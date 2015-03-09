@@ -36,6 +36,15 @@ object Settings {
         proguardScala in Android := false
       )
 
+  lazy val repositorySettings = commonSettings ++
+      Seq(
+        exportJars := true,
+        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
+        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+        javacOptions in Compile += "-deprecation",
+        proguardScala in Android := false
+      )
+
   lazy val commonSettings = Seq(
     scalaVersion := scalaV,
     resolvers ++= commonResolvers,

@@ -20,13 +20,16 @@ object AppBuild extends Build {
         packageName in Android := "com.fortysevendeg.ninecardslauncher"
 
       )
-      .aggregate(app, api)
+      .aggregate(app, api, repository)
 
   lazy val app = Project(id = "app", base = file("modules/app"))
-      .androidBuildWith(api)
+      .androidBuildWith(api, repository)
       .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
       .settings(appSettings: _*)
 
   val api = Project(id = "api", base = file("modules/api"))
       .settings(apiSettings: _*)
+
+  val repository = Project(id = "repository", base = file("modules/repository"))
+      .settings(repositorySettings: _*)
 }
