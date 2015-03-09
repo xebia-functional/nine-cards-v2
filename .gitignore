@@ -1,0 +1,42 @@
+logs
+target
+tmp
+.history
+dist
+/out
+/RUNNING_PID
+/.ivy*
+
+# sbt specific
+/.sbt
+.cache/
+.history/
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+project/project
+project/target
+/.activator
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
+
+#Eclipse specific
+.classpath
+.project
+.cache
+.settings/
+
+#IntelliJ IDEA specific
+.idea/
+/.idea_modules
+/.idea
+/*.iml
+
+#Proguard
+proguard-sbt.txt
