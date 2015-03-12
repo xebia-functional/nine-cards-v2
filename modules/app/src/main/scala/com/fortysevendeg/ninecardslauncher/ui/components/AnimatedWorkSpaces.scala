@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.ui.components.TouchState._
 import macroid.AppContext
 import macroid.FullDsl._
 
-abstract class FrameLayoutGallery[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit appContext: AppContext)
+abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit appContext: AppContext)
   extends FrameLayout(context, attr, defStyleAttr) {
 
   def this(context: Context)(implicit appContext: AppContext) = this(context, null, 0)
