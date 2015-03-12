@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
-import android.widget._
+import com.fortysevendeg.ninecardslauncher.ui.components.TestGallery
 import macroid.FullDsl._
 import macroid.{ActivityContext, AppContext}
 
@@ -8,9 +8,7 @@ trait Layout
     extends Styles {
 
   def content(implicit appContext: AppContext, context: ActivityContext) = getUi(
-    l[FrameLayout](
-      w[TextView] <~ titleStyle
-    )
+    l[TestGallery]()
   )
 
 }
