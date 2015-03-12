@@ -139,23 +139,31 @@ class TestGallery(context: Context, attr: AttributeSet, defStyleAttr: Int)(impli
   }
 
   private def next(): Unit = {
-    val auxFrom = frontView
-    val auxLeft = previousView
-    frontView = nextView
-    previousView = auxFrom
-    nextView = auxLeft
-    currentItem = currentItem + 1
-    if (currentItem > data.size - 1) currentItem = 0
+    for {
+      front <- frontView
+      next <- nextView
+      previous <- previousView
+    } yield {
+      frontView = Some(next)
+      nextView = Some(previous)
+      previousView = Some(front)
+      currentItem = currentItem + 1
+      if (currentItem > data.size - 1) currentItem = 0
+    }
   }
 
   private def previous(): Unit = {
-    val auxFrom = frontView
-    val auxRight = nextView
-    frontView = previousView
-    nextView = auxFrom
-    previousView = auxRight
-    currentItem = currentItem - 1
-    if (currentItem < 0) currentItem = data.length - 1
+    for {
+      front <- frontView
+      next <- nextView
+      previous <- previousView
+    } yield {
+      frontView = Some(previous)
+      nextView = Some(front)
+      previousView = Some(next)
+      currentItem = currentItem - 1
+      if (currentItem < 0) currentItem = data.length - 1
+    }
   }
 
   private def swapViews(): Unit = {
@@ -173,6 +181,7 @@ class TestGallery(context: Context, attr: AttributeSet, defStyleAttr: Int)(impli
       val positionRight: Int = if (currentItem + 1 > data.length - 1) 0 else currentItem + 1
       populateView(nextView, data(positionRight), positionRight)
     }
+    displacement = 0
 
     runUi(
       (this <~ flgEnabled(data.nonEmpty && data.length > 1)) ~

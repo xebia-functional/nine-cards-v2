@@ -21,7 +21,7 @@ abstract class FrameLayoutGallery(context: Context, attr: AttributeSet, defStyle
 
   var horizontalGallery = true
 
-  var infinite = true
+  var infinite = false
 
   var velocityTracker: Option[VelocityTracker] = None
 
