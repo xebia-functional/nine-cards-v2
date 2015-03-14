@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.ui.components
 
 import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, ValueAnimator}
 import android.content.Context
-import android.graphics.Color
 import android.os.Handler
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
@@ -14,8 +13,8 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.components.TouchState._
-import macroid.{Ui, AppContext}
 import macroid.FullDsl._
+import macroid.{AppContext, Ui}
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit appContext: AppContext)
   extends FrameLayout(context, attr, defStyleAttr) {
@@ -30,7 +29,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   var enabled = false
 
-  var horizontalGallery = true
+  val horizontalGallery = true
 
   var infinite = false
 

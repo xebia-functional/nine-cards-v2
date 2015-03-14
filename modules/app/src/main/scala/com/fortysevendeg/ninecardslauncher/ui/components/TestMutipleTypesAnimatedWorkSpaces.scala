@@ -16,6 +16,8 @@ import ItemType._
 class TestMultipleTypesAnimatedWorkSpaces(context: Context)(implicit appContext: AppContext, activityContext: ActivityContext)
   extends AnimatedWorkSpaces[WorkSpaceMultipleHolder, TestMultipleData](context, null, 0) {
 
+  override val horizontalGallery = false
+
   override def getItemViewTypeCount: Int = 2
 
   override def getItemViewType(data: TestMultipleData, position: Int): Int = if (data.text.isDefined) textView else imageView
@@ -89,8 +91,6 @@ object TestMultipleTypesAnimatedWorkSpacesTweaks {
   type W = TestAnimatedWorkSpaces
 
   def flgEnabled(e: Boolean): Tweak[W] = Tweak[W](_.enabled = e)
-
-  def flgHorizontalGallery(h: Boolean): Tweak[W] = Tweak[W](_.horizontalGallery = h)
 
   def flgInfinite(i: Boolean): Tweak[W] = Tweak[W](_.infinite = i)
 

@@ -43,8 +43,6 @@ object TestAnimatedWorkSpacesTweaks {
 
   def flgEnabled(e: Boolean): Tweak[W] = Tweak[W](_.enabled = e)
 
-  def flgHorizontalGallery(h: Boolean): Tweak[W] = Tweak[W](_.horizontalGallery = h)
-
   def flgInfinite(i: Boolean): Tweak[W] = Tweak[W](_.infinite = i)
 
 }
