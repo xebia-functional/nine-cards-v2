@@ -14,7 +14,7 @@ class TestAnimatedWorkSpaces(context: Context)(implicit appContext: AppContext, 
 
   override def getData(): List[String] = List("1", "2", "3", "4", "5", "6")
 
-  override def createView(): WorkSpaceHolder = new WorkSpaceHolder
+  override def createView(viewType: Int): WorkSpaceHolder = new WorkSpaceHolder
 
   override def populateView(view: Option[WorkSpaceHolder], data: String, position: Int) = {
     view map {
