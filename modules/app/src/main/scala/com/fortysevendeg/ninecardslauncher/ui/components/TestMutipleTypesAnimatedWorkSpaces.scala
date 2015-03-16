@@ -16,7 +16,7 @@ import ItemType._
 class TestMultipleTypesAnimatedWorkSpaces(context: Context)(implicit appContext: AppContext, activityContext: ActivityContext)
   extends AnimatedWorkSpaces[WorkSpaceMultipleHolder, TestMultipleData](context, null, 0) {
 
-  override val horizontalGallery = false
+  override def getHorizontalGallery: Boolean = false
 
   override def getItemViewTypeCount: Int = 2
 

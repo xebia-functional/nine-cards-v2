@@ -29,9 +29,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   var enabled = false
 
-  val horizontalGallery = true
+  val horizontalGallery = getHorizontalGallery
 
-  var infinite = false
+  var infinite = getInfinite
 
   var velocityTracker: Option[VelocityTracker] = None
 
@@ -76,6 +76,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   var currentItem = 0
 
+  def getHorizontalGallery: Boolean = true
+
+  def getInfinite: Boolean = false
+
   def getData: List[Data]
 
   def createView(viewType: Int): Holder
@@ -89,10 +93,13 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   createViews()
 
   private def createViews() = {
-    // TODO Be careful when there is 2 items or less
-    previewViewType = getItemViewType(data.last, data.length - 1)
+    if (data.isEmpty) {
+      throw new InstantiationException("data can't be empty")
+    }
+    val (lastItem, nextItem) = if (data.length > 1) (data.length - 1, 1) else (0, 0)
+    previewViewType = getItemViewType(data.last, lastItem)
     val previous = createView(previewViewType)
-    nextViewType = getItemViewType(data(1), 1)
+    nextViewType = getItemViewType(data(nextItem), nextItem)
     val next = createView(nextViewType)
     frontViewType = getItemViewType(data(0), 0)
     val front = createView(frontViewType)
@@ -202,7 +209,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       frontViewType = nextViewType
       nextViewType = previewViewType
       previewViewType = auxFront
-      currentItem = if (currentItem > data.size - 1) 0 else currentItem + 1
+      currentItem = if (currentItem >= data.size - 1) 0 else currentItem + 1
     }
   }
 
@@ -225,7 +232,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       frontViewType = previewViewType
       previewViewType = nextViewType
       nextViewType = auxFront
-      currentItem = if (currentItem < 0) data.length - 1 else currentItem - 1
+      currentItem = if (currentItem <= 0) data.length - 1 else currentItem - 1
     }
   }
 
