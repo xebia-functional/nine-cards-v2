@@ -11,6 +11,8 @@ object AppBuild extends Build {
   lazy val root = Project(id = "root", base = file("."))
       .settings(
         scalaVersion := scalaV,
+        name := "9 Cards 2.0",
+        scalacOptions ++= Seq("-feature", "-deprecation"),
         platformTarget in Android := "android-21",
         packageT in Compile <<= packageT in Android in app,
         packageRelease <<= packageRelease in Android in app,
