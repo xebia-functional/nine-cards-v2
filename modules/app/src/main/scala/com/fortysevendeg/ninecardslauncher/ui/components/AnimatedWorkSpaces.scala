@@ -11,6 +11,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.{MotionEvent, VelocityTracker, ViewConfiguration, ViewGroup}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.components.TouchState._
 import macroid.FullDsl._
@@ -46,7 +47,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       configuration.getScaledMinimumFlingVelocity)
   }
 
-  val durationAnimation = appContext.get.getResources.getInteger(android.R.integer.config_shortAnimTime)
+  val durationAnimation = resGetInteger(android.R.integer.config_shortAnimTime)
 
   val mainAnimator: ObjectAnimator = new ObjectAnimator
 
