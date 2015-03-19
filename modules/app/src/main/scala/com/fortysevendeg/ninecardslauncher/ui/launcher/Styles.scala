@@ -1,11 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
-import android.graphics.PorterDuff.Mode
-import android.graphics.PorterDuffColorFilter
 import android.view.Gravity
 import android.view.ViewGroup.LayoutParams._
 import android.widget.ImageView.ScaleType
-import android.widget.{FrameLayout, ImageView, LinearLayout}
+import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
