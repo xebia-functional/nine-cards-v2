@@ -60,6 +60,7 @@ object Settings {
     aar(androidCardView),
     aar(macroidRoot),
     aar(macroidExtras),
+    aar(playServicesBase),
     compilerPlugin(Libraries.wartRemover))
 
   lazy val commonResolvers = Seq(

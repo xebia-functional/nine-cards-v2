@@ -16,20 +16,18 @@ import ItemType._
 class TestMultipleTypesAnimatedWorkSpaces(context: Context)(implicit appContext: AppContext, activityContext: ActivityContext)
   extends AnimatedWorkSpaces[WorkSpaceMultipleHolder, TestMultipleData](context, null, 0) {
 
-  override def getHorizontalGallery: Boolean = false
-
   override def getItemViewTypeCount: Int = 2
 
   override def getItemViewType(data: TestMultipleData, position: Int): Int = if (data.text.isDefined) textView else imageView
 
   override def getData: List[TestMultipleData] = List(
-    TestMultipleData(None, Some("light_action_bar_icon_collection_game_action")),
+    TestMultipleData(None, Some("icon_collection_games")),
     TestMultipleData(Some("1"), None),
     TestMultipleData(Some("2"), None),
     TestMultipleData(Some("4"), None),
-    TestMultipleData(None, Some("light_action_bar_icon_collection_game_adventure")),
+    TestMultipleData(None, Some("icon_collection_home")),
     TestMultipleData(Some("5"), None),
-    TestMultipleData(None, Some("light_action_bar_icon_collection_game_arcade"))
+    TestMultipleData(None, Some("icon_collection_music"))
   )
 
   override def createView(viewType: Int): WorkSpaceMultipleHolder = viewType match {
