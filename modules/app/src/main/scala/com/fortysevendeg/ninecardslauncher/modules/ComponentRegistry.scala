@@ -1,0 +1,10 @@
+package com.fortysevendeg.ninecardslauncher.modules
+
+import com.fortysevendeg.ninecardslauncher.modules.appsmanager.AppManagerServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.repository.RepositoryServicesComponent
+
+trait ComponentRegistry
+  extends AppManagerServicesComponent
+  with RepositoryServicesComponent
+  with ImageServicesComponent
