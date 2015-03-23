@@ -71,7 +71,7 @@ trait ImageServicesComponentImpl
       currentDensity match {
         case DisplayMetrics.DENSITY_HIGH =>
           List(DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH)
-        case DisplayMetrics.DENSITY_TV =>
+        case _ =>
           List(DisplayMetrics.DENSITY_XXHIGH, DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH)
       }
     }

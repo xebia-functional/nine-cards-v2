@@ -5,6 +5,6 @@ import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.repository.RepositoryServicesComponent
 
 trait ComponentRegistry
-  extends AppManagerServicesComponent
+  extends ImageServicesComponent
+  with AppManagerServicesComponent
   with RepositoryServicesComponent
-  with ImageServicesComponent

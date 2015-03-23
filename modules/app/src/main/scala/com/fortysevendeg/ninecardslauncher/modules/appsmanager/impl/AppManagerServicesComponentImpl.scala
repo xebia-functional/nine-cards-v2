@@ -37,7 +37,7 @@ trait AppManagerServicesComponentImpl
               AppItem(
                 name = name,
                 packageName = resolveInfo.activityInfo.applicationInfo.packageName,
-                imagePath = "",
+                imagePath = imageServices.createAppBitmap(name, resolveInfo),
                 intent = "")
           }
 

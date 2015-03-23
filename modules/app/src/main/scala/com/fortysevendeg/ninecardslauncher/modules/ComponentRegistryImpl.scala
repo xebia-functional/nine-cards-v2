@@ -8,7 +8,8 @@ import com.fortysevendeg.ninecardslauncher.modules.repository.impl.RepositorySer
 trait ComponentRegistryImpl
   extends ComponentRegistry
   with AppContextProvider
+  with ImageServicesComponentImpl
   with AppManagerServicesComponentImpl
   with RepositoryServicesComponentImpl
-  with ImageServicesComponentImpl
+
 
