@@ -89,7 +89,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   def getItemViewType(data: Data, position: Int): Int = 0
 
-  def init() = {
+  def init(position: Int = 0) = {
     if (data.isEmpty) {
       throw new InstantiationException("data can't be empty")
     }
@@ -115,7 +115,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       runUi(this <~ vgAddViews(Seq(p, n, f), params))
     }
 
-
+    currentItem = position
     reset()
   }
 

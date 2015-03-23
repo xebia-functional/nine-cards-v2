@@ -60,7 +60,7 @@ class LauncherWorkSpaceWidgetsHolder(implicit appContext: AppContext, activityCo
 
   addView(
     getUi(
-      w[TextView] <~ wire(text) <~ vMatchParent <~ tvSize(80) <~ tvColor(Color.WHITE) <~ tvText("WIDGETS") <~ tvGravity(Gravity.CENTER)
+      w[TextView] <~ wire(text) <~ vMatchParent <~ tvSize(30) <~ tvColor(Color.WHITE) <~ tvText("WIDGETS") <~ tvGravity(Gravity.CENTER)
     )
   )
 
@@ -101,6 +101,6 @@ object LauncherWorkSpacesTweaks {
   def lwsData(collections: Seq[Collection]) = Tweak[W] {
     workspaces =>
       workspaces.data = LauncherData(true) +: getCollectionsItems(collections, Seq.empty, LauncherData(false))
-      workspaces.init()
+      workspaces.init(1)
   }
 }
