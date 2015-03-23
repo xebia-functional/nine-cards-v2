@@ -107,7 +107,7 @@ trait ImageServicesComponentImpl
       val x: Int = ((defaultSize / 2) - bounds.exactCenterX).toInt
       val y: Int = ((defaultSize / 2) - bounds.exactCenterY).toInt
       val canvas: Canvas = new Canvas(bitmap)
-      canvas.drawColor(getCurrentColor)
+      canvas.drawColor(getCurrentColor())
       canvas.drawText(text, x, y, paint)
       bitmap
     }
@@ -176,7 +176,7 @@ trait ImageServicesComponentImpl
       path
     }
 
-    private def getCurrentColor: Int = {
+    private def getCurrentColor(): Int = {
       val color = currentColor match {
         case 0 => color1
         case 1 => color2

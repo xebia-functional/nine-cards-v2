@@ -24,7 +24,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   def this(context: Context, attr: AttributeSet)(implicit appContext: AppContext) = this(context, attr, 0)
 
-  val data: List[Data] = getData
+  var data: Seq[Data] = Seq.empty
 
   var touchState = stopped
 
@@ -81,19 +81,15 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   def getInfinite: Boolean = false
 
-  def getData: List[Data]
-
   def createView(viewType: Int): Holder
 
-  def populateView(view: Option[Holder], data: Data, position: Int)
+  def populateView(view: Option[Holder], data: Data, viewType: Int, position: Int)
 
   def getItemViewTypeCount: Int = 0
 
   def getItemViewType(data: Data, position: Int): Int = 0
 
-  createViews()
-
-  private def createViews() = {
+  def init() = {
     if (data.isEmpty) {
       throw new InstantiationException("data can't be empty")
     }
@@ -252,10 +248,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
         frontView = Some(newView)
         runUi(
           (frontParentView <~ vgRemoveAllViews <~ vgAddView(newView, params)) ~
-            Ui { populateView(frontView, data(currentItem), currentItem) }
+            Ui { populateView(frontView, data(currentItem), frontViewType, currentItem) }
         )
       } else {
-        populateView(frontView, data(currentItem), currentItem)
+        populateView(frontView, data(currentItem), frontViewType, currentItem)
       }
 
       val positionLeft: Int = if (currentItem - 1 < 0) data.length - 1 else currentItem - 1
@@ -266,10 +262,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
         previousView = Some(newView)
         runUi(
           (previousParentView <~ vgRemoveAllViews <~ vgAddView(newView, params)) ~
-            Ui { populateView(previousView, data(positionLeft), positionLeft) }
+            Ui { populateView(previousView, data(positionLeft), previewViewType, positionLeft) }
         )
       } else {
-        populateView(previousView, data(positionLeft), positionLeft)
+        populateView(previousView, data(positionLeft), previewViewType, positionLeft)
       }
 
       val positionRight: Int = if (currentItem + 1 > data.length - 1) 0 else currentItem + 1
@@ -281,10 +277,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
         runUi(
           (nextParentView <~ vgRemoveAllViews) ~
             (nextParentView <~ vgAddView(newView, params)) ~
-            Ui { populateView(nextView, data(positionRight), positionRight) }
+            Ui { populateView(nextView, data(positionRight), nextViewType, positionRight) }
         )
       } else {
-        populateView(nextView, data(positionRight), positionRight)
+        populateView(nextView, data(positionRight), nextViewType, positionRight)
       }
     }
     displacement = 0
