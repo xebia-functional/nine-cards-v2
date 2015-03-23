@@ -1,19 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
 import android.content.Context
-import android.graphics.Color
-import android.view.Gravity
-import android.widget.{ImageView, TextView, FrameLayout}
+import android.widget.FrameLayout
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.repository.{Collection, RepositoryServicesComponent}
+import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
 import com.fortysevendeg.ninecardslauncher.ui.components.AnimatedWorkSpaces
-import macroid.{Tweak, ActivityContext, AppContext}
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import WorkSpaceType._
-import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher.ui.launcher.WorkSpaceType._
+import macroid.{ActivityContext, AppContext, Tweak}
 
 import scala.annotation.tailrec
 
@@ -38,7 +31,7 @@ class LauncherWorkSpaces(context: Context)(implicit appContext: AppContext, acti
         viewType match {
           case `collections` =>
             val view = v.asInstanceOf[LauncherWorkSpaceCollectionsHolder]
-            runUi(view.image <~ ivSrc(resGetDrawable(data.collection.head.icon).get))
+            view.populate(data)
           case _ =>
         }
     }
@@ -53,32 +46,6 @@ object WorkSpaceType {
 class LauncherWorkSpaceHolder(implicit appContext: AppContext, activityContext: ActivityContext)
   extends FrameLayout(activityContext.get)
 
-class LauncherWorkSpaceWidgetsHolder(implicit appContext: AppContext, activityContext: ActivityContext)
-  extends LauncherWorkSpaceHolder {
-
-  var text = slot[TextView]
-
-  addView(
-    getUi(
-      w[TextView] <~ wire(text) <~ vMatchParent <~ tvSize(30) <~ tvColor(Color.WHITE) <~ tvText("WIDGETS") <~ tvGravity(Gravity.CENTER)
-    )
-  )
-
-}
-
-class LauncherWorkSpaceCollectionsHolder(implicit appContext: AppContext, activityContext: ActivityContext)
-  extends LauncherWorkSpaceHolder {
-
-  var image = slot[ImageView]
-
-  addView(
-    getUi(
-      w[ImageView] <~ wire(image) <~ vMatchParent
-    )
-  )
-
-}
-
 case class LauncherData(widgets: Boolean, collection: Seq[Collection] = Seq.empty)
 
 object LauncherWorkSpacesTweaks {
@@ -90,11 +57,10 @@ object LauncherWorkSpacesTweaks {
       case Nil if newLauncherData.collection.length > 0 => newLauncherData +: acc
       case Nil => acc
       case h :: t if newLauncherData.collection.length == 9 => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(false))
-      case h :: t => {
+      case h :: t =>
         val g: Seq[Collection] = newLauncherData.collection :+ h
         val n = LauncherData(false, g)
         getCollectionsItems(t, acc, n)
-      }
     }
   }
 
