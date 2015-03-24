@@ -36,6 +36,14 @@ object Libraries {
   object json {
     lazy val playJson = "com.typesafe.play" %% "play-json" % Versions.playJsonV
   }
+
+  object net {
+    lazy val communicator = "io.taig" %% "communicator" % Versions.communicatorV
+  }
+
+  object utils {
+    lazy val commonsLang = "org.apache.commons" % "commons-lang3" % Versions.commonsLangV
+  }
   
   object test {
     lazy val specs2 = "org.specs2" %% "specs2-core" % Versions.specs2V % "test"

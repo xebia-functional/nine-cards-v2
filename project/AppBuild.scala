@@ -2,6 +2,10 @@ import sbt._
 import sbt.Keys._
 import android.Keys._
 import Settings._
+import Libraries.json._
+import Libraries.net._
+import Libraries.utils._
+import Libraries.test._
 
 object AppBuild extends Build {
 
@@ -30,6 +34,13 @@ object AppBuild extends Build {
       .settings(appSettings: _*)
 
   val api = Project(id = "api", base = file("modules/api"))
+      .settings(libraryDependencies ++= Seq(
+    playJson,
+    communicator,
+    commonsLang,
+    specs2,
+    mockito,
+    androidTest))
       .settings(apiSettings: _*)
 
   val repository = Project(id = "repository", base = file("modules/repository"))
