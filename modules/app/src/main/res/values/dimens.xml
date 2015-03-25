@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Commons -->
     <dimen name="height_search_box">48dp</dimen>
 
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_default">8dp</dimen>
     <dimen name="padding_large">16dp</dimen>
+
+    <dimen name="text_xlarge">18dp</dimen>
+    <dimen name="text_large">16dp</dimen>
+    <dimen name="text_default">14dp</dimen>
+    <dimen name="text_medium">12dp</dimen>
+    <dimen name="text_small">10dp</dimen>
+
+    <dimen name="elevation_default">4dp</dimen>
+
+    <dimen name="shadow_displacement_default">1dp</dimen>
+    <dimen name="shadow_radius_default">1dp</dimen>
+
+    <!-- Groups of collections -->
+    <dimen name="size_group_collection">72dp</dimen>
 
 </resources>

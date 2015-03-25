@@ -1,12 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
-import android.view.Gravity
+import android.graphics.Outline
+import android.text.TextUtils.TruncateAt
+import android.view.{ViewOutlineProvider, ViewGroup, Gravity}
 import android.view.ViewGroup.LayoutParams._
 import android.widget.ImageView.ScaleType
-import android.widget.{FrameLayout, LinearLayout}
+import android.widget._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
+import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.DeviceVersion._
+import com.fortysevendeg.macroid.extras.ViewTweaks
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageViewTweaks._
@@ -18,18 +24,20 @@ trait Styles {
 
   def rootStyle(implicit appContext: AppContext): Tweak[LinearLayout] =
     vMatchParent +
-      llVertical +
-      vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
+      llVertical
 
   val workspaceStyle: Tweak[FrameLayout] =
     llMatchWeightVertical
 
-  def searchContentStyle(implicit appContext: AppContext): Tweak[LinearLayout] =
+  def searchContentStyle(implicit appContext: AppContext): Tweak[LinearLayout] = {
+    val margin = resGetDimensionPixelSize(R.dimen.padding_default)
     lp[LinearLayout](MATCH_PARENT, resGetDimensionPixelSize(R.dimen.height_search_box)) +
       llHorizontal +
+      llLayoutMargin(margin, margin, margin, margin) +
       llGravity(Gravity.CENTER_VERTICAL) +
       vBackground(R.drawable.search) +
       vPaddings(paddingLeftRight = resGetDimensionPixelSize(R.dimen.padding_large), paddingTopBottom = 0)
+  }
 
   def burgerButtonStyle(implicit appContext: AppContext): Tweak[TintableImageView] =
     vWrapContent +
@@ -52,13 +60,60 @@ trait Styles {
       tivDefaultColor(R.color.search_icons_tint) +
       tivPressedColor(R.color.search_press_tint)
 
-  val drawerBarContentStyle: Tweak[LinearLayout] =
+  def drawerBarContentStyle(implicit appContext: AppContext): Tweak[LinearLayout] = {
+    val marginDefault = resGetDimensionPixelSize(R.dimen.padding_default)
+    val marginBottom = resGetDimensionPixelSize(R.dimen.padding_large)
     vMatchWidth +
-      llHorizontal
+      llHorizontal +
+      llLayoutMargin(marginDefault, marginDefault, marginDefault, marginBottom)
+  }
 
-  def appDrawerStyle(implicit appContext: AppContext): Tweak[TintableImageView] =
-    llWrapWeightHorizontal +
+  def appDrawerContentStyle(): Tweak[FrameLayout] = llWrapWeightHorizontal
+
+  def appDrawerStyle(implicit appContext: AppContext): Tweak[TintableImageView] = {
+    val elevation = resGetDimensionPixelSize(R.dimen.elevation_default)
+    vWrapContent +
+      flLayoutGravity(Gravity.CENTER) +
       ivSrc(R.drawable.icon_app_drawer) +
-      tivPressedColor(R.color.app_drawer_press_tint)
+      (Lollipop ifSupportedThen {
+        vElevation(elevation) +
+          vPaddings(elevation) +
+          vCircleOutlineProvider(elevation)
+      } getOrElse tivPressedColor(R.color.app_drawer_press_tint))
+  }
+}
+
+trait CollectionsGroupStyle {
+
+  val collectionGridStyle: Tweak[GridLayout] =
+    vMatchParent
+
+}
+
+trait CollectionItemStyle {
+
+  val collectionItemStyle: Tweak[LinearLayout] =
+    vMatchParent +
+      llVertical +
+      llGravity(Gravity.CENTER)
+
+  def iconStyle(implicit appContext: AppContext): Tweak[ImageView] = {
+    val size = resGetDimensionPixelSize(R.dimen.size_group_collection)
+    lp[ViewGroup](size, size) +
+      (Lollipop ifSupportedThen vElevation(resGetDimensionPixelSize(R.dimen.elevation_default)) getOrElse Tweak.blank)
+  }
+
+  def nameStyle(implicit appContext: AppContext): Tweak[TextView] = {
+    val displacement = resGetDimensionPixelSize(R.dimen.shadow_displacement_default)
+    val radius = resGetDimensionPixelSize(R.dimen.shadow_radius_default)
+    vWrapContent +
+      vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_default)) +
+      tvColorResource(R.color.collection_group_name) +
+      tvSizeResource(R.dimen.text_default) +
+      tvLines(2) +
+      tvEllipsize(TruncateAt.END) +
+      tvGravity(Gravity.CENTER_HORIZONTAL) +
+      tvShadowLayer(radius, displacement, displacement, resGetColor(R.color.shadow_default))
+  }
 
 }

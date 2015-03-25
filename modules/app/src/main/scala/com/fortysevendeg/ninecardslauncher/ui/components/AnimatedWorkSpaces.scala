@@ -24,6 +24,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   def this(context: Context, attr: AttributeSet)(implicit appContext: AppContext) = this(context, attr, 0)
 
+  val dimen: Dimen = Dimen()
+
   var data: Seq[Data] = Seq.empty
 
   var touchState = stopped
@@ -81,9 +83,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   def getInfinite: Boolean = false
 
-  def createView(viewType: Int): Holder
+  def createView(viewType: Int, parentDimen: Dimen): Holder
 
-  def populateView(view: Option[Holder], data: Data, viewType: Int, position: Int)
+  def populateView(view: Option[Holder], parentDimen: Dimen, data: Data, viewType: Int, position: Int)
 
   def getItemViewTypeCount: Int = 0
 
@@ -95,11 +97,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     }
     val (lastItem, nextItem) = if (data.length > 1) (data.length - 1, 1) else (0, 0)
     previewViewType = getItemViewType(data.last, lastItem)
-    val previous = createView(previewViewType)
+    val previous = createView(previewViewType, dimen)
     nextViewType = getItemViewType(data(nextItem), nextItem)
-    val next = createView(nextViewType)
+    val next = createView(nextViewType, dimen)
     frontViewType = getItemViewType(data(0), 0)
-    val front = createView(frontViewType)
+    val front = createView(frontViewType, dimen)
     previousView = Some(previous)
     nextView = Some(next)
     frontView = Some(front)
@@ -124,6 +126,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   def isFirst: Boolean = currentItem == 0
 
   def isLast: Boolean = currentItem == data.length - 1
+
+  def canGoToPrevious = !isFirst || (isFirst && infinite)
+
+  def canGoToNext = !isLast || (isLast && infinite)
 
   def snap(velocity: Float): Unit = {
     mainAnimator.cancel()
@@ -244,43 +250,51 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       val auxFrontViewType = getItemViewType(data(currentItem), currentItem)
       if (frontViewType != auxFrontViewType) {
         frontViewType = auxFrontViewType
-        val newView = createView(frontViewType)
+        val newView = createView(frontViewType, dimen)
         frontView = Some(newView)
         runUi(
           (frontParentView <~ vgRemoveAllViews <~ vgAddView(newView, params)) ~
-            Ui { populateView(frontView, data(currentItem), frontViewType, currentItem) }
+            Ui { populateView(frontView, dimen, data(currentItem), frontViewType, currentItem) }
         )
       } else {
-        populateView(frontView, data(currentItem), frontViewType, currentItem)
+        populateView(frontView, dimen, data(currentItem), frontViewType, currentItem)
       }
 
-      val positionLeft: Int = if (currentItem - 1 < 0) data.length - 1 else currentItem - 1
-      val auxPreviewViewType = getItemViewType(data(positionLeft), positionLeft)
-      if (previewViewType != auxPreviewViewType) {
-        previewViewType = auxPreviewViewType
-        val newView = createView(previewViewType)
-        previousView = Some(newView)
-        runUi(
-          (previousParentView <~ vgRemoveAllViews <~ vgAddView(newView, params)) ~
-            Ui { populateView(previousView, data(positionLeft), previewViewType, positionLeft) }
-        )
-      } else {
-        populateView(previousView, data(positionLeft), previewViewType, positionLeft)
+      if (canGoToPrevious) {
+        val positionLeft: Int = if (currentItem - 1 < 0) data.length - 1 else currentItem - 1
+        val auxPreviewViewType = getItemViewType(data(positionLeft), positionLeft)
+        if (previewViewType != auxPreviewViewType) {
+          previewViewType = auxPreviewViewType
+          val newView = createView(previewViewType, dimen)
+          previousView = Some(newView)
+          runUi(
+            (previousParentView <~ vgRemoveAllViews <~ vgAddView(newView, params)) ~
+              Ui {
+                populateView(previousView, dimen, data(positionLeft), previewViewType, positionLeft)
+              }
+          )
+        } else {
+          populateView(previousView, dimen, data(positionLeft), previewViewType, positionLeft)
+        }
       }
 
-      val positionRight: Int = if (currentItem + 1 > data.length - 1) 0 else currentItem + 1
-      val auxNextViewType = getItemViewType(data(positionRight), positionRight)
-      if (nextViewType != auxNextViewType) {
-        nextViewType = auxNextViewType
-        val newView = createView(nextViewType)
-        nextView = Some(newView)
-        runUi(
-          (nextParentView <~ vgRemoveAllViews) ~
-            (nextParentView <~ vgAddView(newView, params)) ~
-            Ui { populateView(nextView, data(positionRight), nextViewType, positionRight) }
-        )
-      } else {
-        populateView(nextView, data(positionRight), nextViewType, positionRight)
+      if (canGoToNext) {
+        val positionRight: Int = if (currentItem + 1 > data.length - 1) 0 else currentItem + 1
+        val auxNextViewType = getItemViewType(data(positionRight), positionRight)
+        if (nextViewType != auxNextViewType) {
+          nextViewType = auxNextViewType
+          val newView = createView(nextViewType, dimen)
+          nextView = Some(newView)
+          runUi(
+            (nextParentView <~ vgRemoveAllViews) ~
+              (nextParentView <~ vgAddView(newView, params)) ~
+              Ui {
+                populateView(nextView, dimen, data(positionRight), nextViewType, positionRight)
+              }
+          )
+        } else {
+          populateView(nextView, dimen, data(positionRight), nextViewType, positionRight)
+        }
       }
     }
     displacement = 0
@@ -312,6 +326,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
           }
         })
     }
+  }
+
+  override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
+    super.onSizeChanged(w, h, oldw, oldh)
+    dimen.width = w
+    dimen.height = h
   }
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
@@ -397,6 +417,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   }
 
 }
+
+case class Dimen(var width: Int = 0, var height: Int = 0)
 
 object TouchState {
   val stopped = 0

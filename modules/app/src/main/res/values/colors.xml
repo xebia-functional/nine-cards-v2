@@ -8,11 +8,13 @@
     <color name="accent">#E05F5E</color>
     <color name="toolbar_title">#ffffff</color>
 
-    <color name="background_default_1">#f58559</color>
-    <color name="background_default_2">#ad62a7</color>
-    <color name="background_default_3">#e4c62e</color>
-    <color name="background_default_4">#59a2be</color>
-    <color name="background_default_5">#f9a43e</color>
+    <color name="background_default_1">#FF9800</color>
+    <color name="background_default_2">#F44336</color>
+    <color name="background_default_3">#9C27B0</color>
+    <color name="background_default_4">#2196F3</color>
+    <color name="background_default_5">#673AB7</color>
+
+    <color name="shadow_default">#364550</color>
 
     <!-- Search bar -->
     <color name="search_icons_tint">#646464</color>
@@ -21,5 +23,18 @@
 
     <!-- App Drawer -->
     <color name="app_drawer_press_tint">#cce0fa</color>
+
+    <!-- Groups of collections -->
+    <color name="collection_group_name">#ffffff</color>
+
+    <color name="collection_group_1">#FF9800</color>
+    <color name="collection_group_2">#F44336</color>
+    <color name="collection_group_3">#9C27B0</color>
+    <color name="collection_group_4">#2196F3</color>
+    <color name="collection_group_5">#673AB7</color>
+    <color name="collection_group_6">#3F51B5</color>
+    <color name="collection_group_7">#8BC34A</color>
+    <color name="collection_group_8">#4CAF50</color>
+    <color name="collection_group_9">#009688</color>
 
 </resources>

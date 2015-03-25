@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.FrameLayout
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
-import com.fortysevendeg.ninecardslauncher.ui.components.AnimatedWorkSpaces
+import com.fortysevendeg.ninecardslauncher.ui.components.{Dimen, AnimatedWorkSpaces}
 import com.fortysevendeg.ninecardslauncher.ui.launcher.WorkSpaceType._
 import macroid.{ActivityContext, AppContext, Tweak}
 
@@ -20,12 +20,12 @@ class LauncherWorkSpaces(context: Context)(implicit appContext: AppContext, acti
 
   override def getItemViewType(data: LauncherData, position: Int): Int = if (data.widgets) widgets else collections
 
-  override def createView(viewType: Int): LauncherWorkSpaceHolder = viewType match {
+  override def createView(viewType: Int, parentDimen: Dimen): LauncherWorkSpaceHolder = viewType match {
     case `widgets` => new LauncherWorkSpaceWidgetsHolder
-    case `collections` => new LauncherWorkSpaceCollectionsHolder
+    case `collections` => new LauncherWorkSpaceCollectionsHolder(parentDimen)
   }
 
-  override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int) =
+  override def populateView(view: Option[LauncherWorkSpaceHolder], parentDimen: Dimen,  data: LauncherData, viewType: Int, position: Int) =
     view map {
       v =>
         viewType match {
@@ -46,7 +46,7 @@ object WorkSpaceType {
 class LauncherWorkSpaceHolder(implicit appContext: AppContext, activityContext: ActivityContext)
   extends FrameLayout(activityContext.get)
 
-case class LauncherData(widgets: Boolean, collection: Seq[Collection] = Seq.empty)
+case class LauncherData(widgets: Boolean, collections: Seq[Collection] = Seq.empty)
 
 object LauncherWorkSpacesTweaks {
   type W = LauncherWorkSpaces
@@ -54,11 +54,11 @@ object LauncherWorkSpacesTweaks {
   @tailrec
   private def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
     collections match {
-      case Nil if newLauncherData.collection.length > 0 => newLauncherData +: acc
+      case Nil if newLauncherData.collections.length > 0 => acc :+ newLauncherData
       case Nil => acc
-      case h :: t if newLauncherData.collection.length == 9 => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(false))
+      case h :: t if newLauncherData.collections.length == 9 => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(false))
       case h :: t =>
-        val g: Seq[Collection] = newLauncherData.collection :+ h
+        val g: Seq[Collection] = newLauncherData.collections :+ h
         val n = LauncherData(false, g)
         getCollectionsItems(t, acc, n)
     }

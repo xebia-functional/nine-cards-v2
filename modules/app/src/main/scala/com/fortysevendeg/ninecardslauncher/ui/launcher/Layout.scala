@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.ui.launcher
 
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.widget.LinearLayout
+import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import macroid.FullDsl._
@@ -40,21 +40,31 @@ trait Layout
       ) <~ searchContentStyle,
       l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces),
       l[LinearLayout](
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        ),
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        ),
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        ),
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        ),
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        )
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerStyle <~ On.click(
+            uiShortToast("App Drawer")
+          )
+        ) <~ appDrawerContentStyle,
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerStyle <~ On.click(
+            uiShortToast("App Drawer")
+          )
+        ) <~ appDrawerContentStyle,
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerStyle <~ On.click(
+            uiShortToast("App Drawer")
+          )
+        ) <~ appDrawerContentStyle,
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerStyle <~ On.click(
+            uiShortToast("App Drawer")
+          )
+        ) <~ appDrawerContentStyle,
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerStyle <~ On.click(
+            uiShortToast("App Drawer")
+          )
+        ) <~ appDrawerContentStyle
       ) <~ drawerBarContentStyle
     ) <~ rootStyle
   )
