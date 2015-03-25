@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
+import android.animation.AnimatorInflater
 import android.graphics.Outline
 import android.text.TextUtils.TruncateAt
 import android.view.{ViewOutlineProvider, ViewGroup, Gravity}
@@ -12,7 +13,7 @@ import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
-import com.fortysevendeg.macroid.extras.ViewTweaks
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageViewTweaks._
@@ -61,22 +62,23 @@ trait Styles {
       tivPressedColor(R.color.search_press_tint)
 
   def drawerBarContentStyle(implicit appContext: AppContext): Tweak[LinearLayout] = {
-    val marginDefault = resGetDimensionPixelSize(R.dimen.padding_default)
-    val marginBottom = resGetDimensionPixelSize(R.dimen.padding_large)
+    val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
+    val paddingBottom = resGetDimensionPixelSize(R.dimen.padding_large)
     vMatchWidth +
       llHorizontal +
-      llLayoutMargin(marginDefault, marginDefault, marginDefault, marginBottom)
+      vPadding(paddingDefault, paddingDefault, paddingDefault, paddingBottom) +
+      vgClipToPadding(false)
   }
 
   def appDrawerContentStyle(): Tweak[FrameLayout] = llWrapWeightHorizontal
 
   def appDrawerStyle(implicit appContext: AppContext): Tweak[TintableImageView] = {
-    val elevation = resGetDimensionPixelSize(R.dimen.elevation_default)
+    val elevation = resGetDimensionPixelSize(R.dimen.elevation_pressed)
     vWrapContent +
       flLayoutGravity(Gravity.CENTER) +
       ivSrc(R.drawable.icon_app_drawer) +
       (Lollipop ifSupportedThen {
-        vElevation(elevation) +
+        vStateListAnimator(R.anim.elevation_transition) +
           vPaddings(elevation) +
           vCircleOutlineProvider(elevation)
       } getOrElse tivPressedColor(R.color.app_drawer_press_tint))

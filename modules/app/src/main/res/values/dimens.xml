@@ -14,7 +14,8 @@
     <dimen name="text_medium">12dp</dimen>
     <dimen name="text_small">10dp</dimen>
 
-    <dimen name="elevation_default">4dp</dimen>
+    <dimen name="elevation_default">2dp</dimen>
+    <dimen name="elevation_pressed">4dp</dimen>
 
     <dimen name="shadow_displacement_default">1dp</dimen>
     <dimen name="shadow_radius_default">1dp</dimen>
