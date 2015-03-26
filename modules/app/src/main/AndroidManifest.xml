@@ -20,5 +20,10 @@
             </intent-filter>
         </activity>
 
+        <provider
+                android:authorities="com.fortysevendeg.ninecardslauncher"
+                android:name="com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider"
+                android:exported="false" />
+
     </application>
 </manifest>
