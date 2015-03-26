@@ -38,21 +38,21 @@ object Libraries {
   }
 
   object net {
-    lazy val communicator = "io.taig" %% "communicator" % Versions.communicatorV
+    lazy val sprayClient = "io.spray" %% "spray-client" % Versions.sprayClientV
   }
 
-  object utils {
-    lazy val commonsLang = "org.apache.commons" % "commons-lang3" % Versions.commonsLangV
-  }
-  
   object test {
     lazy val specs2 = "org.specs2" %% "specs2-core" % Versions.specs2V % "test"
-    lazy val androidTest = "com.google.android" % "android" % "4.1.1.4" % "test"
     lazy val mockito = "org.specs2" % "specs2-mock_2.11" % Versions.mockitoV % "test"
+    lazy val androidTest = "com.google.android" % "android" % "4.1.1.4" % "test"
   }
 
   object graphics {
     lazy val picasso = "com.squareup.picasso" % "picasso" % Versions.picassoV
+  }
+
+  object akka {
+    lazy val akkaActor = "com.typesafe.akka" %% "akka-actor" % Versions.akkaActorV
   }
 
   object playServices {

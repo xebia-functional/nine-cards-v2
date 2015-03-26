@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.api
 
-import com.fortysevendeg.ninecardslauncher.api.model.{SharedCollectionSubscription, SharedCollectionList, SharedCollection}
+import com.fortysevendeg.ninecardslauncher.api.model.{SharedCollection, SharedCollectionList, SharedCollectionSubscription}
 import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits
-import com.fortysevendeg.rest.client.{BodyContent, ServiceClient}
+import com.fortysevendeg.rest.client.ServiceClient
 
 trait NineCardsServiceClient
   extends ServiceClient
@@ -32,27 +32,23 @@ trait NineCardsServiceClient
       path = s"$prefixPath/search/$keywords/$offset/$limit")
 
   def rateSharedCollection(sharedCollectionId: Long, rate: Double) =
-    rawBodyPost[SharedCollection](
-      path = s"$prefixPath/$sharedCollectionId/rate/$rate",
-      rawBody = BodyContent.emptyTextBody)
+    emptyPost[SharedCollection](
+      path = s"$prefixPath/$sharedCollectionId/rate/$rate")
 
   def subscribeSharedCollection(sharedCollectionId: Long) =
-    rawBodyPut[SharedCollectionSubscription](
-      path = s"$prefixPath/$sharedCollectionId/subscribe",
-      rawBody = BodyContent.emptyTextBody)
+    emptyPut[SharedCollectionSubscription](
+      path = s"$prefixPath/$sharedCollectionId/subscribe")
 
   def unsubscribeSharedCollection(sharedCollectionId: Long) =
     delete[String](
       path = s"$prefixPath/$sharedCollectionId/subscribe")
 
   def notifyViewCollection(sharedCollectionId: Long) =
-    rawBodyPut[SharedCollection](
-      path = s"$prefixPath/$sharedCollectionId/notifyViews",
-      rawBody = BodyContent.emptyTextBody)
+    emptyPut[SharedCollection](
+      path = s"$prefixPath/$sharedCollectionId/notifyViews")
 
   def notifyInstallCollection(sharedCollectionId: Long) =
-    rawBodyPut[SharedCollection](
-      path = s"$prefixPath/$sharedCollectionId/notifyInstall",
-      rawBody = BodyContent.emptyTextBody)
+    emptyPut[SharedCollection](
+      path = s"$prefixPath/$sharedCollectionId/notifyInstall")
 
 }

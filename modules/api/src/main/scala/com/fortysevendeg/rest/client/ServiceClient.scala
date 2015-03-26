@@ -1,117 +1,79 @@
 package com.fortysevendeg.rest.client
 
-import java.io.InputStream
-
-import com.fortysevendeg.rest.client.BodyContent.{StringBody, Body, EmptyBody}
-import com.fortysevendeg.rest.client.HttpMethods._
-import com.squareup.okhttp
-import io.taig.communicator.RichOkHttpRequestBuilder
-import io.taig.communicator.request.Request
-import io.taig.communicator.response.Plain
-import io.taig.communicator.result.Parser
-import org.apache.commons.lang3.text.StrSubstitutor
-import play.api.libs.json.{Writes, Json, Reads}
+import play.api.libs.json.{Json, Reads, Writes}
+import spray.http.HttpHeaders.RawHeader
+import spray.http.{HttpEntity, MediaTypes}
+import spray.httpx.marshalling.Marshaller
+import spray.httpx.unmarshalling._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait ServiceClient {
 
+  val httpClient: HttpClient
+
   implicit val executionContext: ExecutionContext
 
   val baseUrl: String
 
-  val okHttpClient: okhttp.OkHttpClient = new okhttp.OkHttpClient
+  def get[Res](
+      path: String,
+      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Reads[Res]): Future[Res] = 
+    httpClient.doGet[Res](
+      baseUrl.concat(path),
+      toHttpHeader(headers))(createUnmarshaller[Res])
 
-  def get[T](
+  def emptyPost[Res](
+      path: String,
+      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Reads[Res]): Future[Res] =
+    httpClient.doPost[Res](
+      baseUrl.concat(path),
+      toHttpHeader(headers))(createUnmarshaller[Res])
+
+  def post[Req, Res](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      pathValues: Map[String, String] = Map.empty[String, String])(implicit reads: Reads[T]): Future[T] =
-    call(path = path, method = GET, headers = headers, pathValues = pathValues)
+      body: Req)(implicit reads: Reads[Res], writes: Writes[Req]): Future[Res] =
+    httpClient.doPost[Req, Res](
+      baseUrl.concat(path),
+      toHttpHeader(headers),
+      body)(createMarshaller[Req], createUnmarshaller[Res])
 
-  def rawBodyPost[T](
+  def emptyPut[Res](
+      path: String,
+      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Reads[Res]): Future[Res] =
+    httpClient.doPut[Res](
+      baseUrl.concat(path),
+      toHttpHeader(headers))(createUnmarshaller[Res])
+
+  def put[Req, Res](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      pathValues: Map[String, String] = Map.empty[String, String],
-      rawBody: Body)(implicit reads: Reads[T]): Future[T] =
-    call(path = path, method = POST, headers = headers, pathValues = pathValues, rawBody = rawBody)
+      body: Req)(implicit reads: Reads[Res], writes: Writes[Req]): Future[Res] =
+    httpClient.doPut[Req, Res](
+      baseUrl.concat(path),
+      toHttpHeader(headers),
+      body)(createMarshaller[Req], createUnmarshaller[Res])
 
-  def post[T, S](
+  def delete[Res](
       path: String,
-      headers: Seq[(String, String)] = Seq.empty,
-      pathValues: Map[String, String] = Map.empty[String, String],
-      body: S)(implicit reads: Reads[T], writes: Writes[S]): Future[T] =
-    call[T](path = path, method = POST, headers = headers, pathValues = pathValues, rawBody = createBody(body))
+      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Reads[Res]): Future[Res] =
+    httpClient.doDelete[Res](
+      baseUrl.concat(path),
+      toHttpHeader(headers))(createUnmarshaller[Res])
+  
+  private def toHttpHeader(headers: Seq[(String, String)]): Seq[RawHeader] = 
+    headers map(t => RawHeader(t._1, t._2))
 
-  def rawBodyPut[T](
-      path: String,
-      headers: Seq[(String, String)] = Seq.empty,
-      pathValues: Map[String, String] = Map.empty[String, String],
-      rawBody: Body)(implicit reads: Reads[T]): Future[T] =
-    call(path = path, method = PUT, headers = headers, pathValues = pathValues, rawBody = rawBody)
-
-  def put[T, S](
-      path: String,
-      headers: Seq[(String, String)] = Seq.empty,
-      pathValues: Map[String, String] = Map.empty[String, String],
-      rawBody: S)(implicit reads: Reads[T], writes: Writes[S]): Future[T] =
-    call[T](path = path, method = PUT, headers = headers, pathValues = pathValues, rawBody = createBody(rawBody))
-
-  def delete[T](
-      path: String,
-      headers: Seq[(String, String)] = Seq.empty,
-      pathValues: Map[String, String] = Map.empty[String, String])(implicit reads: Reads[T]): Future[T] =
-    call(path = path, method = DELETE, headers = headers, pathValues = pathValues)
-
-  def call[T](
-    path: String,
-    method: HttpMethod,
-    headers: Seq[(String, String)] = Seq.empty,
-    pathValues: Map[String, String] = Map.empty[String, String],
-    rawBody: Body = EmptyBody())(implicit reads: Reads[T]): Future[T] = {
-
-    val replacedPath = parseUrl(path = path, params = pathValues)
-
-    val builder = Request(replacedPath)
-      .headers(toHeaders(headers))
-
-    addMethod(builder, method, rawBody.requestBody)
-      .parse(okHttpClient, new DefaultParser[T])
-      .transform(response => response.payload, throwable => throwable)
-  }
-
-  private def createBody[T](bodyObject: T)(implicit writes: Writes[T]): Body =
-    StringBody("application/json", Json.toJson(bodyObject).toString())
-
-  private def parseUrl(path: String, params: Map[String, String]): String = {
-    import scala.collection.JavaConversions.mapAsJavaMap
-    StrSubstitutor.replace(baseUrl.concat(path), params)
-  }
-
-  private def toHeaders(headers: Seq[(String, String)]): okhttp.Headers = {
-    val headersBuilder = new okhttp.Headers.Builder()
-    headers map { header =>
-      headersBuilder.add(header._1, header._2)
+  private def createUnmarshaller[Res](implicit reads: Reads[Res]): Unmarshaller[Res] =
+    Unmarshaller[Res](MediaTypes.`text/plain`, MediaTypes.`application/json`) {
+      case HttpEntity.NonEmpty(contentType, data) =>
+        Json.parse(scala.io.Source.fromBytes(data.toByteArray, contentType.charset.value).mkString).as[Res]
     }
-    headersBuilder.build()
-  }
-
-  private def addMethod(
-      builder: okhttp.Request.Builder,
-      method: HttpMethods.HttpMethod,
-      requestBody: Option[okhttp.RequestBody]) =
-    (method, requestBody) match {
-      case (GET, _) => builder.get()
-      case (DELETE, _) => builder.delete()
-      case (HEAD, _) => builder.head()
-      case (POST, Some(rb)) => builder.post(rb)
-      case (PUT, Some(rb)) => builder.put(rb)
-      case (PATCH, Some(rb)) => builder.patch(rb)
-      case _ => throw new IllegalArgumentException
+  
+  private def createMarshaller[Res](implicit writes: Writes[Res]): Marshaller[Res] =
+    Marshaller.of[Res](MediaTypes.`application/json`) { 
+      (value, contentType, ctx) => ctx.marshalTo(HttpEntity(contentType, Json.toJson(value).toString()))
     }
-
-  class DefaultParser[T](implicit reads: Reads[T]) extends Parser[T] {
-    override def parse(response: Plain, stream: InputStream): T =
-      Json.parse(scala.io.Source.fromInputStream(stream).mkString).as[T]
-  }
 
 }
