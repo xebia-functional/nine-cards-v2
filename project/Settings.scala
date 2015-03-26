@@ -10,42 +10,15 @@ import sbt._
 
 object Settings {
 
-  val scalaV = "2.11.2"
+  val scalaV = "2.11.6"
 
-  // App Module
-
-  lazy val appSettings = commonSettings ++
-    Seq(
-      run <<= run in Android,
-      javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-      transitiveAndroidLibs in Android := false,
-      libraryDependencies ++= commonDependencies,
-      proguardScala in Android := true,
-      useProguard in Android := true,
-      proguardOptions in Android ++= proguardCommons
-    )
-
-  // Api Module
-
-  lazy val apiSettings = commonSettings ++
-    Seq(
-      exportJars := true,
-      scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
-      javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-      javacOptions in Compile += "-deprecation",
-      proguardScala in Android := false
-    )
-
-  // Repository Module
-
-  lazy val repositorySettings = commonSettings ++
-    Seq(
-      exportJars := true,
-      scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
-      javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-      javacOptions in Compile += "-deprecation",
-      proguardScala in Android := false
-    )
+  lazy val repositoryDependencies = Seq(
+    aar(androidSupportv4),
+    aar(androidAppCompat),
+    aar(androidRecyclerview),
+    aar(androidCardView),
+    aar(macroidRoot),
+    aar(macroidExtras))
 
   // Commons
 
@@ -89,4 +62,40 @@ object Settings {
     "-keep class android.** { *; }",
     "-keep class com.google.** { *; }"
   )
+
+  // App Module
+
+  lazy val appSettings = commonSettings ++
+      Seq(
+        run <<= run in Android,
+        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+        transitiveAndroidLibs in Android := false,
+        libraryDependencies ++= commonDependencies,
+        proguardScala in Android := true,
+        useProguard in Android := true,
+        proguardOptions in Android ++= proguardCommons
+      )
+
+  // Api Module
+
+  lazy val apiSettings = commonSettings ++
+      Seq(
+        exportJars := true,
+        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
+        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+        javacOptions in Compile += "-deprecation",
+        proguardScala in Android := false
+      )
+
+  // Repository Module
+
+  lazy val repositorySettings = commonSettings ++
+      Seq(
+        exportJars := true,
+        libraryDependencies ++= repositoryDependencies,
+        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
+        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+        javacOptions in Compile += "-deprecation",
+        proguardScala in Android := false
+      )
 }
