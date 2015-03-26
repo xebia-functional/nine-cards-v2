@@ -20,12 +20,12 @@ class LauncherWorkSpaces(context: Context)(implicit appContext: AppContext, acti
 
   override def getItemViewType(data: LauncherData, position: Int): Int = if (data.widgets) widgets else collections
 
-  override def createView(viewType: Int, parentDimen: Dimen): LauncherWorkSpaceHolder = viewType match {
+  override def createView(viewType: Int): LauncherWorkSpaceHolder = viewType match {
     case `widgets` => new LauncherWorkSpaceWidgetsHolder
-    case `collections` => new LauncherWorkSpaceCollectionsHolder(parentDimen)
+    case `collections` => new LauncherWorkSpaceCollectionsHolder(dimen)
   }
 
-  override def populateView(view: Option[LauncherWorkSpaceHolder], parentDimen: Dimen,  data: LauncherData, viewType: Int, position: Int) =
+  override def populateView(view: Option[LauncherWorkSpaceHolder],  data: LauncherData, viewType: Int, position: Int) =
     view map {
       v =>
         viewType match {

@@ -94,9 +94,10 @@ trait CollectionsGroupStyle {
 trait CollectionItemStyle {
 
   val collectionItemStyle: Tweak[LinearLayout] =
-    vMatchParent +
+    vWrapContent +
       llVertical +
-      llGravity(Gravity.CENTER)
+      llGravity(Gravity.CENTER) +
+      flLayoutGravity(Gravity.CENTER)
 
   def iconStyle(implicit appContext: AppContext): Tweak[ImageView] = {
     val size = resGetDimensionPixelSize(R.dimen.size_group_collection)
