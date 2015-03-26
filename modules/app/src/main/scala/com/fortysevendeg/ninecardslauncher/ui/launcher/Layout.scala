@@ -15,6 +15,8 @@ trait Layout
 
   var workspaces = slot[LauncherWorkSpaces]
 
+  var appDrawerBar = slot[LinearLayout]
+
   def content(implicit appContext: AppContext, context: ActivityContext) = getUi(
     l[LinearLayout](
       l[LinearLayout](
@@ -41,8 +43,13 @@ trait Layout
       l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces),
       l[LinearLayout](
         l[FrameLayout](
-          w[TintableImageView] <~ appDrawerStyle <~ On.click(
-            uiShortToast("App Drawer")
+          w[TintableImageView] <~ appDrawerAppStyle <~ On.click(
+            uiShortToast("App 1")
+          )
+        ) <~ appDrawerContentStyle,
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerAppStyle <~ On.click(
+            uiShortToast("App 2")
           )
         ) <~ appDrawerContentStyle,
         l[FrameLayout](
@@ -51,21 +58,16 @@ trait Layout
           )
         ) <~ appDrawerContentStyle,
         l[FrameLayout](
-          w[TintableImageView] <~ appDrawerStyle <~ On.click(
-            uiShortToast("App Drawer")
+          w[TintableImageView] <~ appDrawerAppStyle <~ On.click(
+            uiShortToast("App 3")
           )
         ) <~ appDrawerContentStyle,
         l[FrameLayout](
-          w[TintableImageView] <~ appDrawerStyle <~ On.click(
-            uiShortToast("App Drawer")
-          )
-        ) <~ appDrawerContentStyle,
-        l[FrameLayout](
-          w[TintableImageView] <~ appDrawerStyle <~ On.click(
-            uiShortToast("App Drawer")
+          w[TintableImageView] <~ appDrawerAppStyle <~ On.click(
+            uiShortToast("App 4")
           )
         ) <~ appDrawerContentStyle
-      ) <~ drawerBarContentStyle
+      ) <~ drawerBarContentStyle <~ wire(appDrawerBar)
     ) <~ rootStyle
   )
 

@@ -23,4 +23,7 @@
     <!-- Groups of collections -->
     <dimen name="size_group_collection">72dp</dimen>
 
+    <!-- App Drawer -->
+    <dimen name="size_icon_app_drawer">52dp</dimen>
+
 </resources>

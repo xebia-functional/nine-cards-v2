@@ -66,7 +66,8 @@ trait Styles {
     vMatchWidth +
       llHorizontal +
       vPadding(paddingDefault, paddingDefault, paddingDefault, paddingBottom) +
-      vgClipToPadding(false)
+      vgClipToPadding(false) +
+      llGravity(Gravity.CENTER_VERTICAL)
   }
 
   def appDrawerContentStyle(): Tweak[FrameLayout] = llWrapWeightHorizontal
@@ -82,6 +83,15 @@ trait Styles {
           vCircleOutlineProvider(elevation)
       } getOrElse tivPressedColor(R.color.app_drawer_press_tint))
   }
+
+  def appDrawerAppStyle(implicit appContext: AppContext): Tweak[TintableImageView] = {
+    val size = resGetDimensionPixelSize(R.dimen.size_icon_app_drawer)
+    lp[ViewGroup](size, size) +
+      flLayoutGravity(Gravity.CENTER) +
+      tivPressedColor(R.color.app_drawer_press_tint) +
+      vTag(R.id.`type`, AppDrawer.app)
+  }
+
 }
 
 trait CollectionsGroupStyle {
@@ -118,4 +128,8 @@ trait CollectionItemStyle {
       tvShadowLayer(radius, displacement, displacement, resGetColor(R.color.shadow_default))
   }
 
+}
+
+object AppDrawer {
+  val app = "app"
 }
