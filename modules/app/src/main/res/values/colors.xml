@@ -14,7 +14,7 @@
     <color name="background_default_4">#2196F3</color>
     <color name="background_default_5">#673AB7</color>
 
-    <color name="shadow_default">#364550</color>
+    <color name="shadow_default">#32364550</color>
 
     <!-- Search bar -->
     <color name="search_icons_tint">#646464</color>

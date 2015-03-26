@@ -1,18 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
-import android.animation.AnimatorInflater
-import android.graphics.Outline
 import android.text.TextUtils.TruncateAt
-import android.view.{ViewOutlineProvider, ViewGroup, Gravity}
 import android.view.ViewGroup.LayoutParams._
+import android.view.{Gravity, ViewGroup}
 import android.widget.ImageView.ScaleType
 import android.widget._
+import com.fortysevendeg.macroid.extras.DeviceVersion._
+import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
-import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
@@ -25,7 +23,8 @@ trait Styles {
 
   def rootStyle(implicit appContext: AppContext): Tweak[LinearLayout] =
     vMatchParent +
-      llVertical
+      llVertical +
+      vFitsSystemWindows(true)
 
   val workspaceStyle: Tweak[FrameLayout] =
     llMatchWeightVertical

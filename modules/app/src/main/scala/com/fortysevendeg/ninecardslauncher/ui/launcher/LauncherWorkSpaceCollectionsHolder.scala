@@ -1,13 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
-import android.graphics.{Paint, Color}
+import android.graphics.Paint
 import android.graphics.drawable.shapes.OvalShape
-import android.graphics.drawable.{ShapeDrawable, Drawable}
+import android.graphics.drawable.{LayerDrawable, ShapeDrawable, Drawable}
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.widget._
 import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -91,11 +92,24 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
       case 7 => R.color.collection_group_8
       case _ => R.color.collection_group_9
     }
-    val drawable = new ShapeDrawable(new OvalShape())
-    drawable.getPaint.setColor(appContext.get.getResources.getColor(color))
-    drawable.getPaint.setStyle(Paint.Style.FILL)
-    drawable.getPaint.setAntiAlias(true)
-    drawable
+    val drawableColor = new ShapeDrawable(new OvalShape())
+    drawableColor.getPaint.setColor(resGetColor(color))
+    drawableColor.getPaint.setStyle(Paint.Style.FILL)
+    drawableColor.getPaint.setAntiAlias(true)
+
+    Lollipop ifSupportedThen {
+      drawableColor
+    } getOrElse {
+      val padding = resGetDimensionPixelSize(R.dimen.elevation_default)
+      val drawableShadow = new ShapeDrawable(new OvalShape())
+      drawableShadow.getPaint.setColor(resGetColor(R.color.shadow_default))
+      drawableShadow.getPaint.setStyle(Paint.Style.FILL)
+      drawableShadow.getPaint.setAntiAlias(true)
+      val layer = new LayerDrawable(Array(drawableShadow, drawableColor))
+      layer.setLayerInset(0, padding, padding, padding, 0)
+      layer.setLayerInset(1, padding, 0, padding, padding)
+      layer
+    }
   }
 
 }
