@@ -2,13 +2,13 @@ package com.fortysevendeg.ninecardslauncher.provider
 
 import android.content.Context
 import android.database.Cursor
-import macroid.AppContext
+
 import scala.annotation.tailrec
 
 trait DBUtils {
 
-  def emptyAllTables(implicit appContext: AppContext) = {
-    val resolver = appContext.get.getContentResolver
+  def emptyAllTables(context: Context) = {
+    val resolver = context.getContentResolver
     resolver.delete(NineCardsContentProvider.ContentUriCacheCategory, "", Array.empty)
     resolver.delete(NineCardsContentProvider.ContentUriCard, "", Array.empty)
     resolver.delete(NineCardsContentProvider.ContentUriCollection, "", Array.empty)
