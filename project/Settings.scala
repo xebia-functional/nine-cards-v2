@@ -1,9 +1,6 @@
 import Libraries.android._
-import Libraries.graphics._
-import Libraries.json._
 import Libraries.macroid._
 import Libraries.playServices._
-import Libraries.test._
 import android.Keys._
 import sbt.Keys._
 import sbt._
@@ -13,10 +10,6 @@ object Settings {
   val scalaV = "2.11.6"
 
   lazy val repositoryDependencies = Seq(
-    aar(androidSupportv4),
-    aar(androidAppCompat),
-    aar(androidRecyclerview),
-    aar(androidCardView),
     aar(macroidRoot),
     aar(macroidExtras))
 
@@ -92,7 +85,6 @@ object Settings {
   lazy val repositorySettings = commonSettings ++
       Seq(
         exportJars := true,
-        libraryDependencies ++= repositoryDependencies,
         scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
         javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
         javacOptions in Compile += "-deprecation",
