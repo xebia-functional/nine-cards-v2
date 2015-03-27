@@ -16,14 +16,6 @@
 
     <color name="shadow_default">#32364550</color>
 
-    <!-- Search bar -->
-    <color name="search_icons_tint">#646464</color>
-    <color name="search_google_tint">#A3A3A3</color>
-    <color name="search_press_tint">#ff59afdd</color>
-
-    <!-- App Drawer -->
-    <color name="app_drawer_press_tint">#cce0fa</color>
-
     <!-- Groups of collections -->
     <color name="collection_group_name">#ffffff</color>
     <color name="workspaces_pager_default">#32ffffff</color>
@@ -38,5 +30,19 @@
     <color name="collection_group_7">#8BC34A</color>
     <color name="collection_group_8">#4CAF50</color>
     <color name="collection_group_9">#009688</color>
+
+    <!-- Theme Light -->
+    <color name="search_background_tint_light">#ffffff</color>
+    <color name="search_icons_tint_light">#646464</color>
+    <color name="search_google_tint_light">#A3A3A3</color>
+    <color name="search_press_tint_light">#ff59afdd</color>
+    <color name="app_drawer_press_tint_light">#ffd5f2fa</color>
+
+    <!-- Theme Dark -->
+    <color name="search_background_tint_dark">#ff545454</color>
+    <color name="search_icons_tint_dark">#ffffff</color>
+    <color name="search_google_tint_dark">#eeeeee</color>
+    <color name="search_press_tint_dark">#dddddd</color>
+    <color name="app_drawer_press_tint_dark">#ffd5f2fa</color>
 
 </resources>

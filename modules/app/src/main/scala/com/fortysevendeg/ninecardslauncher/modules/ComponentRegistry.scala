@@ -2,9 +2,11 @@ package com.fortysevendeg.ninecardslauncher.modules
 
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.AppManagerServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.repository.RepositoryServicesComponent
 
 trait ComponentRegistry
   extends ImageServicesComponent
   with AppManagerServicesComponent
   with RepositoryServicesComponent
+  with PersistentServicesComponent
