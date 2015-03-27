@@ -17,8 +17,12 @@ import com.fortysevendeg.ninecardslauncher.ui.components.TouchState._
 import macroid.FullDsl._
 import macroid.{AppContext, Ui}
 
+import scala.collection.mutable
+
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit appContext: AppContext)
   extends FrameLayout(context, attr, defStyleAttr) {
+
+  type PageChangedObserver = (Int => Unit)
 
   def this(context: Context)(implicit appContext: AppContext) = this(context, null, 0)
 
@@ -41,6 +45,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   var lastMotionX: Float = 0
 
   var lastMotionY: Float = 0
+
+  var onPageChangedObservers: Seq[PageChangedObserver] = Seq.empty
 
   val (touchSlop, maximumVelocity, minimumVelocity) = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
@@ -65,7 +71,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   val params = new LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
   var previousParentView: Option[FrameLayout] = Some(new FrameLayout(appContext.get))
-  var nextParentView: Option[FrameLayout]= Some(new FrameLayout(appContext.get))
+  var nextParentView: Option[FrameLayout] = Some(new FrameLayout(appContext.get))
   var frontParentView: Option[FrameLayout] = Some(new FrameLayout(appContext.get))
 
   var previousView = slot[Holder]
@@ -91,10 +97,14 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   def getItemViewType(data: Data, position: Int): Int = 0
 
+  def getWorksSpacesCount() = data.length
+
   def init(position: Int = 0) = {
     if (data.isEmpty) {
       throw new InstantiationException("data can't be empty")
     }
+    currentItem = position
+
     val (lastItem, nextItem) = if (data.length > 1) (data.length - 1, 1) else (0, 0)
     previewViewType = getItemViewType(data.last, lastItem)
     val previous = createView(previewViewType)
@@ -116,9 +126,15 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       f.addView(front, params)
       runUi(this <~ vgAddViews(Seq(p, n, f), params))
     }
-
-    currentItem = position
     reset()
+  }
+
+  def notifyPageChangedObservers() = {
+    onPageChangedObservers map (observer => observer(currentItem))
+  }
+
+  def addPageChangedObservers(f: PageChangedObserver) = {
+    onPageChangedObservers = onPageChangedObservers :+ f
   }
 
   private def getSizeWidget = if (horizontalGallery) getWidth else getHeight
@@ -245,6 +261,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   }
 
   private def reset(): Unit = {
+    notifyPageChangedObservers()
     if (data.length > currentItem) {
       // TODO Shouldn't create views directly from here
       val auxFrontViewType = getItemViewType(data(currentItem), currentItem)
@@ -254,7 +271,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
         frontView = Some(newView)
         runUi(
           (frontParentView <~ vgRemoveAllViews <~ vgAddView(newView, params)) ~
-            Ui { populateView(frontView, data(currentItem), frontViewType, currentItem) }
+            Ui {
+              populateView(frontView, data(currentItem), frontViewType, currentItem)
+            }
         )
       } else {
         populateView(frontView, data(currentItem), frontViewType, currentItem)

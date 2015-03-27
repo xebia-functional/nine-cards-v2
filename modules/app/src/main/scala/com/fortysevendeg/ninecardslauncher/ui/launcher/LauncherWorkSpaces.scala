@@ -64,9 +64,12 @@ object LauncherWorkSpacesTweaks {
     }
   }
 
-  def lwsData(collections: Seq[Collection]) = Tweak[W] {
+  def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] {
     workspaces =>
       workspaces.data = LauncherData(true) +: getCollectionsItems(collections, Seq.empty, LauncherData(false))
-      workspaces.init(1)
+      workspaces.init(pageSelected)
   }
+
+  def lwsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W] (_.addPageChangedObservers(observer))
+
 }

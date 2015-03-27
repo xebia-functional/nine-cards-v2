@@ -8,9 +8,11 @@ import com.fortysevendeg.ninecardslauncher.modules.appsmanager.{AppItem, GetApps
 import com.fortysevendeg.ninecardslauncher.modules.repository.GetCollectionsRequest
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.launcher.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{AppContext, Contexts, Transformer}
+import macroid.{Ui, AppContext, Contexts, Transformer}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -22,6 +24,8 @@ class LauncherActivity
 
   override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
 
+  val SelectedPageDefault = 1
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     setContentView(content)
@@ -31,10 +35,26 @@ class LauncherActivity
       collectionResponse <- repositoryServices.getCollections(GetCollectionsRequest(appsResponse.apps))
     } yield {
       runUi(
-        (workspaces <~ lwsData(collectionResponse.collections)) ~
-          (appDrawerBar <~ fillAppDrawer(appsResponse.apps)))
+        (workspaces <~
+          lwsData(collectionResponse.collections, SelectedPageDefault) <~
+          lwsAddPageChangedObserver(currentPage => runUi(pager <~ reloadPager(currentPage)))) ~
+          (appDrawerBar <~ fillAppDrawer(appsResponse.apps)) ~
+          Ui(createPager(SelectedPageDefault)))
     }
 
+  }
+
+  def createPager(posActivated: Int) = {
+    workspaces map {
+      ws =>
+        val pagerViews = (0 to ws.getWorksSpacesCount() - 1) map {
+          position =>
+            val view = pagination(position)
+            view.setActivated(posActivated == position)
+            view
+        }
+        runUi(pager <~ vgAddViews(pagerViews))
+    }
   }
 
   def fillAppDrawer(appItems: Seq[AppItem]) = Transformer {
@@ -43,6 +63,10 @@ class LauncherActivity
       val app = appItems(r.nextInt(appItems.length))
       i <~ ivUri(app.imagePath)
     }
+  }
+
+  def reloadPager(currentPage: Int) = Transformer {
+    case i: ImageView => i <~ vActivated(Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString))
   }
 
 }

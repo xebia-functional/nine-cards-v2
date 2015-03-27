@@ -26,6 +26,8 @@
 
     <!-- Groups of collections -->
     <color name="collection_group_name">#ffffff</color>
+    <color name="workspaces_pager_default">#32ffffff</color>
+    <color name="workspaces_pager_selected">#ffffff</color>
 
     <color name="collection_group_1">#FF9800</color>
     <color name="collection_group_2">#F44336</color>

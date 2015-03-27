@@ -22,6 +22,8 @@
 
     <!-- Groups of collections -->
     <dimen name="size_group_collection">72dp</dimen>
+    <dimen name="size_pager_collection">6dp</dimen>
+    <dimen name="margin_pager_collection">6dp</dimen>
 
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>

@@ -92,6 +92,22 @@ trait Styles {
       vTag(R.id.`type`, AppDrawer.app)
   }
 
+  def paginationContentStyle(implicit appContext: AppContext): Tweak[LinearLayout] = {
+    val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
+    vMatchWidth +
+      llHorizontal +
+      vPadding(paddingDefault, paddingDefault, paddingDefault, paddingDefault) +
+      llGravity(Gravity.CENTER)
+  }
+
+  def paginationItemStyle(implicit appContext: AppContext) = {
+    val size = resGetDimensionPixelSize(R.dimen.size_pager_collection)
+    val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)
+    lp[LinearLayout](size, size) +
+      llLayoutMargin(margin, margin, margin, margin) +
+      ivSrc(R.drawable.workspaces_pager)
+  }
+
 }
 
 trait CollectionsGroupStyle {

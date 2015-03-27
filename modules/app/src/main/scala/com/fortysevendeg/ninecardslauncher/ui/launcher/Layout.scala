@@ -2,8 +2,9 @@ package com.fortysevendeg.ninecardslauncher.ui.launcher
 
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.widget.{FrameLayout, LinearLayout}
+import android.widget.{ImageView, FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import macroid.FullDsl._
 import macroid.{ActivityContext, AppContext, Ui}
@@ -16,6 +17,8 @@ trait Layout
   var workspaces = slot[LauncherWorkSpaces]
 
   var appDrawerBar = slot[LinearLayout]
+
+  var pager = slot[LinearLayout]
 
   def content(implicit appContext: AppContext, context: ActivityContext) = getUi(
     l[LinearLayout](
@@ -41,6 +44,7 @@ trait Layout
         )
       ) <~ searchContentStyle,
       l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces),
+      l[LinearLayout]() <~ paginationContentStyle <~ wire(pager),
       l[LinearLayout](
         l[FrameLayout](
           w[TintableImageView] <~ appDrawerAppStyle <~ On.click(
@@ -69,6 +73,10 @@ trait Layout
         ) <~ appDrawerContentStyle
       ) <~ drawerBarContentStyle <~ wire(appDrawerBar)
     ) <~ rootStyle
+  )
+
+  def pagination(position: Int)(implicit appContext: AppContext, context: ActivityContext) = getUi(
+    w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
 
 }
