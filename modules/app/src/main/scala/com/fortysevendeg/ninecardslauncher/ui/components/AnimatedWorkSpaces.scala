@@ -8,7 +8,7 @@ import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.view.animation.DecelerateInterpolator
-import android.view.{MotionEvent, VelocityTracker, ViewConfiguration, ViewGroup}
+import android.view._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -60,9 +60,13 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   val mainAnimator: ObjectAnimator = new ObjectAnimator
 
   val hideAfterAnimationListener = new AnimatorListenerAdapter() {
+    var swap = false
     override def onAnimationEnd(animation: Animator) {
       new Handler().post(new Runnable() {
-        def run() = swapViews()
+        def run() = {
+          if (swap) swapViews()
+          setLayerType(View.LAYER_TYPE_NONE, null)
+        }
       })
       super.onAnimationEnd(animation)
     }
@@ -168,7 +172,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   }
 
   def performScroll(delta: Float): Unit = {
-    mainAnimator.removeAllListeners()
+//    mainAnimator.removeAllListeners()
     mainAnimator.cancel()
     displacement = math.max(-getSizeWidget, Math.min(getSizeWidget, displacement - delta))
     if (displacement > 0) {
@@ -199,13 +203,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   }
 
   private def animateViews(dest: Int, duration: Int) = {
+    hideAfterAnimationListener.swap = dest != 0
     mainAnimator.setFloatValues(displacement, dest)
     mainAnimator.setDuration(duration)
-    if (dest != 0) {
-      mainAnimator.addListener(hideAfterAnimationListener)
-    } else {
-      mainAnimator.removeAllListeners()
-    }
     mainAnimator.start()
   }
 
@@ -338,6 +338,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
         mainAnimator.setPropertyName(if (horizontalGallery) "translationX" else "translationY")
         mainAnimator.setFloatValues(0, 0)
         mainAnimator.setInterpolator(new DecelerateInterpolator())
+        mainAnimator.addListener(hideAfterAnimationListener)
         mainAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
           override def onAnimationUpdate(arg0: ValueAnimator) {
             displacement = arg0.getAnimatedValue.asInstanceOf[Float]
@@ -418,7 +419,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
         case (i, h, xMove) if !i && !h && !xMove && y - lastMotionY < 0 && !isLast => true
         case _ => false
       }
-      if (isScrolling) touchState = scrolling
+      if (isScrolling) {
+        touchState = scrolling
+        setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      }
       lastMotionX = x
       lastMotionY = y
     }
