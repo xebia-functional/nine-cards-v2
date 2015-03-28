@@ -172,7 +172,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   }
 
   def performScroll(delta: Float): Unit = {
-//    mainAnimator.removeAllListeners()
     mainAnimator.cancel()
     displacement = math.max(-getSizeWidget, Math.min(getSizeWidget, displacement - delta))
     if (displacement > 0) {
