@@ -14,6 +14,10 @@ trait SharedCollectionImplicits {
   implicit val sharedCollectionListReads = Json.reads[SharedCollectionList]
   implicit val sharedCollectionSubscriptionReads = Json.reads[SharedCollectionSubscription]
 
+  implicit val optionSharedCollectionReads = Some(sharedCollectionReads)
+  implicit val optionSharedCollectionListReads = Some(sharedCollectionListReads)
+  implicit val optionSharedCollectionSubscriptionReads = Some(sharedCollectionSubscriptionReads)
+
   implicit val userConfigTimeSlotWrites = Json.writes[UserConfigTimeSlot]
   implicit val sharedCollectionPackageWrites = Json.writes[SharedCollectionPackage]
   implicit val assetThumbResponseWrites = Json.writes[AssetThumbResponse]

@@ -13,7 +13,7 @@ case class SharedCollection(
     name: String,
     shareLink: String,
     packages: Seq[String],
-    resolvedPackages: SharedCollectionPackage,
+    resolvedPackages: Seq[SharedCollectionPackage],
     occurrence: Seq[UserConfigTimeSlot],
     lat: Double,
     lng: Double,

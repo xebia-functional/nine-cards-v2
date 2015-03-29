@@ -1,12 +1,15 @@
 package com.fortysevendeg.rest.client
 
+import com.fortysevendeg.rest.client.messages.{HttpClientResponse, HttpClientException}
 import play.api.libs.json.{Json, Reads, Writes}
+import spray.http.{MediaTypes, HttpEntity}
 import spray.http.HttpHeaders.RawHeader
-import spray.http.{HttpEntity, MediaTypes}
 import spray.httpx.marshalling.Marshaller
-import spray.httpx.unmarshalling._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.runtime.universe.TypeTag
+import scala.util.Try
+
 
 trait ServiceClient {
 
@@ -16,64 +19,84 @@ trait ServiceClient {
 
   val baseUrl: String
 
-  def get[Res](
+  def get[Res: TypeTag](
       path: String,
-      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Reads[Res]): Future[Res] = 
-    httpClient.doGet[Res](
-      baseUrl.concat(path),
-      toHttpHeader(headers))(createUnmarshaller[Res])
+      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] =
+    for {
+      httpResponse <- httpClient.doGet(baseUrl.concat(path), toHttpHeader(headers))
+      response <- verifyResponse(httpResponse.entity, reads)
+    } yield HttpClientResponse(httpResponse.status.intValue, response)
 
-  def emptyPost[Res](
+
+  def emptyPost[Res: TypeTag](
       path: String,
-      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Reads[Res]): Future[Res] =
-    httpClient.doPost[Res](
-      baseUrl.concat(path),
-      toHttpHeader(headers))(createUnmarshaller[Res])
+      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] =
+    for {
+      httpResponse <- httpClient.doPost(baseUrl.concat(path), toHttpHeader(headers))
+      response <- verifyResponse(httpResponse.entity, reads)
+    } yield HttpClientResponse(httpResponse.status.intValue, response)
 
-  def post[Req, Res](
+
+  def post[Req: TypeTag, Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      body: Req)(implicit reads: Reads[Res], writes: Writes[Req]): Future[Res] =
-    httpClient.doPost[Req, Res](
-      baseUrl.concat(path),
-      toHttpHeader(headers),
-      body)(createMarshaller[Req], createUnmarshaller[Res])
+      body: Req)(implicit reads: Option[Reads[Res]] = None, writes: Writes[Req]): Future[HttpClientResponse[Res]] = {
+    implicit val marshaller = createMarshaller[Req]
+    for {
+      httpResponse <- httpClient.doPost[Req](baseUrl.concat(path), toHttpHeader(headers), body)
+      response <- verifyResponse(httpResponse.entity, reads)
+    } yield HttpClientResponse(httpResponse.status.intValue, response)
+  }
 
-  def emptyPut[Res](
+  def emptyPut[Res: TypeTag](
       path: String,
-      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Reads[Res]): Future[Res] =
-    httpClient.doPut[Res](
-      baseUrl.concat(path),
-      toHttpHeader(headers))(createUnmarshaller[Res])
+      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] = {
+    for {
+      httpResponse <- httpClient.doPut(baseUrl.concat(path), toHttpHeader(headers))
+      response <- verifyResponse(httpResponse.entity, reads)
+    } yield HttpClientResponse(httpResponse.status.intValue, response)
+  }
 
-  def put[Req, Res](
+  def put[Req: TypeTag, Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      body: Req)(implicit reads: Reads[Res], writes: Writes[Req]): Future[Res] =
-    httpClient.doPut[Req, Res](
-      baseUrl.concat(path),
-      toHttpHeader(headers),
-      body)(createMarshaller[Req], createUnmarshaller[Res])
+      body: Req)(implicit reads: Option[Reads[Res]] = None, writes: Writes[Req]): Future[HttpClientResponse[Res]] = {
+    implicit val marshaller = createMarshaller[Req]
+    for {
+      httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), toHttpHeader(headers), body)
+      response <- verifyResponse(httpResponse.entity, reads)
+    } yield HttpClientResponse(httpResponse.status.intValue, response)
+  }
 
-  def delete[Res](
+  def delete[Res: TypeTag](
       path: String,
-      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Reads[Res]): Future[Res] =
-    httpClient.doDelete[Res](
-      baseUrl.concat(path),
-      toHttpHeader(headers))(createUnmarshaller[Res])
+      headers: Seq[(String, String)] = Seq.empty)(implicit reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] = {
+    for {
+      httpResponse <- httpClient.doDelete(baseUrl.concat(path), toHttpHeader(headers))
+      response <- verifyResponse(httpResponse.entity, reads)
+    } yield HttpClientResponse(httpResponse.status.intValue, response)
+  }
   
   private def toHttpHeader(headers: Seq[(String, String)]): Seq[RawHeader] = 
     headers map(t => RawHeader(t._1, t._2))
 
-  private def createUnmarshaller[Res](implicit reads: Reads[Res]): Unmarshaller[Res] =
-    Unmarshaller[Res](MediaTypes.`text/plain`, MediaTypes.`application/json`) {
-      case HttpEntity.NonEmpty(contentType, data) =>
-        Json.parse(scala.io.Source.fromBytes(data.toByteArray, contentType.charset.value).mkString).as[Res]
-    }
-  
   private def createMarshaller[Res](implicit writes: Writes[Res]): Marshaller[Res] =
-    Marshaller.of[Res](MediaTypes.`application/json`) { 
+    Marshaller.of[Res](MediaTypes.`application/json`) {
       (value, contentType, ctx) => ctx.marshalTo(HttpEntity(contentType, Json.toJson(value).toString()))
     }
+
+  private def verifyResponse[T: TypeTag](httpEntity: HttpEntity, maybeReads: Option[Reads[T]]): Future[Option[T]] = {
+    import scala.reflect.runtime.universe._
+    val unitType = typeOf[T] =:= typeOf[Unit]
+    (httpEntity.isEmpty, unitType, maybeReads) match {
+      case (false, false, Some(r)) => Future { transformResponse[T](httpEntity.asString, r) }
+      case (true, false, _) => Future.failed(new HttpClientException("No content"))
+      case (false, false, None) => Future.failed(new HttpClientException("No transformer found for type"))
+      case _ => Future.successful(None)
+    }
+  }
+
+  private def transformResponse[T](content: String, reads: Reads[T]): Option[T] =
+    Try(Json.parse(content).as[T](reads)).toOption
 
 }
