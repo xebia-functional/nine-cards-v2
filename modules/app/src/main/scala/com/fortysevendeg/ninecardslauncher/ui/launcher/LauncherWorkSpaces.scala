@@ -4,9 +4,10 @@ import android.content.Context
 import android.widget.FrameLayout
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
-import com.fortysevendeg.ninecardslauncher.ui.components.{Dimen, AnimatedWorkSpaces}
+import com.fortysevendeg.ninecardslauncher.ui.commons.Constants
+import com.fortysevendeg.ninecardslauncher.ui.components.AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.ui.launcher.WorkSpaceType._
-import macroid.{ActivityContext, AppContext, Tweak}
+import macroid.{Ui, ActivityContext, AppContext, Tweak}
 
 import scala.annotation.tailrec
 
@@ -25,17 +26,11 @@ class LauncherWorkSpaces(context: Context)(implicit appContext: AppContext, acti
     case `collections` => new LauncherWorkSpaceCollectionsHolder(dimen)
   }
 
-  override def populateView(view: Option[LauncherWorkSpaceHolder],  data: LauncherData, viewType: Int, position: Int) =
-    view map {
-      v =>
-        viewType match {
-          case `collections` =>
-            val view = v.asInstanceOf[LauncherWorkSpaceCollectionsHolder]
-            view.populate(data)
-          case _ =>
-        }
+  override def populateView(view: Option[LauncherWorkSpaceHolder],  data: LauncherData, viewType: Int, position: Int): Ui[_] =
+    view match {
+      case Some(v: LauncherWorkSpaceCollectionsHolder) => v.populate(data)
+      case _ => Ui.nop
     }
-
 }
 
 object WorkSpaceType {
@@ -56,7 +51,7 @@ object LauncherWorkSpacesTweaks {
     collections match {
       case Nil if newLauncherData.collections.length > 0 => acc :+ newLauncherData
       case Nil => acc
-      case h :: t if newLauncherData.collections.length == 9 => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(false))
+      case h :: t if newLauncherData.collections.length == Constants.numSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(false))
       case h :: t =>
         val g: Seq[Collection] = newLauncherData.collections :+ h
         val n = LauncherData(false, g)

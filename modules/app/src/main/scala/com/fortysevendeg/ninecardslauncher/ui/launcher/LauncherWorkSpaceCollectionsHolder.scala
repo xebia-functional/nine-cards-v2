@@ -40,17 +40,21 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit appContext
     width = parentDimen.width / numInLine,
     height = parentDimen.height / numInLine))
 
-  def populate(data: LauncherData) = for {
-    row <- 0 to (numInLine - 1)
-    column <- 0 to (numInLine - 1)
-  } yield {
-      val position = (row * numInLine) + column
-      val view = grid map (_.getChildAt(position).asInstanceOf[CollectionItem])
-      data.collections.lift(position) map {
-        collection =>
-          runUi(view <~ vVisible <~ ciPopulate(collection))
-      } getOrElse runUi(view <~ vGone)
-    }
+  def populate(data: LauncherData): Ui[_] = {
+    val uiSeq = for {
+      row <- 0 until numInLine
+      column <- 0 until numInLine
+    } yield {
+        val position = (row * numInLine) + column
+        val view = grid map (_.getChildAt(position).asInstanceOf[CollectionItem])
+        // TODO we should use a sequance UI
+        data.collections.lift(position) map {
+          collection =>
+            view <~ vVisible <~ ciPopulate(collection)
+        } getOrElse view <~ vGone
+      }
+    Ui.sequence(uiSeq: _*)
+  }
 
 }
 
@@ -75,7 +79,7 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
         w[TextView] <~ wire(name) <~ nameStyle
       ) <~ collectionItemStyle <~ On.click {
         collection map (c => uiShortToast(c.name)) getOrElse Ui.nop
-      }
+      } <~ vTag(R.id.use_layer_hardware, "")
     )
   )
 
