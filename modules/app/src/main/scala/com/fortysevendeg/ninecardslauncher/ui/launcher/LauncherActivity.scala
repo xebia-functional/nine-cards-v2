@@ -44,17 +44,15 @@ class LauncherActivity
 
   }
 
-  def createPager(posActivated: Int) = {
-    workspaces map {
-      ws =>
-        val pagerViews = (0 to ws.getWorksSpacesCount - 1) map {
-          position =>
-            val view = pagination(position)
-            view.setActivated(posActivated == position)
-            view
-        }
-        runUi(pager <~ vgAddViews(pagerViews))
-    }
+  def createPager(posActivated: Int) = workspaces map {
+    ws =>
+      val pagerViews = (0 to ws.getWorksSpacesCount - 1) map {
+        position =>
+          val view = pagination(position)
+          view.setActivated(posActivated == position)
+          view
+      }
+      runUi(pager <~ vgAddViews(pagerViews))
   }
 
   def fillAppDrawer(appItems: Seq[AppItem]) = Transformer {
