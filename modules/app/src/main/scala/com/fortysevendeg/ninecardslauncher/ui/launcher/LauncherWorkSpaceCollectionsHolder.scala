@@ -29,7 +29,7 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit appContext
 
   var grid = slot[GridLayout]
 
-  val views = 0 to (numSpaces - 1) map (new CollectionItem(_))
+  val views = 0 until numSpaces map (new CollectionItem(_))
 
   addView(getUi(l[GridLayout]() <~ wire(grid) <~ collectionGridStyle))
 
