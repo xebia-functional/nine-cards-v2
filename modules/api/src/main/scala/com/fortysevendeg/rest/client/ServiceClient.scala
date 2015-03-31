@@ -54,12 +54,11 @@ trait ServiceClient {
   def emptyPut[Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] = {
+      reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] =
     for {
       httpResponse <- httpClient.doPut(baseUrl.concat(path), toHttpHeader(headers))
       response <- verifyResponse(httpResponse.entity, reads)
     } yield HttpClientResponse(httpResponse.status.intValue, response)
-  }
 
   def put[Req: TypeTag, Res: TypeTag](
       path: String,
@@ -76,12 +75,11 @@ trait ServiceClient {
   def delete[Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] = {
+      reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] =
     for {
       httpResponse <- httpClient.doDelete(baseUrl.concat(path), toHttpHeader(headers))
       response <- verifyResponse(httpResponse.entity, reads)
     } yield HttpClientResponse(httpResponse.status.intValue, response)
-  }
   
   private def toHttpHeader(headers: Seq[(String, String)]): Seq[RawHeader] = 
     headers map(t => RawHeader(t._1, t._2))
