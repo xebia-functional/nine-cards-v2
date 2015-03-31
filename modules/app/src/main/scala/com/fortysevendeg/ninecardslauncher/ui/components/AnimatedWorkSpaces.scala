@@ -6,7 +6,7 @@ import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
-import android.view.animation.DecelerateInterpolator
+import android.view.animation.{AccelerateInterpolator, DecelerateInterpolator}
 import android.view._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.ui.components.TouchState._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{Transformer, AppContext, Ui}
+import com.fortysevendeg.ninecardslauncher.ui.commons.AnimationsUtils._
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit appContext: AppContext)
   extends FrameLayout(context, attr, defStyleAttr) { self =>
@@ -55,9 +56,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   val durationAnimation = resGetInteger(android.R.integer.config_shortAnimTime)
 
-  val mainAnimator: ObjectAnimator = new ObjectAnimator
-
-  val hideAfterAnimationListener = new AnimatorListenerAdapter() {
+  val resetAfterAnimationListener = new AnimatorListenerAdapter() {
     var swap = false
 
     override def onAnimationEnd(animation: Animator) {
@@ -66,6 +65,17 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       super.onAnimationEnd(animation)
     }
   }
+
+  val mainAnimator: ObjectAnimator = new ObjectAnimator
+  mainAnimator.setInterpolator(new DecelerateInterpolator())
+  mainAnimator.setPropertyName(if (horizontalGallery) "translationX" else "translationY")
+  mainAnimator.addListener(resetAfterAnimationListener)
+  mainAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    override def onAnimationUpdate(arg0: ValueAnimator) {
+      displacement = arg0.getAnimatedValue.asInstanceOf[Float]
+      runUi(transformPanelCanvas())
+    }
+  })
 
   val params = new LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
@@ -159,7 +169,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       case v if v <= 0 && displacement < 0 => -getSizeWidget
       case _ => 0
     }
-    animateViews(destiny, durationAnimation)
+    animateViews(destiny, calculateDurationByVelocity(velocity, durationAnimation))
   }
 
   def snapDestination(): Unit = {
@@ -203,7 +213,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   }
 
   private def animateViews(dest: Int, duration: Int) = {
-    hideAfterAnimationListener.swap = dest != 0
+    resetAfterAnimationListener.swap = dest != 0
     mainAnimator.setFloatValues(displacement, dest)
     mainAnimator.setDuration(duration)
     mainAnimator.start()
@@ -305,23 +315,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     displacement = 0
     enabled = data.nonEmpty && data.length > 1
 
-
-    mainAnimator.removeAllListeners()
     mainAnimator.cancel()
 
     frontParentView map {
       front =>
         mainAnimator.setTarget(front)
-        mainAnimator.setPropertyName(if (horizontalGallery) "translationX" else "translationY")
         mainAnimator.setFloatValues(0, 0)
-        mainAnimator.setInterpolator(new DecelerateInterpolator())
-        mainAnimator.addListener(hideAfterAnimationListener)
-        mainAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-          override def onAnimationUpdate(arg0: ValueAnimator) {
-            displacement = arg0.getAnimatedValue.asInstanceOf[Float]
-            runUi(transformPanelCanvas())
-          }
-        })
     }
 
     frontUi ~ leftUi ~ rightUi ~
