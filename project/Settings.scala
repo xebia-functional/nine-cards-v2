@@ -7,8 +7,6 @@ import sbt._
 
 object Settings {
 
-  val scalaV = "2.11.6"
-
   lazy val repositoryDependencies = Seq(
     aar(macroidRoot),
     aar(macroidExtras))
@@ -16,7 +14,7 @@ object Settings {
   // Commons
 
   lazy val commonSettings = Seq(
-    scalaVersion := scalaV,
+    scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers)
 
   lazy val commonDependencies = Seq(
@@ -85,9 +83,6 @@ object Settings {
   lazy val repositorySettings = commonSettings ++
       Seq(
         exportJars := true,
-        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
-        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-        javacOptions in Compile += "-deprecation",
         proguardScala in Android := false
       )
 }
