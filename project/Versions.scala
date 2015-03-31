@@ -12,4 +12,7 @@ object Versions {
   val picassoV = "2.5.0"
   val playServicesV = "6.5.87"
   val mockitoV = "3.0-M2"
+  val sprayClientV = "1.3.1"
+  val akkaActorV = "2.3.9"
+  val mockServerV = "3.9.2"
 }
