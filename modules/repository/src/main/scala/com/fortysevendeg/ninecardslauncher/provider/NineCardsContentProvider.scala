@@ -33,7 +33,7 @@ class NineCardsContentProvider extends ContentProvider {
     nineCardsSqlHelper.close()
   }
 
-  override def getType(uri: Uri): String =  {
+  override def getType(uri: Uri): String = {
     getUriInfo(uri) match {
       case (_, MimeTypeAllItems) => MimeTypeAllItemsValue
       case (_, MimeTypeSingleItem) => MimeTypeSingleItemValue
@@ -145,5 +145,7 @@ object NineCardsContentProvider {
 }
 
 sealed trait MimeType
+
 object MimeTypeAllItems extends MimeType
+
 object MimeTypeSingleItem extends MimeType
