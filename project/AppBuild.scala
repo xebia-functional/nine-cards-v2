@@ -7,7 +7,6 @@ import Libraries.net._
 import Libraries.test._
 import Libraries.akka._
 
-//object AppBuild extends android.AutoBuild {
 object AppBuild extends Build {
 
   def excludeArtifact(module: ModuleID, artifactOrganizations: String*): ModuleID =
@@ -46,7 +45,6 @@ object AppBuild extends Build {
     akkaActor,
     specs2,
     mockito,
-    androidTest,
     mockServer))
       .settings(apiSettings: _*)
 

@@ -1,0 +1,1056 @@
+{
+  "_id": "12345678",
+  "plusProfile": {
+    "displayName": "Display Name",
+    "profileImage": {
+      "imageType": 0,
+      "imageUrl": "https://lh5.googleusercontent.com/photo.jpg",
+      "secureUrl": "https://lh5.googleusercontent.com/photo.jpg"
+    }
+  },
+  "email": "email@sample.com",
+  "devices": [
+    {
+      "deviceId": "987654321d",
+      "deviceName": "Nexus 4d - 4.3 - API 18 - 768x1280",
+      "collections": [
+        {
+          "name": "Desarrollo",
+          "items": [
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Analytics",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.google.android.apps.giant"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.google.android.apps.giant",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Andlytics",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.github.andlyticsproject"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.github.andlyticsproject",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Android Design in Action",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.astuetz.android.adia"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.astuetz.android.adia",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "App Detective",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.zmarties.detective"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.zmarties.detective",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Content Provider Helper",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.jensdriller.contentproviderhelper"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.jensdriller.contentproviderhelper",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Mongo Explorer",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.innodroid.mongobrowser"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.innodroid.mongobrowser",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Screen maker",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "pl2.lines.screen.maker"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "pl2.lines.screen.maker",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Trello",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.trello"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.trello",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            }
+          ],
+          "collectionType": "FREE",
+          "constrains": [],
+          "wifi": [],
+          "occurrence": [],
+          "radius": 0,
+          "lat": 0.0,
+          "lng": 0.0,
+          "alt": 0.0,
+          "category": "",
+          "icon": "libraries_and_demo",
+          "themedColorIndex": 1
+        },
+        {
+          "name": "ChromeCast ",
+          "items": [
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "CheapCast",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "at.maui.cheapcast"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "at.maui.cheapcast",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Chromecast",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.google.android.apps.chromecast.app"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.google.android.apps.chromecast.app",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Chrome Beta",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.chrome.beta"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.chrome.beta",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "CastPad",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.hillmanworks.drawcast"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.hillmanworks.drawcast",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Cast Store",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "goko.gcs"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "goko.gcs",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "YouTube",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.google.android.youtube"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.google.android.youtube",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "AllCast",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.koushikdutta.cast"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.koushikdutta.cast",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Plex",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.plexapp.android"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.plexapp.android",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "RECOMMENDED_APP",
+              "title": "Photowall",
+              "metadata": {
+                "className": null,
+                "dataExtra": null,
+                "intentExtras": {"package_name": "com.google.android.apps.photowall"},
+                "packageName": null,
+                "categories": null,
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "clipData": null,
+                "dataString": null,
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.google.android.apps.photowall",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0,
+                "package": null,
+                "scheme": null,
+                "selector": null,
+                "sourceBounds": null,
+                "type": null,
+                "excludingStopped": false
+              }
+            }
+          ],
+          "collectionType": "FREE",
+          "constrains": [],
+          "wifi": [],
+          "occurrence": [],
+          "radius": 0,
+          "lat": 0.0,
+          "lng": 0.0,
+          "alt": 0.0,
+          "category": "",
+          "icon": "arcade",
+          "themedColorIndex": 2
+        }
+      ]
+    },
+    {
+      "deviceId": "123456789d",
+      "deviceName": "Nexus 7",
+      "collections": [
+        {
+          "name": "Juegos",
+          "items": [
+            {
+              "itemType": "APP",
+              "title": "World of Goo",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.twodboy.worldofgoofull.WorldOfGooFull",
+                  "package_name": "com.twodboy.worldofgoofull"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.twodboy.worldofgoofull",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Swampy",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.disney.WMW.WMWActivity",
+                  "package_name": "com.disney.WMW"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.disney.WMW",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Carmageddon",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.stainlessgames.carmageddon.ParsonsLoader",
+                  "package_name": "com.stainlessgames.carmageddonpromo"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.stainlessgames.carmageddonpromo",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "BADLAND",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.frogmind.badland.Badland",
+                  "package_name": "com.frogmind.badland"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.frogmind.badland",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Walking Dead Assault",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.OTAndroidApp.AndroidActivity",
+                  "package_name": "com.skybound.TWDA"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.skybound.TWDA",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Zombie Smasher",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.moistrue.zombiesmasher.ZombieSmasherActivity",
+                  "package_name": "com.moistrue.zombiesmasher"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.moistrue.zombiesmasher",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Amazing Alex",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.rovio.amazingalex.AAActivity",
+                  "package_name": "com.rovio.amazingalex.premium"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.rovio.amazingalex.premium",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "WizardandDragonDefense",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "muneris.unity.androidbridge.MunerisUnityPlayerProxyActivity",
+                  "package_name": "com.basalt.google.wizarddefense"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.basalt.google.wizarddefense",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Monster Match",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.ngmoco.marketingapp.PackageApplication",
+                  "package_name": "com.mobage.ww.a1431.Puzzles_Android"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.mobage.ww.a1431.Puzzles_Android",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            }
+          ],
+          "collectionType": "APPS",
+          "constrains": [],
+          "wifi": [],
+          "occurrence": [],
+          "radius": 0,
+          "lat": 0.0,
+          "lng": 0.0,
+          "alt": 0.0,
+          "category": "GAME",
+          "icon": "game",
+          "themedColorIndex": 0
+        },
+        {
+          "name": "Productividad",
+          "items": [
+            {
+              "itemType": "APP",
+              "title": "Keep",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.google.android.keep.activities.BrowseActivity",
+                  "package_name": "com.google.android.keep"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.google.android.keep",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Drive",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.google.android.apps.docs.app.NewMainProxyActivity",
+                  "package_name": "com.google.android.apps.docs"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.google.android.apps.docs",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Reloj",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.android.deskclock.DeskClock",
+                  "package_name": "com.google.android.deskclock"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.google.android.deskclock",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "FX",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "nextapp.fx.ui.textedit.TextEditorActivity",
+                  "package_name": "nextapp.fx"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "nextapp.fx",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Dropbox",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.dropbox.android.activity.DropboxBrowser",
+                  "package_name": "com.dropbox.android"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.dropbox.android",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "GitHub",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.github.mobile.ui.user.HomeActivity",
+                  "package_name": "com.github.mobile"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.github.mobile",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "SwiftKey Tablet",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.touchtype.LauncherActivity",
+                  "package_name": "com.touchtype.swiftkey.tablet.full"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.touchtype.swiftkey.tablet.full",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            },
+            {
+              "itemType": "APP",
+              "title": "Calendario",
+              "metadata": {
+                "intentExtras": {
+                  "class_name": "com.android.calendar.AllInOneActivity",
+                  "package_name": "com.google.android.calendar"
+                },
+                "action": "com.fortysevendeg.ninecardslauncher.OPEN_APP",
+                "extras": {
+                  "classLoader": {"parent": null},
+                  "pairValue": "com.google.android.calendar",
+                  "empty": false,
+                  "parcelled": false
+                },
+                "flags": 0.0,
+                "excludingStopped": false
+              }
+            }
+          ],
+          "collectionType": "APPS",
+          "constrains": [],
+          "wifi": [],
+          "occurrence": [],
+          "radius": 0,
+          "lat": 0.0,
+          "lng": 0.0,
+          "alt": 0.0,
+          "category": "PRODUCTIVITY",
+          "icon": "productivity",
+          "themedColorIndex": 1
+        }
+      ],
+      "lastSynced": 1411261107527
+    }
+  ],
+  "themes": [
+    {
+      "_id": "123456789t",
+      "themeId": "123456789-themeid",
+      "name": "Theme Name",
+      "shared": true,
+      "publishedOn": 1392734931387,
+      "userConfigId": "12345678",
+      "baseColor": {
+        "primary": "#E2FFE9",
+        "secondary": "#E2FFE9",
+        "tertiary": "#E2FFE9"
+      },
+      "description": "Theme description",
+      "wallpaper": "http://123456789-themeid",
+      "localUserRated": 0,
+      "screenshots": [
+        {
+          "uri": "http://123456789-themeid-s1",
+          "thumbs": [
+            {
+              "url": "123456789-themeid-st-1",
+              "width": 0,
+              "height": 0
+            }
+          ]
+        },
+        {
+          "uri": "http://123456789-themeid-s2",
+          "thumbs": [
+            {
+              "url": "123456789-themeid-st-2",
+              "width": 0,
+              "height": 0
+            }
+          ]
+        }
+      ],
+      "author": "Theme Author",
+      "alpha": 0,
+      "collectionsAlpha": 64,
+      "colors": [
+        {
+          "primary": "#F4FFEF",
+          "secondary": "#F4FFEF",
+          "tertiary": "#F4FFEF"
+        },
+        {
+          "primary": "#E1FEFF",
+          "secondary": "#E1FEFF",
+          "tertiary": "#E1FEFF"
+        },
+        {
+          "primary": "#E8EDFF",
+          "secondary": "#E8EDFF",
+          "tertiary": "#E8EDFF"
+        },
+        {
+          "primary": "#F5FFFE",
+          "secondary": "#F5FFFE",
+          "tertiary": "#F5FFFE"
+        },
+        {
+          "primary": "#EEFFF7",
+          "secondary": "#EEFFF7",
+          "tertiary": "#EEFFF7"
+        },
+        {
+          "primary": "#ECFFED",
+          "secondary": "#ECFFED",
+          "tertiary": "#ECFFED"
+        },
+        {
+          "primary": "#E8FEFF",
+          "secondary": "#E8FEFF",
+          "tertiary": "#E8FEFF"
+        },
+        {
+          "primary": "#E6FEFF",
+          "secondary": "#E6FEFF",
+          "tertiary": "#E6FEFF"
+        },
+        {
+          "primary": "#EDFFF7",
+          "secondary": "#EDFFF7",
+          "tertiary": "#EDFFF7"
+        }
+      ]
+    }
+  ],
+  "geoInfo": {
+    "homeMorning": {
+      "wifi": "wifiHome",
+      "lat": 0.0,
+      "lng": 0.0,
+      "occurrence": [
+        {
+          "from": "5:00",
+          "to": "8:00",
+          "days": [
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "from": "7:00",
+          "to": "18:00",
+          "days": [
+            1,
+            7
+          ]
+        }
+      ]
+    },
+    "homeNight": {
+      "wifi": "wifiHome",
+      "lat": 0.0,
+      "lng": 0.0,
+      "occurrence": [
+        {
+          "from": "19:00",
+          "to": "23:59",
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "from": "00:00",
+          "to": "07:00",
+          "days": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      ]
+    },
+    "work": {
+      "wifi": "wifiWork",
+      "lat": 0.0,
+      "lng": 0.0,
+      "occurrence": [
+        {
+          "from": "8:00",
+          "to": "17:00",
+          "days": [
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ]
+    }
+  },
+  "status": {
+    "products": [
+      "pro.upgrade",
+      "pro.upgrade"
+    ],
+    "friendsReferred": 3,
+    "themesShared": 0,
+    "collectionsShared": 5,
+    "customCollections": 10,
+    "earlyAdopter": false,
+    "communityMember": false,
+    "joinedThrough": "87654321",
+    "tester": true
+  }
+}

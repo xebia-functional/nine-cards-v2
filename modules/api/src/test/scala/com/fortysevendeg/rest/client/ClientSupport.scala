@@ -16,13 +16,13 @@ trait ClientSupport {
 
   import play.api.libs.json.Json
 
-  implicit val readsResponse = Some(Json.reads[SampleResponse])
-  implicit val readsRequest = Some(Json.reads[SampleRequest])
+  implicit val readsResponse = Json.reads[SampleResponse]
+  implicit val readsRequest = Json.reads[SampleRequest]
   implicit val writesRequest = Json.writes[SampleRequest]
 
   implicit val marshaller =
     Marshaller.of[SampleRequest](MediaTypes.`application/json`) { (value, contentType, ctx) =>
-      ctx.marshalTo(HttpEntity(contentType, Json.toJson(value).toString()))
+      ctx.marshalTo(HttpEntity(contentType, Json.toJson(value)(writesRequest).toString()))
     }
 
 }

@@ -83,7 +83,7 @@ class ServiceClientSpec
 
     "returns a valid response for a valid call to get with response" in
         new WithSuccessfullyHttpClient {
-          val response = Await.result(get[SampleResponse](baseUrl, Seq.empty), Duration.Inf)
+          val response = Await.result(get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doGet(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
@@ -99,7 +99,7 @@ class ServiceClientSpec
 
     "returns a valid response for a valid call to delete with response" in
         new WithSuccessfullyHttpClient {
-          val response = Await.result(delete[SampleResponse](baseUrl, Seq.empty), Duration.Inf)
+          val response = Await.result(delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doDelete(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
@@ -107,7 +107,7 @@ class ServiceClientSpec
 
     "returns a valid response for a valid call to post" in
         new WithSuccessfullyHttpClient {
-          val response = Await.result(emptyPost[SampleResponse](baseUrl, Seq.empty), Duration.Inf)
+          val response = Await.result(emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doPost(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
@@ -116,7 +116,7 @@ class ServiceClientSpec
     "returns a valid response for a valid call to post with valid arguments" in
         new WithSuccessfullyHttpClient {
           val request = SampleRequest("sample-request")
-          val response = Await.result(post[SampleRequest, SampleResponse](baseUrl, Seq.empty, request), Duration.Inf)
+          val response = Await.result(post[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doPost[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
@@ -124,7 +124,7 @@ class ServiceClientSpec
 
     "returns a valid response for a valid call to put" in
         new WithSuccessfullyHttpClient {
-          val response = Await.result(emptyPut[SampleResponse](baseUrl, Seq.empty), Duration.Inf)
+          val response = Await.result(emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doPut(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
@@ -133,7 +133,7 @@ class ServiceClientSpec
     "returns a valid response for a valid call to put with valid arguments" in
         new WithSuccessfullyHttpClient {
           val request = SampleRequest("sample-request")
-          val response = Await.result(put[SampleRequest, SampleResponse](baseUrl, Seq.empty, request), Duration.Inf)
+          val response = Await.result(put[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doPut[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
@@ -148,22 +148,22 @@ class ServiceClientSpec
 
     "returns a failed response when the call to get method throw an exception" in
         new WithFailedHttpClient {
-          Await.result(get[SampleResponse](baseUrl, Seq.empty), Duration.Inf) must throwA[IllegalArgumentException]
+          Await.result(get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf) must throwA[IllegalArgumentException]
         }
 
     "returns a failed response when the call to delete method throw an exception" in
         new WithFailedHttpClient {
-          Await.result(delete[SampleResponse](baseUrl, Seq.empty), Duration.Inf) must throwA[IllegalArgumentException]
+          Await.result(delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf) must throwA[IllegalArgumentException]
         }
 
     "returns a failed response when the call to post method throw an exception" in
         new WithFailedHttpClient {
-          Await.result(emptyPost[SampleResponse](baseUrl, Seq.empty), Duration.Inf) must throwA[IllegalArgumentException]
+          Await.result(emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf) must throwA[IllegalArgumentException]
         }
 
     "returns a failed response when the call to put method throw an exception" in
         new WithFailedHttpClient {
-          Await.result(emptyPut[SampleResponse](baseUrl, Seq.empty), Duration.Inf) must throwA[IllegalArgumentException]
+          Await.result(emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf) must throwA[IllegalArgumentException]
         }
 
   }

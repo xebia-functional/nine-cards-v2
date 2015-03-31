@@ -45,11 +45,6 @@ case class SharedCollectionPackage(
     downloads: String,
     free: Boolean)
 
-case class UserConfigTimeSlot(
-    from: String,
-    to: String,
-    days: Seq[Int])
-
 case class SharedCollectionSubscription(
     _id: String,
     sharedCollectionId: String,

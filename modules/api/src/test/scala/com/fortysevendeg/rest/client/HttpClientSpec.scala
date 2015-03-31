@@ -37,7 +37,7 @@ trait HttpClientSupport
 
   private def isValidBody(req: HttpRequest): Boolean = {
     acceptedBody match {
-      case Some(request) => readsRequest map ( reads => Json.parse(req.entity.asString).as[SampleRequest](reads) == request) getOrElse false
+      case Some(request) => Json.parse(req.entity.asString).as[SampleRequest](readsRequest) == request
       case _ => true
     }
   }
