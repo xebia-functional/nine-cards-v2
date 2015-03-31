@@ -142,9 +142,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   private def getSizeWidget = if (horizontalGallery) getWidth else getHeight
 
-  def isFirst: Boolean = currentItem == 0
+  def isPosition(position: Int): Boolean = currentItem == position
 
-  def isLast: Boolean = currentItem == data.length - 1
+  def isFirst: Boolean = isPosition(0)
+
+  def isLast: Boolean = isPosition(data.length - 1)
 
   def canGoToPrevious = !isFirst || (isFirst && infinite)
 
@@ -355,6 +357,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       case ACTION_MOVE => setStateIfNeeded(x, y)
       case ACTION_DOWN => lastMotionX = x; lastMotionY = y
       case ACTION_CANCEL | ACTION_UP => computeFling(); touchState = stopped
+      case _ =>
     }
     touchState != stopped
   }
@@ -382,6 +385,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
         }
       case ACTION_DOWN => lastMotionX = x; lastMotionY = y
       case ACTION_CANCEL | ACTION_UP => computeFling(); touchState = stopped
+      case _ =>
     }
     true
   }
@@ -394,13 +398,18 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     val yMoved = yDiff > touchSlop
 
     if (xMoved || yMoved) {
-      val isScrolling = (infinite, horizontalGallery, xDiff > yDiff) match {
-        case (i, h, xMove) if i && h && xMove => true
-        case (i, h, xMove) if i && !h && !xMove => true
-        case (i, h, xMove) if !i && h && xMove && x - lastMotionX > 0 && !isFirst => true
-        case (i, h, xMove) if !i && h && xMove && x - lastMotionX < 0 && !isLast => true
-        case (i, h, xMove) if !i && !h && !xMove && y - lastMotionY > 0 && !isFirst => true
-        case (i, h, xMove) if !i && !h && !xMove && y - lastMotionY < 0 && !isLast => true
+      val penultimate = data.length - 2
+      val isScrolling = (infinite, horizontalGallery, xDiff > yDiff, mainAnimator.isRunning) match {
+        case (i, h, xMove, running) if i && h && xMove => true
+        case (i, h, xMove, running) if i && !h && !xMove => true
+        case (i, h, xMove, running) if running && !i && h && xMove && x - lastMotionX > 0 && isPosition(1) => false
+        case (i, h, xMove, running) if running && !i && h && xMove && x - lastMotionX < 0 && isPosition(penultimate) => false
+        case (i, h, xMove, running) if running && !i && !h && !xMove && y - lastMotionY > 0 && isPosition(1) => false
+        case (i, h, xMove, running) if running && !i && !h && !xMove && y - lastMotionY < 0 && isPosition(penultimate) => false
+        case (i, h, xMove, running) if !i && h && xMove && x - lastMotionX > 0 && !isFirst => true
+        case (i, h, xMove, running) if !i && h && xMove && x - lastMotionX < 0 && !isLast => true
+        case (i, h, xMove, running) if !i && !h && !xMove && y - lastMotionY > 0 && !isFirst => true
+        case (i, h, xMove, running) if !i && !h && !xMove && y - lastMotionY < 0 && !isLast => true
         case _ => false
       }
       if (isScrolling) {
