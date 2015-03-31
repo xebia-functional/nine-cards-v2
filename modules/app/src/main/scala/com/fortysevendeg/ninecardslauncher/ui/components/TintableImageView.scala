@@ -44,13 +44,12 @@ class TintableImageView(context: Context)(implicit appContext: AppContext, activ
 object TintableImageViewTweaks {
   type W = TintableImageView
 
-  def tivDefaultColor(resColor: Int)(implicit appContext: AppContext): Tweak[W] = Tweak[W] {
+  def tivDefaultColor(color: Int)(implicit appContext: AppContext): Tweak[W] = Tweak[W] {
     view =>
-      val defaultColor = resGetColor(resColor)
-      view.defaultColor = defaultColor
-      view.setTint(defaultColor)
+      view.defaultColor = color
+      view.setTint(color)
   }
 
-  def tivPressedColor(resColor: Int)(implicit appContext: AppContext): Tweak[W] = Tweak[W](_.pressedColor = resGetColor(resColor))
+  def tivPressedColor(color: Int)(implicit appContext: AppContext): Tweak[W] = Tweak[W](_.pressedColor = color)
 
 }

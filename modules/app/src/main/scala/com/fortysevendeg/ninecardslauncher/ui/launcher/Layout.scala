@@ -2,16 +2,26 @@ package com.fortysevendeg.ninecardslauncher.ui.launcher
 
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.widget.{ImageView, TextView, LinearLayout}
-import com.fortysevendeg.ninecardslauncher.ui.components.{TintableImageView, TestMultipleTypesAnimatedWorkSpaces}
+import android.widget.{ImageView, FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
+import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import macroid.FullDsl._
-import macroid.{Ui, ActivityContext, AppContext}
+import macroid.{ActivityContext, AppContext, Ui}
 
 import scala.util.Try
 
 trait Layout
   extends Styles {
+
+  self : PersistentServicesComponent =>
+
+  var workspaces = slot[LauncherWorkSpaces]
+
+  var appDrawerBar = slot[LinearLayout]
+
+  var pager = slot[LinearLayout]
 
   def content(implicit appContext: AppContext, context: ActivityContext) = getUi(
     l[LinearLayout](
@@ -36,25 +46,40 @@ trait Layout
           }
         )
       ) <~ searchContentStyle,
-      l[TestMultipleTypesAnimatedWorkSpaces]() <~ workspaceStyle,
+      l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces),
+      l[LinearLayout]() <~ paginationContentStyle <~ wire(pager),
       l[LinearLayout](
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        ),
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        ),
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        ),
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        ),
-        w[TintableImageView] <~ appDrawerStyle <~ On.click(
-          uiShortToast("App Drawer")
-        )
-      ) <~ drawerBarContentStyle
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerAppStyle <~ On.click(
+            uiShortToast("App 1")
+          )
+        ) <~ appDrawerContentStyle,
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerAppStyle <~ On.click(
+            uiShortToast("App 2")
+          )
+        ) <~ appDrawerContentStyle,
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerStyle <~ On.click(
+            uiShortToast("App Drawer")
+          )
+        ) <~ appDrawerContentStyle,
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerAppStyle <~ On.click(
+            uiShortToast("App 3")
+          )
+        ) <~ appDrawerContentStyle,
+        l[FrameLayout](
+          w[TintableImageView] <~ appDrawerAppStyle <~ On.click(
+            uiShortToast("App 4")
+          )
+        ) <~ appDrawerContentStyle
+      ) <~ drawerBarContentStyle <~ wire(appDrawerBar)
     ) <~ rootStyle
+  )
+
+  def pagination(position: Int)(implicit appContext: AppContext, context: ActivityContext) = getUi(
+    w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
 
 }

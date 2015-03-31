@@ -8,12 +8,41 @@
     <color name="accent">#E05F5E</color>
     <color name="toolbar_title">#ffffff</color>
 
-    <!-- Search bar -->
-    <color name="search_icons_tint">#646464</color>
-    <color name="search_google_tint">#A3A3A3</color>
-    <color name="search_press_tint">#ff59afdd</color>
+    <color name="background_default_1">#FF9800</color>
+    <color name="background_default_2">#F44336</color>
+    <color name="background_default_3">#9C27B0</color>
+    <color name="background_default_4">#2196F3</color>
+    <color name="background_default_5">#673AB7</color>
 
-    <!-- App Drawer -->
-    <color name="app_drawer_press_tint">#cce0fa</color>
+    <color name="shadow_default">#32364550</color>
+
+    <!-- Groups of collections -->
+    <color name="collection_group_name">#ffffff</color>
+    <color name="workspaces_pager_default">#32ffffff</color>
+    <color name="workspaces_pager_selected">#ffffff</color>
+
+    <color name="collection_group_1">#FF9800</color>
+    <color name="collection_group_2">#F44336</color>
+    <color name="collection_group_3">#9C27B0</color>
+    <color name="collection_group_4">#2196F3</color>
+    <color name="collection_group_5">#673AB7</color>
+    <color name="collection_group_6">#3F51B5</color>
+    <color name="collection_group_7">#8BC34A</color>
+    <color name="collection_group_8">#4CAF50</color>
+    <color name="collection_group_9">#009688</color>
+
+    <!-- Theme Light -->
+    <color name="search_background_tint_light">#ffffff</color>
+    <color name="search_icons_tint_light">#646464</color>
+    <color name="search_google_tint_light">#A3A3A3</color>
+    <color name="search_press_tint_light">#ff59afdd</color>
+    <color name="app_drawer_press_tint_light">#ffd5f2fa</color>
+
+    <!-- Theme Dark -->
+    <color name="search_background_tint_dark">#ff545454</color>
+    <color name="search_icons_tint_dark">#ffffff</color>
+    <color name="search_google_tint_dark">#eeeeee</color>
+    <color name="search_press_tint_dark">#dddddd</color>
+    <color name="app_drawer_press_tint_dark">#ffd5f2fa</color>
 
 </resources>
