@@ -36,16 +36,25 @@ object Libraries {
   object json {
     lazy val playJson = "com.typesafe.play" %% "play-json" % Versions.playJsonV
   }
-  
+
+  object net {
+    lazy val sprayClient = "io.spray" %% "spray-client" % Versions.sprayClientV
+  }
+
   object test {
     lazy val specs2 = "org.specs2" %% "specs2-core" % Versions.specs2V % "test"
-    lazy val androidTest = "com.google.android" % "android" % "4.1.1.4" % "test"
     lazy val mockito = "org.specs2" % "specs2-mock_2.11" % Versions.mockitoV % "test"
+    lazy val androidTest = "com.google.android" % "android" % "4.1.1.4" % "test"
+    lazy val mockServer = "org.mock-server" % "mockserver-netty" % Versions.mockServerV % "test"
   }
 
   object graphics {
     lazy val glide = "com.github.bumptech.glide" % "glide" % Versions.glideV
 //    lazy val picasso = "com.squareup.picasso" % "picasso" % Versions.picassoV
+  }
+
+  object akka {
+    lazy val akkaActor = "com.typesafe.akka" %% "akka-actor" % Versions.akkaActorV
   }
 
   object playServices {
