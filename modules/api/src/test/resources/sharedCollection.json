@@ -1,0 +1,124 @@
+{
+  "_id": "1234567",
+  "sharedCollectionId": "12345678",
+  "publishedOn": 1397159552189,
+  "userConfigId": "12345679",
+  "description": "Shared collection description",
+  "screenshots": [],
+  "author": "Author name",
+  "tags": [],
+  "name": "Shared collection name",
+  "shareLink": "http://www.9cards.io/collections/id/12345678",
+  "packages": [
+    "com.instagram.android",
+    "com.twitter.android",
+    "com.klinker.android.twitter",
+    "com.tumblr",
+    "com.facebook.katana",
+    "org.buffer.android",
+    "com.joelapenna.foursquared",
+    "com.linkedin.android",
+    "com.fortysevendeg.streamdin.android.main",
+    "com.google.android.apps.plus"
+  ],
+  "resolvedPackages": [
+    {
+      "packageName": "com.instagram.android",
+      "title": "Instagram",
+      "description": "Instagram description",
+      "free": true,
+      "icon": "http://lh3.ggpht.com/vFpQP39LB60dli3n-rJnVvTM07dsvIzxrCL5xMiy1V4GV4unC1ifXkUExQ4N-DBCKwI",
+      "stars": 4.563540935516357,
+      "downloads": "100.000.000+"
+    },
+    {
+      "packageName": "com.twitter.android",
+      "title": "Twitter",
+      "description": "Twitter description",
+      "free": true,
+      "icon": "https://lh3.ggpht.com/lSLM0xhCA1RZOwaQcjhlwmsvaIQYaP3c5qbDKCgLALhydrgExnaSKZdGa8S3YtRuVA",
+      "stars": 4.040551662445068,
+      "downloads": "100.000.000+"
+    },
+    {
+      "packageName": "com.klinker.android.twitter",
+      "title": "Talon for Twitter",
+      "description": "Talon description",
+      "free": false,
+      "icon": "https://lh3.ggpht.com/6JgzzGX3GECZMYJcu1Urrl7DKXnAwEp6Cbr_yZjAsyTaXpJz8g2GkG6MFr2loI9vERw",
+      "stars": 4.404158592224121,
+      "downloads": "10.000+"
+    },
+    {
+      "packageName": "com.tumblr",
+      "title": "Tumblr",
+      "description": "Tumblr description",
+      "free": true,
+      "icon": "https://lh4.ggpht.com/qL8WP8bO7qViEkxwTXYGzroI-U1JPkRwRv3YylZM8mvmrAdnKaAdgaNW2SFvZEfH1ic",
+      "stars": 4.362127304077148,
+      "downloads": "10.000.000+"
+    },
+    {
+      "packageName": "com.facebook.katana",
+      "title": "Facebook",
+      "description": "Facebook description",
+      "free": true,
+      "icon": "https://lh5.ggpht.com/_XklY7dK6yGsYt53X15RIp7-tbdjWMwQwl_iUAcW-uSq_8zAprmywdn5DQfBHvxZurs1",
+      "stars": 3.924877405166626,
+      "downloads": "500.000.000+"
+    },
+    {
+      "packageName": "org.buffer.android",
+      "title": "Buffer (Twitter, Facebook)",
+      "description": "Buffer description",
+      "free": true,
+      "icon": "https://lh6.ggpht.com/seTKR9RIh0mFJf9ku8xueVwYdE0-1c_YNyRDIpCXXNnlSa3HuU8vN8Imx-5CzDDLAOjr",
+      "stars": 4.3095903396606445,
+      "downloads": "100.000+"
+    },
+    {
+      "packageName": "com.joelapenna.foursquared",
+      "title": "Foursquare",
+      "description": "Foursquare description",
+      "free": true,
+      "icon": "https://lh4.ggpht.com/ltms3IrSi9LzFseKrpNELMaumrv6AcSf9mq2EnmjL-4SUr5xZhOXNs_PJ_l_h0nVWrIs",
+      "stars": 4.186801433563232,
+      "downloads": "10.000.000+"
+    },
+    {
+      "packageName": "com.linkedin.android",
+      "title": "LinkedIn",
+      "description": "LinkedIn description",
+      "free": true,
+      "icon": "https://lh3.ggpht.com/XgjH1SF8ce-fC597Y0gJqnLt-PpZ1zlE4xUcB8GH6_B5i00SR7jix5Re-T1kkL52VA",
+      "stars": 4.16345739364624,
+      "downloads": "10.000.000+"
+    },
+    {
+      "packageName": "com.fortysevendeg.streamdin.android.main",
+      "title": "Streamd.in",
+      "description": "Streamd.in description",
+      "free": true,
+      "icon": "http://lh5.ggpht.com/qEmkgNttKVUAzICARbZ6-6ieBrxWMgUSw1LzOM_hpYC6COh4E5W6RtU1msv8kVlCQ3SG",
+      "stars": 4.445497512817383,
+      "downloads": "5.000+"
+    },
+    {
+      "packageName": "com.google.android.apps.plus",
+      "title": "Google+",
+      "description": "Google + description",
+      "free": true,
+      "icon": "https://lh4.ggpht.com/6sFQIKf45aBC8HOtMVCBUx29tUjFbfIiXYX-zLOTxviQSuIwWBBzWT9Lj2q9wsWXr3w",
+      "stars": 4.141451835632324,
+      "downloads": "500.000.000+"
+    }
+  ],
+  "occurrence": [],
+  "lat": 0.0,
+  "lng": 0.0,
+  "alt": 0.0,
+  "views": 136,
+  "category": "SOCIAL",
+  "icon": "social",
+  "community": true
+}
