@@ -62,6 +62,8 @@ object Settings {
     aar(macroidExtras),
     aar(playServicesBase),
     glide,
+    compilerPlugin( "org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full ),
+    "io.taig.android" %% "parcelable" % "1.2.5",
     compilerPlugin(Libraries.wartRemover))
 
   lazy val commonResolvers = Seq(

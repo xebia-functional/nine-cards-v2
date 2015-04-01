@@ -38,11 +38,19 @@
     <color name="search_press_tint_light">#ff59afdd</color>
     <color name="app_drawer_press_tint_light">#ffd5f2fa</color>
 
+    <color name="collection_detail_background_light">#EEEEEE</color>
+    <color name="collection_detail_background_card_light">#ffffff</color>
+    <color name="collection_detail_text_card_light">#000000</color>
+
     <!-- Theme Dark -->
     <color name="search_background_tint_dark">#ff545454</color>
     <color name="search_icons_tint_dark">#ffffff</color>
     <color name="search_google_tint_dark">#eeeeee</color>
     <color name="search_press_tint_dark">#dddddd</color>
     <color name="app_drawer_press_tint_dark">#ffd5f2fa</color>
+
+    <color name="collection_detail_background_dark">#ffa3a3a3</color>
+    <color name="collection_detail_background_card_dark">#ff545454</color>
+    <color name="collection_detail_text_card_dark">#eeeeee</color>
 
 </resources>

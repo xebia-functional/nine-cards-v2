@@ -1,5 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
+import io.taig.android.parcelable.annotation.Parcelable
+
+@Parcelable
 case class Collection(
   id: Int,
   position: Int,
@@ -14,6 +17,7 @@ case class Collection(
   sharedCollectionSubscribed: Boolean,
   cards: Seq[Card])
 
+@Parcelable
 case class Card(
   id: Int,
   position: Int,

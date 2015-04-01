@@ -43,6 +43,20 @@ trait PersistentServicesComponentImpl
       case _ => resGetColor(R.color.app_drawer_press_tint_light)
     }
 
+    override def getCollectionDetailBackgroundColor(): Int = theme match {
+      case `ThemeDark` => resGetColor(R.color.collection_detail_background_dark)
+      case _ => resGetColor(R.color.collection_detail_background_light)
+    }
+
+    override def getCollectionDetailTextCardColor(): Int = theme match {
+      case `ThemeDark` => resGetColor(R.color.collection_detail_text_card_dark)
+      case _ => resGetColor(R.color.collection_detail_text_card_light)
+    }
+
+    override def getCollectionDetailCardBackgroundColor(): Int = theme match {
+      case `ThemeDark` => resGetColor(R.color.collection_detail_background_card_dark)
+      case _ => resGetColor(R.color.collection_detail_background_card_light)
+    }
   }
 
 }

@@ -6,6 +6,9 @@ trait PersistentServices {
   def getSearchGoogleColor(): Int
   def getSearchPressedColor(): Int
   def getAppDrawerPressedColor(): Int
+  def getCollectionDetailBackgroundColor(): Int
+  def getCollectionDetailCardBackgroundColor(): Int
+  def getCollectionDetailTextCardColor(): Int
 }
 
 trait PersistentServicesComponent {
