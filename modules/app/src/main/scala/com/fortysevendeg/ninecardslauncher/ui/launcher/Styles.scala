@@ -105,9 +105,8 @@ trait Styles {
   }
 
   def paginationItemStyle(implicit appContext: AppContext) = {
-    val size = resGetDimensionPixelSize(R.dimen.size_pager_collection)
     val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)
-    lp[LinearLayout](size, size) +
+    vWrapContent +
       llLayoutMargin(margin, margin, margin, margin) +
       ivSrc(R.drawable.workspaces_pager)
   }
