@@ -24,6 +24,11 @@
     <dimen name="size_group_collection">72dp</dimen>
     <dimen name="margin_pager_collection">2dp</dimen>
 
+    <!-- Collections Details -->
+    <dimen name="margin_top_pagers_collection_details">130dp</dimen>
+    <dimen name="margin_top_tabs_collection_details">80dp</dimen>
+    <dimen name="height_tootlbar_collection_details">198dp</dimen>
+
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
 

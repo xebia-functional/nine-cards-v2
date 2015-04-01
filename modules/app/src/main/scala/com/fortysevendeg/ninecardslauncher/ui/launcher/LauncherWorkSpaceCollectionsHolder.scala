@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.graphics.drawable._
@@ -12,9 +13,9 @@ import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
+import com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.ui.components.Dimen
 import com.fortysevendeg.ninecardslauncher.ui.launcher.CollectionItemTweaks._
@@ -78,7 +79,13 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
         w[ImageView] <~ wire(icon) <~ iconStyle,
         w[TextView] <~ wire(name) <~ nameStyle
       ) <~ collectionItemStyle <~ On.click {
-        collection map (c => uiShortToast(c.name)) getOrElse Ui.nop
+        collection map {
+          c =>
+            Ui {
+              val intent = new Intent(activityContext.get, classOf[CollectionsDetailsActivity])
+              activityContext.get.startActivity(intent)
+            }
+        } getOrElse Ui.nop
       } <~ vTag(R.id.use_layer_hardware, "")
     )
   )
