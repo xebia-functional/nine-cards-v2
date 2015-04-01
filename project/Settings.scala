@@ -25,6 +25,7 @@ object Settings {
     aar(macroidRoot),
     aar(macroidExtras),
     aar(playServicesBase),
+    glide,
     compilerPlugin(Libraries.wartRemover))
 
   lazy val commonResolvers = Seq(
