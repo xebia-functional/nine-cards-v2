@@ -34,8 +34,9 @@ trait Styles {
 
   def iconStyle(implicit appContext: AppContext): Tweak[ImageView] =
     vWrapContent +
-      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.padding_small)) +
-      vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
+      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.padding_default)) +
+      flLayoutGravity(Gravity.CENTER_HORIZONTAL) +
+      vPaddings(resGetDimensionPixelSize(R.dimen.padding_large))
 
   def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
     vMatchWidth +

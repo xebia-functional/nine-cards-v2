@@ -163,4 +163,6 @@ object SlidingTabLayoutTweaks {
   def stlSelectedTextColor(color: Int): Tweak[W] = Tweak[W](_.setSelectedTextColor(color))
 
   def stlTabStripColor(color: Int): Tweak[W] = Tweak[W](_.setTabStripColor(color))
+
+  def stlOnPageChangeListener(listener: ViewPager.OnPageChangeListener): Tweak[W] = Tweak[W](_.setOnPageChangeListener(listener))
 }
