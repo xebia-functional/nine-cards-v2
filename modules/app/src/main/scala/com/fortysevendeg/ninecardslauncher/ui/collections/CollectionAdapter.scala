@@ -27,12 +27,12 @@ import macroid.FullDsl._
 import macroid.{Ui, ActivityContext, AppContext}
 import CollectionAdapter._
 
-class CollectionAdapter(collection: Collection, listener: CollectionListener)
+class CollectionAdapter(collection: Collection, heightCard: Int, listener: CollectionListener)
     (implicit context: ActivityContext, appContext: AppContext, fragment: Fragment)
     extends RecyclerView.Adapter[ViewHolderCollectionAdapter] {
 
   override def onCreateViewHolder(parentViewGroup: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
-    val adapter = new CollectionLayoutAdapter()
+    val adapter = new CollectionLayoutAdapter(heightCard)
     adapter.content.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = runUi(listener(collection.cards(v.getTag.asInstanceOf[Int])))
     })

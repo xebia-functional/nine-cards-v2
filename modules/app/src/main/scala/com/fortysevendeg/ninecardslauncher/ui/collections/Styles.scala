@@ -47,8 +47,8 @@ trait CollectionAdapterStyles {
 
   self: PersistentServicesComponent =>
 
-  def rootStyle(implicit appContext: AppContext): Tweak[CardView] =
-    vMatchParent +
+  def rootStyle(heightCard: Int)(implicit appContext: AppContext): Tweak[CardView] =
+    vContentSizeMatchWidth(heightCard) +
       cvCardBackgroundColor(persistentServices.getCollectionDetailCardBackgroundColor())
 
   def contentStyle(implicit appContext: AppContext): Tweak[LinearLayout] =

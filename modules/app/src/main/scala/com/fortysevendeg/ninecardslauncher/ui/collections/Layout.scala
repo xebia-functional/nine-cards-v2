@@ -47,7 +47,7 @@ trait CollectionFragmentLayout
 
 }
 
-class CollectionLayoutAdapter(implicit context: ActivityContext, appContext: AppContext)
+class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContext, appContext: AppContext)
   extends CollectionAdapterStyles
   with ComponentRegistryImpl {
 
@@ -65,7 +65,7 @@ class CollectionLayoutAdapter(implicit context: ActivityContext, appContext: App
         w[ImageView] <~ wire(icon) <~ iconStyle,
         w[TextView] <~ wire(name) <~ nameStyle
       ) <~ contentStyle
-    ) <~ rootStyle
+    ) <~ rootStyle(heightCard)
   )
 
 }
