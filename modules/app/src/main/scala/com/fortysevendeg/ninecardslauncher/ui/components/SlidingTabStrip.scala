@@ -1,13 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.ui.components
 
 import android.content.Context
-import android.graphics.{Color, Canvas, Paint}
-import android.util.{TypedValue, AttributeSet}
+import android.graphics.{Canvas, Color, Paint}
+import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.AppContext
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 
 /**
  * Inspired in https://developer.android.com/samples/SlidingTabsBasic/index.html
@@ -26,7 +26,9 @@ class SlidingTabStrip(context: Context, attr: AttributeSet, defStyleAttr: Int)(i
 
   val selectedIndicatorThickness = resGetDimensionPixelSize(R.dimen.height_selected_tab)
   val selectedIndicatorPaint = new Paint
-  selectedIndicatorPaint.setColor(Color.WHITE)
+  setColor(Color.WHITE)
+
+  def setColor(color: Int) = selectedIndicatorPaint.setColor(color)
 
   def onViewPagerPageChanged(position: Int, positionOffset: Float) {
     selectedPosition = position

@@ -18,12 +18,17 @@ trait Layout
   self: PersistentServicesComponent =>
 
   var toolbar = slot[Toolbar]
+
   var viewPager = slot[ViewPager]
+
   var tabs = slot[SlidingTabLayout]
+
+  var icon = slot[ImageView]
 
   def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
     l[FrameLayout](
       darkToolbar <~ toolbarStyle <~ wire(toolbar),
+      w[ImageView] <~ iconStyle <~ wire(icon),
       l[SlidingTabLayout]() <~ tabsStyle <~ wire(tabs),
       l[ViewPager]() <~ viewPagerStyle <~ wire(viewPager) <~ id(Id.pager) // ViewPager need set resource id
     ) <~ rootStyle

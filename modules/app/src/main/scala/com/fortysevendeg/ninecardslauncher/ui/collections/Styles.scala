@@ -14,6 +14,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
+import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{AppContext, Tweak}
@@ -31,9 +32,16 @@ trait Styles {
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details)) +
       vBackground(R.color.primary)
 
+  def iconStyle(implicit appContext: AppContext): Tweak[ImageView] =
+    vWrapContent +
+      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.padding_small)) +
+      vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
+
   def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
     vMatchWidth +
-      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_tabs_collection_details))
+      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_tabs_collection_details)) +
+      stlDefaultTextColor(persistentServices.getCollectionDetailTextTabDefaultColor()) +
+      stlSelectedTextColor(persistentServices.getCollectionDetailTextTabSelectedColor())
 
   def viewPagerStyle(implicit appContext: AppContext): Tweak[ViewPager] =
     vMatchParent +

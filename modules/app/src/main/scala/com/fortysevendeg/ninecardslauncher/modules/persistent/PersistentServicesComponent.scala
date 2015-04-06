@@ -9,6 +9,8 @@ trait PersistentServices {
   def getCollectionDetailBackgroundColor(): Int
   def getCollectionDetailCardBackgroundColor(): Int
   def getCollectionDetailTextCardColor(): Int
+  def getCollectionDetailTextTabSelectedColor(): Int
+  def getCollectionDetailTextTabDefaultColor(): Int
 }
 
 trait PersistentServicesComponent {
