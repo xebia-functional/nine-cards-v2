@@ -18,4 +18,5 @@ class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections: Seq
 
   override def getCount: Int = collections.length
 
+  override def getPageTitle(position: Int): CharSequence = collections(position).name
 }

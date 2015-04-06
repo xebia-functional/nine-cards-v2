@@ -27,6 +27,8 @@ object ColorsUtils {
     Color.HSVToColor(colorHsv)
   }
 
+  def setAlpha (color: Int, alpha: Byte): Int = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
+
 }
 
 object AnimationsUtils {

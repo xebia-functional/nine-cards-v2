@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.ui.collections
 
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.ActionBarActivity
@@ -8,8 +9,9 @@ import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
 import com.fortysevendeg.ninecardslauncher.modules.repository.GetCollectionsRequest
+import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{AppContext, Contexts}
+import macroid.{Ui, AppContext, Contexts}
 import macroid.FullDsl._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,7 +34,15 @@ class CollectionsDetailsActivity
       appsResponse <- appManagerServices.getApps(GetAppsRequest())
       collectionResponse <- repositoryServices.getCollections(GetCollectionsRequest(appsResponse.apps))
     } yield {
-      runUi(viewPager <~ vpAdapter(new CollectionsPagerAdapter(getSupportFragmentManager, collectionResponse.collections)))
+      runUi(
+        (viewPager <~ vpAdapter(new CollectionsPagerAdapter(getSupportFragmentManager, collectionResponse.collections))) ~
+          Ui {
+            tabs map {
+              t =>
+                t.setViewPager(viewPager)
+            }
+          }
+      )
     }
 
   }

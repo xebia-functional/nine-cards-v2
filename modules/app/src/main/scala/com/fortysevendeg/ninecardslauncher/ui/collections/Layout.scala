@@ -6,6 +6,7 @@ import android.view.ContextThemeWrapper
 import android.widget.{LinearLayout, TextView, ImageView, FrameLayout}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
+import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContext, AppContext, IdGeneration, Ui}
@@ -18,10 +19,12 @@ trait Layout
 
   var toolbar = slot[Toolbar]
   var viewPager = slot[ViewPager]
+  var tabs = slot[SlidingTabLayout]
 
   def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
     l[FrameLayout](
       darkToolbar <~ toolbarStyle <~ wire(toolbar),
+      l[SlidingTabLayout]() <~ tabsStyle <~ wire(tabs),
       l[ViewPager]() <~ viewPagerStyle <~ wire(viewPager) <~ id(Id.pager) // ViewPager need set resource id
     ) <~ rootStyle
   )

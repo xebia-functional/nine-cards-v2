@@ -1,21 +1,22 @@
 package com.fortysevendeg.ninecardslauncher.ui.collections
 
 import android.support.v4.view.ViewPager
-import android.support.v7.widget.{RecyclerView, CardView, Toolbar}
+import android.support.v7.widget.{CardView, RecyclerView, Toolbar}
 import android.text.TextUtils.TruncateAt
 import android.view.{Gravity, ViewGroup}
-import android.widget.{LinearLayout, TextView, ImageView, FrameLayout}
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
-import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
+import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
+import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{AppContext, Tweak}
 import macroid.FullDsl._
+import macroid.{AppContext, Tweak}
 
 trait Styles {
 
@@ -30,9 +31,14 @@ trait Styles {
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details)) +
       vBackground(R.color.primary)
 
+  def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
+    vMatchWidth +
+      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_tabs_collection_details))
+
   def viewPagerStyle(implicit appContext: AppContext): Tweak[ViewPager] =
     vMatchParent +
       flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_pagers_collection_details))
+
 }
 
 trait CollectionFragmentStyles {
