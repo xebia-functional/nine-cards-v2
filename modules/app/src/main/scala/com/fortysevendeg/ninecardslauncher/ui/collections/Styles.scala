@@ -10,6 +10,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
+import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
 import com.fortysevendeg.ninecardslauncher2.R
@@ -31,7 +32,7 @@ trait Styles {
 
   def viewPagerStyle(implicit appContext: AppContext): Tweak[ViewPager] =
     vMatchParent +
-      vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.margin_top_pagers_collection_details))
+      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_pagers_collection_details))
 }
 
 trait CollectionFragmentStyles {
