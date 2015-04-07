@@ -11,7 +11,7 @@ class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections: Seq
     val fragment = new CollectionFragment()
     val bundle = new Bundle()
     bundle.putInt(CollectionFragment.KeyPosition, position)
-    bundle.putParcelable(CollectionFragment.KeyCollection, collections(position).asInstanceOf[Parcelable])
+    bundle.putSerializable(CollectionFragment.KeyCollection, collections(position))
     fragment.setArguments(bundle)
     fragment
   }

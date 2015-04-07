@@ -29,6 +29,23 @@ object ColorsUtils {
 
   def setAlpha(color: Int, alpha: Byte): Int = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
 
+  def interpolateColors(fraction: Float, startValue: Int, endValue: Int): Int = {
+    val startInt: Int = startValue
+    val startA: Int = (startInt >> 24) & 0xff
+    val startR: Int = (startInt >> 16) & 0xff
+    val startG: Int = (startInt >> 8) & 0xff
+    val startB: Int = startInt & 0xff
+    val endInt: Int = endValue
+    val endA: Int = (endInt >> 24) & 0xff
+    val endR: Int = (endInt >> 16) & 0xff
+    val endG: Int = (endInt >> 8) & 0xff
+    val endB: Int = endInt & 0xff
+    ((startA + (fraction * (endA - startA)).toInt) << 24) |
+      ((startR + (fraction * (endR - startR)).toInt) << 16) |
+      (startG + (fraction * (endG - startG)).toInt) << 8 |
+      (startB + (fraction * (endB - startB)).toInt)
+  }
+
 }
 
 object AnimationsUtils {

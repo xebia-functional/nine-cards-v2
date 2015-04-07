@@ -8,13 +8,17 @@ import android.view.{Menu, MenuItem}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
 import com.fortysevendeg.ninecardslauncher.modules.repository.{Collection, GetCollectionsRequest, GetCollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{Ui, AppContext, Contexts}
+import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -26,37 +30,61 @@ class CollectionsDetailsActivity
 
   override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
 
+  lazy val systemBarTintManager = new SystemBarTintManager(this)
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     setContentView(layout)
     toolbar map setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
 
+    systemBarTintManager.setStatusBarTintEnabled(true)
+
     for {
       appsResponse <- appManagerServices.getApps(GetAppsRequest())
       GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest(appsResponse.apps))
     } yield {
+      val pageChangeListener = new OnPageChangeListener {
+        override def onPageScrollStateChanged(state: Int): Unit = {}
+        override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit = {
+          val selectedCollection: Collection = collections(position)
+          val nextCollection: Option[Collection] = collections.lift(position + 1)
+          nextCollection map {
+            toCollection =>
+              val startColor = resGetColor(persistentServices.getIndexColor(selectedCollection.themedColorIndex))
+              val endColor = resGetColor(persistentServices.getIndexColor(toCollection.themedColorIndex))
+              val color = interpolateColors(positionOffset, startColor, endColor)
+              runUi(updateToolbarColor(color))
+          }
+        }
+        override def onPageSelected(position: Int): Unit = updateCollection(collections(position))
+      }
       runUi(
         (viewPager <~ vpAdapter(new CollectionsPagerAdapter(getSupportFragmentManager, collections))) ~
           (tabs <~
-            stlViewPager(viewPager)<~
-            stlOnPageChangeListener(new OnPageChangeListener {
-              override def onPageScrollStateChanged(i: Int): Unit = {}
-              override def onPageScrolled(i: Int, v: Float, i1: Int): Unit = {}
-              override def onPageSelected(position: Int): Unit = {
-                updateCollection(collections(position))
-              }
-            })) ~
-          Ui { updateCollection(collections(viewPager.get.getCurrentItem)) }
+            stlViewPager(viewPager) <~
+            stlOnPageChangeListener(pageChangeListener)) ~
+          Ui {
+            viewPager map (vp => updateCollection(collections(vp.getCurrentItem)))
+          }
       )
     }
 
   }
 
   def updateCollection(collection: Collection) = resGetDrawableIdentifier(collection.icon + "_detail") map {
-      res => runUi(icon <~ ivSrc(res))
-    }
+    res => runUi( icon <~ ivSrc(res) )
+  }
 
+  private def updateToolbarColor(color: Int): Ui[_] =
+    (toolbar <~ vBackgroundColor(color)) ~
+      Ui {
+        Lollipop ifSupportedThen {
+          getWindow.setStatusBarColor(color)
+        } getOrElse {
+          systemBarTintManager.setStatusBarTintColor(color)
+        }
+      }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater.inflate(R.menu.collection_detail_menu, menu)

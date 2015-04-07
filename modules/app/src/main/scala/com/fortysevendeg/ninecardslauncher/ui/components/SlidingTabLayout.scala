@@ -115,7 +115,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(
   }
 
   private class InternalViewPagerListener extends ViewPager.OnPageChangeListener {
-    private var mScrollState: Int = 0
+    private var scrollState: Int = 0
 
     def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
       val tabStripChildCount: Int = tabStrip.getChildCount
@@ -133,13 +133,13 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(
     }
 
     def onPageScrollStateChanged(state: Int) {
-      mScrollState = state
+      scrollState = state
       viewPagerPageChangeListener map (_.onPageScrollStateChanged(state))
     }
 
     def onPageSelected(position: Int) {
       runUi(self <~ upadateTabsColors(position))
-      if (mScrollState == ViewPager.SCROLL_STATE_IDLE) {
+      if (scrollState == ViewPager.SCROLL_STATE_IDLE) {
         tabStrip.onViewPagerPageChanged(position, 0f)
         scrollToTab(position, 0)
       }

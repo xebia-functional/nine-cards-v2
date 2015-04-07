@@ -31,6 +31,9 @@
     <color name="collection_group_8">#4CAF50</color>
     <color name="collection_group_9">#009688</color>
 
+    <!-- Collections detail -->
+    <color name="background_icon_collection_detail">#4bffffff</color>
+
     <!-- Theme Light -->
     <color name="search_background_tint_light">#ffffff</color>
     <color name="search_icons_tint_light">#646464</color>

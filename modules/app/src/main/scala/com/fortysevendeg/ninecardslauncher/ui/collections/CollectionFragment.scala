@@ -30,7 +30,7 @@ class CollectionFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     import CollectionFragment._
     val position = getArguments.getInt(KeyPosition, 0)
-    val collection = getArguments.getParcelable[Collection](KeyCollection)
+    val collection = getArguments.getSerializable(KeyCollection).asInstanceOf[Collection]
 
     runUi(recyclerView <~ vGlobalLayoutListener(view => {
       val heightCard = (view.getHeight / NumInLine) - resGetDimensionPixelSize(R.dimen.padding_small)

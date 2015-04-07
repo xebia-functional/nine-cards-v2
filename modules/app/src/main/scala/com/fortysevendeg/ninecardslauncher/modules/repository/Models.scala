@@ -1,8 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
-import io.taig.android.parcelable.annotation.Parcelable
-
-@Parcelable
 case class Collection(
   id: Int,
   position: Int,
@@ -15,9 +12,8 @@ case class Collection(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Boolean,
-  cards: Seq[Card])
+  cards: Seq[Card]) extends Serializable
 
-@Parcelable
 case class Card(
   id: Int,
   position: Int,
@@ -29,4 +25,4 @@ case class Card(
   imagePath: String,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
-  notification: Option[String] = None)
+  notification: Option[String] = None) extends Serializable

@@ -14,6 +14,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
 import com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
@@ -61,7 +62,10 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit appContext
 
 class CollectionItem(position: Int)(implicit appContext: AppContext, activityContext: ActivityContext)
   extends FrameLayout(activityContext.get)
-  with CollectionItemStyle {
+  with CollectionItemStyle
+  with ComponentRegistryImpl {
+
+  override val appContextProvider: AppContext = appContext
 
   var collection: Option[Collection] = None
 
@@ -102,19 +106,7 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
   }
 
   private def createBackground(indexColor: Int): Drawable = {
-    val resColor = indexColor match {
-      case 0 => R.color.collection_group_1
-      case 1 => R.color.collection_group_2
-      case 2 => R.color.collection_group_3
-      case 3 => R.color.collection_group_4
-      case 4 => R.color.collection_group_5
-      case 5 => R.color.collection_group_6
-      case 6 => R.color.collection_group_7
-      case 7 => R.color.collection_group_8
-      case _ => R.color.collection_group_9
-    }
-
-    val color = resGetColor(resColor)
+    val color = resGetColor(persistentServices.getIndexColor(indexColor))
 
     Lollipop ifSupportedThen {
       new RippleDrawable(

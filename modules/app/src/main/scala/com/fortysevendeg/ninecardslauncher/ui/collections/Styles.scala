@@ -3,13 +3,15 @@ package com.fortysevendeg.ninecardslauncher.ui.collections
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.{CardView, RecyclerView, Toolbar}
 import android.text.TextUtils.TruncateAt
-import android.view.{Gravity, ViewGroup}
+import android.view.{View, Gravity, ViewGroup}
+import android.widget.ImageView.ScaleType
 import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
@@ -29,14 +31,21 @@ trait Styles {
       vBackgroundColor(persistentServices.getCollectionDetailBackgroundColor())
 
   def toolbarStyle(implicit appContext: AppContext): Tweak[Toolbar] =
-    vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details)) +
-      vBackground(R.color.primary)
+    vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details))
 
-  def iconStyle(implicit appContext: AppContext): Tweak[ImageView] =
-    vWrapContent +
-      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.padding_default)) +
-      flLayoutGravity(Gravity.CENTER_HORIZONTAL) +
-      vPaddings(resGetDimensionPixelSize(R.dimen.padding_large))
+  def iconStyle(implicit appContext: AppContext): Tweak[ImageView] = {
+    val size = resGetDimensionPixelSize(R.dimen.size_icon_collection_detail)
+    lp[ViewGroup](size, size) +
+      ivScaleType(ScaleType.CENTER_INSIDE) +
+      vBackground(R.drawable.background_icon_collection_detail) +
+      Tweak[ImageView] {
+        view ⇒
+          val params = new FrameLayout.LayoutParams(view.getLayoutParams)
+          params.setMargins(0, resGetDimensionPixelSize(R.dimen.padding_default), 0, 0)
+          params.gravity = Gravity.CENTER_HORIZONTAL
+          view.setLayoutParams(params)
+      }
+  }
 
   def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
     vMatchWidth +
