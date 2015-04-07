@@ -1,6 +1,5 @@
 import Libraries.android._
 import Libraries.graphics._
-import Libraries.macroid._
 import Libraries.playServices._
 import android.Keys._
 import sbt.Keys._
