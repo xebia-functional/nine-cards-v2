@@ -28,7 +28,9 @@ trait Layout
   def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
     l[FrameLayout](
       darkToolbar <~ toolbarStyle <~ wire(toolbar),
-      w[ImageView] <~ iconStyle <~ wire(icon),
+      l[FrameLayout](
+        w[ImageView] <~ iconStyle <~ wire(icon)
+      ) <~ iconContentStyle,
       l[SlidingTabLayout]() <~ tabsStyle <~ wire(tabs),
       l[ViewPager]() <~ viewPagerStyle <~ wire(viewPager) <~ id(Id.pager) // ViewPager need set resource id
     ) <~ rootStyle

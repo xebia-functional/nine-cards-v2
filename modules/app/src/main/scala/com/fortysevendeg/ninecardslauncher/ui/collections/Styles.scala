@@ -33,12 +33,11 @@ trait Styles {
   def toolbarStyle(implicit appContext: AppContext): Tweak[Toolbar] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details))
 
-  def iconStyle(implicit appContext: AppContext): Tweak[ImageView] = {
+  def iconContentStyle(implicit appContext: AppContext): Tweak[FrameLayout] = {
     val size = resGetDimensionPixelSize(R.dimen.size_icon_collection_detail)
     lp[ViewGroup](size, size) +
-      ivScaleType(ScaleType.CENTER_INSIDE) +
       vBackground(R.drawable.background_icon_collection_detail) +
-      Tweak[ImageView] {
+      Tweak[FrameLayout] {
         view ⇒
           val params = new FrameLayout.LayoutParams(view.getLayoutParams)
           params.setMargins(0, resGetDimensionPixelSize(R.dimen.padding_default), 0, 0)
@@ -46,6 +45,11 @@ trait Styles {
           view.setLayoutParams(params)
       }
   }
+
+  def iconStyle(implicit appContext: AppContext): Tweak[ImageView] =
+    vMatchParent +
+      ivScaleType(ScaleType.CENTER_INSIDE)
+
 
   def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
     vMatchWidth +

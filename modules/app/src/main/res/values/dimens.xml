@@ -23,12 +23,14 @@
     <!-- Groups of collections -->
     <dimen name="size_group_collection">72dp</dimen>
     <dimen name="margin_pager_collection">2dp</dimen>
+    <integer name="anim_duration_pager_appear">175</integer>
 
     <!-- Collections Details -->
     <dimen name="size_icon_collection_detail">60dp</dimen>
     <dimen name="margin_top_pagers_collection_details">130dp</dimen>
     <dimen name="margin_top_tabs_collection_details">90dp</dimen>
     <dimen name="height_tootlbar_collection_details">190dp</dimen>
+    <integer name="anim_duration_icon_collection_detail">100</integer>
 
     <dimen name="size_icon_card">60dp</dimen>
 

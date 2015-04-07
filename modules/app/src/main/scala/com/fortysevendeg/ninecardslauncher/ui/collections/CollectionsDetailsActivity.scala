@@ -46,35 +46,41 @@ class CollectionsDetailsActivity
       GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest(appsResponse.apps))
     } yield {
       val pageChangeListener = new OnPageChangeListener {
+        var lastSelected = -1
+
         override def onPageScrollStateChanged(state: Int): Unit = {}
 
         override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit = {
           val selectedCollection: Collection = collections(position)
           val nextCollection: Option[Collection] = collections.lift(position + 1)
           nextCollection map {
-            toCollection =>
+            next =>
               val startColor = resGetColor(persistentServices.getIndexColor(selectedCollection.themedColorIndex))
-              val endColor = resGetColor(persistentServices.getIndexColor(toCollection.themedColorIndex))
+              val endColor = resGetColor(persistentServices.getIndexColor(next.themedColorIndex))
               val color = interpolateColors(positionOffset, startColor, endColor)
               runUi(updateToolbarColor(color))
           }
         }
 
-        override def onPageSelected(position: Int): Unit = runUi(updateCollection(collections(position)))
+        override def onPageSelected(position: Int): Unit = {
+          val fromLeft = position < lastSelected
+          lastSelected = position
+          runUi(updateCollection(collections(position), fromLeft))
+        }
       }
       runUi(
         (viewPager <~ vpAdapter(new CollectionsPagerAdapter(getSupportFragmentManager, collections))) ~
           (tabs <~
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(pageChangeListener)) ~
-            (viewPager map (vp => updateCollection(collections(vp.getCurrentItem), false)) getOrElse Ui.nop)
+            (viewPager map (vp => updateCollection(collections(vp.getCurrentItem), false, false)) getOrElse Ui.nop)
       )
     }
 
   }
 
-  private def updateCollection(collection: Collection, anim: Boolean = true): Ui[_] = resGetDrawableIdentifier(collection.icon + "_detail") map {
-    res => if (anim) icon <~ changeIcon(res) else icon <~ ivSrc(res)
+  private def updateCollection(collection: Collection, fromLeft: Boolean, anim: Boolean = true): Ui[_] = resGetDrawableIdentifier(collection.icon + "_detail") map {
+    res => if (anim) icon <~ changeIcon(res, fromLeft) else icon <~ ivSrc(res)
   } getOrElse Ui.nop
 
   private def updateToolbarColor(color: Int): Ui[_] =

@@ -65,7 +65,7 @@ class LauncherActivity
   }
 
   def reloadPager(currentPage: Int) = Transformer {
-    case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true) <~~ pagerAppear()
+    case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true) <~~ pagerAppear
     case i: ImageView => i <~ vActivated(false)
   }
 
