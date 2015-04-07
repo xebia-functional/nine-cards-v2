@@ -62,6 +62,17 @@ class NineCardsSqlHelper(context: Context)
   }
   override def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = {
 
+    (oldVersion + 1 to newVersion) foreach {
+      case 2 =>
+        db.execSQL("ALTER TABLE " + CardEntity.Table + " ADD COLUMN " + CardEntity.Notification + " TEXT")
+      case 3 =>
+        db.execSQL("ALTER TABLE " + CardEntity.Table + " ADD COLUMN " + CardEntity.Micros + " INTEGER")
+      case 4 =>
+        db.execSQL("ALTER TABLE " + CollectionEntity.Table + " ADD COLUMN " + CollectionEntity.SharedCollectionId + " TEXT")
+        db.execSQL("ALTER TABLE " + CollectionEntity.Table + " ADD COLUMN " + CollectionEntity.OriginalSharedCollectionId + " TEXT")
+        db.execSQL("ALTER TABLE " + CollectionEntity.Table + " ADD COLUMN " + CollectionEntity.SharedCollectionSubscribed + " INTEGER")
+    }
+
     new Handler().post(
       new Runnable() {
         override def run() = execVersionsDB(context, oldVersion, newVersion)
@@ -72,5 +83,5 @@ class NineCardsSqlHelper(context: Context)
 object NineCardsSqlHelper {
   val Id = "_id"
   val DatabaseName = "nineCards"
-  val DatabaseVersion = 1
+  val DatabaseVersion = 4
 }
