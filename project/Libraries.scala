@@ -65,4 +65,8 @@ object Libraries {
     lazy val playServicesBase = playServicesDep("play-services-base")
   }
 
+  object scalaz {
+    lazy val scalaz = "org.scalaz" %% "scalaz-core" % Versions.scalazV
+  }
+
 }
