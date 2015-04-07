@@ -29,7 +29,7 @@ object CollectionEntity {
   val SharedCollectionId = "sharedCollectionId"
   val SharedCollectionSubscribed = "sharedCollectionSubscribed"
 
-  val AllFields = Seq[String](
+  val AllFields = Array[String](
     NineCardsSqlHelper.Id,
     Position,
     Name,

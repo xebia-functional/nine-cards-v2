@@ -31,7 +31,7 @@ object CardEntity {
   val NumDownloads = "numDownloads"
   val Notification = "notification"
 
-  val AllFields = Seq[String](
+  val AllFields = Array[String](
     NineCardsSqlHelper.Id,
     Position,
     CollectionId,

@@ -21,7 +21,7 @@ object CacheCategoryEntity {
   val RatingsCount = "ratingsCount"
   val CommentCount = "commentCount"
 
-  val AllFields = Seq[String](
+  val AllFields = Array[String](
     NineCardsSqlHelper.Id,
     PackageName,
     Category,
