@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.provider
 
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
 
 case class CacheCategoryEntity(id: Int, data: CacheCategoryEntityData)
 
@@ -34,12 +35,12 @@ object CacheCategoryEntity {
     CacheCategoryEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
       data = CacheCategoryEntityData(
-        packageName = cursor.getString(cursor.getColumnIndex(CacheCategoryEntity.PackageName)),
-        category = cursor.getString(cursor.getColumnIndex(CacheCategoryEntity.Category)),
-        starRating = cursor.getDouble(cursor.getColumnIndex(CacheCategoryEntity.StarRating)),
-        numDownloads = cursor.getString(cursor.getColumnIndex(CacheCategoryEntity.NumDownloads)),
-        ratingsCount = cursor.getInt(cursor.getColumnIndex(CacheCategoryEntity.RatingsCount)),
-        commentCount = cursor.getInt(cursor.getColumnIndex(CacheCategoryEntity.CommentCount))))
+        packageName = cursor.getString(cursor.getColumnIndex(PackageName)),
+        category = cursor.getString(cursor.getColumnIndex(Category)),
+        starRating = cursor.getDouble(cursor.getColumnIndex(StarRating)),
+        numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
+        ratingsCount = cursor.getInt(cursor.getColumnIndex(RatingsCount)),
+        commentCount = cursor.getInt(cursor.getColumnIndex(CommentCount))))
   }
 }
 
@@ -47,11 +48,11 @@ object CacheCategoryEntityData {
 
   def cacheCategoryEntityDataFromCursor(cursor: Cursor) = {
     CacheCategoryEntityData(
-      packageName = cursor.getString(cursor.getColumnIndex(CacheCategoryEntity.PackageName)),
-      category = cursor.getString(cursor.getColumnIndex(CacheCategoryEntity.Category)),
-      starRating = cursor.getDouble(cursor.getColumnIndex(CacheCategoryEntity.StarRating)),
-      numDownloads = cursor.getString(cursor.getColumnIndex(CacheCategoryEntity.NumDownloads)),
-      ratingsCount = cursor.getInt(cursor.getColumnIndex(CacheCategoryEntity.RatingsCount)),
-      commentCount = cursor.getInt(cursor.getColumnIndex(CacheCategoryEntity.CommentCount)))
+      packageName = cursor.getString(cursor.getColumnIndex(PackageName)),
+      category = cursor.getString(cursor.getColumnIndex(Category)),
+      starRating = cursor.getDouble(cursor.getColumnIndex(StarRating)),
+      numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
+      ratingsCount = cursor.getInt(cursor.getColumnIndex(RatingsCount)),
+      commentCount = cursor.getInt(cursor.getColumnIndex(CommentCount)))
   }
 }

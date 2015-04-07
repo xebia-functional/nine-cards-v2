@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.provider
 
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 
 case class GeoInfoEntity(id: Int, data: GeoInfoEntityData)
 
@@ -34,12 +35,12 @@ object GeoInfoEntity {
     GeoInfoEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
       data = GeoInfoEntityData(
-        constrain = cursor.getString(cursor.getColumnIndex(GeoInfoEntity.Constrain)),
-        occurrence = cursor.getString(cursor.getColumnIndex(GeoInfoEntity.Occurrence)),
-        wifi = cursor.getString(cursor.getColumnIndex(GeoInfoEntity.Wifi)),
-        latitude = cursor.getDouble(cursor.getColumnIndex(GeoInfoEntity.Latitude)),
-        longitude = cursor.getDouble(cursor.getColumnIndex(GeoInfoEntity.Longitude)),
-        system = cursor.getInt(cursor.getColumnIndex(GeoInfoEntity.System)) > 0))
+        constrain = cursor.getString(cursor.getColumnIndex(Constrain)),
+        occurrence = cursor.getString(cursor.getColumnIndex(Occurrence)),
+        wifi = cursor.getString(cursor.getColumnIndex(Wifi)),
+        latitude = cursor.getDouble(cursor.getColumnIndex(Latitude)),
+        longitude = cursor.getDouble(cursor.getColumnIndex(Longitude)),
+        system = cursor.getInt(cursor.getColumnIndex(System)) > 0))
   }
 }
 
@@ -47,11 +48,11 @@ object GeoInfoEntityData {
 
   def geoInfoEntityDataFromCursor(cursor: Cursor) = {
     GeoInfoEntityData(
-      constrain = cursor.getString(cursor.getColumnIndex(GeoInfoEntity.Constrain)),
-      occurrence = cursor.getString(cursor.getColumnIndex(GeoInfoEntity.Occurrence)),
-      wifi = cursor.getString(cursor.getColumnIndex(GeoInfoEntity.Wifi)),
-      latitude = cursor.getDouble(cursor.getColumnIndex(GeoInfoEntity.Latitude)),
-      longitude = cursor.getDouble(cursor.getColumnIndex(GeoInfoEntity.Longitude)),
-      system = cursor.getInt(cursor.getColumnIndex(GeoInfoEntity.System)) > 0)
+      constrain = cursor.getString(cursor.getColumnIndex(Constrain)),
+      occurrence = cursor.getString(cursor.getColumnIndex(Occurrence)),
+      wifi = cursor.getString(cursor.getColumnIndex(Wifi)),
+      latitude = cursor.getDouble(cursor.getColumnIndex(Latitude)),
+      longitude = cursor.getDouble(cursor.getColumnIndex(Longitude)),
+      system = cursor.getInt(cursor.getColumnIndex(System)) > 0)
   }
 }
