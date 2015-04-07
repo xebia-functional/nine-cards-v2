@@ -33,7 +33,8 @@ class CollectionFragment
     val collection = getArguments.getSerializable(KeyCollection).asInstanceOf[Collection]
 
     runUi(recyclerView <~ vGlobalLayoutListener(view => {
-      val heightCard = (view.getHeight / NumInLine) - resGetDimensionPixelSize(R.dimen.padding_small)
+      val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+      val heightCard = (view.getHeight - (padding * 2)) / NumInLine
       loadCollection(collection, heightCard)
     }))
 
