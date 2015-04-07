@@ -23,6 +23,7 @@ import android.view.{View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.modules.repository.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageFragmentTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import macroid.FullDsl._
 import macroid.{Ui, ActivityContext, AppContext}
 import CollectionAdapter._
@@ -34,7 +35,10 @@ class CollectionAdapter(collection: Collection, heightCard: Int, listener: Colle
   override def onCreateViewHolder(parentViewGroup: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
     val adapter = new CollectionLayoutAdapter(heightCard)
     adapter.content.setOnClickListener(new OnClickListener {
-      override def onClick(v: View): Unit = runUi(listener(collection.cards(v.getTag.asInstanceOf[Int])))
+      override def onClick(v: View): Unit = Option(v.getTag) map {
+        tag =>
+          runUi(listener(collection.cards(tag.toString.toInt)))
+      }
     })
     new ViewHolderCollectionAdapter(adapter)
   }
@@ -43,7 +47,9 @@ class CollectionAdapter(collection: Collection, heightCard: Int, listener: Colle
 
   override def onBindViewHolder(viewHolder: ViewHolderCollectionAdapter, position: Int): Unit = {
     val card = collection.cards(position)
-    runUi((viewHolder.icon <~ ivUri(fragment, card.imagePath)) ~ (viewHolder.name <~ tvText(card.term)))
+    runUi((viewHolder.icon <~ ivUri(fragment, card.imagePath)) ~
+      (viewHolder.name <~ tvText(card.term)) ~
+      (viewHolder.content <~ vTag(position.toString)))
   }
 
 
