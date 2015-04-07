@@ -1,19 +1,24 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import android.content.ContentValues
-import android.database.Cursor
+import android.net.Uri
 import android.net.Uri._
 import com.fortysevendeg.macroid.extras.AppContextProvider
-import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
-import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, CollectionEntity, NineCardsContentProvider}
+import com.fortysevendeg.ninecardslauncher.commons.OptionTFutureConversion._
+import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity.{Position, Type, _}
+import com.fortysevendeg.ninecardslauncher.provider.{CollectionEntity, DBUtils, NineCardsContentProvider}
+import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.utils._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import scala.util.Try
+import scalaz.OptionT.optionT
 
-trait CollectionRepositoryClient extends DBUtils {
+trait CollectionRepositoryClient
+    extends CardRepositoryClient
+    with DBUtils {
 
   self: AppContextProvider =>
 
@@ -28,10 +33,10 @@ trait CollectionRepositoryClient extends DBUtils {
           contentValues.put(Type, request.data.`type`)
           contentValues.put(Icon, request.data.icon)
           contentValues.put(ThemedColorIndex, request.data.themedColorIndex.asInstanceOf[java.lang.Integer])
-          contentValues.put(AppsCategory, request.data.appsCategory)
-          contentValues.put(Constrains, request.data.constrains)
-          contentValues.put(OriginalSharedCollectionId, request.data.originalSharedCollectionId)
-          contentValues.put(SharedCollectionId, request.data.sharedCollectionId)
+          contentValues.put(AppsCategory, request.data.appsCategory getOrElse "")
+          contentValues.put(Constrains, request.data.constrains getOrElse "")
+          contentValues.put(OriginalSharedCollectionId, request.data.originalSharedCollectionId getOrElse "")
+          contentValues.put(SharedCollectionId, request.data.sharedCollectionId getOrElse "")
           contentValues.put(SharedCollectionSubscribed, request.data.sharedCollectionSubscribed)
 
           val uri = appContextProvider.get.getContentResolver.insert(
@@ -40,15 +45,13 @@ trait CollectionRepositoryClient extends DBUtils {
 
           AddCollectionResponse(
             success = true,
-            collectionEntity = Some(CollectionEntity(
-              id = Integer.parseInt(uri.getPathSegments.get(1)),
-              data = request.data)))
+            collection = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
 
         } recover {
           case e: Exception =>
             AddCollectionResponse(
               success = false,
-              collectionEntity = None)
+              collection = None)
         }
       }
 
@@ -57,7 +60,7 @@ trait CollectionRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           appContextProvider.get.getContentResolver.delete(
-            withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.entity.id.toString),
+            withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.collection.id.toString),
             "",
             Array.empty)
 
@@ -71,81 +74,54 @@ trait CollectionRepositoryClient extends DBUtils {
 
   def getCollectionById: Service[GetCollectionByIdRequest, GetCollectionByIdResponse] =
     request =>
-      tryToFuture {
-        Try {
-          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
-            withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.id.toString),
-            Array.empty,
-            "",
-            Array.empty,
-            ""))
-
-          GetCollectionByIdResponse(result = getEntityFromCursor(cursor, collectionEntityFromCursor))
-
-        } recover {
-          case e: Exception =>
-            GetCollectionByIdResponse(result = None)
-        }
-      }
+      for {
+        collection <- tryToFuture(getCollection(withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.id.toString)))
+        getCardByCollectionResponse <- getCardByCollection(GetCardByCollectionRequest(request.id))
+      } yield GetCollectionByIdResponse(buildCollectionWithCards(collection, getCardByCollectionResponse.result))
 
   def getCollectionByOriginalSharedCollectionId:
   Service[GetCollectionByOriginalSharedCollectionIdRequest, GetCollectionByOriginalSharedCollectionIdResponse] =
-    request =>
-      tryToFuture {
-        Try {
-          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
-            NineCardsContentProvider.ContentUriCollection,
-            AllFields.toArray,
-            s"$OriginalSharedCollectionId = ?",
-            Array(request.sharedCollectionId.toString),
-            ""))
+    request => {
+      val result = for {
+        collection <- optionT(tryToFuture(getCollection(
+          selection = s"$OriginalSharedCollectionId = ?",
+          selectionArgs = Array(request.sharedCollectionId.toString))))
+        getCardByCollectionResponse <- optionT(getCardByCollection(GetCardByCollectionRequest(collection.id)) map { item => Option(item) })
+      } yield GetCollectionByOriginalSharedCollectionIdResponse(buildCollectionWithCards(Option(collection), getCardByCollectionResponse.result))
 
-          GetCollectionByOriginalSharedCollectionIdResponse(
-            result = getListFromCursor(cursor, collectionEntityFromCursor))
-
-        } recover {
-          case e: Exception =>
-            GetCollectionByOriginalSharedCollectionIdResponse(result = Seq.empty)
-        }
-      }
+      result.run.flatten
+    }
 
   def getCollectionByPosition: Service[GetCollectionByPositionRequest, GetCollectionByPositionResponse] =
-    request =>
-      tryToFuture {
-        Try {
-          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
-            NineCardsContentProvider.ContentUriCollection,
-            AllFields.toArray,
-            s"$Position = ?",
-            Array(request.position.toString),
-            ""))
+    request => {
+      val result = for {
+        collection <- optionT(tryToFuture(getCollection(
+          selection = s"$Position = ?",
+          selectionArgs = Array(request.position.toString))))
+        getCardByCollectionResponse <- optionT(getCardByCollection(GetCardByCollectionRequest(collection.id)) map { item => Option(item) })
+      } yield GetCollectionByPositionResponse(buildCollectionWithCards(Option(collection), getCardByCollectionResponse.result))
 
-          GetCollectionByPositionResponse(result = getListFromCursor(cursor, collectionEntityFromCursor))
-
-        } recover {
-          case e: Exception =>
-            GetCollectionByPositionResponse(result = Seq.empty)
-        }
-      }
+      result.run.flatten
+    }
 
   def updateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse] =
     request =>
       tryToFuture {
         Try {
           val contentValues = new ContentValues()
-          contentValues.put(Position, request.entity.data.position.asInstanceOf[java.lang.Integer])
-          contentValues.put(Name, request.entity.data.name)
-          contentValues.put(Type, request.entity.data.`type`)
-          contentValues.put(Icon, request.entity.data.icon)
-          contentValues.put(ThemedColorIndex, request.entity.data.themedColorIndex.asInstanceOf[java.lang.Integer])
-          contentValues.put(AppsCategory, request.entity.data.appsCategory)
-          contentValues.put(Constrains, request.entity.data.constrains)
-          contentValues.put(OriginalSharedCollectionId, request.entity.data.originalSharedCollectionId)
-          contentValues.put(SharedCollectionId, request.entity.data.sharedCollectionId)
-          contentValues.put(SharedCollectionSubscribed, request.entity.data.sharedCollectionSubscribed)
+          contentValues.put(Position, request.collection.position.asInstanceOf[java.lang.Integer])
+          contentValues.put(Name, request.collection.name)
+          contentValues.put(Type, request.collection.`type`)
+          contentValues.put(Icon, request.collection.icon)
+          contentValues.put(ThemedColorIndex, request.collection.themedColorIndex.asInstanceOf[java.lang.Integer])
+          contentValues.put(AppsCategory, request.collection.appsCategory getOrElse "")
+          contentValues.put(Constrains, request.collection.constrains getOrElse "")
+          contentValues.put(OriginalSharedCollectionId, request.collection.originalSharedCollectionId getOrElse "")
+          contentValues.put(SharedCollectionId, request.collection.sharedCollectionId getOrElse "")
+          contentValues.put(SharedCollectionSubscribed, request.collection.sharedCollectionSubscribed)
 
           appContextProvider.get.getContentResolver.update(
-            withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.entity.id.toString),
+            withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.collection.id.toString),
             contentValues,
             "",
             Array.empty)
@@ -157,4 +133,19 @@ trait CollectionRepositoryClient extends DBUtils {
             UpdateCollectionResponse(success = false)
         }
       }
+
+  private def getCollection(
+      uri: Uri = NineCardsContentProvider.ContentUriCollection,
+      projection: Array[String] = CollectionEntity.AllFields,
+      selection: String = "",
+      selectionArgs: Array[String] = Array.empty[String],
+      sortOrder: String = "") =
+    Try {
+      val cursor = Option(appContextProvider.get.getContentResolver.query(uri, projection, selection, selectionArgs, sortOrder))
+      getEntityFromCursor(cursor, collectionEntityFromCursor) map toCollection
+    }
+
+  private def buildCollectionWithCards(collection: Option[Collection], cards: Seq[Card]) = collection map {
+    _.copy(cards = cards)
+  }
 }
