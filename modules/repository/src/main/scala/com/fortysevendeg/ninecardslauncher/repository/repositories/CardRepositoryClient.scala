@@ -40,15 +40,11 @@ trait CardRepositoryClient extends DBUtils {
             NineCardsContentProvider.ContentUriCard,
             contentValues)
 
-          AddCardResponse(
-            success = true,
-            card = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
+          AddCardResponse(card = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
 
         } recover {
           case e: Exception =>
-            AddCardResponse(
-              success = false,
-              card = None)
+            AddCardResponse(card = None)
         }
       }
 

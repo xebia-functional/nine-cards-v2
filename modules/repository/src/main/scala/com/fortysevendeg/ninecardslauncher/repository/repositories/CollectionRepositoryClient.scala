@@ -43,15 +43,11 @@ trait CollectionRepositoryClient
             NineCardsContentProvider.ContentUriCollection,
             contentValues)
 
-          AddCollectionResponse(
-            success = true,
-            collection = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
+          AddCollectionResponse(collection = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
 
         } recover {
           case e: Exception =>
-            AddCollectionResponse(
-              success = false,
-              collection = None)
+            AddCollectionResponse(collection = None)
         }
       }
 

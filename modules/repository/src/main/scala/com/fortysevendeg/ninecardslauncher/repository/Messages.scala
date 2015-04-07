@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection}
 
 case class AddCardRequest(collectionId: Int, data: Card)
 
-case class AddCardResponse(success: Boolean, card: Option[Card])
+case class AddCardResponse(card: Option[Card])
 
 case class DeleteCardRequest(card: Card)
 
@@ -24,7 +24,7 @@ case class UpdateCardResponse(success: Boolean)
 
 case class AddCollectionRequest(data: Collection)
 
-case class AddCollectionResponse(success: Boolean, collection: Option[Collection])
+case class AddCollectionResponse(collection: Option[Collection])
 
 case class DeleteCollectionRequest(collection: Collection)
 
