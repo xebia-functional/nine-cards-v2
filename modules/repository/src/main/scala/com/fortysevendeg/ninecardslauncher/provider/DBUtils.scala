@@ -2,27 +2,30 @@ package com.fortysevendeg.ninecardslauncher.provider
 
 import android.content.Context
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
+import com.fortysevendeg.macroid.extras.AppContextProvider
+import NineCardsSqlHelper._
 
 import scala.annotation.tailrec
 
 trait DBUtils {
 
-  def emptyAllTables(context: Context) = {
-    val resolver = context.getContentResolver
-    resolver.delete(NineCardsContentProvider.ContentUriCacheCategory, "", Array.empty)
-    resolver.delete(NineCardsContentProvider.ContentUriCard, "", Array.empty)
-    resolver.delete(NineCardsContentProvider.ContentUriCollection, "", Array.empty)
-    resolver.delete(NineCardsContentProvider.ContentUriGeoInfo, "", Array.empty)
+  self: AppContextProvider =>
+
+  def emptyAllTables = {
+    val resolver = appContextProvider.get.getContentResolver
+    resolver.delete(ContentUriCacheCategory, "", Array.empty)
+    resolver.delete(ContentUriCard, "", Array.empty)
+    resolver.delete(ContentUriCollection, "", Array.empty)
+    resolver.delete(ContentUriGeoInfo, "", Array.empty)
   }
 
-  def execAllVersionsDB(context: Context) =
-    for (i <- 1 to NineCardsSqlHelper.DatabaseVersion) execVersion(context, i)
+  def execAllVersionsDB() = (1 to DatabaseVersion) foreach { version => execVersion(version) }
 
-  def execVersionsDB(context: Context, oldVersion: Int, newVersion: Int) {
-    for (i <- oldVersion + 1 to newVersion) execVersion(context, i)
-  }
+  def execVersionsDB(oldVersion: Int, newVersion: Int) =
+    (oldVersion + 1 to newVersion) foreach { version => execVersion(version) }
 
-  def execVersion(context: Context, version: Int) {}
+  def execVersion(version: Int) = {}
 
   def getEntityFromCursor[T](cursor: Option[Cursor], conversionFunction: Cursor => T): Option[T] = cursor match {
     case Some(cursorObject) if cursorObject.moveToFirst() =>
