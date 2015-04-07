@@ -12,14 +12,14 @@ class NineCardsContentProvider extends ContentProvider {
   lazy val database: Option[SQLiteDatabase] = Option[SQLiteDatabase](nineCardsSqlHelper.getWritableDatabase)
 
   private def getUriInfo(uri: Uri): (String, MimeType) = uriMatcher.`match`(uri) match {
-    case code if code == CodeCacheCategoryAllItems => (CacheCategoryEntity.Table, MimeTypeAllItems)
-    case code if code == CodeCacheCategorySingleItem => (CacheCategoryEntity.Table, MimeTypeSingleItem)
-    case code if code == CodeCardAllItems => (CardEntity.Table, MimeTypeAllItems)
-    case code if code == CodeCardSingleItem => (CardEntity.Table, MimeTypeSingleItem)
-    case code if code == CodeCollectionAllItems => (CollectionEntity.Table, MimeTypeAllItems)
-    case code if code == CodeCollectionSingleItem => (CollectionEntity.Table, MimeTypeSingleItem)
-    case code if code == CodeGeoInfoAllItems => (GeoInfoEntity.Table, MimeTypeAllItems)
-    case code if code == CodeGeoInfoSingleItem => (GeoInfoEntity.Table, MimeTypeSingleItem)
+    case CodeCacheCategoryAllItems => (CacheCategoryEntity.Table, MimeTypeAllItems)
+    case CodeCacheCategorySingleItem => (CacheCategoryEntity.Table, MimeTypeSingleItem)
+    case CodeCardAllItems => (CardEntity.Table, MimeTypeAllItems)
+    case CodeCardSingleItem => (CardEntity.Table, MimeTypeSingleItem)
+    case CodeCollectionAllItems => (CollectionEntity.Table, MimeTypeAllItems)
+    case CodeCollectionSingleItem => (CollectionEntity.Table, MimeTypeSingleItem)
+    case CodeGeoInfoAllItems => (GeoInfoEntity.Table, MimeTypeAllItems)
+    case CodeGeoInfoSingleItem => (GeoInfoEntity.Table, MimeTypeSingleItem)
     case _ => throw new IllegalArgumentException(InvalidUri + uri)
   }
 
