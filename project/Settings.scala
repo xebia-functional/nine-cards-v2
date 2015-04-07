@@ -1,4 +1,5 @@
 import Libraries.android._
+import Libraries.graphics._
 import Libraries.macroid._
 import Libraries.playServices._
 import android.Keys._
@@ -6,10 +7,6 @@ import sbt.Keys._
 import sbt._
 
 object Settings {
-
-  lazy val repositoryDependencies = Seq(
-    aar(macroidRoot),
-    aar(macroidExtras))
 
   // Commons
 
@@ -19,11 +16,8 @@ object Settings {
 
   lazy val commonDependencies = Seq(
     aar(androidSupportv4),
-    aar(androidAppCompat),
     aar(androidRecyclerview),
     aar(androidCardView),
-    aar(macroidRoot),
-    aar(macroidExtras),
     aar(playServicesBase),
     glide,
     compilerPlugin(Libraries.wartRemover))
