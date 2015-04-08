@@ -4,6 +4,7 @@ object Libraries {
 
   def onCompile(dep: ModuleID): ModuleID = dep % "compile"
   def onTest(dep: ModuleID): ModuleID = dep % "test"
+  def intransitive(dep: ModuleID): ModuleID = dep intransitive()
 
   //Plugins:
   lazy val wartRemover = "org.brianmckenna" %% "wartremover" % Versions.wartremoverV
@@ -27,7 +28,7 @@ object Libraries {
   object macroid {
 
     def macroid(module: String = "") =
-      "org.macroid" %% s"macroid${if(!module.isEmpty) s"-$module" else ""}" % Versions.macroidV
+      "org.macroid" %% s"macroid${if (!module.isEmpty) s"-$module" else ""}" % Versions.macroidV
 
     lazy val macroidRoot = macroid()
     lazy val macroidExtras = "com.fortysevendeg" %% "macroid-extras" % Versions.macroidExtrasV
@@ -50,7 +51,7 @@ object Libraries {
 
   object graphics {
     lazy val glide = "com.github.bumptech.glide" % "glide" % Versions.glideV
-//    lazy val picasso = "com.squareup.picasso" % "picasso" % Versions.picassoV
+    //    lazy val picasso = "com.squareup.picasso" % "picasso" % Versions.picassoV
   }
 
   object akka {

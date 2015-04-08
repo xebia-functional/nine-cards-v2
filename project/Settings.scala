@@ -1,5 +1,6 @@
 import Libraries.android._
 import Libraries.graphics._
+import Libraries.macroid._
 import Libraries.playServices._
 import android.Keys._
 import sbt.Keys._
@@ -15,6 +16,9 @@ object Settings {
 
   lazy val commonDependencies = Seq(
     aar(androidSupportv4),
+    aar(androidAppCompat),
+    aar(macroidRoot),
+    aar(macroidExtras),
     aar(androidRecyclerview),
     aar(androidCardView),
     aar(playServicesBase),
