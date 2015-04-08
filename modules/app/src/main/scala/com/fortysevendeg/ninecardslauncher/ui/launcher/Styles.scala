@@ -39,15 +39,15 @@ trait Styles {
       llLayoutMargin(margin, margin, margin, margin) +
       llGravity(Gravity.CENTER_VERTICAL) +
       vBackground(R.drawable.search) +
-      vBackgroundColorFilter(persistentServices.getSearchBackgroundColor()) +
+      vBackgroundColorFilter(persistentServices.getSearchBackgroundColor) +
       vPaddings(paddingLeftRight = resGetDimensionPixelSize(R.dimen.padding_large), paddingTopBottom = 0)
   }
 
   def burgerButtonStyle(implicit appContext: AppContext): Tweak[TintableImageView] =
     vWrapContent +
       ivSrc(R.drawable.icon_menu_search) +
-      tivDefaultColor(persistentServices.getSearchIconsColor()) +
-      tivPressedColor(persistentServices.getSearchPressedColor())
+      tivDefaultColor(persistentServices.getSearchIconsColor) +
+      tivPressedColor(persistentServices.getSearchPressedColor)
 
   def googleButtonStyle(implicit appContext: AppContext): Tweak[TintableImageView] =
     llWrapWeightHorizontal +
@@ -55,14 +55,14 @@ trait Styles {
       ivScaleType(ScaleType.FIT_START) +
       vPaddings(paddingLeftRight = resGetDimensionPixelSize(R.dimen.padding_large),
         paddingTopBottom = resGetDimensionPixelSize(R.dimen.padding_default)) +
-      tivDefaultColor(persistentServices.getSearchGoogleColor()) +
-      tivPressedColor(persistentServices.getSearchPressedColor())
+      tivDefaultColor(persistentServices.getSearchGoogleColor) +
+      tivPressedColor(persistentServices.getSearchPressedColor)
 
   def micButtonStyle(implicit appContext: AppContext): Tweak[TintableImageView] =
     vWrapContent +
       ivSrc(R.drawable.icon_mic_search) +
-      tivDefaultColor(persistentServices.getSearchIconsColor()) +
-      tivPressedColor(persistentServices.getSearchPressedColor())
+      tivDefaultColor(persistentServices.getSearchIconsColor) +
+      tivPressedColor(persistentServices.getSearchPressedColor)
 
   def drawerBarContentStyle(implicit appContext: AppContext): Tweak[LinearLayout] = {
     val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
@@ -85,14 +85,14 @@ trait Styles {
         vStateListAnimator(R.anim.elevation_transition) +
           vPaddings(elevation) +
           vCircleOutlineProvider(elevation)
-      } getOrElse tivPressedColor(persistentServices.getAppDrawerPressedColor()))
+      } getOrElse tivPressedColor(persistentServices.getAppDrawerPressedColor))
   }
 
   def appDrawerAppStyle(implicit appContext: AppContext): Tweak[TintableImageView] = {
     val size = resGetDimensionPixelSize(R.dimen.size_icon_app_drawer)
     lp[ViewGroup](size, size) +
       flLayoutGravity(Gravity.CENTER) +
-      tivPressedColor(persistentServices.getAppDrawerPressedColor()) +
+      tivPressedColor(persistentServices.getAppDrawerPressedColor) +
       vTag(R.id.`type`, AppDrawer.app)
   }
 
@@ -105,9 +105,8 @@ trait Styles {
   }
 
   def paginationItemStyle(implicit appContext: AppContext) = {
-    val size = resGetDimensionPixelSize(R.dimen.size_pager_collection)
     val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)
-    lp[LinearLayout](size, size) +
+    vWrapContent +
       llLayoutMargin(margin, margin, margin, margin) +
       ivSrc(R.drawable.workspaces_pager)
   }

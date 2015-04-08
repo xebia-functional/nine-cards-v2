@@ -13,6 +13,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{Ui, AppContext, Contexts, Transformer}
+import Snails._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -64,7 +65,8 @@ class LauncherActivity
   }
 
   def reloadPager(currentPage: Int) = Transformer {
-    case i: ImageView => i <~ vActivated(Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString))
+    case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true) <~~ pagerAppear
+    case i: ImageView => i <~ vActivated(false)
   }
 
 }

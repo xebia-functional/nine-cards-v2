@@ -12,7 +12,7 @@ case class Collection(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Boolean,
-  cards: Seq[Card])
+  cards: Seq[Card]) extends Serializable
 
 case class Card(
   id: Int,
@@ -25,4 +25,4 @@ case class Card(
   imagePath: String,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
-  notification: Option[String] = None)
+  notification: Option[String] = None) extends Serializable
