@@ -1,9 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.repository
 
-import com.fortysevendeg.ninecardslauncher.provider.{CardEntity, CollectionEntity}
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.provider.{CacheCategoryEntity, GeoInfoEntity, CardEntity, CollectionEntity}
+import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, GeoInfo, Card, Collection}
 
 object Conversions {
+
+  def toCacheCategory(cacheCategory: CacheCategoryEntity) = CacheCategory(
+    id = cacheCategory.id,
+    packageName = cacheCategory.data.packageName,
+    category = cacheCategory.data.category,
+    starRating = cacheCategory.data.starRating,
+    numDownloads = cacheCategory.data.numDownloads,
+    ratingsCount = cacheCategory.data.ratingsCount,
+    commentCount = cacheCategory.data.commentCount)
 
   def toCard(cardEntity: CardEntity) = Card(
     id = cardEntity.id,
@@ -31,4 +40,13 @@ object Conversions {
     sharedCollectionId = Option[String](collectionEntity.data.sharedCollectionId),
     sharedCollectionSubscribed = collectionEntity.data.sharedCollectionSubscribed,
     cards = Seq.empty[Card])
+
+  def toGeoInfo(geoInfoEntity: GeoInfoEntity) = GeoInfo(
+    id = geoInfoEntity.id,
+    constrain = geoInfoEntity.data.constrain,
+    occurrence = geoInfoEntity.data.occurrence,
+    wifi = geoInfoEntity.data.wifi,
+    latitude = geoInfoEntity.data.latitude,
+    longitude = geoInfoEntity.data.longitude,
+    system = geoInfoEntity.data.system)
 }
