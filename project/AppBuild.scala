@@ -2,6 +2,7 @@ import sbt._
 import sbt.Keys._
 import android.Keys._
 import Settings._
+import ReplacePropertiesGenerator._
 import Libraries.json._
 import Libraries.net._
 import Libraries.test._
@@ -22,20 +23,22 @@ object AppBuild extends Build {
         packageRelease <<= packageRelease in Android in app,
         packageDebug <<= packageDebug in Android in app,
         install <<= install in Android in app,
-        run <<= run in Android in app,
+        run <<= (run in Android in app).dependsOn(setDebugTask(true)),
         packageName in Android := "com.fortysevendeg.ninecardslauncher"
       )
       .aggregate(app, api, repository)
 
   lazy val app = Project(id = "app", base = file("modules/app"))
       .androidBuildWith(api, repository)
-      .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
-      .settings(apkbuildExcludes in Android ++= Seq(
+      .settings(
+        projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))),
+        apkbuildExcludes in Android ++= Seq(
           "META-INF/LICENSE",
           "META-INF/LICENSE.txt",
           "META-INF/NOTICE",
           "META-INF/NOTICE.txt",
-          "reference.conf"))
+          "reference.conf"),
+        packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask))
       .settings(appSettings: _*)
 
   val api = Project(id = "api", base = file("modules/api"))

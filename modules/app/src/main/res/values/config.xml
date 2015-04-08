@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="api_actor">http-spray-client</string>
+    <string name="api_base_url">${appsly.url}</string>
+    <string name="api_app_id">${appsly.appid}</string>
+    <string name="api_app_key">${appsly.appkey}</string>
+    <string name="api_localization">en-EN</string>
+</resources>
