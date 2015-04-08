@@ -1,6 +1,31 @@
 package com.fortysevendeg.ninecardslauncher.repository
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, GeoInfo, Card, Collection}
+
+
+case class AddCacheCategoryRequest(data: CacheCategory)
+
+case class AddCacheCategoryResponse(cacheCategory: Option[CacheCategory])
+
+case class DeleteCacheCategoryRequest(cacheCategory: CacheCategory)
+
+case class DeleteCacheCategoryResponse(success: Boolean)
+
+case class DeleteCacheCategoryByPackageRequest(`package`: String)
+
+case class DeleteCacheCategoryByPackageResponse(success: Boolean)
+
+case class GetCacheCategoryByIdRequest(id: Int)
+
+case class GetCacheCategoryByIdResponse(result: Option[CacheCategory])
+
+case class GetCacheCategoryByPackageRequest(`package`: String)
+
+case class GetCacheCategoryByPackageResponse(result: Option[CacheCategory])
+
+case class UpdateCacheCategoryRequest(cacheCategory: CacheCategory)
+
+case class UpdateCacheCategoryResponse(success: Boolean)
 
 case class AddCardRequest(collectionId: Int, data: Card)
 
@@ -45,3 +70,23 @@ case class GetCollectionByOriginalSharedCollectionIdResponse(result: Option[Coll
 case class UpdateCollectionRequest(collection: Collection)
 
 case class UpdateCollectionResponse(success: Boolean)
+
+case class AddGeoInfoRequest(data: GeoInfo)
+
+case class AddGeoInfoResponse(geoInfo: Option[GeoInfo])
+
+case class DeleteGeoInfoRequest(geoInfo: GeoInfo)
+
+case class DeleteGeoInfoResponse(success: Boolean)
+
+case class GetGeoInfoByIdRequest(id: Int)
+
+case class GetGeoInfoByIdResponse(result: Option[GeoInfo])
+
+case class GetGeoInfoByConstrainRequest(constrain: String)
+
+case class GetGeoInfoByConstrainResponse(result: Option[GeoInfo])
+
+case class UpdateGeoInfoRequest(geoInfo: GeoInfo)
+
+case class UpdateGeoInfoResponse(success: Boolean)
