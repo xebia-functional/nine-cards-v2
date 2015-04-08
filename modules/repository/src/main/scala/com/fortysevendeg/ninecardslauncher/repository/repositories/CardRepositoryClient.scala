@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri._
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
@@ -16,7 +16,7 @@ import scala.util.Try
 
 trait CardRepositoryClient extends DBUtils {
 
-  self: AppContextProvider =>
+  self: ContentResolverProvider =>
 
   def addCard: Service[AddCardRequest, AddCardResponse] =
     request =>
@@ -36,7 +36,7 @@ trait CardRepositoryClient extends DBUtils {
           contentValues.put(NumDownloads, request.data.numDownloads getOrElse "")
           contentValues.put(Notification, request.data.notification getOrElse "")
 
-          val uri = appContextProvider.get.getContentResolver.insert(
+          val uri = contentResolver.insert(
             NineCardsContentProvider.ContentUriCard,
             contentValues)
 
@@ -52,7 +52,7 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          appContextProvider.get.getContentResolver.delete(
+          contentResolver.delete(
             withAppendedPath(NineCardsContentProvider.ContentUriCard, request.card.id.toString),
             "",
             Array.empty)
@@ -69,7 +69,7 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
+          val cursor: Option[Cursor] = Option(contentResolver.query(
             withAppendedPath(NineCardsContentProvider.ContentUriCard, request.id.toString),
             Array.empty,
             "",
@@ -89,7 +89,7 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
+          val cursor: Option[Cursor] = Option(contentResolver.query(
             NineCardsContentProvider.ContentUriCard,
             AllFields,
             s"$CollectionId = ?",
@@ -120,7 +120,7 @@ trait CardRepositoryClient extends DBUtils {
           contentValues.put(NumDownloads, request.card.numDownloads getOrElse "")
           contentValues.put(Notification, request.card.notification getOrElse "")
 
-          appContextProvider.get.getContentResolver.update(
+          contentResolver.update(
             withAppendedPath(NineCardsContentProvider.ContentUriCard, request.card.id.toString),
             contentValues,
             "",

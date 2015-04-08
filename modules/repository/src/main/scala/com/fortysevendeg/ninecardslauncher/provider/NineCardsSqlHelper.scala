@@ -1,12 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.provider
 
-import android.content.Context
+import android.content.{ContentResolver, Context}
 import android.database.sqlite.{SQLiteDatabase, SQLiteOpenHelper}
 import android.os.Handler
+import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 
 class NineCardsSqlHelper(context: Context)
     extends SQLiteOpenHelper(context, NineCardsSqlHelper.DatabaseName, null, NineCardsSqlHelper.DatabaseVersion)
-    with DBUtils {
+    with DBUtils
+    with ContentResolverProvider {
+
+  override implicit val contentResolver: ContentResolver = context.getContentResolver
 
   override def onCreate(db: SQLiteDatabase) = {
 
@@ -57,7 +61,7 @@ class NineCardsSqlHelper(context: Context)
 
     new Handler().postDelayed(
       new Runnable() {
-        override def run() = execAllVersionsDB(context)
+        override def run() = execAllVersionsDB()
       }, 0)
   }
   override def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = {
@@ -75,7 +79,7 @@ class NineCardsSqlHelper(context: Context)
 
     new Handler().post(
       new Runnable() {
-        override def run() = execVersionsDB(context, oldVersion, newVersion)
+        override def run() = execVersionsDB(oldVersion, newVersion)
       })
   }
 }
