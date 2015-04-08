@@ -1,5 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.repository.model
 
+case class CacheCategory(
+    id: Int,
+    packageName: String,
+    category: String,
+    starRating: Double,
+    numDownloads: String,
+    ratingsCount: Int,
+    commentCount: Int)
+
 case class Collection(
     id: Int,
     position: Int,
@@ -26,3 +35,12 @@ case class Card(
     starRating: Option[Double] = None,
     numDownloads: Option[String] = None,
     notification: Option[String] = None)
+
+case class GeoInfo(
+    id: Int,
+    constrain: String,
+    occurrence: String,
+    wifi: String,
+    latitude: Double,
+    longitude: Double,
+    system: Boolean)
