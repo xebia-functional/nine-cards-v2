@@ -45,38 +45,14 @@ class CollectionsDetailsActivity
       appsResponse <- appManagerServices.getApps(GetAppsRequest())
       GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest(appsResponse.apps))
     } yield {
-      val pageChangeListener = new OnPageChangeListener {
-        var lastSelected = -1
-
-        override def onPageScrollStateChanged(state: Int): Unit = {}
-
-        override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit = {
-          val selectedCollection: Collection = collections(position)
-          val nextCollection: Option[Collection] = collections.lift(position + 1)
-          nextCollection map {
-            next =>
-              val startColor = resGetColor(persistentServices.getIndexColor(selectedCollection.themedColorIndex))
-              val endColor = resGetColor(persistentServices.getIndexColor(next.themedColorIndex))
-              val color = interpolateColors(positionOffset, startColor, endColor)
-              runUi(updateToolbarColor(color))
-          }
-        }
-
-        override def onPageSelected(position: Int): Unit = {
-          val fromLeft = position < lastSelected
-          lastSelected = position
-          runUi(updateCollection(collections(position), fromLeft))
-        }
-      }
       runUi(
         (viewPager <~ vpAdapter(new CollectionsPagerAdapter(getSupportFragmentManager, collections))) ~
           (tabs <~
             stlViewPager(viewPager) <~
-            stlOnPageChangeListener(pageChangeListener)) ~
+            stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
             (viewPager map (vp => updateCollection(collections(vp.getCurrentItem), false, false)) getOrElse Ui.nop)
       )
     }
-
   }
 
   private def updateCollection(collection: Collection, fromLeft: Boolean, anim: Boolean = true): Ui[_] = resGetDrawableIdentifier(collection.icon + "_detail") map {
@@ -103,6 +79,39 @@ class CollectionsDetailsActivity
       finish()
       true
     case _ => super.onOptionsItemSelected(item)
+  }
+
+}
+
+class OnPageChangeCollectionsListener(
+  collections: Seq[Collection],
+  updateToolbarColor: Int => Ui[_],
+  updateCollection: (Collection, Boolean, Boolean) => Ui[_])(implicit appContext: AppContext)
+  extends OnPageChangeListener
+  with ComponentRegistryImpl {
+
+  override val appContextProvider: AppContext = appContext
+
+  var lastSelected = -1
+
+  override def onPageScrollStateChanged(state: Int): Unit = {}
+
+  override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit = {
+    val selectedCollection: Collection = collections(position)
+    val nextCollection: Option[Collection] = collections.lift(position + 1)
+    nextCollection map {
+      next =>
+        val startColor = resGetColor(persistentServices.getIndexColor(selectedCollection.themedColorIndex))
+        val endColor = resGetColor(persistentServices.getIndexColor(next.themedColorIndex))
+        val color = interpolateColors(positionOffset, startColor, endColor)
+        runUi(updateToolbarColor(color))
+    }
+  }
+
+  override def onPageSelected(position: Int): Unit = {
+    val fromLeft = position < lastSelected
+    lastSelected = position
+    runUi(updateCollection(collections(position), fromLeft, true))
   }
 
 }

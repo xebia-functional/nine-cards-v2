@@ -16,22 +16,21 @@
   -->
 
 <menu
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:scaladays="http://schemas.android.com/apk/res-auto">
+        xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
             android:id="@+id/action_edit"
             android:title="@string/edit"
-            scaladays:showAsAction="never"/>
+            android:showAsAction="never"/>
 
     <item
             android:id="@+id/action_make_public"
             android:title="@string/make_public"
-            scaladays:showAsAction="never"/>
+            android:showAsAction="never"/>
 
     <item
             android:id="@+id/action_share"
             android:title="@string/share"
-            scaladays:showAsAction="never"/>
+            android:showAsAction="never"/>
 
 </menu>

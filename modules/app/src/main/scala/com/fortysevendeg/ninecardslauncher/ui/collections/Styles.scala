@@ -1,5 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.ui.collections
 
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable._
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.{CardView, RecyclerView, Toolbar}
 import android.text.TextUtils.TruncateAt
@@ -7,6 +10,7 @@ import android.view.{View, Gravity, ViewGroup}
 import android.widget.ImageView.ScaleType
 import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
+import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -15,6 +19,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
+import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -28,7 +33,7 @@ trait Styles {
   def rootStyle(implicit appContext: AppContext): Tweak[FrameLayout] =
     vMatchParent +
       vFitsSystemWindows(true) +
-      vBackgroundColor(persistentServices.getCollectionDetailBackgroundColor())
+      vBackgroundColor(persistentServices.getCollectionDetailBackgroundColor)
 
   def toolbarStyle(implicit appContext: AppContext): Tweak[Toolbar] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details))
@@ -54,8 +59,8 @@ trait Styles {
   def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
     vMatchWidth +
       flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_tabs_collection_details)) +
-      stlDefaultTextColor(persistentServices.getCollectionDetailTextTabDefaultColor()) +
-      stlSelectedTextColor(persistentServices.getCollectionDetailTextTabSelectedColor())
+      stlDefaultTextColor(persistentServices.getCollectionDetailTextTabDefaultColor) +
+      stlSelectedTextColor(persistentServices.getCollectionDetailTextTabSelectedColor)
 
   def viewPagerStyle(implicit appContext: AppContext): Tweak[ViewPager] =
     vMatchParent +
@@ -78,7 +83,23 @@ trait CollectionAdapterStyles {
 
   def rootStyle(heightCard: Int)(implicit appContext: AppContext): Tweak[CardView] =
     vContentSizeMatchWidth(heightCard) +
-      cvCardBackgroundColor(persistentServices.getCollectionDetailCardBackgroundColor())
+      cvCardBackgroundColor(persistentServices.getCollectionDetailCardBackgroundColor) +
+      flForeground(createBackground)
+
+  private def createBackground(implicit appContext: AppContext): Drawable = {
+    val color = persistentServices.getCollectionDetailCardBackgroundPressedColor
+    Lollipop ifSupportedThen {
+      new RippleDrawable(
+        new ColorStateList(Array(Array()), Array(color)),
+        null,
+        new ColorDrawable(setAlpha(Color.BLACK, 0.1f)))
+    } getOrElse {
+      val states = new StateListDrawable()
+      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(setAlpha(color, 0.1f)))
+      states.addState(Array.emptyIntArray, new ColorDrawable(Color.TRANSPARENT))
+      states
+    }
+  }
 
   def contentStyle(implicit appContext: AppContext): Tweak[LinearLayout] =
     vMatchParent +
@@ -94,7 +115,7 @@ trait CollectionAdapterStyles {
   def nameStyle(implicit appContext: AppContext): Tweak[TextView] =
     vMatchWidth +
       vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_default)) +
-      tvColor(persistentServices.getCollectionDetailTextCardColor()) +
+      tvColor(persistentServices.getCollectionDetailTextCardColor) +
       tvLines(2) +
       tvSizeResource(R.dimen.text_default) +
       tvEllipsize(TruncateAt.END)

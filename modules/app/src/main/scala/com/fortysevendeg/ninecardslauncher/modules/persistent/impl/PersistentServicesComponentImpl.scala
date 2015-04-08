@@ -18,52 +18,57 @@ trait PersistentServicesComponentImpl
 
     val theme = ThemeLight
 
-    override def getSearchBackgroundColor(): Int = theme match {
+    override def getSearchBackgroundColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.search_background_tint_dark)
       case _ => resGetColor(R.color.search_background_tint_light)
     }
 
-    override def getSearchPressedColor(): Int = theme match {
+    override def getSearchPressedColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.search_press_tint_dark)
       case _ => resGetColor(R.color.search_press_tint_light)
     }
 
-    override def getSearchGoogleColor(): Int = theme match {
+    override def getSearchGoogleColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.search_google_tint_dark)
       case _ => resGetColor(R.color.search_google_tint_light)
     }
 
-    override def getSearchIconsColor(): Int = theme match {
+    override def getSearchIconsColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.search_icons_tint_dark)
       case _ => resGetColor(R.color.search_icons_tint_light)
     }
 
-    override def getAppDrawerPressedColor(): Int = theme match {
+    override def getAppDrawerPressedColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.app_drawer_press_tint_dark)
       case _ => resGetColor(R.color.app_drawer_press_tint_light)
     }
 
-    override def getCollectionDetailBackgroundColor(): Int = theme match {
+    override def getCollectionDetailBackgroundColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.collection_detail_background_dark)
       case _ => resGetColor(R.color.collection_detail_background_light)
     }
 
-    override def getCollectionDetailTextCardColor(): Int = theme match {
+    override def getCollectionDetailTextCardColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.collection_detail_text_card_dark)
       case _ => resGetColor(R.color.collection_detail_text_card_light)
     }
 
-    override def getCollectionDetailCardBackgroundColor(): Int = theme match {
+    override def getCollectionDetailCardBackgroundColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.collection_detail_background_card_dark)
       case _ => resGetColor(R.color.collection_detail_background_card_light)
     }
 
-    override def getCollectionDetailTextTabSelectedColor(): Int = theme match {
+    override def getCollectionDetailCardBackgroundPressedColor: Int = theme match {
+      case `ThemeDark` => resGetColor(R.color.collection_detail_background_card_pressed_dark)
+      case _ => resGetColor(R.color.collection_detail_background_card_pressed_light)
+    }
+
+    override def getCollectionDetailTextTabSelectedColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.collection_detail_tab_color_selected_dark)
       case _ => resGetColor(R.color.collection_detail_tab_color_selected_light)
     }
 
-    override def getCollectionDetailTextTabDefaultColor(): Int = theme match {
+    override def getCollectionDetailTextTabDefaultColor: Int = theme match {
       case `ThemeDark` => resGetColor(R.color.collection_detail_tab_color_default_dark)
       case _ => resGetColor(R.color.collection_detail_tab_color_default_light)
     }

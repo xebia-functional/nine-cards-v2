@@ -39,7 +39,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(
 
   var lastScrollTo: Int = 0
 
-  var defaultTextColor: Int = ColorsUtils.setAlpha(Color.WHITE, 0x50)
+  var defaultTextColor: Int = ColorsUtils.setAlpha(Color.WHITE, 0.5f)
 
   var selectedTextColor: Int = Color.WHITE
 

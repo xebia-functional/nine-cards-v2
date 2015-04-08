@@ -27,7 +27,7 @@ object ColorsUtils {
     Color.HSVToColor(colorHsv)
   }
 
-  def setAlpha(color: Int, alpha: Byte): Int = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
+  def setAlpha(color: Int, alpha: Float): Int = Color.argb((255 * alpha).toInt, Color.red(color), Color.green(color), Color.blue(color))
 
   def interpolateColors(fraction: Float, startValue: Int, endValue: Int): Int = {
     val startInt: Int = startValue
