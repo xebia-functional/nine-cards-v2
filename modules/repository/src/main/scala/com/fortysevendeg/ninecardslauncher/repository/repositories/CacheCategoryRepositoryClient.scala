@@ -1,0 +1,143 @@
+package com.fortysevendeg.ninecardslauncher.repository.repositories
+
+import android.content.ContentValues
+import android.database.Cursor
+import android.net.Uri._
+import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
+import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
+import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
+import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.utils._
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Try
+
+trait CacheCategoryRepositoryClient extends DBUtils {
+
+  self: AppContextProvider =>
+
+  def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
+    request =>
+      tryToFuture {
+        Try {
+          val contentValues = new ContentValues()
+          contentValues.put(PackageName, request.data.packageName)
+          contentValues.put(Category, request.data.category)
+          contentValues.put(StarRating, request.data.starRating)
+          contentValues.put(NumDownloads, request.data.numDownloads)
+          contentValues.put(RatingsCount, request.data.ratingsCount.asInstanceOf[java.lang.Integer])
+          contentValues.put(CommentCount, request.data.commentCount.asInstanceOf[java.lang.Integer])
+
+          val uri = appContextProvider.get.getContentResolver.insert(
+            NineCardsContentProvider.ContentUriCacheCategory,
+            contentValues)
+
+          AddCacheCategoryResponse(cacheCategory = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
+
+        } recover {
+          case e: Exception =>
+            AddCacheCategoryResponse(cacheCategory = None)
+        }
+      }
+
+  def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
+    request =>
+      tryToFuture {
+        Try {
+          appContextProvider.get.getContentResolver.delete(
+            withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.cacheCategory.id.toString),
+            "",
+            Array.empty)
+
+          DeleteCacheCategoryResponse(success = true)
+
+        } recover {
+          case e: Exception =>
+            DeleteCacheCategoryResponse(success = false)
+        }
+      }
+
+
+  def deleteCacheByPackageCategory: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
+    request =>
+      tryToFuture {
+        Try {
+          appContextProvider.get.getContentResolver.delete(
+            NineCardsContentProvider.ContentUriCacheCategory,
+            s"$Package = ?",
+            Array(request.`package`))
+
+          DeleteCacheCategoryByPackageResponse(success = true)
+
+        } recover {
+          case e: Exception =>
+            DeleteCacheCategoryByPackageResponse(success = false)
+        }
+      }
+
+  def getCacheCategoryById: Service[GetCacheCategoryByIdRequest, GetCacheCategoryByIdResponse] =
+    request =>
+      tryToFuture {
+        Try {
+          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
+            withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.id.toString),
+            Array.empty,
+            "",
+            Array.empty,
+            ""))
+
+          GetCacheCategoryByIdResponse(result = getEntityFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
+
+        } recover {
+          case e: Exception =>
+            GetCacheCategoryByIdResponse(result = None)
+        }
+      }
+
+
+  def getCacheCategoryByPackage: Service[GetCacheCategoryByPackageRequest, GetCacheCategoryByPackageResponse] =
+    request =>
+      tryToFuture {
+        Try {
+          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
+            NineCardsContentProvider.ContentUriCacheCategory,
+            AllFields,
+            s"$Package = ?",
+            Array(request.`package`),
+            ""))
+
+          GetCacheCategoryByPackageResponse(result = getEntityFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
+
+        } recover {
+          case e: Exception =>
+            GetCacheCategoryByPackageResponse(result = None)
+        }
+      }
+
+  def updateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
+    request =>
+      tryToFuture {
+        Try {
+          val contentValues = new ContentValues()
+          contentValues.put(PackageName, request.cacheCategory.packageName)
+          contentValues.put(Category, request.cacheCategory.category)
+          contentValues.put(StarRating, request.cacheCategory.starRating)
+          contentValues.put(NumDownloads, request.cacheCategory.numDownloads)
+          contentValues.put(RatingsCount, request.cacheCategory.ratingsCount.asInstanceOf[java.lang.Integer])
+          contentValues.put(CommentCount, request.cacheCategory.commentCount.asInstanceOf[java.lang.Integer])
+
+          appContextProvider.get.getContentResolver.update(
+            withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.cacheCategory.id.toString),
+            contentValues,
+            "",
+            Array.empty)
+
+          UpdateCacheCategoryResponse(success = true)
+
+        } recover {
+          case e: Exception =>
+            UpdateCacheCategoryResponse(success = false)
+        }
+      }
+}
