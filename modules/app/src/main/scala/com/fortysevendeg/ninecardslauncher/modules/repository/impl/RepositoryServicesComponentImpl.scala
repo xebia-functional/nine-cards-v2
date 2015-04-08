@@ -19,7 +19,7 @@ trait RepositoryServicesComponentImpl
     // TODO  We are using this implementation until the repository component will be finished
     var nCol = 0
 
-    def getNameCollection = nCol match {
+    def getNameCollection(col: Int) = col match {
       case 0 => "Contacts"
       case 1 => "Games"
       case 2 => "Home"
@@ -31,7 +31,7 @@ trait RepositoryServicesComponentImpl
       case _ => "Work"
     }
 
-    def getIconCollection = nCol match {
+    def getIconCollection(col: Int) = col match {
       case 0 => "icon_collection_contacts"
       case 1 => "icon_collection_games"
       case 2 => "icon_collection_home"
@@ -43,7 +43,7 @@ trait RepositoryServicesComponentImpl
       case _ => "icon_collection_work"
     }
 
-    def getTypeCollection = nCol match {
+    def getTypeCollection(col: Int) = col match {
       case 0 => "CONTACTS"
       case 1 => "APPS"
       case 2 => "HOME_MORNING"
@@ -56,20 +56,21 @@ trait RepositoryServicesComponentImpl
     }
 
     def createNewCollection(): Collection = {
+      val col = nCol % 9
       val c = Collection(
         id = nCol,
         position = nCol,
-        name = getNameCollection,
-        `type` = getTypeCollection,
-        icon = getIconCollection,
-        themedColorIndex = nCol,
+        name = getNameCollection(col),
+        `type` = getTypeCollection(col),
+        icon = getIconCollection(col),
+        themedColorIndex = col,
         sharedCollectionSubscribed = false,
         cards = Seq.empty)
       nCol = nCol + 1
       c
     }
 
-    def toCard(app: AppItem) = {
+    def toCard(app: AppItem) =
       Card(
         id = 1,
         position = 1,
@@ -79,14 +80,13 @@ trait RepositoryServicesComponentImpl
         intent = "",
         imagePath = app.imagePath
       )
-    }
 
     @tailrec
     private def getCollection(apps: Seq[AppItem], collections: Seq[Collection], newCollection: Collection): Seq[Collection] = {
       apps match {
         case Nil if newCollection.cards.length > 0 => collections :+ newCollection
         case Nil => collections
-        case h :: t if newCollection.cards.length > 8 => getCollection(t, collections :+ newCollection, createNewCollection())
+        case h :: t if newCollection.cards.length > 13 => getCollection(t, collections :+ newCollection, createNewCollection())
         case h :: t => {
           val col = newCollection.copy(cards = newCollection.cards :+ toCard(h))
           getCollection(t, collections, col)

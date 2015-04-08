@@ -142,8 +142,17 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     case v: View if Option(v.getTag(R.id.use_layer_hardware)).isDefined => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
   }
 
+  def goToItem(): Int = {
+    (displacement, currentItem) match {
+      case (disp, item) if disp < 0 && item >= data.size - 1 => 0
+      case (disp, item) if disp < 0 => currentItem + 1
+      case (disp, item) if currentItem <= 0 => data.length - 1
+      case _ => currentItem - 1
+    }
+  }
+
   def notifyPageChangedObservers() = {
-    onPageChangedObservers map (observer => observer(currentItem))
+    onPageChangedObservers map (observer => observer(goToItem()))
   }
 
   def addPageChangedObservers(f: PageChangedObserver) = {
@@ -213,7 +222,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   }
 
   private def animateViews(dest: Int, duration: Int) = {
-    resetAfterAnimationListener.swap = dest != 0
+    val swap = dest != 0
+    if (swap) notifyPageChangedObservers()
+    resetAfterAnimationListener.swap = swap
     mainAnimator.setFloatValues(displacement, dest)
     mainAnimator.setDuration(duration)
     mainAnimator.start()
@@ -238,7 +249,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       frontViewType = nextViewType
       nextViewType = previewViewType
       previewViewType = auxFront
-      currentItem = if (currentItem >= data.size - 1) 0 else currentItem + 1
+      currentItem = goToItem()
     }
   }
 
@@ -261,7 +272,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       frontViewType = previewViewType
       previewViewType = nextViewType
       nextViewType = auxFront
-      currentItem = if (currentItem <= 0) data.length - 1 else currentItem - 1
+      currentItem = goToItem()
     }
   }
 
@@ -271,7 +282,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   }
 
   private def reset(): Ui[_] = {
-    notifyPageChangedObservers()
     // TODO Shouldn't create views directly from here
 
     val auxFrontViewType = getItemViewType(data(currentItem), currentItem)

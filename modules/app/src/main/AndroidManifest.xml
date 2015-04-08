@@ -9,16 +9,22 @@
 
     <application
             android:label="@string/app_name"
-            android:theme="@style/AppTheme"
             android:icon="@drawable/ic_launcher"
             >
 
-        <activity android:name="com.fortysevendeg.ninecardslauncher.ui.launcher.LauncherActivity">
+        <activity
+                android:theme="@style/AppThemeWallpaper"
+                android:name="com.fortysevendeg.ninecardslauncher.ui.launcher.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+                android:theme="@style/AppTheme"
+                android:label=""
+                android:name="com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity" />
 
         <provider
                 android:authorities="com.fortysevendeg.ninecardslauncher"
