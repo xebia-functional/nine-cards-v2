@@ -1,9 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.ui.collections
 
+import android.animation.{ValueAnimator, ObjectAnimator}
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.ActionBarActivity
+import android.view.animation.DecelerateInterpolator
 import android.view.{Menu, MenuItem}
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -19,7 +21,7 @@ import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks.
 import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{AppContext, Contexts, Ui}
+import macroid.{Tweak, AppContext, Contexts, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -27,11 +29,16 @@ class CollectionsDetailsActivity
   extends ActionBarActivity
   with Contexts[FragmentActivity]
   with Layout
-  with ComponentRegistryImpl {
+  with ComponentRegistryImpl
+  with ScrolledListener {
 
   override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
 
   lazy val systemBarTintManager = new SystemBarTintManager(this)
+
+  lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+
+  lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
@@ -50,7 +57,7 @@ class CollectionsDetailsActivity
           (tabs <~
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
-            (viewPager map (vp => updateCollection(collections(vp.getCurrentItem), false, false)) getOrElse Ui.nop)
+          (viewPager map (vp => updateCollection(collections(vp.getCurrentItem), false, false)) getOrElse Ui.nop)
       )
     }
   }
@@ -81,12 +88,34 @@ class CollectionsDetailsActivity
     case _ => super.onOptionsItemSelected(item)
   }
 
+  override def scrollY(scroll: Int, dy: Int): Unit = {
+    runUi(scrolled(scroll))
+  }
+
+  private def scrolled(scroll: Int): Ui[_] = {
+    val move = math.min(scroll, spaceMove)
+    val ratio: Float = move.toFloat / spaceMove.toFloat
+    val newElevation = elevation + (if (ratio >= 1) 1 else 0)
+    val scale = 1 - (ratio / 2)
+    (tabs <~ vTranslationY(-move) <~ uiElevation(newElevation)) ~
+      (toolbar <~ vTranslationY(-move * 2) <~ uiElevation(newElevation)) ~
+      (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
+  }
+
+  private def uiElevation(elevation: Float) = Lollipop.ifSupportedThen {
+    vElevation(elevation)
+  }.getOrElse(Tweak.blank)
+
+}
+
+trait ScrolledListener {
+  def scrollY(scroll: Int, dy: Int)
 }
 
 class OnPageChangeCollectionsListener(
-  collections: Seq[Collection],
-  updateToolbarColor: Int => Ui[_],
-  updateCollection: (Collection, Boolean, Boolean) => Ui[_])(implicit appContext: AppContext)
+                                       collections: Seq[Collection],
+                                       updateToolbarColor: Int => Ui[_],
+                                       updateCollection: (Collection, Boolean, Boolean) => Ui[_])(implicit appContext: AppContext)
   extends OnPageChangeListener
   with ComponentRegistryImpl {
 

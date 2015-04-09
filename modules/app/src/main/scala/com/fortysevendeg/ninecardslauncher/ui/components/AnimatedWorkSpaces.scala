@@ -71,8 +71,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   mainAnimator.setPropertyName(if (horizontalGallery) "translationX" else "translationY")
   mainAnimator.addListener(resetAfterAnimationListener)
   mainAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-    override def onAnimationUpdate(arg0: ValueAnimator) {
-      displacement = arg0.getAnimatedValue.asInstanceOf[Float]
+    override def onAnimationUpdate(value: ValueAnimator) {
+      displacement = value.getAnimatedValue.asInstanceOf[Float]
       runUi(transformPanelCanvas())
     }
   })

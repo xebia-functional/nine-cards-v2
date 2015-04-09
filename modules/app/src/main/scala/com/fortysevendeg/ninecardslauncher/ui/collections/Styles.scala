@@ -50,6 +50,8 @@ trait Styles {
           params.gravity = Gravity.CENTER_HORIZONTAL
           view.setLayoutParams(params)
       } +
+      vPivotX(resGetDimensionPixelSize(R.dimen.pivot_x_icon_collection_detail)) +
+      vPivotY(0) +
       elevation
 
   }
@@ -68,10 +70,11 @@ trait Styles {
 
   def viewPagerStyle(implicit appContext: AppContext): Tweak[ViewPager] =
     vMatchParent +
-      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details))
+      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_pagers_collection_details)) +
+      elevation
 
 
-  private val elevation = Lollipop.ifSupportedThen {
+  private def elevation(implicit appContext: AppContext) = Lollipop.ifSupportedThen {
     vElevation(resGetDimensionPixelSize(R.dimen.elevation_toolbar))
   }.getOrElse(Tweak.blank)
 
@@ -79,10 +82,14 @@ trait Styles {
 
 trait CollectionFragmentStyles {
 
-  def recyclerStyle(implicit appContext: AppContext): Tweak[RecyclerView] =
+  def recyclerStyle(implicit appContext: AppContext): Tweak[RecyclerView] = {
+    val paddingTop = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     vMatchParent +
-      vPaddings(resGetDimensionPixelSize(R.dimen.padding_small)) +
-      vgClipToPadding(false)
+      vPadding(padding, paddingTop, padding, padding) +
+      vgClipToPadding(false) +
+      vOverScrollMode(View.OVER_SCROLL_NEVER)
+  }
 
 }
 
