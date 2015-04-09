@@ -36,7 +36,8 @@ trait Styles {
       vBackgroundColor(persistentServices.getCollectionDetailBackgroundColor)
 
   def toolbarStyle(implicit appContext: AppContext): Tweak[Toolbar] =
-    vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details))
+    vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details)) +
+      elevation
 
   def iconContentStyle(implicit appContext: AppContext): Tweak[FrameLayout] = {
     val size = resGetDimensionPixelSize(R.dimen.size_icon_collection_detail)
@@ -48,7 +49,9 @@ trait Styles {
           params.setMargins(0, resGetDimensionPixelSize(R.dimen.padding_default), 0, 0)
           params.gravity = Gravity.CENTER_HORIZONTAL
           view.setLayoutParams(params)
-      }
+      } +
+      elevation
+
   }
 
   def iconStyle(implicit appContext: AppContext): Tweak[ImageView] =
@@ -57,14 +60,20 @@ trait Styles {
 
 
   def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
-    vMatchWidth +
+    vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tabs_collection_details)) +
       flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_tabs_collection_details)) +
       stlDefaultTextColor(persistentServices.getCollectionDetailTextTabDefaultColor) +
-      stlSelectedTextColor(persistentServices.getCollectionDetailTextTabSelectedColor)
+      stlSelectedTextColor(persistentServices.getCollectionDetailTextTabSelectedColor) +
+      elevation
 
   def viewPagerStyle(implicit appContext: AppContext): Tweak[ViewPager] =
     vMatchParent +
-      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_pagers_collection_details))
+      flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details))
+
+
+  private val elevation = Lollipop.ifSupportedThen {
+    vElevation(resGetDimensionPixelSize(R.dimen.elevation_toolbar))
+  }.getOrElse(Tweak.blank)
 
 }
 
