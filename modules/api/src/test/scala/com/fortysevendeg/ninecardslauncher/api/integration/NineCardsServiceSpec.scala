@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import com.fortysevendeg.BaseTestSupport
 import com.fortysevendeg.ninecardslauncher.api.NineCardsServiceClient
 import com.fortysevendeg.ninecardslauncher.api.model._
-import com.fortysevendeg.rest.client.HttpClient
+import com.fortysevendeg.rest.client.http.SprayHttpClient
 import org.mockserver.integration.ClientAndServer._
 import org.mockserver.logging.Logging
 import org.mockserver.model.Header
@@ -19,7 +19,7 @@ import scala.concurrent.{Await, ExecutionContext}
 
 class NineCardsServiceSupport
     extends NineCardsServiceClient
-    with HttpClient
+    with SprayHttpClient
     with Scope {
 
   implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global

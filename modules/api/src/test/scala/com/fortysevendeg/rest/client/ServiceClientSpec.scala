@@ -1,39 +1,46 @@
 package com.fortysevendeg.rest.client
 
 import com.fortysevendeg.BaseTestSupport
-import com.fortysevendeg.rest.client.messages.{HttpClientException, HttpClientResponse}
-import org.specs2.mock.Mockito
+import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientResponse}
+import com.fortysevendeg.rest.client.messages.{ServiceClientException, ServiceClientResponse}
 import org.hamcrest.core.IsEqual
+import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import spray.http.{MediaTypes, HttpEntity, StatusCode, HttpResponse}
+import play.api.libs.json.Json
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
+
+trait ServiceClientSupport {
+
+  val baseUrl = "http://sampleUrl"
+
+  implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
+
+  implicit val readsResponse = Json.reads[SampleResponse]
+  implicit val writesRequest = Json.writes[SampleRequest]
+}
 
 trait WithSuccessfullyHttpClient
     extends ServiceClient
-    with ClientSupport
+    with ServiceClientSupport
     with Mockito
     with Scope {
 
   override val httpClient = mock[HttpClient]
 
-  val mockResponse = mock[HttpResponse]
-  val mockStatus = mock[StatusCode]
+  val mockResponse = mock[HttpClientResponse]
 
-  mockResponse.status returns mockStatus
-  mockStatus.isSuccess returns true
-  mockStatus.intValue returns 200
+  mockResponse.statusCode returns 200
 
   val message = "Hello World!"
 
   val json = s"""{ "message" : "$message" }"""
 
-  val sampleResponse = HttpClientResponse(200, Some(SampleResponse(message)))
+  val sampleResponse = ServiceClientResponse(200, Some(SampleResponse(message)))
 
-  val body = HttpEntity(MediaTypes.`application/json`, json.getBytes)
-  mockResponse.entity returns body
+  mockResponse.body returns Some(json)
 
   httpClient.doGet(any, any) returns Future.successful(mockResponse)
 
@@ -51,7 +58,7 @@ trait WithSuccessfullyHttpClient
 
 trait WithFailedHttpClient
     extends ServiceClient
-    with ClientSupport
+    with ServiceClientSupport
     with Mockito
     with Scope {
 
@@ -139,11 +146,11 @@ class ServiceClientSpec
           response shouldEqual sampleResponse
         }
 
-    "throws a HttpClientException when no Reads found for the response type" in
+    "throws a ServiceClientException when no Reads found for the response type" in
         new WithSuccessfullyHttpClient {
           Await.result(
             get[Test](baseUrl, Seq.empty),
-            Duration.Inf) must throwA[HttpClientException]
+            Duration.Inf) must throwA[ServiceClientException]
         }
 
     "returns a failed response when the call to get method throw an exception" in

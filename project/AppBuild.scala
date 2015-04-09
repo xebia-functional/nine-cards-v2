@@ -42,6 +42,7 @@ object AppBuild extends Build {
       .settings(libraryDependencies ++= Seq(
     playJson,
     sprayClient,
+    raptureIO,
     akkaActor,
     specs2,
     mockito,

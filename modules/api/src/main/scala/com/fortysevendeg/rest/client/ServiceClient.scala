@@ -1,10 +1,8 @@
 package com.fortysevendeg.rest.client
 
-import com.fortysevendeg.rest.client.messages.{HttpClientResponse, HttpClientException}
+import com.fortysevendeg.rest.client.http.{HttpClientResponse, HttpClient}
+import com.fortysevendeg.rest.client.messages.{ServiceClientResponse, ServiceClientException}
 import play.api.libs.json.{Json, Reads, Writes}
-import spray.http.{MediaTypes, HttpEntity}
-import spray.http.HttpHeaders.RawHeader
-import spray.httpx.marshalling.Marshaller
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.runtime.universe.TypeTag
@@ -22,80 +20,70 @@ trait ServiceClient {
   def get[Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] =
+      reads: Option[Reads[Res]] = None): Future[ServiceClientResponse[Res]] =
     for {
-      httpResponse <- httpClient.doGet(baseUrl.concat(path), toHttpHeader(headers))
-      response <- verifyResponse(httpResponse.entity, reads)
-    } yield HttpClientResponse(httpResponse.status.intValue, response)
+      clientResponse <- httpClient.doGet(baseUrl.concat(path), headers)
+      response <- readResponse(clientResponse, reads)
+    } yield ServiceClientResponse(clientResponse.statusCode.intValue, response)
 
 
   def emptyPost[Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] =
+      reads: Option[Reads[Res]] = None): Future[ServiceClientResponse[Res]] =
     for {
-      httpResponse <- httpClient.doPost(baseUrl.concat(path), toHttpHeader(headers))
-      response <- verifyResponse(httpResponse.entity, reads)
-    } yield HttpClientResponse(httpResponse.status.intValue, response)
+      clientResponse <- httpClient.doPost(baseUrl.concat(path), headers)
+      response <- readResponse(clientResponse, reads)
+    } yield ServiceClientResponse(clientResponse.statusCode, response)
 
 
   def post[Req: TypeTag, Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
       body: Req,
-      reads: Option[Reads[Res]] = None)(implicit writes: Writes[Req]): Future[HttpClientResponse[Res]] = {
-    implicit val marshaller = createMarshaller[Req]
+      reads: Option[Reads[Res]] = None)(implicit writes: Writes[Req]): Future[ServiceClientResponse[Res]] = {
     for {
-      httpResponse <- httpClient.doPost[Req](baseUrl.concat(path), toHttpHeader(headers), body)
-      response <- verifyResponse(httpResponse.entity, reads)
-    } yield HttpClientResponse(httpResponse.status.intValue, response)
+      clientResponse <- httpClient.doPost[Req](baseUrl.concat(path), headers, body)
+      response <- readResponse(clientResponse, reads)
+    } yield ServiceClientResponse(clientResponse.statusCode, response)
   }
 
   def emptyPut[Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] =
+      reads: Option[Reads[Res]] = None): Future[ServiceClientResponse[Res]] =
     for {
-      httpResponse <- httpClient.doPut(baseUrl.concat(path), toHttpHeader(headers))
-      response <- verifyResponse(httpResponse.entity, reads)
-    } yield HttpClientResponse(httpResponse.status.intValue, response)
+      clientResponse <- httpClient.doPut(baseUrl.concat(path), headers)
+      response <- readResponse(clientResponse, reads)
+    } yield ServiceClientResponse(clientResponse.statusCode, response)
 
   def put[Req: TypeTag, Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
       body: Req,
-      reads: Option[Reads[Res]] = None)(implicit writes: Writes[Req]): Future[HttpClientResponse[Res]] = {
-    implicit val marshaller = createMarshaller[Req]
+      reads: Option[Reads[Res]] = None)(implicit writes: Writes[Req]): Future[ServiceClientResponse[Res]] = {
     for {
-      httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), toHttpHeader(headers), body)
-      response <- verifyResponse(httpResponse.entity, reads)
-    } yield HttpClientResponse(httpResponse.status.intValue, response)
+      httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), headers, body)
+      response <- readResponse(httpResponse, reads)
+    } yield ServiceClientResponse(httpResponse.statusCode, response)
   }
 
   def delete[Res: TypeTag](
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
-      reads: Option[Reads[Res]] = None): Future[HttpClientResponse[Res]] =
+      reads: Option[Reads[Res]] = None): Future[ServiceClientResponse[Res]] =
     for {
-      httpResponse <- httpClient.doDelete(baseUrl.concat(path), toHttpHeader(headers))
-      response <- verifyResponse(httpResponse.entity, reads)
-    } yield HttpClientResponse(httpResponse.status.intValue, response)
-  
-  private def toHttpHeader(headers: Seq[(String, String)]): Seq[RawHeader] = 
-    headers map(t => RawHeader(t._1, t._2))
+      clientResponse <- httpClient.doDelete(baseUrl.concat(path), headers)
+      response <- readResponse(clientResponse, reads)
+    } yield ServiceClientResponse(clientResponse.statusCode, response)
 
-  private def createMarshaller[Res](implicit writes: Writes[Res]): Marshaller[Res] =
-    Marshaller.of[Res](MediaTypes.`application/json`) {
-      (value, contentType, ctx) => ctx.marshalTo(HttpEntity(contentType, Json.toJson(value).toString()))
-    }
-
-  private def verifyResponse[T: TypeTag](httpEntity: HttpEntity, maybeReads: Option[Reads[T]]): Future[Option[T]] = {
+  private def readResponse[T: TypeTag](clientResponse: HttpClientResponse, maybeReads: Option[Reads[T]]): Future[Option[T]] = {
     import scala.reflect.runtime.universe._
     val unitType = typeOf[T] =:= typeOf[Unit]
-    (httpEntity.isEmpty, unitType, maybeReads) match {
-      case (false, false, Some(r)) => transformResponse[T](httpEntity.asString, r)
-      case (true, false, _) => Future.failed(new HttpClientException("No content"))
-      case (false, false, None) => Future.failed(new HttpClientException("No transformer found for type"))
+    (clientResponse.body, unitType, maybeReads) match {
+      case (Some(d), false, Some(r)) => transformResponse[T](d, r)
+      case (None, false, _) => Future.failed(new ServiceClientException("No content"))
+      case (Some(d), false, None) => Future.failed(new ServiceClientException("No transformer found for type"))
       case _ => Future.successful(None)
     }
   }
