@@ -18,6 +18,8 @@ object Libraries {
 
     def androidDep(module: String) = "com.android.support" % module % Versions.androidV
 
+    lazy val multiDexLib = "com.google.android" % "multidex" % Versions.multiDexV
+
     lazy val androidSupportv4 = androidDep("support-v4")
     lazy val androidAppCompat = androidDep("appcompat-v7")
     lazy val androidRecyclerview = androidDep("recyclerview-v7")
