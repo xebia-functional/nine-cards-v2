@@ -16,33 +16,33 @@ trait SprayHttpClient extends HttpClient {
 
   implicit val actorSystem: ActorSystem
 
-  def doGet(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+  override def doGet(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Get(url)))
   }
 
-  def doDelete(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+  override def doDelete(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Delete(url)))
   }
 
-  def doPost(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+  override def doPost(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Post(url)))
   }
 
-  def doPost[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req): Future[HttpClientResponse] = {
+  override def doPost[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req): Future[HttpClientResponse] = {
     implicit val marshaller = createMarshaller[Req]
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Post(url, body)))
   }
 
-  def doPut(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+  override def doPut(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Put(url)))
   }
 
-  def doPut[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req): Future[HttpClientResponse] = {
+  override def doPut[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req): Future[HttpClientResponse] = {
     implicit val marshaller = createMarshaller[Req]
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Put(url, body)))

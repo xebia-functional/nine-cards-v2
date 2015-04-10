@@ -38,8 +38,8 @@ object Libraries {
   }
 
   object net {
-    lazy val raptureIO = "com.propensive" %% "rapture-io" % Versions.raptureIOV
     lazy val sprayClient = "io.spray" %% "spray-client" % Versions.sprayClientV
+    lazy val okHttp = "com.squareup.okhttp" % "okhttp" % Versions.okHttpV
   }
 
   object test {

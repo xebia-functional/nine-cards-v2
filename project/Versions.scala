@@ -14,7 +14,7 @@ object Versions {
   val mockitoV = "3.0-M2"
   val glideV = "3.5.2"
   val sprayClientV = "1.3.1"
-  val raptureIOV = "0.10.0"
+  val okHttpV = "2.3.0"
   val akkaActorV = "2.3.9"
   val mockServerV = "3.9.2"
 }
