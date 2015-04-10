@@ -1,11 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.ui.collections
 
-import android.animation.{ValueAnimator, ObjectAnimator}
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.ActionBarActivity
-import android.view.animation.DecelerateInterpolator
 import android.view.{Menu, MenuItem}
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -21,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks.
 import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{Tweak, AppContext, Contexts, Ui}
+import macroid.{AppContext, Contexts, Tweak, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -40,6 +38,8 @@ class CollectionsDetailsActivity
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
 
+  private var collectionsAdapter: Option[CollectionsPagerAdapter] = None
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     setContentView(layout)
@@ -52,19 +52,29 @@ class CollectionsDetailsActivity
       appsResponse <- appManagerServices.getApps(GetAppsRequest())
       GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest(appsResponse.apps))
     } yield {
+      val adapter = new CollectionsPagerAdapter(getSupportFragmentManager, collections)
+      collectionsAdapter = Some(adapter)
       runUi(
-        (viewPager <~ vpAdapter(new CollectionsPagerAdapter(getSupportFragmentManager, collections))) ~
+        (viewPager <~ vpAdapter(adapter)) ~
+          Ui { adapter.activateFragment(0) } ~
           (tabs <~
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
-          (viewPager map (vp => updateCollection(collections(vp.getCurrentItem), false, false)) getOrElse Ui.nop)
+          (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop)
       )
     }
   }
 
-  private def updateCollection(collection: Collection, fromLeft: Boolean, anim: Boolean = true): Ui[_] = resGetDrawableIdentifier(collection.icon + "_detail") map {
-    res => if (anim) icon <~ changeIcon(res, fromLeft) else icon <~ ivSrc(res)
-  } getOrElse Ui.nop
+  private def setIconCollection(collection: Collection): Ui[_] =
+    resGetDrawableIdentifier(collection.icon + "_detail") map (r => icon <~ ivSrc(r)) getOrElse Ui.nop
+
+  private def updateCollection(collection: Collection, position: Int, fromLeft: Boolean): Ui[_] =
+    (for {
+      res <- resGetDrawableIdentifier(collection.icon + "_detail")
+      adapter <- collectionsAdapter
+    } yield {
+        (icon <~ changeIcon(res, fromLeft)) ~ adapter.notifyChanged(position)
+      }).getOrElse(Ui.nop)
 
   private def updateToolbarColor(color: Int): Ui[_] =
     (toolbar <~ vBackgroundColor(color)) ~
@@ -106,16 +116,31 @@ class CollectionsDetailsActivity
     vElevation(elevation)
   }.getOrElse(Tweak.blank)
 
+  override def scrollType(sType: Int): Unit = {
+    for {
+      vp <- viewPager
+      adapter <- collectionsAdapter
+    } yield {
+      adapter.setScrollType(sType)
+      runUi(adapter.notifyChanged(vp.getCurrentItem))
+    }
+  }
 }
 
 trait ScrolledListener {
   def scrollY(scroll: Int, dy: Int)
+  def scrollType(sType: Int)
+}
+
+object ScrollType {
+  val Up = 0
+  val Down = 1
 }
 
 class OnPageChangeCollectionsListener(
                                        collections: Seq[Collection],
                                        updateToolbarColor: Int => Ui[_],
-                                       updateCollection: (Collection, Boolean, Boolean) => Ui[_])(implicit appContext: AppContext)
+                                       updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
   extends OnPageChangeListener
   with ComponentRegistryImpl {
 
@@ -140,7 +165,7 @@ class OnPageChangeCollectionsListener(
   override def onPageSelected(position: Int): Unit = {
     val fromLeft = position < lastSelected
     lastSelected = position
-    runUi(updateCollection(collections(position), fromLeft, true))
+    runUi(updateCollection(collections(position), position, fromLeft))
   }
 
 }
