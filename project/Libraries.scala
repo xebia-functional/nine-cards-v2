@@ -41,6 +41,7 @@ object Libraries {
 
   object net {
     lazy val sprayClient = "io.spray" %% "spray-client" % Versions.sprayClientV
+    lazy val okHttp = "com.squareup.okhttp" % "okhttp" % Versions.okHttpV
   }
 
   object test {
