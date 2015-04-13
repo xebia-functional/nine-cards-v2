@@ -2,6 +2,7 @@ import Libraries.android._
 import Libraries.graphics._
 import Libraries.macroid._
 import Libraries.playServices._
+import Versions._
 import Libraries.net._
 import android.Keys._
 import sbt.Keys._
@@ -9,42 +10,40 @@ import sbt._
 
 object Settings {
 
-  val scalaV = "2.11.2"
-
   // App Module
 
-  lazy val appSettings = commonSettings ++
-    Seq(
-      run <<= run in Android,
-      javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-      transitiveAndroidLibs in Android := false,
-      libraryDependencies ++= commonDependencies,
-      proguardScala in Android := true,
-      useProguard in Android := true,
-      proguardOptions in Android ++= proguardCommons
-    )
+  lazy val appSettings = commonSettings ++ multiDex ++
+      Seq(
+        run <<= run in Android,
+        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+        transitiveAndroidLibs in Android := false,
+        libraryDependencies ++= commonDependencies,
+        proguardScala in Android := true,
+        useProguard in Android := true,
+        proguardOptions in Android ++= proguardCommons,
+        proguardCache in Android := Seq.empty)
 
   // Api Module
 
   lazy val apiSettings = commonSettings ++
-    Seq(
-      exportJars := true,
-      scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
-      javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-      javacOptions in Compile += "-deprecation",
-      proguardScala in Android := false
-    )
+      Seq(
+        exportJars := true,
+        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
+        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+        javacOptions in Compile += "-deprecation",
+        proguardScala in Android := false
+      )
 
   // Repository Module
 
   lazy val repositorySettings = commonSettings ++
-    Seq(
-      exportJars := true,
-      scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
-      javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-      javacOptions in Compile += "-deprecation",
-      proguardScala in Android := false
-    )
+      Seq(
+        exportJars := true,
+        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
+        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+        javacOptions in Compile += "-deprecation",
+        proguardScala in Android := false
+      )
 
   // Commons
 
@@ -53,6 +52,7 @@ object Settings {
     resolvers ++= commonResolvers)
 
   lazy val commonDependencies = Seq(
+    aar(multiDexLib),
     aar(androidSupportv4),
     aar(androidAppCompat),
     aar(androidRecyclerview),
@@ -90,4 +90,24 @@ object Settings {
     "-keep class android.** { *; }",
     "-keep class com.google.** { *; }"
   )
+
+  lazy val multiDex = Seq(
+    dexMaxHeap in Android := "2048m",
+    dexMulti in Android := true,
+    dexMinimizeMainFile in Android := true,
+    dexMainFileClasses in Android := multiDexClasses
+  )
+
+  lazy val multiDexClasses = Seq(
+    "com/fortysevendeg/ninecardslauncher/NineCardsApplication.class",
+    "android/support/multidex/BuildConfig.class",
+    "android/support/multidex/MultiDex$V14.class",
+    "android/support/multidex/MultiDex$V19.class",
+    "android/support/multidex/MultiDex$V4.class",
+    "android/support/multidex/MultiDex.class",
+    "android/support/multidex/MultiDexApplication.class",
+    "android/support/multidex/MultiDexExtractor$1.class",
+    "android/support/multidex/MultiDexExtractor.class",
+    "android/support/multidex/ZipUtil$CentralDirectory.class",
+    "android/support/multidex/ZipUtil.class")
 }

@@ -1,3 +1,4 @@
+import Libraries.akka._
 import sbt._
 import sbt.Keys._
 import android.Keys._
@@ -6,7 +7,11 @@ import ReplacePropertiesGenerator._
 import Libraries.json._
 import Libraries.net._
 import Libraries.test._
-import Libraries.akka._
+import Settings._
+import Versions._
+import android.Keys._
+import sbt.Keys._
+import sbt._
 
 object AppBuild extends Build {
 
@@ -30,15 +35,13 @@ object AppBuild extends Build {
 
   lazy val app = Project(id = "app", base = file("modules/app"))
       .androidBuildWith(api, repository)
-      .settings(
-        projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))),
-        apkbuildExcludes in Android ++= Seq(
-          "META-INF/LICENSE",
-          "META-INF/LICENSE.txt",
-          "META-INF/NOTICE",
-          "META-INF/NOTICE.txt",
-          "reference.conf"),
-        packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask))
+      .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
+      .settings(apkbuildExcludes in Android ++= Seq(
+    "META-INF/LICENSE",
+    "META-INF/LICENSE.txt",
+    "META-INF/NOTICE",
+    "META-INF/NOTICE.txt",
+    "reference.conf"))
       .settings(appSettings: _*)
 
   val api = Project(id = "api", base = file("modules/api"))
