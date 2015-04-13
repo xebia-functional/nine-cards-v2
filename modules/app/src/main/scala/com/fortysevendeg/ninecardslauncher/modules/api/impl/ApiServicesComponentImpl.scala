@@ -1,14 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.modules.api.impl
 
-import akka.actor.ActorSystem
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.api.NineCardsServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.rest.client.HttpClient
 
-import scala.concurrent.{ExecutionContext}
+import scala.concurrent.ExecutionContext
 
 trait ApiServicesComponentImpl
   extends ApiServicesComponent {
@@ -20,14 +18,11 @@ trait ApiServicesComponentImpl
   class ApiServicesImpl
     extends ApiServices
     with NineCardsServiceClient
-    with HttpClient
     with Conversions {
 
     implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
-    implicit val actorSystem: ActorSystem = ActorSystem(getString(R.string.api_actor))
-
-    override val httpClient = this
+    override val httpClient = new OkHttpClientImpl
 
     override val baseUrl = getString(R.string.api_base_url)
 
