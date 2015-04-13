@@ -4,6 +4,7 @@ import Libraries.net._
 import Libraries.scalaz._
 import Libraries.test._
 import Settings._
+import Versions._
 import android.Keys._
 import sbt.Keys._
 import sbt._
@@ -42,8 +43,9 @@ object AppBuild extends Build {
   val api = Project(id = "api", base = file("modules/api"))
       .settings(libraryDependencies ++= Seq(
     playJson,
-    sprayClient,
-    akkaActor,
+    sprayClient % "provided",
+    okHttp % "provided",
+    akkaActor % "provided",
     specs2,
     mockito,
     mockServer))
