@@ -4,8 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdapter}
 import android.view.ViewGroup
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
-import macroid.{Ui, AppContext}
-import macroid.Logging._
+import macroid.{AppContext, Ui}
 
 import scala.collection.mutable.WeakHashMap
 

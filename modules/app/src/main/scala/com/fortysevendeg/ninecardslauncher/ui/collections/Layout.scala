@@ -33,8 +33,8 @@ trait Layout
       l[FrameLayout](
         w[ImageView] <~ iconStyle <~ wire(icon)
       ) <~ iconContentStyle <~ wire(iconContent),
-      l[SlidingTabLayout]() <~ tabsStyle <~ wire(tabs),
-      l[ViewPager]() <~ viewPagerStyle <~ wire(viewPager) <~ id(Id.pager) // ViewPager need set resource id
+      l[ViewPager]() <~ viewPagerStyle <~ wire(viewPager) <~ id(Id.pager), // ViewPager need set resource id
+      l[SlidingTabLayout]() <~ tabsStyle <~ wire(tabs)
     ) <~ rootStyle
   )
 
