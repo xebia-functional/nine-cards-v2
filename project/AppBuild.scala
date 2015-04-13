@@ -44,8 +44,9 @@ object AppBuild extends Build {
   val api = Project(id = "api", base = file("modules/api"))
       .settings(libraryDependencies ++= Seq(
     playJson,
-    sprayClient,
-    akkaActor,
+    sprayClient % "provided",
+    okHttp % "provided",
+    akkaActor % "provided",
     specs2,
     mockito,
     mockServer))
