@@ -18,31 +18,31 @@ trait OkHttpClient extends HttpClient {
 
   val textPlainMediaType = okHttp.MediaType.parse("text/plain")
 
-  override def doGet(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+  override def doGet(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] =
     doMethod(GET, url, httpHeaders)
-  }
 
-  override def doDelete(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+
+  override def doDelete(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] =
     doMethod(DELETE, url, httpHeaders)
-  }
 
-  override def doPost(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+
+  override def doPost(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] =
     doMethod(POST, url, httpHeaders)
-  }
 
-  override def doPost[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req): Future[HttpClientResponse] = {
+
+  override def doPost[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req): Future[HttpClientResponse] =
     doMethod(POST, url, httpHeaders, Some(Json.toJson(body).toString()))
-  }
 
-  override def doPut(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+
+  override def doPut(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] =
     doMethod(PUT, url, httpHeaders)
-  }
 
-  override def doPut[Req: TypeTag: Writes](url: String, httpHeaders: Seq[(String, String)], body: Req): Future[HttpClientResponse] = {
+
+  override def doPut[Req: TypeTag: Writes](url: String, httpHeaders: Seq[(String, String)], body: Req): Future[HttpClientResponse] =
     doMethod(PUT, url, httpHeaders, Some(Json.toJson(body).toString()))
-  }
 
-  private def doMethod(method: Method, url: String, httpHeaders:  Seq[(String, String)], body: Option[String] = None): Future[HttpClientResponse] = {
+
+  private def doMethod(method: Method, url: String, httpHeaders:  Seq[(String, String)], body: Option[String] = None): Future[HttpClientResponse] =
     Future {
       val builder = createBuilderRequest(url, httpHeaders)
       val request = (method match {
@@ -54,7 +54,6 @@ trait OkHttpClient extends HttpClient {
       val response = okHttpClient.newCall(request).execute()
       HttpClientResponse(response.code(), Option(response.body()) map (_.string()))
     }
-  }
 
   private def createBuilderRequest(url: String, httpHeaders:  Seq[(String, String)]): okHttp.Request.Builder =
     new okHttp.Request.Builder()
@@ -66,13 +65,11 @@ trait OkHttpClient extends HttpClient {
     okHttp.Headers.of(httpHeaders.map(t => t._1 -> t._2).toMap.asJava)
   }
 
-  private def createBody(body: Option[String]) = {
+  private def createBody(body: Option[String]) =
     body match {
       case Some(b) => okHttp.RequestBody.create(jsonMediaType, b)
       case _ => okHttp.RequestBody.create(textPlainMediaType, "")
     }
-
-  }
 
 }
 

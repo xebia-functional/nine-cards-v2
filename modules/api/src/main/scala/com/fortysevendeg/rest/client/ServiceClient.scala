@@ -61,12 +61,12 @@ trait ServiceClient {
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
       body: Req,
-      reads: Option[Reads[Res]] = None)(implicit writes: Writes[Req]): Future[ServiceClientResponse[Res]] = {
+      reads: Option[Reads[Res]] = None)(implicit writes: Writes[Req]): Future[ServiceClientResponse[Res]] =
     for {
       httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), headers, body)
       response <- readResponse(httpResponse, reads)
     } yield ServiceClientResponse(httpResponse.statusCode, response)
-  }
+
 
   def delete[Res: TypeTag](
       path: String,
