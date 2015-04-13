@@ -1,12 +1,8 @@
 import Libraries.akka._
-import sbt._
-import sbt.Keys._
-import android.Keys._
-import Settings._
-import ReplacePropertiesGenerator._
 import Libraries.json._
 import Libraries.net._
 import Libraries.test._
+import ReplacePropertiesGenerator._
 import Settings._
 import Versions._
 import android.Keys._
