@@ -32,6 +32,7 @@ object AppBuild extends Build {
   lazy val app = Project(id = "app", base = file("modules/app"))
       .androidBuildWith(api, repository)
       .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
+      .settings(packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask))
       .settings(apkbuildExcludes in Android ++= Seq(
     "META-INF/LICENSE",
     "META-INF/LICENSE.txt",
