@@ -41,12 +41,12 @@ trait ServiceClient {
       path: String,
       headers: Seq[(String, String)] = Seq.empty,
       body: Req,
-      reads: Option[Reads[Res]] = None)(implicit writes: Writes[Req]): Future[ServiceClientResponse[Res]] = {
+      reads: Option[Reads[Res]] = None)(implicit writes: Writes[Req]): Future[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doPost[Req](baseUrl.concat(path), headers, body)
       response <- readResponse(clientResponse, reads)
     } yield ServiceClientResponse(clientResponse.statusCode, response)
-  }
+
 
   def emptyPut[Res: TypeTag](
       path: String,
