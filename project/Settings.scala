@@ -1,9 +1,7 @@
 import Libraries.android._
 import Libraries.graphics._
-import Libraries.json._
 import Libraries.macroid._
 import Libraries.playServices._
-import Libraries.test._
 import android.Keys._
 import sbt.Keys._
 import sbt._
