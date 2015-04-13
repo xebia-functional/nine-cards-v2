@@ -1,6 +1,8 @@
-package com.fortysevendeg.rest.client
+package com.fortysevendeg.rest.client.http
 
+import akka.actor.ActorSystem
 import com.fortysevendeg.BaseTestSupport
+import com.fortysevendeg.rest.client.{SampleResponse, SampleRequest}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -8,16 +10,25 @@ import play.api.libs.json.Json
 import spray.http._
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{ExecutionContext, Await, Future}
 
-trait HttpClientSupport
-  extends HttpClient
-  with ClientSupport
+trait SprayHttpClientSupport
+  extends SprayHttpClient
   with Mockito
   with Scope {
 
+  implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
+
+  implicit val actorSystem: ActorSystem = ActorSystem("http-spray-client")
+
+  val baseUrl = "http://sampleUrl"
+
   val mockResponse = mock[HttpResponse]
   val mockStatus = mock[StatusCode]
+
+  implicit val readsResponse = Json.reads[SampleResponse]
+  implicit val readsRequest = Json.reads[SampleRequest]
+  implicit val writesRequest = Json.writes[SampleRequest]
 
   val acceptedMethod: Option[HttpMethod] = None
 
@@ -44,13 +55,13 @@ trait HttpClientSupport
 
 }
 
-class HttpClientSpec
+class SprayHttpClientSpec
     extends Specification
     with BaseTestSupport {
 
-  "HttpClient component" should {
+  "SprayHttpClient component" should {
 
-    "returns the response for a successfully get request" in new HttpClientSupport {
+    "returns the response for a successfully get request" in new SprayHttpClientSupport {
 
       mockResponse.status returns mockStatus
       mockStatus.isSuccess returns true
@@ -65,10 +76,10 @@ class HttpClientSpec
       override val acceptedMethod = Some(HttpMethods.GET)
 
       val response = Await.result(doGet(baseUrl, Seq.empty), Duration.Inf)
-      response.entity.asString shouldEqual json
+      response.body shouldEqual Some(json)
     }
 
-    "returns the response for a successfully delete request" in new HttpClientSupport {
+    "returns the response for a successfully delete request" in new SprayHttpClientSupport {
 
       mockResponse.status returns mockStatus
       mockStatus.isSuccess returns true
@@ -83,10 +94,10 @@ class HttpClientSpec
       override val acceptedMethod = Some(HttpMethods.DELETE)
 
       val response = Await.result(doDelete(baseUrl, Seq.empty), Duration.Inf)
-      response.entity.asString shouldEqual json
+      response.body shouldEqual Some(json)
     }
 
-    "returns the response for a successfully empty post request" in new HttpClientSupport {
+    "returns the response for a successfully empty post request" in new SprayHttpClientSupport {
 
       mockResponse.status returns mockStatus
       mockStatus.isSuccess returns true
@@ -101,10 +112,10 @@ class HttpClientSpec
       override val acceptedMethod = Some(HttpMethods.POST)
 
       val response = Await.result(doPost(baseUrl, Seq.empty), Duration.Inf)
-      response.entity.asString shouldEqual json
+      response.body shouldEqual Some(json)
     }
 
-    "returns the response for a successfully post request" in new HttpClientSupport {
+    "returns the response for a successfully post request" in new SprayHttpClientSupport {
 
       mockResponse.status returns mockStatus
       mockStatus.isSuccess returns true
@@ -122,10 +133,10 @@ class HttpClientSpec
       override val acceptedBody = Some(sampleRequest)
 
       val response = Await.result(doPost[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
-      response.entity.asString shouldEqual json
+      response.body shouldEqual Some(json)
     }
 
-    "returns the response for a successfully empty put request" in new HttpClientSupport {
+    "returns the response for a successfully empty put request" in new SprayHttpClientSupport {
 
       mockResponse.status returns mockStatus
       mockStatus.isSuccess returns true
@@ -140,10 +151,10 @@ class HttpClientSpec
       override val acceptedMethod = Some(HttpMethods.PUT)
 
       val response = Await.result(doPut(baseUrl, Seq.empty), Duration.Inf)
-      response.entity.asString shouldEqual json
+      response.body shouldEqual Some(json)
     }
 
-    "returns the response for a successfully put request" in new HttpClientSupport {
+    "returns the response for a successfully put request" in new SprayHttpClientSupport {
 
       mockResponse.status returns mockStatus
       mockStatus.isSuccess returns true
@@ -161,10 +172,10 @@ class HttpClientSpec
       override val acceptedBody = Some(sampleRequest)
 
       val response = Await.result(doPut[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
-      response.entity.asString shouldEqual json
+      response.body shouldEqual Some(json)
     }
 
-    "returns Exception for an unexpected method" in new HttpClientSupport {
+    "returns Exception for an unexpected method" in new SprayHttpClientSupport {
 
       mockResponse.status returns mockStatus
       mockStatus.isSuccess returns true
@@ -181,7 +192,7 @@ class HttpClientSpec
       Await.result(doDelete(baseUrl, Seq.empty), Duration.Inf) must throwA[IllegalArgumentException]
     }
 
-    "returns Exception for an unexpected request" in new HttpClientSupport {
+    "returns Exception for an unexpected request" in new SprayHttpClientSupport {
 
       mockResponse.status returns mockStatus
       mockStatus.isSuccess returns true
