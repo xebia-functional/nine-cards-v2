@@ -1,11 +1,12 @@
-import sbt._
-import sbt.Keys._
-import android.Keys._
-import Settings._
+import Libraries.akka._
 import Libraries.json._
 import Libraries.net._
 import Libraries.test._
-import Libraries.akka._
+import Settings._
+import Versions._
+import android.Keys._
+import sbt.Keys._
+import sbt._
 
 object AppBuild extends Build {
 
@@ -31,11 +32,11 @@ object AppBuild extends Build {
       .androidBuildWith(api, repository)
       .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
       .settings(apkbuildExcludes in Android ++= Seq(
-          "META-INF/LICENSE",
-          "META-INF/LICENSE.txt",
-          "META-INF/NOTICE",
-          "META-INF/NOTICE.txt",
-          "reference.conf"))
+    "META-INF/LICENSE",
+    "META-INF/LICENSE.txt",
+    "META-INF/NOTICE",
+    "META-INF/NOTICE.txt",
+    "reference.conf"))
       .settings(appSettings: _*)
 
   val api = Project(id = "api", base = file("modules/api"))
