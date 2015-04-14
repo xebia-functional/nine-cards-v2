@@ -5,6 +5,8 @@ import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits
 import com.fortysevendeg.rest.client.ServiceClient
 import play.api.libs.json.Reads
 
+import scala.concurrent.ExecutionContext
+
 trait SharedCollectionsServiceClient
     extends ServiceClient
     with SharedCollectionImplicits {
@@ -13,7 +15,7 @@ trait SharedCollectionsServiceClient
 
   def shareCollection(
       sharedCollection: SharedCollection,
-      headers: Seq[(String, String)])(implicit reads: Reads[SharedCollection]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[SharedCollection]) =
     post[SharedCollection, SharedCollection](
       path = prefixPathCollections,
       headers = headers,
@@ -22,7 +24,7 @@ trait SharedCollectionsServiceClient
 
   def getSharedCollection(
       sharedCollectionId: String,
-      headers: Seq[(String, String)])(implicit reads: Reads[SharedCollection]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[SharedCollection]) =
     get[SharedCollection](
       path = s"$prefixPathCollections/$sharedCollectionId",
       headers = headers,
@@ -32,7 +34,7 @@ trait SharedCollectionsServiceClient
       collectionType: String,
       offset: Int,
       limit: Int,
-      headers: Seq[(String, String)])(implicit reads: Reads[SharedCollectionList]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[SharedCollectionList]) =
     get[SharedCollectionList](
       path = s"$prefixPathCollections/$collectionType/$offset/$limit",
       headers = headers,
@@ -43,7 +45,7 @@ trait SharedCollectionsServiceClient
       category: String,
       offset: Int,
       limit: Int,
-      headers: Seq[(String, String)])(implicit reads: Reads[SharedCollectionList]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[SharedCollectionList]) =
     get[SharedCollectionList](
       path = s"$prefixPathCollections/$collectionType/$category/$offset/$limit",
       headers = headers,
@@ -53,7 +55,7 @@ trait SharedCollectionsServiceClient
       keywords: String,
       offset: Int,
       limit: Int,
-      headers: Seq[(String, String)])(implicit reads: Reads[SharedCollectionList]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[SharedCollectionList]) =
     get[SharedCollectionList](
       path = s"$prefixPathCollections/search/$keywords/$offset/$limit",
       headers = headers,
@@ -62,7 +64,7 @@ trait SharedCollectionsServiceClient
   def rateSharedCollection(
       sharedCollectionId: String,
       rate: Double,
-      headers: Seq[(String, String)])(implicit reads: Reads[SharedCollection]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[SharedCollection]) =
     emptyPost[SharedCollection](
       path = s"$prefixPathCollections/$sharedCollectionId/rate/$rate",
       headers = headers,
@@ -70,7 +72,7 @@ trait SharedCollectionsServiceClient
 
   def subscribeSharedCollection(
       sharedCollectionId: String,
-      headers: Seq[(String, String)])(implicit reads: Reads[SharedCollectionSubscription]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[SharedCollectionSubscription]) =
     emptyPut[SharedCollectionSubscription](
       path = s"$prefixPathCollections/$sharedCollectionId/subscribe",
       headers = headers,
@@ -78,14 +80,14 @@ trait SharedCollectionsServiceClient
 
   def unsubscribeSharedCollection(
       sharedCollectionId: String,
-      headers: Seq[(String, String)]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext) =
     delete[Unit](
       path = s"$prefixPathCollections/$sharedCollectionId/subscribe",
       headers = headers)
 
   def notifyViewCollection(
       sharedCollectionId: String,
-      headers: Seq[(String, String)])(implicit reads: Reads[SharedCollection]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[SharedCollection]) =
     emptyPut[SharedCollection](
       path = s"$prefixPathCollections/$sharedCollectionId/notifyViews",
       headers = headers,
@@ -93,7 +95,7 @@ trait SharedCollectionsServiceClient
 
   def notifyInstallCollection(
       sharedCollectionId: String,
-      headers: Seq[(String, String)])(implicit reads: Reads[SharedCollection]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[SharedCollection]) =
     emptyPut[SharedCollection](
       path = s"$prefixPathCollections/$sharedCollectionId/notifyInstall",
       headers = headers,

@@ -89,22 +89,18 @@ trait NineCardsServiceSupport
 }
 
 class NineCardsServiceOkHttpSupport
-    extends NineCardsServiceSupport
-    with OkHttpClient {
+    extends NineCardsServiceSupport {
 
-  override val okHttpClient = new okHttp.OkHttpClient
-
-  override val httpClient = this
+  override val httpClient = new OkHttpClient {}
 
 }
 
 class NineCardsServiceSprayHttpSupport
-    extends NineCardsServiceSupport
-    with SprayHttpClient {
+    extends NineCardsServiceSupport {
 
-  override val httpClient = this
-
-  implicit val actorSystem: ActorSystem = ActorSystem("http-spray-client")
+  override val httpClient = new SprayHttpClient {
+    implicit val actorSystem: ActorSystem = ActorSystem("http-spray-client")
+  }
 
 }
 

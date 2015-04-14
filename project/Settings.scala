@@ -3,6 +3,7 @@ import Libraries.graphics._
 import Libraries.macroid._
 import Libraries.playServices._
 import Versions._
+import Libraries.net._
 import android.Keys._
 import sbt.Keys._
 import sbt._
@@ -60,6 +61,7 @@ object Settings {
     aar(macroidExtras),
     aar(playServicesBase),
     glide,
+    okHttp,
     compilerPlugin(Libraries.wartRemover))
 
   lazy val commonResolvers = Seq(
