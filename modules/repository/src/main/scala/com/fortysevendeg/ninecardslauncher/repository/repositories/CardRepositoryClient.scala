@@ -11,12 +11,14 @@ import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.util.Try
 
 trait CardRepositoryClient extends DBUtils {
 
   self: ContentResolverProvider =>
+
+  implicit val executionContext: ExecutionContext
 
   def addCard: Service[AddCardRequest, AddCardResponse] =
     request =>

@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.util.Try
 import scalaz.OptionT.optionT
 
@@ -21,6 +21,8 @@ trait CollectionRepositoryClient
     with DBUtils {
 
   self: ContentResolverProvider =>
+
+  implicit val executionContext: ExecutionContext
 
   def addCollection: Service[AddCollectionRequest, AddCollectionResponse] =
     request =>
