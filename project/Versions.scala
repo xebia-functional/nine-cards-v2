@@ -1,7 +1,7 @@
 object Versions {
 
   val appV = "1.0.0"
-  val scalaV = "2.11.4"
+  val scalaV = "2.11.6"
   val androidPlatformV = "android-22"
   val androidV = "22.0.0"
   val multiDexV = "0.1"
@@ -18,4 +18,5 @@ object Versions {
   val okHttpV = "2.3.0"
   val akkaActorV = "2.3.9"
   val mockServerV = "3.9.2"
+  val scalazV = "7.1.0"
 }

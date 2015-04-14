@@ -12,45 +12,57 @@ import scala.reflect.runtime.universe.TypeTag
 
 trait SprayHttpClient extends HttpClient {
 
-  implicit val executionContext: ExecutionContext
-
   implicit val actorSystem: ActorSystem
 
-  override def doGet(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+  override def doGet(
+      url: String,
+      httpHeaders:  Seq[(String, String)])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] = {
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Get(url)))
   }
 
-  override def doDelete(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+  override def doDelete(
+      url: String,
+      httpHeaders:  Seq[(String, String)])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] = {
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Delete(url)))
   }
 
-  override def doPost(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+  override def doPost(
+      url: String,
+      httpHeaders:  Seq[(String, String)])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] = {
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Post(url)))
   }
 
-  override def doPost[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req): Future[HttpClientResponse] = {
+  override def doPost[Req: TypeTag: Writes](
+      url: String,
+      httpHeaders:  Seq[(String, String)],
+      body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] = {
     implicit val marshaller = createMarshaller[Req]
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Post(url, body)))
   }
 
-  override def doPut(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] = {
+  override def doPut(
+      url: String,
+      httpHeaders:  Seq[(String, String)])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] = {
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Put(url)))
   }
 
-  override def doPut[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req): Future[HttpClientResponse] = {
+  override def doPut[Req: TypeTag: Writes](
+      url: String,
+      httpHeaders:  Seq[(String, String)],
+      body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] = {
     implicit val marshaller = createMarshaller[Req]
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Put(url, body)))
   }
 
-  def sendAndReceive = sendReceive
+  def sendAndReceive(implicit executionContext: ExecutionContext) = sendReceive
 
-  private def preparePipeline(httpHeaders: Seq[RawHeader]): HttpRequest => Future[HttpResponse] = {
+  private def preparePipeline(httpHeaders: Seq[RawHeader])(implicit executionContext: ExecutionContext): HttpRequest => Future[HttpResponse] = {
     addHeaders(httpHeaders.toList) ~> sendAndReceive
   }
 
@@ -62,7 +74,7 @@ trait SprayHttpClient extends HttpClient {
       (value, contentType, ctx) => ctx.marshalTo(HttpEntity(contentType, Json.toJson(value).toString()))
     }
 
-  private def transformResponse(httpResponse: Future[HttpResponse]): Future[HttpClientResponse] =
+  private def transformResponse(httpResponse: Future[HttpResponse])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     httpResponse.transform(
       response => HttpClientResponse(response.status.intValue, readResponse(response.entity)),
       cause => cause

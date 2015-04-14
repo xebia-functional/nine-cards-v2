@@ -34,7 +34,7 @@ trait SprayHttpClientSupport
 
   val acceptedBody: Option[SampleRequest] = None
 
-  override def sendAndReceive = {
+  override def sendAndReceive(implicit executionContext: ExecutionContext) = {
     (req: HttpRequest) => {
       if (isValidMethod(req) && isValidBody(req))
         Future.successful(mockResponse)

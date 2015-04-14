@@ -6,6 +6,8 @@ dist
 /out
 /RUNNING_PID
 /.ivy*
+debug.properties
+release.properties
 
 # sbt specific
 /.sbt

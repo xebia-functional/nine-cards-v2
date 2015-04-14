@@ -3,6 +3,7 @@ import Libraries.graphics._
 import Libraries.macroid._
 import Libraries.playServices._
 import Versions._
+import Libraries.net._
 import android.Keys._
 import sbt.Keys._
 import sbt._
@@ -47,19 +48,20 @@ object Settings {
   // Commons
 
   lazy val commonSettings = Seq(
-    scalaVersion := scalaV,
+    scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers)
 
   lazy val commonDependencies = Seq(
     aar(multiDexLib),
     aar(androidSupportv4),
     aar(androidAppCompat),
-    aar(androidRecyclerview),
-    aar(androidCardView),
     aar(macroidRoot),
     aar(macroidExtras),
+    aar(androidRecyclerview),
+    aar(androidCardView),
     aar(playServicesBase),
     glide,
+    okHttp,
     compilerPlugin(Libraries.wartRemover))
 
   lazy val commonResolvers = Seq(
@@ -88,7 +90,7 @@ object Settings {
     "-keep class android.** { *; }",
     "-keep class com.google.** { *; }"
   )
-
+  
   lazy val multiDex = Seq(
     dexMaxHeap in Android := "2048m",
     dexMulti in Android := true,

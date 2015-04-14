@@ -1,7 +1,9 @@
 import Libraries.akka._
 import Libraries.json._
 import Libraries.net._
+import Libraries.scalaz._
 import Libraries.test._
+import ReplacePropertiesGenerator._
 import Settings._
 import Versions._
 import android.Keys._
@@ -15,7 +17,7 @@ object AppBuild extends Build {
 
   lazy val root = Project(id = "root", base = file("."))
       .settings(
-        scalaVersion := scalaV,
+        scalaVersion := Versions.scalaV,
         name := "9 Cards 2.0",
         scalacOptions ++= Seq("-feature", "-deprecation"),
         platformTarget in Android := "android-21",
@@ -23,7 +25,7 @@ object AppBuild extends Build {
         packageRelease <<= packageRelease in Android in app,
         packageDebug <<= packageDebug in Android in app,
         install <<= install in Android in app,
-        run <<= run in Android in app,
+        run <<= (run in Android in app).dependsOn(setDebugTask(true)),
         packageName in Android := "com.fortysevendeg.ninecardslauncher"
       )
       .aggregate(app, api, repository)
@@ -31,6 +33,7 @@ object AppBuild extends Build {
   lazy val app = Project(id = "app", base = file("modules/app"))
       .androidBuildWith(api, repository)
       .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
+      .settings(packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask))
       .settings(apkbuildExcludes in Android ++= Seq(
     "META-INF/LICENSE",
     "META-INF/LICENSE.txt",
@@ -51,5 +54,10 @@ object AppBuild extends Build {
       .settings(apiSettings: _*)
 
   val repository = Project(id = "repository", base = file("modules/repository"))
+      .settings(
+        libraryDependencies ++= Seq(
+          scalaz,
+          specs2,
+          mockito))
       .settings(repositorySettings: _*)
 }
