@@ -12,37 +12,35 @@ trait OkHttpClient extends HttpClient {
   
   val okHttpClient = new okHttp.OkHttpClient
 
-  implicit val executionContext: ExecutionContext
-
   val jsonMediaType = okHttp.MediaType.parse("application/json")
 
   val textPlainMediaType = okHttp.MediaType.parse("text/plain")
 
-  override def doGet(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] =
+  override def doGet(url: String, httpHeaders:  Seq[(String, String)])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(GET, url, httpHeaders)
 
 
-  override def doDelete(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] =
+  override def doDelete(url: String, httpHeaders:  Seq[(String, String)])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(DELETE, url, httpHeaders)
 
 
-  override def doPost(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] =
+  override def doPost(url: String, httpHeaders:  Seq[(String, String)])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(POST, url, httpHeaders)
 
 
-  override def doPost[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req): Future[HttpClientResponse] =
+  override def doPost[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(POST, url, httpHeaders, Some(Json.toJson(body).toString()))
 
 
-  override def doPut(url: String, httpHeaders:  Seq[(String, String)]): Future[HttpClientResponse] =
+  override def doPut(url: String, httpHeaders:  Seq[(String, String)])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(PUT, url, httpHeaders)
 
 
-  override def doPut[Req: TypeTag: Writes](url: String, httpHeaders: Seq[(String, String)], body: Req): Future[HttpClientResponse] =
+  override def doPut[Req: TypeTag: Writes](url: String, httpHeaders: Seq[(String, String)], body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(PUT, url, httpHeaders, Some(Json.toJson(body).toString()))
 
 
-  private def doMethod(method: Method, url: String, httpHeaders:  Seq[(String, String)], body: Option[String] = None): Future[HttpClientResponse] =
+  private def doMethod(method: Method, url: String, httpHeaders:  Seq[(String, String)], body: Option[String] = None)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     Future {
       val builder = createBuilderRequest(url, httpHeaders)
       val request = (method match {

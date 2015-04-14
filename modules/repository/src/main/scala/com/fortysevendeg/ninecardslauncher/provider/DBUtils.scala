@@ -35,7 +35,7 @@ trait DBUtils {
 
   def getListFromCursor[T](cursor: Option[Cursor], conversionFunction: Cursor => T): Seq[T] = {
     @tailrec
-    def getListFromEntityLoop(cursor: Cursor, result: Seq[T]): Seq[T] = {
+    def getListFromEntityLoop(cursor: Cursor, result: Seq[T]): Seq[T] =
       cursor match {
         case validCursor if validCursor.isAfterLast => result
         case _ => {
@@ -44,7 +44,6 @@ trait DBUtils {
           getListFromEntityLoop(cursor, entity +: result)
         }
       }
-    }
 
     cursor match {
       case Some(cursorObject) if cursorObject.moveToFirst() => {

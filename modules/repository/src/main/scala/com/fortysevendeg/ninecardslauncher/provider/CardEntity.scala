@@ -46,7 +46,7 @@ object CardEntity {
     NumDownloads,
     Notification)
 
-  def cardEntityFromCursor(cursor: Cursor) = {
+  def cardEntityFromCursor(cursor: Cursor) =
     CardEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
       data = CardEntityData(
@@ -61,12 +61,11 @@ object CardEntity {
         micros = cursor.getInt(cursor.getColumnIndex(Micros)),
         numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
         notification = cursor.getString(cursor.getColumnIndex(Notification))))
-  }
 }
 
 object CardEntityData {
 
-  def cardEntityDataFromCursor(cursor: Cursor) = {
+  def cardEntityDataFromCursor(cursor: Cursor) =
     CardEntityData(
       position = cursor.getInt(cursor.getColumnIndex(Position)),
       collectionId = cursor.getInt(cursor.getColumnIndex(CollectionId)),
@@ -79,5 +78,4 @@ object CardEntityData {
       micros = cursor.getInt(cursor.getColumnIndex(Micros)),
       numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
       notification = cursor.getString(cursor.getColumnIndex(Notification)))
-  }
 }

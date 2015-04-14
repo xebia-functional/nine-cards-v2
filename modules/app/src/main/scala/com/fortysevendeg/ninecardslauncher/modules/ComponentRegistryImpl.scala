@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules
 
 import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.modules.api.impl.ApiServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl.AppManagerServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.image.impl.ImageServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.persistent.impl.PersistentServicesComponentImpl
@@ -13,4 +14,5 @@ trait ComponentRegistryImpl
   with AppManagerServicesComponentImpl
   with RepositoryServicesComponentImpl
   with PersistentServicesComponentImpl
+  with ApiServicesComponentImpl
 

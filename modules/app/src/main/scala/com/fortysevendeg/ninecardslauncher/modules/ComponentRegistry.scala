@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules
 
+import com.fortysevendeg.ninecardslauncher.modules.api.ApiServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.AppManagerServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
@@ -10,3 +11,4 @@ trait ComponentRegistry
   with AppManagerServicesComponent
   with RepositoryServicesComponent
   with PersistentServicesComponent
+  with ApiServicesComponent

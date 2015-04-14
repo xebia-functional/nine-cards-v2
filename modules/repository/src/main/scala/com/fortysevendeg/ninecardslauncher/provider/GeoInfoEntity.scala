@@ -31,7 +31,7 @@ object GeoInfoEntity {
     Longitude,
     System)
 
-  def geoInfoEntityFromCursor(cursor: Cursor) = {
+  def geoInfoEntityFromCursor(cursor: Cursor) =
     GeoInfoEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
       data = GeoInfoEntityData(
@@ -41,12 +41,11 @@ object GeoInfoEntity {
         latitude = cursor.getDouble(cursor.getColumnIndex(Latitude)),
         longitude = cursor.getDouble(cursor.getColumnIndex(Longitude)),
         system = cursor.getInt(cursor.getColumnIndex(System)) > 0))
-  }
 }
 
 object GeoInfoEntityData {
 
-  def geoInfoEntityDataFromCursor(cursor: Cursor) = {
+  def geoInfoEntityDataFromCursor(cursor: Cursor) =
     GeoInfoEntityData(
       constrain = cursor.getString(cursor.getColumnIndex(Constrain)),
       occurrence = cursor.getString(cursor.getColumnIndex(Occurrence)),
@@ -54,5 +53,4 @@ object GeoInfoEntityData {
       latitude = cursor.getDouble(cursor.getColumnIndex(Latitude)),
       longitude = cursor.getDouble(cursor.getColumnIndex(Longitude)),
       system = cursor.getInt(cursor.getColumnIndex(System)) > 0)
-  }
 }
