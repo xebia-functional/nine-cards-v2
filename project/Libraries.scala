@@ -4,7 +4,6 @@ object Libraries {
 
   def onCompile(dep: ModuleID): ModuleID = dep % "compile"
   def onTest(dep: ModuleID): ModuleID = dep % "test"
-  def intransitive(dep: ModuleID): ModuleID = dep intransitive()
 
   //Plugins:
   lazy val wartRemover = "org.brianmckenna" %% "wartremover" % Versions.wartremoverV
