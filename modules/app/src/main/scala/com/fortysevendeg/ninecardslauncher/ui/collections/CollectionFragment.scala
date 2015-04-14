@@ -74,14 +74,14 @@ class CollectionFragment
               override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = {
                 super.onScrolled(recyclerView, dx, dy)
                 scrollY = scrollY + dy
-                if (activeFragment) {
+                if (activeFragment && collection.cards.length > NumSpaces) {
                   scrolledListener map (_.scrollY(scrollY, dy))
                 }
               }
 
               override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE  && collection.cards.length > NumSpaces) {
                   scrolledListener map {
                     sl =>
                       val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollType.Down) else (spaceMove, ScrollType.Up)
