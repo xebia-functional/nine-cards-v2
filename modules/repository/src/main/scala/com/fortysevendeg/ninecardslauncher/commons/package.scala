@@ -18,9 +18,8 @@ package object utils {
 package object concurrent {
   // Convenience function that wraps Future.successful and returns a successful Future if all goes well,
   // or a failed one if there is an exception.
-  def now[T](body: => T)(implicit context: ExecutionContext) : Future[T] = {
+  def now[T](body: => T)(implicit context: ExecutionContext): Future[T] =
     (Try(body) map Future.successful recover {
       case ex => Future.failed(ex)
     }).get
-  }
 }

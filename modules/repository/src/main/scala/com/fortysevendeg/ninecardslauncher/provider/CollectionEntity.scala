@@ -43,7 +43,7 @@ object CollectionEntity {
     SharedCollectionId,
     SharedCollectionSubscribed)
 
-  def collectionEntityFromCursor(cursor: Cursor) = {
+  def collectionEntityFromCursor(cursor: Cursor) =
     CollectionEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
       data = CollectionEntityData(
@@ -57,12 +57,11 @@ object CollectionEntity {
         originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(OriginalSharedCollectionId)),
         sharedCollectionId = cursor.getString(cursor.getColumnIndex(SharedCollectionId)),
         sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(SharedCollectionSubscribed)) > 0))
-  }
 }
 
 object CollectionEntityData {
 
-  def collectionEntityDataFromCursor(cursor: Cursor) = {
+  def collectionEntityDataFromCursor(cursor: Cursor) =
     CollectionEntityData(
       position = cursor.getInt(cursor.getColumnIndex(Position)),
       name = cursor.getString(cursor.getColumnIndex(Name)),
@@ -74,5 +73,4 @@ object CollectionEntityData {
       originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(OriginalSharedCollectionId)),
       sharedCollectionId = cursor.getString(cursor.getColumnIndex(SharedCollectionId)),
       sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(SharedCollectionSubscribed)) > 0)
-  }
 }

@@ -31,7 +31,7 @@ object CacheCategoryEntity {
     RatingsCount,
     CommentCount)
 
-  def cacheCategoryEntityFromCursor(cursor: Cursor) = {
+  def cacheCategoryEntityFromCursor(cursor: Cursor) =
     CacheCategoryEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
       data = CacheCategoryEntityData(
@@ -41,12 +41,11 @@ object CacheCategoryEntity {
         numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
         ratingsCount = cursor.getInt(cursor.getColumnIndex(RatingsCount)),
         commentCount = cursor.getInt(cursor.getColumnIndex(CommentCount))))
-  }
 }
 
 object CacheCategoryEntityData {
 
-  def cacheCategoryEntityDataFromCursor(cursor: Cursor) = {
+  def cacheCategoryEntityDataFromCursor(cursor: Cursor) =
     CacheCategoryEntityData(
       packageName = cursor.getString(cursor.getColumnIndex(PackageName)),
       category = cursor.getString(cursor.getColumnIndex(Category)),
@@ -54,5 +53,4 @@ object CacheCategoryEntityData {
       numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
       ratingsCount = cursor.getInt(cursor.getColumnIndex(RatingsCount)),
       commentCount = cursor.getInt(cursor.getColumnIndex(CommentCount)))
-  }
 }
