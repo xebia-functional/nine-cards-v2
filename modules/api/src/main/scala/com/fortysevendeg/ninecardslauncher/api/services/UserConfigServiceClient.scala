@@ -5,13 +5,15 @@ import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits
 import com.fortysevendeg.rest.client.ServiceClient
 import play.api.libs.json.{Writes, Reads}
 
+import scala.concurrent.ExecutionContext
+
 trait UserConfigServiceClient
     extends ServiceClient
     with UserConfigImplicits {
 
   val prefixPathUserConfig = "/ninecards/userconfig"
 
-  def getUserConfig(headers: Seq[(String, String)])(implicit reads: Reads[UserConfig]) =
+  def getUserConfig(headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[UserConfig]) =
     get[UserConfig](
       path = prefixPathUserConfig,
       headers = headers,
@@ -19,7 +21,7 @@ trait UserConfigServiceClient
 
   def saveDevice(
       device: UserConfigDevice,
-      headers: Seq[(String, String)])(implicit reads: Reads[UserConfig], writes: Writes[UserConfigDevice]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[UserConfig], writes: Writes[UserConfigDevice]) =
     put[UserConfigDevice, UserConfig](
       path = s"$prefixPathUserConfig/device",
       headers = headers,
@@ -28,7 +30,7 @@ trait UserConfigServiceClient
 
   def saveGeoInfo(
       geoInfo: UserConfigGeoInfo,
-      headers: Seq[(String, String)])(implicit reads: Reads[UserConfig], writes: Writes[UserConfigGeoInfo]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[UserConfig], writes: Writes[UserConfigGeoInfo]) =
     put[UserConfigGeoInfo, UserConfig](
       path = s"$prefixPathUserConfig/geoInfo",
       headers = headers,
@@ -37,13 +39,13 @@ trait UserConfigServiceClient
 
   def checkpointPurchaseProduct(
       product: String,
-      headers: Seq[(String, String)])(implicit reads: Reads[UserConfig]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[UserConfig]) =
     emptyPut[UserConfig](
       path = s"$prefixPathUserConfig/checkpoint/purchase/$product",
       headers = headers,
       reads = Some(reads))
 
-  def checkpointCustomCollection(headers: Seq[(String, String)])(implicit reads: Reads[UserConfig]) =
+  def checkpointCustomCollection(headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[UserConfig]) =
     emptyPut[UserConfig](
       path = s"$prefixPathUserConfig/checkpoint/collection",
       headers = headers,
@@ -51,7 +53,7 @@ trait UserConfigServiceClient
 
   def checkpointJoinedBy(
       otherConfigId: String,
-      headers: Seq[(String, String)])(implicit reads: Reads[UserConfig]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[UserConfig]) =
     emptyPut[UserConfig](
       path = s"$prefixPathUserConfig/checkpoint/joined/$otherConfigId",
       headers = headers,
@@ -59,7 +61,7 @@ trait UserConfigServiceClient
 
   def tester(
       replace: Map[String, String],
-      headers: Seq[(String, String)])(implicit reads: Reads[UserConfig]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[UserConfig]) =
     put[Map[String, String], UserConfig](
       path = s"$prefixPathUserConfig/tester",
       headers = headers,
