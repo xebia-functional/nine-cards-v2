@@ -1,6 +1,7 @@
 import Libraries.akka._
 import Libraries.json._
 import Libraries.net._
+import Libraries.scalaz._
 import Libraries.test._
 import ReplacePropertiesGenerator._
 import Settings._
@@ -16,7 +17,7 @@ object AppBuild extends Build {
 
   lazy val root = Project(id = "root", base = file("."))
       .settings(
-        scalaVersion := scalaV,
+        scalaVersion := Versions.scalaV,
         name := "9 Cards 2.0",
         scalacOptions ++= Seq("-feature", "-deprecation"),
         platformTarget in Android := "android-21",
@@ -53,5 +54,10 @@ object AppBuild extends Build {
       .settings(apiSettings: _*)
 
   val repository = Project(id = "repository", base = file("modules/repository"))
+      .settings(
+        libraryDependencies ++= Seq(
+          scalaz,
+          specs2,
+          mockito))
       .settings(repositorySettings: _*)
 }
