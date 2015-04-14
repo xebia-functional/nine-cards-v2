@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{AppContext, Contexts, Tweak, Ui}
+import CollectionFragment._
 
 class CollectionFragment
   extends Fragment
@@ -28,20 +29,23 @@ class CollectionFragment
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
+  lazy val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+
   lazy val layoutManager = new GridLayoutManager(appContextProvider.get, NumInLine)
 
-  var scrolledListener: Option[ScrolledListener] = None
-
   var sType = -1
+
+  lazy val position = getArguments.getInt(KeyPosition, 0)
+
+  lazy val collection = getArguments.getSerializable(KeyCollection).asInstanceOf[Collection]
+
+  var scrolledListener: Option[ScrolledListener] = None
 
   var activeFragment = false
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = layout
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    import CollectionFragment._
-    val position = getArguments.getInt(KeyPosition, 0)
-    val collection = getArguments.getSerializable(KeyCollection).asInstanceOf[Collection]
     sType = getArguments.getInt(KeyScrollType, ScrollType.Down)
 
     runUi(recyclerView <~ vGlobalLayoutListener(view => {
@@ -49,7 +53,7 @@ class CollectionFragment
       val paddingTop = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
       val heightCard = (view.getHeight - (padding + paddingTop)) / NumInLine
       loadCollection(collection, heightCard) ~
-        uiHandler(recyclerView <~ vScrollBy(0, if (sType == ScrollType.Up) spaceMove else 0))
+        uiHandler(startScroll())
     }))
     super.onViewCreated(view, savedInstanceState)
   }
@@ -96,15 +100,23 @@ class CollectionFragment
       }
   }
 
-  def scrollType(newSType: Int): Ui[_] =
-    sType match {
-      case t if t != newSType =>
-        sType = newSType
-        recyclerView <~
-          vScrollBy(0, -10000) <~
-          (if (sType == ScrollType.Up) vScrollBy(0, spaceMove) else Tweak.blank)
-      case _ => Ui.nop
-    }
+  def startScroll(): Ui[_] = (collection.cards.length, sType) match {
+    case (cards, s) if cards > NumSpaces => recyclerView <~ vScrollBy(0, if (s == ScrollType.Up) spaceMove else 0)
+    case (_, s) => recyclerView <~ vPadding(padding, if (s == ScrollType.Up) padding else spaceMove, padding, padding)
+    case _ => Ui.nop
+  }
+
+  def scrollType(newSType: Int): Ui[_] = (collection.cards.length, sType) match {
+    case (cards, s) if s != newSType && cards > NumSpaces =>
+      sType = newSType
+      recyclerView <~
+        vScrollBy(0, -Int.MaxValue) <~
+        (if (sType == ScrollType.Up) vScrollBy(0, spaceMove) else Tweak.blank)
+    case (_, s) if s != newSType =>
+      sType = newSType
+      recyclerView <~ vPadding(padding, if (newSType == ScrollType.Up) padding else spaceMove, padding, padding)
+    case _ => Ui.nop
+  }
 
   override def onAttach(activity: Activity): Unit = {
     super.onAttach(activity)

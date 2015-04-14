@@ -86,6 +86,7 @@ trait RepositoryServicesComponentImpl
       apps match {
         case Nil if newCollection.cards.length > 0 => collections :+ newCollection
         case Nil => collections
+        case h :: t if collections.length == 2 && newCollection.cards.length > 4 => getCollection(t, collections :+ newCollection, createNewCollection())
         case h :: t if newCollection.cards.length > 13 => getCollection(t, collections :+ newCollection, createNewCollection())
         case h :: t => {
           val col = newCollection.copy(cards = newCollection.cards :+ toCard(h))

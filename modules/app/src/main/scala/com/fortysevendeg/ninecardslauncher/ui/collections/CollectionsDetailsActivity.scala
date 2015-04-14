@@ -56,7 +56,7 @@ class CollectionsDetailsActivity
       collectionsAdapter = Some(adapter)
       runUi(
         (viewPager <~ vpAdapter(adapter)) ~
-          Ui { adapter.activateFragment(0) } ~
+          Ui(adapter.activateFragment(0)) ~
           (tabs <~
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
@@ -129,6 +129,7 @@ class CollectionsDetailsActivity
 
 trait ScrolledListener {
   def scrollY(scroll: Int, dy: Int)
+
   def scrollType(sType: Int)
 }
 
