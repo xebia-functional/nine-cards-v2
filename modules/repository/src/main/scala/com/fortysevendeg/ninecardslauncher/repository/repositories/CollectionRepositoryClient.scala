@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.content.ContentValues
 import android.net.Uri
 import android.net.Uri._
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.commons.OptionTFutureConversion._
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity.{Position, Type, _}
 import com.fortysevendeg.ninecardslauncher.provider.{CollectionEntity, DBUtils, NineCardsContentProvider}
@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.util.Try
 import scalaz.OptionT.optionT
 
@@ -20,7 +20,9 @@ trait CollectionRepositoryClient
     extends CardRepositoryClient
     with DBUtils {
 
-  self: AppContextProvider =>
+  self: ContentResolverProvider =>
+
+  implicit val executionContext: ExecutionContext
 
   def addCollection: Service[AddCollectionRequest, AddCollectionResponse] =
     request =>
@@ -39,7 +41,7 @@ trait CollectionRepositoryClient
           contentValues.put(SharedCollectionId, request.data.sharedCollectionId getOrElse "")
           contentValues.put(SharedCollectionSubscribed, request.data.sharedCollectionSubscribed)
 
-          val uri = appContextProvider.get.getContentResolver.insert(
+          val uri = contentResolver.insert(
             NineCardsContentProvider.ContentUriCollection,
             contentValues)
 
@@ -55,7 +57,7 @@ trait CollectionRepositoryClient
     request =>
       tryToFuture {
         Try {
-          appContextProvider.get.getContentResolver.delete(
+          contentResolver.delete(
             withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.collection.id.toString),
             "",
             Array.empty)
@@ -116,7 +118,7 @@ trait CollectionRepositoryClient
           contentValues.put(SharedCollectionId, request.collection.sharedCollectionId getOrElse "")
           contentValues.put(SharedCollectionSubscribed, request.collection.sharedCollectionSubscribed)
 
-          appContextProvider.get.getContentResolver.update(
+          contentResolver.update(
             withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.collection.id.toString),
             contentValues,
             "",
@@ -137,7 +139,7 @@ trait CollectionRepositoryClient
       selectionArgs: Array[String] = Array.empty[String],
       sortOrder: String = "") =
     Try {
-      val cursor = Option(appContextProvider.get.getContentResolver.query(uri, projection, selection, selectionArgs, sortOrder))
+      val cursor = Option(contentResolver.query(uri, projection, selection, selectionArgs, sortOrder))
       getEntityFromCursor(cursor, collectionEntityFromCursor) map toCollection
     }
 

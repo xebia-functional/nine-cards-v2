@@ -1,23 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.provider
 
-import android.content.Context
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
-import com.fortysevendeg.macroid.extras.AppContextProvider
-import NineCardsSqlHelper._
+import com.fortysevendeg.ninecardslauncher.provider.NineCardsSqlHelper._
 
 import scala.annotation.tailrec
 
 trait DBUtils {
 
-  self: AppContextProvider =>
+  self: ContentResolverProvider =>
 
   def emptyAllTables = {
-    val resolver = appContextProvider.get.getContentResolver
-    resolver.delete(ContentUriCacheCategory, "", Array.empty)
-    resolver.delete(ContentUriCard, "", Array.empty)
-    resolver.delete(ContentUriCollection, "", Array.empty)
-    resolver.delete(ContentUriGeoInfo, "", Array.empty)
+    contentResolver.delete(ContentUriCacheCategory, "", Array.empty)
+    contentResolver.delete(ContentUriCard, "", Array.empty)
+    contentResolver.delete(ContentUriCollection, "", Array.empty)
+    contentResolver.delete(ContentUriGeoInfo, "", Array.empty)
   }
 
   def execAllVersionsDB() = (1 to DatabaseVersion) foreach { version => execVersion(version) }

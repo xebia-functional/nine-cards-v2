@@ -27,7 +27,7 @@
                 android:name="com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity" />
 
         <provider
-                android:authorities="com.fortysevendeg.ninecardslauncher"
+                android:authorities="com.fortysevendeg.ninecardslauncher2"
                 android:name="com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider"
                 android:exported="false" />
 

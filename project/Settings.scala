@@ -53,6 +53,9 @@ object Settings {
   lazy val commonDependencies = Seq(
     aar(multiDexLib),
     aar(androidSupportv4),
+    aar(androidAppCompat),
+    aar(macroidRoot),
+    aar(macroidExtras),
     aar(androidRecyclerview),
     aar(androidCardView),
     aar(playServicesBase),
@@ -85,7 +88,7 @@ object Settings {
     "-keep class android.** { *; }",
     "-keep class com.google.** { *; }"
   )
-
+  
   lazy val multiDex = Seq(
     dexMaxHeap in Android := "2048m",
     dexMulti in Android := true,

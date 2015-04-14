@@ -116,7 +116,7 @@ class NineCardsContentProvider extends ContentProvider {
 
 object NineCardsContentProvider {
   val InvalidUri = "Invalid uri: "
-  val AuthorityPart = "com.fortysevendeg.ninecardslauncher"
+  val AuthorityPart = "com.fortysevendeg.ninecardslauncher2"
   val ContentPrefix = "content://"
   val ContentUriCacheCategory = Uri.parse(s"$ContentPrefix$AuthorityPart/${CacheCategoryEntity.Table}")
   val CodeCacheCategoryAllItems = 1

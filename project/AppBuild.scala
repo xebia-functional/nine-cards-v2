@@ -1,6 +1,5 @@
 import Libraries.akka._
 import Libraries.json._
-import Libraries.macroid._
 import Libraries.net._
 import Libraries.scalaz._
 import Libraries.test._
@@ -55,9 +54,6 @@ object AppBuild extends Build {
   val repository = Project(id = "repository", base = file("modules/repository"))
       .settings(
         libraryDependencies ++= Seq(
-          aar(androidAppCompat),
-          aar(macroidRoot),
-          aar(macroidExtras),
           scalaz,
           specs2,
           mockito))
