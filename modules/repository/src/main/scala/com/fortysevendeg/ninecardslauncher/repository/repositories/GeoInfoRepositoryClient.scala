@@ -3,21 +3,22 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri._
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
 import com.fortysevendeg.ninecardslauncher.repository._
-import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.util.Try
 
 trait GeoInfoRepositoryClient extends DBUtils {
 
-  self: AppContextProvider =>
+  self: ContentResolverProvider =>
 
+  implicit val executionContext: ExecutionContext
+  
   def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
     request =>
       tryToFuture {
@@ -31,7 +32,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
           contentValues.put(Longitude, request.data.longitude)
           contentValues.put(System, request.data.system)
 
-          val uri = appContextProvider.get.getContentResolver.insert(
+          val uri = contentResolver.insert(
             NineCardsContentProvider.ContentUriGeoInfo,
             contentValues)
 
@@ -47,7 +48,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          appContextProvider.get.getContentResolver.delete(
+          contentResolver.delete(
             withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.geoInfo.id.toString),
             "",
             Array.empty)
@@ -64,7 +65,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
+          val cursor: Option[Cursor] = Option(contentResolver.query(
             withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.id.toString),
             Array.empty,
             "",
@@ -84,7 +85,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
+          val cursor: Option[Cursor] = Option(contentResolver.query(
             NineCardsContentProvider.ContentUriGeoInfo,
             AllFields,
             s"$Constrain = ?",
@@ -111,7 +112,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
           contentValues.put(Longitude, request.geoInfo.longitude)
           contentValues.put(System, request.geoInfo.system)
 
-          appContextProvider.get.getContentResolver.update(
+          contentResolver.update(
             withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.geoInfo.id.toString),
             contentValues,
             "",

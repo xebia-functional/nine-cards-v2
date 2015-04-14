@@ -3,19 +3,21 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri._
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import scala.util.Try
 
 trait CacheCategoryRepositoryClient extends DBUtils {
 
-  self: AppContextProvider =>
+  self: ContentResolverProvider =>
+
+  implicit val executionContext: ExecutionContext
 
   def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
     request =>
@@ -29,7 +31,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
           contentValues.put(RatingsCount, request.data.ratingsCount.asInstanceOf[java.lang.Integer])
           contentValues.put(CommentCount, request.data.commentCount.asInstanceOf[java.lang.Integer])
 
-          val uri = appContextProvider.get.getContentResolver.insert(
+          val uri = contentResolver.insert(
             NineCardsContentProvider.ContentUriCacheCategory,
             contentValues)
 
@@ -45,7 +47,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          appContextProvider.get.getContentResolver.delete(
+          contentResolver.delete(
             withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.cacheCategory.id.toString),
             "",
             Array.empty)
@@ -63,7 +65,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          appContextProvider.get.getContentResolver.delete(
+          contentResolver.delete(
             NineCardsContentProvider.ContentUriCacheCategory,
             s"$Package = ?",
             Array(request.`package`))
@@ -80,7 +82,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
+          val cursor: Option[Cursor] = Option(contentResolver.query(
             withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.id.toString),
             Array.empty,
             "",
@@ -100,7 +102,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(appContextProvider.get.getContentResolver.query(
+          val cursor: Option[Cursor] = Option(contentResolver.query(
             NineCardsContentProvider.ContentUriCacheCategory,
             AllFields,
             s"$Package = ?",
@@ -127,7 +129,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
           contentValues.put(RatingsCount, request.cacheCategory.ratingsCount.asInstanceOf[java.lang.Integer])
           contentValues.put(CommentCount, request.cacheCategory.commentCount.asInstanceOf[java.lang.Integer])
 
-          appContextProvider.get.getContentResolver.update(
+          contentResolver.update(
             withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.cacheCategory.id.toString),
             contentValues,
             "",
