@@ -19,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks.
 import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{AppContext, Contexts, Ui}
+import macroid.{AppContext, Contexts, Tweak, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -27,11 +27,18 @@ class CollectionsDetailsActivity
   extends ActionBarActivity
   with Contexts[FragmentActivity]
   with Layout
-  with ComponentRegistryImpl {
+  with ComponentRegistryImpl
+  with ScrolledListener {
 
   override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
 
   lazy val systemBarTintManager = new SystemBarTintManager(this)
+
+  lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+
+  lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
+
+  private var collectionsAdapter: Option[CollectionsPagerAdapter] = None
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
@@ -45,19 +52,29 @@ class CollectionsDetailsActivity
       appsResponse <- appManagerServices.getApps(GetAppsRequest())
       GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest(appsResponse.apps))
     } yield {
+      val adapter = new CollectionsPagerAdapter(getSupportFragmentManager, collections)
+      collectionsAdapter = Some(adapter)
       runUi(
-        (viewPager <~ vpAdapter(new CollectionsPagerAdapter(getSupportFragmentManager, collections))) ~
+        (viewPager <~ vpAdapter(adapter)) ~
+          Ui(adapter.activateFragment(0)) ~
           (tabs <~
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
-            (viewPager map (vp => updateCollection(collections(vp.getCurrentItem), false, false)) getOrElse Ui.nop)
+          (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop)
       )
     }
   }
 
-  private def updateCollection(collection: Collection, fromLeft: Boolean, anim: Boolean = true): Ui[_] = resGetDrawableIdentifier(collection.icon + "_detail") map {
-    res => if (anim) icon <~ changeIcon(res, fromLeft) else icon <~ ivSrc(res)
-  } getOrElse Ui.nop
+  private def setIconCollection(collection: Collection): Ui[_] =
+    resGetDrawableIdentifier(s"${collection.icon}_detail") map (r => icon <~ ivSrc(r)) getOrElse Ui.nop
+
+  private def updateCollection(collection: Collection, position: Int, fromLeft: Boolean): Ui[_] =
+    (for {
+      res <- resGetDrawableIdentifier(s"${collection.icon}_detail")
+      adapter <- collectionsAdapter
+    } yield {
+        (icon <~ changeIcon(res, fromLeft)) ~ adapter.notifyChanged(position)
+      }).getOrElse(Ui.nop)
 
   private def updateToolbarColor(color: Int): Ui[_] =
     (toolbar <~ vBackgroundColor(color)) ~
@@ -81,12 +98,50 @@ class CollectionsDetailsActivity
     case _ => super.onOptionsItemSelected(item)
   }
 
+  override def scrollY(scroll: Int, dy: Int): Unit = {
+    runUi(scrolled(scroll))
+  }
+
+  private def scrolled(scroll: Int): Ui[_] = {
+    val move = math.min(scroll, spaceMove)
+    val ratio: Float = move.toFloat / spaceMove.toFloat
+    val newElevation = elevation + (if (ratio >= 1) 1 else 0)
+    val scale = 1 - (ratio / 2)
+    (tabs <~ vTranslationY(-move) <~ uiElevation(newElevation)) ~
+      (toolbar <~ vTranslationY(-move * 2) <~ uiElevation(newElevation)) ~
+      (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
+  }
+
+  private def uiElevation(elevation: Float) = Lollipop.ifSupportedThen {
+    vElevation(elevation)
+  }.getOrElse(Tweak.blank)
+
+  override def scrollType(sType: Int): Unit = {
+    for {
+      vp <- viewPager
+      adapter <- collectionsAdapter
+    } yield {
+      adapter.setScrollType(sType)
+      runUi(adapter.notifyChanged(vp.getCurrentItem))
+    }
+  }
+}
+
+trait ScrolledListener {
+  def scrollY(scroll: Int, dy: Int)
+
+  def scrollType(sType: Int)
+}
+
+object ScrollType {
+  val Up = 0
+  val Down = 1
 }
 
 class OnPageChangeCollectionsListener(
-  collections: Seq[Collection],
-  updateToolbarColor: Int => Ui[_],
-  updateCollection: (Collection, Boolean, Boolean) => Ui[_])(implicit appContext: AppContext)
+                                       collections: Seq[Collection],
+                                       updateToolbarColor: Int => Ui[_],
+                                       updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
   extends OnPageChangeListener
   with ComponentRegistryImpl {
 
@@ -111,7 +166,7 @@ class OnPageChangeCollectionsListener(
   override def onPageSelected(position: Int): Unit = {
     val fromLeft = position < lastSelected
     lastSelected = position
-    runUi(updateCollection(collections(position), fromLeft, true))
+    runUi(updateCollection(collections(position), position, fromLeft))
   }
 
 }
