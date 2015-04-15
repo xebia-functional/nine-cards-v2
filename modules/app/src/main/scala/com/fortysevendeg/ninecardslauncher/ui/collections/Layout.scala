@@ -23,6 +23,8 @@ trait Layout
 
   var tabs = slot[SlidingTabLayout]
 
+  var iconContent = slot[FrameLayout]
+
   var icon = slot[ImageView]
 
   def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
@@ -30,9 +32,9 @@ trait Layout
       darkToolbar <~ toolbarStyle <~ wire(toolbar),
       l[FrameLayout](
         w[ImageView] <~ iconStyle <~ wire(icon)
-      ) <~ iconContentStyle,
-      l[SlidingTabLayout]() <~ tabsStyle <~ wire(tabs),
-      l[ViewPager]() <~ viewPagerStyle <~ wire(viewPager) <~ id(Id.pager) // ViewPager need set resource id
+      ) <~ iconContentStyle <~ wire(iconContent),
+      l[ViewPager]() <~ viewPagerStyle <~ wire(viewPager) <~ id(Id.pager), // ViewPager need set resource id
+      l[SlidingTabLayout]() <~ tabsStyle <~ wire(tabs)
     ) <~ rootStyle
   )
 

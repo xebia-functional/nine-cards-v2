@@ -5,10 +5,12 @@ import android.graphics.Color
 import android.support.v4.view.ViewPager
 import android.util.{AttributeSet, TypedValue}
 import android.view.View.OnClickListener
+import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View, ViewGroup}
-import android.widget.{HorizontalScrollView, TextView}
+import android.widget.{FrameLayout, HorizontalScrollView, TextView}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{Transformer, ActivityContext, Tweak, AppContext}
@@ -43,10 +45,13 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(
 
   var selectedTextColor: Int = Color.WHITE
 
+  val params = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+  params.gravity = Gravity.BOTTOM
+
   setHorizontalScrollBarEnabled(false)
   setFillViewport(true)
 
-  addView(tabStrip, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+  addView(tabStrip, params)
 
   def setTabStripColor(color: Int) = tabStrip.setColor(color)
 
