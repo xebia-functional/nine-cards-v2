@@ -66,11 +66,11 @@ class CollectionsDetailsActivity
   }
 
   private def setIconCollection(collection: Collection): Ui[_] =
-    resGetDrawableIdentifier(collection.icon + "_detail") map (r => icon <~ ivSrc(r)) getOrElse Ui.nop
+    resGetDrawableIdentifier(s"${collection.icon}_detail") map (r => icon <~ ivSrc(r)) getOrElse Ui.nop
 
   private def updateCollection(collection: Collection, position: Int, fromLeft: Boolean): Ui[_] =
     (for {
-      res <- resGetDrawableIdentifier(collection.icon + "_detail")
+      res <- resGetDrawableIdentifier(s"${collection.icon}_detail")
       adapter <- collectionsAdapter
     } yield {
         (icon <~ changeIcon(res, fromLeft)) ~ adapter.notifyChanged(position)
