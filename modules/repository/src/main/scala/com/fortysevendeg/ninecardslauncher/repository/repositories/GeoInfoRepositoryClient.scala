@@ -20,7 +20,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
 
   implicit val executionContext: ExecutionContext
 
-  def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
+  def addGeoInfo(): Service[AddGeoInfoRequest, AddGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -48,7 +48,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
+  def deleteGeoInfo(): Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -69,14 +69,19 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(contentResolver.query(
+          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.id.toString),
             Array.empty,
             "",
             Array.empty,
             ""))
 
-          GetGeoInfoByIdResponse(result = getEntityFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
+          maybeCursor match {
+            case Some(cursor) =>
+              GetGeoInfoByIdResponse(
+                result = getEntityFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
+            case _ => GetGeoInfoByIdResponse(result = None)
+          }
 
         } recover {
           case e: Exception =>
@@ -89,14 +94,19 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(contentResolver.query(
+          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             NineCardsContentProvider.ContentUriGeoInfo,
             AllFields,
             s"$Constrain = ?",
             Array(request.constrain),
             ""))
 
-          GetGeoInfoByConstrainResponse(result = getEntityFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
+          maybeCursor match {
+            case Some(cursor) =>
+              GetGeoInfoByConstrainResponse(
+                result = getEntityFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
+            case _ => GetGeoInfoByConstrainResponse(result = None)
+          }
 
         } recover {
           case e: Exception =>
@@ -104,7 +114,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
+  def updateGeoInfo(): Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {

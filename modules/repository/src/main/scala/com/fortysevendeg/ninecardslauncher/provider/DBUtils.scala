@@ -25,33 +25,32 @@ trait DBUtils {
 
   def execVersion(version: Int) = {}
 
-  def getEntityFromCursor[T](cursor: Option[Cursor], conversionFunction: Cursor => T): Option[T] = cursor match {
-    case Some(cursorObject) if cursorObject.moveToFirst() =>
-      val result = Some(conversionFunction(cursorObject))
-      cursorObject.close()
+  def getEntityFromCursor[T](cursor: Cursor, conversionFunction: Cursor => T): Option[T] =
+    if (cursor.moveToFirst()) {
+      val result = Some(conversionFunction(cursor))
+      cursor.close()
       result
-    case _ => None
-  }
+    } else {
+      None
+    }
 
-  def getListFromCursor[T](cursor: Option[Cursor], conversionFunction: Cursor => T): Seq[T] = {
+  def getListFromCursor[T](cursor: Cursor, conversionFunction: Cursor => T): Seq[T] = {
     @tailrec
     def getListFromEntityLoop(cursor: Cursor, result: Seq[T]): Seq[T] =
       cursor match {
         case validCursor if validCursor.isAfterLast => result
-        case _ => {
+        case _ =>
           val entity = conversionFunction(cursor)
           cursor.moveToNext
           getListFromEntityLoop(cursor, entity +: result)
-        }
       }
 
-    cursor match {
-      case Some(cursorObject) if cursorObject.moveToFirst() => {
-        val result = getListFromEntityLoop(cursorObject, Seq.empty[T])
-        cursorObject.close()
-        result
-      }
-      case _ => Seq.empty[T]
+    if (cursor.moveToFirst()) {
+      val result = getListFromEntityLoop(cursor, Seq.empty[T])
+      cursor.close()
+      result
+    } else {
+      Seq.empty[T]
     }
   }
 }

@@ -20,7 +20,7 @@ trait CardRepositoryClient extends DBUtils {
 
   implicit val executionContext: ExecutionContext
 
-  def addCard: Service[AddCardRequest, AddCardResponse] =
+  def addCard(): Service[AddCardRequest, AddCardResponse] =
     request =>
       tryToFuture {
         Try {
@@ -53,7 +53,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCard: Service[DeleteCardRequest, DeleteCardResponse] =
+  def deleteCard(): Service[DeleteCardRequest, DeleteCardResponse] =
     request =>
       tryToFuture {
         Try {
@@ -74,14 +74,19 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(contentResolver.query(
+          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             withAppendedPath(NineCardsContentProvider.ContentUriCard, request.id.toString),
             Array.empty,
             "",
             Array.empty,
             ""))
 
-          GetCardByIdResponse(result = getEntityFromCursor(cursor, cardEntityFromCursor) map toCard)
+          maybeCursor match {
+            case Some(cursor) =>
+              GetCardByIdResponse(
+                result = getEntityFromCursor(cursor, cardEntityFromCursor) map toCard)
+            case _ => GetCardByIdResponse(result = None)
+          }
 
         } recover {
           case e: Exception =>
@@ -94,14 +99,19 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(contentResolver.query(
+          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             NineCardsContentProvider.ContentUriCard,
             AllFields,
             s"$CollectionId = ?",
             Array(request.collectionId.toString),
             ""))
 
-          GetCardByCollectionResponse(result = getListFromCursor(cursor, cardEntityFromCursor) map toCard)
+          maybeCursor match {
+            case Some(cursor) =>
+              GetCardByCollectionResponse(
+                result = getListFromCursor(cursor, cardEntityFromCursor) map toCard)
+            case _ => GetCardByCollectionResponse(result = Seq.empty[Card])
+          }
 
         } recover {
           case e: Exception =>
@@ -109,7 +119,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def updateCard: Service[UpdateCardRequest, UpdateCardResponse] =
+  def updateCard(): Service[UpdateCardRequest, UpdateCardResponse] =
     request =>
       tryToFuture {
         Try {

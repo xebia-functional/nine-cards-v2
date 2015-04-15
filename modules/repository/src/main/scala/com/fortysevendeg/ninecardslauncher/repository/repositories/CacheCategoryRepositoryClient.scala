@@ -20,7 +20,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
 
   implicit val executionContext: ExecutionContext
 
-  def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
+  def addCacheCategory(): Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -47,7 +47,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
+  def deleteCacheCategory(): Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -65,7 +65,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
       }
 
 
-  def deleteCacheByPackageCategory: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
+  def deleteCacheByPackageCategory(): Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
     request =>
       tryToFuture {
         Try {
@@ -86,14 +86,19 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(contentResolver.query(
+          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.id.toString),
             Array.empty,
             "",
             Array.empty,
             ""))
 
-          GetCacheCategoryByIdResponse(result = getEntityFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
+          maybeCursor match {
+            case Some(cursor) =>
+              GetCacheCategoryByIdResponse(
+                result = getEntityFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
+            case _ => GetCacheCategoryByIdResponse(result = None)
+          }
 
         } recover {
           case e: Exception =>
@@ -106,22 +111,26 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cursor: Option[Cursor] = Option(contentResolver.query(
+          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             NineCardsContentProvider.ContentUriCacheCategory,
             AllFields,
             s"$PackageName = ?",
             Array(request.`package`),
             ""))
 
-          GetCacheCategoryByPackageResponse(result = getEntityFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
-
+          maybeCursor match {
+            case Some(cursor) =>
+              GetCacheCategoryByPackageResponse(
+                result = getEntityFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
+            case _ => GetCacheCategoryByPackageResponse(result = None)
+          }
         } recover {
           case e: Exception =>
             GetCacheCategoryByPackageResponse(result = None)
         }
       }
 
-  def updateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
+  def updateCacheCategory(): Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
