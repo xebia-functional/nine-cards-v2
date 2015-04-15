@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 import scalaz.OptionT.optionT
 
@@ -24,7 +24,7 @@ trait CollectionRepositoryClient
 
   implicit val executionContext: ExecutionContext
 
-  def addCollection: Service[AddCollectionRequest, AddCollectionResponse] =
+  def addCollection(): Service[AddCollectionRequest, AddCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -56,7 +56,7 @@ trait CollectionRepositoryClient
         }
       }
 
-  def deleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse] =
+  def deleteCollection(): Service[DeleteCollectionRequest, DeleteCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -74,11 +74,18 @@ trait CollectionRepositoryClient
       }
 
   def getCollectionById: Service[GetCollectionByIdRequest, GetCollectionByIdResponse] =
-    request =>
-      for {
+    request => {
+      val collectionInfo = for {
         collection <- tryToFuture(getCollection(withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.id.toString)))
         getCardByCollectionResponse <- getCardByCollection(GetCardByCollectionRequest(request.id))
-      } yield GetCollectionByIdResponse(buildCollectionWithCards(collection, getCardByCollectionResponse.result))
+      } yield (collection, getCardByCollectionResponse.result)
+
+      collectionInfo map {
+        case (Some(collection), cards) =>
+          GetCollectionByIdResponse(result = Some(buildCollectionWithCards(collection, cards)))
+        case _ => GetCollectionByIdResponse(result = None)
+      }
+    }
 
   def getCollectionByOriginalSharedCollectionId:
   Service[GetCollectionByOriginalSharedCollectionIdRequest, GetCollectionByOriginalSharedCollectionIdResponse] =
@@ -88,7 +95,7 @@ trait CollectionRepositoryClient
           selection = s"$OriginalSharedCollectionId = ?",
           selectionArgs = Array(request.sharedCollectionId.toString))))
         getCardByCollectionResponse <- optionT(getCardByCollection(GetCardByCollectionRequest(collection.id)) map { item => Option(item) })
-      } yield GetCollectionByOriginalSharedCollectionIdResponse(buildCollectionWithCards(Option(collection), getCardByCollectionResponse.result))
+      } yield GetCollectionByOriginalSharedCollectionIdResponse(Some(buildCollectionWithCards(collection, getCardByCollectionResponse.result)))
 
       result.run.flatten
     }
@@ -100,12 +107,24 @@ trait CollectionRepositoryClient
           selection = s"$Position = ?",
           selectionArgs = Array(request.position.toString))))
         getCardByCollectionResponse <- optionT(getCardByCollection(GetCardByCollectionRequest(collection.id)) map { item => Option(item) })
-      } yield GetCollectionByPositionResponse(buildCollectionWithCards(Option(collection), getCardByCollectionResponse.result))
+      } yield GetCollectionByPositionResponse(Some(buildCollectionWithCards(collection, getCardByCollectionResponse.result)))
 
       result.run.flatten
     }
 
-  def updateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse] =
+  def getSortedCollections:
+  Service[GetSortedCollectionsRequest, GetSortedCollectionsResponse] =
+    request => {
+      val result = for {
+        collections <- tryToFuture(getCollections(
+          sortOrder = s"$Position asc"))
+        collectionsWithCards <- buildCollectionsWithCards(collections)
+      } yield GetSortedCollectionsResponse(collectionsWithCards)
+
+      result
+    }
+
+  def updateCollection(): Service[UpdateCollectionRequest, UpdateCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -142,11 +161,35 @@ trait CollectionRepositoryClient
       selectionArgs: Array[String] = Array.empty[String],
       sortOrder: String = "") =
     Try {
-      val cursor = Option(contentResolver.query(uri, projection, selection, selectionArgs, sortOrder))
-      getEntityFromCursor(cursor, collectionEntityFromCursor) map toCollection
+      Option(contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)) match {
+        case Some(cursor) => getEntityFromCursor(cursor, collectionEntityFromCursor) map toCollection
+        case _ => None
+      }
     }
 
-  private def buildCollectionWithCards(collection: Option[Collection], cards: Seq[Card]) = collection map {
-    element => element.copy(data = element.data.copy(cards = cards))
-  }
+  private def getCollections(
+      uri: Uri = NineCardsContentProvider.ContentUriCollection,
+      projection: Array[String] = CollectionEntity.AllFields,
+      selection: String = "",
+      selectionArgs: Array[String] = Array.empty[String],
+      sortOrder: String = "") =
+    Try {
+      Option(contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)) match {
+        case Some(cursor) => getListFromCursor(cursor, collectionEntityFromCursor) map toCollection
+        case _ => Seq.empty
+      }
+    }
+
+  private def buildCollectionWithCards(collection: Collection, cards: Seq[Card]) =
+    collection.copy(data = collection.data.copy(cards = cards))
+
+  private def buildCollectionsWithCards(collections: Seq[Collection]) =
+    Future.sequence(
+      collections map {
+        collection =>
+          getCardByCollection(GetCardByCollectionRequest(collection.id)) map {
+            response =>
+              buildCollectionWithCards(collection, response.result)
+          }
+      })
 }

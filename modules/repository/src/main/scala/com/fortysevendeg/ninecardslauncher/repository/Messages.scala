@@ -67,6 +67,10 @@ case class GetCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId: 
 
 case class GetCollectionByOriginalSharedCollectionIdResponse(result: Option[Collection])
 
+case class GetSortedCollectionsRequest()
+
+case class GetSortedCollectionsResponse(collections: Seq[Collection])
+
 case class UpdateCollectionRequest(collection: Collection)
 
 case class UpdateCollectionResponse(success: Boolean)
