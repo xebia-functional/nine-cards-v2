@@ -67,7 +67,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         Try {
           contentResolver.delete(
             NineCardsContentProvider.ContentUriCacheCategory,
-            s"$Package = ?",
+            s"$PackageName = ?",
             Array(request.`package`))
 
           DeleteCacheCategoryByPackageResponse(success = true)
@@ -105,7 +105,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
           val cursor: Option[Cursor] = Option(contentResolver.query(
             NineCardsContentProvider.ContentUriCacheCategory,
             AllFields,
-            s"$Package = ?",
+            s"$PackageName = ?",
             Array(request.`package`),
             ""))
 
