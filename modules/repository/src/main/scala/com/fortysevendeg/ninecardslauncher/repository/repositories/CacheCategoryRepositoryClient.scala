@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
 import com.fortysevendeg.ninecardslauncher.utils._
 
 import scala.concurrent.ExecutionContext
@@ -35,7 +36,10 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             NineCardsContentProvider.ContentUriCacheCategory,
             contentValues)
 
-          AddCacheCategoryResponse(cacheCategory = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
+          AddCacheCategoryResponse(
+            cacheCategory = Some(CacheCategory(
+              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              data = request.data)))
 
         } recover {
           case e: Exception =>
@@ -122,12 +126,12 @@ trait CacheCategoryRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           val contentValues = new ContentValues()
-          contentValues.put(PackageName, request.cacheCategory.packageName)
-          contentValues.put(Category, request.cacheCategory.category)
-          contentValues.put(StarRating, request.cacheCategory.starRating)
-          contentValues.put(NumDownloads, request.cacheCategory.numDownloads)
-          contentValues.put(RatingsCount, request.cacheCategory.ratingsCount.asInstanceOf[java.lang.Integer])
-          contentValues.put(CommentCount, request.cacheCategory.commentCount.asInstanceOf[java.lang.Integer])
+          contentValues.put(PackageName, request.cacheCategory.data.packageName)
+          contentValues.put(Category, request.cacheCategory.data.category)
+          contentValues.put(StarRating, request.cacheCategory.data.starRating)
+          contentValues.put(NumDownloads, request.cacheCategory.data.numDownloads)
+          contentValues.put(RatingsCount, request.cacheCategory.data.ratingsCount.asInstanceOf[java.lang.Integer])
+          contentValues.put(CommentCount, request.cacheCategory.data.commentCount.asInstanceOf[java.lang.Integer])
 
           contentResolver.update(
             withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.cacheCategory.id.toString),

@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.repository
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, GeoInfo, Card, Collection}
+import com.fortysevendeg.ninecardslauncher.repository.model._
 
 
-case class AddCacheCategoryRequest(data: CacheCategory)
+case class AddCacheCategoryRequest(data: CacheCategoryData)
 
 case class AddCacheCategoryResponse(cacheCategory: Option[CacheCategory])
 
@@ -27,7 +27,7 @@ case class UpdateCacheCategoryRequest(cacheCategory: CacheCategory)
 
 case class UpdateCacheCategoryResponse(success: Boolean)
 
-case class AddCardRequest(collectionId: Int, data: Card)
+case class AddCardRequest(collectionId: Int, data: CardData)
 
 case class AddCardResponse(card: Option[Card])
 
@@ -47,7 +47,7 @@ case class UpdateCardRequest(card: Card)
 
 case class UpdateCardResponse(success: Boolean)
 
-case class AddCollectionRequest(data: Collection)
+case class AddCollectionRequest(data: CollectionData)
 
 case class AddCollectionResponse(collection: Option[Collection])
 
@@ -71,7 +71,7 @@ case class UpdateCollectionRequest(collection: Collection)
 
 case class UpdateCollectionResponse(success: Boolean)
 
-case class AddGeoInfoRequest(data: GeoInfo)
+case class AddGeoInfoRequest(data: GeoInfoData)
 
 case class AddGeoInfoResponse(geoInfo: Option[GeoInfo])
 

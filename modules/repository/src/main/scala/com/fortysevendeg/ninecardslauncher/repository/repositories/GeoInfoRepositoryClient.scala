@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
 import com.fortysevendeg.ninecardslauncher.utils._
 
 import scala.concurrent.ExecutionContext
@@ -18,7 +19,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
   self: ContentResolverProvider =>
 
   implicit val executionContext: ExecutionContext
-  
+
   def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
     request =>
       tryToFuture {
@@ -36,7 +37,10 @@ trait GeoInfoRepositoryClient extends DBUtils {
             NineCardsContentProvider.ContentUriGeoInfo,
             contentValues)
 
-          AddGeoInfoResponse(geoInfo = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
+          AddGeoInfoResponse(
+            geoInfo = Some(GeoInfo(
+              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              data = request.data)))
 
         } recover {
           case e: Exception =>
@@ -105,12 +109,12 @@ trait GeoInfoRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           val contentValues = new ContentValues()
-          contentValues.put(Constrain, request.geoInfo.constrain)
-          contentValues.put(Occurrence, request.geoInfo.occurrence)
-          contentValues.put(Wifi, request.geoInfo.wifi)
-          contentValues.put(Latitude, request.geoInfo.latitude)
-          contentValues.put(Longitude, request.geoInfo.longitude)
-          contentValues.put(System, request.geoInfo.system)
+          contentValues.put(Constrain, request.geoInfo.data.constrain)
+          contentValues.put(Occurrence, request.geoInfo.data.occurrence)
+          contentValues.put(Wifi, request.geoInfo.data.wifi)
+          contentValues.put(Latitude, request.geoInfo.data.latitude)
+          contentValues.put(Longitude, request.geoInfo.data.longitude)
+          contentValues.put(System, request.geoInfo.data.system)
 
           contentResolver.update(
             withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.geoInfo.id.toString),
