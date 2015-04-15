@@ -42,7 +42,10 @@ trait CardRepositoryClient extends DBUtils {
             NineCardsContentProvider.ContentUriCard,
             contentValues)
 
-          AddCardResponse(card = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
+          AddCardResponse(
+            card = Some(Card(
+              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              data = request.data)))
 
         } recover {
           case e: Exception =>
@@ -111,16 +114,16 @@ trait CardRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           val contentValues = new ContentValues()
-          contentValues.put(Position, request.card.position.asInstanceOf[java.lang.Integer])
-          contentValues.put(Term, request.card.term)
-          contentValues.put(PackageName, request.card.packageName getOrElse "")
-          contentValues.put(Type, request.card.`type`)
-          contentValues.put(Intent, request.card.intent)
-          contentValues.put(ImagePath, request.card.imagePath)
-          contentValues.put(StarRating, request.card.starRating getOrElse 0.0d)
-          contentValues.put(Micros, request.card.micros.asInstanceOf[java.lang.Integer])
-          contentValues.put(NumDownloads, request.card.numDownloads getOrElse "")
-          contentValues.put(Notification, request.card.notification getOrElse "")
+          contentValues.put(Position, request.card.data.position.asInstanceOf[java.lang.Integer])
+          contentValues.put(Term, request.card.data.term)
+          contentValues.put(PackageName, request.card.data.packageName getOrElse "")
+          contentValues.put(Type, request.card.data.`type`)
+          contentValues.put(Intent, request.card.data.intent)
+          contentValues.put(ImagePath, request.card.data.imagePath)
+          contentValues.put(StarRating, request.card.data.starRating getOrElse 0.0d)
+          contentValues.put(Micros, request.card.data.micros.asInstanceOf[java.lang.Integer])
+          contentValues.put(NumDownloads, request.card.data.numDownloads getOrElse "")
+          contentValues.put(Notification, request.card.data.notification getOrElse "")
 
           contentResolver.update(
             withAppendedPath(NineCardsContentProvider.ContentUriCard, request.card.id.toString),

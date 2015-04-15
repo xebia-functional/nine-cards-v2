@@ -45,7 +45,10 @@ trait CollectionRepositoryClient
             NineCardsContentProvider.ContentUriCollection,
             contentValues)
 
-          AddCollectionResponse(collection = Some(request.data.copy(id = Integer.parseInt(uri.getPathSegments.get(1)))))
+          AddCollectionResponse(
+            collection = Some(Collection(
+              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              data = request.data)))
 
         } recover {
           case e: Exception =>
@@ -107,16 +110,16 @@ trait CollectionRepositoryClient
       tryToFuture {
         Try {
           val contentValues = new ContentValues()
-          contentValues.put(Position, request.collection.position.asInstanceOf[java.lang.Integer])
-          contentValues.put(Name, request.collection.name)
-          contentValues.put(Type, request.collection.`type`)
-          contentValues.put(Icon, request.collection.icon)
-          contentValues.put(ThemedColorIndex, request.collection.themedColorIndex.asInstanceOf[java.lang.Integer])
-          contentValues.put(AppsCategory, request.collection.appsCategory getOrElse "")
-          contentValues.put(Constrains, request.collection.constrains getOrElse "")
-          contentValues.put(OriginalSharedCollectionId, request.collection.originalSharedCollectionId getOrElse "")
-          contentValues.put(SharedCollectionId, request.collection.sharedCollectionId getOrElse "")
-          contentValues.put(SharedCollectionSubscribed, request.collection.sharedCollectionSubscribed)
+          contentValues.put(Position, request.collection.data.position.asInstanceOf[java.lang.Integer])
+          contentValues.put(Name, request.collection.data.name)
+          contentValues.put(Type, request.collection.data.`type`)
+          contentValues.put(Icon, request.collection.data.icon)
+          contentValues.put(ThemedColorIndex, request.collection.data.themedColorIndex.asInstanceOf[java.lang.Integer])
+          contentValues.put(AppsCategory, request.collection.data.appsCategory getOrElse "")
+          contentValues.put(Constrains, request.collection.data.constrains getOrElse "")
+          contentValues.put(OriginalSharedCollectionId, request.collection.data.originalSharedCollectionId getOrElse "")
+          contentValues.put(SharedCollectionId, request.collection.data.sharedCollectionId getOrElse "")
+          contentValues.put(SharedCollectionSubscribed, request.collection.data.sharedCollectionSubscribed)
 
           contentResolver.update(
             withAppendedPath(NineCardsContentProvider.ContentUriCollection, request.collection.id.toString),
@@ -144,6 +147,6 @@ trait CollectionRepositoryClient
     }
 
   private def buildCollectionWithCards(collection: Option[Collection], cards: Seq[Card]) = collection map {
-    _.copy(cards = cards)
+    element => element.copy(data = element.data.copy(cards = cards))
   }
 }
