@@ -17,7 +17,7 @@ object AppBuild extends Build {
 
   lazy val root = Project(id = "root", base = file("."))
       .settings(
-        scalaVersion := Versions.scalaV,
+        scalaVersion := scalaV,
         name := "9 Cards 2.0",
         scalacOptions ++= Seq("-feature", "-deprecation"),
         platformTarget in Android := "android-21",
@@ -54,10 +54,9 @@ object AppBuild extends Build {
       .settings(apiSettings: _*)
 
   val repository = Project(id = "repository", base = file("modules/repository"))
-      .settings(
-        libraryDependencies ++= Seq(
-          scalaz,
-          specs2,
-          mockito))
+      .settings(libraryDependencies ++= Seq(
+    scalaz,
+    specs2,
+    mockito))
       .settings(repositorySettings: _*)
 }
