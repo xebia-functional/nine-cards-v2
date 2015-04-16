@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri._
+import com.fortysevendeg.ninecardslauncher.commons.RichContentValues._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
@@ -26,15 +27,15 @@ trait CardRepositoryClient extends DBUtils {
         Try {
 
           val contentValues = new ContentValues()
-          contentValues.put(Position, request.data.position.asInstanceOf[java.lang.Integer])
-          contentValues.put(CollectionId, request.collectionId.asInstanceOf[java.lang.Integer])
+          contentValues.put(Position, request.data.position)
+          contentValues.put(CollectionId, request.collectionId)
           contentValues.put(Term, request.data.term)
           contentValues.put(PackageName, request.data.packageName getOrElse "")
           contentValues.put(Type, request.data.`type`)
           contentValues.put(Intent, request.data.intent)
           contentValues.put(ImagePath, request.data.imagePath)
           contentValues.put(StarRating, request.data.starRating getOrElse 0.0d)
-          contentValues.put(Micros, request.data.micros.asInstanceOf[java.lang.Integer])
+          contentValues.put(Micros, request.data.micros)
           contentValues.put(NumDownloads, request.data.numDownloads getOrElse "")
           contentValues.put(Notification, request.data.notification getOrElse "")
 
@@ -124,14 +125,14 @@ trait CardRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           val contentValues = new ContentValues()
-          contentValues.put(Position, request.card.data.position.asInstanceOf[java.lang.Integer])
+          contentValues.put(Position, request.card.data.position)
           contentValues.put(Term, request.card.data.term)
           contentValues.put(PackageName, request.card.data.packageName getOrElse "")
           contentValues.put(Type, request.card.data.`type`)
           contentValues.put(Intent, request.card.data.intent)
           contentValues.put(ImagePath, request.card.data.imagePath)
           contentValues.put(StarRating, request.card.data.starRating getOrElse 0.0d)
-          contentValues.put(Micros, request.card.data.micros.asInstanceOf[java.lang.Integer])
+          contentValues.put(Micros, request.card.data.micros)
           contentValues.put(NumDownloads, request.card.data.numDownloads getOrElse "")
           contentValues.put(Notification, request.card.data.notification getOrElse "")
 

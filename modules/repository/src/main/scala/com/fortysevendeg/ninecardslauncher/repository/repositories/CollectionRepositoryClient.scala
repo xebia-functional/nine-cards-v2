@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.content.ContentValues
 import android.net.Uri
 import android.net.Uri._
+import com.fortysevendeg.ninecardslauncher.commons.RichContentValues._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.commons.OptionTFutureConversion._
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity.{Position, Type, _}
@@ -11,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.utils._
-
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 import scalaz.OptionT.optionT
@@ -30,11 +30,11 @@ trait CollectionRepositoryClient
         Try {
 
           val contentValues = new ContentValues()
-          contentValues.put(Position, request.data.position.asInstanceOf[java.lang.Integer])
+          contentValues.put(Position, request.data.position)
           contentValues.put(Name, request.data.name)
           contentValues.put(Type, request.data.`type`)
           contentValues.put(Icon, request.data.icon)
-          contentValues.put(ThemedColorIndex, request.data.themedColorIndex.asInstanceOf[java.lang.Integer])
+          contentValues.put(ThemedColorIndex, request.data.themedColorIndex)
           contentValues.put(AppsCategory, request.data.appsCategory getOrElse "")
           contentValues.put(Constrains, request.data.constrains getOrElse "")
           contentValues.put(OriginalSharedCollectionId, request.data.originalSharedCollectionId getOrElse "")
@@ -129,11 +129,11 @@ trait CollectionRepositoryClient
       tryToFuture {
         Try {
           val contentValues = new ContentValues()
-          contentValues.put(Position, request.collection.data.position.asInstanceOf[java.lang.Integer])
+          contentValues.put(Position, request.collection.data.position)
           contentValues.put(Name, request.collection.data.name)
           contentValues.put(Type, request.collection.data.`type`)
           contentValues.put(Icon, request.collection.data.icon)
-          contentValues.put(ThemedColorIndex, request.collection.data.themedColorIndex.asInstanceOf[java.lang.Integer])
+          contentValues.put(ThemedColorIndex, request.collection.data.themedColorIndex)
           contentValues.put(AppsCategory, request.collection.data.appsCategory getOrElse "")
           contentValues.put(Constrains, request.collection.data.constrains getOrElse "")
           contentValues.put(OriginalSharedCollectionId, request.collection.data.originalSharedCollectionId getOrElse "")

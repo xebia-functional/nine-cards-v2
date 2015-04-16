@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri._
+import com.fortysevendeg.ninecardslauncher.commons.RichContentValues._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
@@ -29,8 +30,8 @@ trait CacheCategoryRepositoryClient extends DBUtils {
           contentValues.put(Category, request.data.category)
           contentValues.put(StarRating, request.data.starRating)
           contentValues.put(NumDownloads, request.data.numDownloads)
-          contentValues.put(RatingsCount, request.data.ratingsCount.asInstanceOf[java.lang.Integer])
-          contentValues.put(CommentCount, request.data.commentCount.asInstanceOf[java.lang.Integer])
+          contentValues.put(RatingsCount, request.data.ratingsCount)
+          contentValues.put(CommentCount, request.data.commentCount)
 
           val uri = contentResolver.insert(
             NineCardsContentProvider.ContentUriCacheCategory,
@@ -139,8 +140,8 @@ trait CacheCategoryRepositoryClient extends DBUtils {
           contentValues.put(Category, request.cacheCategory.data.category)
           contentValues.put(StarRating, request.cacheCategory.data.starRating)
           contentValues.put(NumDownloads, request.cacheCategory.data.numDownloads)
-          contentValues.put(RatingsCount, request.cacheCategory.data.ratingsCount.asInstanceOf[java.lang.Integer])
-          contentValues.put(CommentCount, request.cacheCategory.data.commentCount.asInstanceOf[java.lang.Integer])
+          contentValues.put(RatingsCount, request.cacheCategory.data.ratingsCount)
+          contentValues.put(CommentCount, request.cacheCategory.data.commentCount)
 
           contentResolver.update(
             withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.cacheCategory.id.toString),
