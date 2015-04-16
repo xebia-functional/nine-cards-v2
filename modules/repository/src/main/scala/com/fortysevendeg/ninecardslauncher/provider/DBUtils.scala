@@ -25,14 +25,15 @@ trait DBUtils {
 
   def execVersion(version: Int) = {}
 
-  def getEntityFromCursor[T](cursor: Cursor, conversionFunction: Cursor => T): Option[T] =
-    if (cursor.moveToFirst()) {
-      val result = Some(conversionFunction(cursor))
-      cursor.close()
-      result
-    } else {
-      None
+  def getEntityFromCursor[T](cursor: Cursor, conversionFunction: Cursor => T): Option[T] = {
+    val entity = cursor.moveToFirst() match {
+      case true => Some(conversionFunction(cursor))
+      case _ => None
     }
+
+    cursor.close()
+    entity
+  }
 
   def getListFromCursor[T](cursor: Cursor, conversionFunction: Cursor => T): Seq[T] = {
     @tailrec
@@ -45,12 +46,12 @@ trait DBUtils {
           getListFromEntityLoop(cursor, entity +: result)
       }
 
-    if (cursor.moveToFirst()) {
-      val result = getListFromEntityLoop(cursor, Seq.empty[T])
-      cursor.close()
-      result
-    } else {
-      Seq.empty[T]
+    val list = cursor.moveToFirst() match {
+      case true => getListFromEntityLoop(cursor, Seq.empty[T])
+      case _ => Seq.empty[T]
     }
+
+    cursor.close()
+    list
   }
 }
