@@ -6,17 +6,17 @@ import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
-import android.view.animation.{AccelerateInterpolator, DecelerateInterpolator}
 import android.view._
+import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.TouchState._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{Transformer, AppContext, Ui}
-import com.fortysevendeg.ninecardslauncher.ui.commons.AnimationsUtils._
+import macroid.{AppContext, Transformer, Ui}
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit appContext: AppContext)
   extends FrameLayout(context, attr, defStyleAttr) { self =>

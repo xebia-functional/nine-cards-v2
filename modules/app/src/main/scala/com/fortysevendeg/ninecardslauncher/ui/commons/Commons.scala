@@ -18,6 +18,22 @@ object Constants {
 
 }
 
+object ActivityResult {
+
+  val Wizard = 1
+
+}
+
+object GoogleServicesConstants {
+
+  val AccountType = "com.google"
+
+  val AndroidId = "android_id"
+
+  val ContentGServices = "content://com.google.android.gsf.gservices"
+
+}
+
 object ColorsUtils {
 
   def getColorDark(color: Int, ratio: Float = 0.1f) = {

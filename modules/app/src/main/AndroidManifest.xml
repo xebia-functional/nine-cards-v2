@@ -26,6 +26,11 @@
                 android:label=""
                 android:name="com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity" />
 
+        <activity
+                android:theme="@style/AppTheme"
+                android:label=""
+                android:name="com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity" />
+
         <provider
                 android:authorities="com.fortysevendeg.ninecardslauncher2"
                 android:name="com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider"

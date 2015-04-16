@@ -49,8 +49,7 @@ class CollectionsDetailsActivity
     systemBarTintManager.setStatusBarTintEnabled(true)
 
     for {
-      appsResponse <- appManagerServices.getApps(GetAppsRequest())
-      GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest(appsResponse.apps))
+      GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest())
     } yield {
       val adapter = new CollectionsPagerAdapter(getSupportFragmentManager, collections)
       collectionsAdapter = Some(adapter)

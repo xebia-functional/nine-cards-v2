@@ -1,23 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.ui.collections
 
 import android.support.v4.view.ViewPager
-import android.support.v7.widget.{CardView, RecyclerView, Toolbar}
-import android.view.ContextThemeWrapper
-import android.widget.{LinearLayout, TextView, ImageView, FrameLayout}
+import android.support.v7.widget.{CardView, RecyclerView}
+import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
+import com.fortysevendeg.ninecardslauncher.ui.commons.ToolbarLayout
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
-import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ActivityContext, AppContext, IdGeneration, Ui}
+import macroid.{ActivityContext, AppContext, IdGeneration}
 
 trait Layout
   extends Styles
+  with ToolbarLayout
   with IdGeneration {
 
   self: PersistentServicesComponent =>
-
-  var toolbar = slot[Toolbar]
 
   var viewPager = slot[ViewPager]
 
@@ -29,7 +27,7 @@ trait Layout
 
   def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
     l[FrameLayout](
-      darkToolbar <~ toolbarStyle <~ wire(toolbar),
+      darkToolbar <~ toolbarStyle,
       l[FrameLayout](
         w[ImageView] <~ iconStyle <~ wire(icon)
       ) <~ iconContentStyle <~ wire(iconContent),
@@ -37,14 +35,6 @@ trait Layout
       l[SlidingTabLayout]() <~ tabsStyle <~ wire(tabs)
     ) <~ rootStyle
   )
-
-  def darkToolbar(implicit activityContext: ActivityContext) =
-    Ui {
-      val contextTheme = new ContextThemeWrapper(activityContext.get, R.style.ThemeOverlay_AppCompat_Dark_ActionBar)
-      val darkToolBar = new Toolbar(contextTheme)
-      darkToolBar.setPopupTheme(R.style.ThemeOverlay_AppCompat_Light)
-      darkToolBar
-    }
 
 }
 

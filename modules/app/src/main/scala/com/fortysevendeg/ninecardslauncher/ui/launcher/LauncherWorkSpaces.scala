@@ -46,6 +46,7 @@ case class LauncherData(widgets: Boolean, collections: Seq[Collection] = Seq.emp
 object LauncherWorkSpacesTweaks {
   type W = LauncherWorkSpaces
 
+  // We create a new page every 9 collections
   @tailrec
   private def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
     collections match {
