@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.ui.wizard
 
 import android.support.v7.widget.Toolbar
-import android.widget.{Button, RadioButton, RadioGroup, FrameLayout}
+import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -20,7 +20,7 @@ trait Styles {
     vMatchWidth +
       elevation
 
-  def contentUserStyle(implicit appContext: AppContext): Tweak[RadioGroup] =
+  def contentUserStyle(implicit appContext: AppContext): Tweak[LinearLayout] =
     vMatchParent +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       llVertical

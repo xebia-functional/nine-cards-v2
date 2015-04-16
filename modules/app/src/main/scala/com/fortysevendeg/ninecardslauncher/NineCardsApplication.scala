@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher
 
-import android.content.Context
-import android.support.multidex.MultiDex
 import android.app.Application
+import android.content.Context
 
 class NineCardsApplication extends Application {
 
   override def attachBaseContext(base: Context): Unit = {
     super.attachBaseContext(base)
-    MultiDex.install(this)
+    // Multidex unavailable for now
+//    MultiDex.install(this)
   }
 
 }

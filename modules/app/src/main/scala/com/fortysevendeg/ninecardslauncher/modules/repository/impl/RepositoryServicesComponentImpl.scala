@@ -5,7 +5,7 @@ import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.AppItem
 import com.fortysevendeg.ninecardslauncher.modules.repository._
-import com.fortysevendeg.ninecardslauncher.repository.NineCardRepositoryClient
+import com.fortysevendeg.ninecardslauncher.repository.{GetSortedCollectionsRequest, NineCardRepositoryClient}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -18,6 +18,7 @@ trait RepositoryServicesComponentImpl
 
   class RepositoryServicesImpl
     extends RepositoryServices
+    with Conversions
     with NineCardRepositoryClient {
 
     override implicit val contentResolver: ContentResolver = appContextProvider.get.getContentResolver
@@ -37,10 +38,10 @@ trait RepositoryServicesComponentImpl
 
     override def getCollections: Service[GetCollectionsRequest, GetCollectionsResponse] =
       request =>
-        Future {
-          GetCollectionsResponse(Seq.empty)
+        getSortedCollections(GetSortedCollectionsRequest()) map {
+          response =>
+            GetCollectionsResponse(toCollectionSeq(response.collections))
         }
-
   }
 
 }
