@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.modules
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.modules.api.impl.ApiServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl.AppManagerServicesComponentImpl
+import com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl.GoogleConnectorServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.image.impl.ImageServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.persistent.impl.PersistentServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.impl.RepositoryServicesComponentImpl
@@ -14,5 +15,6 @@ trait ComponentRegistryImpl
   with AppManagerServicesComponentImpl
   with RepositoryServicesComponentImpl
   with PersistentServicesComponentImpl
+  with GoogleConnectorServicesComponentImpl
   with ApiServicesComponentImpl
 

@@ -41,6 +41,30 @@ trait ApiServicesComponentImpl
       (HeaderAppKey, getString(R.string.api_app_key)),
       (HeaderLocalization, getString(R.string.api_localization)))
 
+    override def login: Service[LoginRequest, LoginResponse] =
+      request =>
+          for {
+            response <- login(fromLoginRequest(request), baseHeader)
+          } yield LoginResponse(response.statusCode, response.data map toUser)
+
+    override def linkGoogleAccount: Service[LinkGoogleAccountRequest, LoginResponse] =
+      request =>
+        for {
+          response <- linkAuthData(fromLinkGoogleAccountRequest(request), createHeader(request.deviceId, request.token))
+        } yield LoginResponse(response.statusCode, response.data map toUser)
+
+    override def createInstallation: Service[InstallationRequest, InstallationResponse] =
+      request =>
+        for {
+          response <- createInstallation(fromInstallationRequest(request), baseHeader)
+        } yield InstallationResponse(response.statusCode, response.data map toInstallation)
+
+    override def updateInstallation: Service[InstallationRequest, UpdateInstallationResponse] =
+      request =>
+        for {
+          response <- updateInstallation(fromInstallationRequest(request), baseHeader)
+        } yield UpdateInstallationResponse(response.statusCode)
+
     override def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse] =
       request =>
           for {

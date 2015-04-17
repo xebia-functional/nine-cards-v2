@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.api.model
 
 case class User(
-  _id: String,
+  id: String,
   sessionToken: String,
   username: Option[String],
   password: Option[String],
@@ -44,7 +44,7 @@ case class AuthAnonymous(
   id: String)
 
 case class Installation(
-  _id: String,
+  id: String,
   deviceType: Option[String],
   deviceToken: Option[String],
   userId: Option[String],

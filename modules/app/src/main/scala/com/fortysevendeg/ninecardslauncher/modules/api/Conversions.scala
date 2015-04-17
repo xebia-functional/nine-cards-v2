@@ -4,6 +4,75 @@ import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
 
 trait Conversions {
 
+  def fromLoginRequest(login: LoginRequest): apiModel.User =
+    apiModel.User(
+      id = login.id,
+      email = Some(login.email),
+      sessionToken = login.sessionToken,
+      username = None,
+      password = None,
+      authData = Some(apiModel.AuthData(
+        google = Some(apiModel.AuthGoogle(
+          email = login.email,
+          devices = login.devices map fromGoogleDevice
+        )),
+        facebook = None,
+        twitter = None,
+        anonymous = None
+      )))
+
+  def fromGoogleDevice(device: GoogleDevice): apiModel.AuthGoogleDevice =
+    apiModel.AuthGoogleDevice(
+      name = device.name,
+      deviceId = device.devideId,
+      secretToken = device.secretToken,
+      permissions = device.permissions)
+
+  def toUser(user: apiModel.User): User =
+    User(
+      id = user.id,
+      sessionToken = user.sessionToken,
+      email = user.email,
+      devices = (for {
+        data <- user.authData
+        google <- data.google
+      } yield toGoogleDeviceSeq(google.devices)) getOrElse Seq.empty)
+
+  def toGoogleDeviceSeq(devices: Seq[apiModel.AuthGoogleDevice]): Seq[GoogleDevice] = devices map toGoogleDevice
+
+  def toGoogleDevice(device: apiModel.AuthGoogleDevice): GoogleDevice =
+    GoogleDevice(
+      name = device.name,
+      devideId = device.deviceId,
+      secretToken = device.secretToken,
+      permissions = device.permissions)
+
+  def fromLinkGoogleAccountRequest(googleRequest: LinkGoogleAccountRequest): apiModel.AuthData =
+    apiModel.AuthData(
+      google = Some(apiModel.AuthGoogle(
+        email = googleRequest.email,
+        devices = googleRequest.devices map fromGoogleDevice
+      )),
+      facebook = None,
+      twitter = None,
+      anonymous = None)
+
+  def fromInstallationRequest(installation: InstallationRequest): apiModel.Installation =
+    apiModel.Installation(
+      id = installation.id,
+      deviceType = installation.deviceType,
+      deviceToken = installation.deviceToken,
+      userId = installation.userId,
+      facebookId = None)
+
+  def toInstallation(installation: apiModel.Installation): Installation =
+    Installation(
+      id = installation.id,
+      deviceType = installation.deviceType,
+      deviceToken = installation.deviceToken,
+      userId = installation.userId
+    )
+
   def toUserConfig(apiUserConfig: apiModel.UserConfig): UserConfig =
     UserConfig(
       _id = apiUserConfig._id,
@@ -101,7 +170,7 @@ trait Conversions {
       deviceId = device.deviceId,
       deviceName = device.deviceName,
       collections = device.collections map fromUserConfigCollection)
-  
+
   def fromUserConfigCollection(collection: UserConfigCollection): apiModel.UserConfigCollection =
     apiModel.UserConfigCollection(
       name = collection.name,
