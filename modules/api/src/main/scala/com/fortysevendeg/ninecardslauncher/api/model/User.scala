@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.api.model
 
 case class User(
-  id: String,
-  sessionToken: String,
+  id: Option[String],
+  sessionToken: Option[String],
   username: Option[String],
   password: Option[String],
   email: Option[String],

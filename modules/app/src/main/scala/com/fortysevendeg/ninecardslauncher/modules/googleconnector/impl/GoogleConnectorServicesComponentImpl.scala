@@ -1,24 +1,26 @@
 package com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl
 
-import android.accounts.{AccountManagerFuture, AccountManagerCallback, Account, AccountManager}
+import android.accounts.{Account, AccountManager, AccountManagerCallback, AccountManagerFuture}
 import android.content.Context
-import android.database.Cursor
 import android.net.Uri
-import android.os.Bundle
+import android.os.{Build, Bundle}
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.modules.api.{ApiServicesComponent, GoogleDevice, LoginRequest}
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector._
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContext
-import scala.concurrent.{Promise, ExecutionContext, Future}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Promise
 import scala.util.{Failure, Success, Try}
 
 trait GoogleConnectorServicesComponentImpl
   extends GoogleConnectorServicesComponent {
 
-  self: AppContextProvider =>
+  self: AppContextProvider with ApiServicesComponent =>
 
   lazy val googleConnectorServices = new GoogleConnectorServicesImpl
 
@@ -41,17 +43,27 @@ trait GoogleConnectorServicesComponentImpl
             val oauthScopes = resGetString(R.string.oauth_scopes)
             accountManager.getAuthToken(account, oauthScopes, null, activityContext.get, new AccountManagerCallback[Bundle] {
               override def run(future: AccountManagerFuture[Bundle]): Unit = {
-                requestPromise.complete(
-                  Try {
-                    val authTokenBundle: Bundle = future.getResult
-                    val token: String = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN)
-                    setToken(token)
-                    RequestTokenResponse(token)
-                    // TODO save google account on server
-                  })
+                val authTokenBundle: Bundle = future.getResult
+                val token: String = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN)
+                setToken(token)
+                val loginRequest = LoginRequest(
+                  email = request.username,
+                  device = GoogleDevice(
+                    name = Build.MODEL,
+                    devideId = getAndroidId.get,
+                    secretToken = token,
+                    permissions = Seq(appContextProvider.get.getString(R.string.oauth_scopes))
+                  )
+                )
+                apiServices.login(loginRequest) map {
+                  response =>
+                    requestPromise.complete(Try(RequestTokenResponse(true)))
+                } recover {
+                  case _ => requestPromise.complete(Try(RequestTokenResponse(false)))
+                }
               }
             }, null)
-        }
+        } getOrElse requestPromise.complete(Try(RequestTokenResponse(false)))
         requestPromise.future
       }
 
@@ -77,14 +89,12 @@ trait GoogleConnectorServicesComponentImpl
       accounts find (_.name == name)
     }
 
-    def getAndroidId: Option[String] = {
-      Try {
-        val cursor = Option(appContextProvider.get.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
-        cursor filter(c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
-      } match {
-        case Success(id) => id
-        case Failure(ex) => None
-      }
+    def getAndroidId: Option[String] = Try {
+      val cursor = Option(appContextProvider.get.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
+      cursor filter(c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+    } match {
+      case Success(id) => id
+      case Failure(ex) => None
     }
 
   }

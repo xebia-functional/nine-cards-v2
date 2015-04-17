@@ -1,18 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.modules.api
 
 case class LoginRequest(
-  id: String,
-  sessionToken: String,
   email: String,
-  devices: Seq[GoogleDevice])
+  device: GoogleDevice)
 
 case class LoginResponse(
   statusCode: Int,
   user: Option[User])
 
 case class User(
-  id: String,
-  sessionToken: String,
+  id: Option[String],
+  sessionToken: Option[String],
   email: Option[String],
   devices: Seq[GoogleDevice])
 
@@ -39,7 +37,7 @@ case class InstallationResponse (
   installation: Option[Installation])
 
 case class Installation(
-  id: String,
+  id: Option[String],
   deviceType: Option[String],
   deviceToken: Option[String],
   userId: Option[String])

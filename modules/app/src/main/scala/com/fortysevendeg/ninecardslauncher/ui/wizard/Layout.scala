@@ -16,12 +16,14 @@ trait Layout
 
   var usersGroup = slot[LinearLayout]
 
+  var action = slot[Button]
+
   def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
     l[FrameLayout](
       darkToolbar <~ toolbarStyle,
       l[LinearLayout](
         l[RadioGroup]() <~ wire(usersGroup) <~ userGroupStyle,
-        w[Button] <~ selectUserButtonStyle
+        w[Button] <~ selectUserButtonStyle <~ wire(action)
       ) <~ contentUserStyle
     ) <~ rootStyle
   )

@@ -43,11 +43,11 @@ trait UserClient
 
   def updateInstallation(
       installation: Installation,
-      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[Unit]) =
+      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext) =
     put[Installation, Unit](
-      path = s"$prefixPathInstallation/${installation._id}",
+      path = s"$prefixPathInstallation/${installation.id}",
       headers = headers,
       body = installation,
-      Some(reads))
+      None)
 
 }

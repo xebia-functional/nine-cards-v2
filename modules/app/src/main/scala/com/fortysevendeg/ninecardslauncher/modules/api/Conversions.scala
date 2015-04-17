@@ -6,15 +6,15 @@ trait Conversions {
 
   def fromLoginRequest(login: LoginRequest): apiModel.User =
     apiModel.User(
-      id = login.id,
-      email = Some(login.email),
-      sessionToken = login.sessionToken,
+      id = None,
+      email = None,
+      sessionToken = None,
       username = None,
       password = None,
       authData = Some(apiModel.AuthData(
         google = Some(apiModel.AuthGoogle(
           email = login.email,
-          devices = login.devices map fromGoogleDevice
+          devices = List(fromGoogleDevice(login.device))
         )),
         facebook = None,
         twitter = None,
@@ -67,7 +67,7 @@ trait Conversions {
 
   def toInstallation(installation: apiModel.Installation): Installation =
     Installation(
-      id = installation.id,
+      id = Some(installation.id),
       deviceType = installation.deviceType,
       deviceToken = installation.deviceToken,
       userId = installation.userId

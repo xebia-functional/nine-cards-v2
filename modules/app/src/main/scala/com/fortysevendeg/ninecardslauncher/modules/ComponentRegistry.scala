@@ -6,11 +6,13 @@ import com.fortysevendeg.ninecardslauncher.modules.googleconnector.GoogleConnect
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.repository.RepositoryServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 
 trait ComponentRegistry
   extends ImageServicesComponent
   with AppManagerServicesComponent
   with RepositoryServicesComponent
   with PersistentServicesComponent
+  with UserServicesComponent
   with GoogleConnectorServicesComponent
   with ApiServicesComponent

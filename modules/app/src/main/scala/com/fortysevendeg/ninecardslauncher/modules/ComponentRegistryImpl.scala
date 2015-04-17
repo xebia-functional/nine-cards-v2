@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl.GoogleCo
 import com.fortysevendeg.ninecardslauncher.modules.image.impl.ImageServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.persistent.impl.PersistentServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.impl.RepositoryServicesComponentImpl
+import com.fortysevendeg.ninecardslauncher.modules.user.impl.UserServicesComponentImpl
 
 trait ComponentRegistryImpl
   extends ComponentRegistry
@@ -15,6 +16,7 @@ trait ComponentRegistryImpl
   with AppManagerServicesComponentImpl
   with RepositoryServicesComponentImpl
   with PersistentServicesComponentImpl
+  with UserServicesComponentImpl
   with GoogleConnectorServicesComponentImpl
   with ApiServicesComponentImpl
 
