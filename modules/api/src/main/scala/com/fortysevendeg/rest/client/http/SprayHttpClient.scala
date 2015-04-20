@@ -8,7 +8,6 @@ import spray.http.{HttpEntity, MediaTypes, HttpRequest, HttpResponse}
 import spray.httpx.marshalling.Marshaller
 
 import scala.concurrent.{Future, ExecutionContext}
-import scala.reflect.runtime.universe.TypeTag
 
 trait SprayHttpClient extends HttpClient {
 
@@ -35,7 +34,7 @@ trait SprayHttpClient extends HttpClient {
     transformResponse(pipeline(Post(url)))
   }
 
-  override def doPost[Req: TypeTag: Writes](
+  override def doPost[Req: Writes](
       url: String,
       httpHeaders:  Seq[(String, String)],
       body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] = {
@@ -51,7 +50,7 @@ trait SprayHttpClient extends HttpClient {
     transformResponse(pipeline(Put(url)))
   }
 
-  override def doPut[Req: TypeTag: Writes](
+  override def doPut[Req: Writes](
       url: String,
       httpHeaders:  Seq[(String, String)],
       body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] = {
