@@ -1,21 +1,23 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
+import android.app.Application
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.widget.{ImageView, FrameLayout, LinearLayout}
+import android.widget.{FrameLayout, ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
+import com.fortysevendeg.ninecardslauncher.di.{DependencyInjector, InjectorProvider}
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import macroid.FullDsl._
-import macroid.{ActivityContext, AppContext, Ui}
+import macroid._
+import com.fortysevendeg.ninecardslauncher.ui.launcher.LauncherWorkSpacesTweaks._
 
 import scala.util.Try
 
 trait Layout
   extends Styles {
 
-  self : PersistentServicesComponent =>
+  self : InjectorProvider =>
 
   var workspaces = slot[LauncherWorkSpaces]
 
@@ -46,7 +48,7 @@ trait Layout
           }
         )
       ) <~ searchContentStyle,
-      l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces),
+      l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces) <~ (di map (injector => lwsDi(injector))).getOrElse(Tweak.blank),
       l[LinearLayout]() <~ paginationContentStyle <~ wire(pager),
       l[LinearLayout](
         l[FrameLayout](

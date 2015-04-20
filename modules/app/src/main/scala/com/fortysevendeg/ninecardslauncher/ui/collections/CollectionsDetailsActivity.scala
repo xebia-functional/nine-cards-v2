@@ -10,8 +10,10 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.di.ActivityInjectorProvider
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
+import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServices
 import com.fortysevendeg.ninecardslauncher.modules.repository.{Collection, GetCollectionsRequest, GetCollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
@@ -28,7 +30,8 @@ class CollectionsDetailsActivity
   with Contexts[FragmentActivity]
   with Layout
   with ComponentRegistryImpl
-  with ScrolledListener {
+  with ScrolledListener
+  with ActivityInjectorProvider {
 
   override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
 
@@ -59,7 +62,7 @@ class CollectionsDetailsActivity
           Ui(adapter.activateFragment(0)) ~
           (tabs <~
             stlViewPager(viewPager) <~
-            stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
+            stlOnPageChangeListener(new OnPageChangeCollectionsListener(di map (_.persistentServices), collections, updateToolbarColor, updateCollection))) ~
           (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop)
       )
     }
@@ -138,7 +141,7 @@ object ScrollType {
   val Down = 1
 }
 
-class OnPageChangeCollectionsListener(
+class OnPageChangeCollectionsListener(persistentServices: Option[PersistentServices],
                                        collections: Seq[Collection],
                                        updateToolbarColor: Int => Ui[_],
                                        updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
@@ -156,8 +159,8 @@ class OnPageChangeCollectionsListener(
     val nextCollection: Option[Collection] = collections.lift(position + 1)
     nextCollection map {
       next =>
-        val startColor = resGetColor(persistentServices.getIndexColor(selectedCollection.themedColorIndex))
-        val endColor = resGetColor(persistentServices.getIndexColor(next.themedColorIndex))
+        val startColor = persistentServices map (ps => resGetColor(ps.getIndexColor(selectedCollection.themedColorIndex))) getOrElse 0
+        val endColor = persistentServices map (ps => resGetColor(ps.getIndexColor(next.themedColorIndex))) getOrElse 0
         val color = interpolateColors(positionOffset, startColor, endColor)
         runUi(updateToolbarColor(color))
     }

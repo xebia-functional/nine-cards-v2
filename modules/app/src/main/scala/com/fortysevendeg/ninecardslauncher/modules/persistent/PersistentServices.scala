@@ -14,7 +14,3 @@ trait PersistentServices {
   def getCollectionDetailTextTabDefaultColor: Int
   def getIndexColor(index: Int): Int
 }
-
-trait PersistentServicesComponent {
-  val persistentServices: PersistentServices
-}

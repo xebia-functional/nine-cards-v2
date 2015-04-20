@@ -2,12 +2,13 @@ package com.fortysevendeg.ninecardslauncher.ui.launcher
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.fortysevendeg.ninecardslauncher.di.DependencyInjector
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants
 import com.fortysevendeg.ninecardslauncher.ui.components.AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.ui.launcher.WorkSpaceType._
-import macroid.{Ui, ActivityContext, AppContext, Tweak}
+import macroid.{ActivityContext, AppContext, Tweak, Ui}
 
 import scala.annotation.tailrec
 
@@ -21,9 +22,11 @@ class LauncherWorkSpaces(context: Context)(implicit appContext: AppContext, acti
 
   override def getItemViewType(data: LauncherData, position: Int): Int = if (data.widgets) widgets else collections
 
+  var di: Option[DependencyInjector] = None
+
   override def createView(viewType: Int): LauncherWorkSpaceHolder = viewType match {
     case `widgets` => new LauncherWorkSpaceWidgetsHolder
-    case `collections` => new LauncherWorkSpaceCollectionsHolder(dimen)
+    case `collections` => new LauncherWorkSpaceCollectionsHolder(di, dimen)
   }
 
   override def populateView(view: Option[LauncherWorkSpaceHolder],  data: LauncherData, viewType: Int, position: Int): Ui[_] =
@@ -66,5 +69,10 @@ object LauncherWorkSpacesTweaks {
   }
 
   def lwsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W] (_.addPageChangedObservers(observer))
+
+  def lwsDi(di: DependencyInjector) = Tweak[W] {
+    workspaces =>
+      workspaces.di = Some(di)
+  }
 
 }

@@ -20,6 +20,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.View.OnClickListener
 import android.view.{View, ViewGroup}
+import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServices
 import com.fortysevendeg.ninecardslauncher.modules.repository.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageFragmentTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -28,12 +29,16 @@ import macroid.FullDsl._
 import macroid.{Ui, ActivityContext, AppContext}
 import CollectionAdapter._
 
-class CollectionAdapter(collection: Collection, heightCard: Int, listener: CollectionListener)
+class CollectionAdapter(
+    collection: Collection,
+    heightCard: Int,
+    listener: CollectionListener,
+    persistentServices: Option[PersistentServices])
     (implicit context: ActivityContext, appContext: AppContext, fragment: Fragment)
     extends RecyclerView.Adapter[ViewHolderCollectionAdapter] {
 
   override def onCreateViewHolder(parentViewGroup: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
-    val adapter = new CollectionLayoutAdapter(heightCard)
+    val adapter = new CollectionLayoutAdapter(heightCard, persistentServices)
     adapter.content.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = Option(v.getTag) map {
         tag =>

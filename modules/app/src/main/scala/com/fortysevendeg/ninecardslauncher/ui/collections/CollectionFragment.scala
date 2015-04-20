@@ -9,6 +9,7 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.di.FragmentInjectorProvider
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
@@ -21,7 +22,8 @@ class CollectionFragment
   extends Fragment
   with Contexts[Fragment]
   with CollectionFragmentLayout
-  with ComponentRegistryImpl {
+  with ComponentRegistryImpl
+  with FragmentInjectorProvider {
 
   override implicit lazy val appContextProvider: AppContext = fragmentAppContext
 
@@ -59,7 +61,11 @@ class CollectionFragment
   }
 
   def loadCollection(collection: Collection, heightCard: Int): Ui[_] = {
-    val adapter = new CollectionAdapter(collection, heightCard, card => uiShortToast(card.term))
+    val adapter = new CollectionAdapter(
+      collection,
+      heightCard,
+      card => uiShortToast(card.term),
+      di map (_.persistentServices))
     (recyclerView <~ rvLayoutManager(layoutManager) <~
       rvFixedSize <~
       rvAddItemDecoration(new CollectionItemDecorator) <~
