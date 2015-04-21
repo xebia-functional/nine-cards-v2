@@ -5,6 +5,8 @@ import com.fortysevendeg.ninecardslauncher.api.NineCardsServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.rest.client.ServiceClient
+import com.fortysevendeg.rest.client.http.HttpClient
 
 import scala.concurrent.ExecutionContext
 
@@ -22,9 +24,10 @@ trait ApiServicesComponentImpl
 
     implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
-    override val httpClient = new OkHttpClientImpl
-
-    override val baseUrl = getString(R.string.api_base_url)
+    override val serviceClient = new ServiceClient {
+      override val httpClient: HttpClient = new OkHttpClientImpl
+      override val baseUrl: String = getString(R.string.api_base_url)
+    }
 
     val HeaderAppId = "X-Appsly-Application-Id"
 
@@ -40,6 +43,8 @@ trait ApiServicesComponentImpl
       (HeaderAppId, getString(R.string.api_app_id)),
       (HeaderAppKey, getString(R.string.api_app_key)),
       (HeaderLocalization, getString(R.string.api_localization)))
+
+    import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
 
     override def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse] =
       request =>

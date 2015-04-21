@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.api.reads
 
 import com.fortysevendeg.ninecardslauncher.api.model._
 
-trait UserConfigImplicits {
+object UserConfigImplicits {
 
   import play.api.libs.json._
 

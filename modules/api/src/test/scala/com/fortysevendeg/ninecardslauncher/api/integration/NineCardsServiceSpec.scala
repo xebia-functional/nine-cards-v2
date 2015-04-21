@@ -4,8 +4,8 @@ import akka.actor.ActorSystem
 import com.fortysevendeg.BaseTestSupport
 import com.fortysevendeg.ninecardslauncher.api.NineCardsServiceClient
 import com.fortysevendeg.ninecardslauncher.api.model._
-import com.fortysevendeg.rest.client.http.{SprayHttpClient, OkHttpClient}
-import com.squareup.{okhttp => okHttp}
+import com.fortysevendeg.rest.client.ServiceClient
+import com.fortysevendeg.rest.client.http.{HttpClient, OkHttpClient, SprayHttpClient}
 import org.mockserver.integration.ClientAndServer._
 import org.mockserver.logging.Logging
 import org.mockserver.model.Header
@@ -24,7 +24,7 @@ trait NineCardsServiceSupport
 
   implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
-  override val baseUrl = "http://localhost:9999"
+  val fakeBaseUrl = "http://localhost:9999"
 
   def createUserConfigDevice(
       deviceId: String = "",
@@ -91,17 +91,28 @@ trait NineCardsServiceSupport
 class NineCardsServiceOkHttpSupport
     extends NineCardsServiceSupport {
 
-  override val httpClient = new OkHttpClient {}
+  override val serviceClient: ServiceClient = new ServiceClient {
+
+    override val httpClient: HttpClient = new OkHttpClient {}
+    
+    override val baseUrl: String = fakeBaseUrl
+
+  }
 
 }
 
 class NineCardsServiceSprayHttpSupport
     extends NineCardsServiceSupport {
-
-  override val httpClient = new SprayHttpClient {
-    implicit val actorSystem: ActorSystem = ActorSystem("http-spray-client")
+  
+  override val serviceClient: ServiceClient = new ServiceClient {
+    
+    override val httpClient: HttpClient = new SprayHttpClient {
+      implicit val actorSystem: ActorSystem = ActorSystem("http-spray-client")
+    }
+    
+    override val baseUrl: String = fakeBaseUrl
+    
   }
-
 }
 
 trait MockServerService
@@ -120,7 +131,7 @@ trait MockServerService
   val sharedCollectionKeywords = "keyword1,keyword2"
 
   val userConfigPathPrefix = "/ninecards/userconfig"
-  val sharedCollectionpathPrefix = "/ninecards/collections"
+  val sharedCollectionPathPrefix = "/ninecards/collections"
   val regexpPath = "[a-zA-Z0-9,\\.\\/]*"
   val jsonHeader = new Header("Content-Type", "application/json; charset=utf-8")
   val userConfigJson = "userConfig.json"
@@ -154,6 +165,9 @@ class NineCardsServiceSpec
   override protected def after: Any = {}
 
   override def map(fs: => Fragments) = step(beforeAll) ^ super.map(fs) ^ step(afterAll)
+
+  import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
+  import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits._
 
   "User Config Service component with OkHttpClient" should {
 
@@ -310,7 +324,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("GET")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionIdFirst"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -331,7 +345,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("GET")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionType/$regexpPath"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionType/$regexpPath"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -354,7 +368,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("GET")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionType/$regexpPath"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionType/$regexpPath"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -377,7 +391,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("GET")
-                .withPath(s"$sharedCollectionpathPrefix/search/$regexpPath"))
+                .withPath(s"$sharedCollectionPathPrefix/search/$regexpPath"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -400,7 +414,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("POST")
-                .withPath(sharedCollectionpathPrefix))
+                .withPath(sharedCollectionPathPrefix))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -421,7 +435,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("POST")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionIdFirst/rate/$regexpPath"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst/rate/$regexpPath"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -442,7 +456,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("PUT")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionIdFirst/subscribe"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst/subscribe"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -463,7 +477,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("DELETE")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionIdFirst/subscribe"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst/subscribe"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -634,7 +648,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("GET")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionIdFirst"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -655,7 +669,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("GET")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionType/$regexpPath"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionType/$regexpPath"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -678,7 +692,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("GET")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionType/$regexpPath"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionType/$regexpPath"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -701,7 +715,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("GET")
-                .withPath(s"$sharedCollectionpathPrefix/search/$regexpPath"))
+                .withPath(s"$sharedCollectionPathPrefix/search/$regexpPath"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -724,7 +738,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("POST")
-                .withPath(sharedCollectionpathPrefix))
+                .withPath(sharedCollectionPathPrefix))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -745,7 +759,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("POST")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionIdFirst/rate/$regexpPath"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst/rate/$regexpPath"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -766,7 +780,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("PUT")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionIdFirst/subscribe"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst/subscribe"))
               .respond(
                 response()
                     .withStatusCode(200)
@@ -787,7 +801,7 @@ class NineCardsServiceSpec
           mockServer.when(
             request()
                 .withMethod("DELETE")
-                .withPath(s"$sharedCollectionpathPrefix/$sharedCollectionIdFirst/subscribe"))
+                .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst/subscribe"))
               .respond(
                 response()
                     .withStatusCode(200)

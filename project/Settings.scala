@@ -11,13 +11,14 @@ import sbt._
 object Settings {
 
   // App Module
-
-  lazy val appSettings = commonSettings ++ multiDex ++
+  // For multidex add `multiDex ++` to this settings
+  lazy val appSettings = commonSettings ++
       Seq(
         run <<= run in Android,
         javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
         transitiveAndroidLibs in Android := false,
         libraryDependencies ++= commonDependencies,
+        dexMaxHeap in Android := "2048m",
         proguardScala in Android := true,
         useProguard in Android := true,
         proguardOptions in Android ++= proguardCommons,
@@ -92,7 +93,6 @@ object Settings {
   )
   
   lazy val multiDex = Seq(
-    dexMaxHeap in Android := "2048m",
     dexMulti in Android := true,
     dexMinimizeMainFile in Android := true,
     dexMainFileClasses in Android := multiDexClasses
