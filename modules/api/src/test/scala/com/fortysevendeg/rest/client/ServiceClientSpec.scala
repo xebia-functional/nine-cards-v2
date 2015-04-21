@@ -48,11 +48,11 @@ trait WithSuccessfullyHttpClient
 
   httpClient.doPost(any, any)(any) returns Future.successful(mockResponse)
 
-  httpClient.doPost[SampleRequest](any, any, any)(any, any, any) returns Future.successful(mockResponse)
+  httpClient.doPost[SampleRequest](any, any, any)(any, any) returns Future.successful(mockResponse)
 
   httpClient.doPut(any, any)(any) returns Future.successful(mockResponse)
 
-  httpClient.doPut[SampleRequest](any, any, any)(any, any, any) returns Future.successful(mockResponse)
+  httpClient.doPut[SampleRequest](any, any, any)(any, any) returns Future.successful(mockResponse)
 
 }
 
@@ -72,11 +72,11 @@ trait WithFailedHttpClient
 
   httpClient.doPost(any, any)(any) returns Future.failed(exception)
 
-  httpClient.doPost[SampleRequest](any, any, any)(any, any, any) returns Future.failed(exception)
+  httpClient.doPost[SampleRequest](any, any, any)(any, any) returns Future.failed(exception)
 
   httpClient.doPut(any, any)(any) returns Future.failed(exception)
 
-  httpClient.doPut[SampleRequest](any, any, any)(any, any, any) returns Future.failed(exception)
+  httpClient.doPut[SampleRequest](any, any, any)(any, any) returns Future.failed(exception)
 
 }
 
@@ -98,7 +98,7 @@ class ServiceClientSpec
 
     "returns a valid response for a valid call to get without response" in
         new WithSuccessfullyHttpClient {
-          val response = Await.result(get[Unit](baseUrl, Seq.empty), Duration.Inf)
+          val response = Await.result(get(baseUrl, Seq.empty, None, true), Duration.Inf)
           there was one(httpClient).doGet(any, any)(any)
           there was noMoreCallsTo(httpClient)
           response.data shouldEqual None
@@ -124,7 +124,7 @@ class ServiceClientSpec
         new WithSuccessfullyHttpClient {
           val request = SampleRequest("sample-request")
           val response = Await.result(post[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)), Duration.Inf)
-          there was one(httpClient).doPost[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any, any, any)
+          there was one(httpClient).doPost[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
         }
@@ -141,7 +141,7 @@ class ServiceClientSpec
         new WithSuccessfullyHttpClient {
           val request = SampleRequest("sample-request")
           val response = Await.result(put[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)), Duration.Inf)
-          there was one(httpClient).doPut[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any, any, any)
+          there was one(httpClient).doPut[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
         }

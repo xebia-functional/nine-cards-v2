@@ -11,14 +11,14 @@ import sbt._
 object Settings {
 
   // App Module
-
-  // If we want to add multidex, we should add "multiDex ++" here
+  // For multidex add `multiDex ++` to this settings
   lazy val appSettings = commonSettings ++
       Seq(
         run <<= run in Android,
         javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
         transitiveAndroidLibs in Android := false,
         libraryDependencies ++= commonDependencies,
+        dexMaxHeap in Android := "2048m",
         proguardScala in Android := true,
         useProguard in Android := true,
         proguardOptions in Android ++= proguardCommons,
@@ -91,26 +91,23 @@ object Settings {
     "-keep class android.** { *; }",
     "-keep class com.google.** { *; }"
   )
-
-  // Multidex options unavailable for now
   
-//  lazy val multiDex = Seq(
-//    dexMaxHeap in Android := "2048m",
-//    dexMulti in Android := true,
-//    dexMinimizeMainFile in Android := true,
-//    dexMainFileClasses in Android := multiDexClasses
-//  )
-//
-//  lazy val multiDexClasses = Seq(
-//    "com/fortysevendeg/ninecardslauncher/NineCardsApplication.class",
-//    "android/support/multidex/BuildConfig.class",
-//    "android/support/multidex/MultiDex$V14.class",
-//    "android/support/multidex/MultiDex$V19.class",
-//    "android/support/multidex/MultiDex$V4.class",
-//    "android/support/multidex/MultiDex.class",
-//    "android/support/multidex/MultiDexApplication.class",
-//    "android/support/multidex/MultiDexExtractor$1.class",
-//    "android/support/multidex/MultiDexExtractor.class",
-//    "android/support/multidex/ZipUtil$CentralDirectory.class",
-//    "android/support/multidex/ZipUtil.class")
+  lazy val multiDex = Seq(
+    dexMulti in Android := true,
+    dexMinimizeMainFile in Android := true,
+    dexMainFileClasses in Android := multiDexClasses
+  )
+
+  lazy val multiDexClasses = Seq(
+    "com/fortysevendeg/ninecardslauncher/NineCardsApplication.class",
+    "android/support/multidex/BuildConfig.class",
+    "android/support/multidex/MultiDex$V14.class",
+    "android/support/multidex/MultiDex$V19.class",
+    "android/support/multidex/MultiDex$V4.class",
+    "android/support/multidex/MultiDex.class",
+    "android/support/multidex/MultiDexApplication.class",
+    "android/support/multidex/MultiDexExtractor$1.class",
+    "android/support/multidex/MultiDexExtractor.class",
+    "android/support/multidex/ZipUtil$CentralDirectory.class",
+    "android/support/multidex/ZipUtil.class")
 }

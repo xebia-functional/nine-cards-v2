@@ -32,7 +32,7 @@ object Libraries {
       "org.macroid" %% s"macroid${if (!module.isEmpty) s"-$module" else ""}" % Versions.macroidV
 
     lazy val macroidRoot = macroid()
-    lazy val macroidExtras = "com.fortysevendeg" %% "macroid-extras" % Versions.macroidExtrasV
+    lazy val macroidExtras = "com.fortysevendeg" %% "macroid-extras" % Versions.macroidExtrasV changing()
   }
 
   object json {
