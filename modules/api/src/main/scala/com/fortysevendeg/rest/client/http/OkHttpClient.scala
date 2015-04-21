@@ -6,7 +6,6 @@ import com.squareup.{okhttp => okHttp}
 import play.api.libs.json.{Json, Writes}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.runtime.universe.TypeTag
 
 trait OkHttpClient extends HttpClient {
   
@@ -28,7 +27,7 @@ trait OkHttpClient extends HttpClient {
     doMethod(POST, url, httpHeaders)
 
 
-  override def doPost[Req: TypeTag: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
+  override def doPost[Req: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(POST, url, httpHeaders, Some(Json.toJson(body).toString()))
 
 
@@ -36,7 +35,7 @@ trait OkHttpClient extends HttpClient {
     doMethod(PUT, url, httpHeaders)
 
 
-  override def doPut[Req: TypeTag: Writes](url: String, httpHeaders: Seq[(String, String)], body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
+  override def doPut[Req: Writes](url: String, httpHeaders: Seq[(String, String)], body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(PUT, url, httpHeaders, Some(Json.toJson(body).toString()))
 
 
