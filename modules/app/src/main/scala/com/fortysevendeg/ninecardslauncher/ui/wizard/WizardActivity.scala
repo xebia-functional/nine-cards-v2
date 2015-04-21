@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.RequestTokenRequest
 import macroid.{Transformer, Ui, AppContext, Contexts}
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
-import com.fortysevendeg.macroid.extras.ActionsExtras._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import macroid.FullDsl._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,12 +44,8 @@ class WizardActivity
       googleConnectorServices.requestToken(activityActivityContext)(RequestTokenRequest(i.getText.toString)) map {
         response =>
           if (response.success) {
-            aShortToast("esto va bien!")
-          } else {
-            aShortToast("esto va mal!")
+            runUi(uiShortToast("esto va bien!"))
           }
-      } recover {
-        case _ => aShortToast("esto va mal en recover!")
       }
     }
   }

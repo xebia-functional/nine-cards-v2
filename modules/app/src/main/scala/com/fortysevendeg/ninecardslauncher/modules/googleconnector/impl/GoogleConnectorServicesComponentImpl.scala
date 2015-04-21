@@ -9,6 +9,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.api.{ApiServicesComponent, GoogleDevice, LoginRequest}
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector._
+import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContext
@@ -20,7 +21,7 @@ import scala.util.{Failure, Success, Try}
 trait GoogleConnectorServicesComponentImpl
   extends GoogleConnectorServicesComponent {
 
-  self: AppContextProvider with ApiServicesComponent =>
+  self: AppContextProvider with UserServicesComponent =>
 
   lazy val googleConnectorServices = new GoogleConnectorServicesImpl
 
@@ -43,23 +44,28 @@ trait GoogleConnectorServicesComponentImpl
             val oauthScopes = resGetString(R.string.oauth_scopes)
             accountManager.getAuthToken(account, oauthScopes, null, activityContext.get, new AccountManagerCallback[Bundle] {
               override def run(future: AccountManagerFuture[Bundle]): Unit = {
-                val authTokenBundle: Bundle = future.getResult
-                val token: String = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN)
-                setToken(token)
-                val loginRequest = LoginRequest(
-                  email = request.username,
-                  device = GoogleDevice(
-                    name = Build.MODEL,
-                    devideId = getAndroidId.get,
-                    secretToken = token,
-                    permissions = Seq(appContextProvider.get.getString(R.string.oauth_scopes))
+                Try {
+                  val authTokenBundle: Bundle = future.getResult
+                  val token: String = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN)
+                  setToken(token)
+                  LoginRequest(
+                    email = request.username,
+                    device = GoogleDevice(
+                      name = Build.MODEL,
+                      devideId = getAndroidId.get,
+                      secretToken = token,
+                      permissions = Seq(appContextProvider.get.getString(R.string.oauth_scopes))
+                    )
                   )
-                )
-                apiServices.login(loginRequest) map {
-                  response =>
-                    requestPromise.complete(Try(RequestTokenResponse(true)))
-                } recover {
-                  case _ => requestPromise.complete(Try(RequestTokenResponse(false)))
+                } match {
+                  case Success(loginRequest) =>
+                    userServices.signIn(loginRequest) map {
+                      response =>
+                        requestPromise.complete(Try(RequestTokenResponse(response.success)))
+                    } recover {
+                      case _ => requestPromise.complete(Try(RequestTokenResponse(false)))
+                    }
+                  case Failure(ex) => requestPromise.complete(Try(RequestTokenResponse(false)))
                 }
               }
             }, null)

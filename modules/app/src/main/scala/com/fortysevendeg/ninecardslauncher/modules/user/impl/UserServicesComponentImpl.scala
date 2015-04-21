@@ -4,8 +4,9 @@ import java.io.File
 
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.modules.api._
-import com.fortysevendeg.ninecardslauncher.modules.user.{UserServices, UserServicesComponent}
+import com.fortysevendeg.ninecardslauncher.modules.user.{SignInResponse, UserServices, UserServicesComponent}
 import com.fortysevendeg.ninecardslauncher.utils.FileUtils
+import com.fortysevendeg.ninecardslauncher.commons.Service
 
 import scala.util.{Failure, Success}
 
@@ -20,74 +21,111 @@ trait UserServicesComponentImpl
 
   class UserServicesImpl
     extends UserServices
+    with Conversions
     with FileUtils {
 
-    val BasicInstallation = Some(Installation(id = None, deviceType = Some(DeviceType), deviceToken = None, userId = None))
+    private val BasicInstallation = Installation(id = None, deviceType = Some(DeviceType), deviceToken = None, userId = None)
 
-    var installation: Option[Installation] = None
-
-    var user: Option[User] = None
+    private var synchronizingChangesInstallation: Boolean = false
+    private var pendingSynchronizedInstallation: Boolean = false
 
     val DeviceType = "ANDROID"
     val FilenameUser = "__user_entity__"
     val FilenameInstallation = "__installation_entity__"
 
-    override def register(): Unit = {
-      loadFile[Installation](getFileInstallation) match {
-        case Success(inst) => installation = Some(inst)
-        case Failure(ex) => installation = BasicInstallation
+    override def register(): Unit =
+      if (!getFileInstallation.exists()) {
+        saveInstallation(BasicInstallation)
       }
 
-      loadFile[User](getFileUser) match {
-        case Success(us) => user = Some(us)
-      }
-    }
 
     override def unregister(): Unit = {
-      installation = BasicInstallation
-      saveInstallation
-      // TODO synchronize installation in server here
+      saveInstallation(BasicInstallation)
+      synchronizeInstallation()
       val fileUser = getFileUser
       if (fileUser.exists()) fileUser.delete()
-      user = None
     }
 
-    override def login(request: LoginRequest): Unit = {
-      val loginResponse = user map {
-        u =>
-          apiServices.linkGoogleAccount(
-            LinkGoogleAccountRequest(
-              deviceId = request.device.devideId,
-              token = request.device.secretToken,
-              email = request.email,
-              devices = List(request.device)
-            ))
-      } getOrElse {
-        apiServices.login(request)
+    // TODO We have to store the information in Database. Serialization it's temporarily
+    override def getUser: Option[User] =
+      loadFile[User](getFileUser) match {
+        case Success(us) => Some(us)
+        case Failure(ex) => None
       }
-      loginResponse map {
-        response =>
-          response.user map {
-            u =>
-              user = Some(u)
-              saveUser
-              installation map {
-                i =>
-                  installation = Some(i.copy(userId = u.id))
-                  saveInstallation
-                // TODO synchronize installation in server here
-              }
-          }
+
+    override def getInstallation: Option[Installation] =
+      loadFile[Installation](getFileInstallation) match {
+        case Success(inst) => Some(inst)
+        case Failure(ex) => None
       }
-    }
 
-    private def saveInstallation = installation map (writeFile[Installation](getFileInstallation, _))
+    override def signIn: Service[LoginRequest, SignInResponse] =
+      request => {
+        val loginResponse = getUser map {
+          user =>
+            apiServices.linkGoogleAccount(
+              LinkGoogleAccountRequest(
+                deviceId = request.device.devideId,
+                token = request.device.secretToken,
+                email = request.email,
+                devices = List(request.device)
+              ))
+        } getOrElse {
+          apiServices.login(request)
+        }
+        loginResponse map {
+          response =>
+            response.user map {
+              user =>
+                saveUser(user)
+                getInstallation map {
+                  i =>
+                    saveInstallation(i.copy(userId = user.id))
+                    synchronizeInstallation()
+                }
+                SignInResponse(response.statusCode, true)
+            } getOrElse SignInResponse(response.statusCode, false)
+        }
+      }
 
-    private def saveUser = user map (writeFile[User](getFileUser, _))
+    private def saveInstallation(installation: Installation) = writeFile[Installation](getFileInstallation, installation)
+
+    private def saveUser(user: User) = writeFile[User](getFileUser, user)
 
     private def getFileInstallation = new File(appContextProvider.get.getFilesDir, FilenameInstallation)
 
     private def getFileUser = new File(appContextProvider.get.getFilesDir, FilenameUser)
+
+    private def synchronizeInstallation(): Unit =
+      synchronizingChangesInstallation match {
+        case true => pendingSynchronizedInstallation = true
+        case _ =>
+          synchronizingChangesInstallation = true
+          getInstallation map {
+            inst =>
+              inst.id map {
+                id =>
+                  apiServices.updateInstallation(toInstallationRequest(inst)) map {
+                    response =>
+                      synchronizingChangesInstallation = false
+                      if (pendingSynchronizedInstallation) {
+                        pendingSynchronizedInstallation = false
+                        synchronizeInstallation()
+                      }
+                  }
+              } getOrElse {
+                apiServices.createInstallation(toInstallationRequest(inst)) map {
+                  response =>
+                    synchronizingChangesInstallation = false
+                    response.installation map saveInstallation
+                    if (pendingSynchronizedInstallation) {
+                      pendingSynchronizedInstallation = false
+                      synchronizeInstallation()
+                    }
+                }
+              }
+          }
+      }
 
   }
 

@@ -25,6 +25,11 @@ trait Styles {
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       llVertical
 
+  def welcomeTextStyle(implicit appContext: AppContext): Tweak[TextView] =
+    vWrapContent +
+      vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
+      tvText(R.string.welcomeMessage)
+
   def userGroupStyle(implicit appContext: AppContext): Tweak[RadioGroup] =
     llMatchWeightVertical +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +

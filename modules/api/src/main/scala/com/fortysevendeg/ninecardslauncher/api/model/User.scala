@@ -44,7 +44,7 @@ case class AuthAnonymous(
   id: String)
 
 case class Installation(
-  id: String,
+  id: Option[String],
   deviceType: Option[String],
   deviceToken: Option[String],
   userId: Option[String],

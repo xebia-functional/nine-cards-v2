@@ -6,15 +6,14 @@ import com.fortysevendeg.ninecardslauncher.ui.commons.ToolbarLayout
 import macroid.FullDsl._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import macroid.{Ui, ActivityContext, AppContext, IdGeneration}
-
+import macroid._
 
 trait Layout
   extends Styles
   with ToolbarLayout
   with IdGeneration {
 
-  var usersGroup = slot[LinearLayout]
+  var usersGroup = slot[RadioGroup]
 
   var action = slot[Button]
 
@@ -22,6 +21,7 @@ trait Layout
     l[FrameLayout](
       darkToolbar <~ toolbarStyle,
       l[LinearLayout](
+        w[TextView] <~ welcomeTextStyle,
         l[RadioGroup]() <~ wire(usersGroup) <~ userGroupStyle,
         w[Button] <~ selectUserButtonStyle <~ wire(action)
       ) <~ contentUserStyle
@@ -29,9 +29,9 @@ trait Layout
   )
 
   def addUsersToRadioGroup(accounts: Seq[Account])(implicit appContext: AppContext, context: ActivityContext): Ui[_] = {
-    val radioViews = accounts map (userRadio(_))
-    radioViews lift 0 map (_.setChecked(true))
-    usersGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)
+    val radioViews = accounts map userRadio
+    (usersGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
+      Ui { radioViews lift 0 foreach (_.setChecked(true)) }
   }
 
   private def userRadio(account: Account)(implicit appContext: AppContext, context: ActivityContext): RadioButton = getUi(

@@ -7,8 +7,6 @@ class NineCardsApplication extends Application {
 
   override def attachBaseContext(base: Context): Unit = {
     super.attachBaseContext(base)
-    // Multidex unavailable for now
-//    MultiDex.install(this)
   }
 
 }

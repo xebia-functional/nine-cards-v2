@@ -67,7 +67,15 @@ trait Conversions {
 
   def toInstallation(installation: apiModel.Installation): Installation =
     Installation(
-      id = Some(installation.id),
+      id = installation.id,
+      deviceType = installation.deviceType,
+      deviceToken = installation.deviceToken,
+      userId = installation.userId
+    )
+
+  def toInstallationRequest(installation: Installation) : InstallationRequest =
+    InstallationRequest(
+      id = installation.id,
       deviceType = installation.deviceType,
       deviceToken = installation.deviceToken,
       userId = installation.userId

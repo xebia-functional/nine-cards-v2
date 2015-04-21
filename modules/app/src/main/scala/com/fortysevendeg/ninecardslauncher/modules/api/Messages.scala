@@ -27,7 +27,7 @@ case class LinkGoogleAccountRequest(
   devices: Seq[GoogleDevice])
 
 case class InstallationRequest(
-  id: String,
+  id: Option[String],
   deviceType: Option[String],
   deviceToken: Option[String],
   userId: Option[String])

@@ -45,6 +45,7 @@ trait ApiServicesComponentImpl
       (HeaderLocalization, getString(R.string.api_localization)))
 
     import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
+    import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
 
     override def login: Service[LoginRequest, LoginResponse] =
       request =>

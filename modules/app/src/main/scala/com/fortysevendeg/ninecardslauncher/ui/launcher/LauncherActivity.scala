@@ -33,6 +33,7 @@ class LauncherActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
+    userServices.register()
     setContentView(content)
     generateCollections
   }
