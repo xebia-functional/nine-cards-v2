@@ -1,0 +1,181 @@
+{
+  "docV1": null,
+  "analyticsCookie": null,
+  "userReview": {
+    "authorName": null,
+    "url": null,
+    "source": null,
+    "documentVersion": null,
+    "timestampMsec": 1425992562252,
+    "starRating": 5,
+    "title": null,
+    "comment": null,
+    "commentId": "gp:AOqpTOFDajTfsf9Y0v5bx1N1JANjj0EUEZtre3NDWrcipk7eR9xTmd_vhIevIRrjxfWUuQs8hwxgeSfS156mKAE",
+    "deviceName": null,
+    "replyText": null,
+    "replyTimestampMsec": null,
+    "author": {
+      "name": "Javi Pacheco",
+      "urls": {
+        "unknown1": false,
+        "url": "https://lh5.googleusercontent.com/-kMC0U2b5ji8/AAAAAAAAAAI/AAAAAAAAffI/hqV-b33OWIk/photo.jpg",
+        "secureUrl": null,
+        "unknown2": true
+      }
+    }
+  },
+  "docV2": {
+    "docid": "com.fortysevendeg.scala.android",
+    "backendDocid": "com.fortysevendeg.scala.android",
+    "docType": 1,
+    "backendId": 3,
+    "title": "Scala API Demos",
+    "creator": "47 Degrees LLC",
+    "descriptionHtml": "Scala Api Demos is an open source project developed to create an index of examples that were developed in Scala on Android.<p>You can view various examples submitted by community developers. Each example lists the level of difficulty with both Scala and Android. It also includes the minimum Android API level required to run the sample.<p>Contribute to the project by adding your own examples! All of the information you need to get started can be found in the projects readme at <a href=\"https://www.google.com/url?q=https://github.com/47deg/scala-android/blob/master/README.md&amp;sa=D&amp;usg=AFQjCNFC76ujhIbtNxDSNDCpGabqH0TLUw\" target=\"_blank\">https://github.com/47deg/scala-android/blob/master/README.md</a><p>This project is handcrafted by 47 Degrees and written entirely in Scala on Android.",
+    "offer": [
+      {
+        "micros": 0,
+        "currencyCode": "USD",
+        "formattedAmount": "Free",
+        "convertedPrice": [],
+        "checkoutFlowRequired": false,
+        "fullPriceMicros": null,
+        "formattedFullAmount": null,
+        "offerType": 1,
+        "rentalTerms": null,
+        "onSaleDate": null,
+        "promotionLabel": [],
+        "subscriptionTerms": null,
+        "formattedName": null,
+        "formattedDescription": null
+      }
+    ],
+    "availability": {
+      "restriction": 1,
+      "offerType": null,
+      "rule": null,
+      "availableIfOwned": true,
+      "install": [],
+      "filterInfo": null,
+      "ownershipInfo": null
+    },
+    "image": [
+      {
+        "imageType": 4,
+        "imageUrl": "https://lh3.ggpht.com/kOao82-yjslB_aNY1zzVp5Ouu_qw_uZNOtTofgs3Sr1meEGcIxikLQovPh7VLSg3Ww",
+        "altTextLocalized": null,
+        "secureUrl": null,
+        "positionInSequence": null,
+        "supportsFifeUrlOptions": true
+      },
+      {
+        "imageType": 2,
+        "imageUrl": "https://lh3.ggpht.com/6gCjpHw4OJFaeHb3CP76T6J4qcVzTvJVj_6zzgadUnSwxgTHWzLDZ3DERBGCVa6zWrA",
+        "altTextLocalized": null,
+        "secureUrl": null,
+        "positionInSequence": null,
+        "supportsFifeUrlOptions": true
+      },
+      {
+        "imageType": 1,
+        "imageUrl": "https://lh5.ggpht.com/hqeGG1TBVah-xuhRsA_o2nLwJAppTYPjdBWevP9o8eWiBvWkFPWadVJPd9bOKYZgsx4",
+        "altTextLocalized": null,
+        "secureUrl": null,
+        "positionInSequence": 0,
+        "supportsFifeUrlOptions": true
+      },
+      {
+        "imageType": 1,
+        "imageUrl": "https://lh6.ggpht.com/N7lLy3MkyihhuYMKKpL41kqblIy0n_M2tcExQf_BCMwxpIO44PvMd3KGAtGQRZFgZg",
+        "altTextLocalized": null,
+        "secureUrl": null,
+        "positionInSequence": 1,
+        "supportsFifeUrlOptions": true
+      },
+      {
+        "imageType": 1,
+        "imageUrl": "https://lh5.ggpht.com/PzenuNj2xatetK_1f9t7siEXI8rDMMDgX48Jlgsi05vO2LKFSr0pIfil2fqGUZCb1WY",
+        "altTextLocalized": null,
+        "secureUrl": null,
+        "positionInSequence": 2,
+        "supportsFifeUrlOptions": true
+      },
+      {
+        "imageType": 0,
+        "imageUrl": "https://lh3.ggpht.com/vBmdB8RSQ9dcb0v-qUgiyqeLktIfEshqKARNbBIntlXafm4QNELRrM1V50CataTq_KE",
+        "altTextLocalized": null,
+        "secureUrl": null,
+        "positionInSequence": null,
+        "supportsFifeUrlOptions": true
+      }
+    ],
+    "child": [],
+    "containerMetadata": null,
+    "details": {
+      "appDetails": {
+        "developerName": "47 Degrees LLC",
+        "majorVersionNumber": 1,
+        "versionCode": 2,
+        "versionString": "1.1",
+        "title": "",
+        "appCategory": ["LIBRARIES_AND_DEMO"],
+        "contentRating": 2,
+        "installationSize": 4415883,
+        "permission": [
+          "android.permission.INTERNET",
+          "android.permission.ACCESS_NETWORK_STATE",
+          "android.permission.WRITE_EXTERNAL_STORAGE",
+          "android.permission.ACCESS_COARSE_LOCATION",
+          "android.permission.ACCESS_FINE_LOCATION",
+          "android.permission.READ_EXTERNAL_STORAGE"
+        ],
+        "developerEmail": "hello@47deg.com",
+        "developerWebsite": "http://47deg.com",
+        "numDownloads": "100+",
+        "packageName": "com.fortysevendeg.scala.android",
+        "recentChangesHtml": "Bugs fixed",
+        "uploadDate": "Mar 17, 2015",
+        "file": [
+          {
+            "fileType": 0,
+            "versionCode": 2,
+            "size": 3883499
+          }
+        ],
+        "appType": "APPLICATION"
+      },
+      "albumDetails": null,
+      "artistDetails": null,
+      "songDetails": null,
+      "bookDetails": null,
+      "videoDetails": null,
+      "subscriptionDetails": null,
+      "magazineDetails": null,
+      "tvShowDetails": null,
+      "tvSeasonDetails": null,
+      "tvEpisodeDetails": null
+    },
+    "aggregateRating": {
+      "type": 2,
+      "starRating": 5.0,
+      "ratingsCount": 19,
+      "oneStarRatings": 0,
+      "twoStarRatings": 0,
+      "threeStarRatings": 0,
+      "fourStarRatings": 0,
+      "fiveStarRatings": 19,
+      "thumbsUpCount": null,
+      "thumbsDownCount": null,
+      "commentCount": 3,
+      "bayesianMeanRating": null
+    },
+    "detailsUrl": "details?doc=com.fortysevendeg.scala.android",
+    "shareUrl": "https://play.google.com/store/apps/details?id=com.fortysevendeg.scala.android",
+    "reviewsUrl": "rev?doc=com.fortysevendeg.scala.android&n=20&o=0",
+    "backendUrl": null,
+    "purchaseDetailsUrl": "details?doc=com.fortysevendeg.scala.android",
+    "detailsReusable": true,
+    "subtitle": null
+  },
+  "footerHtml": null
+}

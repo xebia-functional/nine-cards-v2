@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "packageName": "com.fortysevendeg.scala.android",
+      "appType": "APPLICATION",
+      "appCategory": "LIBRARIES_AND_DEMO",
+      "numDownloads": "100+",
+      "starRating": 5.0,
+      "ratingCount": 19,
+      "commentCount": 3
+    },
+    {
+      "packageName": "com.fortysevendeg.android.scaladays",
+      "appType": "APPLICATION",
+      "appCategory": "SOCIAL",
+      "numDownloads": "500+",
+      "starRating": 4.451613,
+      "ratingCount": 31,
+      "commentCount": 6
+    }
+  ],
+  "errors": []
+}
