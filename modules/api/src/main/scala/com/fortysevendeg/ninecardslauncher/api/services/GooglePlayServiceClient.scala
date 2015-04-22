@@ -14,7 +14,7 @@ trait GooglePlayServiceClient {
   private val PackagePath = "package"
   private val PackagesPath = "packages"
   private val SearchPath = "search"
-  private val SetailedPackagesPath = "detailed"
+  private val DetailedPackagesPath = "detailed"
   private val SimplePackagesPath = "simple"
 
   def getGooglePlayPackage(packageName: String, headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[GooglePlayPackage]) =
@@ -27,7 +27,7 @@ trait GooglePlayServiceClient {
       packageRequest: PackagesRequest,
       headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[GooglePlayPackages], writes: Writes[PackagesRequest]) =
     serviceClient.post[PackagesRequest, GooglePlayPackages](
-      path = s"$PrefixGooglePlay/$PackagesPath/$SetailedPackagesPath",
+      path = s"$PrefixGooglePlay/$PackagesPath/$DetailedPackagesPath",
       headers = headers,
       body = packageRequest,
       reads = Some(reads))

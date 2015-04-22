@@ -67,7 +67,7 @@ case class NineCardIntent(
     className: Option[String],
     packageName: Option[String],
     dataExtra: Option[String],
-    intentExtras: Map[String, String],
+    intentExtras: Option[Map[String, String]],
     categories: Option[Seq[String]])
 
 case class UserConfigUserLocation(
