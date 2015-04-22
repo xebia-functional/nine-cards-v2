@@ -10,15 +10,15 @@
     "starRating": 5,
     "title": null,
     "comment": null,
-    "commentId": "gp:AOqpTOFDajTfsf9Y0v5bx1N1JANjj0EUEZtre3NDWrcipk7eR9xTmd_vhIevIRrjxfWUuQs8hwxgeSfS156mKAE",
+    "commentId": "commentId",
     "deviceName": null,
     "replyText": null,
     "replyTimestampMsec": null,
     "author": {
-      "name": "Javi Pacheco",
+      "name": "Author name",
       "urls": {
         "unknown1": false,
-        "url": "https://lh5.googleusercontent.com/-kMC0U2b5ji8/AAAAAAAAAAI/AAAAAAAAffI/hqV-b33OWIk/photo.jpg",
+        "url": "https://lh5.googleusercontent.com/photo.jpg",
         "secureUrl": null,
         "unknown2": true
       }
