@@ -3,11 +3,10 @@ package com.fortysevendeg.ninecardslauncher.modules.repository.impl
 import android.content.ContentResolver
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
-import com.fortysevendeg.ninecardslauncher.modules.appsmanager.AppItem
 import com.fortysevendeg.ninecardslauncher.modules.repository._
-import com.fortysevendeg.ninecardslauncher.repository.{GetSortedCollectionsRequest, NineCardRepositoryClient}
+import com.fortysevendeg.ninecardslauncher.repository.{GetAllCacheCategoryRequest, GetSortedCollectionsRequest, NineCardRepositoryClient}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 trait RepositoryServicesComponentImpl
   extends RepositoryServicesComponent {
@@ -25,22 +24,26 @@ trait RepositoryServicesComponentImpl
 
     override implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
-    def toCard(app: AppItem) =
-      Card(
-        id = 1,
-        position = 1,
-        term = app.name,
-        packageName = Some(app.packageName),
-        `type` = "APP",
-        intent = "",
-        imagePath = app.imagePath
-      )
-
     override def getCollections: Service[GetCollectionsRequest, GetCollectionsResponse] =
       request =>
         getSortedCollections(GetSortedCollectionsRequest()) map {
           response =>
             GetCollectionsResponse(toCollectionSeq(response.collections))
+        }
+
+    override def getCacheCategory: Service[GetCacheCategoryRequest, GetCacheCategoryResponse] =
+      request => {
+        getAllCacheCategory(GetAllCacheCategoryRequest()) map {
+          response =>
+            GetCacheCategoryResponse(toCacheCategorySeq(response.cacheCategory))
+        }
+      }
+
+    override def insertGeoInfo: Service[InsertGeoInfoRequest, InsertGeoInfoResponse] =
+      request =>
+        addGeoInfo(toAddGeoInfoRequest(request)) map {
+          response =>
+            InsertGeoInfoResponse(response.geoInfo)
         }
   }
 

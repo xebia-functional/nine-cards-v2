@@ -39,37 +39,39 @@ trait GoogleConnectorServicesComponentImpl
         val requestPromise = Promise[RequestTokenResponse]()
         setUser(request.username)
         invalidateToken()
-        getAccount(request.username) map {
-          account =>
-            val oauthScopes = resGetString(R.string.oauth_scopes)
-            accountManager.getAuthToken(account, oauthScopes, null, activityContext.get, new AccountManagerCallback[Bundle] {
-              override def run(future: AccountManagerFuture[Bundle]): Unit = {
-                Try {
-                  val authTokenBundle: Bundle = future.getResult
-                  val token: String = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN)
-                  setToken(token)
-                  LoginRequest(
-                    email = request.username,
-                    device = GoogleDevice(
-                      name = Build.MODEL,
-                      devideId = getAndroidId.get,
-                      secretToken = token,
-                      permissions = Seq(appContextProvider.get.getString(R.string.oauth_scopes))
-                    )
+        (for {
+          account <- getAccount(request.username)
+          androidId <- userServices.getAndroidId
+        } yield {
+          val oauthScopes = resGetString(R.string.oauth_scopes)
+          accountManager.getAuthToken(account, oauthScopes, null, activityContext.get, new AccountManagerCallback[Bundle] {
+            override def run(future: AccountManagerFuture[Bundle]): Unit = {
+              Try {
+                val authTokenBundle: Bundle = future.getResult
+                val token: String = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN)
+                setToken(token)
+                LoginRequest(
+                  email = request.username,
+                  device = GoogleDevice(
+                    name = Build.MODEL,
+                    devideId = androidId,
+                    secretToken = token,
+                    permissions = Seq(appContextProvider.get.getString(R.string.oauth_scopes))
                   )
-                } match {
-                  case Success(loginRequest) =>
-                    userServices.signIn(loginRequest) map {
-                      response =>
-                        requestPromise.complete(Try(RequestTokenResponse(response.success)))
-                    } recover {
-                      case _ => requestPromise.complete(Try(RequestTokenResponse(false)))
-                    }
-                  case Failure(ex) => requestPromise.complete(Try(RequestTokenResponse(false)))
-                }
+                )
+              } match {
+                case Success(loginRequest) =>
+                  userServices.signIn(loginRequest) map {
+                    response =>
+                      requestPromise.complete(Try(RequestTokenResponse(response.success)))
+                  } recover {
+                    case _ => requestPromise.complete(Try(RequestTokenResponse(false)))
+                  }
+                case Failure(ex) => requestPromise.complete(Try(RequestTokenResponse(false)))
               }
-            }, null)
-        } getOrElse requestPromise.complete(Try(RequestTokenResponse(false)))
+            }
+          }, null)
+        }) getOrElse requestPromise.complete(Try(RequestTokenResponse(false)))
         requestPromise.future
       }
 
@@ -93,14 +95,6 @@ trait GoogleConnectorServicesComponentImpl
     private def getAccount(name: String): Option[Account] = {
       val accounts: Seq[Account] = accountManager.getAccountsByType(AccountType).toSeq
       accounts find (_.name == name)
-    }
-
-    def getAndroidId: Option[String] = Try {
-      val cursor = Option(appContextProvider.get.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
-      cursor filter(c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
-    } match {
-      case Success(id) => id
-      case Failure(ex) => None
     }
 
   }

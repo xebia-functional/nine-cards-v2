@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection}
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard}
+import com.fortysevendeg.ninecardslauncher.repository.{AddGeoInfoResponse, AddGeoInfoRequest}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection, Card => RepositoryCard, CacheCategory => RepositoryCacheCategory, GeoInfo, GeoInfoData}
 
 trait Conversions {
 
@@ -36,5 +36,29 @@ trait Conversions {
       starRating = card.data.starRating,
       numDownloads = card.data.numDownloads,
       notification = card.data.notification)
+
+  def toCacheCategorySeq(cache: Seq[RepositoryCacheCategory]) = cache map toCacheCategory
+
+  def toCacheCategory(cacheCategory: RepositoryCacheCategory) =
+    CacheCategory(
+      id = cacheCategory.id,
+      packageName = cacheCategory.data.packageName,
+      category = cacheCategory.data.category,
+      starRating = cacheCategory.data.starRating,
+      numDownloads = cacheCategory.data.numDownloads,
+      ratingsCount = cacheCategory.data.ratingsCount,
+      commentCount = cacheCategory.data.commentCount)
+
+  def toAddGeoInfoRequest(request: InsertGeoInfoRequest) =
+    AddGeoInfoRequest(
+      data = GeoInfoData(
+        constrain = request.constrain,
+        occurrence = request.occurrence,
+        wifi = request.wifi,
+        latitude = request.latitude,
+        longitude = request.longitude,
+        system = request.system
+      )
+    )
 
 }

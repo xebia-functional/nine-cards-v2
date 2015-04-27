@@ -18,6 +18,18 @@ object Constants {
 
 }
 
+object NineCardsMoments {
+
+  val HomeMorning: String = "home_morning"
+
+  val Work: String = "work"
+
+  val HomeNight: String = "home_night"
+
+  val Transit: String = "transit"
+
+}
+
 object ActivityResult {
 
   val Wizard = 1
@@ -32,6 +44,10 @@ object GoogleServicesConstants {
 
   val ContentGServices = "content://com.google.android.gsf.gservices"
 
+}
+
+object AppUtils {
+  def getUniqueId: Int = (System.currentTimeMillis & 0xfffffff).toInt
 }
 
 object ColorsUtils {

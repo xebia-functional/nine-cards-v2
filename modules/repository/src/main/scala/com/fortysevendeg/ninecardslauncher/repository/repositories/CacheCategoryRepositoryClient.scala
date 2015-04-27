@@ -6,7 +6,7 @@ import android.net.Uri._
 import com.fortysevendeg.ninecardslauncher.commons.RichContentValues._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
-import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
+import com.fortysevendeg.ninecardslauncher.provider.{CacheCategoryEntity, DBUtils, NineCardsContentProvider}
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
@@ -21,7 +21,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
 
   implicit val executionContext: ExecutionContext
 
-  def addCacheCategory(): Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
+  def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -48,7 +48,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCacheCategory(): Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
+  def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -66,7 +66,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
       }
 
 
-  def deleteCacheByPackageCategory(): Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
+  def deleteCacheByPackageCategory: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
     request =>
       tryToFuture {
         Try {
@@ -80,6 +80,30 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         } recover {
           case e: Exception =>
             DeleteCacheCategoryByPackageResponse(success = false)
+        }
+      }
+
+  def getAllCacheCategory: Service[GetAllCacheCategoryRequest, GetAllCacheCategoryResponse] =
+    request =>
+      tryToFuture {
+        Try {
+          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
+            NineCardsContentProvider.ContentUriCacheCategory,
+            CacheCategoryEntity.AllFields,
+            "",
+            Array.empty,
+            ""))
+
+          maybeCursor match {
+            case Some(cursor) =>
+              GetAllCacheCategoryResponse(
+                getListFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
+            case _ => GetAllCacheCategoryResponse(Seq.empty)
+          }
+
+        } recover {
+          case e: Exception =>
+            GetAllCacheCategoryResponse(Seq.empty)
         }
       }
 
@@ -131,7 +155,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def updateCacheCategory(): Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
+  def updateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {

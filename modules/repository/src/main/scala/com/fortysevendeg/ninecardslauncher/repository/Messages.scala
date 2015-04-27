@@ -15,6 +15,10 @@ case class DeleteCacheCategoryByPackageRequest(`package`: String)
 
 case class DeleteCacheCategoryByPackageResponse(success: Boolean)
 
+case class GetAllCacheCategoryRequest()
+
+case class GetAllCacheCategoryResponse(cacheCategory: Seq[CacheCategory])
+
 case class GetCacheCategoryByIdRequest(id: Int)
 
 case class GetCacheCategoryByIdResponse(result: Option[CacheCategory])

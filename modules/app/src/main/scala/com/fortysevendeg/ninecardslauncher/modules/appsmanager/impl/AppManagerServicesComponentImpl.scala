@@ -5,6 +5,7 @@ import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCacheCategoryResponse, GetCacheCategoryRequest, RepositoryServicesComponent}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,7 +14,7 @@ import scala.concurrent.Future
 trait AppManagerServicesComponentImpl
   extends AppManagerServicesComponent {
 
-  self: AppContextProvider with ImageServicesComponent =>
+  self: AppContextProvider with ImageServicesComponent with RepositoryServicesComponent =>
 
   lazy val appManagerServices = new AppManagerServicesImpl
 
@@ -44,6 +45,25 @@ trait AppManagerServicesComponentImpl
           GetAppsResponse(appitems)
         }
 
+    override def getCategorizedApps: Service[GetCategorizedAppsRequest, GetCategorizedAppsResponse] =
+      request =>
+        for {
+          GetCacheCategoryResponse(cacheCategory) <- repositoryServices.getCacheCategory(GetCacheCategoryRequest())
+          GetAppsResponse(apps) <- getApps(GetAppsRequest())
+        } yield {
+          val categorizedApps = apps map {
+            app =>
+              app.copy(category = cacheCategory.find(_.packageName == app.packageName).map(_.category))
+          }
+          GetCategorizedAppsResponse(categorizedApps)
+        }
+
+    override def getAppsByCategory: Service[GetAppsByCategoryRequest, GetAppsByCategoryResponse] =
+      request =>
+        getCategorizedApps(GetCategorizedAppsRequest()) map {
+          response =>
+            GetAppsByCategoryResponse(response.apps.filter(_.category == request.category))
+        }
   }
 
 }

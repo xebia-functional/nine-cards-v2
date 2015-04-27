@@ -4,6 +4,8 @@ import com.fortysevendeg.ninecardslauncher.commons.Service
 
 trait AppManagerServices {
   def getApps: Service[GetAppsRequest, GetAppsResponse]
+  def getCategorizedApps: Service[GetCategorizedAppsRequest, GetCategorizedAppsResponse]
+  def getAppsByCategory: Service[GetAppsByCategoryRequest, GetAppsByCategoryResponse]
 }
 
 trait AppManagerServicesComponent {

@@ -2,13 +2,15 @@ package com.fortysevendeg.ninecardslauncher.modules.user.impl
 
 import java.io.File
 
+import android.net.Uri
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.user.{SignInResponse, UserServices, UserServicesComponent}
+import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.commons.Service
 
-import scala.util.{Failure, Success}
+import scala.util.{Try, Failure, Success}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -87,6 +89,14 @@ trait UserServicesComponentImpl
             } getOrElse SignInResponse(response.statusCode, false)
         }
       }
+
+    override def getAndroidId: Option[String] = Try {
+      val cursor = Option(appContextProvider.get.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
+      cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+    } match {
+      case Success(id) => id
+      case Failure(ex) => None
+    }
 
     private def saveInstallation(installation: Installation) = writeFile[Installation](getFileInstallation, installation)
 

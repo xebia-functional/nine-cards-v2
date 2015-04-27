@@ -26,3 +26,12 @@ case class Card(
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
   notification: Option[String] = None) extends Serializable
+
+case class CacheCategory(
+  id: Int,
+  packageName: String,
+  category: String,
+  starRating: Double,
+  numDownloads: String,
+  ratingsCount: Int,
+  commentCount: Int) extends Serializable

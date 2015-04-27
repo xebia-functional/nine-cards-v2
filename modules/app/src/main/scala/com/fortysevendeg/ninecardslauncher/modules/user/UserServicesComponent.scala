@@ -9,6 +9,7 @@ trait UserServices {
   def getUser: Option[User]
   def getInstallation: Option[Installation]
   def signIn: Service[LoginRequest, SignInResponse]
+  def getAndroidId: Option[String]
 }
 
 trait UserServicesComponent {
