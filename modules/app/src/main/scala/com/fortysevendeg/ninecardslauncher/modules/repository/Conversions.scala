@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
-import com.fortysevendeg.ninecardslauncher.repository.{AddGeoInfoResponse, AddGeoInfoRequest}
-import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection, Card => RepositoryCard, CacheCategory => RepositoryCacheCategory, GeoInfo, GeoInfoData}
+import com.fortysevendeg.ninecardslauncher.repository.{AddCardRequest, AddCollectionRequest, AddGeoInfoResponse, AddGeoInfoRequest}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection, Card => RepositoryCard, CacheCategory => RepositoryCacheCategory, CardData, CollectionData, GeoInfo, GeoInfoData}
 
 trait Conversions {
 
@@ -61,4 +61,37 @@ trait Conversions {
       )
     )
 
+  def toAddCollectionRequest(request: InsertCollectionRequest) =
+    AddCollectionRequest(
+      data = CollectionData(
+        position = request.position,
+        name = request.name,
+        `type` = request.`type`,
+        icon = request.icon,
+        themedColorIndex = request.themedColorIndex,
+        appsCategory = request.appsCategory,
+        constrains = request.constrains,
+        originalSharedCollectionId = request.originalSharedCollectionId,
+        sharedCollectionId = request.sharedCollectionId,
+        sharedCollectionSubscribed = request.sharedCollectionSubscribed,
+        cards = Seq.empty
+      )
+    )
+
+  def toAddCardRequest(collectionId: Int, request: CardItem) =
+    AddCardRequest(
+      collectionId = collectionId,
+      data = CardData(
+        position = request.position,
+        term = request.term,
+        `type` = request.`type`,
+        micros = request.micros,
+        packageName = request.packageName,
+        intent = request.intent,
+        imagePath = request.imagePath,
+        starRating = request.starRating,
+        numDownloads = request.numDownloads,
+        notification = request.notification
+      )
+    )
 }

@@ -20,7 +20,6 @@ case class AuthGoogleDevice(
   secretToken: String,
   permissions: Seq[String])
 
-
 case class AuthGoogle(
   email: String,
   devices: Seq[AuthGoogleDevice])

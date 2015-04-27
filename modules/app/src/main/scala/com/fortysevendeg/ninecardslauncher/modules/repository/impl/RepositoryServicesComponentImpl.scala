@@ -3,10 +3,12 @@ package com.fortysevendeg.ninecardslauncher.modules.repository.impl
 import android.content.ContentResolver
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.modules.repository.Conversions
 import com.fortysevendeg.ninecardslauncher.modules.repository._
-import com.fortysevendeg.ninecardslauncher.repository.{GetAllCacheCategoryRequest, GetSortedCollectionsRequest, NineCardRepositoryClient}
+import com.fortysevendeg.ninecardslauncher.repository._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Future, Promise, ExecutionContext}
+import scala.util.Success
 
 trait RepositoryServicesComponentImpl
   extends RepositoryServicesComponent {
@@ -45,6 +47,29 @@ trait RepositoryServicesComponentImpl
           response =>
             InsertGeoInfoResponse(response.geoInfo)
         }
+
+    override def insertCollection: Service[InsertCollectionRequest, InsertCollectionResponse] =
+      request => {
+        val promise = Promise[InsertCollectionResponse]()
+        addCollection(toAddCollectionRequest(request)) map {
+          response =>
+            response.collection map {
+              collection => {
+                val futures = request.cards map {
+                  card =>
+                    addCard(toAddCardRequest(collection.id, card))
+                }
+                Future.sequence(futures) map (p => promise.complete(Success(InsertCollectionResponse(true)))) recover {
+                  case _ => promise.complete(Success(InsertCollectionResponse(false)))
+                }
+              }
+            } getOrElse promise.complete(Success(InsertCollectionResponse(true)))
+        } recover {
+          case _ => promise.complete(Success(InsertCollectionResponse(false)))
+        }
+
+        promise.future
+      }
   }
 
 }
