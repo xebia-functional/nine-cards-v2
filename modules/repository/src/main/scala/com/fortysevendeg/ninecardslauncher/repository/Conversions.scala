@@ -41,8 +41,7 @@ object Conversions {
       constrains = Option[String](collectionEntity.data.constrains),
       originalSharedCollectionId = Option[String](collectionEntity.data.originalSharedCollectionId),
       sharedCollectionId = Option[String](collectionEntity.data.sharedCollectionId),
-      sharedCollectionSubscribed = collectionEntity.data.sharedCollectionSubscribed,
-      cards = Seq.empty[Card]))
+      sharedCollectionSubscribed = collectionEntity.data.sharedCollectionSubscribed))
 
   def toGeoInfo(geoInfoEntity: GeoInfoEntity) = GeoInfo(
     id = geoInfoEntity.id,
