@@ -77,7 +77,7 @@ trait CardRepositoryClient extends DBUtils {
         Try {
           val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             withAppendedPath(NineCardsContentProvider.ContentUriCard, request.id.toString),
-            Array.empty,
+            AllFields,
             "",
             Array.empty,
             ""))
@@ -96,7 +96,7 @@ trait CardRepositoryClient extends DBUtils {
       }
 
 
-  def getCardByCollection: Service[GetCardByCollectionRequest, GetCardByCollectionResponse] =
+  def getCardByCollection: Service[GetAllCardsByCollectionRequest, GetAllCardsByCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -109,14 +109,14 @@ trait CardRepositoryClient extends DBUtils {
 
           maybeCursor match {
             case Some(cursor) =>
-              GetCardByCollectionResponse(
+              GetAllCardsByCollectionResponse(
                 result = getListFromCursor(cursor, cardEntityFromCursor) map toCard)
-            case _ => GetCardByCollectionResponse(result = Seq.empty[Card])
+            case _ => GetAllCardsByCollectionResponse(result = Seq.empty[Card])
           }
 
         } recover {
           case e: Exception =>
-            GetCardByCollectionResponse(result = Seq.empty[Card])
+            GetAllCardsByCollectionResponse(result = Seq.empty[Card])
         }
       }
 
