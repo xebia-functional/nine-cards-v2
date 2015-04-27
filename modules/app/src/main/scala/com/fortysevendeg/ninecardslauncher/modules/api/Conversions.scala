@@ -61,7 +61,7 @@ trait Conversions {
       className = apiIntent.className,
       packageName = apiIntent.packageName,
       dataExtra = apiIntent.dataExtra,
-      intentExtras = apiIntent.intentExtras,
+      intentExtras = apiIntent.intentExtras getOrElse Map.empty,
       categories = apiIntent.categories)
 
   def toUserConfigGeoInfo(apiGeoInfo: apiModel.UserConfigGeoInfo): UserConfigGeoInfo =
@@ -133,7 +133,7 @@ trait Conversions {
       className = apiIntent.className,
       packageName = apiIntent.packageName,
       dataExtra = apiIntent.dataExtra,
-      intentExtras = apiIntent.intentExtras,
+      intentExtras = Some(apiIntent.intentExtras),
       categories = apiIntent.categories)
 
   def fromUserConfigGeoInfo(apiGeoInfo: UserConfigGeoInfo): apiModel.UserConfigGeoInfo =
