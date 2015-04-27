@@ -9,8 +9,8 @@ trait DependencyInjector {
 
   self : Application =>
 
-  implicit val appContext: AppContext = AppContext(this)
+  val appContext: AppContext = AppContext(this)
 
-  lazy val persistentServices: PersistentServices = new PersistentServicesImpl
+  lazy val persistentServices: PersistentServices = new PersistentServicesImpl()(appContext)
 
 }

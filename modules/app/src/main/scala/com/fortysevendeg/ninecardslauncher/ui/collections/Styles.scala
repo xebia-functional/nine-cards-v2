@@ -18,8 +18,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.di.{InjectorProvider, PersistentServicesProvider}
-import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServices
+import com.fortysevendeg.ninecardslauncher.di.DependencyInjector
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
@@ -29,18 +28,10 @@ import macroid.{AppContext, Tweak}
 
 trait Styles {
 
-  self: InjectorProvider =>
-
-  private def fTweak[W <: View](f: PersistentServices => Tweak[W]): Tweak[W] =
-    di match {
-      case Some(a) => f(a.persistentServices)
-      case _ => Tweak.blank
-    }
-
-  def rootStyle(implicit appContext: AppContext): Tweak[FrameLayout] =
+  def rootStyle(implicit appContext: AppContext, di: DependencyInjector): Tweak[FrameLayout] =
     vMatchParent +
       vFitsSystemWindows(true) +
-      fTweak(ps => vBackgroundColor(ps.getCollectionDetailBackgroundColor))
+      vBackgroundColor(di.persistentServices.getCollectionDetailBackgroundColor)
 
   def toolbarStyle(implicit appContext: AppContext): Tweak[Toolbar] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details)) +
@@ -68,11 +59,11 @@ trait Styles {
       ivScaleType(ScaleType.CENTER_INSIDE)
 
 
-  def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
+  def tabsStyle(implicit appContext: AppContext, di: DependencyInjector): Tweak[SlidingTabLayout] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tabs_collection_details)) +
       flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_tabs_collection_details)) +
-      fTweak(ps => stlDefaultTextColor(ps.getCollectionDetailTextTabDefaultColor)) +
-      fTweak(ps => stlSelectedTextColor(ps.getCollectionDetailTextTabSelectedColor)) +
+      stlDefaultTextColor(di.persistentServices.getCollectionDetailTextTabDefaultColor) +
+      stlSelectedTextColor(di.persistentServices.getCollectionDetailTextTabSelectedColor) +
       elevation
 
   def viewPagerStyle(implicit appContext: AppContext): Tweak[ViewPager] =
@@ -102,21 +93,13 @@ trait CollectionFragmentStyles {
 
 trait CollectionAdapterStyles {
 
-  self: PersistentServicesProvider =>
-
-  private def psTweak[W <: View](tweakFunction: (PersistentServices) => Tweak[W]): Tweak[W] =
-    getPersistentServices match {
-      case Some(ps) => tweakFunction(ps)
-      case _ => Tweak.blank
-    }
-
-  def rootStyle(heightCard: Int)(implicit appContext: AppContext): Tweak[CardView] =
+  def rootStyle(heightCard: Int)(implicit appContext: AppContext, di: DependencyInjector): Tweak[CardView] =
     vContentSizeMatchWidth(heightCard) +
-      psTweak(ps => cvCardBackgroundColor(ps.getCollectionDetailCardBackgroundColor)) +
+      cvCardBackgroundColor(di.persistentServices.getCollectionDetailCardBackgroundColor) +
       flForeground(createBackground)
 
-  private def createBackground(implicit appContext: AppContext): Drawable = {
-    val color = getPersistentServices map (_.getCollectionDetailCardBackgroundPressedColor) getOrElse 0
+  private def createBackground(implicit appContext: AppContext, di: DependencyInjector): Drawable = {
+    val color = di.persistentServices.getCollectionDetailCardBackgroundPressedColor
     Lollipop ifSupportedThen {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),
@@ -141,10 +124,10 @@ trait CollectionAdapterStyles {
     lp[ViewGroup](size, size)
   }
 
-  def nameStyle(implicit appContext: AppContext): Tweak[TextView] =
+  def nameStyle(implicit appContext: AppContext, di: DependencyInjector): Tweak[TextView] =
     vMatchWidth +
       vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_default)) +
-      psTweak(ps => tvColor(ps.getCollectionDetailTextCardColor)) +
+      tvColor(di.persistentServices.getCollectionDetailTextCardColor) +
       tvLines(2) +
       tvSizeResource(R.dimen.text_default) +
       tvEllipsize(TruncateAt.END)

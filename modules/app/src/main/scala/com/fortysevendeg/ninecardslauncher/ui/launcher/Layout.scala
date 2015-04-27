@@ -17,15 +17,13 @@ import scala.util.Try
 trait Layout
   extends Styles {
 
-  self : InjectorProvider =>
-
   var workspaces = slot[LauncherWorkSpaces]
 
   var appDrawerBar = slot[LinearLayout]
 
   var pager = slot[LinearLayout]
 
-  def content(implicit appContext: AppContext, context: ActivityContext) = getUi(
+  def content(implicit appContext: AppContext, context: ActivityContext, di: DependencyInjector) = getUi(
     l[LinearLayout](
       l[LinearLayout](
         w[TintableImageView] <~ burgerButtonStyle <~ On.click(
@@ -48,7 +46,7 @@ trait Layout
           }
         )
       ) <~ searchContentStyle,
-      l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces) <~ (di map (injector => lwsDi(injector))).getOrElse(Tweak.blank),
+      l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces) <~ lwsDi(di),
       l[LinearLayout]() <~ paginationContentStyle <~ wire(pager),
       l[LinearLayout](
         l[FrameLayout](

@@ -64,8 +64,7 @@ class CollectionFragment
     val adapter = new CollectionAdapter(
       collection,
       heightCard,
-      card => uiShortToast(card.term),
-      di map (_.persistentServices))
+      card => uiShortToast(card.term))
     (recyclerView <~ rvLayoutManager(layoutManager) <~
       rvFixedSize <~
       rvAddItemDecoration(new CollectionItemDecorator) <~

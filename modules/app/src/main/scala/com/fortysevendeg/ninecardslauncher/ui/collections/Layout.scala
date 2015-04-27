@@ -4,9 +4,8 @@ import android.support.v4.view.ViewPager
 import android.support.v7.widget.{CardView, RecyclerView, Toolbar}
 import android.view.ContextThemeWrapper
 import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
-import com.fortysevendeg.ninecardslauncher.di.{InjectorProvider, PersistentServicesProvider}
+import com.fortysevendeg.ninecardslauncher.di.{DependencyInjector, InjectorProvider}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServices
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -61,11 +60,9 @@ trait CollectionFragmentLayout
 }
 
 class CollectionLayoutAdapter(
-    heightCard: Int,
-    persistentServices: Option[PersistentServices])
-    (implicit context: ActivityContext, appContext: AppContext)
-  extends PersistentServicesProvider
-  with CollectionAdapterStyles
+    heightCard: Int)
+    (implicit context: ActivityContext, appContext: AppContext, di: DependencyInjector)
+  extends CollectionAdapterStyles
   with ComponentRegistryImpl {
 
   override val appContextProvider: AppContext = appContext
@@ -84,8 +81,6 @@ class CollectionLayoutAdapter(
       ) <~ contentStyle
     ) <~ rootStyle(heightCard)
   )
-
-  override val getPersistentServices: Option[PersistentServices] = persistentServices
 }
 
 class ViewHolderCollectionAdapter(adapter: CollectionLayoutAdapter)(implicit context: ActivityContext, appContext: AppContext)

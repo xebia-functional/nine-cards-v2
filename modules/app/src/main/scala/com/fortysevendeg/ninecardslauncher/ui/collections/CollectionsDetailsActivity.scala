@@ -10,7 +10,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.di.ActivityInjectorProvider
+import com.fortysevendeg.ninecardslauncher.di.{DependencyInjector, ActivityInjectorProvider}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServices
@@ -62,7 +62,7 @@ class CollectionsDetailsActivity
           Ui(adapter.activateFragment(0)) ~
           (tabs <~
             stlViewPager(viewPager) <~
-            stlOnPageChangeListener(new OnPageChangeCollectionsListener(di map (_.persistentServices), collections, updateToolbarColor, updateCollection))) ~
+            stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
           (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop)
       )
     }
@@ -141,10 +141,9 @@ object ScrollType {
   val Down = 1
 }
 
-class OnPageChangeCollectionsListener(persistentServices: Option[PersistentServices],
-                                       collections: Seq[Collection],
+class OnPageChangeCollectionsListener(collections: Seq[Collection],
                                        updateToolbarColor: Int => Ui[_],
-                                       updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
+                                       updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext, di: DependencyInjector)
   extends OnPageChangeListener
   with ComponentRegistryImpl {
 
@@ -159,8 +158,8 @@ class OnPageChangeCollectionsListener(persistentServices: Option[PersistentServi
     val nextCollection: Option[Collection] = collections.lift(position + 1)
     nextCollection map {
       next =>
-        val startColor = persistentServices map (ps => resGetColor(ps.getIndexColor(selectedCollection.themedColorIndex))) getOrElse 0
-        val endColor = persistentServices map (ps => resGetColor(ps.getIndexColor(next.themedColorIndex))) getOrElse 0
+        val startColor = resGetColor(di.persistentServices.getIndexColor(selectedCollection.themedColorIndex))
+        val endColor = resGetColor(di.persistentServices.getIndexColor(next.themedColorIndex))
         val color = interpolateColors(positionOffset, startColor, endColor)
         runUi(updateToolbarColor(color))
     }

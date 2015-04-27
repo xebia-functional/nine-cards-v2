@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.ui.launcher
 
 import android.text.TextUtils.TruncateAt
 import android.view.ViewGroup.LayoutParams._
-import android.view.{View, Gravity, ViewGroup}
+import android.view.{Gravity, ViewGroup}
 import android.widget.ImageView.ScaleType
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
@@ -13,8 +13,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.di.InjectorProvider
-import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServices
+import com.fortysevendeg.ninecardslauncher.di.DependencyInjector
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -22,14 +21,6 @@ import macroid.FullDsl._
 import macroid.{AppContext, Tweak}
 
 trait Styles {
-
-  self: InjectorProvider =>
-
-  private def fTweak[W <: View](f: PersistentServices => Tweak[W]): Tweak[W] =
-    di match {
-      case Some(a) => f(a.persistentServices)
-      case _ => Tweak.blank
-    }
 
   def rootStyle(implicit appContext: AppContext): Tweak[LinearLayout] =
     vMatchParent +
@@ -39,37 +30,37 @@ trait Styles {
   val workspaceStyle: Tweak[FrameLayout] =
     llMatchWeightVertical
 
-  def searchContentStyle(implicit appContext: AppContext): Tweak[LinearLayout] = {
+  def searchContentStyle(implicit appContext: AppContext, di: DependencyInjector): Tweak[LinearLayout] = {
     val margin = resGetDimensionPixelSize(R.dimen.padding_default)
     lp[LinearLayout](MATCH_PARENT, resGetDimensionPixelSize(R.dimen.height_search_box)) +
       llHorizontal +
       llLayoutMargin(margin, margin, margin, margin) +
       llGravity(Gravity.CENTER_VERTICAL) +
       vBackground(R.drawable.search) +
-      fTweak(ps => vBackgroundColorFilter(ps.getSearchBackgroundColor)) +
+      vBackgroundColorFilter(di.persistentServices.getSearchBackgroundColor) +
       vPaddings(paddingLeftRight = resGetDimensionPixelSize(R.dimen.padding_large), paddingTopBottom = 0)
   }
 
-  def burgerButtonStyle(implicit appContext: AppContext): Tweak[TintableImageView] =
+  def burgerButtonStyle(implicit appContext: AppContext, di: DependencyInjector): Tweak[TintableImageView] =
     vWrapContent +
       ivSrc(R.drawable.icon_menu_search) +
-      fTweak(ps => tivDefaultColor(ps.getSearchIconsColor)) +
-      fTweak(ps => tivPressedColor(ps.getSearchPressedColor))
+      tivDefaultColor(di.persistentServices.getSearchIconsColor) +
+      tivPressedColor(di.persistentServices.getSearchPressedColor)
 
-  def googleButtonStyle(implicit appContext: AppContext): Tweak[TintableImageView] =
+  def googleButtonStyle(implicit appContext: AppContext, di: DependencyInjector): Tweak[TintableImageView] =
     llWrapWeightHorizontal +
       ivSrc(R.drawable.logo_google) +
       ivScaleType(ScaleType.FIT_START) +
       vPaddings(paddingLeftRight = resGetDimensionPixelSize(R.dimen.padding_large),
         paddingTopBottom = resGetDimensionPixelSize(R.dimen.padding_default)) +
-      fTweak(ps => tivDefaultColor(ps.getSearchGoogleColor)) +
-      fTweak(ps => tivPressedColor(ps.getSearchPressedColor))
+      tivDefaultColor(di.persistentServices.getSearchGoogleColor) +
+      tivPressedColor(di.persistentServices.getSearchPressedColor)
 
-  def micButtonStyle(implicit appContext: AppContext): Tweak[TintableImageView] =
+  def micButtonStyle(implicit appContext: AppContext, di: DependencyInjector): Tweak[TintableImageView] =
     vWrapContent +
       ivSrc(R.drawable.icon_mic_search) +
-      fTweak(ps => tivDefaultColor(ps.getSearchIconsColor)) +
-      fTweak(ps => tivPressedColor(ps.getSearchPressedColor))
+      tivDefaultColor(di.persistentServices.getSearchIconsColor) +
+      tivPressedColor(di.persistentServices.getSearchPressedColor)
 
   def drawerBarContentStyle(implicit appContext: AppContext): Tweak[LinearLayout] = {
     val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
@@ -83,7 +74,7 @@ trait Styles {
 
   def appDrawerContentStyle(): Tweak[FrameLayout] = llWrapWeightHorizontal
 
-  def appDrawerStyle(implicit appContext: AppContext): Tweak[TintableImageView] = {
+  def appDrawerStyle(implicit appContext: AppContext, di: DependencyInjector): Tweak[TintableImageView] = {
     val elevation = resGetDimensionPixelSize(R.dimen.elevation_pressed)
     vWrapContent +
       flLayoutGravity(Gravity.CENTER) +
@@ -92,14 +83,14 @@ trait Styles {
         vStateListAnimator(R.anim.elevation_transition) +
           vPaddings(elevation) +
           vCircleOutlineProvider(elevation)
-      } getOrElse fTweak(ps => tivPressedColor(ps.getAppDrawerPressedColor)))
+      } getOrElse tivPressedColor(di.persistentServices.getAppDrawerPressedColor))
   }
 
-  def appDrawerAppStyle(implicit appContext: AppContext): Tweak[TintableImageView] = {
+  def appDrawerAppStyle(implicit appContext: AppContext, di: DependencyInjector): Tweak[TintableImageView] = {
     val size = resGetDimensionPixelSize(R.dimen.size_icon_app_drawer)
     lp[ViewGroup](size, size) +
       flLayoutGravity(Gravity.CENTER) +
-      fTweak(ps => tivPressedColor(ps.getAppDrawerPressedColor)) +
+      tivPressedColor(di.persistentServices.getAppDrawerPressedColor) +
       vTag(R.id.`type`, AppDrawer.app)
   }
 
