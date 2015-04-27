@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "itemType": "GO_PRO",
+      "title": "Go Pro",
+      "icon": "drawable://card_icon_pro_9cards",
+      "metadata": {"action": "com.fortysevendeg.ninecardslauncher.OPEN_GO_PRO"},
+      "labels": {
+        "es": "Hazte Pro",
+        "en": "Go Pro"
+      },
+      "categories": ["HOME_MORNING"]
+    },
+    {
+      "itemType": "SPONSORED",
+      "title": "Join Google+ Community",
+      "icon": "drawable://card_icon_pro_google_plus",
+      "metadata": {
+        "dataExtra": "https://plus.google.com/u/0/communities/106427379572576906483",
+        "intentExtras": {},
+        "action": "android.intent.action.VIEW",
+        "dataString": "https://plus.google.com/u/0/communities/106427379572576906483",
+        "flags": 0,
+        "scheme": "https",
+        "excludingStopped": false
+      },
+      "labels": {
+        "es": "Entra en la Comunidad de Google+",
+        "en": "Join Google+ Community"
+      },
+      "categories": ["HOME_NIGHT"]
+    },
+    {
+      "itemType": "GET_IT_FREE",
+      "title": "Get 9 Cards Free",
+      "metadata": {"action": "com.fortysevendeg.ninecardslauncher.OPEN_GET_IT_FREE"},
+      "categories": ["WORK"]
+    }
+  ]
+}
