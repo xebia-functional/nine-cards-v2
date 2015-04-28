@@ -1,7 +1,6 @@
 import Libraries.akka._
 import Libraries.json._
 import Libraries.net._
-import Libraries.scalaz._
 import Libraries.test._
 import ReplacePropertiesGenerator._
 import Settings._
@@ -55,7 +54,6 @@ object AppBuild extends Build {
 
   val repository = Project(id = "repository", base = file("modules/repository"))
       .settings(libraryDependencies ++= Seq(
-    scalaz,
     specs2,
     mockito))
       .settings(repositorySettings: _*)

@@ -18,5 +18,4 @@ object Versions {
   val okHttpV = "2.3.0"
   val akkaActorV = "2.3.9"
   val mockServerV = "3.9.2"
-  val scalazV = "7.1.0"
 }
