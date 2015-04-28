@@ -33,6 +33,14 @@ trait RepositoryServicesComponentImpl
             GetCollectionsResponse(toCollectionSeq(response.collections))
         }
 
+    override def insertCacheCategory: Service[InsertCacheCategoryRequest, InsertCacheCategoryResponse] =
+      request => {
+        addCacheCategory(toAddCacheCategoryRequest(request)) map {
+          response =>
+            InsertCacheCategoryResponse(response.cacheCategory map toCacheCategory)
+        }
+      }
+
     override def getCacheCategory: Service[GetCacheCategoryRequest, GetCacheCategoryResponse] =
       request => {
         getAllCacheCategory(GetAllCacheCategoryRequest()) map {

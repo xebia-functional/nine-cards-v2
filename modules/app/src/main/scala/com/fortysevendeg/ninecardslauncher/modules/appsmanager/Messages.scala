@@ -14,4 +14,4 @@ case class GetAppsByCategoryResponse(apps: Seq[AppItem])
 
 case class CategorizeAppsRequest()
 
-case class CategorizeAppsResponse()
+case class CategorizeAppsResponse(success: Boolean)

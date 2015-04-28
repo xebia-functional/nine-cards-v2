@@ -7,7 +7,7 @@ import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.api._
-import com.fortysevendeg.ninecardslauncher.modules.appsmanager.{AppItem, GetAppsByCategoryRequest}
+import com.fortysevendeg.ninecardslauncher.modules.appsmanager.{CategorizeAppsRequest, AppItem, GetAppsByCategoryRequest}
 import com.fortysevendeg.ninecardslauncher.modules.repository.{CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
 import com.fortysevendeg.ninecardslauncher.repository.model.CollectionData
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
@@ -52,6 +52,11 @@ class CreateCollectionService
         setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
 
     startForeground(NotificationId, builder.build)
+
+    appManagerServices.categorizeApps(CategorizeAppsRequest()) map {
+      response =>
+        createConfiguration()
+    }
 
     super.onStartCommand(intent, flags, startId)
   }

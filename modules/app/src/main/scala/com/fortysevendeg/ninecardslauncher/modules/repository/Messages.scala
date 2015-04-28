@@ -10,6 +10,17 @@ case class GetCacheCategoryRequest()
 
 case class GetCacheCategoryResponse(cacheCategory: Seq[CacheCategory])
 
+case class InsertCacheCategoryRequest(
+    packageName: String,
+    category: String,
+    starRating: Double,
+    numDownloads: String,
+    ratingsCount: Int,
+    commentCount: Int)
+
+case class InsertCacheCategoryResponse(
+    cacheCategory: Option[CacheCategory])
+
 case class InsertGeoInfoRequest(
     constrain: String,
     occurrence: String,
@@ -32,7 +43,7 @@ case class InsertCollectionRequest(
     originalSharedCollectionId: Option[String] = None,
     sharedCollectionId: Option[String] = None,
     sharedCollectionSubscribed: Boolean,
-    cards : Seq[CardItem])
+    cards: Seq[CardItem])
 
 case class CardItem(
     position: Int,
