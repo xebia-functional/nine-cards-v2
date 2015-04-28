@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.net.Uri
 import android.net.Uri._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
+import com.fortysevendeg.ninecardslauncher.commons.RichContentValues._
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
