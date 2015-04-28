@@ -3,18 +3,22 @@ package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 import android.content.Intent
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.modules.api.{ApiServicesComponent, ApiServices}
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCacheCategoryResponse, GetCacheCategoryRequest, RepositoryServicesComponent}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Promise, Future}
 
 trait AppManagerServicesComponentImpl
   extends AppManagerServicesComponent {
 
-  self: AppContextProvider with ImageServicesComponent with RepositoryServicesComponent =>
+  self: AppContextProvider
+      with ImageServicesComponent
+      with RepositoryServicesComponent
+      with ApiServicesComponent =>
 
   lazy val appManagerServices = new AppManagerServicesImpl
 
@@ -64,6 +68,20 @@ trait AppManagerServicesComponentImpl
           response =>
             GetAppsByCategoryResponse(response.apps.filter(_.category == request.category))
         }
+
+    override def categorizeApps: Service[CategorizeAppsRequest, CategorizeAppsResponse] =
+      request => {
+        val promise = Promise[CategorizeAppsResponse]()
+        getCategorizedApps(GetCategorizedAppsRequest()) map {
+          response =>
+            response.apps.filter(_.category.isEmpty) map {
+              app =>
+                app
+            }
+        }
+        promise.future
+      }
+
   }
 
 }

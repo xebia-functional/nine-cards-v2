@@ -1,58 +1,64 @@
 package com.fortysevendeg.ninecardslauncher.modules.api
 
 case class LoginRequest(
-  email: String,
-  device: GoogleDevice)
+    email: String,
+    device: GoogleDevice)
 
 case class LoginResponse(
-  statusCode: Int,
-  user: Option[User])
-
-case class User(
-  id: Option[String],
-  sessionToken: Option[String],
-  email: Option[String],
-  devices: Seq[GoogleDevice])
-
-case class GoogleDevice(
-  name: String,
-  devideId: String,
-  secretToken: String,
-  permissions: Seq[String])
+    statusCode: Int,
+    user: Option[User])
 
 case class LinkGoogleAccountRequest(
-  deviceId: String,
-  token: String,
-  email: String,
-  devices: Seq[GoogleDevice])
+    deviceId: String,
+    token: String,
+    email: String,
+    devices: Seq[GoogleDevice])
 
 case class InstallationRequest(
-  id: Option[String],
-  deviceType: Option[String],
-  deviceToken: Option[String],
-  userId: Option[String])
+    id: Option[String],
+    deviceType: Option[String],
+    deviceToken: Option[String],
+    userId: Option[String])
 
-case class InstallationResponse (
-  statusCode: Int,
-  installation: Option[Installation])
+case class InstallationResponse(
+    statusCode: Int,
+    installation: Option[Installation])
 
 case class Installation(
-  id: Option[String],
-  deviceType: Option[String],
-  deviceToken: Option[String],
-  userId: Option[String])
+    id: Option[String],
+    deviceType: Option[String],
+    deviceToken: Option[String],
+    userId: Option[String])
 
-case class UpdateInstallationResponse (
-  statusCode: Int)
+case class UpdateInstallationResponse(
+    statusCode: Int)
+
+case class GooglePlayPackageRequest(
+    deviceId: String,
+    token: String,
+    packageName: String)
+
+case class GooglePlayPackageResponse(
+    statusCode: Int,
+    app: Option[GooglePlayApp])
+
+case class GooglePlaySimplePackagesRequest(
+    deviceId: String,
+    token: String,
+    items: Seq[String])
+
+case class GooglePlaySimplePackagesResponse(
+    statusCode: Int,
+    apps: GooglePlaySimplePackages)
 
 trait UserConfigRequest {
-  def deviceId: String
-  def token: String
+    def deviceId: String
+    def token: String
 }
 
 trait UserConfigResponse {
-  def statusCode: Int
-  def userConfig: Option[UserConfig]
+    def statusCode: Int
+    def userConfig: Option[UserConfig]
 }
 
 case class GetUserConfigRequest(

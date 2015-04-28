@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.modules.api.impl
 
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.api.NineCardsServiceClient
+import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -46,6 +47,7 @@ trait ApiServicesComponentImpl
 
     import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
     import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
+    import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
 
     override def login: Service[LoginRequest, LoginResponse] =
       request =>
@@ -70,6 +72,20 @@ trait ApiServicesComponentImpl
         for {
           response <- updateInstallation(fromInstallationRequest(request), baseHeader)
         } yield UpdateInstallationResponse(response.statusCode)
+
+    override def googlePlayPackage: Service[GooglePlayPackageRequest, GooglePlayPackageResponse] =
+      request =>
+        for {
+          response <- getGooglePlayPackage(request.packageName, createHeader(request.deviceId, request.token))
+        } yield GooglePlayPackageResponse(response.statusCode, response.data map (playApp => toGooglePlayApp(playApp.docV2)))
+
+    override def googlePlaySimplePackages: Service[GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse] =
+      request =>
+        for {
+          response <- getGooglePlaySimplePackages(PackagesRequest(request.items), createHeader(request.deviceId, request.token))
+        } yield GooglePlaySimplePackagesResponse(
+          response.statusCode,
+          response.data.map(playApp => toGooglePlaySimplePackages(playApp)).getOrElse(GooglePlaySimplePackages(Seq.empty, Seq.empty)))
 
     override def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse] =
       request =>

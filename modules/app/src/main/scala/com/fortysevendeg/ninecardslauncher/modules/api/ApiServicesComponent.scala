@@ -12,6 +12,10 @@ trait ApiServices {
 
   def updateInstallation: Service[InstallationRequest, UpdateInstallationResponse]
 
+  def googlePlayPackage: Service[GooglePlayPackageRequest, GooglePlayPackageResponse]
+
+  def googlePlaySimplePackages: Service[GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse]
+
   def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse]
 
   def saveDevice: Service[SaveDeviceRequest, SaveDeviceResponse]

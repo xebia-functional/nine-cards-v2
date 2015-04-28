@@ -70,15 +70,79 @@ trait Conversions {
       id = installation.id,
       deviceType = installation.deviceType,
       deviceToken = installation.deviceToken,
-      userId = installation.userId
-    )
+      userId = installation.userId)
 
-  def toInstallationRequest(installation: Installation) : InstallationRequest =
+  def toInstallationRequest(installation: Installation): InstallationRequest =
     InstallationRequest(
       id = installation.id,
       deviceType = installation.deviceType,
       deviceToken = installation.deviceToken,
-      userId = installation.userId
+      userId = installation.userId)
+
+  def toGooglePlayApp(googlePlayApp: apiModel.GooglePlayApp): GooglePlayApp =
+    GooglePlayApp(
+      docid = googlePlayApp.docid,
+      title = googlePlayApp.title,
+      creator = googlePlayApp.creator,
+      descriptionHtml = googlePlayApp.descriptionHtml,
+      image = googlePlayApp.image map toGooglePlayImage,
+      details = toGooglePlayDetails(googlePlayApp.details),
+      offer = googlePlayApp.offer map toGooglePlayOffer,
+      aggregateRating = toGooglePlayAggregateRating(googlePlayApp.aggregateRating)
+    )
+
+  def toGooglePlayImage(googlePlayImage: apiModel.GooglePlayImage): GooglePlayImage =
+    GooglePlayImage(
+      imageType = googlePlayImage.imageType,
+      imageUrl = googlePlayImage.imageUrl,
+      creator = googlePlayImage.creator)
+
+  def toGooglePlayOffer(googlePlayOffer: apiModel.GooglePlayOffer): GooglePlayOffer =
+    GooglePlayOffer(
+      formattedAmount = googlePlayOffer.formattedAmount,
+      micros = googlePlayOffer.micros)
+
+  def toGooglePlayAggregateRating(googlePlayAggregateRating: apiModel.GooglePlayAggregateRating): GooglePlayAggregateRating =
+    GooglePlayAggregateRating(
+      ratingsCount = googlePlayAggregateRating.ratingsCount,
+      commentCount = googlePlayAggregateRating.commentCount,
+      oneStarRatings = googlePlayAggregateRating.oneStarRatings,
+      twoStarRatings = googlePlayAggregateRating.twoStarRatings,
+      threeStarRatings = googlePlayAggregateRating.threeStarRatings,
+      fourStarRatings = googlePlayAggregateRating.fourStarRatings,
+      fiveStarRatings = googlePlayAggregateRating.fiveStarRatings,
+      starRating = googlePlayAggregateRating.starRating)
+
+  def toGooglePlayDetails(googlePlayDetails: apiModel.GooglePlayDetails): GooglePlayDetails =
+    GooglePlayDetails(appDetails = toGooglePlayAppDetails(googlePlayDetails.appDetails))
+
+  def toGooglePlayAppDetails(googlePlayAppDetails: apiModel.GooglePlayAppDetails): GooglePlayAppDetails =
+    GooglePlayAppDetails(
+      appCategory = googlePlayAppDetails.appCategory,
+      numDownloads = googlePlayAppDetails.numDownloads,
+      developerEmail = googlePlayAppDetails.developerEmail,
+      developerName = googlePlayAppDetails.developerName,
+      developerWebsite = googlePlayAppDetails.developerWebsite,
+      versionCode = googlePlayAppDetails.versionCode,
+      versionString = googlePlayAppDetails.versionString,
+      appType = googlePlayAppDetails.appType,
+      permission = googlePlayAppDetails.permission)
+
+  def toGooglePlaySimplePackages(googlePlaySimplePackages: apiModel.GooglePlaySimplePackages): GooglePlaySimplePackages =
+    GooglePlaySimplePackages(
+      errors = googlePlaySimplePackages.errors,
+      items = googlePlaySimplePackages.items map toGooglePlaySimplePackage
+    )
+
+  def toGooglePlaySimplePackage(googlePlaySimplePackage: apiModel.GooglePlaySimplePackage): GooglePlaySimplePackage =
+    GooglePlaySimplePackage(
+      packageName = googlePlaySimplePackage.packageName,
+      appType = googlePlaySimplePackage.appType,
+      appCategory = googlePlaySimplePackage.appCategory,
+      numDownloads = googlePlaySimplePackage.numDownloads,
+      starRating = googlePlaySimplePackage.starRating,
+      ratingCount = googlePlaySimplePackage.ratingCount,
+      commentCount = googlePlaySimplePackage.commentCount
     )
 
   def toUserConfig(apiUserConfig: apiModel.UserConfig): UserConfig =

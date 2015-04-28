@@ -11,3 +11,7 @@ case class GetCategorizedAppsResponse(apps: Seq[AppItem])
 case class GetAppsByCategoryRequest(category: String)
 
 case class GetAppsByCategoryResponse(apps: Seq[AppItem])
+
+case class CategorizeAppsRequest()
+
+case class CategorizeAppsResponse()
