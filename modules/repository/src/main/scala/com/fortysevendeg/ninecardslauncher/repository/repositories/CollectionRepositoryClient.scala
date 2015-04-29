@@ -24,7 +24,7 @@ trait CollectionRepositoryClient
 
   implicit val executionContext: ExecutionContext
 
-  def addCollection(): Service[AddCollectionRequest, AddCollectionResponse] =
+  def addCollection: Service[AddCollectionRequest, AddCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -56,7 +56,7 @@ trait CollectionRepositoryClient
         }
       }
 
-  def deleteCollection(): Service[DeleteCollectionRequest, DeleteCollectionResponse] =
+  def deleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -109,7 +109,7 @@ trait CollectionRepositoryClient
         }
       }
 
-  def updateCollection(): Service[UpdateCollectionRequest, UpdateCollectionResponse] =
+  def updateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse] =
     request =>
       tryToFuture {
         Try {

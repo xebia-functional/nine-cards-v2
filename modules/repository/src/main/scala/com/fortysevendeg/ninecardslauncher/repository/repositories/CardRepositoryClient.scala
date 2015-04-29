@@ -21,7 +21,7 @@ trait CardRepositoryClient extends DBUtils {
 
   implicit val executionContext: ExecutionContext
 
-  def addCard(): Service[AddCardRequest, AddCardResponse] =
+  def addCard: Service[AddCardRequest, AddCardResponse] =
     request =>
       tryToFuture {
         Try {
@@ -54,7 +54,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCard(): Service[DeleteCardRequest, DeleteCardResponse] =
+  def deleteCard: Service[DeleteCardRequest, DeleteCardResponse] =
     request =>
       tryToFuture {
         Try {
@@ -120,7 +120,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def updateCard(): Service[UpdateCardRequest, UpdateCardResponse] =
+  def updateCard: Service[UpdateCardRequest, UpdateCardResponse] =
     request =>
       tryToFuture {
         Try {

@@ -21,7 +21,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
 
   implicit val executionContext: ExecutionContext
 
-  def addCacheCategory(): Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
+  def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -48,7 +48,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCacheCategory(): Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
+  def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -65,7 +65,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCacheByPackageCategory(): Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
+  def deleteCacheByPackageCategory: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
     request =>
       tryToFuture {
         Try {
@@ -153,7 +153,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def updateCacheCategory(): Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
+  def updateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {

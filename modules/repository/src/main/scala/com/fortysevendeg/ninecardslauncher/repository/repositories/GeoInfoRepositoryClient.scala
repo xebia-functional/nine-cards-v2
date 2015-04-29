@@ -20,7 +20,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
 
   implicit val executionContext: ExecutionContext
 
-  def addGeoInfo(): Service[AddGeoInfoRequest, AddGeoInfoResponse] =
+  def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -48,7 +48,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteGeoInfo(): Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
+  def deleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -138,7 +138,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def updateGeoInfo(): Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
+  def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
