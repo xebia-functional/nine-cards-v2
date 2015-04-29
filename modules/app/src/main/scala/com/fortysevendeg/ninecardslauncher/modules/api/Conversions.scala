@@ -6,7 +6,7 @@ trait Conversions {
 
   def fromLoginRequest(login: LoginRequest): apiModel.User =
     apiModel.User(
-      id = None,
+      _id = None,
       email = None,
       sessionToken = None,
       username = None,
@@ -30,7 +30,7 @@ trait Conversions {
 
   def toUser(user: apiModel.User): User =
     User(
-      id = user.id,
+      id = user._id,
       sessionToken = user.sessionToken,
       email = user.email,
       devices = (for {
@@ -59,15 +59,14 @@ trait Conversions {
 
   def fromInstallationRequest(installation: InstallationRequest): apiModel.Installation =
     apiModel.Installation(
-      id = installation.id,
+      _id = installation.id,
       deviceType = installation.deviceType,
       deviceToken = installation.deviceToken,
-      userId = installation.userId,
-      facebookId = None)
+      userId = installation.userId)
 
   def toInstallation(installation: apiModel.Installation): Installation =
     Installation(
-      id = installation.id,
+      id = installation._id,
       deviceType = installation.deviceType,
       deviceToken = installation.deviceToken,
       userId = installation.userId)

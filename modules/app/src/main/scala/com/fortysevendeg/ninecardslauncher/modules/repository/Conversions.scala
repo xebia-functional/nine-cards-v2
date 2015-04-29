@@ -85,8 +85,7 @@ trait Conversions {
         constrains = request.constrains,
         originalSharedCollectionId = request.originalSharedCollectionId,
         sharedCollectionId = request.sharedCollectionId,
-        sharedCollectionSubscribed = request.sharedCollectionSubscribed,
-        cards = Seq.empty
+        sharedCollectionSubscribed = request.sharedCollectionSubscribed
       )
     )
 

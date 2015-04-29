@@ -31,6 +31,9 @@
                 android:label=""
                 android:name="com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity" />
 
+        <service
+                android:name="com.fortysevendeg.ninecardslauncher.services.CreateCollectionService" />
+
         <provider
                 android:authorities="com.fortysevendeg.ninecardslauncher2"
                 android:name="com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider"

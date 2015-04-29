@@ -99,7 +99,7 @@ case class UserConfigStatusInfo(
     customCollections: Int,
     earlyAdopter: Boolean,
     communityMember: Boolean,
-    joinedThrough: String,
+    joinedThrough: Option[String],
     tester: Boolean)
 
 case class UserConfigProfileImage(
@@ -122,7 +122,7 @@ case class UserConfigCollection(
     lat: Double,
     lng: Double,
     alt: Double,
-    category: String)
+    category: Option[String])
 
 case class UserConfigCollectionItem(
     itemType: String,

@@ -24,6 +24,7 @@ import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContext, AppContext, Tweak, Ui}
+import com.fortysevendeg.ninecardslauncher.ui.commons.ImageResourceNamed._
 
 class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit appContext: AppContext, activityContext: ActivityContext)
   extends LauncherWorkSpaceHolder
@@ -96,7 +97,7 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)
-    resGetDrawableIdentifier(collection.icon) map {
+    resGetDrawableIdentifier(iconCollectionWorkspace(collection.icon)) map {
       resIcon =>
         runUi(
           (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~

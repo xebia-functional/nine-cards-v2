@@ -26,14 +26,14 @@ trait UserServicesComponentImpl
     with Conversions
     with FileUtils {
 
+    val DeviceType = "ANDROID"
+    val FilenameUser = "__user_entity__"
+    val FilenameInstallation = "__installation_entity__"
+
     private val BasicInstallation = Installation(id = None, deviceType = Some(DeviceType), deviceToken = None, userId = None)
 
     private var synchronizingChangesInstallation: Boolean = false
     private var pendingSynchronizedInstallation: Boolean = false
-
-    val DeviceType = "ANDROID"
-    val FilenameUser = "__user_entity__"
-    val FilenameInstallation = "__installation_entity__"
 
     override def register(): Unit =
       if (!getFileInstallation.exists()) {
@@ -63,19 +63,7 @@ trait UserServicesComponentImpl
 
     override def signIn: Service[LoginRequest, SignInResponse] =
       request => {
-        val loginResponse = getUser map {
-          user =>
-            apiServices.linkGoogleAccount(
-              LinkGoogleAccountRequest(
-                deviceId = request.device.devideId,
-                token = request.device.secretToken,
-                email = request.email,
-                devices = List(request.device)
-              ))
-        } getOrElse {
-          apiServices.login(request)
-        }
-        loginResponse map {
+        apiServices.login(request) map {
           response =>
             response.user map {
               user =>

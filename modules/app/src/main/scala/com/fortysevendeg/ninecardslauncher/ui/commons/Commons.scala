@@ -112,6 +112,14 @@ object CardType {
   val NineCardsExtension = "NINE_CARDS_EXTENSION"
 }
 
+object ImageResourceNamed {
+
+  def iconCollectionWorkspace(category: String) = s"icon_collection_$category"
+
+  def iconCollectionDetail(category: String) = s"icon_collection_${category}_detail"
+
+}
+
 object ActivityResult {
 
   val Wizard = 1

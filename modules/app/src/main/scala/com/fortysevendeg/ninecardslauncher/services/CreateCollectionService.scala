@@ -1,31 +1,30 @@
 package com.fortysevendeg.ninecardslauncher.services
 
-import android.app.{PendingIntent, NotificationManager, Service}
+import android.app.{NotificationManager, PendingIntent, Service}
 import android.content.{Context, Intent}
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.api._
-import com.fortysevendeg.ninecardslauncher.modules.appsmanager.{CategorizeAppsRequest, AppItem, GetAppsByCategoryRequest}
+import com.fortysevendeg.ninecardslauncher.modules.appsmanager.{AppItem, CategorizeAppsRequest, GetAppsByCategoryRequest}
 import com.fortysevendeg.ninecardslauncher.modules.repository.{CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
-import com.fortysevendeg.ninecardslauncher.repository.model.CollectionData
+import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
+import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.ui.commons.{CardType, CollectionType, NineCardsMoments}
+import com.fortysevendeg.ninecardslauncher.ui.commons.NineCategories._
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.AppContext
-import CreateCollectionService._
-import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsMoments
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.ui.commons.NineCategories._
-import com.fortysevendeg.ninecardslauncher.ui.commons.CollectionType
-import com.fortysevendeg.ninecardslauncher.ui.commons.CardType
+import macroid.Logging._
 
 class CreateCollectionService
-    extends Service
-    with ComponentRegistryImpl {
+  extends Service
+  with ComponentRegistryImpl {
 
   override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
 
@@ -44,18 +43,23 @@ class CreateCollectionService
     val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
     val title: String = getString(R.string.workingNotificationTitle)
     builder.
-        setContentTitle(title).
-        setTicker(title).
-        setContentText(getString(R.string.loadingYourAppsMessage)).
-        setSmallIcon(R.drawable.icon_notification_working).
-        setProgress(0, 0, true).
-        setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
+      setContentTitle(title).
+      setTicker(title).
+      setContentText(getString(R.string.loadingYourAppsMessage)).
+      setSmallIcon(R.drawable.icon_notification_working).
+      setProgress(0, 0, true).
+      setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
 
     startForeground(NotificationId, builder.build)
 
     appManagerServices.categorizeApps(CategorizeAppsRequest()) map {
       response =>
-        createConfiguration()
+        if (response.success) {
+          createConfiguration()
+        } else {
+          logD"Categorize apps doesn't work"("9CARDS")
+          closeService()
+        }
     }
 
     super.onStartCommand(intent, flags, startId)
@@ -77,16 +81,20 @@ class CreateCollectionService
               } yield {
                   createCollectionFromDevice(device)
                 }) getOrElse {
-                // TODO handler exception
+                logD"UserConfig don't created"("9CARDS")
+                closeService()
               }
           } getOrElse {
             createCollectionFromMyDevice()
           }
       } recover {
-        case _ => // TODO handler exception
+        case ex: Throwable =>
+          logD"UserConfig endpoind failed: ${ex.getMessage}"("9CARDS")
+          closeService()
       }
     }) getOrElse {
-    // TODO handler exception
+    logD"User unserialize failed"("9CARDS")
+    closeService()
   }
 
   private def synchronizeGeoInfo(userConfig: UserConfig) = {
@@ -98,7 +106,9 @@ class CreateCollectionService
   private def addUserConfigUserLocation(config: UserConfigUserLocation, constrain: String) = {
     if (!config.wifi.isEmpty)
       sharedPreferences.edit.putString(HomeMorningKey, config.wifi).apply()
+
     import play.api.libs.json._
+
     val reads = Json.writes[UserConfigTimeSlot]
     val ocurrenceStr: String = config.occurrence map (o => (Json.toJson(o)(reads)).toString()) mkString("[", ", ", "]")
     val request = InsertGeoInfoRequest(
@@ -152,10 +162,14 @@ class CreateCollectionService
           responses =>
             closeService()
         } recover {
-          case _ => // TODO handler exception
+          case _ =>
+            logD"Insert sequence failed"("9CARDS")
+            closeService()
         }
     } recover {
-      case _ => // TODO handler exception
+      case _ =>
+        logD"Collections sequence failed"("9CARDS")
+        closeService()
     }
   }
 
@@ -163,10 +177,12 @@ class CreateCollectionService
     // TODO Create from device
   }
 
-  private def createCollection(category: String): Future[InsertCollectionRequest] = {
+  private def createCollection(category: String): Future[InsertCollectionRequest] =
     appManagerServices.getAppsByCategory(GetAppsByCategoryRequest(category)) map {
       response =>
+        logD"Apps $category: ${response.apps.length}"("9CARDS")
         val apps = response.apps.sortWith(_.getMFIndex < _.getMFIndex).drop(NumSpaces)
+        logD"Sorted: ${apps.length}"("9CARDS")
         InsertCollectionRequest(
           position = 0,
           name = category,
@@ -178,7 +194,6 @@ class CreateCollectionService
           cards = apps map toCardItem
         )
     }
-  }
 
   private def toCardItem(appItem: AppItem) =
     CardItem(

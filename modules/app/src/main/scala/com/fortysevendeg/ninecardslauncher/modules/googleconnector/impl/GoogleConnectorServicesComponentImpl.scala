@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl
 
-import android.accounts.{Account, AccountManager, AccountManagerCallback, AccountManagerFuture}
+import android.accounts._
 import android.content.Context
 import android.net.Uri
 import android.os.{Build, Bundle}
@@ -67,7 +67,10 @@ trait GoogleConnectorServicesComponentImpl
                   } recover {
                     case _ => requestPromise.complete(Try(RequestTokenResponse(false)))
                   }
-                case Failure(ex) => requestPromise.complete(Try(RequestTokenResponse(false)))
+                case Failure(ex) => ex match {
+                  case ex: OperationCanceledException => requestPromise.complete(Try(RequestTokenResponse(false, true)))
+                  case _ => requestPromise.complete(Try(RequestTokenResponse(false)))
+                }
               }
             }
           }, null)
