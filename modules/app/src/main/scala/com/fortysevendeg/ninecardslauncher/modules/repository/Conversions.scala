@@ -19,8 +19,7 @@ trait Conversions {
       constrains = collection.data.constrains,
       originalSharedCollectionId = collection.data.originalSharedCollectionId,
       sharedCollectionId = collection.data.sharedCollectionId,
-      sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed,
-      cards = collection.data.cards map toCard
+      sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed
     )
 
   def toCard(card: RepositoryCard) =

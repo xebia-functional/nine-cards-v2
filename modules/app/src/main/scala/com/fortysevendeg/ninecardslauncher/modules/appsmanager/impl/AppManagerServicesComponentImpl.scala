@@ -13,6 +13,7 @@ import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.util.Success
+import macroid.Logging._
 
 trait AppManagerServicesComponentImpl
     extends AppManagerServicesComponent {
@@ -69,7 +70,8 @@ trait AppManagerServicesComponentImpl
       request =>
         getCategorizedApps(GetCategorizedAppsRequest()) map {
           response =>
-            GetAppsByCategoryResponse(response.apps.filter(_.category == request.category))
+            val apps = response.apps.filter(_.category == Some(request.category))
+            GetAppsByCategoryResponse(apps)
         }
 
     override def categorizeApps: Service[CategorizeAppsRequest, CategorizeAppsResponse] =

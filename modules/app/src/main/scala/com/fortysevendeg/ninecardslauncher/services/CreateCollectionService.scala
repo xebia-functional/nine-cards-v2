@@ -7,7 +7,7 @@ import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.api._
-import com.fortysevendeg.ninecardslauncher.modules.appsmanager.{AppItem, CategorizeAppsRequest, GetAppsByCategoryRequest}
+import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.repository.{CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.AppContext
 
+import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import macroid.Logging._
@@ -29,6 +30,8 @@ class CreateCollectionService
   override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
 
   private var loadDeviceId: Option[String] = None
+
+  private val minAppsToAdd = 3
 
   private lazy val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext)
 
@@ -123,37 +126,13 @@ class CreateCollectionService
   }
 
   private def createCollectionFromMyDevice() = {
-    val collectionFutures = Seq(
-      createCollection(Game),
-      createCollection(BooksAndReference),
-      createCollection(Business),
-      createCollection(Comics),
-      createCollection(Communication),
-      createCollection(Education),
-      createCollection(Entertainment),
-      createCollection(Finance),
-      createCollection(HealthAndFitness),
-      createCollection(LibrariesAndDemo),
-      createCollection(Lifestyle),
-      createCollection(AppWallpaper),
-      createCollection(MediaAndVideo),
-      createCollection(Medical),
-      createCollection(MusicAndAudio),
-      createCollection(NewsAndMagazines),
-      createCollection(Personalization),
-      createCollection(Photography),
-      createCollection(Productivity),
-      createCollection(Shopping),
-      createCollection(Social),
-      createCollection(Sports),
-      createCollection(Tools),
-      createCollection(Transportation),
-      createCollection(TravelAndLocal),
-      createCollection(Weather),
-      createCollection(AppWidgets)
-    )
-    Future.sequence(collectionFutures) map {
-      inserts =>
+    appManagerServices.getCategorizedApps(GetCategorizedAppsRequest()) map {
+      response =>
+        val categories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
+          Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
+          MediaAndVideo, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
+          Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgets)
+        val inserts = createInsertSeq(response.apps, categories, Seq.empty)
         val insertFutures = inserts map {
           insert =>
             repositoryServices.insertCollection(insert)
@@ -166,10 +145,7 @@ class CreateCollectionService
             logD"Insert sequence failed"("9CARDS")
             closeService()
         }
-    } recover {
-      case _ =>
-        logD"Collections sequence failed"("9CARDS")
-        closeService()
+
     }
   }
 
@@ -177,23 +153,30 @@ class CreateCollectionService
     // TODO Create from device
   }
 
-  private def createCollection(category: String): Future[InsertCollectionRequest] =
-    appManagerServices.getAppsByCategory(GetAppsByCategoryRequest(category)) map {
-      response =>
-        logD"Apps $category: ${response.apps.length}"("9CARDS")
-        val apps = response.apps.sortWith(_.getMFIndex < _.getMFIndex).drop(NumSpaces)
-        logD"Sorted: ${apps.length}"("9CARDS")
-        InsertCollectionRequest(
-          position = 0,
-          name = category,
-          `type` = CollectionType.Apps,
-          icon = category.toLowerCase,
-          themedColorIndex = 0,
-          appsCategory = Some(category),
-          sharedCollectionSubscribed = false,
-          cards = apps map toCardItem
-        )
+  @tailrec
+  private def createInsertSeq(apps: Seq[AppItem], categories: Seq[String], acc: Seq[InsertCollectionRequest]) : Seq[InsertCollectionRequest] = {
+    categories match {
+      case Nil => acc
+      case h :: t =>
+        val insert = createCollection(apps, h, acc.length)
+        val a = if (insert.cards.length >= minAppsToAdd) acc :+ insert else acc
+        createInsertSeq(apps, t, a)
     }
+  }
+
+  private def createCollection(apps: Seq[AppItem], category: String, index: Int): InsertCollectionRequest = {
+    val appsCategory = apps.filter(_.category == Some(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
+    InsertCollectionRequest(
+      position = index % NumInLine,
+      name = category,
+      `type` = CollectionType.Apps,
+      icon = Social.toLowerCase, // TODO Put "category.toLowerCase" when we have all icons
+      themedColorIndex = index % NumInLine,
+      appsCategory = Some(category),
+      sharedCollectionSubscribed = false,
+      cards = apps map toCardItem
+    )
+  }
 
   private def toCardItem(appItem: AppItem) =
     CardItem(

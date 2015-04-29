@@ -12,7 +12,7 @@ case class Collection(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Boolean,
-  cards: Seq[Card]) extends Serializable
+  cards: Seq[Card] = Seq.empty) extends Serializable
 
 case class Card(
   id: Int,

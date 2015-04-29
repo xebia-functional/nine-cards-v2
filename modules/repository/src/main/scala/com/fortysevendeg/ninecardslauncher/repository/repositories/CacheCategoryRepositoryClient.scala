@@ -6,7 +6,7 @@ import android.net.Uri._
 import com.fortysevendeg.ninecardslauncher.commons.RichContentValues._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
-import com.fortysevendeg.ninecardslauncher.provider.{CacheCategoryEntity, DBUtils, NineCardsContentProvider}
+import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory

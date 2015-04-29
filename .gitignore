@@ -42,3 +42,7 @@ project/target
 
 #Proguard
 proguard-sbt.txt
+
+#Gen
+modules/api/gen/
+modules/repository/gen/

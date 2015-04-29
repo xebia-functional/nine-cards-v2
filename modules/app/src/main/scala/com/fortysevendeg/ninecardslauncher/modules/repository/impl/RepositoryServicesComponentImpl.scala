@@ -43,9 +43,9 @@ trait RepositoryServicesComponentImpl
 
     override def getCacheCategory: Service[GetCacheCategoryRequest, GetCacheCategoryResponse] =
       request => {
-        getAllCacheCategory(GetAllCacheCategoryRequest()) map {
+        getAllCacheCategories(GetAllCacheCategoriesRequest()) map {
           response =>
-            GetCacheCategoryResponse(toCacheCategorySeq(response.cacheCategory))
+            GetCacheCategoryResponse(toCacheCategorySeq(response.cacheCategories))
         }
       }
 
