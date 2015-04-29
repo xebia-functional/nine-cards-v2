@@ -65,7 +65,6 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-
   def deleteCacheByPackageCategory: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
     request =>
       tryToFuture {
@@ -83,27 +82,27 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def getAllCacheCategory: Service[GetAllCacheCategoryRequest, GetAllCacheCategoryResponse] =
+  def getAllCacheCategories: Service[GetAllCacheCategoriesRequest, GetAllCacheCategoriesResponse] =
     request =>
       tryToFuture {
         Try {
           val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             NineCardsContentProvider.ContentUriCacheCategory,
-            CacheCategoryEntity.AllFields,
+            AllFields,
             "",
             Array.empty,
             ""))
 
           maybeCursor match {
             case Some(cursor) =>
-              GetAllCacheCategoryResponse(
-                getListFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
-            case _ => GetAllCacheCategoryResponse(Seq.empty)
+              GetAllCacheCategoriesResponse(
+                cacheCategories = getListFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
+            case _ => GetAllCacheCategoriesResponse(cacheCategories = Seq.empty)
           }
 
         } recover {
           case e: Exception =>
-            GetAllCacheCategoryResponse(Seq.empty)
+            GetAllCacheCategoriesResponse(cacheCategories = Seq.empty)
         }
       }
 
@@ -113,7 +112,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         Try {
           val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.id.toString),
-            Array.empty,
+            AllFields,
             "",
             Array.empty,
             ""))
@@ -130,7 +129,6 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             GetCacheCategoryByIdResponse(result = None)
         }
       }
-
 
   def getCacheCategoryByPackage: Service[GetCacheCategoryByPackageRequest, GetCacheCategoryByPackageResponse] =
     request =>
