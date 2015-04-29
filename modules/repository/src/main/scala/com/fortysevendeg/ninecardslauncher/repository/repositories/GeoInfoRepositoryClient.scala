@@ -20,7 +20,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
 
   implicit val executionContext: ExecutionContext
 
-  def addGeoInfo(): Service[AddGeoInfoRequest, AddGeoInfoResponse] =
+  def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -48,7 +48,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteGeoInfo(): Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
+  def deleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -65,13 +65,37 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
+  def getAllGeoInfoItems: Service[GetAllGeoInfoItemsRequest, GetAllGeoInfoItemsResponse] =
+    request =>
+      tryToFuture {
+        Try {
+          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
+            NineCardsContentProvider.ContentUriGeoInfo,
+            AllFields,
+            "",
+            Array.empty,
+            ""))
+
+          maybeCursor match {
+            case Some(cursor) =>
+              GetAllGeoInfoItemsResponse(
+                geoInfoItems = getListFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
+            case _ => GetAllGeoInfoItemsResponse(geoInfoItems = Seq.empty)
+          }
+
+        } recover {
+          case e: Exception =>
+            GetAllGeoInfoItemsResponse(geoInfoItems = Seq.empty)
+        }
+      }
+
   def getGeoInfoById: Service[GetGeoInfoByIdRequest, GetGeoInfoByIdResponse] =
     request =>
       tryToFuture {
         Try {
           val maybeCursor: Option[Cursor] = Option(contentResolver.query(
             withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.id.toString),
-            Array.empty,
+            AllFields,
             "",
             Array.empty,
             ""))
@@ -114,7 +138,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def updateGeoInfo(): Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
+  def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
