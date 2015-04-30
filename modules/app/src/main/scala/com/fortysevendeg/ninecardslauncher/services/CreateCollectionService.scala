@@ -5,6 +5,7 @@ import android.content.{Context, Intent}
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
+import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
@@ -17,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.ui.commons.NineCategories._
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.AppContext
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,7 +27,8 @@ import macroid.Logging._
 
 class CreateCollectionService
   extends Service
-  with ComponentRegistryImpl {
+  with ComponentRegistryImpl
+  with AppConversions {
 
   override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
 
@@ -150,11 +153,11 @@ class CreateCollectionService
   }
 
   private def createCollectionFromDevice(device: UserConfigDevice) = {
-    // TODO Create from device
+    device.collections
   }
 
   @tailrec
-  private def createInsertSeq(apps: Seq[AppItem], categories: Seq[String], acc: Seq[InsertCollectionRequest]) : Seq[InsertCollectionRequest] = {
+  private def createInsertSeq(apps: Seq[AppItem], categories: Seq[String], acc: Seq[InsertCollectionRequest]): Seq[InsertCollectionRequest] = {
     categories match {
       case Nil => acc
       case h :: t =>
@@ -168,25 +171,15 @@ class CreateCollectionService
     val appsCategory = apps.filter(_.category == Some(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
     InsertCollectionRequest(
       position = index % NumInLine,
-      name = category,
+      name = resGetString(category.toLowerCase).getOrElse(category.toLowerCase),
       `type` = CollectionType.Apps,
       icon = Social.toLowerCase, // TODO Put "category.toLowerCase" when we have all icons
       themedColorIndex = index % NumInLine,
       appsCategory = Some(category),
-      sharedCollectionSubscribed = false,
+      sharedCollectionSubscribed = Option(false),
       cards = appsCategory map toCardItem
     )
   }
-
-  private def toCardItem(appItem: AppItem) =
-    CardItem(
-      position = 0,
-      packageName = Some(appItem.packageName),
-      term = appItem.name,
-      imagePath = appItem.imagePath,
-      intent = appItem.intent,
-      `type` = CardType.App
-    )
 
   private def closeService() = {
     stopForeground(true)

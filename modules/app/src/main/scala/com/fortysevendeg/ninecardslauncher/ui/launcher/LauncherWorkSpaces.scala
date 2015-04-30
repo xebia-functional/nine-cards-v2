@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.ui.launcher
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.fortysevendeg.ninecardslauncher.models.Collection
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants
 import com.fortysevendeg.ninecardslauncher.ui.components.AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.ui.launcher.WorkSpaceType._

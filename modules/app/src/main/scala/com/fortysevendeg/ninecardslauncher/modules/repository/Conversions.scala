@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
+import com.fortysevendeg.ninecardslauncher.models.{CacheCategory, Card, Collection}
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection, Card => RepositoryCard, CacheCategory => RepositoryCacheCategory, _}
 
@@ -19,7 +20,7 @@ trait Conversions {
       constrains = collection.data.constrains,
       originalSharedCollectionId = collection.data.originalSharedCollectionId,
       sharedCollectionId = collection.data.sharedCollectionId,
-      sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed
+      sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed getOrElse false
     )
 
   def toCard(card: RepositoryCard) =

@@ -26,7 +26,7 @@ case class CollectionData(
   constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
-  sharedCollectionSubscribed: Boolean)
+  sharedCollectionSubscribed: Option[Boolean])
 
 case class Card(
   id: Int,

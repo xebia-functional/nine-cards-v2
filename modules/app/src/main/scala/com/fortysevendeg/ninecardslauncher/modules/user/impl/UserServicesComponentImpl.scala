@@ -4,6 +4,7 @@ import java.io.File
 
 import android.net.Uri
 import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.user.{SignInResponse, UserServices, UserServicesComponent}
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._

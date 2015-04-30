@@ -14,8 +14,8 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.models.Collection
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
 import com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.ui.components.Dimen

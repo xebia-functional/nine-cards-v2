@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
+import com.fortysevendeg.ninecardslauncher.models.{CacheCategory, Collection}
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
 
 case class GetCollectionsRequest()
@@ -42,7 +43,7 @@ case class InsertCollectionRequest(
     constrains: Option[String] = None,
     originalSharedCollectionId: Option[String] = None,
     sharedCollectionId: Option[String] = None,
-    sharedCollectionSubscribed: Boolean,
+    sharedCollectionSubscribed: Option[Boolean],
     cards: Seq[CardItem])
 
 case class CardItem(

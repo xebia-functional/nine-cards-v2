@@ -34,4 +34,60 @@
 
     <string name="creatingCollectionError">We could not create your collections at this time. Please try again later</string>
 
+    <!-- Categories -->
+
+    <string name="all_categories">Any Category</string>
+    <string name="all_apps">All Apps</string>
+    <string name="misc">Misc</string>
+
+    <string name="apps">Apps</string>
+    <string name="game">Games</string>
+    <string name="books_and_reference">Books And Reference</string>
+    <string name="business">Business</string>
+    <string name="comics">Comics</string>
+    <string name="communication">Communication</string>
+    <string name="education">Education</string>
+    <string name="entertainment">Entertainment</string>
+    <string name="finance">Finance</string>
+    <string name="health_and_fitness">Health and Fitness</string>
+    <string name="libraries_and_demo">Libraries and Demo</string>
+    <string name="lifestyle">Lifestyle</string>
+    <string name="app_wallpaper">Live Wallpaper</string>
+    <string name="media_and_video">Media and Video</string>
+    <string name="medical">Medical</string>
+    <string name="music_and_audio">Music and Audio</string>
+    <string name="news_and_magazines">News and Magazines</string>
+    <string name="personalization">Customization</string>
+    <string name="photography">Photography</string>
+    <string name="productivity">Productivity</string>
+    <string name="shopping">Shopping</string>
+    <string name="social">Social</string>
+    <string name="sports">Sports</string>
+    <string name="tools">Tools</string>
+    <string name="transportation">Transportation</string>
+    <string name="travel_and_local">Travel and Local</string>
+    <string name="weather">Weather</string>
+    <string name="widgets">Widgets</string>
+
+    <string name="game_action">Action</string>
+    <string name="game_adventure">Adventure</string>
+    <string name="game_arcade">Arcade</string>
+    <string name="game_board">Board</string>
+    <string name="game_card">Card</string>
+    <string name="game_casino">Casino</string>
+    <string name="game_casual">Casual</string>
+    <string name="game_educational">Educational</string>
+    <string name="game_family">Family</string>
+    <string name="game_wallpaper">Live Wallpaper Games</string>
+    <string name="game_music">Music</string>
+    <string name="game_puzzle">Puzzle</string>
+    <string name="game_racing">Racing</string>
+    <string name="game_role_playing">Role Playing</string>
+    <string name="game_simulation">Simulation</string>
+    <string name="game_sports">Sports Games</string>
+    <string name="game_strategy">Strategy</string>
+    <string name="game_trivia">Trivia</string>
+    <string name="game_widgets">Widgets Games</string>
+    <string name="game_word">Word</string>
+
 </resources>

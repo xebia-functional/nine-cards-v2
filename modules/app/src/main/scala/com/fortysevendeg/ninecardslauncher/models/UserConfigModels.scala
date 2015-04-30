@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.model
+package com.fortysevendeg.ninecardslauncher.models
 
 case class UserConfig(
   _id: String,
@@ -67,7 +67,7 @@ case class NineCardIntent(
   className: Option[String],
   packageName: Option[String],
   dataExtra: Option[String],
-  intentExtras: Option[Map[String, String]],
+  intentExtras: Map[String, String],
   categories: Option[Seq[String]])
 
 case class UserConfigUserLocation(

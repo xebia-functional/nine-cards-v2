@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager
 
+import com.fortysevendeg.ninecardslauncher.models.AppItem
+
 case class GetAppsRequest()
 
 case class GetAppsResponse(apps: Seq[AppItem])

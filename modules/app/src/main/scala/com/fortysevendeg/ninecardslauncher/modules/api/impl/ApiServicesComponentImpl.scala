@@ -4,6 +4,7 @@ import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.api.NineCardsServiceClient
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
 import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.rest.client.ServiceClient

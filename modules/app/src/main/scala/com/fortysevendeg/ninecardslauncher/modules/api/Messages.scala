@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.api
 
+import com.fortysevendeg.ninecardslauncher.models._
+
 case class LoginRequest(
     email: String,
     device: GoogleDevice)
@@ -24,11 +26,7 @@ case class InstallationResponse(
     statusCode: Int,
     installation: Option[Installation])
 
-case class Installation(
-    id: Option[String],
-    deviceType: Option[String],
-    deviceToken: Option[String],
-    userId: Option[String])
+
 
 case class UpdateInstallationResponse(
     statusCode: Int)

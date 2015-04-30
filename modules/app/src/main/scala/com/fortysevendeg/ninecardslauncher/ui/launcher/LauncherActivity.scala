@@ -6,9 +6,9 @@ import android.os.Bundle
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.models.{AppItem, Collection}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.appsmanager.AppItem
-import com.fortysevendeg.ninecardslauncher.modules.repository.{Collection, GetCollectionsRequest, GetCollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.ui.launcher.LauncherWorkSpacesTweaks._

@@ -10,9 +10,10 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.models.Collection
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
-import com.fortysevendeg.ninecardslauncher.modules.repository.{Collection, GetCollectionsRequest, GetCollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
