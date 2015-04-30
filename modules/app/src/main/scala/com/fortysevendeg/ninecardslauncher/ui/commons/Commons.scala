@@ -112,6 +112,11 @@ object CardType {
   val NineCardsExtension = "NINE_CARDS_EXTENSION"
 }
 
+object NineCardsIntent {
+  val NineCardExtraPackageName: String = "package_name"
+  val NineCardExtraClassName: String = "class_name"
+}
+
 object ImageResourceNamed {
 
   def iconCollectionWorkspace(category: String) = s"icon_collection_$category"

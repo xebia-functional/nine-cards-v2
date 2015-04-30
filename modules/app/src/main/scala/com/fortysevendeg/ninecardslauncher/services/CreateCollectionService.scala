@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.repository.{CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
+import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
@@ -128,32 +128,37 @@ class CreateCollectionService
     repositoryServices.insertGeoInfo(request)
   }
 
-  private def createCollectionFromMyDevice() = {
-    appManagerServices.getCategorizedApps(GetCategorizedAppsRequest()) map {
-      response =>
-        val categories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
-          Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
-          MediaAndVideo, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
-          Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgets)
-        val inserts = createInsertSeq(response.apps, categories, Seq.empty)
-        val insertFutures = inserts map {
-          insert =>
-            repositoryServices.insertCollection(insert)
-        }
-        Future.sequence(insertFutures) map {
-          responses =>
-            closeService()
-        } recover {
-          case _ =>
-            logD"Insert sequence failed"("9CARDS")
-            closeService()
-        }
-
-    }
+  private def createCollectionFromMyDevice() = appManagerServices.getCategorizedApps(GetCategorizedAppsRequest()) map {
+    response =>
+      val categories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
+        Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
+        MediaAndVideo, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
+        Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgets)
+      val inserts = createInsertSeq(response.apps, categories, Seq.empty)
+      val insertFutures = inserts map {
+        insert =>
+          repositoryServices.insertCollection(insert)
+      }
+      insertFuturesInDB(insertFutures)
   }
 
   private def createCollectionFromDevice(device: UserConfigDevice) = {
-    device.collections
+    val insertFutures = device.collections map toInsertCollectionRequest map {
+      insert =>
+        repositoryServices.insertCollection(insert)
+    }
+    insertFuturesInDB(insertFutures)
+  }
+
+  private def insertFuturesInDB(insertFutures: Seq[Future[InsertCollectionResponse]]) = {
+    Future.sequence(insertFutures) map {
+      responses =>
+        closeService()
+    } recover {
+      case _ =>
+        logD"Insert sequence failed"("9CARDS")
+        closeService()
+    }
   }
 
   @tailrec

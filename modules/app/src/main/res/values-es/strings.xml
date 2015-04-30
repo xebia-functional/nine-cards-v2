@@ -4,6 +4,7 @@
     <string name="edit">Editar</string>
     <string name="make_public">Hacer Pública</string>
     <string name="share">Compartir</string>
+    <string name="loading">Cargando</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continuar</string>
@@ -31,6 +32,9 @@
     <string name="savingConfigurationMessage">Guardando tu configuración en nuestros servidores</string>
 
     <string name="creatingCollectionError">Error creando colecciones. Por favor inténtelo de nuevo</string>
+
+    <string name="loadUserConfigDeviceReplace">Reemplazar %1$s con nueva configuración</string>
+    <string name="deviceNotFoundMessage">Este dispositivo no está asociado a ninguna cuenta. Por favor, entra de nuevo</string>
 
     <!-- Categories -->
 
