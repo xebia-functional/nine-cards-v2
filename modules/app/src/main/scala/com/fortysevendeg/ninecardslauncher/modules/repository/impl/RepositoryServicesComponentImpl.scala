@@ -27,11 +27,28 @@ trait RepositoryServicesComponentImpl
     override implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
     override def getCollections: Service[GetCollectionsRequest, GetCollectionsResponse] =
-      request =>
+      request => {
+        val promise = Promise[GetCollectionsResponse]()
         getSortedCollections(GetSortedCollectionsRequest()) map {
           response =>
-            GetCollectionsResponse(toCollectionSeq(response.collections))
+            val futures = toCollectionSeq(response.collections) map {
+              collection =>
+                getCardByCollection(GetAllCardsByCollectionRequest(collection.id)) map {
+                  cardResponse =>
+                    collection.copy(cards = cardResponse.result map toCard)
+                }
+            }
+            Future.sequence(futures) map {
+              collections =>
+                promise.complete(Success(GetCollectionsResponse(collections)))
+            } recover {
+              case _ => promise.complete(Success(GetCollectionsResponse(Seq.empty)))
+            }
+        } recover {
+          case _ => promise.complete(Success(GetCollectionsResponse(Seq.empty)))
         }
+        promise.future
+      }
 
     override def insertCacheCategory: Service[InsertCacheCategoryRequest, InsertCacheCategoryResponse] =
       request => {

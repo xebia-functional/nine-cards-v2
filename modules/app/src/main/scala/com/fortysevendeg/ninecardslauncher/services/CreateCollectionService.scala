@@ -31,7 +31,7 @@ class CreateCollectionService
 
   private var loadDeviceId: Option[String] = None
 
-  private val minAppsToAdd = 3
+  private val minAppsToAdd = 4
 
   private lazy val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext)
 
@@ -174,7 +174,7 @@ class CreateCollectionService
       themedColorIndex = index % NumInLine,
       appsCategory = Some(category),
       sharedCollectionSubscribed = false,
-      cards = apps map toCardItem
+      cards = appsCategory map toCardItem
     )
   }
 
