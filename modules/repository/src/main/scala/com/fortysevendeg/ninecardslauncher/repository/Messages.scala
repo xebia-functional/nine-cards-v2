@@ -15,6 +15,10 @@ case class DeleteCacheCategoryByPackageRequest(`package`: String)
 
 case class DeleteCacheCategoryByPackageResponse(success: Boolean)
 
+case class GetAllCacheCategoriesRequest()
+
+case class GetAllCacheCategoriesResponse(cacheCategories: Seq[CacheCategory])
+
 case class GetCacheCategoryByIdRequest(id: Int)
 
 case class GetCacheCategoryByIdResponse(result: Option[CacheCategory])
@@ -39,9 +43,9 @@ case class GetCardByIdRequest(id: Int)
 
 case class GetCardByIdResponse(result: Option[Card])
 
-case class GetCardByCollectionRequest(collectionId: Int)
+case class GetAllCardsByCollectionRequest(collectionId: Int)
 
-case class GetCardByCollectionResponse(result: Seq[Card])
+case class GetAllCardsByCollectionResponse(result: Seq[Card])
 
 case class UpdateCardRequest(card: Card)
 
@@ -82,6 +86,10 @@ case class AddGeoInfoResponse(geoInfo: Option[GeoInfo])
 case class DeleteGeoInfoRequest(geoInfo: GeoInfo)
 
 case class DeleteGeoInfoResponse(success: Boolean)
+
+case class GetAllGeoInfoItemsRequest()
+
+case class GetAllGeoInfoItemsResponse(geoInfoItems: Seq[GeoInfo])
 
 case class GetGeoInfoByIdRequest(id: Int)
 
