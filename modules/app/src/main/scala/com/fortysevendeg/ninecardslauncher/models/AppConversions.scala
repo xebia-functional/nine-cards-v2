@@ -1,9 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.models
 
-import com.fortysevendeg.ninecardslauncher.modules.image.{ImageServices, ImageServicesComponent}
-import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionRequest, CardItem}
+import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.repository.{CardItem, InsertCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.ui.commons.CardType._
+import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
+import macroid.Logging._
 
 trait AppConversions {
 
@@ -47,18 +49,23 @@ trait AppConversions {
     }
   }
 
-  def toInsertCollectionRequest(userConfigCollection: UserConfigCollection): InsertCollectionRequest =
+  def toInsertCollectionRequestFromUserConfigSeq(items: Seq[UserConfigCollection]): Seq[InsertCollectionRequest] =
+    items.zipWithIndex.map (zipped => toInsertCollectionRequest(zipped._1, zipped._2))
+
+  def toInsertCollectionRequest(userConfigCollection: UserConfigCollection, index: Int): InsertCollectionRequest = {
+    val pos = if (index >= NumSpaces) index % NumSpaces else index
     InsertCollectionRequest(
-      position = 0,
+      position = pos,
       name = userConfigCollection.name,
       `type` = userConfigCollection.collectionType,
       icon = userConfigCollection.icon,
-      themedColorIndex = 0,
+      themedColorIndex = pos,
       appsCategory = userConfigCollection.category,
       constrains = None,
       originalSharedCollectionId = userConfigCollection.originalSharedCollectionId,
       sharedCollectionId = userConfigCollection.sharedCollectionId,
       sharedCollectionSubscribed = userConfigCollection.sharedCollectionSubscribed,
       cards = toCartItemFromUserConfigSeq(userConfigCollection.items))
+  }
 
 }

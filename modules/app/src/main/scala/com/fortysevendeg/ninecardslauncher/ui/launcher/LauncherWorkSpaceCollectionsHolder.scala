@@ -97,14 +97,17 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)
-    resGetDrawableIdentifier(iconCollectionWorkspace(collection.icon)) map {
-      resIcon =>
-        runUi(
-          (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
-            (name <~ tvText(collection.name))
-        )
-    }
+    runUi(
+      resGetDrawableIdentifier(iconCollectionWorkspace(collection.icon)) map {
+        resIcon =>
+          populateIcon(collection, resIcon)
+      } getOrElse populateIcon(collection, R.drawable.icon_collection_home)
+    )
   }
+
+  private def populateIcon(collection: Collection, resIcon: Int): Ui[_] =
+    (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
+      (name <~ tvText(collection.name))
 
   private def createBackground(indexColor: Int): Drawable = {
     val color = resGetColor(persistentServices.getIndexColor(indexColor))

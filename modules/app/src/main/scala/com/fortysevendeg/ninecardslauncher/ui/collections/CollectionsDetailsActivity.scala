@@ -71,7 +71,7 @@ class CollectionsDetailsActivity
 
   private def updateCollection(collection: Collection, position: Int, fromLeft: Boolean): Ui[_] =
     (for {
-      res <- resGetDrawableIdentifier(s"${collection.icon}_detail")
+      res <- resGetDrawableIdentifier(iconCollectionDetail(collection.icon))
       adapter <- collectionsAdapter
     } yield {
         (icon <~ changeIcon(res, fromLeft)) ~ adapter.notifyChanged(position)
