@@ -17,6 +17,8 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{AppContext, Contexts, Transformer, Ui}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -103,7 +105,9 @@ class WizardActivity
         response =>
           response.userConfig map {
             userConfig =>
-              runUi(addDevicesToRadioGroup(userConfig.devices) ~ showDevices)
+              runUi(addDevicesToRadioGroup(userConfig.devices) ~
+                showDevices ~
+                (titleDevice <~ tvText(resGetString(R.string. addDeviceTitle, userConfig.plusProfile.displayName))))
           } getOrElse runUi(errorUi)
       } recover {
         case _ => runUi(errorUi)

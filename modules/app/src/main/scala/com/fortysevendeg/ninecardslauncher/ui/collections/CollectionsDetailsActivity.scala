@@ -21,6 +21,7 @@ import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{AppContext, Contexts, Tweak, Ui}
+import com.fortysevendeg.ninecardslauncher.ui.commons.ImageResourceNamed._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -66,7 +67,7 @@ class CollectionsDetailsActivity
   }
 
   private def setIconCollection(collection: Collection): Ui[_] =
-    resGetDrawableIdentifier(s"${collection.icon}_detail") map (r => icon <~ ivSrc(r)) getOrElse Ui.nop
+    resGetDrawableIdentifier(iconCollectionDetail(collection.icon)) map (r => icon <~ ivSrc(r)) getOrElse Ui.nop
 
   private def updateCollection(collection: Collection, position: Int, fromLeft: Boolean): Ui[_] =
     (for {
@@ -139,11 +140,11 @@ object ScrollType {
 }
 
 class OnPageChangeCollectionsListener(
-                                       collections: Seq[Collection],
-                                       updateToolbarColor: Int => Ui[_],
-                                       updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
-  extends OnPageChangeListener
-  with ComponentRegistryImpl {
+  collections: Seq[Collection],
+  updateToolbarColor: Int => Ui[_],
+  updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
+   extends OnPageChangeListener
+   with ComponentRegistryImpl {
 
   override val appContextProvider: AppContext = appContext
 

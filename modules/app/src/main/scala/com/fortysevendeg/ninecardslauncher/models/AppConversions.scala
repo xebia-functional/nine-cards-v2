@@ -9,16 +9,22 @@ trait AppConversions {
 
   self : ImageServicesComponent =>
 
-  def toCardItem(appItem: AppItem) =
+  def toCartItemFromAppItemSeq(items: Seq[AppItem]): Seq[CardItem] =
+    items.zipWithIndex.map (zipped => toCardItem(zipped._1, zipped._2))
+
+  def toCardItem(appItem: AppItem, pos: Int) =
     CardItem(
-      position = 0,
+      position = pos,
       packageName = Some(appItem.packageName),
       term = appItem.name,
       imagePath = appItem.imagePath,
       intent = appItem.intent,
       `type` = App)
 
-  def toCardItem(item: UserConfigCollectionItem): Option[CardItem] = {
+  def toCartItemFromUserConfigSeq(items: Seq[UserConfigCollectionItem]): Seq[CardItem] =
+    items.zipWithIndex.map (zipped => toCardItem(zipped._1, zipped._2)).flatten
+
+  def toCardItem(item: UserConfigCollectionItem, pos: Int): Option[CardItem] = {
     // TODO We only are working with apps for now
     val packageName = (item.itemType match {
       case App =>
@@ -32,7 +38,7 @@ trait AppConversions {
     packageName map {
       pn =>
         CardItem(
-          position = 0,
+          position = pos,
           packageName = Option(pn),
           term = item.title,
           imagePath = imageServices.getPath(pn),
@@ -53,6 +59,6 @@ trait AppConversions {
       originalSharedCollectionId = userConfigCollection.originalSharedCollectionId,
       sharedCollectionId = userConfigCollection.sharedCollectionId,
       sharedCollectionSubscribed = userConfigCollection.sharedCollectionSubscribed,
-      cards = userConfigCollection.items map toCardItem flatten)
+      cards = toCartItemFromUserConfigSeq(userConfigCollection.items))
 
 }

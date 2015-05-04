@@ -58,10 +58,10 @@ trait Styles {
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
 
   def endMessageStyle(implicit appContext: AppContext): Tweak[TextView] =
-    vWrapContent +
+    llMatchWeightVertical +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       tvSizeResource(R.dimen.text_default) +
-      llLayoutGravity(Gravity.CENTER)
+      tvGravity(Gravity.CENTER)
 
   private def elevation(implicit appContext: AppContext) = Lollipop.ifSupportedThen {
     vElevation(resGetDimensionPixelSize(R.dimen.elevation_toolbar))

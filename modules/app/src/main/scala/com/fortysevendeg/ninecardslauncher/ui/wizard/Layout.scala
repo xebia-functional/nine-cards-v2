@@ -28,6 +28,8 @@ trait Layout
 
   var userAction = slot[Button]
 
+  var titleDevice = slot[TextView]
+
   var deviceRootLayout = slot[LinearLayout]
 
   var devicesGroup = slot[RadioGroup]
@@ -45,12 +47,13 @@ trait Layout
         w[TextView] <~ defaultTextStyle <~ tvText(R.string.loading)
       ) <~ loadingRootStyle <~ wire(loadingRootLayout) <~ vGone,
       l[LinearLayout](
+        w[TextView] <~ titleTextStyle <~ tvText(R.string.welcome),
         w[TextView] <~ defaultTextStyle <~ tvText(R.string.welcomeMessage),
         l[RadioGroup]() <~ wire(usersGroup) <~ groupStyle,
         w[Button] <~ actionButtonStyle <~ wire(userAction) <~ tvText(R.string.buttonContinue)
       ) <~ contentStyle <~ wire(userRootLayout),
       l[LinearLayout](
-        w[TextView] <~ titleTextStyle,
+        w[TextView] <~ titleTextStyle <~ wire(titleDevice),
         w[TextView] <~ defaultTextStyle <~ tvText(R.string.addDeviceMessage),
         l[RadioGroup]() <~ wire(devicesGroup) <~ groupStyle,
         w[Button] <~ actionButtonStyle <~ wire(deviceAction) <~ tvText(R.string.buttonContinue)

@@ -174,15 +174,16 @@ class CreateCollectionService
 
   private def createCollection(apps: Seq[AppItem], category: String, index: Int): InsertCollectionRequest = {
     val appsCategory = apps.filter(_.category == Some(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
+    val pos = if (index >= NumSpaces) index % NumSpaces else index
     InsertCollectionRequest(
-      position = index % NumInLine,
+      position = pos,
       name = resGetString(category.toLowerCase).getOrElse(category.toLowerCase),
       `type` = CollectionType.Apps,
       icon = Social.toLowerCase, // TODO Put "category.toLowerCase" when we have all icons
-      themedColorIndex = index % NumInLine,
+      themedColorIndex = pos,
       appsCategory = Some(category),
       sharedCollectionSubscribed = Option(false),
-      cards = appsCategory map toCardItem
+      cards = toCartItemFromAppItemSeq(appsCategory)
     )
   }
 
