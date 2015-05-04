@@ -23,7 +23,7 @@ case class Card(
   term: String,
   packageName: Option[String],
   `type`: String,
-  intent: String,
+  intent: NineCardIntent,
   imagePath: String,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,

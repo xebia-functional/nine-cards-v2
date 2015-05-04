@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.api.model
 
+import play.api.libs.json._
+
 case class UserConfig(
   _id: String,
   email: String,
@@ -59,15 +61,7 @@ case class UserConfigCollection(
 case class UserConfigCollectionItem(
   itemType: String,
   title: String,
-  metadata: NineCardIntent,
-  categories: Option[Seq[String]])
-
-case class NineCardIntent(
-  action: String,
-  className: Option[String],
-  packageName: Option[String],
-  dataExtra: Option[String],
-  intentExtras: Option[Map[String, String]],
+  metadata: JsValue,
   categories: Option[Seq[String]])
 
 case class UserConfigUserLocation(

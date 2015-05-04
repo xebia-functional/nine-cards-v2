@@ -59,7 +59,12 @@ class CollectionFragment
   }
 
   def loadCollection(collection: Collection, heightCard: Int): Ui[_] = {
-    val adapter = new CollectionAdapter(collection, heightCard, card => uiShortToast(card.term))
+    val adapter = new CollectionAdapter(collection, heightCard, card => Ui {
+      card.intent.createIntentForApp().map {
+        intent =>
+          appContextProvider.get.startActivity(intent)
+      }
+    })
     (recyclerView <~ rvLayoutManager(layoutManager) <~
       rvFixedSize <~
       rvAddItemDecoration(new CollectionItemDecorator) <~
@@ -81,7 +86,7 @@ class CollectionFragment
 
               override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE  && collection.cards.length > NumSpaces) {
+                if (activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && collection.cards.length > NumSpaces) {
                   scrolledListener map {
                     sl =>
                       val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollType.Down) else (spaceMove, ScrollType.Up)

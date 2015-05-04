@@ -1,5 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.models
 
+import android.content.{ComponentName, Intent}
+import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
+
 case class UserConfig(
   _id: String,
   email: String,
@@ -63,12 +66,27 @@ case class UserConfigCollectionItem(
   categories: Option[Seq[String]])
 
 case class NineCardIntent(
-  action: String,
-  className: Option[String],
-  packageName: Option[String],
-  dataExtra: Option[String],
-  intentExtras: Map[String, String],
-  categories: Option[Seq[String]])
+  intentExtras: Map[String, String]) extends Intent {
+
+  def extractPackageName(): Option[String] = intentExtras.get(NineCardExtraPackageName)
+
+  def extractClassName(): Option[String] = intentExtras.get(NineCardExtraClassName)
+
+  def createIntentForApp(): Option[Intent] = {
+    for {
+      packageName <- extractPackageName()
+      className <- extractClassName()
+    } yield {
+      val intent = new Intent(Intent.ACTION_MAIN)
+      intent.addCategory(Intent.CATEGORY_LAUNCHER)
+      intent.setComponent(new ComponentName(packageName, className))
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+      intent
+    }
+  }
+
+
+}
 
 case class UserConfigUserLocation(
   wifi: String,

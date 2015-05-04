@@ -4,8 +4,7 @@ import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.repository.{CardItem, InsertCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.ui.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
-import macroid.Logging._
+import play.api.libs.json._
 
 trait AppConversions {
 
@@ -28,23 +27,20 @@ trait AppConversions {
 
   def toCardItem(item: UserConfigCollectionItem, pos: Int): Option[CardItem] = {
     // TODO We only are working with apps for now
-    val packageName = (item.itemType match {
+    val packageName = item.itemType match {
       case App =>
-        if (item.metadata.intentExtras.contains(NineCardExtraPackageName)) {
-          Option(item.metadata.intentExtras.get(NineCardExtraPackageName))
-        } else {
-          None
-        }
+        item.metadata.extractPackageName()
       case _ => None
-    }).flatten
+    }
     packageName map {
       pn =>
+        val writes = Json.writes[NineCardIntent]
         CardItem(
           position = pos,
           packageName = Option(pn),
           term = item.title,
           imagePath = imageServices.getPath(pn),
-          intent = item.metadata.toString,
+          intent = Json.toJson(item.metadata)(writes).toString(),
           `type` = App)
     }
   }

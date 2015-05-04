@@ -1,8 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
-import com.fortysevendeg.ninecardslauncher.models.{CacheCategory, Card, Collection}
+import com.fortysevendeg.ninecardslauncher.models.{NineCardIntent, CacheCategory, Card, Collection}
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection, Card => RepositoryCard, CacheCategory => RepositoryCacheCategory, _}
+import play.api.libs.json._
 
 trait Conversions {
 
@@ -23,7 +24,8 @@ trait Conversions {
       sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed getOrElse false
     )
 
-  def toCard(card: RepositoryCard) =
+  def toCard(card: RepositoryCard) = {
+    val reads = Json.reads[NineCardIntent]
     Card(
       id = card.id,
       position = card.data.position,
@@ -31,11 +33,12 @@ trait Conversions {
       term = card.data.term,
       packageName = card.data.packageName,
       `type` = card.data.`type`,
-      intent = card.data.intent,
+      intent = Json.parse(card.data.intent).as[NineCardIntent](reads),
       imagePath = card.data.imagePath,
       starRating = card.data.starRating,
       numDownloads = card.data.numDownloads,
       notification = card.data.notification)
+  }
 
   def toCacheCategorySeq(cache: Seq[RepositoryCacheCategory]) = cache map toCacheCategory
 

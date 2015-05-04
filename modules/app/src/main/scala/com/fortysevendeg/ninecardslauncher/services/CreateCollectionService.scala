@@ -179,7 +179,7 @@ class CreateCollectionService
       position = pos,
       name = resGetString(category.toLowerCase).getOrElse(category.toLowerCase),
       `type` = CollectionType.Apps,
-      icon = Social.toLowerCase, // TODO Put "category.toLowerCase" when we have all icons
+      icon = category.toLowerCase,
       themedColorIndex = pos,
       appsCategory = Some(category),
       sharedCollectionSubscribed = Option(false),

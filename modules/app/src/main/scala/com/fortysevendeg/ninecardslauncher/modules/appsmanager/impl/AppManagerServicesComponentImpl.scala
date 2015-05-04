@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 import android.content.Intent
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
-import com.fortysevendeg.ninecardslauncher.models.AppItem
+import com.fortysevendeg.ninecardslauncher.models.{NineCardIntent, AppItem}
 import com.fortysevendeg.ninecardslauncher.modules.api.{ApiServicesComponent, GooglePlaySimplePackagesRequest}
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
@@ -14,7 +14,8 @@ import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.util.Success
-import macroid.Logging._
+import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
+import play.api.libs.json._
 
 trait AppManagerServicesComponentImpl
     extends AppManagerServicesComponent {
@@ -44,11 +45,18 @@ trait AppManagerServicesComponentImpl
           val appitems: Seq[AppItem] = apps map {
             resolveInfo =>
               val name = resolveInfo.loadLabel(packageManager).toString
+              val extras = Map(
+                NineCardExtraPackageName -> resolveInfo.activityInfo.applicationInfo.packageName,
+                NineCardExtraClassName -> resolveInfo.activityInfo.name
+              )
+              val intent = new NineCardIntent(extras)
+              intent.setAction(OpenApp)
+              val writes = Json.writes[NineCardIntent]
               AppItem(
                 name = name,
                 packageName = resolveInfo.activityInfo.applicationInfo.packageName,
                 imagePath = imageServices.createAppBitmap(name, resolveInfo),
-                intent = "")
+                intent = Json.toJson(intent)(writes).toString())
           }
 
           GetAppsResponse(appitems)

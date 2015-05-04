@@ -2,6 +2,8 @@ package com.fortysevendeg.ninecardslauncher.modules.api
 
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
 import com.fortysevendeg.ninecardslauncher.models._
+import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
+import play.api.libs.json._
 
 trait Conversions {
 
@@ -196,14 +198,10 @@ trait Conversions {
       metadata = toNineCardIntent(apiCollectionItem.metadata),
       categories = apiCollectionItem.categories)
 
-  def toNineCardIntent(apiIntent: apiModel.NineCardIntent): NineCardIntent =
-    NineCardIntent(
-      action = apiIntent.action,
-      className = apiIntent.className,
-      packageName = apiIntent.packageName,
-      dataExtra = apiIntent.dataExtra,
-      intentExtras = apiIntent.intentExtras getOrElse Map.empty,
-      categories = apiIntent.categories)
+  def toNineCardIntent(jsValue: JsValue): NineCardIntent = {
+    val reads = Json.reads[NineCardIntent]
+    jsValue.as[NineCardIntent](reads)
+  }
 
   def toUserConfigGeoInfo(apiGeoInfo: apiModel.UserConfigGeoInfo): UserConfigGeoInfo =
     UserConfigGeoInfo(
@@ -265,17 +263,17 @@ trait Conversions {
     apiModel.UserConfigCollectionItem(
       itemType = collectionItem.itemType,
       title = collectionItem.title,
-      metadata = fromNineCardIntent(collectionItem.metadata),
+      metadata = Json.parse("{\"name\": \"test\"}"), //fromNineCardIntent(collectionItem.metadata),
       categories = collectionItem.categories)
 
-  def fromNineCardIntent(apiIntent: NineCardIntent): apiModel.NineCardIntent =
-    apiModel.NineCardIntent(
-      action = apiIntent.action,
-      className = apiIntent.className,
-      packageName = apiIntent.packageName,
-      dataExtra = apiIntent.dataExtra,
-      intentExtras = Some(apiIntent.intentExtras),
-      categories = apiIntent.categories)
+  //  def fromNineCardIntent(apiIntent: NineCardIntent): apiModel.NineCardIntent =
+  //    apiModel.NineCardIntent(
+  //      action = apiIntent.action,
+  //      className = apiIntent.className,
+  //      packageName = apiIntent.packageName,
+  //      dataExtra = apiIntent.dataExtra,
+  //      intentExtras = Some(apiIntent.intentExtras),
+  //      categories = apiIntent.categories)
 
   def fromUserConfigGeoInfo(apiGeoInfo: UserConfigGeoInfo): apiModel.UserConfigGeoInfo =
     apiModel.UserConfigGeoInfo(
