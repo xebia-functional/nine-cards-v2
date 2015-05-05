@@ -4,9 +4,9 @@ import android.content.Intent
 import com.fortysevendeg.macroid.extras.AppContextProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.models.{NineCardIntent, AppItem}
-import com.fortysevendeg.ninecardslauncher.modules.api.{ApiServicesComponent, GooglePlaySimplePackagesRequest}
+import com.fortysevendeg.ninecardslauncher.modules.api.{GooglePlayPackagesRequest, ApiServicesComponent, GooglePlaySimplePackagesRequest}
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.image.{StoreImageAppRequest, ImageServicesComponent}
 import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCacheCategoryRequest, GetCacheCategoryRequest, GetCacheCategoryResponse, RepositoryServicesComponent}
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 
@@ -17,18 +17,18 @@ import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import play.api.libs.json._
 
 trait AppManagerServicesComponentImpl
-    extends AppManagerServicesComponent {
+  extends AppManagerServicesComponent {
 
   self: AppContextProvider
-      with ImageServicesComponent
-      with RepositoryServicesComponent
-      with UserServicesComponent
-      with ApiServicesComponent =>
+    with ImageServicesComponent
+    with RepositoryServicesComponent
+    with UserServicesComponent
+    with ApiServicesComponent =>
 
   lazy val appManagerServices = new AppManagerServicesImpl
 
   class AppManagerServicesImpl
-      extends AppManagerServices {
+    extends AppManagerServices {
 
     val packageManager = appContextProvider.get.getPackageManager
 
@@ -60,6 +60,46 @@ trait AppManagerServicesComponentImpl
 
           GetAppsResponse(appitems)
         }
+
+    override def createBirmapForNoPackagesInstalled: Service[IntentsRequest, PackagesResponse] =
+      request => {
+        val promise = Promise[PackagesResponse]()
+        val packagesNoFound = (request.intents map {
+          intent =>
+            if (Option(packageManager.resolveActivity(intent, 0)).isEmpty) {
+              intent.extractPackageName()
+            } else {
+              None
+            }
+        }).flatten
+        (for {
+          user <- userServices.getUser
+          token <- user.sessionToken
+          androidId <- userServices.getAndroidId
+        } yield {
+            apiServices.googlePlayPackages(GooglePlayPackagesRequest(androidId, token, packagesNoFound)) map {
+              response =>
+                val futures = response.packages map {
+                  p =>
+                    (p.app.docid, p.app.getIcon)
+                } flatMap {
+                  case (packageName, maybeIcon) => maybeIcon map {
+                    icon =>
+                      imageServices.storeImageApp(StoreImageAppRequest(packageName, icon))
+                  }
+                }
+                Future.sequence(futures) map {
+                  response =>
+                    promise.success(PackagesResponse(response.flatMap (_.packageName)))
+                } recover {
+                  case _ => promise.success(PackagesResponse(Seq.empty))
+                }
+            } recover {
+              case _ => promise.success(PackagesResponse(Seq.empty))
+            }
+          }) getOrElse promise.success(PackagesResponse(Seq.empty))
+        promise.future
+      }
 
     override def getCategorizedApps: Service[GetCategorizedAppsRequest, GetCategorizedAppsResponse] =
       request =>

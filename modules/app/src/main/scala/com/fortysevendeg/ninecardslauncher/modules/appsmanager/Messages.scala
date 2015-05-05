@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager
 
-import android.content.Intent
-import com.fortysevendeg.ninecardslauncher.models.AppItem
+import com.fortysevendeg.ninecardslauncher.models.{NineCardIntent, AppItem}
 
 case class GetAppsRequest()
 
@@ -18,3 +17,7 @@ case class GetAppsByCategoryResponse(apps: Seq[AppItem])
 case class CategorizeAppsRequest()
 
 case class CategorizeAppsResponse(success: Boolean)
+
+case class IntentsRequest(intents: Seq[NineCardIntent])
+
+case class PackagesResponse(packages: Seq[String])

@@ -80,6 +80,12 @@ trait ApiServicesComponentImpl
           response <- getGooglePlayPackage(request.packageName, createHeader(request.deviceId, request.token))
         } yield GooglePlayPackageResponse(response.statusCode, response.data map (playApp => toGooglePlayApp(playApp.docV2)))
 
+    override def googlePlayPackages: Service[GooglePlayPackagesRequest, GooglePlayPackagesResponse] =
+      request =>
+        for {
+          response <- getGooglePlayPackages(PackagesRequest(request.packageNames), createHeader(request.deviceId, request.token))
+        } yield GooglePlayPackagesResponse(response.statusCode, response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)
+
     override def googlePlaySimplePackages: Service[GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse] =
       request =>
         for {

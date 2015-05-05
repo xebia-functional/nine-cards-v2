@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.image.impl
 
-import java.io.{FileOutputStream, File}
+import java.io.{InputStream, FileOutputStream, File}
+import java.net.{HttpURLConnection, URL}
 
 import android.content.Context
 import android.content.pm.{PackageManager, ActivityInfo, ResolveInfo}
@@ -8,10 +9,13 @@ import android.graphics._
 import android.graphics.drawable.BitmapDrawable
 import android.util.DisplayMetrics
 import com.fortysevendeg.macroid.extras.AppContextProvider
-import com.fortysevendeg.ninecardslauncher.modules.image.{ImageServices, ImageServicesComponent}
+import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.modules.image.{StoreImageAppResponse, StoreImageAppRequest, ImageServices, ImageServicesComponent}
 import com.fortysevendeg.ninecardslauncher2.R
 
+import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait ImageServicesComponentImpl
   extends ImageServicesComponent {
@@ -103,6 +107,32 @@ trait ImageServicesComponentImpl
 
     override def getPath(filename: String): String = String.format("%s/%s", cacheDir.getPath, filename)
 
+    override def storeImageApp: Service[StoreImageAppRequest, StoreImageAppResponse] =
+      request =>
+        Future {
+          getBitmapFromURL(request.url) map {
+            bitmap =>
+              saveBitmapDensity(request.packageName, bitmap)
+              StoreImageAppResponse(Some(request.packageName))
+          } getOrElse StoreImageAppResponse(None)
+        }
+
+    private def saveBitmapDensity(filename: String, bitmap: Bitmap): String = {
+      import DisplayMetrics._
+      val newBitmap = (currentDensity, bitmap) match {
+        case (cd, bmp) if (cd == DENSITY_XXHIGH || cd == DENSITY_TV) && bmp.getWidth > 48 * 4 =>
+          Bitmap.createScaledBitmap(bitmap, 48 * 4, 48 * 4, true)
+        case (cd, bmp) if cd == DENSITY_XHIGH && bmp.getWidth > 48 * 3 =>
+          Bitmap.createScaledBitmap(bitmap, 48 * 3, 48 * 3, true)
+        case (cd, bmp) if cd == DENSITY_HIGH && bmp.getWidth > 48 * 2 =>
+          Bitmap.createScaledBitmap(bitmap, 48 * 2, 48 * 2, true)
+        case (cd, bmp) if cd == DENSITY_MEDIUM && bmp.getWidth > 48 * 1.5 =>
+          Bitmap.createScaledBitmap(bitmap, (48 * 1.5).toInt, (48 * 1.5).toInt, true)
+        case (_, bmp) => bmp
+      }
+      saveBitmap(filename, newBitmap)
+    }
+
     private def createDefaultBitmap(text: String): Bitmap = {
       val bitmap: Bitmap = Bitmap.createBitmap(defaultSize, defaultSize, Bitmap.Config.RGB_565)
       val bounds: Rect = new Rect
@@ -164,7 +194,7 @@ trait ImageServicesComponentImpl
 
     }
 
-    private def saveBitmap(filename: String, bitmap: Bitmap, force: Boolean = false): String =  {
+    private def saveBitmap(filename: String, bitmap: Bitmap, force: Boolean = false): String = {
       val path: String = getPath(filename)
       if (force || !new File(filename).exists) {
         Try {
@@ -175,6 +205,20 @@ trait ImageServicesComponentImpl
         }
       }
       path
+    }
+
+    private def getBitmapFromURL(uri: String): Option[Bitmap] = {
+      Try {
+        val url: URL = new URL(uri)
+        val connection: HttpURLConnection = url.openConnection.asInstanceOf[HttpURLConnection]
+        connection.setDoInput(true)
+        connection.connect()
+        val input: InputStream = connection.getInputStream
+        BitmapFactory.decodeStream(input)
+      } match {
+        case Success(bitmap) => Some(bitmap)
+        case Failure(ex) => ex.printStackTrace(); None
+      }
     }
 
     private def getCurrentColor(): Int = {

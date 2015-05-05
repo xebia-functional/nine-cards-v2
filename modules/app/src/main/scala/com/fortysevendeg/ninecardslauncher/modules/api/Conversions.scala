@@ -81,6 +81,14 @@ trait Conversions {
       deviceToken = installation.deviceToken,
       userId = installation.userId)
 
+  def toGooglePlayPackageSeq(googlePlayPackages: Seq[apiModel.GooglePlayPackage]): Seq[GooglePlayPackage] =
+    googlePlayPackages map toGooglePlayPackage
+
+  def toGooglePlayPackage(googlePlayPackage: apiModel.GooglePlayPackage): GooglePlayPackage =
+    GooglePlayPackage(
+      app = toGooglePlayApp(googlePlayPackage.docV2)
+    )
+
   def toGooglePlayApp(googlePlayApp: apiModel.GooglePlayApp): GooglePlayApp =
     GooglePlayApp(
       docid = googlePlayApp.docid,

@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.models
 
+case class GooglePlayPackage(app: GooglePlayApp)
+
 case class GoogleDevice(
     name: String,
     devideId: String,
@@ -14,7 +16,25 @@ case class GooglePlayApp(
     image: Seq[GooglePlayImage],
     details: GooglePlayDetails,
     offer: Seq[GooglePlayOffer],
-    aggregateRating: GooglePlayAggregateRating)
+    aggregateRating: GooglePlayAggregateRating) {
+
+    val IconImageType = 4
+
+    val IconBackgroundType = 2
+
+    val IconScreenShootType = 1
+
+    val IconVideoType = 3
+
+    def getIcon: Option[String] = image.find(_.imageType == IconImageType) map (_.imageUrl)
+
+    def getBackground: Option[String] = image.find(_.imageType == IconBackgroundType) map (_.imageUrl)
+
+    def getScreenShoots: Seq[String] = image.filter(_.imageType == IconScreenShootType) map (_.imageUrl)
+
+    def getVideo: Option[String] = image.find(_.imageType == IconVideoType) map (_.imageUrl)
+
+}
 
 case class GooglePlayImage(
     imageType: Int,

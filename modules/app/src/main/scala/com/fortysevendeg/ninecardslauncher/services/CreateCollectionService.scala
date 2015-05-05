@@ -143,8 +143,18 @@ class CreateCollectionService
   }
 
   private def createCollectionFromDevice(device: UserConfigDevice) = {
-    val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections) map repositoryServices.insertCollection
-    insertFuturesInDB(insertFutures)
+    // Store the icons for the apps not installed from internet
+    val intents = device.collections flatMap (_.items map (_.metadata))
+    appManagerServices.createBirmapForNoPackagesInstalled(IntentsRequest(intents)) map {
+      response =>
+        // Save collection in repository
+        val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections, response.packages) map repositoryServices.insertCollection
+        insertFuturesInDB(insertFutures)
+    } recover {
+      case _ =>
+        logD"Store images of apps not installed failed"("9CARDS")
+        closeService()
+    }
   }
 
   private def insertFuturesInDB(insertFutures: Seq[Future[InsertCollectionResponse]]) = {

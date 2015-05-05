@@ -26,8 +26,6 @@ case class InstallationResponse(
     statusCode: Int,
     installation: Option[Installation])
 
-
-
 case class UpdateInstallationResponse(
     statusCode: Int)
 
@@ -39,6 +37,15 @@ case class GooglePlayPackageRequest(
 case class GooglePlayPackageResponse(
     statusCode: Int,
     app: Option[GooglePlayApp])
+
+case class GooglePlayPackagesRequest(
+    deviceId: String,
+    token: String,
+    packageNames: Seq[String])
+
+case class GooglePlayPackagesResponse(
+    statusCode: Int,
+    packages: Seq[GooglePlayPackage])
 
 case class GooglePlaySimplePackagesRequest(
     deviceId: String,
