@@ -101,7 +101,7 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
       resGetDrawableIdentifier(iconCollectionWorkspace(collection.icon)) map {
         resIcon =>
           populateIcon(collection, resIcon)
-      } getOrElse populateIcon(collection, R.drawable.icon_collection_home)
+      } getOrElse populateIcon(collection, R.drawable.icon_collection_home) // TODO We should use default icon
     )
   }
 

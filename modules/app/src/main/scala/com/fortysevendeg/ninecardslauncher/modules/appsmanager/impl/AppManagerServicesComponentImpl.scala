@@ -13,7 +13,6 @@ import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
-import scala.util.Success
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import play.api.libs.json._
 
@@ -90,7 +89,7 @@ trait AppManagerServicesComponentImpl
           response =>
             val packagesWithoutCategory = response.apps.filter(_.category.isEmpty) map (_.packageName)
             if (packagesWithoutCategory.isEmpty) {
-              promise.complete(Success(CategorizeAppsResponse(true)))
+              promise.success(CategorizeAppsResponse(true))
             } else {
               (for {
                 user <- userServices.getUser
@@ -112,14 +111,14 @@ trait AppManagerServicesComponentImpl
                       }
                       Future.sequence(futures) map {
                         seq =>
-                          promise.complete(Success(CategorizeAppsResponse(true)))
+                          promise.success(CategorizeAppsResponse(true))
                       } recover {
-                        case _ => promise.complete(Success(CategorizeAppsResponse(false)))
+                        case _ => promise.success(CategorizeAppsResponse(false))
                       }
                   } recover {
-                    case _ => promise.complete(Success(CategorizeAppsResponse(false)))
+                    case _ => promise.success(CategorizeAppsResponse(false))
                   }
-                }).getOrElse(promise.complete(Success(CategorizeAppsResponse(false))))
+                }).getOrElse(promise.success(CategorizeAppsResponse(false)))
             }
         }
         promise.future

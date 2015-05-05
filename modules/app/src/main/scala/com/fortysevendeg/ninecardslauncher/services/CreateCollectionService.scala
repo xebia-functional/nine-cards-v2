@@ -143,10 +143,7 @@ class CreateCollectionService
   }
 
   private def createCollectionFromDevice(device: UserConfigDevice) = {
-    val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections) map {
-      insert =>
-        repositoryServices.insertCollection(insert)
-    }
+    val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections) map repositoryServices.insertCollection
     insertFuturesInDB(insertFutures)
   }
 

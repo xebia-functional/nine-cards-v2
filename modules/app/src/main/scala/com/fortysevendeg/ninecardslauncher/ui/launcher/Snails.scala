@@ -7,8 +7,6 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{AppContext, Snail}
 
 import scala.concurrent.Promise
-import scala.util.Success
-
 object Snails {
 
   def pagerAppear(implicit appContext: AppContext): Snail[View] = Snail[View] {
@@ -24,7 +22,7 @@ object Snails {
         override def onAnimationEnd(animation: Animator) {
           super.onAnimationEnd(animation)
           view.setLayerType(View.LAYER_TYPE_NONE, null)
-          animPromise.complete(Success(()))
+          animPromise.success()
         }
       }).start()
       animPromise.future

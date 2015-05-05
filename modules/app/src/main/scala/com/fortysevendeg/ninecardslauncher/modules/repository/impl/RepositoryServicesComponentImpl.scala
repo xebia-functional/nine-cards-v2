@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher.modules.repository._
 import com.fortysevendeg.ninecardslauncher.repository._
 
 import scala.concurrent.{Future, Promise, ExecutionContext}
-import scala.util.Success
 
 trait RepositoryServicesComponentImpl
   extends RepositoryServicesComponent {
@@ -40,12 +39,12 @@ trait RepositoryServicesComponentImpl
             }
             Future.sequence(futures) map {
               collections =>
-                promise.complete(Success(GetCollectionsResponse(collections)))
+                promise.success(GetCollectionsResponse(collections))
             } recover {
-              case _ => promise.complete(Success(GetCollectionsResponse(Seq.empty)))
+              case _ => promise.success(GetCollectionsResponse(Seq.empty))
             }
         } recover {
-          case _ => promise.complete(Success(GetCollectionsResponse(Seq.empty)))
+          case _ => promise.success(GetCollectionsResponse(Seq.empty))
         }
         promise.future
       }
@@ -84,13 +83,13 @@ trait RepositoryServicesComponentImpl
                   card =>
                     addCard(toAddCardRequest(collection.id, card))
                 }
-                Future.sequence(futures) map (p => promise.complete(Success(InsertCollectionResponse(true)))) recover {
-                  case _ => promise.complete(Success(InsertCollectionResponse(false)))
+                Future.sequence(futures) map (p => promise.success(InsertCollectionResponse(true))) recover {
+                  case _ => promise.success(InsertCollectionResponse(false))
                 }
               }
-            } getOrElse promise.complete(Success(InsertCollectionResponse(true)))
+            } getOrElse promise.success(InsertCollectionResponse(true))
         } recover {
-          case _ => promise.complete(Success(InsertCollectionResponse(false)))
+          case _ => promise.success(InsertCollectionResponse(false))
         }
 
         promise.future
