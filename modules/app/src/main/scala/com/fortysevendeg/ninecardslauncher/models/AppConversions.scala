@@ -22,29 +22,6 @@ trait AppConversions {
       intent = appItem.intent,
       `type` = App)
 
-  def toCartItemFromUserConfigSeq(items: Seq[UserConfigCollectionItem]): Seq[CardItem] =
-    items.zipWithIndex.map (zipped => toCardItem(zipped._1, zipped._2)).flatten
-
-  def toCardItem(item: UserConfigCollectionItem, pos: Int): Option[CardItem] = {
-    // TODO We only are working with apps for now
-    val packageName = item.itemType match {
-      case App =>
-        item.metadata.extractPackageName()
-      case _ => None
-    }
-    packageName map {
-      pn =>
-        val writes = Json.writes[NineCardIntent]
-        CardItem(
-          position = pos,
-          packageName = Option(pn),
-          term = item.title,
-          imagePath = imageServices.getPath(pn),
-          intent = Json.toJson(item.metadata)(writes).toString(),
-          `type` = App)
-    }
-  }
-
   def toInsertCollectionRequestFromUserConfigSeq(items: Seq[UserConfigCollection]): Seq[InsertCollectionRequest] =
     items.zipWithIndex.map (zipped => toInsertCollectionRequest(zipped._1, zipped._2))
 
@@ -62,6 +39,30 @@ trait AppConversions {
       sharedCollectionId = userConfigCollection.sharedCollectionId,
       sharedCollectionSubscribed = userConfigCollection.sharedCollectionSubscribed,
       cards = toCartItemFromUserConfigSeq(userConfigCollection.items))
+  }
+
+  def toCartItemFromUserConfigSeq(items: Seq[UserConfigCollectionItem]): Seq[CardItem] =
+    items.zipWithIndex.map (zipped => toCardItem(zipped._1, zipped._2)).flatten
+
+  def toCardItem(item: UserConfigCollectionItem, pos: Int): Option[CardItem] = {
+    // TODO We only are working with apps for now
+    item.itemType match {
+      case App =>
+        for {
+          packageName <- item.metadata.extractPackageName()
+          className <- item.metadata.extractClassName()
+        } yield {
+          val writes = Json.writes[NineCardIntent]
+          CardItem(
+            position = pos,
+            packageName = Option(packageName),
+            term = item.title,
+            imagePath = imageServices.getImagePath(packageName, className),
+            intent = Json.toJson(item.metadata)(writes).toString(),
+            `type` = App)
+        }
+      case _ => None
+    }
   }
 
 }

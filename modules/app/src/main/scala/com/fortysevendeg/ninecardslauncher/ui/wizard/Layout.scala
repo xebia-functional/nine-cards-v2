@@ -59,7 +59,7 @@ trait Layout
         w[Button] <~ actionButtonStyle <~ wire(deviceAction) <~ tvText(R.string.buttonContinue)
       ) <~ contentStyle <~ wire(deviceRootLayout) <~ vGone,
       l[LinearLayout](
-        w[TextView] <~ endMessageStyle <~ tvText("WIZARD HERE"),
+        w[TextView] <~ endMessageStyle <~ tvText("We are working in Wizard. Please, you should wait that the icon disappear in Notification Bar before to press the button"),
         w[Button] <~ actionButtonStyle <~ wire(finishAction) <~ tvText(R.string.goTo9Cards)
       ) <~ contentStyle <~ wire(wizardRootLayout) <~ vGone
     ) <~ rootStyle

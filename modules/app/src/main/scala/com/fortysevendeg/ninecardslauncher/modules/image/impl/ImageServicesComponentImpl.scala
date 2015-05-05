@@ -76,7 +76,6 @@ trait ImageServicesComponentImpl
       }
     }
 
-
     def createAppBitmap(term: String, info: ResolveInfo): String = {
       val packageName: String = info.activityInfo.applicationInfo.packageName
       val filename: String = convertToFilename(info.activityInfo)
@@ -100,7 +99,11 @@ trait ImageServicesComponentImpl
       }
     }
 
-    def createDefaultBitmap(text: String): Bitmap = {
+    override def getImagePath(packageName: String, className: String): String = getPath(convertToFilename(packageName, className))
+
+    override def getPath(filename: String): String = String.format("%s/%s", cacheDir.getPath, filename)
+
+    private def createDefaultBitmap(text: String): Bitmap = {
       val bitmap: Bitmap = Bitmap.createBitmap(defaultSize, defaultSize, Bitmap.Config.RGB_565)
       val bounds: Rect = new Rect
       paint.getTextBounds(text, 0, text.length, bounds)
@@ -112,13 +115,11 @@ trait ImageServicesComponentImpl
       bitmap
     }
 
-    def convertToFilename(activityInfo: ActivityInfo): String = {
-      String.format("%s_%s", activityInfo.applicationInfo.packageName.toLowerCase.replace(".", "_"), activityInfo.name.toLowerCase.replace(".", "_"))
-    }
+    private def convertToFilename(packageName: String, className: String): String =
+      String.format("%s_%s", packageName.toLowerCase.replace(".", "_"), className.toLowerCase.replace(".", "_"))
 
-    def getPath(filename: String): String = {
-      String.format("%s/%s", cacheDir.getPath, filename)
-    }
+    private def convertToFilename(activityInfo: ActivityInfo): String =
+      convertToFilename(activityInfo.applicationInfo.packageName, activityInfo.name)
 
     private def getBestBitmapForApp(packageName: String, icon: Int): Option[Bitmap] = {
       def getBitmap(ic: Int): Option[Bitmap] = {

@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager
 
+import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.models.AppItem
 
 case class GetAppsRequest()
