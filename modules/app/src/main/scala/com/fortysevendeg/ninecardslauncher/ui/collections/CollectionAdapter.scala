@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.ui.collections
 
+import java.io.File
+
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.View.OnClickListener
@@ -8,6 +10,8 @@ import com.fortysevendeg.ninecardslauncher.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageFragmentTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{Ui, ActivityContext, AppContext}
 import CollectionAdapter._
@@ -31,7 +35,13 @@ class CollectionAdapter(collection: Collection, heightCard: Int, listener: Colle
 
   override def onBindViewHolder(viewHolder: ViewHolderCollectionAdapter, position: Int): Unit = {
     val card = collection.cards(position)
-    runUi((viewHolder.icon <~ ivUri(fragment, card.imagePath)) ~
+    runUi((viewHolder.icon <~ (
+      if (new File(card.imagePath).exists()) {
+        ivUri(fragment, card.imagePath)
+      } else {
+        ivSrc(R.drawable.ic_launcher) // TODO Create a new icon when the imagePath don't exist
+      }
+      )) ~
       (viewHolder.name <~ tvText(card.term)) ~
       (viewHolder.content <~ vTag(position.toString)))
   }
