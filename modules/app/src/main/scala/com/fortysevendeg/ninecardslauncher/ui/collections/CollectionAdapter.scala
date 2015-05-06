@@ -20,7 +20,6 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.View.OnClickListener
 import android.view.{View, ViewGroup}
-import com.fortysevendeg.ninecardslauncher.di.DependencyInjector
 import com.fortysevendeg.ninecardslauncher.modules.repository.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageFragmentTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -33,7 +32,7 @@ class CollectionAdapter(
     collection: Collection,
     heightCard: Int,
     listener: CollectionListener)
-    (implicit context: ActivityContext, appContext: AppContext, fragment: Fragment, di: DependencyInjector)
+    (implicit context: ActivityContext, appContext: AppContext, fragment: Fragment)
     extends RecyclerView.Adapter[ViewHolderCollectionAdapter] {
 
   override def onCreateViewHolder(parentViewGroup: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {

@@ -9,21 +9,19 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.di.FragmentInjectorProvider
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
+import com.fortysevendeg.ninecardslauncher.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{AppContext, Contexts, Tweak, Ui}
-import CollectionFragment._
 
 class CollectionFragment
   extends Fragment
   with Contexts[Fragment]
   with CollectionFragmentLayout
-  with ComponentRegistryImpl
-  with FragmentInjectorProvider {
+  with ComponentRegistryImpl {
 
   override implicit lazy val appContextProvider: AppContext = fragmentAppContext
 

@@ -1,11 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
-import android.app.{Application, Activity}
+import android.app.{Activity, Application}
 import android.os.Bundle
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.di.ActivityInjectorProvider
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.{AppItem, GetAppsRequest}
 import com.fortysevendeg.ninecardslauncher.modules.repository.GetCollectionsRequest
@@ -22,8 +21,7 @@ class LauncherActivity
   extends Activity
   with Contexts[Activity]
   with Layout
-  with ComponentRegistryImpl
-  with ActivityInjectorProvider {
+  with ComponentRegistryImpl {
 
   implicit lazy val applicationProvider: Application = getApplication
 

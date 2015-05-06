@@ -1,16 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
-import android.app.Application
 import android.content.Intent
 import android.speech.RecognizerIntent
 import android.widget.{FrameLayout, ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.di.{DependencyInjector, InjectorProvider}
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import macroid.FullDsl._
 import macroid._
-import com.fortysevendeg.ninecardslauncher.ui.launcher.LauncherWorkSpacesTweaks._
 
 import scala.util.Try
 
@@ -23,7 +20,7 @@ trait Layout
 
   var pager = slot[LinearLayout]
 
-  def content(implicit appContext: AppContext, context: ActivityContext, di: DependencyInjector) = getUi(
+  def content(implicit appContext: AppContext, context: ActivityContext) = getUi(
     l[LinearLayout](
       l[LinearLayout](
         w[TintableImageView] <~ burgerButtonStyle <~ On.click(
@@ -46,7 +43,7 @@ trait Layout
           }
         )
       ) <~ searchContentStyle,
-      l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces) <~ lwsDi(di),
+      l[LauncherWorkSpaces]() <~ workspaceStyle <~ wire(workspaces),
       l[LinearLayout]() <~ paginationContentStyle <~ wire(pager),
       l[LinearLayout](
         l[FrameLayout](

@@ -4,7 +4,6 @@ import android.support.v4.view.ViewPager
 import android.support.v7.widget.{CardView, RecyclerView, Toolbar}
 import android.view.ContextThemeWrapper
 import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
-import com.fortysevendeg.ninecardslauncher.di.{DependencyInjector, InjectorProvider}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher2.R
@@ -14,8 +13,6 @@ import macroid.{ActivityContext, AppContext, IdGeneration, Ui}
 trait Layout
   extends Styles
   with IdGeneration {
-
-  self: InjectorProvider =>
 
   var toolbar = slot[Toolbar]
 
@@ -61,7 +58,7 @@ trait CollectionFragmentLayout
 
 class CollectionLayoutAdapter(
     heightCard: Int)
-    (implicit context: ActivityContext, appContext: AppContext, di: DependencyInjector)
+    (implicit context: ActivityContext, appContext: AppContext)
   extends CollectionAdapterStyles
   with ComponentRegistryImpl {
 

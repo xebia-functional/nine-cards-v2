@@ -14,8 +14,8 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.di.DependencyInjector
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
+import com.fortysevendeg.ninecardslauncher.modules.theme.ThemeUtils._
 import com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
@@ -25,13 +25,13 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContext, AppContext, Tweak, Ui}
 
-class LauncherWorkSpaceCollectionsHolder(dependencyInjector: Option[DependencyInjector], parentDimen: Dimen)(implicit appContext: AppContext, activityContext: ActivityContext)
+class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit appContext: AppContext, activityContext: ActivityContext)
   extends LauncherWorkSpaceHolder
   with CollectionsGroupStyle {
 
   var grid = slot[GridLayout]
 
-  val views = 0 until NumSpaces map (new CollectionItem(dependencyInjector, _))
+  val views = 0 until NumSpaces map (new CollectionItem(_))
 
   addView(getUi(l[GridLayout]() <~ wire(grid) <~ collectionGridStyle))
 
@@ -59,7 +59,7 @@ class LauncherWorkSpaceCollectionsHolder(dependencyInjector: Option[DependencyIn
   }
 }
 
-class CollectionItem(dependencyInjector: Option[DependencyInjector], position: Int)(implicit appContext: AppContext, activityContext: ActivityContext)
+class CollectionItem(position: Int)(implicit appContext: AppContext, activityContext: ActivityContext)
   extends FrameLayout(activityContext.get)
   with CollectionItemStyle {
 
@@ -102,7 +102,7 @@ class CollectionItem(dependencyInjector: Option[DependencyInjector], position: I
   }
 
   private def createBackground(indexColor: Int): Drawable = {
-    val color = dependencyInjector map (di => resGetColor(di.persistentServices.getIndexColor(indexColor))) getOrElse 0
+    val color = resGetColor(getIndexColor(indexColor))
 
     Lollipop ifSupportedThen {
       new RippleDrawable(

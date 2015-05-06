@@ -1,12 +1,10 @@
 package com.fortysevendeg.ninecardslauncher
 
-import android.content.Context
 import android.app.Application
-import com.fortysevendeg.ninecardslauncher.di.DependencyInjector
+import android.content.Context
 
 class NineCardsApplication
-    extends Application
-    with DependencyInjector {
+    extends Application {
 
   override def attachBaseContext(base: Context): Unit = {
     super.attachBaseContext(base)
