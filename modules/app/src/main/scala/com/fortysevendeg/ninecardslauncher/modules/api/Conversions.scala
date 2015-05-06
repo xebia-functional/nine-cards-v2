@@ -274,15 +274,6 @@ trait Conversions {
       metadata = Json.parse("{\"name\": \"test\"}"), //fromNineCardIntent(collectionItem.metadata),
       categories = collectionItem.categories)
 
-  //  def fromNineCardIntent(apiIntent: NineCardIntent): apiModel.NineCardIntent =
-  //    apiModel.NineCardIntent(
-  //      action = apiIntent.action,
-  //      className = apiIntent.className,
-  //      packageName = apiIntent.packageName,
-  //      dataExtra = apiIntent.dataExtra,
-  //      intentExtras = Some(apiIntent.intentExtras),
-  //      categories = apiIntent.categories)
-
   def fromUserConfigGeoInfo(apiGeoInfo: UserConfigGeoInfo): apiModel.UserConfigGeoInfo =
     apiModel.UserConfigGeoInfo(
       homeMorning = apiGeoInfo.homeMorning map fromUserConfigUserLocation,
