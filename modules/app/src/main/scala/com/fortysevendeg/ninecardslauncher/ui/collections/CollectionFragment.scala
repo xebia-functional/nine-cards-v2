@@ -60,10 +60,7 @@ class CollectionFragment
 
   def loadCollection(collection: Collection, heightCard: Int): Ui[_] = {
     val adapter = new CollectionAdapter(collection, heightCard, card => Ui {
-      card.intent.createIntentForApp().map {
-        intent =>
-          appContextProvider.get.startActivity(intent)
-      }
+      card.intent.execute
     })
     (recyclerView <~ rvLayoutManager(layoutManager) <~
       rvFixedSize <~

@@ -5,6 +5,7 @@
     <string name="make_public">Hacer Pública</string>
     <string name="share">Compartir</string>
     <string name="loading">Cargando</string>
+    <string name="contactUsError">Opps! Por favor contacta con nosotros si este problema persiste</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continuar</string>

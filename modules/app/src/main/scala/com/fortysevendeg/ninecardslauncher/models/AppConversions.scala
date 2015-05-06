@@ -52,7 +52,7 @@ trait AppConversions {
           packageName <- item.metadata.extractPackageName()
           className <- item.metadata.extractClassName()
         } yield {
-          val writes = Json.writes[NineCardIntent]
+          import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
           val imagePath = packagesNotInstalled find(_ == packageName) map
             imageServices.getPath getOrElse
             imageServices.getImagePath(packageName, className)
@@ -61,7 +61,7 @@ trait AppConversions {
             packageName = Option(packageName),
             term = item.title,
             imagePath = imagePath,
-            intent = Json.toJson(item.metadata)(writes).toString(),
+            intent = Json.toJson(item.metadata).toString(),
             `type` = App)
         }
       case _ => None

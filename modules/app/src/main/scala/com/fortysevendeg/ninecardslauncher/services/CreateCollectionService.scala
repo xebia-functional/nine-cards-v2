@@ -66,6 +66,10 @@ class CreateCollectionService
           logD"Categorize apps doesn't work"("9CARDS")
           closeService()
         }
+    } recover {
+      case _ =>
+        logD"Categorize apps doesn't work (async task)"("9CARDS")
+        closeService()
     }
 
     super.onStartCommand(intent, flags, startId)
@@ -145,7 +149,7 @@ class CreateCollectionService
   private def createCollectionFromDevice(device: UserConfigDevice) = {
     // Store the icons for the apps not installed from internet
     val intents = device.collections flatMap (_.items map (_.metadata))
-    appManagerServices.createBirmapForNoPackagesInstalled(IntentsRequest(intents)) map {
+    appManagerServices.createBitmapsForNoPackagesInstalled(IntentsRequest(intents)) map {
       response =>
         // Save collection in repository
         val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections, response.packages) map repositoryServices.insertCollection

@@ -120,8 +120,6 @@ object NineCardsIntent {
   val OpenSms: String = "com.fortysevendeg.ninecardslauncher.OPEN_SMS"
   val OpenPhone: String = "com.fortysevendeg.ninecardslauncher.OPEN_PHONE"
   val OpenEmail: String = "com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"
-  val OpenGoPro: String = "com.fortysevendeg.ninecardslauncher.OPEN_GO_PRO"
-  val OpenGetItFree: String = "com.fortysevendeg.ninecardslauncher.OPEN_GET_IT_FREE"
 }
 
 object ImageResourceNamed {

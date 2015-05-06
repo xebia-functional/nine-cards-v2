@@ -50,18 +50,18 @@ trait AppManagerServicesComponentImpl
               )
               val intent = new NineCardIntent(extras)
               intent.setAction(OpenApp)
-              val writes = Json.writes[NineCardIntent]
+              import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
               AppItem(
                 name = name,
                 packageName = resolveInfo.activityInfo.applicationInfo.packageName,
                 imagePath = imageServices.createAppBitmap(name, resolveInfo),
-                intent = Json.toJson(intent)(writes).toString())
+                intent = Json.toJson(intent).toString())
           }
 
           GetAppsResponse(appitems)
         }
 
-    override def createBirmapForNoPackagesInstalled: Service[IntentsRequest, PackagesResponse] =
+    override def createBitmapsForNoPackagesInstalled: Service[IntentsRequest, PackagesResponse] =
       request => {
         val promise = Promise[PackagesResponse]()
         val packagesNoFound = (request.intents map {
@@ -160,6 +160,8 @@ trait AppManagerServicesComponentImpl
                   }
                 }).getOrElse(promise.success(CategorizeAppsResponse(false)))
             }
+        } recover {
+          case _ => promise.success(CategorizeAppsResponse(false))
         }
         promise.future
       }

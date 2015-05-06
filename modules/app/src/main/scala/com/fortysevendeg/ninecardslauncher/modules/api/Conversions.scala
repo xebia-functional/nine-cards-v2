@@ -207,8 +207,8 @@ trait Conversions {
       categories = apiCollectionItem.categories)
 
   def toNineCardIntent(jsValue: JsValue): NineCardIntent = {
-    val reads = Json.reads[NineCardIntent]
-    jsValue.as[NineCardIntent](reads)
+    import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
+    jsValue.as[NineCardIntent]
   }
 
   def toUserConfigGeoInfo(apiGeoInfo: apiModel.UserConfigGeoInfo): UserConfigGeoInfo =

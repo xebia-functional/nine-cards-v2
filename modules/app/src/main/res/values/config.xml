@@ -9,4 +9,8 @@
     <!-- Google -->
     <string name="client_client_id">${google_client_id}</string>
     <string name="oauth_scopes">${google_oauth_scopes}</string>
+
+    <!-- Google Play -->
+    <string name="google_play_url">http://play.google.com/store/apps/details?id=%1$s</string>
+
 </resources>
