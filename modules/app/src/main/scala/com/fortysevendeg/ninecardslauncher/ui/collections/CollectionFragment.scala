@@ -11,11 +11,11 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
+import com.fortysevendeg.ninecardslauncher.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{AppContext, Contexts, Tweak, Ui}
-import CollectionFragment._
 
 class CollectionFragment
   extends Fragment
@@ -59,7 +59,10 @@ class CollectionFragment
   }
 
   def loadCollection(collection: Collection, heightCard: Int): Ui[_] = {
-    val adapter = new CollectionAdapter(collection, heightCard, card => uiShortToast(card.term))
+    val adapter = new CollectionAdapter(
+      collection,
+      heightCard,
+      card => uiShortToast(card.term))
     (recyclerView <~ rvLayoutManager(layoutManager) <~
       rvFixedSize <~
       rvAddItemDecoration(new CollectionItemDecorator) <~

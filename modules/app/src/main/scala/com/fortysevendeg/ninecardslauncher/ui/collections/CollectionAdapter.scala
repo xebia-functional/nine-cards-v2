@@ -28,7 +28,10 @@ import macroid.FullDsl._
 import macroid.{Ui, ActivityContext, AppContext}
 import CollectionAdapter._
 
-class CollectionAdapter(collection: Collection, heightCard: Int, listener: CollectionListener)
+class CollectionAdapter(
+    collection: Collection,
+    heightCard: Int,
+    listener: CollectionListener)
     (implicit context: ActivityContext, appContext: AppContext, fragment: Fragment)
     extends RecyclerView.Adapter[ViewHolderCollectionAdapter] {
 

@@ -1,19 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.ui.launcher
 
-import android.app.Activity
+import android.app.{Activity, Application}
 import android.os.Bundle
 import android.widget.ImageView
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.{AppItem, GetAppsRequest}
 import com.fortysevendeg.ninecardslauncher.modules.repository.GetCollectionsRequest
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.launcher.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{Ui, AppContext, Contexts, Transformer}
-import Snails._
+import macroid.{AppContext, Contexts, Transformer, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -22,6 +22,8 @@ class LauncherActivity
   with Contexts[Activity]
   with Layout
   with ComponentRegistryImpl {
+
+  implicit lazy val applicationProvider: Application = getApplication
 
   override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
 

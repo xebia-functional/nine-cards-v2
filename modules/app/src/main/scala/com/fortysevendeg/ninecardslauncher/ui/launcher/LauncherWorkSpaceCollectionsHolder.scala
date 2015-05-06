@@ -14,13 +14,13 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
+import com.fortysevendeg.ninecardslauncher.modules.theme.ThemeUtils._
 import com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.ui.components.Dimen
 import com.fortysevendeg.ninecardslauncher.ui.launcher.CollectionItemTweaks._
-import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContext, AppContext, Tweak, Ui}
@@ -57,15 +57,11 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit appContext
       }
     Ui.sequence(uiSeq: _*)
   }
-
 }
 
 class CollectionItem(position: Int)(implicit appContext: AppContext, activityContext: ActivityContext)
   extends FrameLayout(activityContext.get)
-  with CollectionItemStyle
-  with ComponentRegistryImpl {
-
-  override val appContextProvider: AppContext = appContext
+  with CollectionItemStyle {
 
   var collection: Option[Collection] = None
 
@@ -106,7 +102,7 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
   }
 
   private def createBackground(indexColor: Int): Drawable = {
-    val color = resGetColor(persistentServices.getIndexColor(indexColor))
+    val color = resGetColor(getIndexColor(indexColor))
 
     Lollipop ifSupportedThen {
       new RippleDrawable(

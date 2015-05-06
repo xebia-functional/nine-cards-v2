@@ -6,19 +6,19 @@ import android.graphics.drawable._
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.{CardView, RecyclerView, Toolbar}
 import android.text.TextUtils.TruncateAt
-import android.view.{View, Gravity, ViewGroup}
+import android.view.{Gravity, View, ViewGroup}
 import android.widget.ImageView.ScaleType
 import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
+import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
@@ -26,14 +26,14 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{AppContext, Tweak}
 
-trait Styles {
+trait Styles extends Module {
 
-  self: PersistentServicesComponent =>
+  def theme(implicit appContext: AppContext) = persistentServices.theme
 
   def rootStyle(implicit appContext: AppContext): Tweak[FrameLayout] =
     vMatchParent +
       vFitsSystemWindows(true) +
-      vBackgroundColor(persistentServices.getCollectionDetailBackgroundColor)
+      vBackgroundColor(theme.collectionDetailBackgroundColor)
 
   def toolbarStyle(implicit appContext: AppContext): Tweak[Toolbar] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details)) +
@@ -64,8 +64,8 @@ trait Styles {
   def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tabs_collection_details)) +
       flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_tabs_collection_details)) +
-      stlDefaultTextColor(persistentServices.getCollectionDetailTextTabDefaultColor) +
-      stlSelectedTextColor(persistentServices.getCollectionDetailTextTabSelectedColor) +
+      stlDefaultTextColor(theme.collectionDetailTextTabDefaultColor) +
+      stlSelectedTextColor(theme.collectionDetailTextTabSelectedColor) +
       elevation
 
   def viewPagerStyle(implicit appContext: AppContext): Tweak[ViewPager] =
@@ -93,17 +93,17 @@ trait CollectionFragmentStyles {
 
 }
 
-trait CollectionAdapterStyles {
+trait CollectionAdapterStyles extends Module {
 
-  self: PersistentServicesComponent =>
+  def theme(implicit appContext: AppContext) = persistentServices.theme
 
   def rootStyle(heightCard: Int)(implicit appContext: AppContext): Tweak[CardView] =
     vContentSizeMatchWidth(heightCard) +
-      cvCardBackgroundColor(persistentServices.getCollectionDetailCardBackgroundColor) +
+      cvCardBackgroundColor(theme.collectionDetailCardBackgroundColor) +
       flForeground(createBackground)
 
   private def createBackground(implicit appContext: AppContext): Drawable = {
-    val color = persistentServices.getCollectionDetailCardBackgroundPressedColor
+    val color = theme.collectionDetailCardBackgroundPressedColor
     Lollipop ifSupportedThen {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),
@@ -131,7 +131,7 @@ trait CollectionAdapterStyles {
   def nameStyle(implicit appContext: AppContext): Tweak[TextView] =
     vMatchWidth +
       vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_default)) +
-      tvColor(persistentServices.getCollectionDetailTextCardColor) +
+      tvColor(theme.collectionDetailTextCardColor) +
       tvLines(2) +
       tvSizeResource(R.dimen.text_default) +
       tvEllipsize(TruncateAt.END)

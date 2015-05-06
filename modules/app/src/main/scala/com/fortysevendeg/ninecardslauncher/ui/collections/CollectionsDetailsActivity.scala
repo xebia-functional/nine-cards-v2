@@ -13,6 +13,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
 import com.fortysevendeg.ninecardslauncher.modules.repository.{Collection, GetCollectionsRequest, GetCollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.modules.theme.ThemeUtils._
 import com.fortysevendeg.ninecardslauncher.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
@@ -138,8 +139,7 @@ object ScrollType {
   val Down = 1
 }
 
-class OnPageChangeCollectionsListener(
-                                       collections: Seq[Collection],
+class OnPageChangeCollectionsListener(collections: Seq[Collection],
                                        updateToolbarColor: Int => Ui[_],
                                        updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
   extends OnPageChangeListener
@@ -156,8 +156,8 @@ class OnPageChangeCollectionsListener(
     val nextCollection: Option[Collection] = collections.lift(position + 1)
     nextCollection map {
       next =>
-        val startColor = resGetColor(persistentServices.getIndexColor(selectedCollection.themedColorIndex))
-        val endColor = resGetColor(persistentServices.getIndexColor(next.themedColorIndex))
+        val startColor = resGetColor(getIndexColor(selectedCollection.themedColorIndex))
+        val endColor = resGetColor(getIndexColor(next.themedColorIndex))
         val color = interpolateColors(positionOffset, startColor, endColor)
         runUi(updateToolbarColor(color))
     }
