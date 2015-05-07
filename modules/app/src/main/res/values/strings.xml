@@ -1,7 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources
+        xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
     <string name="app_name">9 Cards 2.0</string>
     <string name="edit">Edit</string>
     <string name="make_public">Make Public</string>
     <string name="share">Share</string>
+    <string name="loading">Loading</string>
+    <string name="contactUsError">Oops! Please contact us if this problem persists</string>
+
+    <!-- Wizard -->
+    <string name="buttonContinue">Continue</string>
+    <string name="welcome">Welcome to <xliff:g id="app_name">9 Cards</xliff:g></string>
+    <string name="welcomeMessage">Please select an account so you can begin your <xliff:g id="app_name">9 Cards</xliff:g> experience:</string>
+
+    <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g></string>
+    <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
+
+    <string name="deviceDetectedNoProUser">We have detected a saved configuration for your <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g>. If you are PRO User you can load your previous collections and themes. Would you like to upgrade now?</string>
+
+    <string name="canceledGooglePermission">The Android Market permission is required in order to use <xliff:g id="app_name">9 Cards</xliff:g></string>
+
+    <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
+    <string name="goTo9Cards">Dive in!</string>
+    <string name="workingNotificationTitle">Categorizing your apps</string>
+
+    <string name="loadingYourAppsMessage">Analyzing your apps, check out our tutorial while you wait</string>
+    <string name="downloadingAppsInfoMessage">Categorizing your apps</string>
+    <string name="loadingUserConfigMessage">Loading available configurations</string>
+    <string name="loadingFromDeviceMessage">Synchronizing your device configuration</string>
+    <string name="loadingForMyDeviceMessage">Generating a new device configuration</string>
+
+    <string name="downloadingBitmapsMessage">Downloading images for apps</string>
+    <string name="savingConfigurationMessage">Saving configuration to our servers</string>
+
+    <string name="creatingCollectionError">We could not create your collections at this time. Please try again later</string>
+
+    <string name="loadUserConfigDeviceReplace">Replace <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g> with a new configuration</string>
+    <string name="deviceNotFoundMessage">This device is not associated with your account. Please log in</string>
+
+    <!-- Categories -->
+
+    <string name="all_categories">Any Category</string>
+    <string name="all_apps">All Apps</string>
+    <string name="misc">Misc</string>
+
+    <string name="apps">Apps</string>
+    <string name="game">Games</string>
+    <string name="books_and_reference">Books And Reference</string>
+    <string name="business">Business</string>
+    <string name="comics">Comics</string>
+    <string name="communication">Communication</string>
+    <string name="education">Education</string>
+    <string name="entertainment">Entertainment</string>
+    <string name="finance">Finance</string>
+    <string name="health_and_fitness">Health and Fitness</string>
+    <string name="libraries_and_demo">Libraries and Demo</string>
+    <string name="lifestyle">Lifestyle</string>
+    <string name="app_wallpaper">Live Wallpaper</string>
+    <string name="media_and_video">Media and Video</string>
+    <string name="medical">Medical</string>
+    <string name="music_and_audio">Music and Audio</string>
+    <string name="news_and_magazines">News and Magazines</string>
+    <string name="personalization">Customization</string>
+    <string name="photography">Photography</string>
+    <string name="productivity">Productivity</string>
+    <string name="shopping">Shopping</string>
+    <string name="social">Social</string>
+    <string name="sports">Sports</string>
+    <string name="tools">Tools</string>
+    <string name="transportation">Transportation</string>
+    <string name="travel_and_local">Travel and Local</string>
+    <string name="weather">Weather</string>
+    <string name="widgets">Widgets</string>
+
+    <string name="game_action">Action</string>
+    <string name="game_adventure">Adventure</string>
+    <string name="game_arcade">Arcade</string>
+    <string name="game_board">Board</string>
+    <string name="game_card">Card</string>
+    <string name="game_casino">Casino</string>
+    <string name="game_casual">Casual</string>
+    <string name="game_educational">Educational</string>
+    <string name="game_family">Family</string>
+    <string name="game_wallpaper">Live Wallpaper Games</string>
+    <string name="game_music">Music</string>
+    <string name="game_puzzle">Puzzle</string>
+    <string name="game_racing">Racing</string>
+    <string name="game_role_playing">Role Playing</string>
+    <string name="game_simulation">Simulation</string>
+    <string name="game_sports">Sports Games</string>
+    <string name="game_strategy">Strategy</string>
+    <string name="game_trivia">Trivia</string>
+    <string name="game_widgets">Widgets Games</string>
+    <string name="game_word">Word</string>
+
 </resources>

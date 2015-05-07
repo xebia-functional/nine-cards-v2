@@ -4,6 +4,20 @@ import com.fortysevendeg.ninecardslauncher.commons.Service
 
 trait ApiServices {
 
+  def login: Service[LoginRequest, LoginResponse]
+
+  def linkGoogleAccount: Service[LinkGoogleAccountRequest, LoginResponse]
+
+  def createInstallation: Service[InstallationRequest, InstallationResponse]
+
+  def updateInstallation: Service[InstallationRequest, UpdateInstallationResponse]
+
+  def googlePlayPackage: Service[GooglePlayPackageRequest, GooglePlayPackageResponse]
+
+  def googlePlayPackages: Service[GooglePlayPackagesRequest, GooglePlayPackagesResponse]
+
+  def googlePlaySimplePackages: Service[GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse]
+
   def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse]
 
   def saveDevice: Service[SaveDeviceRequest, SaveDeviceResponse]

@@ -39,7 +39,7 @@ trait CollectionRepositoryClient
           contentValues.put(Constrains, request.data.constrains getOrElse "")
           contentValues.put(OriginalSharedCollectionId, request.data.originalSharedCollectionId getOrElse "")
           contentValues.put(SharedCollectionId, request.data.sharedCollectionId getOrElse "")
-          contentValues.put(SharedCollectionSubscribed, request.data.sharedCollectionSubscribed)
+          contentValues.put(SharedCollectionSubscribed, request.data.sharedCollectionSubscribed getOrElse false)
 
           val uri = contentResolver.insert(
             ContentUriCollection,
@@ -123,7 +123,7 @@ trait CollectionRepositoryClient
           contentValues.put(Constrains, request.collection.data.constrains getOrElse "")
           contentValues.put(OriginalSharedCollectionId, request.collection.data.originalSharedCollectionId getOrElse "")
           contentValues.put(SharedCollectionId, request.collection.data.sharedCollectionId getOrElse "")
-          contentValues.put(SharedCollectionSubscribed, request.collection.data.sharedCollectionSubscribed)
+          contentValues.put(SharedCollectionSubscribed, request.collection.data.sharedCollectionSubscribed getOrElse false)
 
           contentResolver.update(
             withAppendedPath(ContentUriCollection, request.collection.id.toString),

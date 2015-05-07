@@ -12,6 +12,7 @@ object AsyncImageApplicationTweaks {
     imageView => {
       Glide.`with`(appContext.get)
         .load(uri)
+        .crossFade()
         .into(imageView)
     }
   )
@@ -25,6 +26,7 @@ object AsyncImageActivityTweaks {
     imageView => {
       Glide.`with`(activityContext.get)
         .load(uri)
+        .crossFade()
         .into(imageView)
     }
   )
@@ -38,6 +40,7 @@ object AsyncImageFragmentTweaks {
     imageView => {
       Glide.`with`(fragment)
         .load(uri)
+        .crossFade()
         .into(imageView)
     }
   )

@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{AppContext, Snail}
 
 import scala.concurrent.Promise
-import scala.util.Success
 
 object Snails {
 
@@ -29,7 +28,7 @@ object Snails {
               super.onAnimationEnd(animation)
               view.setRotation(0)
               view.setLayerType(View.LAYER_TYPE_NONE, null)
-              animPromise.complete(Success(()))
+              animPromise.success()
             }
           }).start()
         }
