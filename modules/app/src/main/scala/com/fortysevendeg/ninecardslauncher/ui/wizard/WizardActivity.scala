@@ -88,7 +88,7 @@ class WizardActivity
     case i: RadioButton if i.isChecked =>
       val tag = i.getTag.toString
       (if (tag == NewConfigurationKey) {
-        launchService(None)
+        launchService()
       } else {
         launchService(Option(tag))
       }) ~ showWizard
@@ -140,7 +140,7 @@ class WizardActivity
       (wizardRootLayout <~ vGone) ~
       (deviceRootLayout <~ vVisible)
 
-  private def launchService(maybeKey: Option[String]) = Ui {
+  private def launchService(maybeKey: Option[String] = None) = Ui {
     val intent = new Intent(self, classOf[CreateCollectionService])
     maybeKey map (key => intent.putExtra(CreateCollectionService.KeyDevice, key))
     self.startService(intent)
