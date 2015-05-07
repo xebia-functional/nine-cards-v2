@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 
 import android.content.Intent
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.macroid.extras.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.models.{NineCardIntent, AppItem}
 import com.fortysevendeg.ninecardslauncher.modules.api.{GooglePlayPackagesRequest, ApiServicesComponent, GooglePlaySimplePackagesRequest}
@@ -19,7 +19,7 @@ import play.api.libs.json._
 trait AppManagerServicesComponentImpl
   extends AppManagerServicesComponent {
 
-  self: AppContextProvider
+  self: ContextWrapperProvider
     with ImageServicesComponent
     with RepositoryServicesComponent
     with UserServicesComponent
@@ -30,7 +30,7 @@ trait AppManagerServicesComponentImpl
   class AppManagerServicesImpl
     extends AppManagerServices {
 
-    val packageManager = appContextProvider.get.getPackageManager
+    val packageManager = contextProvider.application.getPackageManager
 
     override def getApps: Service[GetAppsRequest, GetAppsResponse] =
       request =>

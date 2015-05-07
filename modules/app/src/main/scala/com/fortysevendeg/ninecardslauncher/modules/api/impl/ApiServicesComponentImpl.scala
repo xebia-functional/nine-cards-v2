@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.api.impl
 
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.macroid.extras.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.api.NineCardsServiceClient
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
 import com.fortysevendeg.ninecardslauncher.commons.Service
@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
 trait ApiServicesComponentImpl
   extends ApiServicesComponent {
 
-  self: AppContextProvider =>
+  self: ContextWrapperProvider =>
 
   lazy val apiServices = new ApiServicesImpl
 
@@ -146,7 +146,7 @@ trait ApiServicesComponentImpl
               createHeader(request.deviceId, request.token))
           } yield TesterResponse(response.statusCode, response.data map toUserConfig)
 
-    private def getString(string: Int) = appContextProvider.get.getString(string)
+    private def getString(string: Int) = contextProvider.application.getString(string)
 
     private def createHeader(device: String, token: String) =
       baseHeader :+ (HeaderDevice, device) :+ (HeaderToken, token)

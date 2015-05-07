@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{AppContext, Contexts, Transformer, Ui}
+import macroid.{ContextWrapper, Contexts, Transformer, Ui}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -32,7 +32,7 @@ class WizardActivity
 
   private var finished = false
 
-  override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
+  override lazy val contextProvider: ContextWrapper = activityContextWrapper
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -70,7 +70,7 @@ class WizardActivity
 
   private def selectUser = Transformer {
     case i: RadioButton if i.isChecked =>
-      googleConnectorServices.requestToken(activityActivityContext)(RequestTokenRequest(i.getTag.toString)) map {
+      googleConnectorServices.requestToken(activityContextWrapper)(RequestTokenRequest(i.getTag.toString)) map {
         response =>
           if (response.success) {
             runUi(showLoading ~ Ui(searchDevices()))

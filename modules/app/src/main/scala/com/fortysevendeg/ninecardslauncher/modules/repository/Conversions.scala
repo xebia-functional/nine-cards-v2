@@ -4,7 +4,6 @@ import com.fortysevendeg.ninecardslauncher.models.{NineCardIntent, CacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection, Card => RepositoryCard, CacheCategory => RepositoryCacheCategory, _}
 import play.api.libs.json._
-import macroid.Logging._
 
 trait Conversions {
 

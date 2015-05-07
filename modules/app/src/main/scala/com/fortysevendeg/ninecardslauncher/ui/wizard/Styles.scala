@@ -10,60 +10,60 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Tweak, AppContext}
+import macroid.{Tweak, ContextWrapper}
 
 trait Styles {
 
-  def rootStyle(implicit appContext: AppContext): Tweak[FrameLayout] =
+  def rootStyle(implicit context: ContextWrapper): Tweak[FrameLayout] =
     vMatchParent +
       vFitsSystemWindows(true)
 
-  def toolbarStyle(implicit appContext: AppContext): Tweak[Toolbar] =
+  def toolbarStyle(implicit context: ContextWrapper): Tweak[Toolbar] =
     vMatchWidth +
       elevation
 
-  def loadingRootStyle(implicit appContext: AppContext): Tweak[LinearLayout] =
+  def loadingRootStyle(implicit context: ContextWrapper): Tweak[LinearLayout] =
     vWrapContent +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       llVertical +
       flLayoutGravity(Gravity.CENTER) +
       llGravity(Gravity.CENTER)
 
-  def contentStyle(implicit appContext: AppContext): Tweak[LinearLayout] =
+  def contentStyle(implicit context: ContextWrapper): Tweak[LinearLayout] =
     vMatchParent +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       llVertical
 
-  def titleTextStyle(implicit appContext: AppContext): Tweak[TextView] =
+  def titleTextStyle(implicit context: ContextWrapper): Tweak[TextView] =
     vWrapContent +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       tvSizeResource(R.dimen.text_large)
 
-  def defaultTextStyle(implicit appContext: AppContext): Tweak[TextView] =
+  def defaultTextStyle(implicit context: ContextWrapper): Tweak[TextView] =
     vWrapContent +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       tvSizeResource(R.dimen.text_default)
 
-  def groupStyle(implicit appContext: AppContext): Tweak[RadioGroup] =
+  def groupStyle(implicit context: ContextWrapper): Tweak[RadioGroup] =
     llMatchWeightVertical +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       llVertical
 
-  def radioStyle(implicit appContext: AppContext): Tweak[RadioButton] =
+  def radioStyle(implicit context: ContextWrapper): Tweak[RadioButton] =
     vWrapContent +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
 
-  def actionButtonStyle(implicit appContext: AppContext): Tweak[Button] =
+  def actionButtonStyle(implicit context: ContextWrapper): Tweak[Button] =
     vMatchWidth +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
 
-  def endMessageStyle(implicit appContext: AppContext): Tweak[TextView] =
+  def endMessageStyle(implicit context: ContextWrapper): Tweak[TextView] =
     llMatchWeightVertical +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       tvSizeResource(R.dimen.text_default) +
       tvGravity(Gravity.CENTER)
 
-  private def elevation(implicit appContext: AppContext) = Lollipop.ifSupportedThen {
+  private def elevation(implicit context: ContextWrapper) = Lollipop.ifSupportedThen {
     vElevation(resGetDimensionPixelSize(R.dimen.elevation_toolbar))
   }.getOrElse(Tweak.blank)
 

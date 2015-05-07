@@ -20,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks.
 import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{AppContext, Contexts, Tweak, Ui}
+import macroid.{ContextWrapper, Contexts, Tweak, Ui}
 import com.fortysevendeg.ninecardslauncher.ui.commons.ImageResourceNamed._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,7 +32,7 @@ class CollectionsDetailsActivity
   with ComponentRegistryImpl
   with ScrolledListener {
 
-  override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
+  override lazy val contextProvider: ContextWrapper = activityContextWrapper
 
   lazy val systemBarTintManager = new SystemBarTintManager(this)
 
@@ -142,11 +142,11 @@ object ScrollType {
 class OnPageChangeCollectionsListener(
   collections: Seq[Collection],
   updateToolbarColor: Int => Ui[_],
-  updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
+  updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit context: ContextWrapper)
    extends OnPageChangeListener
    with ComponentRegistryImpl {
 
-  override val appContextProvider: AppContext = appContext
+  override val contextProvider: ContextWrapper = context
 
   var lastSelected = -1
 

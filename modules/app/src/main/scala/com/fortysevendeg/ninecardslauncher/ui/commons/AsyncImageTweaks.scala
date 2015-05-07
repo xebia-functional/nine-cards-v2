@@ -3,14 +3,14 @@ package com.fortysevendeg.ninecardslauncher.ui.commons
 import android.support.v4.app.Fragment
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import macroid.{Tweak, ActivityContext, AppContext}
+import macroid.{Tweak, ActivityContextWrapper, ContextWrapper}
 
 object AsyncImageApplicationTweaks {
   type W = ImageView
 
-  def ivUri(uri: String)(implicit appContext: AppContext): Tweak[W] = Tweak[W](
+  def ivUri(uri: String)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](
     imageView => {
-      Glide.`with`(appContext.get)
+      Glide.`with`(context.application)
         .load(uri)
         .crossFade()
         .into(imageView)
@@ -22,9 +22,9 @@ object AsyncImageApplicationTweaks {
 object AsyncImageActivityTweaks {
   type W = ImageView
 
-  def ivUri(uri: String)(implicit activityContext: ActivityContext): Tweak[W] = Tweak[W](
+  def ivUri(uri: String)(implicit context: ActivityContextWrapper): Tweak[W] = Tweak[W](
     imageView => {
-      Glide.`with`(activityContext.get)
+      Glide.`with`(context.getOriginal)
         .load(uri)
         .crossFade()
         .into(imageView)

@@ -16,16 +16,16 @@ import com.fortysevendeg.ninecardslauncher.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.TouchState._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{AppContext, Transformer, Ui}
+import macroid.{ContextWrapper, Transformer, Ui}
 
-abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit appContext: AppContext)
+abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(context, attr, defStyleAttr) { self =>
 
   type PageChangedObserver = (Int => Unit)
 
-  def this(context: Context)(implicit appContext: AppContext) = this(context, null, 0)
+  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit appContext: AppContext) = this(context, attr, 0)
+  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
   val dimen: Dimen = Dimen()
 
@@ -79,9 +79,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   val params = new LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
-  var previousParentView: Option[FrameLayout] = Some(new FrameLayout(appContext.get))
-  var nextParentView: Option[FrameLayout] = Some(new FrameLayout(appContext.get))
-  var frontParentView: Option[FrameLayout] = Some(new FrameLayout(appContext.get))
+  var previousParentView: Option[FrameLayout] = Some(new FrameLayout(contextWrapper.application))
+  var nextParentView: Option[FrameLayout] = Some(new FrameLayout(contextWrapper.application))
+  var frontParentView: Option[FrameLayout] = Some(new FrameLayout(contextWrapper.application))
 
   var previousView = slot[Holder]
   var previewViewType = 0

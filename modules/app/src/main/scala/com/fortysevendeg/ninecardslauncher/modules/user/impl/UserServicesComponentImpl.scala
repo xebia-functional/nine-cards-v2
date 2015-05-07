@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.modules.user.impl
 import java.io.File
 
 import android.net.Uri
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.macroid.extras.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.user.{SignInResponse, UserServices, UserServicesComponent}
@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait UserServicesComponentImpl
   extends UserServicesComponent {
 
-  self: AppContextProvider with ApiServicesComponent =>
+  self: ContextWrapperProvider with ApiServicesComponent =>
 
   lazy val userServices = new UserServicesImpl
 
@@ -80,7 +80,7 @@ trait UserServicesComponentImpl
       }
 
     override def getAndroidId: Option[String] = Try {
-      val cursor = Option(appContextProvider.get.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
+      val cursor = Option(contextProvider.application.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
       cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
     } match {
       case Success(id) => id
@@ -91,9 +91,9 @@ trait UserServicesComponentImpl
 
     private def saveUser(user: User) = writeFile[User](getFileUser, user)
 
-    private def getFileInstallation = new File(appContextProvider.get.getFilesDir, FilenameInstallation)
+    private def getFileInstallation = new File(contextProvider.application.getFilesDir, FilenameInstallation)
 
-    private def getFileUser = new File(appContextProvider.get.getFilesDir, FilenameUser)
+    private def getFileUser = new File(contextProvider.application.getFilesDir, FilenameUser)
 
     private def synchronizeInstallation(): Unit =
       synchronizingChangesInstallation match {

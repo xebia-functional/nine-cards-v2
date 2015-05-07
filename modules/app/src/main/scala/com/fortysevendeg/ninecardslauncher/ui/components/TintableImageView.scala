@@ -6,10 +6,9 @@ import android.graphics.{Rect, Color, PorterDuffColorFilter}
 import android.support.v4.view.MotionEventCompat
 import android.view.MotionEvent
 import android.widget.ImageView
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import macroid.{Tweak, ActivityContext, AppContext}
+import macroid.{Tweak, ActivityContextWrapper, ContextWrapper}
 
-class TintableImageView(context: Context)(implicit appContext: AppContext, activityContext: ActivityContext)
+class TintableImageView(context: Context)(implicit activityContext: ActivityContextWrapper)
   extends ImageView(context, null, 0) {
 
   var defaultColor = Color.WHITE
@@ -44,12 +43,12 @@ class TintableImageView(context: Context)(implicit appContext: AppContext, activ
 object TintableImageViewTweaks {
   type W = TintableImageView
 
-  def tivDefaultColor(color: Int)(implicit appContext: AppContext): Tweak[W] = Tweak[W] {
+  def tivDefaultColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W] {
     view =>
       view.defaultColor = color
       view.setTint(color)
   }
 
-  def tivPressedColor(color: Int)(implicit appContext: AppContext): Tweak[W] = Tweak[W](_.pressedColor = color)
+  def tivPressedColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.pressedColor = color)
 
 }
