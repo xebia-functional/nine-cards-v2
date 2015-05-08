@@ -10,9 +10,10 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.models.Collection
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
-import com.fortysevendeg.ninecardslauncher.modules.repository.{Collection, GetCollectionsRequest, GetCollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
@@ -20,6 +21,7 @@ import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{AppContext, Contexts, Tweak, Ui}
+import com.fortysevendeg.ninecardslauncher.ui.commons.ImageResourceNamed._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -49,8 +51,7 @@ class CollectionsDetailsActivity
     systemBarTintManager.setStatusBarTintEnabled(true)
 
     for {
-      appsResponse <- appManagerServices.getApps(GetAppsRequest())
-      GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest(appsResponse.apps))
+      GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest())
     } yield {
       val adapter = new CollectionsPagerAdapter(getSupportFragmentManager, collections)
       collectionsAdapter = Some(adapter)
@@ -66,11 +67,11 @@ class CollectionsDetailsActivity
   }
 
   private def setIconCollection(collection: Collection): Ui[_] =
-    resGetDrawableIdentifier(s"${collection.icon}_detail") map (r => icon <~ ivSrc(r)) getOrElse Ui.nop
+    resGetDrawableIdentifier(iconCollectionDetail(collection.icon)) map (r => icon <~ ivSrc(r)) getOrElse Ui.nop
 
   private def updateCollection(collection: Collection, position: Int, fromLeft: Boolean): Ui[_] =
     (for {
-      res <- resGetDrawableIdentifier(s"${collection.icon}_detail")
+      res <- resGetDrawableIdentifier(iconCollectionDetail(collection.icon))
       adapter <- collectionsAdapter
     } yield {
         (icon <~ changeIcon(res, fromLeft)) ~ adapter.notifyChanged(position)
@@ -139,11 +140,11 @@ object ScrollType {
 }
 
 class OnPageChangeCollectionsListener(
-                                       collections: Seq[Collection],
-                                       updateToolbarColor: Int => Ui[_],
-                                       updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
-  extends OnPageChangeListener
-  with ComponentRegistryImpl {
+  collections: Seq[Collection],
+  updateToolbarColor: Int => Ui[_],
+  updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit appContext: AppContext)
+   extends OnPageChangeListener
+   with ComponentRegistryImpl {
 
   override val appContextProvider: AppContext = appContext
 

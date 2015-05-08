@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Api -->
     <string name="api_base_url">${appsly.url}</string>
     <string name="api_app_id">${appsly.appid}</string>
     <string name="api_app_key">${appsly.appkey}</string>
     <string name="api_localization">en-EN</string>
+
+    <!-- Google -->
+    <string name="client_client_id">${google_client_id}</string>
+    <string name="oauth_scopes">${google_oauth_scopes}</string>
+
+    <!-- Google Play -->
+    <string name="google_play_url">http://play.google.com/store/apps/details?id=%1$s</string>
+
 </resources>

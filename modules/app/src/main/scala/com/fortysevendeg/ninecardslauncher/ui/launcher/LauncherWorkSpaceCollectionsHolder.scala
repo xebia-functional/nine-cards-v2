@@ -14,8 +14,8 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.models.Collection
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
 import com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.ui.components.Dimen
@@ -24,6 +24,7 @@ import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContext, AppContext, Tweak, Ui}
+import com.fortysevendeg.ninecardslauncher.ui.commons.ImageResourceNamed._
 
 class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit appContext: AppContext, activityContext: ActivityContext)
   extends LauncherWorkSpaceHolder
@@ -96,14 +97,17 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)
-    resGetDrawableIdentifier(collection.icon) map {
-      resIcon =>
-        runUi(
-          (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
-            (name <~ tvText(collection.name))
-        )
-    }
+    runUi(
+      resGetDrawableIdentifier(iconCollectionWorkspace(collection.icon)) map {
+        resIcon =>
+          populateIcon(collection, resIcon)
+      } getOrElse populateIcon(collection, R.drawable.icon_collection_home) // TODO We should use default icon
+    )
   }
+
+  private def populateIcon(collection: Collection, resIcon: Int): Ui[_] =
+    (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
+      (name <~ tvText(collection.name))
 
   private def createBackground(indexColor: Int): Drawable = {
     val color = resGetColor(persistentServices.getIndexColor(indexColor))

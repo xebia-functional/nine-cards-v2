@@ -2,6 +2,7 @@ package com.fortysevendeg.rest.client.http
 
 
 import com.fortysevendeg.BaseTestSupport
+import com.fortysevendeg.ninecardslauncher.api.model.Installation
 import com.fortysevendeg.rest.client.SampleRequest
 import com.squareup.{okhttp => okHttp}
 import org.specs2.mock.Mockito

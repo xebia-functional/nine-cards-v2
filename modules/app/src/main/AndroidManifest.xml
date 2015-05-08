@@ -26,10 +26,28 @@
                 android:label=""
                 android:name="com.fortysevendeg.ninecardslauncher.ui.collections.CollectionsDetailsActivity" />
 
+        <activity
+                android:theme="@style/AppTheme"
+                android:label=""
+                android:name="com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity" />
+
+        <service
+                android:name="com.fortysevendeg.ninecardslauncher.services.CreateCollectionService" />
+
         <provider
                 android:authorities="com.fortysevendeg.ninecardslauncher2"
                 android:name="com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider"
                 android:exported="false" />
+
+        <receiver android:name="com.fortysevendeg.ninecardslauncher.receivers.NineCardsReceiver">
+            <intent-filter android:priority="999">
+                <action android:name="com.fortysevendeg.ninecardslauncher.OPEN_APP"/>
+                <action android:name="com.fortysevendeg.ninecardslauncher.OPEN_RECOMMENDED_APP"/>
+                <action android:name="com.fortysevendeg.ninecardslauncher.OPEN_SMS"/>
+                <action android:name="com.fortysevendeg.ninecardslauncher.OPEN_PHONE"/>
+                <action android:name="com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"/>
+            </intent-filter>
+        </receiver>
 
     </application>
 

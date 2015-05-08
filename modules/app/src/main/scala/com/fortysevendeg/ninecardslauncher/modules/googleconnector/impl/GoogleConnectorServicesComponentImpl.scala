@@ -1,0 +1,112 @@
+package com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl
+
+import android.accounts._
+import android.content.Context
+import android.net.Uri
+import android.os.{Build, Bundle}
+import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.models.GoogleDevice
+import com.fortysevendeg.ninecardslauncher.modules.api.{ApiServicesComponent, LoginRequest}
+import com.fortysevendeg.ninecardslauncher.modules.googleconnector._
+import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
+import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
+import com.fortysevendeg.ninecardslauncher2.R
+import macroid.ActivityContext
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Promise
+import scala.util.{Failure, Success, Try}
+
+trait GoogleConnectorServicesComponentImpl
+  extends GoogleConnectorServicesComponent {
+
+  self: AppContextProvider with UserServicesComponent =>
+
+  lazy val googleConnectorServices = new GoogleConnectorServicesImpl
+
+  class GoogleConnectorServicesImpl
+    extends GoogleConnectorServices {
+
+    import GoogleConnector._
+
+    val preferences = appContextProvider.get.getSharedPreferences(GoogleKeyPreferentes, Context.MODE_PRIVATE)
+
+    val accountManager = AccountManager.get(appContextProvider.get)
+
+    override def requestToken(implicit activityContext: ActivityContext): Service[RequestTokenRequest, RequestTokenResponse] =
+      request => {
+        val requestPromise = Promise[RequestTokenResponse]()
+        setUser(request.username)
+        invalidateToken()
+        (for {
+          account <- getAccount(request.username)
+          androidId <- userServices.getAndroidId
+        } yield {
+          val oauthScopes = resGetString(R.string.oauth_scopes)
+          accountManager.getAuthToken(account, oauthScopes, null, activityContext.get, new AccountManagerCallback[Bundle] {
+            override def run(future: AccountManagerFuture[Bundle]): Unit = {
+              Try {
+                val authTokenBundle: Bundle = future.getResult
+                val token: String = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN)
+                setToken(token)
+                LoginRequest(
+                  email = request.username,
+                  device = GoogleDevice(
+                    name = Build.MODEL,
+                    devideId = androidId,
+                    secretToken = token,
+                    permissions = Seq(appContextProvider.get.getString(R.string.oauth_scopes))
+                  )
+                )
+              } match {
+                case Success(loginRequest) =>
+                  userServices.signIn(loginRequest) map {
+                    response =>
+                      requestPromise.success(RequestTokenResponse(response.success))
+                  } recover {
+                    case _ => requestPromise.success(RequestTokenResponse(false))
+                  }
+                case Failure(ex) => ex match {
+                  case ex: OperationCanceledException => requestPromise.success(RequestTokenResponse(false, true))
+                  case _ => requestPromise.success(RequestTokenResponse(false))
+                }
+              }
+            }
+          }, null)
+        }) getOrElse requestPromise.success(RequestTokenResponse(false))
+        requestPromise.future
+      }
+
+    override def getUser: Option[String] = Option(preferences.getString(GoogleKeyUser, null))
+
+    override def getToken: Option[String] = Option(preferences.getString(GoogleKeyToken, null))
+
+    private def setUser(user: String) = preferences.edit.putString(GoogleKeyUser, user).apply()
+
+    private def setToken(token: String) = preferences.edit.putString(GoogleKeyToken, token).apply()
+
+    private def invalidateToken() {
+      getToken map {
+        token =>
+          val accountManager = AccountManager.get(appContextProvider.get)
+          accountManager.invalidateAuthToken(AccountType, token)
+      }
+      setToken(null)
+    }
+
+    private def getAccount(name: String): Option[Account] = {
+      val accounts: Seq[Account] = accountManager.getAccountsByType(AccountType).toSeq
+      accounts find (_.name == name)
+    }
+
+  }
+
+}
+
+object GoogleConnector {
+  val GoogleKeyPreferentes = "__google_auth__"
+  val GoogleKeyUser = "__google_user__"
+  val GoogleKeyToken = "__google_token__"
+}

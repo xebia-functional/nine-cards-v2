@@ -53,7 +53,7 @@ object Settings {
     resolvers ++= commonResolvers)
 
   lazy val commonDependencies = Seq(
-    aar(multiDexLib),
+//    aar(multiDexLib),
     aar(androidSupportv4),
     aar(androidAppCompat),
     aar(macroidRoot),

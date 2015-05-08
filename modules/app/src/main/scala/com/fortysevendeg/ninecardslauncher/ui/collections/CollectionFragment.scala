@@ -9,8 +9,8 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.models.Collection
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.repository.Collection
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -59,7 +59,9 @@ class CollectionFragment
   }
 
   def loadCollection(collection: Collection, heightCard: Int): Ui[_] = {
-    val adapter = new CollectionAdapter(collection, heightCard, card => uiShortToast(card.term))
+    val adapter = new CollectionAdapter(collection, heightCard, card => Ui {
+      card.intent.execute
+    })
     (recyclerView <~ rvLayoutManager(layoutManager) <~
       rvFixedSize <~
       rvAddItemDecoration(new CollectionItemDecorator) <~
@@ -81,7 +83,7 @@ class CollectionFragment
 
               override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE  && collection.cards.length > NumSpaces) {
+                if (activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && collection.cards.length > NumSpaces) {
                   scrolledListener map {
                     sl =>
                       val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollType.Down) else (spaceMove, ScrollType.Up)

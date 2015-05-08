@@ -53,7 +53,6 @@ object Libraries {
 
   object graphics {
     lazy val glide = "com.github.bumptech.glide" % "glide" % Versions.glideV
-    //    lazy val picasso = "com.squareup.picasso" % "picasso" % Versions.picassoV
   }
 
   object akka {

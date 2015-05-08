@@ -8,7 +8,6 @@ object UserConfigImplicits {
 
   implicit val userConfigTimeSlotReads = Json.reads[UserConfigTimeSlot]
   implicit val userConfigUserLocationReads = Json.reads[UserConfigUserLocation]
-  implicit val nineCardIntentReads = Json.reads[NineCardIntent]
   implicit val userConfigCollectionItemReads = Json.reads[UserConfigCollectionItem]
   implicit val userConfigCollectionReads = Json.reads[UserConfigCollection]
   implicit val userConfigProfileImageReads = Json.reads[UserConfigProfileImage]
@@ -20,7 +19,6 @@ object UserConfigImplicits {
 
   implicit val userConfigTimeSlotWrites = Json.writes[UserConfigTimeSlot]
   implicit val userConfigUserLocationWrites = Json.writes[UserConfigUserLocation]
-  implicit val nineCardIntentWrites = Json.writes[NineCardIntent]
   implicit val userConfigCollectionItemWrites = Json.writes[UserConfigCollectionItem]
   implicit val userConfigCollectionWrites = Json.writes[UserConfigCollection]
   implicit val userConfigProfileImageWrites = Json.writes[UserConfigProfileImage]
