@@ -6,28 +6,27 @@ import android.support.v4.view.ViewPager
 import android.util.{AttributeSet, TypedValue}
 import android.view.View.OnClickListener
 import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, View, ViewGroup}
+import android.view.{Gravity, View}
 import android.widget.{FrameLayout, HorizontalScrollView, TextView}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Transformer, ActivityContext, Tweak, AppContext}
+import macroid.{Transformer, ActivityContextWrapper, Tweak}
 import macroid.FullDsl._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils
 
 /**
  * Inspired in https://developer.android.com/samples/SlidingTabsBasic/index.html
  */
-class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit appContext: AppContext, activityContext: ActivityContext)
+class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit  activityContext: ActivityContextWrapper)
   extends HorizontalScrollView(context, attr, defStyleAttr) {
 
   self =>
 
-  def this(context: Context)(implicit appContext: AppContext, activityContext: ActivityContext) = this(context, null, 0)
+  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, null, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit appContext: AppContext, activityContext: ActivityContext) = this(context, attr, 0)
+  def this(context: Context, attr: AttributeSet)(implicit activityContext: ActivityContextWrapper) = this(context, attr, 0)
 
   private val paddingDefault: Int = resGetDimensionPixelSize(R.dimen.padding_default)
 

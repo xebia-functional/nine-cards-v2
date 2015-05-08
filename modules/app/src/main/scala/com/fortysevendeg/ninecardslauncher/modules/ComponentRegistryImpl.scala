@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules
 
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.modules.api.impl.ApiServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl.AppManagerServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl.GoogleConnectorServicesComponentImpl
@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.modules.user.impl.UserServicesCompone
 
 trait ComponentRegistryImpl
   extends ComponentRegistry
-  with AppContextProvider
+  with ContextWrapperProvider
   with ImageServicesComponentImpl
   with AppManagerServicesComponentImpl
   with RepositoryServicesComponentImpl

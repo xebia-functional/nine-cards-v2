@@ -7,17 +7,17 @@ import android.view.View
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.AppContext
+import macroid.ContextWrapper
 
 /**
  * Inspired in https://developer.android.com/samples/SlidingTabsBasic/index.html
  */
-class SlidingTabStrip(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit appContext: AppContext)
+class SlidingTabStrip(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends LinearLayout(context, attr, defStyleAttr) {
 
-  def this(context: Context)(implicit appContext: AppContext) = this(context, null, 0)
+  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit appContext: AppContext) = this(context, attr, 0)
+  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
   private var selectedPosition: Int = 0
   private var selectionOffset: Float = .0f

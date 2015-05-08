@@ -8,7 +8,7 @@ import android.content.pm.{PackageManager, ActivityInfo, ResolveInfo}
 import android.graphics._
 import android.graphics.drawable.BitmapDrawable
 import android.util.DisplayMetrics
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.image.{StoreImageAppResponse, StoreImageAppRequest, ImageServices, ImageServicesComponent}
 import com.fortysevendeg.ninecardslauncher2.R
@@ -20,7 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait ImageServicesComponentImpl
   extends ImageServicesComponent {
 
-  self: AppContextProvider =>
+  self: ContextWrapperProvider =>
 
   lazy val imageServices = new ImageServicesImpl
 
@@ -29,18 +29,18 @@ trait ImageServicesComponentImpl
 
     private var currentColor: Int = 0
 
-    val color1 = appContextProvider.get.getResources.getColor(R.color.background_default_1)
-    val color2 = appContextProvider.get.getResources.getColor(R.color.background_default_2)
-    val color3 = appContextProvider.get.getResources.getColor(R.color.background_default_3)
-    val color4 = appContextProvider.get.getResources.getColor(R.color.background_default_4)
-    val color5 = appContextProvider.get.getResources.getColor(R.color.background_default_5)
+    val color1 = contextProvider.application.getResources.getColor(R.color.background_default_1)
+    val color2 = contextProvider.application.getResources.getColor(R.color.background_default_2)
+    val color3 = contextProvider.application.getResources.getColor(R.color.background_default_3)
+    val color4 = contextProvider.application.getResources.getColor(R.color.background_default_4)
+    val color5 = contextProvider.application.getResources.getColor(R.color.background_default_5)
 
-    val packageManager = appContextProvider.get.getPackageManager
+    val packageManager = contextProvider.application.getPackageManager
 
-    val cacheDir = appContextProvider.get.getDir("icons_apps", Context.MODE_PRIVATE)
+    val cacheDir = contextProvider.application.getDir("icons_apps", Context.MODE_PRIVATE)
 
     val (defaultSize, currentDensity) = {
-      val metrics: DisplayMetrics = appContextProvider.get.getResources.getDisplayMetrics
+      val metrics: DisplayMetrics = contextProvider.application.getResources.getDisplayMetrics
       val width: Int = metrics.widthPixels / 3
       val height: Int = metrics.heightPixels / 3
       val size = if (width > height) width else height

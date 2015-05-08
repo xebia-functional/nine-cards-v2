@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.models
 import android.content.{ComponentName, Intent}
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
-import macroid.AppContext
+import macroid.ContextWrapper
 import play.api.libs.json._
 import scala.collection.JavaConversions._
 
@@ -80,11 +80,11 @@ case class NineCardIntent(
   def extractClassName(): Option[String] =
     Option(intentExtras.getOrElse(NineCardExtraClassName, getStringExtra(NineCardExtraClassName)))
 
-  def execute(implicit appContext: AppContext) =
+  def execute(implicit context: ContextWrapper) =
     getAction match {
       case OpenApp | OpenRecommendedApp | OpenSms | OpenPhone | OpenEmail =>
-        appContext.get.sendBroadcast(toIntent())
-      case _ => appContext.get.startActivity(this)
+        context.application.sendBroadcast(toIntent())
+      case _ => context.application.startActivity(this)
     }
 
   def toIntent(): Intent = (for {

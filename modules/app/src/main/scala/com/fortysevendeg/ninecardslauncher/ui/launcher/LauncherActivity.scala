@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{AppContext, Contexts, Transformer, Ui}
+import macroid.{ContextWrapper, Contexts, Transformer, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -26,7 +26,7 @@ class LauncherActivity
   with Layout
   with ComponentRegistryImpl {
 
-  override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
+  override lazy val contextProvider: ContextWrapper = activityContextWrapper
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val SelectedPageDefault = 1

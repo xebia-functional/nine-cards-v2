@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import macroid.FullDsl._
-import macroid.{ActivityContext, AppContext, Ui}
+import macroid.{ActivityContextWrapper, Ui}
 
 import scala.util.Try
 
@@ -23,7 +23,7 @@ trait Layout
 
   var pager = slot[LinearLayout]
 
-  def content(implicit appContext: AppContext, context: ActivityContext) = getUi(
+  def content(implicit context: ActivityContextWrapper) = getUi(
     l[LinearLayout](
       l[LinearLayout](
         w[TintableImageView] <~ burgerButtonStyle <~ On.click(
@@ -33,7 +33,7 @@ trait Layout
           Ui {
             Try {
               val intent = new Intent(Intent.ACTION_WEB_SEARCH)
-              context.get.startActivity(intent)
+              context.application.startActivity(intent)
             }
           }
         ),
@@ -41,7 +41,7 @@ trait Layout
           Ui {
             Try {
               val intent = new Intent(RecognizerIntent.ACTION_WEB_SEARCH)
-              context.get.startActivity(intent)
+              context.application.startActivity(intent)
             }
           }
         )
@@ -78,7 +78,7 @@ trait Layout
     ) <~ rootStyle
   )
 
-  def pagination(position: Int)(implicit appContext: AppContext, context: ActivityContext) = getUi(
+  def pagination(position: Int)(implicit context: ActivityContextWrapper) = getUi(
     w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
 

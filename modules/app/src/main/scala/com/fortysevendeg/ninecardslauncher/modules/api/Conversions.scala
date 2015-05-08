@@ -271,7 +271,7 @@ trait Conversions {
     apiModel.UserConfigCollectionItem(
       itemType = collectionItem.itemType,
       title = collectionItem.title,
-      metadata = Json.parse("{\"name\": \"test\"}"), //fromNineCardIntent(collectionItem.metadata),
+      metadata = Json.parse("{\"name\": \"test\"}"), // TODO Create metadata for item
       categories = collectionItem.categories)
 
   def fromUserConfigGeoInfo(apiGeoInfo: UserConfigGeoInfo): apiModel.UserConfigGeoInfo =
