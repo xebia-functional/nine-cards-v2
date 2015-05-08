@@ -8,4 +8,5 @@ trait NineCardRepositoryClient
     with CardRepositoryClient
     with CollectionRepositoryClient
     with GeoInfoRepositoryClient
+    with ContentResolverWrapperComponentImpl
     with ContentResolverProvider
