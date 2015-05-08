@@ -32,7 +32,7 @@ trait DBUtils {
         case _ =>
           val entity = conversionFunction(cursor)
           cursor.moveToNext
-          getListFromEntityLoop(cursor, entity +: result)
+          getListFromEntityLoop(cursor, result :+ entity)
       }
 
     val list = cursor.moveToFirst() match {
