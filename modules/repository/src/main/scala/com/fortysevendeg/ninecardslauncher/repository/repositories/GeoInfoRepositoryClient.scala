@@ -1,11 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri._
-import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
-import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
+import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
@@ -16,7 +15,7 @@ import scala.util.Try
 
 trait GeoInfoRepositoryClient extends DBUtils {
 
-  self: ContentResolverProvider =>
+  self: ContentResolverWrapperComponent =>
 
   implicit val executionContext: ExecutionContext
 
@@ -24,18 +23,17 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
+          val values = Map[String, Any](
+            Constrain -> request.data.constrain,
+            Occurrence -> request.data.occurrence,
+            Wifi -> request.data.wifi,
+            Latitude -> request.data.latitude,
+            Longitude -> request.data.longitude,
+            System -> request.data.system)
 
-          val contentValues = new ContentValues()
-          contentValues.put(Constrain, request.data.constrain)
-          contentValues.put(Occurrence, request.data.occurrence)
-          contentValues.put(Wifi, request.data.wifi)
-          contentValues.put(Latitude, request.data.latitude)
-          contentValues.put(Longitude, request.data.longitude)
-          contentValues.put(System, request.data.system)
-
-          val uri = contentResolver.insert(
-            NineCardsContentProvider.ContentUriGeoInfo,
-            contentValues)
+          val uri = contentResolverWrapper.insert(
+            uri = ContentUriGeoInfo,
+            values = values)
 
           AddGeoInfoResponse(
             geoInfo = Some(GeoInfo(
@@ -52,10 +50,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolver.delete(
-            withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.geoInfo.id.toString),
-            "",
-            Array.empty)
+          contentResolverWrapper.delete(uri = withAppendedPath(ContentUriGeoInfo, request.geoInfo.id.toString))
 
           DeleteGeoInfoResponse(success = true)
 
@@ -69,12 +64,9 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            NineCardsContentProvider.ContentUriGeoInfo,
-            AllFields,
-            "",
-            Array.empty,
-            ""))
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+            uri = ContentUriGeoInfo,
+            projection = AllFields))
 
           maybeCursor match {
             case Some(cursor) =>
@@ -93,12 +85,9 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.id.toString),
-            AllFields,
-            "",
-            Array.empty,
-            ""))
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+            uri = withAppendedPath(ContentUriGeoInfo, request.id.toString),
+            projection = AllFields))
 
           maybeCursor match {
             case Some(cursor) =>
@@ -118,12 +107,11 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            NineCardsContentProvider.ContentUriGeoInfo,
-            AllFields,
-            s"$Constrain = ?",
-            Array(request.constrain),
-            ""))
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+            uri = ContentUriGeoInfo,
+            projection = AllFields,
+            where = s"$Constrain = ?",
+            whereParams = Array(request.constrain)))
 
           maybeCursor match {
             case Some(cursor) =>
@@ -142,19 +130,17 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val contentValues = new ContentValues()
-          contentValues.put(Constrain, request.geoInfo.data.constrain)
-          contentValues.put(Occurrence, request.geoInfo.data.occurrence)
-          contentValues.put(Wifi, request.geoInfo.data.wifi)
-          contentValues.put(Latitude, request.geoInfo.data.latitude)
-          contentValues.put(Longitude, request.geoInfo.data.longitude)
-          contentValues.put(System, request.geoInfo.data.system)
+          val values = Map[String, Any](
+            Constrain -> request.geoInfo.data.constrain,
+            Occurrence -> request.geoInfo.data.occurrence,
+            Wifi -> request.geoInfo.data.wifi,
+            Latitude -> request.geoInfo.data.latitude,
+            Longitude -> request.geoInfo.data.longitude,
+            System -> request.geoInfo.data.system)
 
-          contentResolver.update(
-            withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.geoInfo.id.toString),
-            contentValues,
-            "",
-            Array.empty)
+          contentResolverWrapper.update(
+            uri = withAppendedPath(ContentUriGeoInfo, request.geoInfo.id.toString),
+            values = values)
 
           UpdateGeoInfoResponse(success = true)
 

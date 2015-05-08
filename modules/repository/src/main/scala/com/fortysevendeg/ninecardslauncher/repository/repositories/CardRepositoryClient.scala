@@ -1,12 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri._
-import com.fortysevendeg.ninecardslauncher.commons.RichContentValues._
-import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
-import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
@@ -17,7 +15,7 @@ import scala.util.Try
 
 trait CardRepositoryClient extends DBUtils {
 
-  self: ContentResolverProvider =>
+  self: ContentResolverWrapperComponent =>
 
   implicit val executionContext: ExecutionContext
 
@@ -26,22 +24,22 @@ trait CardRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
 
-          val contentValues = new ContentValues()
-          contentValues.put(Position, request.data.position)
-          contentValues.put(CollectionId, request.collectionId)
-          contentValues.put(Term, request.data.term)
-          contentValues.put(PackageName, request.data.packageName getOrElse "")
-          contentValues.put(Type, request.data.`type`)
-          contentValues.put(Intent, request.data.intent)
-          contentValues.put(ImagePath, request.data.imagePath)
-          contentValues.put(StarRating, request.data.starRating getOrElse 0.0d)
-          contentValues.put(Micros, request.data.micros)
-          contentValues.put(NumDownloads, request.data.numDownloads getOrElse "")
-          contentValues.put(Notification, request.data.notification getOrElse "")
+          val values = Map[String, Any](
+            Position -> request.data.position,
+            CollectionId -> request.collectionId,
+            Term -> request.data.term,
+            PackageName -> (request.data.packageName getOrElse ""),
+            Type -> request.data.`type`,
+            Intent -> request.data.intent,
+            ImagePath -> request.data.imagePath,
+            StarRating -> (request.data.starRating getOrElse 0.0d),
+            Micros -> request.data.micros,
+            NumDownloads -> (request.data.numDownloads getOrElse ""),
+            Notification -> (request.data.notification getOrElse ""))
 
-          val uri = contentResolver.insert(
-            NineCardsContentProvider.ContentUriCard,
-            contentValues)
+          val uri = contentResolverWrapper.insert(
+            uri = ContentUriCard,
+            values = values)
 
           AddCardResponse(
             card = Some(Card(
@@ -58,10 +56,7 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolver.delete(
-            withAppendedPath(NineCardsContentProvider.ContentUriCard, request.card.id.toString),
-            "",
-            Array.empty)
+          contentResolverWrapper.delete(uri = withAppendedPath(ContentUriCard, request.card.id.toString))
 
           DeleteCardResponse(success = true)
 
@@ -75,12 +70,9 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            withAppendedPath(NineCardsContentProvider.ContentUriCard, request.id.toString),
-            AllFields,
-            "",
-            Array.empty,
-            ""))
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+            uri = withAppendedPath(ContentUriCard, request.id.toString),
+            projection = AllFields))
 
           maybeCursor match {
             case Some(cursor) =>
@@ -100,12 +92,11 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            NineCardsContentProvider.ContentUriCard,
-            AllFields,
-            s"$CollectionId = ?",
-            Array(request.collectionId.toString),
-            ""))
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+            uri = ContentUriCard,
+            projection = AllFields,
+            where = s"$CollectionId = ?",
+            whereParams = Array(request.collectionId.toString)))
 
           maybeCursor match {
             case Some(cursor) =>
@@ -124,23 +115,21 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val contentValues = new ContentValues()
-          contentValues.put(Position, request.card.data.position)
-          contentValues.put(Term, request.card.data.term)
-          contentValues.put(PackageName, request.card.data.packageName getOrElse "")
-          contentValues.put(Type, request.card.data.`type`)
-          contentValues.put(Intent, request.card.data.intent)
-          contentValues.put(ImagePath, request.card.data.imagePath)
-          contentValues.put(StarRating, request.card.data.starRating getOrElse 0.0d)
-          contentValues.put(Micros, request.card.data.micros)
-          contentValues.put(NumDownloads, request.card.data.numDownloads getOrElse "")
-          contentValues.put(Notification, request.card.data.notification getOrElse "")
+          val values = Map[String, Any](
+            Position -> request.card.data.position,
+            Term -> request.card.data.term,
+            PackageName -> (request.card.data.packageName getOrElse ""),
+            Type -> request.card.data.`type`,
+            Intent -> request.card.data.intent,
+            ImagePath -> request.card.data.imagePath,
+            StarRating -> (request.card.data.starRating getOrElse 0.0d),
+            Micros -> request.card.data.micros,
+            NumDownloads -> (request.card.data.numDownloads getOrElse ""),
+            Notification -> (request.card.data.notification getOrElse ""))
 
-          contentResolver.update(
-            withAppendedPath(NineCardsContentProvider.ContentUriCard, request.card.id.toString),
-            contentValues,
-            "",
-            Array.empty)
+          contentResolverWrapper.update(
+            uri = withAppendedPath(ContentUriCard, request.card.id.toString),
+            values = values)
 
           UpdateCardResponse(success = true)
 

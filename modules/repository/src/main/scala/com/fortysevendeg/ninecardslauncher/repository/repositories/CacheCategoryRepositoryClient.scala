@@ -1,12 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri._
-import com.fortysevendeg.ninecardslauncher.commons.RichContentValues._
-import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
-import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
@@ -17,7 +15,7 @@ import scala.util.Try
 
 trait CacheCategoryRepositoryClient extends DBUtils {
 
-  self: ContentResolverProvider =>
+  self: ContentResolverWrapperComponent =>
 
   implicit val executionContext: ExecutionContext
 
@@ -25,17 +23,17 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val contentValues = new ContentValues()
-          contentValues.put(PackageName, request.data.packageName)
-          contentValues.put(Category, request.data.category)
-          contentValues.put(StarRating, request.data.starRating)
-          contentValues.put(NumDownloads, request.data.numDownloads)
-          contentValues.put(RatingsCount, request.data.ratingsCount)
-          contentValues.put(CommentCount, request.data.commentCount)
+          val values = Map[String, Any](
+            PackageName -> request.data.packageName,
+            Category -> request.data.category,
+            StarRating -> request.data.starRating,
+            NumDownloads -> request.data.numDownloads,
+            RatingsCount -> request.data.ratingsCount,
+            CommentCount -> request.data.commentCount)
 
-          val uri = contentResolver.insert(
-            NineCardsContentProvider.ContentUriCacheCategory,
-            contentValues)
+          val uri = contentResolverWrapper.insert(
+            uri = ContentUriCacheCategory,
+            values = values)
 
           AddCacheCategoryResponse(
             cacheCategory = Some(CacheCategory(
@@ -52,10 +50,8 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolver.delete(
-            withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.cacheCategory.id.toString),
-            "",
-            Array.empty)
+          contentResolverWrapper.delete(
+            uri = withAppendedPath(ContentUriCacheCategory, request.cacheCategory.id.toString))
 
           DeleteCacheCategoryResponse(success = true)
 
@@ -69,10 +65,10 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolver.delete(
-            NineCardsContentProvider.ContentUriCacheCategory,
-            s"$PackageName = ?",
-            Array(request.`package`))
+          contentResolverWrapper.delete(
+            uri = ContentUriCacheCategory,
+            where = s"$PackageName = ?",
+            whereParams = Array(request.`package`))
 
           DeleteCacheCategoryByPackageResponse(success = true)
 
@@ -86,12 +82,9 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            NineCardsContentProvider.ContentUriCacheCategory,
-            AllFields,
-            "",
-            Array.empty,
-            ""))
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+            uri = ContentUriCacheCategory,
+            projection = AllFields))
 
           maybeCursor match {
             case Some(cursor) =>
@@ -110,12 +103,9 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.id.toString),
-            AllFields,
-            "",
-            Array.empty,
-            ""))
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+            uri = withAppendedPath(ContentUriCacheCategory, request.id.toString),
+            projection = AllFields))
 
           maybeCursor match {
             case Some(cursor) =>
@@ -134,12 +124,11 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            NineCardsContentProvider.ContentUriCacheCategory,
-            AllFields,
-            s"$PackageName = ?",
-            Array(request.`package`),
-            ""))
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+            uri = ContentUriCacheCategory,
+            projection = AllFields,
+            where = s"$PackageName = ?",
+            whereParams = Seq(request.`package`)))
 
           maybeCursor match {
             case Some(cursor) =>
@@ -157,19 +146,18 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val contentValues = new ContentValues()
-          contentValues.put(PackageName, request.cacheCategory.data.packageName)
-          contentValues.put(Category, request.cacheCategory.data.category)
-          contentValues.put(StarRating, request.cacheCategory.data.starRating)
-          contentValues.put(NumDownloads, request.cacheCategory.data.numDownloads)
-          contentValues.put(RatingsCount, request.cacheCategory.data.ratingsCount)
-          contentValues.put(CommentCount, request.cacheCategory.data.commentCount)
+          val values = Map[String, Any](
+            PackageName -> request.cacheCategory.data.packageName,
+            Category -> request.cacheCategory.data.category,
+            StarRating -> request.cacheCategory.data.starRating,
+            NumDownloads -> request.cacheCategory.data.numDownloads,
+            RatingsCount -> request.cacheCategory.data.ratingsCount,
+            CommentCount -> request.cacheCategory.data.commentCount)
 
-          contentResolver.update(
-            withAppendedPath(NineCardsContentProvider.ContentUriCacheCategory, request.cacheCategory.id.toString),
-            contentValues,
-            "",
-            Array.empty)
+          contentResolverWrapper.update(
+            uri = withAppendedPath(ContentUriCacheCategory, request.cacheCategory.id.toString),
+            values = values
+          )
 
           UpdateCacheCategoryResponse(success = true)
 
