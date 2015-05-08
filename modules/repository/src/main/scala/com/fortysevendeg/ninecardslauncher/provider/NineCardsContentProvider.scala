@@ -4,6 +4,7 @@ import android.content.{ContentProvider, ContentUris, ContentValues, UriMatcher}
 import android.database.Cursor
 import android.database.sqlite.{SQLiteDatabase, SQLiteQueryBuilder}
 import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 
 class NineCardsContentProvider extends ContentProvider {
@@ -61,7 +62,7 @@ class NineCardsContentProvider extends ContentProvider {
     mimeType match {
       case MimeTypeAllItems =>
         ContentUris.withAppendedId(
-          ContentUriCacheCategory,
+        getUri(CacheCategoryUri),
           getOrOpenDatabase.insert(tableName, NineCardsSqlHelper.DatabaseName, values))
       case _ => throw new IllegalArgumentException(InvalidUri + uri)
     }
@@ -118,16 +119,12 @@ object NineCardsContentProvider {
   val InvalidUri = "Invalid uri: "
   val AuthorityPart = "com.fortysevendeg.ninecardslauncher2"
   val ContentPrefix = "content://"
-  val ContentUriCacheCategory = Uri.parse(s"$ContentPrefix$AuthorityPart/${CacheCategoryEntity.Table}")
   val CodeCacheCategoryAllItems = 1
   val CodeCacheCategorySingleItem = 2
-  val ContentUriCard = Uri.parse(s"$ContentPrefix$AuthorityPart/${CardEntity.Table}")
   val CodeCardAllItems = 3
   val CodeCardSingleItem = 4
-  val ContentUriCollection = Uri.parse(s"$ContentPrefix$AuthorityPart/${CollectionEntity.Table}")
   val CodeCollectionAllItems = 5
   val CodeCollectionSingleItem = 6
-  val ContentUriGeoInfo = Uri.parse(s"$ContentPrefix$AuthorityPart/${GeoInfoEntity.Table}")
   val CodeGeoInfoAllItems = 7
   val CodeGeoInfoSingleItem = 8
   val MimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.com.fortysevendeg.ninecardslauncher"
@@ -142,6 +139,13 @@ object NineCardsContentProvider {
   uriMatcher.addURI(AuthorityPart, s"${CollectionEntity.Table}/#", CodeCollectionSingleItem)
   uriMatcher.addURI(AuthorityPart, GeoInfoEntity.Table, CodeGeoInfoAllItems)
   uriMatcher.addURI(AuthorityPart, s"${GeoInfoEntity.Table}/#", CodeGeoInfoSingleItem)
+
+  def getUri(nineCardsUri: NineCardsUri): Uri = nineCardsUri match {
+    case CacheCategoryUri => Uri.parse(s"$ContentPrefix$AuthorityPart/${CacheCategoryEntity.Table}")
+    case CardUri => Uri.parse(s"$ContentPrefix$AuthorityPart/${CardEntity.Table}")
+    case CollectionUri => Uri.parse(s"$ContentPrefix$AuthorityPart/${CollectionEntity.Table}")
+    case GeoInfoUri => Uri.parse(s"$ContentPrefix$AuthorityPart/${GeoInfoEntity.Table}")
+  }
 }
 
 sealed trait MimeType
