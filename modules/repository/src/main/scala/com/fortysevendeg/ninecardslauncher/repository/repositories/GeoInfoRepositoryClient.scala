@@ -1,10 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import android.database.Cursor
-import android.net.Uri._
+import com.fortysevendeg.ninecardslauncher.commons.GeoInfoUri
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
-import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
@@ -31,13 +30,13 @@ trait GeoInfoRepositoryClient extends DBUtils {
             Longitude -> request.data.longitude,
             System -> request.data.system)
 
-          val uri = contentResolverWrapper.insert(
-            uri = ContentUriGeoInfo,
+          val id = contentResolverWrapper.insert(
+            nineCardsUri = GeoInfoUri,
             values = values)
 
           AddGeoInfoResponse(
             geoInfo = Some(GeoInfo(
-              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              id = id,
               data = request.data)))
 
         } recover {
@@ -50,7 +49,9 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolverWrapper.delete(uri = withAppendedPath(ContentUriGeoInfo, request.geoInfo.id.toString))
+          contentResolverWrapper.deleteById(
+            nineCardsUri = GeoInfoUri,
+            id = request.geoInfo.id)
 
           DeleteGeoInfoResponse(success = true)
 
@@ -65,7 +66,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
-            uri = ContentUriGeoInfo,
+            nineCardsUri = GeoInfoUri,
             projection = AllFields))
 
           maybeCursor match {
@@ -85,8 +86,9 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
-            uri = withAppendedPath(ContentUriGeoInfo, request.id.toString),
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.queryById(
+            nineCardsUri = GeoInfoUri,
+            id = request.id,
             projection = AllFields))
 
           maybeCursor match {
@@ -108,7 +110,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
-            uri = ContentUriGeoInfo,
+            nineCardsUri = GeoInfoUri,
             projection = AllFields,
             where = s"$Constrain = ?",
             whereParams = Array(request.constrain)))
@@ -138,8 +140,9 @@ trait GeoInfoRepositoryClient extends DBUtils {
             Longitude -> request.geoInfo.data.longitude,
             System -> request.geoInfo.data.system)
 
-          contentResolverWrapper.update(
-            uri = withAppendedPath(ContentUriGeoInfo, request.geoInfo.id.toString),
+          contentResolverWrapper.updateById(
+            nineCardsUri = GeoInfoUri,
+            id = request.geoInfo.id,
             values = values)
 
           UpdateGeoInfoResponse(success = true)

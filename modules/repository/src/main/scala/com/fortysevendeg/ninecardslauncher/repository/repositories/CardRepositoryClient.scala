@@ -1,10 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import android.database.Cursor
-import android.net.Uri._
+import com.fortysevendeg.ninecardslauncher.commons.CardUri
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
-import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
@@ -37,13 +36,13 @@ trait CardRepositoryClient extends DBUtils {
             NumDownloads -> (request.data.numDownloads getOrElse ""),
             Notification -> (request.data.notification getOrElse ""))
 
-          val uri = contentResolverWrapper.insert(
-            uri = ContentUriCard,
+          val id = contentResolverWrapper.insert(
+            nineCardsUri = CardUri,
             values = values)
 
           AddCardResponse(
             card = Some(Card(
-              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              id = id,
               data = request.data)))
 
         } recover {
@@ -56,7 +55,7 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolverWrapper.delete(uri = withAppendedPath(ContentUriCard, request.card.id.toString))
+          contentResolverWrapper.deleteById(nineCardsUri = CardUri, id = request.card.id)
 
           DeleteCardResponse(success = true)
 
@@ -70,8 +69,9 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
-            uri = withAppendedPath(ContentUriCard, request.id.toString),
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.queryById(
+            nineCardsUri = CardUri,
+            id = request.id,
             projection = AllFields))
 
           maybeCursor match {
@@ -93,7 +93,7 @@ trait CardRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
-            uri = ContentUriCard,
+            nineCardsUri = CardUri,
             projection = AllFields,
             where = s"$CollectionId = ?",
             whereParams = Array(request.collectionId.toString)))
@@ -127,8 +127,9 @@ trait CardRepositoryClient extends DBUtils {
             NumDownloads -> (request.card.data.numDownloads getOrElse ""),
             Notification -> (request.card.data.notification getOrElse ""))
 
-          contentResolverWrapper.update(
-            uri = withAppendedPath(ContentUriCard, request.card.id.toString),
+          contentResolverWrapper.updateById(
+            nineCardsUri = CardUri,
+            id = request.card.id,
             values = values)
 
           UpdateCardResponse(success = true)

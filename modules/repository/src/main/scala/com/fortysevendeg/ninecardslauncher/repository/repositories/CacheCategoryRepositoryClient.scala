@@ -1,10 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import android.database.Cursor
-import android.net.Uri._
+import com.fortysevendeg.ninecardslauncher.commons.CacheCategoryUri
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
-import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
@@ -31,13 +30,13 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             RatingsCount -> request.data.ratingsCount,
             CommentCount -> request.data.commentCount)
 
-          val uri = contentResolverWrapper.insert(
-            uri = ContentUriCacheCategory,
+          val id = contentResolverWrapper.insert(
+            nineCardsUri = CacheCategoryUri,
             values = values)
 
           AddCacheCategoryResponse(
             cacheCategory = Some(CacheCategory(
-              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              id = id,
               data = request.data)))
 
         } recover {
@@ -50,8 +49,9 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolverWrapper.delete(
-            uri = withAppendedPath(ContentUriCacheCategory, request.cacheCategory.id.toString))
+          contentResolverWrapper.deleteById(
+            nineCardsUri = CacheCategoryUri,
+            id = request.cacheCategory.id)
 
           DeleteCacheCategoryResponse(success = true)
 
@@ -66,7 +66,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           contentResolverWrapper.delete(
-            uri = ContentUriCacheCategory,
+            nineCardsUri = CacheCategoryUri,
             where = s"$PackageName = ?",
             whereParams = Array(request.`package`))
 
@@ -83,7 +83,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
-            uri = ContentUriCacheCategory,
+            nineCardsUri = CacheCategoryUri,
             projection = AllFields))
 
           maybeCursor match {
@@ -103,8 +103,9 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
-            uri = withAppendedPath(ContentUriCacheCategory, request.id.toString),
+          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.queryById(
+            nineCardsUri = CacheCategoryUri,
+            id = request.id,
             projection = AllFields))
 
           maybeCursor match {
@@ -125,7 +126,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
       tryToFuture {
         Try {
           val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
-            uri = ContentUriCacheCategory,
+            nineCardsUri = CacheCategoryUri,
             projection = AllFields,
             where = s"$PackageName = ?",
             whereParams = Seq(request.`package`)))
@@ -154,8 +155,9 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             RatingsCount -> request.cacheCategory.data.ratingsCount,
             CommentCount -> request.cacheCategory.data.commentCount)
 
-          contentResolverWrapper.update(
-            uri = withAppendedPath(ContentUriCacheCategory, request.cacheCategory.id.toString),
+          contentResolverWrapper.updateById(
+            nineCardsUri = CacheCategoryUri,
+            id = request.cacheCategory.id,
             values = values
           )
 

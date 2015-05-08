@@ -1,10 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import android.net.Uri
-import android.net.Uri._
+import com.fortysevendeg.ninecardslauncher.commons.{CollectionUri, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
-import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Collection
@@ -36,13 +34,13 @@ trait CollectionRepositoryClient extends DBUtils {
             SharedCollectionId -> (request.data.sharedCollectionId getOrElse ""),
             SharedCollectionSubscribed -> request.data.sharedCollectionSubscribed)
 
-          val uri = contentResolverWrapper.insert(
-            uri = ContentUriCollection,
+          val id = contentResolverWrapper.insert(
+            nineCardsUri = CollectionUri,
             values = values)
 
           AddCollectionResponse(
             collection = Some(Collection(
-              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              id = id,
               data = request.data)))
 
         } recover {
@@ -55,7 +53,9 @@ trait CollectionRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolverWrapper.delete(uri = withAppendedPath(ContentUriCollection, request.collection.id.toString))
+          contentResolverWrapper.deleteById(
+            nineCardsUri = CollectionUri,
+            id = request.collection.id)
 
           DeleteCollectionResponse(success = true)
 
@@ -68,7 +68,7 @@ trait CollectionRepositoryClient extends DBUtils {
   def getCollectionById: Service[GetCollectionByIdRequest, GetCollectionByIdResponse] =
     request =>
       tryToFuture {
-        getCollection(uri = withAppendedPath(ContentUriCollection, request.id.toString)) map {
+        getCollectionById(id = request.id) map {
           collection => GetCollectionByIdResponse(collection)
         }
       }
@@ -117,8 +117,9 @@ trait CollectionRepositoryClient extends DBUtils {
             SharedCollectionId -> (request.collection.data.sharedCollectionId getOrElse ""),
             SharedCollectionSubscribed -> request.collection.data.sharedCollectionSubscribed)
 
-          contentResolverWrapper.update(
-            uri = withAppendedPath(ContentUriCollection, request.collection.id.toString),
+          contentResolverWrapper.updateById(
+            nineCardsUri = CollectionUri,
+            id = request.collection.id,
             values = values)
 
           UpdateCollectionResponse(success = true)
@@ -130,26 +131,40 @@ trait CollectionRepositoryClient extends DBUtils {
       }
 
   private def getCollection(
-      uri: Uri = ContentUriCollection,
+      nineCardsUri: NineCardsUri = CollectionUri,
       projection: Seq[String] = AllFields,
       selection: String = "",
       selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      Option(contentResolverWrapper.query(uri, projection, selection, selectionArgs, sortOrder)) match {
+      Option(contentResolverWrapper.query(nineCardsUri, projection, selection, selectionArgs, sortOrder)) match {
+        case Some(cursor) => getEntityFromCursor(cursor, collectionEntityFromCursor) map toCollection
+        case _ => None
+      }
+    }
+
+  private def getCollectionById(
+      nineCardsUri: NineCardsUri = CollectionUri,
+      id : Int,
+      projection: Seq[String] = AllFields,
+      selection: String = "",
+      selectionArgs: Seq[String] = Seq.empty[String],
+      sortOrder: String = "") =
+    Try {
+      Option(contentResolverWrapper.queryById(nineCardsUri, id, projection, selection, selectionArgs, sortOrder)) match {
         case Some(cursor) => getEntityFromCursor(cursor, collectionEntityFromCursor) map toCollection
         case _ => None
       }
     }
 
   private def getCollections(
-      uri: Uri = ContentUriCollection,
+      nineCardsUri: NineCardsUri = CollectionUri,
       projection: Seq[String] = AllFields,
       selection: String = "",
       selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      Option(contentResolverWrapper.query(uri, projection, selection, selectionArgs, sortOrder)) match {
+      Option(contentResolverWrapper.query(nineCardsUri, projection, selection, selectionArgs, sortOrder)) match {
         case Some(cursor) => getListFromCursor(cursor, collectionEntityFromCursor) map toCollection
         case _ => Seq.empty
       }
