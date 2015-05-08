@@ -22,7 +22,7 @@ object GeoInfoEntity {
   val Longitude = "longitude"
   val System = "system"
 
-  val AllFields = Array[String](
+  val AllFields = Seq[String](
     NineCardsSqlHelper.Id,
     Constrain,
     Occurrence,
