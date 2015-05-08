@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules
 
-import com.fortysevendeg.macroid.extras.ContextWrapperProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.modules.api.impl.ApiServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl.AppManagerServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl.GoogleConnectorServicesComponentImpl

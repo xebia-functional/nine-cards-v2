@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.modules.user.impl
 import java.io.File
 
 import android.net.Uri
-import com.fortysevendeg.macroid.extras.ContextWrapperProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.user.{SignInResponse, UserServices, UserServicesComponent}

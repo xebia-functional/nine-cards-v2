@@ -4,7 +4,7 @@ import android.accounts._
 import android.content.Context
 import android.net.Uri
 import android.os.{Build, Bundle}
-import com.fortysevendeg.macroid.extras.ContextWrapperProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.models.GoogleDevice

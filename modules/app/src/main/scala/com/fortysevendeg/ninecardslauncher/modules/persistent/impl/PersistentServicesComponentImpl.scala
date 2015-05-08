@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.persistent.impl
 
-import com.fortysevendeg.macroid.extras.ContextWrapperProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.modules.persistent.{PersistentServices, PersistentServicesComponent}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R

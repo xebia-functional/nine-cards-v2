@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 
 import android.content.Intent
-import com.fortysevendeg.macroid.extras.ContextWrapperProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.models.{NineCardIntent, AppItem}
 import com.fortysevendeg.ninecardslauncher.modules.api.{GooglePlayPackagesRequest, ApiServicesComponent, GooglePlaySimplePackagesRequest}

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository.impl
 
 import android.content.ContentResolver
-import com.fortysevendeg.macroid.extras.ContextWrapperProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.repository.Conversions
 import com.fortysevendeg.ninecardslauncher.modules.repository._

@@ -8,7 +8,7 @@ import android.content.pm.{PackageManager, ActivityInfo, ResolveInfo}
 import android.graphics._
 import android.graphics.drawable.BitmapDrawable
 import android.util.DisplayMetrics
-import com.fortysevendeg.macroid.extras.ContextWrapperProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.image.{StoreImageAppResponse, StoreImageAppRequest, ImageServices, ImageServicesComponent}
 import com.fortysevendeg.ninecardslauncher2.R
