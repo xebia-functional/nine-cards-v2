@@ -23,10 +23,10 @@ import com.fortysevendeg.ninecardslauncher.ui.launcher.CollectionItemTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ActivityContext, AppContext, Tweak, Ui}
+import macroid.{ActivityContextWrapper, ContextWrapper, Tweak, Ui}
 import com.fortysevendeg.ninecardslauncher.ui.commons.ImageResourceNamed._
 
-class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit appContext: AppContext, activityContext: ActivityContext)
+class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityContext: ActivityContextWrapper)
   extends LauncherWorkSpaceHolder
   with CollectionsGroupStyle {
 
@@ -61,12 +61,12 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit appContext
 
 }
 
-class CollectionItem(position: Int)(implicit appContext: AppContext, activityContext: ActivityContext)
-  extends FrameLayout(activityContext.get)
+class CollectionItem(position: Int)(implicit activityContext: ActivityContextWrapper)
+  extends FrameLayout(activityContext.application)
   with CollectionItemStyle
   with ComponentRegistryImpl {
 
-  override val appContextProvider: AppContext = appContext
+  override val contextProvider: ContextWrapper = activityContext
 
   var collection: Option[Collection] = None
 
@@ -87,8 +87,11 @@ class CollectionItem(position: Int)(implicit appContext: AppContext, activityCon
         collection map {
           c =>
             Ui {
-              val intent = new Intent(activityContext.get, classOf[CollectionsDetailsActivity])
-              activityContext.get.startActivity(intent)
+              activityContext.original.get map {
+                activity =>
+                  val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
+                  activity.startActivity(intent)
+              }
             }
         } getOrElse Ui.nop
       } <~ vTag(R.id.use_layer_hardware, "")

@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdapter}
 import android.view.ViewGroup
 import com.fortysevendeg.ninecardslauncher.models.Collection
-import macroid.{AppContext, Ui}
+import macroid.{ContextWrapper, Ui}
 
 import scala.collection.mutable.WeakHashMap
 
-class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections: Seq[Collection])(implicit appContext: AppContext)
+class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections: Seq[Collection])(implicit context: ContextWrapper)
   extends FragmentStatePagerAdapter(fragmentManager) {
 
   val fragments : WeakHashMap[Int, CollectionFragment] = WeakHashMap.empty

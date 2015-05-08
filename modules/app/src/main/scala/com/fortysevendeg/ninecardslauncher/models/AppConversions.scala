@@ -26,13 +26,13 @@ trait AppConversions {
     items.zipWithIndex.map (zipped => toInsertCollectionRequest(zipped._1, zipped._2, packagesNotInstalled))
 
   def toInsertCollectionRequest(userConfigCollection: UserConfigCollection, index: Int, packagesNotInstalled: Seq[String]): InsertCollectionRequest = {
-    val pos = if (index >= NumSpaces) index % NumSpaces else index
+    val color = if (index >= NumSpaces) index % NumSpaces else index
     InsertCollectionRequest(
-      position = pos,
+      position = index,
       name = userConfigCollection.name,
       `type` = userConfigCollection.collectionType,
       icon = userConfigCollection.icon,
-      themedColorIndex = pos,
+      themedColorIndex = color,
       appsCategory = userConfigCollection.category,
       constrains = None,
       originalSharedCollectionId = userConfigCollection.originalSharedCollectionId,

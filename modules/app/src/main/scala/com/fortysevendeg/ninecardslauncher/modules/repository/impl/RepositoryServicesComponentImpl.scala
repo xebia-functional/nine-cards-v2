@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository.impl
 
 import android.content.ContentResolver
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.modules.repository.Conversions
 import com.fortysevendeg.ninecardslauncher.modules.repository._
@@ -12,7 +12,7 @@ import scala.concurrent.{Future, Promise, ExecutionContext}
 trait RepositoryServicesComponentImpl
   extends RepositoryServicesComponent {
 
-  self : AppContextProvider =>
+  self : ContextWrapperProvider =>
 
   lazy val repositoryServices = new RepositoryServicesImpl
 
@@ -21,7 +21,7 @@ trait RepositoryServicesComponentImpl
     with Conversions
     with NineCardRepositoryClient {
 
-    override implicit val contentResolver: ContentResolver = appContextProvider.get.getContentResolver
+    override implicit val contentResolver: ContentResolver = contextProvider.application.getContentResolver
 
     override implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 

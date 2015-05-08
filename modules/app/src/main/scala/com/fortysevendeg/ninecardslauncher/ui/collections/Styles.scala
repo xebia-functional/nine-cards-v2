@@ -24,22 +24,22 @@ import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{AppContext, Tweak}
+import macroid.{ContextWrapper, Tweak}
 
 trait Styles {
 
   self: PersistentServicesComponent =>
 
-  def rootStyle(implicit appContext: AppContext): Tweak[FrameLayout] =
+  def rootStyle(implicit context: ContextWrapper): Tweak[FrameLayout] =
     vMatchParent +
       vFitsSystemWindows(true) +
       vBackgroundColor(persistentServices.getCollectionDetailBackgroundColor)
 
-  def toolbarStyle(implicit appContext: AppContext): Tweak[Toolbar] =
+  def toolbarStyle(implicit context: ContextWrapper): Tweak[Toolbar] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details)) +
       elevation
 
-  def iconContentStyle(implicit appContext: AppContext): Tweak[FrameLayout] = {
+  def iconContentStyle(implicit context: ContextWrapper): Tweak[FrameLayout] = {
     val size = resGetDimensionPixelSize(R.dimen.size_icon_collection_detail)
     lp[ViewGroup](size, size) +
       vBackground(R.drawable.background_icon_collection_detail) +
@@ -56,25 +56,25 @@ trait Styles {
 
   }
 
-  def iconStyle(implicit appContext: AppContext): Tweak[ImageView] =
+  def iconStyle(implicit context: ContextWrapper): Tweak[ImageView] =
     vMatchParent +
       ivScaleType(ScaleType.CENTER_INSIDE)
 
 
-  def tabsStyle(implicit appContext: AppContext): Tweak[SlidingTabLayout] =
+  def tabsStyle(implicit context: ContextWrapper): Tweak[SlidingTabLayout] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tabs_collection_details)) +
       flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_tabs_collection_details)) +
       stlDefaultTextColor(persistentServices.getCollectionDetailTextTabDefaultColor) +
       stlSelectedTextColor(persistentServices.getCollectionDetailTextTabSelectedColor) +
       elevation
 
-  def viewPagerStyle(implicit appContext: AppContext): Tweak[ViewPager] =
+  def viewPagerStyle(implicit context: ContextWrapper): Tweak[ViewPager] =
     vMatchParent +
       flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_pagers_collection_details)) +
       elevation
 
 
-  private def elevation(implicit appContext: AppContext) = Lollipop.ifSupportedThen {
+  private def elevation(implicit context: ContextWrapper) = Lollipop.ifSupportedThen {
     vElevation(resGetDimensionPixelSize(R.dimen.elevation_toolbar))
   }.getOrElse(Tweak.blank)
 
@@ -82,7 +82,7 @@ trait Styles {
 
 trait CollectionFragmentStyles {
 
-  def recyclerStyle(implicit appContext: AppContext): Tweak[RecyclerView] = {
+  def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = {
     val paddingTop = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     vMatchParent +
@@ -97,12 +97,12 @@ trait CollectionAdapterStyles {
 
   self: PersistentServicesComponent =>
 
-  def rootStyle(heightCard: Int)(implicit appContext: AppContext): Tweak[CardView] =
+  def rootStyle(heightCard: Int)(implicit context: ContextWrapper): Tweak[CardView] =
     vContentSizeMatchWidth(heightCard) +
       cvCardBackgroundColor(persistentServices.getCollectionDetailCardBackgroundColor) +
       flForeground(createBackground)
 
-  private def createBackground(implicit appContext: AppContext): Drawable = {
+  private def createBackground(implicit context: ContextWrapper): Drawable = {
     val color = persistentServices.getCollectionDetailCardBackgroundPressedColor
     Lollipop ifSupportedThen {
       new RippleDrawable(
@@ -117,18 +117,18 @@ trait CollectionAdapterStyles {
     }
   }
 
-  def contentStyle(implicit appContext: AppContext): Tweak[LinearLayout] =
+  def contentStyle(implicit context: ContextWrapper): Tweak[LinearLayout] =
     vMatchParent +
       llVertical +
       llGravity(Gravity.CENTER) +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
 
-  def iconStyle(implicit appContext: AppContext): Tweak[ImageView] = {
+  def iconStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val size = resGetDimensionPixelSize(R.dimen.size_icon_card)
     lp[ViewGroup](size, size)
   }
 
-  def nameStyle(implicit appContext: AppContext): Tweak[TextView] =
+  def nameStyle(implicit context: ContextWrapper): Tweak[TextView] =
     vMatchWidth +
       vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_default)) +
       tvColor(persistentServices.getCollectionDetailTextCardColor) +

@@ -5,13 +5,13 @@ import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{AppContext, Snail}
+import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
 
 object Snails {
 
-  def changeIcon(resDrawable: Int, fromLeft: Boolean)(implicit appContext: AppContext): Snail[ImageView] = Snail[ImageView] {
+  def changeIcon(resDrawable: Int, fromLeft: Boolean)(implicit context: ContextWrapper): Snail[ImageView] = Snail[ImageView] {
     view ⇒
       val distance = if (fromLeft) -resGetDimensionPixelSize(R.dimen.padding_default) else resGetDimensionPixelSize(R.dimen.padding_default)
       val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)

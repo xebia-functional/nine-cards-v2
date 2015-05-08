@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{AppContext, Contexts, Tweak, Ui}
+import macroid.{ContextWrapper, Contexts, Tweak, Ui}
 import CollectionFragment._
 
 class CollectionFragment
@@ -23,7 +23,7 @@ class CollectionFragment
   with CollectionFragmentLayout
   with ComponentRegistryImpl {
 
-  override implicit lazy val appContextProvider: AppContext = fragmentAppContext
+  override lazy val contextProvider: ContextWrapper = fragmentContextWrapper
 
   implicit lazy val fragment: Fragment = this
 
@@ -31,7 +31,7 @@ class CollectionFragment
 
   lazy val padding = resGetDimensionPixelSize(R.dimen.padding_small)
 
-  lazy val layoutManager = new GridLayoutManager(appContextProvider.get, NumInLine)
+  lazy val layoutManager = new GridLayoutManager(contextProvider.application, NumInLine)
 
   var sType = -1
 

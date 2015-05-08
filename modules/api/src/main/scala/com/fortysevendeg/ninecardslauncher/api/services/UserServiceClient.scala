@@ -5,7 +5,6 @@ import com.fortysevendeg.rest.client.ServiceClient
 import play.api.libs.json.{Json, Writes, Reads}
 
 import scala.concurrent.ExecutionContext
-import scala.util.{Failure, Success, Try}
 
 trait UserServiceClient {
 

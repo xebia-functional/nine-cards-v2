@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServices
 import com.fortysevendeg.ninecardslauncher.ui.commons.ToolbarLayout
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import macroid.FullDsl._
-import macroid.{ActivityContext, AppContext, IdGeneration}
+import macroid.{ContextWrapper, ActivityContextWrapper, IdGeneration}
 
 trait Layout
   extends Styles
@@ -25,7 +25,7 @@ trait Layout
 
   var icon = slot[ImageView]
 
-  def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
+  def layout(implicit context: ActivityContextWrapper) = getUi(
     l[FrameLayout](
       darkToolbar <~ toolbarStyle,
       l[FrameLayout](
@@ -43,17 +43,17 @@ trait CollectionFragmentLayout
 
   var recyclerView = slot[RecyclerView]
 
-  def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
+  def layout(implicit context: ActivityContextWrapper) = getUi(
     w[RecyclerView] <~ wire(recyclerView) <~ recyclerStyle
   )
 
 }
 
-class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContext, appContext: AppContext)
+class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContextWrapper)
   extends CollectionAdapterStyles
   with ComponentRegistryImpl {
 
-  override val appContextProvider: AppContext = appContext
+  override val contextProvider: ContextWrapper = context
 
   var icon = slot[ImageView]
 
@@ -61,7 +61,7 @@ class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContext
 
   val content = layout
 
-  private def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
+  private def layout(implicit context: ActivityContextWrapper) = getUi(
     l[CardView](
       l[LinearLayout](
         w[ImageView] <~ wire(icon) <~ iconStyle,
@@ -72,7 +72,7 @@ class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContext
 
 }
 
-class ViewHolderCollectionAdapter(adapter: CollectionLayoutAdapter)(implicit context: ActivityContext, appContext: AppContext)
+class ViewHolderCollectionAdapter(adapter: CollectionLayoutAdapter)(implicit context: ActivityContextWrapper)
   extends RecyclerView.ViewHolder(adapter.content) {
 
   val content = adapter.content

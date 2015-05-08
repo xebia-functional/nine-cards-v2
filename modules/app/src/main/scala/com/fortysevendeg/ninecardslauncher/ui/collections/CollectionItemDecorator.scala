@@ -6,9 +6,9 @@ import android.support.v7.widget.RecyclerView.State
 import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.AppContext
+import macroid.ContextWrapper
 
-class CollectionItemDecorator (implicit appContext: AppContext)
+class CollectionItemDecorator (implicit contextWrapper: ContextWrapper)
   extends RecyclerView.ItemDecoration {
 
   override def getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: State): Unit = {

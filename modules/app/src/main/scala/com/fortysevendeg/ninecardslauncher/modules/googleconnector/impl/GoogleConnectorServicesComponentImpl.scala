@@ -4,7 +4,7 @@ import android.accounts._
 import android.content.Context
 import android.net.Uri
 import android.os.{Build, Bundle}
-import com.fortysevendeg.macroid.extras.AppContextProvider
+import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.models.GoogleDevice
@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.modules.googleconnector._
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.ActivityContext
+import macroid.ActivityContextWrapper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
@@ -22,7 +22,7 @@ import scala.util.{Failure, Success, Try}
 trait GoogleConnectorServicesComponentImpl
   extends GoogleConnectorServicesComponent {
 
-  self: AppContextProvider with UserServicesComponent =>
+  self: ContextWrapperProvider with UserServicesComponent =>
 
   lazy val googleConnectorServices = new GoogleConnectorServicesImpl
 
@@ -31,11 +31,11 @@ trait GoogleConnectorServicesComponentImpl
 
     import GoogleConnector._
 
-    val preferences = appContextProvider.get.getSharedPreferences(GoogleKeyPreferentes, Context.MODE_PRIVATE)
+    val preferences = contextProvider.application.getSharedPreferences(GoogleKeyPreferentes, Context.MODE_PRIVATE)
 
-    val accountManager = AccountManager.get(appContextProvider.get)
+    val accountManager = AccountManager.get(contextProvider.application)
 
-    override def requestToken(implicit activityContext: ActivityContext): Service[RequestTokenRequest, RequestTokenResponse] =
+    override def requestToken(implicit activityContext: ActivityContextWrapper): Service[RequestTokenRequest, RequestTokenResponse] =
       request => {
         val requestPromise = Promise[RequestTokenResponse]()
         setUser(request.username)
@@ -45,7 +45,7 @@ trait GoogleConnectorServicesComponentImpl
           androidId <- userServices.getAndroidId
         } yield {
           val oauthScopes = resGetString(R.string.oauth_scopes)
-          accountManager.getAuthToken(account, oauthScopes, null, activityContext.get, new AccountManagerCallback[Bundle] {
+          accountManager.getAuthToken(account, oauthScopes, null, activityContext.getOriginal, new AccountManagerCallback[Bundle] {
             override def run(future: AccountManagerFuture[Bundle]): Unit = {
               Try {
                 val authTokenBundle: Bundle = future.getResult
@@ -57,7 +57,7 @@ trait GoogleConnectorServicesComponentImpl
                     name = Build.MODEL,
                     devideId = androidId,
                     secretToken = token,
-                    permissions = Seq(appContextProvider.get.getString(R.string.oauth_scopes))
+                    permissions = Seq(contextProvider.application.getString(R.string.oauth_scopes))
                   )
                 )
               } match {
@@ -90,7 +90,7 @@ trait GoogleConnectorServicesComponentImpl
     private def invalidateToken() {
       getToken map {
         token =>
-          val accountManager = AccountManager.get(appContextProvider.get)
+          val accountManager = AccountManager.get(contextProvider.application)
           accountManager.invalidateAuthToken(AccountType, token)
       }
       setToken(null)

@@ -40,7 +40,7 @@ trait Layout
 
   var wizardRootLayout = slot[LinearLayout]
 
-  def layout(implicit appContext: AppContext, context: ActivityContext) = getUi(
+  def layout(implicit context: ActivityContextWrapper) = getUi(
     l[FrameLayout](
       l[LinearLayout](
         w[ProgressBar],
@@ -65,20 +65,20 @@ trait Layout
     ) <~ rootStyle
   )
 
-  def addUsersToRadioGroup(accounts: Seq[Account])(implicit appContext: AppContext, context: ActivityContext): Ui[_] = {
+  def addUsersToRadioGroup(accounts: Seq[Account])(implicit context: ActivityContextWrapper): Ui[_] = {
     val radioViews = accounts map (account => userRadio(account.name, account.name))
     (usersGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui { radioViews lift 0 foreach (_.setChecked(true)) }
   }
 
-  def addDevicesToRadioGroup(devices: Seq[UserConfigDevice])(implicit appContext: AppContext, context: ActivityContext): Ui[_] = {
+  def addDevicesToRadioGroup(devices: Seq[UserConfigDevice])(implicit context: ActivityContextWrapper): Ui[_] = {
     val radioViews = (devices map (account => userRadio(account.deviceName, account.deviceId))) :+
       userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), NewConfigurationKey)
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui { radioViews lift 0 foreach (_.setChecked(true)) }
   }
 
-  private def userRadio(title: String, tag: String)(implicit appContext: AppContext, context: ActivityContext): RadioButton = getUi(
+  private def userRadio(title: String, tag: String)(implicit context: ActivityContextWrapper): RadioButton = getUi(
     w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)
   )
 

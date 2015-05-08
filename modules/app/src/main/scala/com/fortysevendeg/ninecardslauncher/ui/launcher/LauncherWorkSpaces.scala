@@ -7,15 +7,15 @@ import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants
 import com.fortysevendeg.ninecardslauncher.ui.components.AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.ui.launcher.WorkSpaceType._
-import macroid.{Ui, ActivityContext, AppContext, Tweak}
+import macroid.{Ui, ActivityContextWrapper, ContextWrapper, Tweak}
 
 import scala.annotation.tailrec
 
-class LauncherWorkSpaces(context: Context)(implicit appContext: AppContext, activityContext: ActivityContext)
+class LauncherWorkSpaces(context: Context)(implicit activityContext: ActivityContextWrapper)
   extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, null, 0)
   with ComponentRegistryImpl {
 
-  override val appContextProvider: AppContext = appContext
+  override val contextProvider: ContextWrapper = activityContext
 
   override def getItemViewTypeCount: Int = 2
 
@@ -38,8 +38,8 @@ object WorkSpaceType {
   val collections = 1
 }
 
-class LauncherWorkSpaceHolder(implicit appContext: AppContext, activityContext: ActivityContext)
-  extends FrameLayout(activityContext.get)
+class LauncherWorkSpaceHolder(implicit activityContext: ActivityContextWrapper)
+  extends FrameLayout(activityContext.application)
 
 case class LauncherData(widgets: Boolean, collections: Seq[Collection] = Seq.empty)
 

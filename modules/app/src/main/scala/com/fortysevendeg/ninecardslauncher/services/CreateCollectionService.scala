@@ -13,24 +13,27 @@ import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionR
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.ui.commons.{CardType, CollectionType, NineCardsMoments}
+import com.fortysevendeg.ninecardslauncher.ui.commons.{CollectionType, NineCardsMoments}
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCategories._
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.AppContext
+import macroid.{Contexts, ContextWrapper}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import macroid.Logging._
+import android.util.Log
 
 class CreateCollectionService
   extends Service
+  with Contexts[Service]
   with ComponentRegistryImpl
   with AppConversions {
 
-  override implicit lazy val appContextProvider: AppContext = AppContext(getApplicationContext)
+  override lazy val contextProvider: ContextWrapper = serviceContextWrapper
+
+  val Tag = "9CARDS"
 
   private var loadDeviceId: Option[String] = None
 
@@ -63,12 +66,12 @@ class CreateCollectionService
         if (response.success) {
           createConfiguration()
         } else {
-          logD"Categorize apps doesn't work"("9CARDS")
+          Log.d(Tag, "Categorize apps doesn't work")
           closeService()
         }
     } recover {
       case _ =>
-        logD"Categorize apps doesn't work (async task)"("9CARDS")
+        Log.d(Tag, "Categorize apps doesn't work (async task)")
         closeService()
     }
 
@@ -91,7 +94,7 @@ class CreateCollectionService
               } yield {
                   createCollectionFromDevice(device)
                 }) getOrElse {
-                logD"UserConfig don't created"("9CARDS")
+                Log.d(Tag, "UserConfig don't created")
                 closeService()
               }
           } getOrElse {
@@ -99,11 +102,11 @@ class CreateCollectionService
           }
       } recover {
         case ex: Throwable =>
-          logD"UserConfig endpoind failed: ${ex.getMessage}"("9CARDS")
+          Log.d(Tag, s"UserConfig endpoind failed: ${ex.getMessage}")
           closeService()
       }
     }) getOrElse {
-    logD"User unserialize failed"("9CARDS")
+    Log.d(Tag, "User unserialize failed")
     closeService()
   }
 
@@ -156,7 +159,7 @@ class CreateCollectionService
         insertFuturesInDB(insertFutures)
     } recover {
       case _ =>
-        logD"Store images of apps not installed failed"("9CARDS")
+        Log.d(Tag, "Store images of apps not installed failed")
         closeService()
     }
   }
@@ -167,7 +170,7 @@ class CreateCollectionService
         closeService()
     } recover {
       case _ =>
-        logD"Insert sequence failed"("9CARDS")
+        Log.d(Tag, "Insert sequence failed")
         closeService()
     }
   }

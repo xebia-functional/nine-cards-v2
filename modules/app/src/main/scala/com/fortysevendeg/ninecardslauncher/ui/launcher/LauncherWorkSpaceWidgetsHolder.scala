@@ -6,9 +6,9 @@ import android.widget.TextView
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import macroid.FullDsl._
-import macroid.{ActivityContext, AppContext}
+import macroid.{ActivityContextWrapper}
 
-class LauncherWorkSpaceWidgetsHolder(implicit appContext: AppContext, activityContext: ActivityContext)
+class LauncherWorkSpaceWidgetsHolder(implicit activityContext: ActivityContextWrapper)
   extends LauncherWorkSpaceHolder {
 
   var text = slot[TextView]
