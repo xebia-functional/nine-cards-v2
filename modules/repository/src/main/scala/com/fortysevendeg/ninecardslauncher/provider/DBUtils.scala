@@ -14,7 +14,7 @@ trait DBUtils {
 
   def execVersion(version: Int) = {}
 
-  def getEntityFromCursor[T](cursor: Cursor, conversionFunction: Cursor => T): Option[T] = {
+  def getEntityFromCursor[T](conversionFunction: Cursor => T)(cursor: Cursor): Option[T] = {
     val entity = cursor.moveToFirst() match {
       case true => Some(conversionFunction(cursor))
       case _ => None
@@ -24,7 +24,7 @@ trait DBUtils {
     entity
   }
 
-  def getListFromCursor[T](cursor: Cursor, conversionFunction: Cursor => T): Seq[T] = {
+  def getListFromCursor[T](conversionFunction: Cursor => T)(cursor: Cursor): Seq[T] = {
     @tailrec
     def getListFromEntityLoop(cursor: Cursor, result: Seq[T]): Seq[T] =
       cursor match {
