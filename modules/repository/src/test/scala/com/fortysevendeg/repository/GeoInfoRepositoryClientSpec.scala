@@ -3,12 +3,15 @@ package com.fortysevendeg.repository
 import com.fortysevendeg.ninecardslauncher.commons.GeoInfoUri
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.provider._
-import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
+import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfoData, GeoInfo}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import org.mockito.Mockito._
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+
+import scala.util.Random
 
 trait GeoInfoMockCursor extends MockCursor with GeoInfoTestData {
 
