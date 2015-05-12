@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.commons.CardUri
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, CardUri}
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
@@ -69,17 +68,12 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.queryById(
+          val card = contentResolverWrapper.queryById(
             nineCardsUri = CardUri,
             id = request.id,
-            projection = AllFields))
+            projection = AllFields)(getEntityFromCursor(cardEntityFromCursor), None) map toCard
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetCardByIdResponse(
-                result = getEntityFromCursor(cursor, cardEntityFromCursor) map toCard)
-            case _ => GetCardByIdResponse(result = None)
-          }
+          GetCardByIdResponse(card)
 
         } recover {
           case e: Exception =>
@@ -87,24 +81,17 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-
   def getCardByCollection: Service[GetAllCardsByCollectionRequest, GetAllCardsByCollectionResponse] =
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+          val cards = contentResolverWrapper.query(
             nineCardsUri = CardUri,
             projection = AllFields,
             where = s"$CollectionId = ?",
-            whereParams = Array(request.collectionId.toString)))
+            whereParams = Array(request.collectionId.toString))(getListFromCursor(cardEntityFromCursor), List.empty) map toCard
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetAllCardsByCollectionResponse(
-                result = getListFromCursor(cursor, cardEntityFromCursor) map toCard)
-            case _ => GetAllCardsByCollectionResponse(result = Seq.empty[Card])
-          }
-
+          GetAllCardsByCollectionResponse(cards)
         } recover {
           case e: Exception =>
             GetAllCardsByCollectionResponse(result = Seq.empty[Card])

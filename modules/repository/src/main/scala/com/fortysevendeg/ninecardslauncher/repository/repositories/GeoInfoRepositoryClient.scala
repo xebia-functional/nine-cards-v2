@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.commons.GeoInfoUri
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
@@ -65,17 +64,11 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+          val geoInfoItems = contentResolverWrapper.query(
             nineCardsUri = GeoInfoUri,
-            projection = AllFields))
+            projection = AllFields)(getListFromCursor(geoInfoEntityFromCursor), List.empty) map toGeoInfo
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetAllGeoInfoItemsResponse(
-                geoInfoItems = getListFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
-            case _ => GetAllGeoInfoItemsResponse(geoInfoItems = Seq.empty)
-          }
-
+          GetAllGeoInfoItemsResponse(geoInfoItems)
         } recover {
           case e: Exception =>
             GetAllGeoInfoItemsResponse(geoInfoItems = Seq.empty)
@@ -86,18 +79,12 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.queryById(
+          val geoInfo = contentResolverWrapper.queryById(
             nineCardsUri = GeoInfoUri,
             id = request.id,
-            projection = AllFields))
+            projection = AllFields)(getEntityFromCursor(geoInfoEntityFromCursor), None) map toGeoInfo
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetGeoInfoByIdResponse(
-                result = getEntityFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
-            case _ => GetGeoInfoByIdResponse(result = None)
-          }
-
+          GetGeoInfoByIdResponse(geoInfo)
         } recover {
           case e: Exception =>
             GetGeoInfoByIdResponse(result = None)
@@ -109,19 +96,13 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+          val geoInfo = contentResolverWrapper.query(
             nineCardsUri = GeoInfoUri,
             projection = AllFields,
             where = s"$Constrain = ?",
-            whereParams = Array(request.constrain)))
+            whereParams = Array(request.constrain))(getEntityFromCursor(geoInfoEntityFromCursor), None) map toGeoInfo
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetGeoInfoByConstrainResponse(
-                result = getEntityFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
-            case _ => GetGeoInfoByConstrainResponse(result = None)
-          }
-
+          GetGeoInfoByConstrainResponse(geoInfo)
         } recover {
           case e: Exception =>
             GetGeoInfoByConstrainResponse(result = None)

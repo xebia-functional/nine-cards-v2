@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{CollectionUri, NineCardsUri}
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, CollectionUri, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
@@ -137,24 +137,29 @@ trait CollectionRepositoryClient extends DBUtils {
       selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      Option(contentResolverWrapper.query(nineCardsUri, projection, selection, selectionArgs, sortOrder)) match {
-        case Some(cursor) => getEntityFromCursor(cursor, collectionEntityFromCursor) map toCollection
-        case _ => None
-      }
+      contentResolverWrapper.query(
+        nineCardsUri = nineCardsUri,
+        projection = projection,
+        where = selection,
+        whereParams = selectionArgs,
+        orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor), None) map toCollection
     }
 
   private def getCollectionById(
       nineCardsUri: NineCardsUri = CollectionUri,
-      id : Int,
+      id: Int,
       projection: Seq[String] = AllFields,
       selection: String = "",
       selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      Option(contentResolverWrapper.queryById(nineCardsUri, id, projection, selection, selectionArgs, sortOrder)) match {
-        case Some(cursor) => getEntityFromCursor(cursor, collectionEntityFromCursor) map toCollection
-        case _ => None
-      }
+      contentResolverWrapper.queryById(
+        nineCardsUri = nineCardsUri,
+        id = id,
+        projection = projection,
+        where = selection,
+        whereParams = selectionArgs,
+        orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor), None) map toCollection
     }
 
   private def getCollections(
@@ -164,9 +169,11 @@ trait CollectionRepositoryClient extends DBUtils {
       selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      Option(contentResolverWrapper.query(nineCardsUri, projection, selection, selectionArgs, sortOrder)) match {
-        case Some(cursor) => getListFromCursor(cursor, collectionEntityFromCursor) map toCollection
-        case _ => Seq.empty
-      }
+      contentResolverWrapper.query(
+        nineCardsUri = nineCardsUri,
+        projection = projection,
+        where = selection,
+        whereParams = selectionArgs,
+        orderBy = sortOrder)(getListFromCursor(collectionEntityFromCursor), List.empty) map toCollection
     }
 }

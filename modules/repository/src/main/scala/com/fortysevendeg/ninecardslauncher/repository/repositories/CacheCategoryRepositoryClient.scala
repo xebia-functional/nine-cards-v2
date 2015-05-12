@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.commons.CacheCategoryUri
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, CacheCategoryUri}
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
@@ -68,7 +67,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
           contentResolverWrapper.delete(
             nineCardsUri = CacheCategoryUri,
             where = s"$PackageName = ?",
-            whereParams = Array(request.`package`))
+            whereParams = Seq(request.`package`))
 
           DeleteCacheCategoryByPackageResponse(success = true)
 
@@ -82,17 +81,11 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+          val cacheCategories = contentResolverWrapper.query(
             nineCardsUri = CacheCategoryUri,
-            projection = AllFields))
+            projection = AllFields)(getListFromCursor(cacheCategoryEntityFromCursor), List.empty) map toCacheCategory
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetAllCacheCategoriesResponse(
-                cacheCategories = getListFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
-            case _ => GetAllCacheCategoriesResponse(cacheCategories = Seq.empty)
-          }
-
+          GetAllCacheCategoriesResponse(cacheCategories)
         } recover {
           case e: Exception =>
             GetAllCacheCategoriesResponse(cacheCategories = Seq.empty)
@@ -103,18 +96,12 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.queryById(
+          val cacheCategory = contentResolverWrapper.queryById(
             nineCardsUri = CacheCategoryUri,
             id = request.id,
-            projection = AllFields))
+            projection = AllFields)(getEntityFromCursor(cacheCategoryEntityFromCursor), None) map toCacheCategory
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetCacheCategoryByIdResponse(
-                result = getEntityFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
-            case _ => GetCacheCategoryByIdResponse(result = None)
-          }
-
+          GetCacheCategoryByIdResponse(cacheCategory)
         } recover {
           case e: Exception =>
             GetCacheCategoryByIdResponse(result = None)
@@ -125,18 +112,14 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolverWrapper.query(
+          val cacheCategory = contentResolverWrapper.query(
             nineCardsUri = CacheCategoryUri,
             projection = AllFields,
             where = s"$PackageName = ?",
-            whereParams = Seq(request.`package`)))
+            whereParams = Seq(request.`package`))(getEntityFromCursor(cacheCategoryEntityFromCursor), None) map toCacheCategory
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetCacheCategoryByPackageResponse(
-                result = getEntityFromCursor(cursor, cacheCategoryEntityFromCursor) map toCacheCategory)
-            case _ => GetCacheCategoryByPackageResponse(result = None)
-          }
+          
+          GetCacheCategoryByPackageResponse(cacheCategory)
         } recover {
           case e: Exception =>
             GetCacheCategoryByPackageResponse(result = None)
