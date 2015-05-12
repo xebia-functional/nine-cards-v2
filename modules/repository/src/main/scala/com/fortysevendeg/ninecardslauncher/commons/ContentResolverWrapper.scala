@@ -1,17 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.repository.repositories
+package com.fortysevendeg.ninecardslauncher.commons
 
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri._
-import com.fortysevendeg.ninecardslauncher.commons.{NineCardsUri, ContentResolverProvider}
 import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 
 trait ContentResolverWrapper {
   def insert(nineCardsUri: NineCardsUri, values: Map[String, Any]): Int
   def delete(nineCardsUri: NineCardsUri, where: String = "", whereParams: Seq[String] = Seq.empty): Int
   def deleteById(nineCardsUri: NineCardsUri, id: Int, where: String = "", whereParams: Seq[String] = Seq.empty): Int
-  def query(nineCardsUri: NineCardsUri, projection: Seq[String], where: String = "", whereParams: Seq[String] = Seq.empty, orderBy: String = ""): Cursor
-  def queryById(nineCardsUri: NineCardsUri, id: Int, projection: Seq[String], where: String = "", whereParams: Seq[String] = Seq.empty, orderBy: String = ""): Cursor
+  def query[T](nineCardsUri: NineCardsUri, projection: Seq[String], where: String = "", whereParams: Seq[String] = Seq.empty, orderBy: String = "")(f: (Cursor) => T, defaultValue: T): T
+  def queryById[T](nineCardsUri: NineCardsUri, id: Int, projection: Seq[String], where: String = "", whereParams: Seq[String] = Seq.empty, orderBy: String = "")(f: (Cursor) => T, defaultValue: T): T
   def update(nineCardsUri: NineCardsUri, values: Map[String, Any], where: String = "", whereParams: Seq[String] = Seq.empty): Int
   def updateById(nineCardsUri: NineCardsUri, id: Int, values: Map[String, Any], where: String = "", whereParams: Seq[String] = Seq.empty): Int
 }
@@ -62,20 +61,28 @@ trait ContentResolverWrapperComponentImpl extends ContentResolverWrapperComponen
         whereParams: Seq[String] = Seq.empty): Int =
       contentResolver.delete(withAppendedPath(getUri(nineCardsUri), id.toString), where, whereParams.toArray)
 
-    override def query(
+    override def query[T](
         nineCardsUri: NineCardsUri,
         projection: Seq[String],
         where: String = "",
         whereParams: Seq[String] = Seq.empty,
-        orderBy: String = ""): Cursor = contentResolver.query(getUri(nineCardsUri), projection.toArray, where, whereParams.toArray, orderBy)
+        orderBy: String = "")(f: (Cursor) => T, defaultValue: T): T =
+      Option(contentResolver.query(getUri(nineCardsUri), projection.toArray, where, whereParams.toArray, orderBy)) match {
+        case None => defaultValue
+        case Some(cursor) => f(cursor)
+      }
 
-    override def queryById(
+    override def queryById[T](
         nineCardsUri: NineCardsUri,
         id: Int,
         projection: Seq[String],
         where: String = "",
         whereParams: Seq[String] = Seq.empty,
-        orderBy: String = ""): Cursor = contentResolver.query(withAppendedPath(getUri(nineCardsUri), id.toString), projection.toArray, where, whereParams.toArray, orderBy)
+        orderBy: String = "")(f: (Cursor) => T, defaultValue: T): T =
+      Option(contentResolver.query(withAppendedPath(getUri(nineCardsUri), id.toString), projection.toArray, where, whereParams.toArray, orderBy)) match {
+        case None => defaultValue
+        case Some(cursor) => f(cursor)
+      }
 
     def map2ContentValue(values: Map[String, Any]) = {
       val contentValues = new ContentValues()
@@ -94,6 +101,7 @@ trait ContentResolverWrapperComponentImpl extends ContentResolverWrapperComponen
 
       contentValues
     }
+
   }
 
 }
