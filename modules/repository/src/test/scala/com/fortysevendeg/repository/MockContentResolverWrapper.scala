@@ -39,20 +39,27 @@ trait MockContentResolverWrapper extends ContentResolverWrapperComponent with Mo
         where: String = "",
         whereParams: Seq[String] = Seq.empty): Int = Random.nextInt(1)
 
-    override def query[T](
+    override def fetch[T](
         nineCardsUri: NineCardsUri,
         projection: Seq[String],
         where: String = "",
         whereParams: Seq[String] = Seq.empty,
-        orderBy: String = "")(f: (Cursor) => T, defaultValue: T): T = ???
+        orderBy: String = "")(f: (Cursor) => Option[T]): Option[T] = None
 
-    override def queryById[T](
+    override def fetchAll[T](
+        nineCardsUri: NineCardsUri,
+        projection: Seq[String],
+        where: String = "",
+        whereParams: Seq[String] = Seq.empty,
+        orderBy: String = "")(f: (Cursor) => Seq[T]): Seq[T] = Seq.empty
+
+    override def findById[T](
         nineCardsUri: NineCardsUri,
         id: Int,
         projection: Seq[String],
         where: String = "",
         whereParams: Seq[String] = Seq.empty,
-        orderBy: String = "")(f: (Cursor) => T, defaultValue: T): T = ???
+        orderBy: String = "")(f: (Cursor) => Option[T]): Option[T] = None
   }
 
 }
