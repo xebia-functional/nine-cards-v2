@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, CacheCategoryUri}
+import com.fortysevendeg.ninecardslauncher.commons.{CacheCategoryUri, ContentResolverWrapperComponent}
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.utils._
 
 import scala.concurrent.ExecutionContext
 import scala.util.Try
+import scala.util.control.NonFatal
 
 trait CacheCategoryRepositoryClient extends DBUtils {
 
@@ -39,8 +40,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
               data = request.data)))
 
         } recover {
-          case e: Exception =>
-            AddCacheCategoryResponse(cacheCategory = None)
+          case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
@@ -52,11 +52,10 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             nineCardsUri = CacheCategoryUri,
             id = request.cacheCategory.id)
 
-          DeleteCacheCategoryResponse(success = true)
+          DeleteCacheCategoryResponse()
 
         } recover {
-          case e: Exception =>
-            DeleteCacheCategoryResponse(success = false)
+          case NonFatal(e) => throw RepositoryDeleteException()
         }
       }
 
@@ -69,11 +68,10 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             where = s"$PackageName = ?",
             whereParams = Seq(request.`package`))
 
-          DeleteCacheCategoryByPackageResponse(success = true)
+          DeleteCacheCategoryByPackageResponse()
 
         } recover {
-          case e: Exception =>
-            DeleteCacheCategoryByPackageResponse(success = false)
+          case NonFatal(e) => throw RepositoryDeleteException()
         }
       }
 
@@ -118,7 +116,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             where = s"$PackageName = ?",
             whereParams = Seq(request.`package`))(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
-          
+
           GetCacheCategoryByPackageResponse(cacheCategory)
         } recover {
           case e: Exception =>
@@ -144,11 +142,10 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             values = values
           )
 
-          UpdateCacheCategoryResponse(success = true)
+          UpdateCacheCategoryResponse()
 
         } recover {
-          case e: Exception =>
-            UpdateCacheCategoryResponse(success = false)
+          case NonFatal(e) => throw RepositoryUpdateException()
         }
       }
 }

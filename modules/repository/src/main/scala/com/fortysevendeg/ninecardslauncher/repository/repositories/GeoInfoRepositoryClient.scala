@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.utils._
 
 import scala.concurrent.ExecutionContext
 import scala.util.Try
+import scala.util.control.NonFatal
 
 trait GeoInfoRepositoryClient extends DBUtils {
 
@@ -39,8 +40,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
               data = request.data)))
 
         } recover {
-          case e: Exception =>
-            AddGeoInfoResponse(geoInfo = None)
+          case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
@@ -52,11 +52,10 @@ trait GeoInfoRepositoryClient extends DBUtils {
             nineCardsUri = GeoInfoUri,
             id = request.geoInfo.id)
 
-          DeleteGeoInfoResponse(success = true)
+          DeleteGeoInfoResponse()
 
         } recover {
-          case e: Exception =>
-            DeleteGeoInfoResponse(success = false)
+          case NonFatal(e) => throw RepositoryDeleteException()
         }
       }
 
@@ -126,11 +125,10 @@ trait GeoInfoRepositoryClient extends DBUtils {
             id = request.geoInfo.id,
             values = values)
 
-          UpdateGeoInfoResponse(success = true)
+          UpdateGeoInfoResponse()
 
         } recover {
-          case e: Exception =>
-            UpdateGeoInfoResponse(success = false)
+          case NonFatal(e) => throw RepositoryUpdateException()
         }
       }
 }

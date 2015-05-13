@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, CardUri}
+import com.fortysevendeg.ninecardslauncher.commons.{CardUri, ContentResolverWrapperComponent}
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.utils._
 
 import scala.concurrent.ExecutionContext
 import scala.util.Try
+import scala.util.control.NonFatal
 
 trait CardRepositoryClient extends DBUtils {
 
@@ -45,8 +46,7 @@ trait CardRepositoryClient extends DBUtils {
               data = request.data)))
 
         } recover {
-          case e: Exception =>
-            AddCardResponse(card = None)
+          case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
@@ -56,11 +56,10 @@ trait CardRepositoryClient extends DBUtils {
         Try {
           contentResolverWrapper.deleteById(nineCardsUri = CardUri, id = request.card.id)
 
-          DeleteCardResponse(success = true)
+          DeleteCardResponse()
 
         } recover {
-          case e: Exception =>
-            DeleteCardResponse(success = false)
+          case NonFatal(e) => throw RepositoryDeleteException()
         }
       }
 
@@ -119,11 +118,10 @@ trait CardRepositoryClient extends DBUtils {
             id = request.card.id,
             values = values)
 
-          UpdateCardResponse(success = true)
+          UpdateCardResponse()
 
         } recover {
-          case e: Exception =>
-            UpdateCardResponse(success = false)
+          case NonFatal(e) => throw RepositoryUpdateException()
         }
       }
 }

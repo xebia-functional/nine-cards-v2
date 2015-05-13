@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.utils._
 
 import scala.concurrent.ExecutionContext
 import scala.util.Try
+import scala.util.control.NonFatal
 
 trait CollectionRepositoryClient extends DBUtils {
 
@@ -43,8 +44,7 @@ trait CollectionRepositoryClient extends DBUtils {
               data = request.data)))
 
         } recover {
-          case e: Exception =>
-            AddCollectionResponse(collection = None)
+          case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
@@ -56,11 +56,10 @@ trait CollectionRepositoryClient extends DBUtils {
             nineCardsUri = CollectionUri,
             id = request.collection.id)
 
-          DeleteCollectionResponse(success = true)
+          DeleteCollectionResponse()
 
         } recover {
-          case e: Exception =>
-            DeleteCollectionResponse(success = false)
+          case NonFatal(e) => throw RepositoryDeleteException()
         }
       }
 
@@ -121,11 +120,10 @@ trait CollectionRepositoryClient extends DBUtils {
             id = request.collection.id,
             values = values)
 
-          UpdateCollectionResponse(success = true)
+          UpdateCollectionResponse()
 
         } recover {
-          case e: Exception =>
-            UpdateCollectionResponse(success = false)
+          case NonFatal(e) => throw RepositoryUpdateException()
         }
       }
 
