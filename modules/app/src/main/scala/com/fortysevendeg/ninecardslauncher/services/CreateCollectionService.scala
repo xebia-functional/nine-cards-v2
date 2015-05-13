@@ -62,16 +62,13 @@ class CreateCollectionService
     startForeground(NotificationId, builder.build)
 
     appManagerServices.categorizeApps(CategorizeAppsRequest()) map {
-      response =>
-        if (response.success) {
-          createConfiguration()
-        } else {
-          Log.d(Tag, "Categorize apps doesn't work")
-          closeService()
-        }
+      response => createConfiguration()
     } recover {
+      case ex: CategorizeAppsException =>
+        Log.d(Tag, ex.getMessage)
+        closeService()
       case _ =>
-        Log.d(Tag, "Categorize apps doesn't work (async task)")
+        Log.d(Tag, "Categorize apps unexpected exception")
         closeService()
     }
 

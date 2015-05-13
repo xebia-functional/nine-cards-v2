@@ -10,7 +10,7 @@ import android.widget.RadioButton
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.api.GetUserConfigRequest
-import com.fortysevendeg.ninecardslauncher.modules.googleconnector.RequestTokenRequest
+import com.fortysevendeg.ninecardslauncher.modules.googleconnector.{GoogleOperationCanceledException, RequestTokenRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -71,14 +71,9 @@ class WizardActivity
   private def selectUser = Transformer {
     case i: RadioButton if i.isChecked =>
       googleConnectorServices.requestToken(activityContextWrapper)(RequestTokenRequest(i.getTag.toString)) map {
-        response =>
-          if (response.success) {
-            runUi(showLoading ~ Ui(searchDevices()))
-          } else {
-            val resString = if (response.canceled) R.string.canceledGooglePermission else R.string.errorConnectingGoogle
-            runUi(uiShortToast(resString) ~ showUser)
-          }
+        response => runUi(showLoading ~ Ui(searchDevices()))
       } recover {
+        case ex: GoogleOperationCanceledException => runUi(uiShortToast(R.string.canceledGooglePermission) ~ showUser)
         case _ => runUi(uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
       }
       showLoading

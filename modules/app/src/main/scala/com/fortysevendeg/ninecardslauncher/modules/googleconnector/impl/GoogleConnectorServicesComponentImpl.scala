@@ -64,18 +64,19 @@ trait GoogleConnectorServicesComponentImpl
                 case Success(loginRequest) =>
                   userServices.signIn(loginRequest) map {
                     response =>
-                      requestPromise.success(RequestTokenResponse(response.success))
+                      requestPromise.success(RequestTokenResponse())
                   } recover {
-                    case _ => requestPromise.success(RequestTokenResponse(false))
+                    case ex: Throwable => requestPromise.failure(ex)
+                    case _ => requestPromise.failure(GoogleUnexpectedException())
                   }
                 case Failure(ex) => ex match {
-                  case ex: OperationCanceledException => requestPromise.success(RequestTokenResponse(false, true))
-                  case _ => requestPromise.success(RequestTokenResponse(false))
+                  case ex: OperationCanceledException => requestPromise.failure(GoogleOperationCanceledException())
+                  case _ => requestPromise.failure(GoogleUnexpectedException())
                 }
               }
             }
           }, null)
-        }) getOrElse requestPromise.success(RequestTokenResponse(false))
+        }) getOrElse requestPromise.failure(GoogleUnexpectedException())
         requestPromise.future
       }
 

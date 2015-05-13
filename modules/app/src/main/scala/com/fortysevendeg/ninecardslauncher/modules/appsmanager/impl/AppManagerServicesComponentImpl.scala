@@ -120,8 +120,8 @@ trait AppManagerServicesComponentImpl
           packagesWithoutCategory = apps.filter(_.category.isEmpty) map (_.packageName)
           GooglePlaySimplePackagesResponse(_, packages) <- googlePlaySimplePackages(packagesWithoutCategory)
           _ <- insertRespositories(packages)
-        } yield CategorizeAppsResponse(true)).recover {
-          case _ => CategorizeAppsResponse(false)
+        } yield CategorizeAppsResponse()).recover {
+          case _ => throw CategorizeAppsException()
         }
 
     private def insertRespositories(packages: GooglePlaySimplePackages): Future[Seq[InsertCacheCategoryResponse]] =
@@ -137,6 +137,7 @@ trait AppManagerServicesComponentImpl
           ))
       })
 
+    // TODO These methods should be remove when we'll add android and tocken in Api Component in ticket 9C-151
     private def googlePlaySimplePackages(packages: Seq[String]): Future[GooglePlaySimplePackagesResponse] =
       (for {
         user <- userServices.getUser
