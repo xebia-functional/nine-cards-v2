@@ -75,7 +75,7 @@ trait AppManagerServicesComponentImpl
           GooglePlayPackagesResponse(_, packages) <- googlePlayPackages(packagesNoFound)
           storeImageResponses <- storeImages(packages)
         } yield {
-          PackagesResponse(storeImageResponses.flatMap(_.packageName))
+          PackagesResponse(storeImageResponses flatMap (_.packageName))
         }).recover {
           case _ => PackagesResponse(Seq.empty)
         }

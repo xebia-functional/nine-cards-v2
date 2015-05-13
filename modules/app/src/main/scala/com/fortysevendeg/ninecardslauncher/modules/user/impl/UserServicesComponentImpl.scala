@@ -75,9 +75,9 @@ trait UserServicesComponentImpl
                     synchronizeInstallation()
                 }
                 SignInResponse(response.statusCode)
-            } getOrElse(throw new UserNotFoundException())
+            } getOrElse(throw UserNotFoundException())
         } recover {
-          case _ => throw new UserUnexpectedException()
+          case _ => throw UserUnexpectedException()
         }
       }
 

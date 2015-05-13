@@ -2,13 +2,11 @@ package com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl
 
 import android.accounts._
 import android.content.Context
-import android.net.Uri
 import android.os.{Build, Bundle}
-import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.commons.{ContextWrapperProvider, Service}
 import com.fortysevendeg.ninecardslauncher.models.GoogleDevice
-import com.fortysevendeg.ninecardslauncher.modules.api.{ApiServicesComponent, LoginRequest}
+import com.fortysevendeg.ninecardslauncher.modules.api.LoginRequest
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector._
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
