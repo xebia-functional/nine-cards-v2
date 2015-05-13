@@ -153,7 +153,7 @@ trait CacheCategoryTestSupport
     whereParams = Seq(nonExistingPackageName))(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(None)
 
-  when(contentResolverWrapper.update(CacheCategoryUri, createCacheCategoryValues)).thenReturn(1)
+  when(contentResolverWrapper.updateById(CacheCategoryUri, cacheCategoryId, createCacheCategoryValues)).thenReturn(1)
 }
 
 class CacheCategoryRepositoryClientSpec
@@ -173,53 +173,53 @@ class CacheCategoryRepositoryClientSpec
     }
 
     "deleteCacheCategory should return a successful response when a valid cache category id is given" in {
-      val result = await(deleteCacheCategory(createDeleteCacheCategoryRequest))
+      val response = await(deleteCacheCategory(createDeleteCacheCategoryRequest))
 
-      result.success shouldEqual true
+      response.deleted shouldEqual 1
     }
 
     "deleteCacheCategoryByPackage should return a successful response when a valid package name is given" in {
-      val result = await(deleteCacheByPackageCategory(createDeleteCacheCategoryByPackageRequest))
+      val response = await(deleteCacheByPackageCategory(createDeleteCacheCategoryByPackageRequest))
 
-      result.success shouldEqual true
+      response.deleted shouldEqual 1
     }
 
     "getAllCacheCategories should return all the cache categories stored in the database" in {
-      val result = await(getAllCacheCategories(createGetAllCacheCategoriesRequest))
+      val response = await(getAllCacheCategories(createGetAllCacheCategoriesRequest))
 
-      result.cacheCategories shouldEqual cacheCategorySeq
+      response.cacheCategories shouldEqual cacheCategorySeq
     }
 
     "getCacheCategoryById should return a CacheCategory object when a existing id is given" in {
-      val result = await(getCacheCategoryById(createGetCacheCategoryByIdRequest(id = cacheCategoryId)))
+      val response = await(getCacheCategoryById(createGetCacheCategoryByIdRequest(id = cacheCategoryId)))
 
-      result.result.get.id shouldEqual cacheCategoryId
-      result.result.get.data.packageName shouldEqual packageName
+      response.result.get.id shouldEqual cacheCategoryId
+      response.result.get.data.packageName shouldEqual packageName
     }
 
     "getCacheCategoryById should return None when a non-existing id is given" in {
-      val result = await(getCacheCategoryById(createGetCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
+      val response = await(getCacheCategoryById(createGetCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
 
-      result.result shouldEqual None
+      response.result shouldEqual None
     }
 
     "getCacheCategoryByPackage should return a CacheCategory object when a existing package name is given" in {
-      val result = await(getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = packageName)))
+      val response = await(getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = packageName)))
 
-      result.result.get.id shouldEqual cacheCategoryId
-      result.result.get.data.packageName shouldEqual packageName
+      response.result.get.id shouldEqual cacheCategoryId
+      response.result.get.data.packageName shouldEqual packageName
     }
 
     "getCacheCategoryByPackage should return None when a non-existing package name is given" in {
-      val result = await(getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = nonExistingPackageName)))
+      val response = await(getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = nonExistingPackageName)))
 
-      result.result shouldEqual None
+      response.result shouldEqual None
     }
 
     "updateCacheCategory should return a successful response when the cache category is updated" in {
-      val result = await(updateCacheCategory(createUpdateCacheCategoryRequest))
+      val response = await(updateCacheCategory(createUpdateCacheCategoryRequest))
 
-      result.success shouldEqual true
+      response.updated shouldEqual 1
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in

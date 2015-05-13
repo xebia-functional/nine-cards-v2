@@ -212,7 +212,7 @@ trait CollectionTestSupport
     orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(None)
 
-  when(contentResolverWrapper.update(CollectionUri, createCollectionValues)).thenReturn(1)
+  when(contentResolverWrapper.updateById(CollectionUri, collectionId, createCollectionValues)).thenReturn(1)
 }
 
 class CollectionRepositoryClientSpec
@@ -235,7 +235,7 @@ class CollectionRepositoryClientSpec
     "deleteCollection should return a successful response when a valid cache category id is given" in {
       val response = await(deleteCollection(createDeleteCollectionRequest))
 
-      response.success shouldEqual true
+      response.deleted shouldEqual 1
     }
 
     "getCollectionById should return a Collection object when a existing id is given" in {
@@ -286,7 +286,7 @@ class CollectionRepositoryClientSpec
     "updateCollection should return a successful response when the collection is updated" in {
       val response = await(updateCollection(createUpdateCollectionRequest))
 
-      response.success shouldEqual true
+      response.updated shouldEqual 1
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in

@@ -147,7 +147,7 @@ trait GeoInfoTestSupport
     whereParams = Seq(nonExistingConstrain))(
         f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(None)
 
-  when(contentResolverWrapper.update(GeoInfoUri, createGeoInfoValues)).thenReturn(1)
+  when(contentResolverWrapper.updateById(GeoInfoUri, geoInfoId, createGeoInfoValues)).thenReturn(1)
 }
 
 class GeoInfoRepositoryClientSpec
@@ -160,54 +160,54 @@ class GeoInfoRepositoryClientSpec
 
     "addGeoInfo should return a valid GeoInfo object" in {
 
-      val result = await(addGeoInfo(createAddGeoInfoRequest))
+      val response = await(addGeoInfo(createAddGeoInfoRequest))
 
-      result.geoInfo.get.id shouldEqual geoInfoId
-      result.geoInfo.get.data.constrain shouldEqual constrain
+      response.geoInfo.get.id shouldEqual geoInfoId
+      response.geoInfo.get.data.constrain shouldEqual constrain
     }
 
     "deleteGeoInfo should return a successful response when a valid geoInfo id is given" in {
-      val result = await(deleteGeoInfo(createDeleteGeoInfoRequest))
+      val response = await(deleteGeoInfo(createDeleteGeoInfoRequest))
 
-      result.success shouldEqual true
+      response.deleted shouldEqual 1
     }
 
     "getAllGeoInfoItems should return all the geoInfo items stored in the database" in {
-      val result = await(getAllGeoInfoItems(createGetAllGeoInfoItemsRequest))
+      val response = await(getAllGeoInfoItems(createGetAllGeoInfoItemsRequest))
 
-      result.geoInfoItems shouldEqual geoInfoSeq
+      response.geoInfoItems shouldEqual geoInfoSeq
     }
 
     "getGeoInfoById should return a GeoInfo object when a existing id is given" in {
-      val result = await(getGeoInfoById(createGetGeoInfoByIdRequest(id = geoInfoId)))
+      val response = await(getGeoInfoById(createGetGeoInfoByIdRequest(id = geoInfoId)))
 
-      result.result.get.id shouldEqual geoInfoId
-      result.result.get.data.constrain shouldEqual constrain
+      response.result.get.id shouldEqual geoInfoId
+      response.result.get.data.constrain shouldEqual constrain
     }
 
     "getGeoInfoById should return None when a non-existing id is given" in {
-      val result = await(getGeoInfoById(createGetGeoInfoByIdRequest(id = nonExistingGeoInfoId)))
+      val response = await(getGeoInfoById(createGetGeoInfoByIdRequest(id = nonExistingGeoInfoId)))
 
-      result.result shouldEqual None
+      response.result shouldEqual None
     }
 
     "getGeoInfoByConstrain should return a GeoInfo object when a existing constrain is given" in {
-      val result = await(getGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = constrain)))
+      val response = await(getGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = constrain)))
 
-      result.result.get.id shouldEqual geoInfoId
-      result.result.get.data.constrain shouldEqual constrain
+      response.result.get.id shouldEqual geoInfoId
+      response.result.get.data.constrain shouldEqual constrain
     }
 
     "getGeoInfoByConstrain should return None when a non-existing constrain is given" in {
-      val result = await(getGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = nonExistingConstrain)))
+      val response = await(getGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = nonExistingConstrain)))
 
-      result.result shouldEqual None
+      response.result shouldEqual None
     }
 
     "updateGeoInfo should return a successful response when the geoInfo item is updated" in {
-      val result = await(updateGeoInfo(createUpdateGeoInfoRequest))
+      val response = await(updateGeoInfo(createUpdateGeoInfoRequest))
 
-      result.success shouldEqual true
+      response.updated shouldEqual 1
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in

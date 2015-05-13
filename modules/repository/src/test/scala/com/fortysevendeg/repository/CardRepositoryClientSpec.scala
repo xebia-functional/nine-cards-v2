@@ -107,9 +107,21 @@ trait CardTestData {
       numDownloads = numDownloadsOption,
       notification = notificationOption)))
 
-  def createCardValues = Map[String, Any](
+  def createInsertCardValues = Map[String, Any](
     Position -> position,
     CollectionId -> collectionId,
+    Term -> term,
+    PackageName -> (packageNameOption getOrElse ""),
+    Type -> `type`,
+    Intent -> intent,
+    ImagePath -> imagePath,
+    StarRating -> (starRatingOption getOrElse 0.0d),
+    Micros -> micros,
+    NumDownloads -> (numDownloadsOption getOrElse ""),
+    Notification -> (notificationOption getOrElse ""))
+
+  def createUpdateCardValues = Map[String, Any](
+    Position -> position,
     Term -> term,
     PackageName -> (packageNameOption getOrElse ""),
     Type -> `type`,
@@ -147,7 +159,7 @@ trait CardTestSupport
 
   def createUpdateCardRequest = UpdateCardRequest(card = card)
 
-  when(contentResolverWrapper.insert(CardUri, createCardValues)).thenReturn(cardId)
+  when(contentResolverWrapper.insert(CardUri, createInsertCardValues)).thenReturn(cardId)
 
   when(contentResolverWrapper.deleteById(CardUri, cardId)).thenReturn(1)
 
@@ -177,7 +189,7 @@ trait CardTestSupport
     whereParams = Seq(nonExistingCollectionId.toString))(
         f = getListFromCursor(cardEntityFromCursor))).thenReturn(Seq.empty)
 
-  when(contentResolverWrapper.update(CardUri, createCardValues)).thenReturn(1)
+  when(contentResolverWrapper.updateById(nineCardsUri = CardUri, id = card.id, values = createUpdateCardValues)).thenReturn(1)
 }
 
 class CardRepositoryClientSpec
@@ -200,7 +212,7 @@ class CardRepositoryClientSpec
     "deleteCard should return a successful response when a valid cache category id is given" in {
       val response = await(deleteCard(createDeleteCardRequest))
 
-      response.success shouldEqual true
+      response.deleted shouldEqual 1
     }
 
     "getCardById should return a Card object when a existing id is given" in {
@@ -231,7 +243,7 @@ class CardRepositoryClientSpec
     "updateCard should return a successful response when the card is updated" in {
       val response = await(updateCard(createUpdateCardRequest))
 
-      response.success shouldEqual true
+      response.updated shouldEqual 1
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in
