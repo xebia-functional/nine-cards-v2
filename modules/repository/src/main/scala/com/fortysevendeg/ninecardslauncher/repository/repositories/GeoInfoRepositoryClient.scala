@@ -64,9 +64,9 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val geoInfoItems = contentResolverWrapper.query(
+          val geoInfoItems = contentResolverWrapper.fetchAll(
             nineCardsUri = GeoInfoUri,
-            projection = AllFields)(getListFromCursor(geoInfoEntityFromCursor), List.empty) map toGeoInfo
+            projection = AllFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
           GetAllGeoInfoItemsResponse(geoInfoItems)
         } recover {
@@ -79,10 +79,10 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val geoInfo = contentResolverWrapper.queryById(
+          val geoInfo = contentResolverWrapper.findById(
             nineCardsUri = GeoInfoUri,
             id = request.id,
-            projection = AllFields)(getEntityFromCursor(geoInfoEntityFromCursor), None) map toGeoInfo
+            projection = AllFields)(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
           GetGeoInfoByIdResponse(geoInfo)
         } recover {
@@ -96,11 +96,11 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val geoInfo = contentResolverWrapper.query(
+          val geoInfo = contentResolverWrapper.fetch(
             nineCardsUri = GeoInfoUri,
             projection = AllFields,
             where = s"$Constrain = ?",
-            whereParams = Array(request.constrain))(getEntityFromCursor(geoInfoEntityFromCursor), None) map toGeoInfo
+            whereParams = Array(request.constrain))(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
           GetGeoInfoByConstrainResponse(geoInfo)
         } recover {

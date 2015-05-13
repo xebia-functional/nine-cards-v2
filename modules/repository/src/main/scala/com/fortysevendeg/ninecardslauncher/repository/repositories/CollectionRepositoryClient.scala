@@ -136,12 +136,12 @@ trait CollectionRepositoryClient extends DBUtils {
       selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      contentResolverWrapper.query(
+      contentResolverWrapper.fetch(
         nineCardsUri = nineCardsUri,
         projection = projection,
         where = selection,
         whereParams = selectionArgs,
-        orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor), None) map toCollection
+        orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
     }
 
   private def getCollectionById(
@@ -152,13 +152,13 @@ trait CollectionRepositoryClient extends DBUtils {
       selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      contentResolverWrapper.queryById(
+      contentResolverWrapper.findById(
         nineCardsUri = nineCardsUri,
         id = id,
         projection = projection,
         where = selection,
         whereParams = selectionArgs,
-        orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor), None) map toCollection
+        orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
     }
 
   private def getCollections(
@@ -168,11 +168,11 @@ trait CollectionRepositoryClient extends DBUtils {
       selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      contentResolverWrapper.query(
+      contentResolverWrapper.fetchAll(
         nineCardsUri = nineCardsUri,
         projection = projection,
         where = selection,
         whereParams = selectionArgs,
-        orderBy = sortOrder)(getListFromCursor(collectionEntityFromCursor), List.empty) map toCollection
+        orderBy = sortOrder)(getListFromCursor(collectionEntityFromCursor)) map toCollection
     }
 }

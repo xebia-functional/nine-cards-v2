@@ -151,35 +151,31 @@ trait CardTestSupport
 
   when(contentResolverWrapper.deleteById(CardUri, cardId)).thenReturn(1)
 
-  when(contentResolverWrapper.queryById(
+  when(contentResolverWrapper.findById(
     nineCardsUri = CardUri,
     id = cardId,
     projection = AllFields)(
-        f = getEntityFromCursor(cardEntityFromCursor),
-        defaultValue = None)).thenReturn(Some(cardEntity))
+        f = getEntityFromCursor(cardEntityFromCursor))).thenReturn(Some(cardEntity))
 
-  when(contentResolverWrapper.queryById(
+  when(contentResolverWrapper.findById(
     nineCardsUri = CardUri,
     id = nonExistingCardId,
     projection = AllFields)(
-        f = getEntityFromCursor(cardEntityFromCursor),
-        defaultValue = None)).thenReturn(None)
+        f = getEntityFromCursor(cardEntityFromCursor))).thenReturn(None)
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetchAll(
     nineCardsUri = CardUri,
     projection = AllFields,
     where = s"$CollectionId = ?",
     whereParams = Seq(collectionId.toString))(
-        f = getListFromCursor(cardEntityFromCursor),
-        defaultValue = Seq.empty)).thenReturn(cardEntitySeq)
+        f = getListFromCursor(cardEntityFromCursor))).thenReturn(cardEntitySeq)
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetchAll(
     nineCardsUri = CardUri,
     projection = AllFields,
     where = s"$CollectionId = ?",
     whereParams = Seq(nonExistingCollectionId.toString))(
-        f = getListFromCursor(cardEntityFromCursor),
-        defaultValue = Seq.empty)).thenReturn(Seq.empty)
+        f = getListFromCursor(cardEntityFromCursor))).thenReturn(Seq.empty)
 
   when(contentResolverWrapper.update(CardUri, createCardValues)).thenReturn(1)
 }

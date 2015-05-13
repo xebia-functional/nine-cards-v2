@@ -154,70 +154,63 @@ trait CollectionTestSupport
 
   when(contentResolverWrapper.deleteById(CollectionUri, collectionId)).thenReturn(1)
 
-  when(contentResolverWrapper.queryById(
+  when(contentResolverWrapper.findById(
     nineCardsUri = CollectionUri,
     id = collectionId,
     projection = AllFields,
     where = "",
     whereParams = Seq.empty,
     orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor),
-        defaultValue = None)).thenReturn(Some(collectionEntity))
+        f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(Some(collectionEntity))
 
-  when(contentResolverWrapper.queryById(
+  when(contentResolverWrapper.findById(
     nineCardsUri = CollectionUri,
     id = nonExistingCollectionId,
     projection = AllFields,
     where = "",
     whereParams = Seq.empty,
     orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor),
-        defaultValue = None)).thenReturn(None)
+        f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(None)
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetchAll(
     nineCardsUri = CollectionUri,
     projection = AllFields,
     where = "",
     whereParams = Seq.empty,
     orderBy = s"$Position asc")(
-        f = getListFromCursor(collectionEntityFromCursor),
-        defaultValue = Seq.empty)).thenReturn(collectionEntitySeq)
+        f = getListFromCursor(collectionEntityFromCursor))).thenReturn(collectionEntitySeq)
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetch(
     nineCardsUri = CollectionUri,
     projection = AllFields,
     where = s"$Position = ?",
     whereParams = Seq(position.toString),
     orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor),
-        defaultValue = None)).thenReturn(Some(collectionEntity))
+        f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(Some(collectionEntity))
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetch(
     nineCardsUri = CollectionUri,
     projection = AllFields,
     where = s"$Position = ?",
     whereParams = Seq(nonExistingPosition.toString),
     orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor),
-        defaultValue = None)).thenReturn(None)
+        f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(None)
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetch(
     nineCardsUri = CollectionUri,
     projection = AllFields,
     where = s"$OriginalSharedCollectionId = ?",
     whereParams = Seq(sharedCollectionId),
     orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor),
-        defaultValue = None)).thenReturn(Some(collectionEntity))
+        f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(Some(collectionEntity))
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetch(
     nineCardsUri = CollectionUri,
     projection = AllFields,
     where = s"$OriginalSharedCollectionId = ?",
     whereParams = Seq(nonExistingSharedCollectionId),
     orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor),
-        defaultValue = None)).thenReturn(None)
+        f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.update(CollectionUri, createCollectionValues)).thenReturn(1)
 }

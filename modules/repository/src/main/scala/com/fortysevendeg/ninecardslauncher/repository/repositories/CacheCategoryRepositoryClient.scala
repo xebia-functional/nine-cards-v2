@@ -81,9 +81,9 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cacheCategories = contentResolverWrapper.query(
+          val cacheCategories = contentResolverWrapper.fetchAll(
             nineCardsUri = CacheCategoryUri,
-            projection = AllFields)(getListFromCursor(cacheCategoryEntityFromCursor), List.empty) map toCacheCategory
+            projection = AllFields)(getListFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
           GetAllCacheCategoriesResponse(cacheCategories)
         } recover {
@@ -96,10 +96,10 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cacheCategory = contentResolverWrapper.queryById(
+          val cacheCategory = contentResolverWrapper.findById(
             nineCardsUri = CacheCategoryUri,
             id = request.id,
-            projection = AllFields)(getEntityFromCursor(cacheCategoryEntityFromCursor), None) map toCacheCategory
+            projection = AllFields)(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
           GetCacheCategoryByIdResponse(cacheCategory)
         } recover {
@@ -112,11 +112,11 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cacheCategory = contentResolverWrapper.query(
+          val cacheCategory = contentResolverWrapper.fetch(
             nineCardsUri = CacheCategoryUri,
             projection = AllFields,
             where = s"$PackageName = ?",
-            whereParams = Seq(request.`package`))(getEntityFromCursor(cacheCategoryEntityFromCursor), None) map toCacheCategory
+            whereParams = Seq(request.`package`))(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
           
           GetCacheCategoryByPackageResponse(cacheCategory)

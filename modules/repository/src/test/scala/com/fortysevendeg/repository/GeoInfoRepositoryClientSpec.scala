@@ -116,41 +116,36 @@ trait GeoInfoTestSupport
 
   when(contentResolverWrapper.deleteById(GeoInfoUri, geoInfoId)).thenReturn(1)
 
-  when(contentResolverWrapper.queryById(
+  when(contentResolverWrapper.findById(
     nineCardsUri = GeoInfoUri,
     id = geoInfoId,
     projection = AllFields)(
-        f = getEntityFromCursor(geoInfoEntityFromCursor),
-        defaultValue = None)).thenReturn(Some(geoInfoEntity))
+        f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(Some(geoInfoEntity))
 
-  when(contentResolverWrapper.queryById(
+  when(contentResolverWrapper.findById(
     nineCardsUri = GeoInfoUri,
     id = nonExistingGeoInfoId,
     projection = AllFields)(
-        f = getEntityFromCursor(geoInfoEntityFromCursor),
-        defaultValue = None)).thenReturn(None)
+        f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(None)
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetchAll(
     nineCardsUri = GeoInfoUri,
     projection = AllFields)(
-        f = getListFromCursor(geoInfoEntityFromCursor),
-        defaultValue = Seq.empty)).thenReturn(geoInfoEntitySeq)
+        f = getListFromCursor(geoInfoEntityFromCursor))).thenReturn(geoInfoEntitySeq)
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetch(
     nineCardsUri = GeoInfoUri,
     projection = AllFields,
     where = s"$Constrain = ?",
     whereParams = Seq(constrain))(
-        f = getEntityFromCursor(geoInfoEntityFromCursor),
-        defaultValue = None)).thenReturn(Some(geoInfoEntity))
+        f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(Some(geoInfoEntity))
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetch(
     nineCardsUri = GeoInfoUri,
     projection = AllFields,
     where = s"$Constrain = ?",
     whereParams = Seq(nonExistingConstrain))(
-        f = getEntityFromCursor(geoInfoEntityFromCursor),
-        defaultValue = None)).thenReturn(None)
+        f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.update(GeoInfoUri, createGeoInfoValues)).thenReturn(1)
 }

@@ -68,10 +68,10 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val card = contentResolverWrapper.queryById(
+          val card = contentResolverWrapper.findById(
             nineCardsUri = CardUri,
             id = request.id,
-            projection = AllFields)(getEntityFromCursor(cardEntityFromCursor), None) map toCard
+            projection = AllFields)(getEntityFromCursor(cardEntityFromCursor)) map toCard
 
           GetCardByIdResponse(card)
 
@@ -85,11 +85,11 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val cards = contentResolverWrapper.query(
+          val cards = contentResolverWrapper.fetchAll(
             nineCardsUri = CardUri,
             projection = AllFields,
             where = s"$CollectionId = ?",
-            whereParams = Array(request.collectionId.toString))(getListFromCursor(cardEntityFromCursor), List.empty) map toCard
+            whereParams = Array(request.collectionId.toString))(getListFromCursor(cardEntityFromCursor)) map toCard
 
           GetAllCardsByCollectionResponse(cards)
         } recover {

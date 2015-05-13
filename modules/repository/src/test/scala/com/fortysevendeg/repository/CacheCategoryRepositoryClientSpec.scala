@@ -122,41 +122,36 @@ trait CacheCategoryTestSupport
 
   when(contentResolverWrapper.delete(CacheCategoryUri, where = s"$PackageName = ?", whereParams = Seq(packageName))).thenReturn(1)
 
-  when(contentResolverWrapper.queryById(
+  when(contentResolverWrapper.findById(
     nineCardsUri = CacheCategoryUri,
     id = cacheCategoryId,
     projection = AllFields)(
-        f = getEntityFromCursor(cacheCategoryEntityFromCursor),
-        defaultValue = None)).thenReturn(Some(cacheCategoryEntity))
+        f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(Some(cacheCategoryEntity))
 
-  when(contentResolverWrapper.queryById(
+  when(contentResolverWrapper.findById(
     nineCardsUri = CacheCategoryUri,
     id = nonExistingCacheCategoryId,
     projection = AllFields)(
-        f = getEntityFromCursor(cacheCategoryEntityFromCursor),
-        defaultValue = None)).thenReturn(None)
+        f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(None)
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetchAll(
     nineCardsUri = CacheCategoryUri,
     projection = AllFields)(
-        f = getListFromCursor(cacheCategoryEntityFromCursor),
-        defaultValue = Seq.empty)).thenReturn(cacheCategoryEntitySeq)
+        f = getListFromCursor(cacheCategoryEntityFromCursor))).thenReturn(cacheCategoryEntitySeq)
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetch(
     nineCardsUri = CacheCategoryUri,
     projection = AllFields,
     where = s"$PackageName = ?",
     whereParams = Seq(packageName))(
-        f = getEntityFromCursor(cacheCategoryEntityFromCursor),
-        defaultValue = None)).thenReturn(Some(cacheCategoryEntity))
+        f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(Some(cacheCategoryEntity))
 
-  when(contentResolverWrapper.query(
+  when(contentResolverWrapper.fetch(
     nineCardsUri = CacheCategoryUri,
     projection = AllFields,
     where = s"$PackageName = ?",
     whereParams = Seq(nonExistingPackageName))(
-        f = getEntityFromCursor(cacheCategoryEntityFromCursor),
-        defaultValue = None)).thenReturn(None)
+        f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.update(CacheCategoryUri, createCacheCategoryValues)).thenReturn(1)
 }
