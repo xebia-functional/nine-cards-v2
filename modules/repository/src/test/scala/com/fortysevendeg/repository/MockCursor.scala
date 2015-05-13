@@ -65,7 +65,7 @@ trait MockCursor extends Mockito {
   def prepareCursor[T](size: Int, data: Seq[(String, Int, Seq[Any], CursorDataType)]) = {
 
     mockIsAfterLast(size = size)
-    mockMoveToFirst(nonEmpty = (size > 0))
+    mockMoveToFirst(nonEmpty = size > 0)
     mockMoveToNext(size = size)
 
     data foreach {
