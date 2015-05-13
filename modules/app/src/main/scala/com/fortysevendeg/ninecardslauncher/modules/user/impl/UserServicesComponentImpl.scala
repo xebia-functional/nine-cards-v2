@@ -6,7 +6,7 @@ import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.modules.api._
-import com.fortysevendeg.ninecardslauncher.modules.user.{SignInResponse, UserServices, UserServicesComponent}
+import com.fortysevendeg.ninecardslauncher.modules.user._
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.commons.Service
@@ -74,8 +74,10 @@ trait UserServicesComponentImpl
                     saveInstallation(i.copy(userId = user.id))
                     synchronizeInstallation()
                 }
-                SignInResponse(response.statusCode, true)
-            } getOrElse SignInResponse(response.statusCode, false)
+                SignInResponse(response.statusCode)
+            } getOrElse(throw UserNotFoundException())
+        } recover {
+          case _ => throw UserUnexpectedException()
         }
       }
 

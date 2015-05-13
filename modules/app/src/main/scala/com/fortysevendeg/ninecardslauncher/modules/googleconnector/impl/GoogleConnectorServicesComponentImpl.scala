@@ -2,13 +2,11 @@ package com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl
 
 import android.accounts._
 import android.content.Context
-import android.net.Uri
 import android.os.{Build, Bundle}
-import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.commons.{ContextWrapperProvider, Service}
 import com.fortysevendeg.ninecardslauncher.models.GoogleDevice
-import com.fortysevendeg.ninecardslauncher.modules.api.{ApiServicesComponent, LoginRequest}
+import com.fortysevendeg.ninecardslauncher.modules.api.LoginRequest
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector._
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
@@ -64,18 +62,19 @@ trait GoogleConnectorServicesComponentImpl
                 case Success(loginRequest) =>
                   userServices.signIn(loginRequest) map {
                     response =>
-                      requestPromise.success(RequestTokenResponse(response.success))
+                      requestPromise.success(RequestTokenResponse())
                   } recover {
-                    case _ => requestPromise.success(RequestTokenResponse(false))
+                    case ex: Throwable => requestPromise.failure(ex)
+                    case _ => requestPromise.failure(GoogleUnexpectedException())
                   }
                 case Failure(ex) => ex match {
-                  case ex: OperationCanceledException => requestPromise.success(RequestTokenResponse(false, true))
-                  case _ => requestPromise.success(RequestTokenResponse(false))
+                  case ex: OperationCanceledException => requestPromise.failure(GoogleOperationCanceledException())
+                  case _ => requestPromise.failure(GoogleUnexpectedException())
                 }
               }
             }
           }, null)
-        }) getOrElse requestPromise.success(RequestTokenResponse(false))
+        }) getOrElse requestPromise.failure(GoogleUnexpectedException())
         requestPromise.future
       }
 
