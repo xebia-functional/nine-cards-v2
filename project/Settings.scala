@@ -69,6 +69,7 @@ object Settings {
     Resolver.mavenLocal,
     DefaultMavenRepository,
     "jcenter" at "http://jcenter.bintray.com",
+    "47 Degrees Repo" at "http://dl.bintray.com/47deg/maven",
     Resolver.typesafeRepo("releases"),
     Resolver.typesafeRepo("snapshots"),
     Resolver.typesafeIvyRepo("snapshots"),
