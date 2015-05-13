@@ -52,11 +52,11 @@ trait CollectionRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolverWrapper.deleteById(
+          val deleted = contentResolverWrapper.deleteById(
             nineCardsUri = CollectionUri,
             id = request.collection.id)
 
-          DeleteCollectionResponse()
+          DeleteCollectionResponse(deleted = deleted)
 
         } recover {
           case NonFatal(e) => throw RepositoryDeleteException()
@@ -113,14 +113,14 @@ trait CollectionRepositoryClient extends DBUtils {
             Constrains -> (request.collection.data.constrains getOrElse ""),
             OriginalSharedCollectionId -> (request.collection.data.originalSharedCollectionId getOrElse ""),
             SharedCollectionId -> (request.collection.data.sharedCollectionId getOrElse ""),
-            SharedCollectionSubscribed -> request.collection.data.sharedCollectionSubscribed)
+            SharedCollectionSubscribed -> (request.collection.data.sharedCollectionSubscribed getOrElse false))
 
-          contentResolverWrapper.updateById(
+          val updated = contentResolverWrapper.updateById(
             nineCardsUri = CollectionUri,
             id = request.collection.id,
             values = values)
 
-          UpdateCollectionResponse()
+          UpdateCollectionResponse(updated = updated)
 
         } recover {
           case NonFatal(e) => throw RepositoryUpdateException()

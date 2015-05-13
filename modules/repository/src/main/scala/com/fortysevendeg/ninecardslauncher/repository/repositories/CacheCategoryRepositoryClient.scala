@@ -48,11 +48,11 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolverWrapper.deleteById(
+          val deleted = contentResolverWrapper.deleteById(
             nineCardsUri = CacheCategoryUri,
             id = request.cacheCategory.id)
 
-          DeleteCacheCategoryResponse()
+          DeleteCacheCategoryResponse(deleted = deleted)
 
         } recover {
           case NonFatal(e) => throw RepositoryDeleteException()
@@ -63,12 +63,12 @@ trait CacheCategoryRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolverWrapper.delete(
+          val deleted = contentResolverWrapper.delete(
             nineCardsUri = CacheCategoryUri,
             where = s"$PackageName = ?",
             whereParams = Seq(request.`package`))
 
-          DeleteCacheCategoryByPackageResponse()
+          DeleteCacheCategoryByPackageResponse(deleted = deleted)
 
         } recover {
           case NonFatal(e) => throw RepositoryDeleteException()
@@ -136,13 +136,13 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             RatingsCount -> request.cacheCategory.data.ratingsCount,
             CommentCount -> request.cacheCategory.data.commentCount)
 
-          contentResolverWrapper.updateById(
+          val updated = contentResolverWrapper.updateById(
             nineCardsUri = CacheCategoryUri,
             id = request.cacheCategory.id,
             values = values
           )
 
-          UpdateCacheCategoryResponse()
+          UpdateCacheCategoryResponse(updated = updated)
 
         } recover {
           case NonFatal(e) => throw RepositoryUpdateException()

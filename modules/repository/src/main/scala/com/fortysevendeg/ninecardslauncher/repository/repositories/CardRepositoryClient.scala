@@ -54,9 +54,9 @@ trait CardRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolverWrapper.deleteById(nineCardsUri = CardUri, id = request.card.id)
+          val deleted = contentResolverWrapper.deleteById(nineCardsUri = CardUri, id = request.card.id)
 
-          DeleteCardResponse()
+          DeleteCardResponse(deleted = deleted)
 
         } recover {
           case NonFatal(e) => throw RepositoryDeleteException()
@@ -113,12 +113,12 @@ trait CardRepositoryClient extends DBUtils {
             NumDownloads -> (request.card.data.numDownloads getOrElse ""),
             Notification -> (request.card.data.notification getOrElse ""))
 
-          contentResolverWrapper.updateById(
+          val updated = contentResolverWrapper.updateById(
             nineCardsUri = CardUri,
             id = request.card.id,
             values = values)
 
-          UpdateCardResponse()
+          UpdateCardResponse(updated = updated)
 
         } recover {
           case NonFatal(e) => throw RepositoryUpdateException()

@@ -48,11 +48,11 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolverWrapper.deleteById(
+          val deleted = contentResolverWrapper.deleteById(
             nineCardsUri = GeoInfoUri,
             id = request.geoInfo.id)
 
-          DeleteGeoInfoResponse()
+          DeleteGeoInfoResponse(deleted = deleted)
 
         } recover {
           case NonFatal(e) => throw RepositoryDeleteException()
@@ -120,12 +120,12 @@ trait GeoInfoRepositoryClient extends DBUtils {
             Longitude -> request.geoInfo.data.longitude,
             System -> request.geoInfo.data.system)
 
-          contentResolverWrapper.updateById(
+          val updated = contentResolverWrapper.updateById(
             nineCardsUri = GeoInfoUri,
             id = request.geoInfo.id,
             values = values)
 
-          UpdateGeoInfoResponse()
+          UpdateGeoInfoResponse(updated = updated)
 
         } recover {
           case NonFatal(e) => throw RepositoryUpdateException()
