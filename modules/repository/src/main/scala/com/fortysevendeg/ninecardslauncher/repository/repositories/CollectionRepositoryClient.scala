@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, CollectionUri, NineCardsUri}
+import com.fortysevendeg.ninecardslauncher.commons.{CollectionUri, ContentResolverWrapperComponent, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
@@ -21,7 +21,6 @@ trait CollectionRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-
           val values = Map[String, Any](
             Position -> request.data.position,
             Name -> request.data.name,
@@ -32,7 +31,7 @@ trait CollectionRepositoryClient extends DBUtils {
             Constrains -> (request.data.constrains getOrElse ""),
             OriginalSharedCollectionId -> (request.data.originalSharedCollectionId getOrElse ""),
             SharedCollectionId -> (request.data.sharedCollectionId getOrElse ""),
-            SharedCollectionSubscribed -> request.data.sharedCollectionSubscribed)
+            SharedCollectionSubscribed -> (request.data.sharedCollectionSubscribed getOrElse false))
 
           val id = contentResolverWrapper.insert(
             nineCardsUri = CollectionUri,
@@ -79,7 +78,7 @@ trait CollectionRepositoryClient extends DBUtils {
       tryToFuture {
         getCollection(
           selection = s"$OriginalSharedCollectionId = ?",
-          selectionArgs = Array(request.sharedCollectionId.toString)) map {
+          selectionArgs = Seq(request.sharedCollectionId.toString)) map {
           collection => GetCollectionByOriginalSharedCollectionIdResponse(collection)
         }
       }
