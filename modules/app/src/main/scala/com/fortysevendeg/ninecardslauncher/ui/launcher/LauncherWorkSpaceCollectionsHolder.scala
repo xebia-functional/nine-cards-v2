@@ -100,12 +100,7 @@ class CollectionItem(position: Int)(implicit activityContext: ActivityContextWra
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)
-    runUi(
-      resGetDrawableIdentifier(iconCollectionWorkspace(collection.icon)) map {
-        resIcon =>
-          populateIcon(collection, resIcon)
-      } getOrElse populateIcon(collection, R.drawable.icon_collection_home) // TODO We should use default icon
-    )
+    runUi( populateIcon(collection, iconCollectionWorkspace(collection.icon)))
   }
 
   private def populateIcon(collection: Collection, resIcon: Int): Ui[_] =

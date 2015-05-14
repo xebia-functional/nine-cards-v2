@@ -8,7 +8,7 @@ import macroid.{ContextWrapper, Ui}
 
 import scala.collection.mutable.WeakHashMap
 
-class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections: Seq[Collection])(implicit context: ContextWrapper)
+case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections: Seq[Collection])(implicit context: ContextWrapper)
   extends FragmentStatePagerAdapter(fragmentManager) {
 
   val fragments : WeakHashMap[Int, CollectionFragment] = WeakHashMap.empty

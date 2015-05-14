@@ -1,6 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.ui.commons
 
 import android.graphics.Color
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher2.R
+import macroid.ContextWrapper
 
 object Constants {
 
@@ -124,9 +127,11 @@ object NineCardsIntent {
 
 object ImageResourceNamed {
 
-  def iconCollectionWorkspace(category: String) = s"icon_collection_$category"
+  def iconCollectionWorkspace(category: String)(implicit context: ContextWrapper): Int =
+    resGetDrawableIdentifier(s"icon_collection_$category") getOrElse R.drawable.icon_collection_default
 
-  def iconCollectionDetail(category: String) = s"icon_collection_${category}_detail"
+  def iconCollectionDetail(category: String)(implicit context: ContextWrapper): Int =
+    resGetDrawableIdentifier(s"icon_collection_${category}_detail") getOrElse R.drawable.icon_collection_default_detail
 
 }
 
