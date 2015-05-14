@@ -32,7 +32,7 @@ object CardEntity {
   val NumDownloads = "numDownloads"
   val Notification = "notification"
 
-  val AllFields = Array[String](
+  val AllFields = Seq[String](
     NineCardsSqlHelper.Id,
     Position,
     CollectionId,
@@ -57,7 +57,7 @@ object CardEntity {
         `type` = cursor.getString(cursor.getColumnIndex(Type)),
         intent = cursor.getString(cursor.getColumnIndex(Intent)),
         imagePath = cursor.getString(cursor.getColumnIndex(ImagePath)),
-        starRating = cursor.getInt(cursor.getColumnIndex(StarRating)),
+        starRating = cursor.getDouble(cursor.getColumnIndex(StarRating)),
         micros = cursor.getInt(cursor.getColumnIndex(Micros)),
         numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
         notification = cursor.getString(cursor.getColumnIndex(Notification))))
@@ -74,7 +74,7 @@ object CardEntityData {
       `type` = cursor.getString(cursor.getColumnIndex(Type)),
       intent = cursor.getString(cursor.getColumnIndex(Intent)),
       imagePath = cursor.getString(cursor.getColumnIndex(ImagePath)),
-      starRating = cursor.getInt(cursor.getColumnIndex(StarRating)),
+      starRating = cursor.getDouble(cursor.getColumnIndex(StarRating)),
       micros = cursor.getInt(cursor.getColumnIndex(Micros)),
       numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
       notification = cursor.getString(cursor.getColumnIndex(Notification)))
