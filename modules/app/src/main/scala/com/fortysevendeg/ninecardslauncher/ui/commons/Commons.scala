@@ -116,6 +116,9 @@ object CardType {
 }
 
 object NineCardsIntent {
+  val NineCardExtraPhone: String = "tel"
+  val NineCardExtraEmail: String = "email"
+  val NineCardExtraUrlAd: String = "url_ad"
   val NineCardExtraPackageName: String = "package_name"
   val NineCardExtraClassName: String = "class_name"
   val OpenApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_APP"

@@ -1,10 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.models
 
-import android.content.{ComponentName, Intent}
+import android.content.Intent
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import macroid.ContextWrapper
 import play.api.libs.json._
+
 import scala.collection.JavaConversions._
 
 case class UserConfig(
@@ -70,41 +71,61 @@ case class UserConfigCollectionItem(
   categories: Option[Seq[String]])
 
 case class NineCardIntent(
-  intentExtras: Map[String, String]) extends Intent {
+  intentExtras: NineCardIntentExtras) extends Intent {
 
-  def this(intent: Intent, intentExtras: Map[String, String]) = this(intentExtras)
+  def this(intent: Intent, intentExtras: NineCardIntentExtras) = this(intentExtras)
 
   def extractPackageName(): Option[String] =
-    Option(intentExtras.getOrElse(NineCardExtraPackageName, getStringExtra(NineCardExtraPackageName)))
+    Option(intentExtras.package_name.getOrElse(getStringExtra(NineCardExtraPackageName)))
 
   def extractClassName(): Option[String] =
-    Option(intentExtras.getOrElse(NineCardExtraClassName, getStringExtra(NineCardExtraClassName)))
+    Option(intentExtras.class_name.getOrElse(getStringExtra(NineCardExtraClassName)))
+
+  def extractPhone(): Option[String] =
+    Option(intentExtras.tel.getOrElse(getStringExtra(NineCardExtraPhone)))
+
+  def extractEmail(): Option[String] =
+    Option(intentExtras.email.getOrElse(getStringExtra(NineCardExtraEmail)))
+
+  def extractUrlAd(): Option[String] =
+    Option(intentExtras.url_ad.getOrElse(getStringExtra(NineCardExtraUrlAd)))
 
   def execute(implicit context: ContextWrapper) =
     getAction match {
       case OpenApp | OpenRecommendedApp | OpenSms | OpenPhone | OpenEmail =>
-        context.application.sendBroadcast(toIntent())
+        context.application.sendBroadcast(toIntent)
       case _ => context.application.startActivity(this)
     }
 
-  def toIntent(): Intent = (for {
-    packageName <- extractPackageName()
-    className <- extractClassName()
-  } yield {
-      val intent = new Intent(this)
-      intent.putExtra(NineCardExtraPackageName, packageName)
-      intent.putExtra(NineCardExtraClassName, className)
-      intent
-    }) getOrElse this
+  def toIntent: Intent = {
+    val intent = new Intent(this)
+    extractPackageName() map (packageName => intent.putExtra(NineCardExtraPackageName, packageName))
+    extractClassName() map (className => intent.putExtra(NineCardExtraClassName, className))
+    extractPhone() map (phone => intent.putExtra(NineCardExtraPhone, phone))
+    extractEmail() map (email => intent.putExtra(NineCardExtraEmail, email))
+    extractUrlAd() map (urlAd => intent.putExtra(NineCardExtraUrlAd, urlAd))
+    intent
+  }
 
 }
 
+case class NineCardIntentExtras(
+  tel: Option[String] = None,
+  email: Option[String] = None,
+  url_ad: Option[String] = None,
+  package_name: Option[String] = None,
+  class_name: Option[String] = None)
+
 object NineCardIntentImplicits {
-//  implicit val reads = Json.reads[NineCardIntent]
+
+  implicit val extrasReads = Json.reads[NineCardIntentExtras]
+
+  implicit val extrasWrites = Json.writes[NineCardIntentExtras]
+
   implicit val nineCardIntentReads = new Reads[NineCardIntent] {
     def reads(js: JsValue): JsResult[NineCardIntent] = {
       val intent = NineCardIntent(
-        (js \ "intentExtras").as[Map[String, String]]
+        (js \ "intentExtras").as[NineCardIntentExtras]
       )
       for {
         packageName <- (js \ "packageName").asOpt[String]
@@ -129,7 +150,7 @@ object NineCardIntentImplicits {
       JsSuccess(intent)
     }
   }
-//  implicit val writes = Json.writes[NineCardIntent]
+
   implicit val nineCardIntentWrites = new Writes[NineCardIntent] {
     def writes(intent: NineCardIntent): JsValue = {
       val extras = Json.obj(
