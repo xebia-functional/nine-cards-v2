@@ -1,13 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import android.content.ContentValues
-import android.net.Uri
-import android.net.Uri._
-import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
-import com.fortysevendeg.ninecardslauncher.commons.RichContentValues._
+import com.fortysevendeg.ninecardslauncher.commons.{CollectionUri, ContentResolverWrapperComponent, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
-import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Collection
@@ -15,12 +10,11 @@ import com.fortysevendeg.ninecardslauncher.utils._
 
 import scala.concurrent.ExecutionContext
 import scala.util.Try
+import scala.util.control.NonFatal
 
-trait CollectionRepositoryClient
-    extends CardRepositoryClient
-    with DBUtils {
+trait CollectionRepositoryClient extends DBUtils {
 
-  self: ContentResolverProvider =>
+  self: ContentResolverWrapperComponent =>
 
   implicit val executionContext: ExecutionContext
 
@@ -28,31 +22,29 @@ trait CollectionRepositoryClient
     request =>
       tryToFuture {
         Try {
+          val values = Map[String, Any](
+            Position -> request.data.position,
+            Name -> request.data.name,
+            Type -> request.data.`type`,
+            Icon -> request.data.icon,
+            ThemedColorIndex -> request.data.themedColorIndex,
+            AppsCategory -> (request.data.appsCategory getOrElse ""),
+            Constrains -> (request.data.constrains getOrElse ""),
+            OriginalSharedCollectionId -> (request.data.originalSharedCollectionId getOrElse ""),
+            SharedCollectionId -> (request.data.sharedCollectionId getOrElse ""),
+            SharedCollectionSubscribed -> (request.data.sharedCollectionSubscribed getOrElse false))
 
-          val contentValues = new ContentValues()
-          contentValues.put(Position, request.data.position)
-          contentValues.put(Name, request.data.name)
-          contentValues.put(Type, request.data.`type`)
-          contentValues.put(Icon, request.data.icon)
-          contentValues.put(ThemedColorIndex, request.data.themedColorIndex)
-          contentValues.put(AppsCategory, request.data.appsCategory getOrElse "")
-          contentValues.put(Constrains, request.data.constrains getOrElse "")
-          contentValues.put(OriginalSharedCollectionId, request.data.originalSharedCollectionId getOrElse "")
-          contentValues.put(SharedCollectionId, request.data.sharedCollectionId getOrElse "")
-          contentValues.put(SharedCollectionSubscribed, request.data.sharedCollectionSubscribed getOrElse false)
-
-          val uri = contentResolver.insert(
-            ContentUriCollection,
-            contentValues)
+          val id = contentResolverWrapper.insert(
+            nineCardsUri = CollectionUri,
+            values = values)
 
           AddCollectionResponse(
             collection = Some(Collection(
-              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              id = id,
               data = request.data)))
 
         } recover {
-          case e: Exception =>
-            AddCollectionResponse(collection = None)
+          case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
@@ -60,23 +52,21 @@ trait CollectionRepositoryClient
     request =>
       tryToFuture {
         Try {
-          contentResolver.delete(
-            withAppendedPath(ContentUriCollection, request.collection.id.toString),
-            "",
-            Array.empty)
+          val deleted = contentResolverWrapper.deleteById(
+            nineCardsUri = CollectionUri,
+            id = request.collection.id)
 
-          DeleteCollectionResponse(success = true)
+          DeleteCollectionResponse(deleted = deleted)
 
         } recover {
-          case e: Exception =>
-            DeleteCollectionResponse(success = false)
+          case NonFatal(e) => throw RepositoryDeleteException()
         }
       }
 
   def getCollectionById: Service[GetCollectionByIdRequest, GetCollectionByIdResponse] =
     request =>
       tryToFuture {
-        getCollection(uri = withAppendedPath(ContentUriCollection, request.id.toString)) map {
+        getCollectionById(id = request.id) map {
           collection => GetCollectionByIdResponse(collection)
         }
       }
@@ -87,7 +77,7 @@ trait CollectionRepositoryClient
       tryToFuture {
         getCollection(
           selection = s"$OriginalSharedCollectionId = ?",
-          selectionArgs = Array(request.sharedCollectionId.toString)) map {
+          selectionArgs = Seq(request.sharedCollectionId.toString)) map {
           collection => GetCollectionByOriginalSharedCollectionIdResponse(collection)
         }
       }
@@ -113,55 +103,74 @@ trait CollectionRepositoryClient
     request =>
       tryToFuture {
         Try {
-          val contentValues = new ContentValues()
-          contentValues.put(Position, request.collection.data.position)
-          contentValues.put(Name, request.collection.data.name)
-          contentValues.put(Type, request.collection.data.`type`)
-          contentValues.put(Icon, request.collection.data.icon)
-          contentValues.put(ThemedColorIndex, request.collection.data.themedColorIndex)
-          contentValues.put(AppsCategory, request.collection.data.appsCategory getOrElse "")
-          contentValues.put(Constrains, request.collection.data.constrains getOrElse "")
-          contentValues.put(OriginalSharedCollectionId, request.collection.data.originalSharedCollectionId getOrElse "")
-          contentValues.put(SharedCollectionId, request.collection.data.sharedCollectionId getOrElse "")
-          contentValues.put(SharedCollectionSubscribed, request.collection.data.sharedCollectionSubscribed getOrElse false)
+          val values = Map[String, Any](
+            Position -> request.collection.data.position,
+            Name -> request.collection.data.name,
+            Type -> request.collection.data.`type`,
+            Icon -> request.collection.data.icon,
+            ThemedColorIndex -> request.collection.data.themedColorIndex,
+            AppsCategory -> (request.collection.data.appsCategory getOrElse ""),
+            Constrains -> (request.collection.data.constrains getOrElse ""),
+            OriginalSharedCollectionId -> (request.collection.data.originalSharedCollectionId getOrElse ""),
+            SharedCollectionId -> (request.collection.data.sharedCollectionId getOrElse ""),
+            SharedCollectionSubscribed -> (request.collection.data.sharedCollectionSubscribed getOrElse false))
 
-          contentResolver.update(
-            withAppendedPath(ContentUriCollection, request.collection.id.toString),
-            contentValues,
-            "",
-            Array.empty)
+          val updated = contentResolverWrapper.updateById(
+            nineCardsUri = CollectionUri,
+            id = request.collection.id,
+            values = values)
 
-          UpdateCollectionResponse(success = true)
+          UpdateCollectionResponse(updated = updated)
 
         } recover {
-          case e: Exception =>
-            UpdateCollectionResponse(success = false)
+          case NonFatal(e) => throw RepositoryUpdateException()
         }
       }
 
   private def getCollection(
-      uri: Uri = ContentUriCollection,
-      projection: Array[String] = AllFields,
+      nineCardsUri: NineCardsUri = CollectionUri,
+      projection: Seq[String] = AllFields,
       selection: String = "",
-      selectionArgs: Array[String] = Array.empty[String],
+      selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      Option(contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)) match {
-        case Some(cursor) => getEntityFromCursor(cursor, collectionEntityFromCursor) map toCollection
-        case _ => None
-      }
+      contentResolverWrapper.fetch(
+        nineCardsUri = nineCardsUri,
+        projection = projection,
+        where = selection,
+        whereParams = selectionArgs,
+        orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
+    }
+
+  private def getCollectionById(
+      nineCardsUri: NineCardsUri = CollectionUri,
+      id: Int,
+      projection: Seq[String] = AllFields,
+      selection: String = "",
+      selectionArgs: Seq[String] = Seq.empty[String],
+      sortOrder: String = "") =
+    Try {
+      contentResolverWrapper.findById(
+        nineCardsUri = nineCardsUri,
+        id = id,
+        projection = projection,
+        where = selection,
+        whereParams = selectionArgs,
+        orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
     }
 
   private def getCollections(
-      uri: Uri = ContentUriCollection,
-      projection: Array[String] = AllFields,
+      nineCardsUri: NineCardsUri = CollectionUri,
+      projection: Seq[String] = AllFields,
       selection: String = "",
-      selectionArgs: Array[String] = Array.empty[String],
+      selectionArgs: Seq[String] = Seq.empty[String],
       sortOrder: String = "") =
     Try {
-      Option(contentResolver.query(uri, projection, selection, selectionArgs, sortOrder)) match {
-        case Some(cursor) => getListFromCursor(cursor, collectionEntityFromCursor) map toCollection
-        case _ => Seq.empty
-      }
+      contentResolverWrapper.fetchAll(
+        nineCardsUri = nineCardsUri,
+        projection = projection,
+        where = selection,
+        whereParams = selectionArgs,
+        orderBy = sortOrder)(getListFromCursor(collectionEntityFromCursor)) map toCollection
     }
 }

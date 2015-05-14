@@ -54,6 +54,7 @@ object AppBuild extends Build {
 
   val repository = Project(id = "repository", base = file("modules/repository"))
       .settings(libraryDependencies ++= Seq(
+    androidTest,
     specs2,
     mockito))
       .settings(repositorySettings: _*)

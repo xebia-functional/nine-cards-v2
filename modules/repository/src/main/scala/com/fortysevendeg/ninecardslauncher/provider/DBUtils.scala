@@ -1,22 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
-import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.provider.NineCardsSqlHelper._
 
 import scala.annotation.tailrec
 
 trait DBUtils {
-
-  self: ContentResolverProvider =>
-
-  def emptyAllTables = {
-    contentResolver.delete(ContentUriCacheCategory, "", Array.empty)
-    contentResolver.delete(ContentUriCard, "", Array.empty)
-    contentResolver.delete(ContentUriCollection, "", Array.empty)
-    contentResolver.delete(ContentUriGeoInfo, "", Array.empty)
-  }
 
   def execAllVersionsDB() = (1 to DatabaseVersion) foreach { version => execVersion(version) }
 
@@ -25,7 +14,7 @@ trait DBUtils {
 
   def execVersion(version: Int) = {}
 
-  def getEntityFromCursor[T](cursor: Cursor, conversionFunction: Cursor => T): Option[T] = {
+  def getEntityFromCursor[T](conversionFunction: Cursor => T)(cursor: Cursor): Option[T] = {
     val entity = cursor.moveToFirst() match {
       case true => Some(conversionFunction(cursor))
       case _ => None
@@ -35,7 +24,7 @@ trait DBUtils {
     entity
   }
 
-  def getListFromCursor[T](cursor: Cursor, conversionFunction: Cursor => T): Seq[T] = {
+  def getListFromCursor[T](conversionFunction: Cursor => T)(cursor: Cursor): Seq[T] = {
     @tailrec
     def getListFromEntityLoop(cursor: Cursor, result: Seq[T]): Seq[T] =
       cursor match {
@@ -43,7 +32,7 @@ trait DBUtils {
         case _ =>
           val entity = conversionFunction(cursor)
           cursor.moveToNext
-          getListFromEntityLoop(cursor, entity +: result)
+          getListFromEntityLoop(cursor, result :+ entity)
       }
 
     val list = cursor.moveToFirst() match {

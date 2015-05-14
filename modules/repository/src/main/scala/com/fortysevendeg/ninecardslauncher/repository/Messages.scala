@@ -9,11 +9,11 @@ case class AddCacheCategoryResponse(cacheCategory: Option[CacheCategory])
 
 case class DeleteCacheCategoryRequest(cacheCategory: CacheCategory)
 
-case class DeleteCacheCategoryResponse(success: Boolean)
+case class DeleteCacheCategoryResponse(deleted: Int)
 
 case class DeleteCacheCategoryByPackageRequest(`package`: String)
 
-case class DeleteCacheCategoryByPackageResponse(success: Boolean)
+case class DeleteCacheCategoryByPackageResponse(deleted: Int)
 
 case class GetAllCacheCategoriesRequest()
 
@@ -29,7 +29,7 @@ case class GetCacheCategoryByPackageResponse(result: Option[CacheCategory])
 
 case class UpdateCacheCategoryRequest(cacheCategory: CacheCategory)
 
-case class UpdateCacheCategoryResponse(success: Boolean)
+case class UpdateCacheCategoryResponse(updated: Int)
 
 case class AddCardRequest(collectionId: Int, data: CardData)
 
@@ -37,7 +37,7 @@ case class AddCardResponse(card: Option[Card])
 
 case class DeleteCardRequest(card: Card)
 
-case class DeleteCardResponse(success: Boolean)
+case class DeleteCardResponse(deleted: Int)
 
 case class GetCardByIdRequest(id: Int)
 
@@ -49,7 +49,7 @@ case class GetAllCardsByCollectionResponse(result: Seq[Card])
 
 case class UpdateCardRequest(card: Card)
 
-case class UpdateCardResponse(success: Boolean)
+case class UpdateCardResponse(updated: Int)
 
 case class AddCollectionRequest(data: CollectionData)
 
@@ -57,7 +57,7 @@ case class AddCollectionResponse(collection: Option[Collection])
 
 case class DeleteCollectionRequest(collection: Collection)
 
-case class DeleteCollectionResponse(success: Boolean)
+case class DeleteCollectionResponse(deleted: Int)
 
 case class GetCollectionByIdRequest(id: Int)
 
@@ -77,7 +77,7 @@ case class GetSortedCollectionsResponse(collections: Seq[Collection])
 
 case class UpdateCollectionRequest(collection: Collection)
 
-case class UpdateCollectionResponse(success: Boolean)
+case class UpdateCollectionResponse(updated: Int)
 
 case class AddGeoInfoRequest(data: GeoInfoData)
 
@@ -85,7 +85,7 @@ case class AddGeoInfoResponse(geoInfo: Option[GeoInfo])
 
 case class DeleteGeoInfoRequest(geoInfo: GeoInfo)
 
-case class DeleteGeoInfoResponse(success: Boolean)
+case class DeleteGeoInfoResponse(deleted: Int)
 
 case class GetAllGeoInfoItemsRequest()
 
@@ -101,4 +101,4 @@ case class GetGeoInfoByConstrainResponse(result: Option[GeoInfo])
 
 case class UpdateGeoInfoRequest(geoInfo: GeoInfo)
 
-case class UpdateGeoInfoResponse(success: Boolean)
+case class UpdateGeoInfoResponse(updated: Int)

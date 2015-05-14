@@ -1,11 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import android.content.ContentValues
-import android.database.Cursor
-import android.net.Uri._
-import com.fortysevendeg.ninecardslauncher.commons.ContentResolverProvider
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, GeoInfoUri}
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
-import com.fortysevendeg.ninecardslauncher.provider.{DBUtils, NineCardsContentProvider}
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
@@ -13,10 +10,11 @@ import com.fortysevendeg.ninecardslauncher.utils._
 
 import scala.concurrent.ExecutionContext
 import scala.util.Try
+import scala.util.control.NonFatal
 
 trait GeoInfoRepositoryClient extends DBUtils {
 
-  self: ContentResolverProvider =>
+  self: ContentResolverWrapperComponent =>
 
   implicit val executionContext: ExecutionContext
 
@@ -24,27 +22,25 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
+          val values = Map[String, Any](
+            Constrain -> request.data.constrain,
+            Occurrence -> request.data.occurrence,
+            Wifi -> request.data.wifi,
+            Latitude -> request.data.latitude,
+            Longitude -> request.data.longitude,
+            System -> request.data.system)
 
-          val contentValues = new ContentValues()
-          contentValues.put(Constrain, request.data.constrain)
-          contentValues.put(Occurrence, request.data.occurrence)
-          contentValues.put(Wifi, request.data.wifi)
-          contentValues.put(Latitude, request.data.latitude)
-          contentValues.put(Longitude, request.data.longitude)
-          contentValues.put(System, request.data.system)
-
-          val uri = contentResolver.insert(
-            NineCardsContentProvider.ContentUriGeoInfo,
-            contentValues)
+          val id = contentResolverWrapper.insert(
+            nineCardsUri = GeoInfoUri,
+            values = values)
 
           AddGeoInfoResponse(
             geoInfo = Some(GeoInfo(
-              id = Integer.parseInt(uri.getPathSegments.get(1)),
+              id = id,
               data = request.data)))
 
         } recover {
-          case e: Exception =>
-            AddGeoInfoResponse(geoInfo = None)
+          case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
@@ -52,16 +48,14 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          contentResolver.delete(
-            withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.geoInfo.id.toString),
-            "",
-            Array.empty)
+          val deleted = contentResolverWrapper.deleteById(
+            nineCardsUri = GeoInfoUri,
+            id = request.geoInfo.id)
 
-          DeleteGeoInfoResponse(success = true)
+          DeleteGeoInfoResponse(deleted = deleted)
 
         } recover {
-          case e: Exception =>
-            DeleteGeoInfoResponse(success = false)
+          case NonFatal(e) => throw RepositoryDeleteException()
         }
       }
 
@@ -69,20 +63,11 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            NineCardsContentProvider.ContentUriGeoInfo,
-            AllFields,
-            "",
-            Array.empty,
-            ""))
+          val geoInfoItems = contentResolverWrapper.fetchAll(
+            nineCardsUri = GeoInfoUri,
+            projection = AllFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetAllGeoInfoItemsResponse(
-                geoInfoItems = getListFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
-            case _ => GetAllGeoInfoItemsResponse(geoInfoItems = Seq.empty)
-          }
-
+          GetAllGeoInfoItemsResponse(geoInfoItems)
         } recover {
           case e: Exception =>
             GetAllGeoInfoItemsResponse(geoInfoItems = Seq.empty)
@@ -93,20 +78,12 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.id.toString),
-            AllFields,
-            "",
-            Array.empty,
-            ""))
+          val geoInfo = contentResolverWrapper.findById(
+            nineCardsUri = GeoInfoUri,
+            id = request.id,
+            projection = AllFields)(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetGeoInfoByIdResponse(
-                result = getEntityFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
-            case _ => GetGeoInfoByIdResponse(result = None)
-          }
-
+          GetGeoInfoByIdResponse(geoInfo)
         } recover {
           case e: Exception =>
             GetGeoInfoByIdResponse(result = None)
@@ -118,20 +95,13 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val maybeCursor: Option[Cursor] = Option(contentResolver.query(
-            NineCardsContentProvider.ContentUriGeoInfo,
-            AllFields,
-            s"$Constrain = ?",
-            Array(request.constrain),
-            ""))
+          val geoInfo = contentResolverWrapper.fetch(
+            nineCardsUri = GeoInfoUri,
+            projection = AllFields,
+            where = s"$Constrain = ?",
+            whereParams = Array(request.constrain))(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
-          maybeCursor match {
-            case Some(cursor) =>
-              GetGeoInfoByConstrainResponse(
-                result = getEntityFromCursor(cursor, geoInfoEntityFromCursor) map toGeoInfo)
-            case _ => GetGeoInfoByConstrainResponse(result = None)
-          }
-
+          GetGeoInfoByConstrainResponse(geoInfo)
         } recover {
           case e: Exception =>
             GetGeoInfoByConstrainResponse(result = None)
@@ -142,25 +112,23 @@ trait GeoInfoRepositoryClient extends DBUtils {
     request =>
       tryToFuture {
         Try {
-          val contentValues = new ContentValues()
-          contentValues.put(Constrain, request.geoInfo.data.constrain)
-          contentValues.put(Occurrence, request.geoInfo.data.occurrence)
-          contentValues.put(Wifi, request.geoInfo.data.wifi)
-          contentValues.put(Latitude, request.geoInfo.data.latitude)
-          contentValues.put(Longitude, request.geoInfo.data.longitude)
-          contentValues.put(System, request.geoInfo.data.system)
+          val values = Map[String, Any](
+            Constrain -> request.geoInfo.data.constrain,
+            Occurrence -> request.geoInfo.data.occurrence,
+            Wifi -> request.geoInfo.data.wifi,
+            Latitude -> request.geoInfo.data.latitude,
+            Longitude -> request.geoInfo.data.longitude,
+            System -> request.geoInfo.data.system)
 
-          contentResolver.update(
-            withAppendedPath(NineCardsContentProvider.ContentUriGeoInfo, request.geoInfo.id.toString),
-            contentValues,
-            "",
-            Array.empty)
+          val updated = contentResolverWrapper.updateById(
+            nineCardsUri = GeoInfoUri,
+            id = request.geoInfo.id,
+            values = values)
 
-          UpdateGeoInfoResponse(success = true)
+          UpdateGeoInfoResponse(updated = updated)
 
         } recover {
-          case e: Exception =>
-            UpdateGeoInfoResponse(success = false)
+          case NonFatal(e) => throw RepositoryUpdateException()
         }
       }
 }
