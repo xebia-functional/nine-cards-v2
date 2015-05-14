@@ -63,39 +63,39 @@ trait CollectionRepositoryClient extends DBUtils {
         }
       }
 
-  def getCollectionById: Service[GetCollectionByIdRequest, GetCollectionByIdResponse] =
+  def getCollectionById: Service[FindCollectionByIdRequest, FindCollectionByIdResponse] =
     request =>
       tryToFuture {
         getCollectionById(id = request.id) map {
-          collection => GetCollectionByIdResponse(collection)
+          collection => FindCollectionByIdResponse(collection)
         }
       }
 
   def getCollectionByOriginalSharedCollectionId:
-  Service[GetCollectionByOriginalSharedCollectionIdRequest, GetCollectionByOriginalSharedCollectionIdResponse] =
+  Service[FetchCollectionByOriginalSharedCollectionIdRequest, FetchCollectionByOriginalSharedCollectionIdResponse] =
     request =>
       tryToFuture {
         getCollection(
           selection = s"$OriginalSharedCollectionId = ?",
           selectionArgs = Seq(request.sharedCollectionId.toString)) map {
-          collection => GetCollectionByOriginalSharedCollectionIdResponse(collection)
+          collection => FetchCollectionByOriginalSharedCollectionIdResponse(collection)
         }
       }
 
-  def getCollectionByPosition: Service[GetCollectionByPositionRequest, GetCollectionByPositionResponse] =
+  def getCollectionByPosition: Service[FetchCollectionByPositionRequest, FetchCollectionByPositionResponse] =
     request =>
       tryToFuture {
         getCollection(selection = s"$Position = ?", selectionArgs = Array(request.position.toString)) map {
-          collection => GetCollectionByPositionResponse(collection)
+          collection => FetchCollectionByPositionResponse(collection)
         }
       }
 
   def getSortedCollections:
-  Service[GetSortedCollectionsRequest, GetSortedCollectionsResponse] =
+  Service[FetchSortedCollectionsRequest, FetchSortedCollectionsResponse] =
     request =>
       tryToFuture {
         getCollections(sortOrder = s"$Position asc") map {
-          collections => GetSortedCollectionsResponse(collections)
+          collections => FetchSortedCollectionsResponse(collections)
         }
       }
 

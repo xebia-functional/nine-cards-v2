@@ -59,7 +59,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def getAllGeoInfoItems: Service[GetAllGeoInfoItemsRequest, GetAllGeoInfoItemsResponse] =
+  def fetchGeoInfoItems: Service[FetchGeoInfoItemsRequest, FetchGeoInfoItemsResponse] =
     request =>
       tryToFuture {
         Try {
@@ -67,14 +67,14 @@ trait GeoInfoRepositoryClient extends DBUtils {
             nineCardsUri = GeoInfoUri,
             projection = AllFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
-          GetAllGeoInfoItemsResponse(geoInfoItems)
+          FetchGeoInfoItemsResponse(geoInfoItems)
         } recover {
           case e: Exception =>
-            GetAllGeoInfoItemsResponse(geoInfoItems = Seq.empty)
+            FetchGeoInfoItemsResponse(geoInfoItems = Seq.empty)
         }
       }
 
-  def getGeoInfoById: Service[GetGeoInfoByIdRequest, GetGeoInfoByIdResponse] =
+  def getGeoInfoById: Service[FindGeoInfoByIdRequest, FindGeoInfoByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -83,15 +83,15 @@ trait GeoInfoRepositoryClient extends DBUtils {
             id = request.id,
             projection = AllFields)(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
-          GetGeoInfoByIdResponse(geoInfo)
+          FindGeoInfoByIdResponse(geoInfo)
         } recover {
           case e: Exception =>
-            GetGeoInfoByIdResponse(result = None)
+            FindGeoInfoByIdResponse(geoInfo = None)
         }
       }
 
 
-  def getGeoInfoByConstrain: Service[GetGeoInfoByConstrainRequest, GetGeoInfoByConstrainResponse] =
+  def getGeoInfoByConstrain: Service[FetchGeoInfoByConstrainRequest, FetchGeoInfoByConstrainResponse] =
     request =>
       tryToFuture {
         Try {
@@ -101,10 +101,10 @@ trait GeoInfoRepositoryClient extends DBUtils {
             where = s"$Constrain = ?",
             whereParams = Array(request.constrain))(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
-          GetGeoInfoByConstrainResponse(geoInfo)
+          FetchGeoInfoByConstrainResponse(geoInfo)
         } recover {
           case e: Exception =>
-            GetGeoInfoByConstrainResponse(result = None)
+            FetchGeoInfoByConstrainResponse(geoInfo = None)
         }
       }
 

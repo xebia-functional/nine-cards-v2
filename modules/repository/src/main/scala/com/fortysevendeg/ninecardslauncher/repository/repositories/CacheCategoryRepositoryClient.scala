@@ -75,7 +75,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def getAllCacheCategories: Service[GetAllCacheCategoriesRequest, GetAllCacheCategoriesResponse] =
+  def fetchCacheCategories: Service[FetchCacheCategoriesRequest, FetchCacheCategoriesResponse] =
     request =>
       tryToFuture {
         Try {
@@ -83,14 +83,14 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             nineCardsUri = CacheCategoryUri,
             projection = AllFields)(getListFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
-          GetAllCacheCategoriesResponse(cacheCategories)
+          FetchCacheCategoriesResponse(cacheCategories)
         } recover {
           case e: Exception =>
-            GetAllCacheCategoriesResponse(cacheCategories = Seq.empty)
+            FetchCacheCategoriesResponse(cacheCategories = Seq.empty)
         }
       }
 
-  def getCacheCategoryById: Service[GetCacheCategoryByIdRequest, GetCacheCategoryByIdResponse] =
+  def getCacheCategoryById: Service[FindCacheCategoryByIdRequest, FindCacheCategoryByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -99,14 +99,14 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             id = request.id,
             projection = AllFields)(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
-          GetCacheCategoryByIdResponse(cacheCategory)
+          FindCacheCategoryByIdResponse(cacheCategory)
         } recover {
           case e: Exception =>
-            GetCacheCategoryByIdResponse(result = None)
+            FindCacheCategoryByIdResponse(category = None)
         }
       }
 
-  def getCacheCategoryByPackage: Service[GetCacheCategoryByPackageRequest, GetCacheCategoryByPackageResponse] =
+  def getCacheCategoryByPackage: Service[FetchCacheCategoryByPackageRequest, FetchCacheCategoryByPackageResponse] =
     request =>
       tryToFuture {
         Try {
@@ -117,10 +117,10 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             whereParams = Seq(request.`package`))(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
 
-          GetCacheCategoryByPackageResponse(cacheCategory)
+          FetchCacheCategoryByPackageResponse(cacheCategory)
         } recover {
           case e: Exception =>
-            GetCacheCategoryByPackageResponse(result = None)
+            FetchCacheCategoryByPackageResponse(category = None)
         }
       }
 

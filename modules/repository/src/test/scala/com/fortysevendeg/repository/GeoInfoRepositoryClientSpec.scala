@@ -104,11 +104,11 @@ trait GeoInfoTestSupport
 
   def createDeleteGeoInfoRequest = DeleteGeoInfoRequest(geoInfo = geoInfo)
 
-  def createGetAllGeoInfoItemsRequest = GetAllGeoInfoItemsRequest()
+  def createGetAllGeoInfoItemsRequest = FetchGeoInfoItemsRequest()
 
-  def createGetGeoInfoByIdRequest(id: Int) = GetGeoInfoByIdRequest(id = id)
+  def createGetGeoInfoByIdRequest(id: Int) = FindGeoInfoByIdRequest(id = id)
 
-  def createGetGeoInfoByConstrainRequest(constrain: String) = GetGeoInfoByConstrainRequest(constrain = constrain)
+  def createGetGeoInfoByConstrainRequest(constrain: String) = FetchGeoInfoByConstrainRequest(constrain = constrain)
 
   def createUpdateGeoInfoRequest = UpdateGeoInfoRequest(geoInfo = geoInfo)
 
@@ -173,7 +173,7 @@ class GeoInfoRepositoryClientSpec
     }
 
     "getAllGeoInfoItems should return all the geoInfo items stored in the database" in {
-      val response = await(getAllGeoInfoItems(createGetAllGeoInfoItemsRequest))
+      val response = await(fetchGeoInfoItems(createGetAllGeoInfoItemsRequest))
 
       response.geoInfoItems shouldEqual geoInfoSeq
     }
@@ -181,27 +181,27 @@ class GeoInfoRepositoryClientSpec
     "getGeoInfoById should return a GeoInfo object when a existing id is given" in {
       val response = await(getGeoInfoById(createGetGeoInfoByIdRequest(id = geoInfoId)))
 
-      response.result.get.id shouldEqual geoInfoId
-      response.result.get.data.constrain shouldEqual constrain
+      response.geoInfo.get.id shouldEqual geoInfoId
+      response.geoInfo.get.data.constrain shouldEqual constrain
     }
 
     "getGeoInfoById should return None when a non-existing id is given" in {
       val response = await(getGeoInfoById(createGetGeoInfoByIdRequest(id = nonExistingGeoInfoId)))
 
-      response.result shouldEqual None
+      response.geoInfo shouldEqual None
     }
 
     "getGeoInfoByConstrain should return a GeoInfo object when a existing constrain is given" in {
       val response = await(getGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = constrain)))
 
-      response.result.get.id shouldEqual geoInfoId
-      response.result.get.data.constrain shouldEqual constrain
+      response.geoInfo.get.id shouldEqual geoInfoId
+      response.geoInfo.get.data.constrain shouldEqual constrain
     }
 
     "getGeoInfoByConstrain should return None when a non-existing constrain is given" in {
       val response = await(getGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = nonExistingConstrain)))
 
-      response.result shouldEqual None
+      response.geoInfo shouldEqual None
     }
 
     "updateGeoInfo should return a successful response when the geoInfo item is updated" in {

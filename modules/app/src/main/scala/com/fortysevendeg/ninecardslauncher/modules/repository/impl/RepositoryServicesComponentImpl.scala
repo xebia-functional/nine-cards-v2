@@ -28,13 +28,13 @@ trait RepositoryServicesComponentImpl
     override def getCollections: Service[GetCollectionsRequest, GetCollectionsResponse] =
       request => {
         val promise = Promise[GetCollectionsResponse]()
-        getSortedCollections(GetSortedCollectionsRequest()) map {
+        getSortedCollections(FetchSortedCollectionsRequest()) map {
           response =>
             val futures = toCollectionSeq(response.collections) map {
               collection =>
-                getCardByCollection(GetAllCardsByCollectionRequest(collection.id)) map {
+                getCardByCollection(FetchCardsByCollectionRequest(collection.id)) map {
                   cardResponse =>
-                    collection.copy(cards = cardResponse.result map toCard)
+                    collection.copy(cards = cardResponse.cards map toCard)
                 }
             }
             Future.sequence(futures) map {
@@ -59,7 +59,7 @@ trait RepositoryServicesComponentImpl
 
     override def getCacheCategory: Service[GetCacheCategoryRequest, GetCacheCategoryResponse] =
       request => {
-        getAllCacheCategories(GetAllCacheCategoriesRequest()) map {
+        fetchCacheCategories(FetchCacheCategoriesRequest()) map {
           response =>
             GetCacheCategoryResponse(toCacheCategorySeq(response.cacheCategories))
         }

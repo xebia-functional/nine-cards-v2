@@ -108,11 +108,11 @@ trait CacheCategoryTestSupport
 
   def createDeleteCacheCategoryByPackageRequest = DeleteCacheCategoryByPackageRequest(`package` = packageName)
 
-  def createGetAllCacheCategoriesRequest = GetAllCacheCategoriesRequest()
+  def createGetAllCacheCategoriesRequest = FetchCacheCategoriesRequest()
 
-  def createGetCacheCategoryByIdRequest(id: Int) = GetCacheCategoryByIdRequest(id = id)
+  def createGetCacheCategoryByIdRequest(id: Int) = FindCacheCategoryByIdRequest(id = id)
 
-  def createGetCacheCategoriesByPackage(packageName: String) = GetCacheCategoryByPackageRequest(`package` = packageName)
+  def createGetCacheCategoriesByPackage(packageName: String) = FetchCacheCategoryByPackageRequest(`package` = packageName)
 
   def createUpdateCacheCategoryRequest = UpdateCacheCategoryRequest(cacheCategory = cacheCategory)
 
@@ -185,7 +185,7 @@ class CacheCategoryRepositoryClientSpec
     }
 
     "getAllCacheCategories should return all the cache categories stored in the database" in {
-      val response = await(getAllCacheCategories(createGetAllCacheCategoriesRequest))
+      val response = await(fetchCacheCategories(createGetAllCacheCategoriesRequest))
 
       response.cacheCategories shouldEqual cacheCategorySeq
     }
@@ -193,27 +193,27 @@ class CacheCategoryRepositoryClientSpec
     "getCacheCategoryById should return a CacheCategory object when a existing id is given" in {
       val response = await(getCacheCategoryById(createGetCacheCategoryByIdRequest(id = cacheCategoryId)))
 
-      response.result.get.id shouldEqual cacheCategoryId
-      response.result.get.data.packageName shouldEqual packageName
+      response.category.get.id shouldEqual cacheCategoryId
+      response.category.get.data.packageName shouldEqual packageName
     }
 
     "getCacheCategoryById should return None when a non-existing id is given" in {
       val response = await(getCacheCategoryById(createGetCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
 
-      response.result shouldEqual None
+      response.category shouldEqual None
     }
 
     "getCacheCategoryByPackage should return a CacheCategory object when a existing package name is given" in {
       val response = await(getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = packageName)))
 
-      response.result.get.id shouldEqual cacheCategoryId
-      response.result.get.data.packageName shouldEqual packageName
+      response.category.get.id shouldEqual cacheCategoryId
+      response.category.get.data.packageName shouldEqual packageName
     }
 
     "getCacheCategoryByPackage should return None when a non-existing package name is given" in {
       val response = await(getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = nonExistingPackageName)))
 
-      response.result shouldEqual None
+      response.category shouldEqual None
     }
 
     "updateCacheCategory should return a successful response when the cache category is updated" in {

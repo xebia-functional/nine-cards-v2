@@ -63,7 +63,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def getCardById: Service[GetCardByIdRequest, GetCardByIdResponse] =
+  def getCardById: Service[FindCardByIdRequest, FindCardByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -72,15 +72,15 @@ trait CardRepositoryClient extends DBUtils {
             id = request.id,
             projection = AllFields)(getEntityFromCursor(cardEntityFromCursor)) map toCard
 
-          GetCardByIdResponse(card)
+          FindCardByIdResponse(card)
 
         } recover {
           case e: Exception =>
-            GetCardByIdResponse(result = None)
+            FindCardByIdResponse(card = None)
         }
       }
 
-  def getCardByCollection: Service[GetAllCardsByCollectionRequest, GetAllCardsByCollectionResponse] =
+  def getCardByCollection: Service[FetchCardsByCollectionRequest, FetchCardsByCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -90,10 +90,10 @@ trait CardRepositoryClient extends DBUtils {
             where = s"$CollectionId = ?",
             whereParams = Array(request.collectionId.toString))(getListFromCursor(cardEntityFromCursor)) map toCard
 
-          GetAllCardsByCollectionResponse(cards)
+          FetchCardsByCollectionResponse(cards)
         } recover {
           case e: Exception =>
-            GetAllCardsByCollectionResponse(result = Seq.empty[Card])
+            FetchCardsByCollectionResponse(cards = Seq.empty[Card])
         }
       }
 
