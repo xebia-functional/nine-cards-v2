@@ -44,3 +44,5 @@ trait DBUtils {
     list
   }
 }
+
+object DBUtils extends DBUtils
