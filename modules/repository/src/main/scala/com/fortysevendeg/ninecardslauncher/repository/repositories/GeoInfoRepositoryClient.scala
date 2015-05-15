@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, GeoInfoUri}
-import com.fortysevendeg.ninecardslauncher.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
 import com.fortysevendeg.ninecardslauncher.repository._
@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait GeoInfoRepositoryClient extends DBUtils {
+trait GeoInfoRepositoryClient {
 
   self: ContentResolverWrapperComponent =>
 
@@ -74,7 +74,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def getGeoInfoById: Service[FindGeoInfoByIdRequest, FindGeoInfoByIdResponse] =
+  def findGeoInfoById: Service[FindGeoInfoByIdRequest, FindGeoInfoByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -89,9 +89,8 @@ trait GeoInfoRepositoryClient extends DBUtils {
             FindGeoInfoByIdResponse(geoInfo = None)
         }
       }
-
-
-  def getGeoInfoByConstrain: Service[FetchGeoInfoByConstrainRequest, FetchGeoInfoByConstrainResponse] =
+  
+  def fetchGeoInfoByConstrain: Service[FetchGeoInfoByConstrainRequest, FetchGeoInfoByConstrainResponse] =
     request =>
       tryToFuture {
         Try {

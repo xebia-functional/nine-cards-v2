@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.{CardUri, ContentResolverWrapperComponent}
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
-import com.fortysevendeg.ninecardslauncher.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait CardRepositoryClient extends DBUtils {
+trait CardRepositoryClient {
 
   self: ContentResolverWrapperComponent =>
 
@@ -63,7 +63,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def getCardById: Service[FindCardByIdRequest, FindCardByIdResponse] =
+  def findCardById: Service[FindCardByIdRequest, FindCardByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -80,7 +80,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def getCardByCollection: Service[FetchCardsByCollectionRequest, FetchCardsByCollectionResponse] =
+  def fetchCardsByCollection: Service[FetchCardsByCollectionRequest, FetchCardsByCollectionResponse] =
     request =>
       tryToFuture {
         Try {
