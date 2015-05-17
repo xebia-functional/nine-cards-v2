@@ -62,8 +62,7 @@ object Settings {
     aar(androidCardView),
     aar(playServicesBase),
     glide,
-    okHttp,
-    compilerPlugin(Libraries.wartRemover))
+    okHttp)
 
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,

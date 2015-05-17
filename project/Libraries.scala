@@ -5,9 +5,6 @@ object Libraries {
   def onCompile(dep: ModuleID): ModuleID = dep % "compile"
   def onTest(dep: ModuleID): ModuleID = dep % "test"
 
-  //Plugins:
-  lazy val wartRemover = "org.brianmckenna" %% "wartremover" % Versions.wartremoverV
-
   object scala {
 
     lazy val scalaReflect = "org.scala-lang" % "scala-reflect" % Versions.scalaV
