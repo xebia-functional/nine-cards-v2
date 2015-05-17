@@ -1,6 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.ui.commons
 
 import android.graphics.Color
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher2.R
+import macroid.ContextWrapper
 
 object Constants {
 
@@ -113,6 +116,9 @@ object CardType {
 }
 
 object NineCardsIntent {
+  val NineCardExtraPhone: String = "tel"
+  val NineCardExtraEmail: String = "email"
+  val NineCardExtraUrlAd: String = "url_ad"
   val NineCardExtraPackageName: String = "package_name"
   val NineCardExtraClassName: String = "class_name"
   val OpenApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_APP"
@@ -124,9 +130,11 @@ object NineCardsIntent {
 
 object ImageResourceNamed {
 
-  def iconCollectionWorkspace(category: String) = s"icon_collection_$category"
+  def iconCollectionWorkspace(category: String)(implicit context: ContextWrapper): Int =
+    resGetDrawableIdentifier(s"icon_collection_$category") getOrElse R.drawable.icon_collection_default
 
-  def iconCollectionDetail(category: String) = s"icon_collection_${category}_detail"
+  def iconCollectionDetail(category: String)(implicit context: ContextWrapper): Int =
+    resGetDrawableIdentifier(s"icon_collection_${category}_detail") getOrElse R.drawable.icon_collection_default_detail
 
 }
 

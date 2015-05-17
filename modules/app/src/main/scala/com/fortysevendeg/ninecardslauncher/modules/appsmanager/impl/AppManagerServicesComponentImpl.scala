@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
-import com.fortysevendeg.ninecardslauncher.models.{GooglePlayPackage, GooglePlaySimplePackages, NineCardIntent, AppItem}
+import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image.{StoreImageAppResponse, StoreImageAppRequest, ImageServicesComponent}
@@ -44,11 +44,10 @@ trait AppManagerServicesComponentImpl
           val appitems: Seq[AppItem] = apps map {
             resolveInfo =>
               val name = resolveInfo.loadLabel(packageManager).toString
-              val extras = Map(
-                NineCardExtraPackageName -> resolveInfo.activityInfo.applicationInfo.packageName,
-                NineCardExtraClassName -> resolveInfo.activityInfo.name
-              )
-              val intent = new NineCardIntent(extras)
+              val intent = new NineCardIntent(NineCardIntentExtras(
+                package_name = Some(resolveInfo.activityInfo.applicationInfo.packageName),
+                class_name = Some(resolveInfo.activityInfo.name)
+              ))
               intent.setAction(OpenApp)
               import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
               AppItem(
