@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.models.Collection
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
 import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.modules.theme.ThemeUtils._
 import com.fortysevendeg.ninecardslauncher.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
@@ -157,8 +158,8 @@ class OnPageChangeCollectionsListener(
     val nextCollection: Option[Collection] = collections.lift(position + 1)
     nextCollection map {
       next =>
-        val startColor = resGetColor(persistentServices.getIndexColor(selectedCollection.themedColorIndex))
-        val endColor = resGetColor(persistentServices.getIndexColor(next.themedColorIndex))
+        val startColor = resGetColor(getIndexColor(selectedCollection.themedColorIndex))
+        val endColor = resGetColor(getIndexColor(next.themedColorIndex))
         val color = interpolateColors(positionOffset, startColor, endColor)
         runUi(updateToolbarColor(color))
     }

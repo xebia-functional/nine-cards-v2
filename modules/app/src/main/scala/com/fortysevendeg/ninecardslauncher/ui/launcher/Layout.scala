@@ -5,7 +5,6 @@ import android.speech.RecognizerIntent
 import android.widget.{ImageView, FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
 import com.fortysevendeg.ninecardslauncher.ui.components.TintableImageView
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
@@ -14,8 +13,6 @@ import scala.util.Try
 
 trait Layout
   extends Styles {
-
-  self : PersistentServicesComponent =>
 
   var workspaces = slot[LauncherWorkSpaces]
 

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.api.services
 
 import com.fortysevendeg.ninecardslauncher.api.model.{Installation, AuthData, User}
 import com.fortysevendeg.rest.client.ServiceClient
-import play.api.libs.json.{Json, Writes, Reads}
+import play.api.libs.json.{Writes, Reads}
 
 import scala.concurrent.ExecutionContext
 

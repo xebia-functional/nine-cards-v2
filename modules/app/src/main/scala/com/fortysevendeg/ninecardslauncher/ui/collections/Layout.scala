@@ -4,7 +4,6 @@ import android.support.v4.view.ViewPager
 import android.support.v7.widget.{CardView, RecyclerView}
 import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
 import com.fortysevendeg.ninecardslauncher.ui.commons.ToolbarLayout
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import macroid.FullDsl._
@@ -14,8 +13,6 @@ trait Layout
   extends Styles
   with ToolbarLayout
   with IdGeneration {
-
-  self: PersistentServicesComponent =>
 
   var viewPager = slot[ViewPager]
 
@@ -69,7 +66,6 @@ class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContext
       ) <~ contentStyle
     ) <~ rootStyle(heightCard)
   )
-
 }
 
 class ViewHolderCollectionAdapter(adapter: CollectionLayoutAdapter)(implicit context: ActivityContextWrapper)
