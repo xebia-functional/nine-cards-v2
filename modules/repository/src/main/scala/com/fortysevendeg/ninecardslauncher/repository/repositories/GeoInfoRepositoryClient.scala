@@ -18,7 +18,7 @@ trait GeoInfoRepositoryClient {
 
   implicit val executionContext: ExecutionContext
 
-  def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
+  def repoAddGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -35,16 +35,16 @@ trait GeoInfoRepositoryClient {
             values = values)
 
           AddGeoInfoResponse(
-            geoInfo = Some(GeoInfo(
+            geoInfo = GeoInfo(
               id = id,
-              data = request.data)))
+              data = request.data))
 
         } recover {
           case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
-  def deleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
+  def repoDeleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -59,7 +59,7 @@ trait GeoInfoRepositoryClient {
         }
       }
 
-  def fetchGeoInfoItems: Service[FetchGeoInfoItemsRequest, FetchGeoInfoItemsResponse] =
+  def repoFetchGeoInfoItems: Service[FetchGeoInfoItemsRequest, FetchGeoInfoItemsResponse] =
     request =>
       tryToFuture {
         Try {
@@ -74,7 +74,7 @@ trait GeoInfoRepositoryClient {
         }
       }
 
-  def findGeoInfoById: Service[FindGeoInfoByIdRequest, FindGeoInfoByIdResponse] =
+  def repoFindGeoInfoById: Service[FindGeoInfoByIdRequest, FindGeoInfoByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -90,7 +90,7 @@ trait GeoInfoRepositoryClient {
         }
       }
   
-  def fetchGeoInfoByConstrain: Service[FetchGeoInfoByConstrainRequest, FetchGeoInfoByConstrainResponse] =
+  def repoFetchGeoInfoByConstrain: Service[FetchGeoInfoByConstrainRequest, FetchGeoInfoByConstrainResponse] =
     request =>
       tryToFuture {
         Try {
@@ -107,7 +107,7 @@ trait GeoInfoRepositoryClient {
         }
       }
 
-  def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
+  def repoUpdateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {

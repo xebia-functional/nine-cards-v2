@@ -18,7 +18,7 @@ trait CacheCategoryRepositoryClient {
 
   implicit val executionContext: ExecutionContext
 
-  def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
+  def repoAddCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -35,16 +35,16 @@ trait CacheCategoryRepositoryClient {
             values = values)
 
           AddCacheCategoryResponse(
-            cacheCategory = Some(CacheCategory(
+            cacheCategory = CacheCategory(
               id = id,
-              data = request.data)))
+              data = request.data))
 
         } recover {
           case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
-  def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
+  def repoDeleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -59,7 +59,7 @@ trait CacheCategoryRepositoryClient {
         }
       }
 
-  def deleteCacheByPackageCategory: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
+  def repoDeleteCacheCategoryByPackage: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
     request =>
       tryToFuture {
         Try {
@@ -75,7 +75,7 @@ trait CacheCategoryRepositoryClient {
         }
       }
 
-  def fetchCacheCategories: Service[FetchCacheCategoriesRequest, FetchCacheCategoriesResponse] =
+  def repoFetchCacheCategories: Service[FetchCacheCategoriesRequest, FetchCacheCategoriesResponse] =
     request =>
       tryToFuture {
         Try {
@@ -90,7 +90,7 @@ trait CacheCategoryRepositoryClient {
         }
       }
 
-  def findCacheCategoryById: Service[FindCacheCategoryByIdRequest, FindCacheCategoryByIdResponse] =
+  def repoFindCacheCategoryById: Service[FindCacheCategoryByIdRequest, FindCacheCategoryByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -106,7 +106,7 @@ trait CacheCategoryRepositoryClient {
         }
       }
 
-  def fetchCacheCategoryByPackage: Service[FetchCacheCategoryByPackageRequest, FetchCacheCategoryByPackageResponse] =
+  def repoFetchCacheCategoryByPackage: Service[FetchCacheCategoryByPackageRequest, FetchCacheCategoryByPackageResponse] =
     request =>
       tryToFuture {
         Try {
@@ -124,7 +124,7 @@ trait CacheCategoryRepositoryClient {
         }
       }
 
-  def updateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
+  def repoUpdateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {

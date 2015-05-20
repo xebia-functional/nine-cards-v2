@@ -14,22 +14,22 @@ class CollectionRepositoryClientSpec
 
     "addCollection should return a valid Collection object" in new AddCollectionSupport {
 
-      val response = await(addCollection(createAddCollectionRequest))
+      val response = await(repoAddCollection(createAddCollectionRequest))
 
-      response.collection.get.id shouldEqual collectionId
-      response.collection.get.data.name shouldEqual name
+      response.collection.id shouldEqual collectionId
+      response.collection.data.name shouldEqual name
     }
 
     "deleteCollection should return a successful response when a valid cache category id is given" in
         new DeleteCollectionSupport {
-          val response = await(deleteCollection(createDeleteCollectionRequest))
+          val response = await(repoDeleteCollection(createDeleteCollectionRequest))
 
           response.deleted shouldEqual 1
         }
 
     "findCollectionById should return a Collection object when a existing id is given" in
         new FindCollectionByIdSupport {
-          val response = await(findCollectionById(createFindCollectionByIdRequest(id = collectionId)))
+          val response = await(repoFindCollectionById(createFindCollectionByIdRequest(id = collectionId)))
 
           response.collection.get.id shouldEqual collectionId
           response.collection.get.data.name shouldEqual name
@@ -37,14 +37,14 @@ class CollectionRepositoryClientSpec
 
     "findCollectionById should return None when a non-existing id is given" in
         new FindCollectionByIdSupport {
-          val response = await(findCollectionById(createFindCollectionByIdRequest(id = nonExistingCollectionId)))
+          val response = await(repoFindCollectionById(createFindCollectionByIdRequest(id = nonExistingCollectionId)))
 
           response.collection shouldEqual None
         }
 
     "fetchCollectionByOriginalSharedCollectionId should return a Collection object when a existing shared collection id is given" in
         new FetchCollectionByOriginalSharedCollectionIdSupport {
-          val response = await(fetchCollectionByOriginalSharedCollectionId(
+          val response = await(repoFetchCollectionByOriginalSharedCollectionId(
             createFetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = sharedCollectionIdInt)))
 
           response.collection.get.id shouldEqual collectionId
@@ -53,7 +53,7 @@ class CollectionRepositoryClientSpec
 
     "fetchCollectionByOriginalSharedCollectionId should return None when a non-existing shared collection id is given" in
         new FetchCollectionByOriginalSharedCollectionIdSupport {
-          val response = await(fetchCollectionByOriginalSharedCollectionId(
+          val response = await(repoFetchCollectionByOriginalSharedCollectionId(
             createFetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = nonExistingSharedCollectionIdInt)))
 
           response.collection shouldEqual None
@@ -61,7 +61,7 @@ class CollectionRepositoryClientSpec
 
     "fetchCollectionByPosition should return a Collection object when a existing position is given" in
         new FetchCollectionByPositionSupport {
-          val response = await(fetchCollectionByPosition(createFetchCollectionByPositionRequest(position = position)))
+          val response = await(repoFetchCollectionByPosition(createFetchCollectionByPositionRequest(position = position)))
 
           response.collection.get.id shouldEqual collectionId
           response.collection.get.data.name shouldEqual name
@@ -69,21 +69,21 @@ class CollectionRepositoryClientSpec
 
     "fetchCollectionByPosition should return None when a non-existing position is given" in
         new FetchCollectionByPositionSupport {
-          val response = await(fetchCollectionByPosition(createFetchCollectionByPositionRequest(position = nonExistingPosition)))
+          val response = await(repoFetchCollectionByPosition(createFetchCollectionByPositionRequest(position = nonExistingPosition)))
 
           response.collection shouldEqual None
         }
 
     "fetchSortedCollections should return all the cache categories stored in the database" in
         new FetchSortedCollectionsSupport {
-          val response = await(fetchSortedCollections(createFetchSortedCollectionsRequest))
+          val response = await(repoFetchSortedCollections(createFetchSortedCollectionsRequest))
 
           response.collections shouldEqual collectionSeq
         }
 
     "updateCollection should return a successful response when the collection is updated" in
         new UpdateCollectionSupport {
-          val response = await(updateCollection(createUpdateCollectionRequest))
+          val response = await(repoUpdateCollection(createUpdateCollectionRequest))
 
           response.updated shouldEqual 1
         }

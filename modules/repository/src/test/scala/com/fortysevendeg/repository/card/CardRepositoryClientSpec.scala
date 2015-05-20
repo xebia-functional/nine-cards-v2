@@ -16,22 +16,22 @@ class CardRepositoryClientSpec
     "addCard should return a valid Card object" in
         new AddCardSupport {
 
-          val response = await(addCard(createAddCardRequest))
+          val response = await(repoAddCard(createAddCardRequest))
 
-          response.card.get.id shouldEqual cardId
-          response.card.get.data.intent shouldEqual intent
+          response.card.id shouldEqual cardId
+          response.card.data.intent shouldEqual intent
         }
 
     "deleteCard should return a successful response when a valid cache category id is given" in
         new DeleteCardSupport {
-          val response = await(deleteCard(createDeleteCardRequest))
+          val response = await(repoDeleteCard(createDeleteCardRequest))
 
           response.deleted shouldEqual 1
         }
 
     "findCardById should return a Card object when a existing id is given" in
         new FindCardByIdSupport {
-          val response = await(findCardById(createFindCardByIdRequest(id = cardId)))
+          val response = await(repoFindCardById(createFindCardByIdRequest(id = cardId)))
 
           response.card.get.id shouldEqual cardId
           response.card.get.data.intent shouldEqual intent
@@ -39,28 +39,28 @@ class CardRepositoryClientSpec
 
     "findCardById should return None when a non-existing id is given" in
         new FindCardByIdSupport {
-          val response = await(findCardById(createFindCardByIdRequest(id = nonExistingCardId)))
+          val response = await(repoFindCardById(createFindCardByIdRequest(id = nonExistingCardId)))
 
           response.card shouldEqual None
         }
 
     "fetchCardsByCollection should return a Card sequence when a existing collection id is given" in
         new FetchCardsByCollectionSupport {
-          val response = await(fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId = collectionId)))
+          val response = await(repoFetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId = collectionId)))
 
           response.cards shouldEqual cardSeq
         }
 
     "fetchCardsByCollection should return an empty sequence when a non-existing collection id is given" in
         new FetchCardsByCollectionSupport {
-          val response = await(fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId = nonExistingCollectionId)))
+          val response = await(repoFetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId = nonExistingCollectionId)))
 
           response.cards shouldEqual Seq.empty
         }
 
     "updateCard should return a successful response when the card is updated" in
         new UpdateCardSupport {
-          val response = await(updateCard(createUpdateCardRequest))
+          val response = await(repoUpdateCard(createUpdateCardRequest))
 
           response.updated shouldEqual 1
         }

@@ -18,7 +18,7 @@ trait CardRepositoryClient {
 
   implicit val executionContext: ExecutionContext
 
-  def addCard: Service[AddCardRequest, AddCardResponse] =
+  def repoAddCard: Service[AddCardRequest, AddCardResponse] =
     request =>
       tryToFuture {
         Try {
@@ -41,16 +41,16 @@ trait CardRepositoryClient {
             values = values)
 
           AddCardResponse(
-            card = Some(Card(
+            card = Card(
               id = id,
-              data = request.data)))
+              data = request.data))
 
         } recover {
           case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
-  def deleteCard: Service[DeleteCardRequest, DeleteCardResponse] =
+  def repoDeleteCard: Service[DeleteCardRequest, DeleteCardResponse] =
     request =>
       tryToFuture {
         Try {
@@ -63,7 +63,7 @@ trait CardRepositoryClient {
         }
       }
 
-  def findCardById: Service[FindCardByIdRequest, FindCardByIdResponse] =
+  def repoFindCardById: Service[FindCardByIdRequest, FindCardByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -80,7 +80,7 @@ trait CardRepositoryClient {
         }
       }
 
-  def fetchCardsByCollection: Service[FetchCardsByCollectionRequest, FetchCardsByCollectionResponse] =
+  def repoFetchCardsByCollection: Service[FetchCardsByCollectionRequest, FetchCardsByCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -97,7 +97,7 @@ trait CardRepositoryClient {
         }
       }
 
-  def updateCard: Service[UpdateCardRequest, UpdateCardResponse] =
+  def repoUpdateCard: Service[UpdateCardRequest, UpdateCardResponse] =
     request =>
       tryToFuture {
         Try {

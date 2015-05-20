@@ -18,7 +18,7 @@ trait CollectionRepositoryClient {
 
   implicit val executionContext: ExecutionContext
 
-  def addCollection: Service[AddCollectionRequest, AddCollectionResponse] =
+  def repoAddCollection: Service[AddCollectionRequest, AddCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -39,16 +39,16 @@ trait CollectionRepositoryClient {
             values = values)
 
           AddCollectionResponse(
-            collection = Some(Collection(
+            collection = Collection(
               id = id,
-              data = request.data)))
+              data = request.data))
 
         } recover {
           case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
-  def deleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse] =
+  def repoDeleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -63,7 +63,7 @@ trait CollectionRepositoryClient {
         }
       }
 
-  def findCollectionById: Service[FindCollectionByIdRequest, FindCollectionByIdResponse] =
+  def repoFindCollectionById: Service[FindCollectionByIdRequest, FindCollectionByIdResponse] =
     request =>
       tryToFuture {
         findCollectionById(id = request.id) map {
@@ -71,7 +71,7 @@ trait CollectionRepositoryClient {
         }
       }
 
-  def fetchCollectionByOriginalSharedCollectionId:
+  def repoFetchCollectionByOriginalSharedCollectionId:
   Service[FetchCollectionByOriginalSharedCollectionIdRequest, FetchCollectionByOriginalSharedCollectionIdResponse] =
     request =>
       tryToFuture {
@@ -82,7 +82,7 @@ trait CollectionRepositoryClient {
         }
       }
 
-  def fetchCollectionByPosition: Service[FetchCollectionByPositionRequest, FetchCollectionByPositionResponse] =
+  def repoFetchCollectionByPosition: Service[FetchCollectionByPositionRequest, FetchCollectionByPositionResponse] =
     request =>
       tryToFuture {
         fetchCollection(selection = s"$Position = ?", selectionArgs = Array(request.position.toString)) map {
@@ -90,7 +90,7 @@ trait CollectionRepositoryClient {
         }
       }
 
-  def fetchSortedCollections:
+  def repoFetchSortedCollections:
   Service[FetchSortedCollectionsRequest, FetchSortedCollectionsResponse] =
     request =>
       tryToFuture {
@@ -99,7 +99,7 @@ trait CollectionRepositoryClient {
         }
       }
 
-  def updateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse] =
+  def repoUpdateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse] =
     request =>
       tryToFuture {
         Try {

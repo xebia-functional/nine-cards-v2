@@ -13,43 +13,43 @@ class GeoInfoRepositoryClientSpec
 
     "addGeoInfo should return a valid GeoInfo object" in new AddGeoInfoSupport {
 
-      val response = await(addGeoInfo(createAddGeoInfoRequest))
+      val response = await(repoAddGeoInfo(createAddGeoInfoRequest))
 
-      response.geoInfo.get.id shouldEqual geoInfoId
-      response.geoInfo.get.data.constrain shouldEqual constrain
+      response.geoInfo.id shouldEqual geoInfoId
+      response.geoInfo.data.constrain shouldEqual constrain
     }
 
     "deleteGeoInfo should return a successful response when a valid geoInfo id is given" in
         new DeleteGeoInfoSupport {
-          val response = await(deleteGeoInfo(createDeleteGeoInfoRequest))
+          val response = await(repoDeleteGeoInfo(createDeleteGeoInfoRequest))
 
           response.deleted shouldEqual 1
         }
 
     "fetchGeoInfoItems should return all the geoInfo items stored in the database" in
         new FetchGeoInfoItemsSupport {
-          val response = await(fetchGeoInfoItems(createFetchGeoInfoItemsRequest))
+          val response = await(repoFetchGeoInfoItems(createFetchGeoInfoItemsRequest))
 
           response.geoInfoItems shouldEqual geoInfoSeq
         }
 
     "findGeoInfoById should return a GeoInfo object when a existing id is given" in
         new FindGeoInfoByIdSupport {
-          val response = await(findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)))
+          val response = await(repoFindGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)))
 
           response.geoInfo.get.id shouldEqual geoInfoId
           response.geoInfo.get.data.constrain shouldEqual constrain
         }
 
     "findGeoInfoById should return None when a non-existing id is given" in new FindGeoInfoByIdSupport {
-      val response = await(findGeoInfoById(createFindGeoInfoByIdRequest(id = nonExistingGeoInfoId)))
+      val response = await(repoFindGeoInfoById(createFindGeoInfoByIdRequest(id = nonExistingGeoInfoId)))
 
       response.geoInfo shouldEqual None
     }
 
     "fetchGeoInfoByConstrain should return a GeoInfo object when a existing constrain is given" in
         new FetchGeoInfoByConstrainSupport {
-          val response = await(fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)))
+          val response = await(repoFetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)))
 
           response.geoInfo.get.id shouldEqual geoInfoId
           response.geoInfo.get.data.constrain shouldEqual constrain
@@ -57,14 +57,14 @@ class GeoInfoRepositoryClientSpec
 
     "fetchGeoInfoByConstrain should return None when a non-existing constrain is given" in
         new FetchGeoInfoByConstrainSupport {
-          val response = await(fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = nonExistingConstrain)))
+          val response = await(repoFetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = nonExistingConstrain)))
 
           response.geoInfo shouldEqual None
         }
 
     "updateGeoInfo should return a successful response when the geoInfo item is updated" in
         new UpdateGeoInfoSupport {
-          val response = await(updateGeoInfo(createUpdateGeoInfoRequest))
+          val response = await(repoUpdateGeoInfo(createUpdateGeoInfoRequest))
 
           response.updated shouldEqual 1
         }

@@ -13,36 +13,36 @@ class CacheCategoryRepositoryClientSpec
 
     "addCacheCategory should return a valid CacheCategory object" in new AddCacheCategorySupport {
 
-      val result = await(addCacheCategory(createAddCacheCategoryRequest))
+      val result = await(repoAddCacheCategory(createAddCacheCategoryRequest))
 
-      result.cacheCategory.get.id shouldEqual cacheCategoryId
-      result.cacheCategory.get.data.packageName shouldEqual packageName
+      result.cacheCategory.id shouldEqual cacheCategoryId
+      result.cacheCategory.data.packageName shouldEqual packageName
     }
 
     "deleteCacheCategory should return a successful response when a valid cache category id is given" in
         new DeleteCacheCategorySupport {
-          val response = await(deleteCacheCategory(createDeleteCacheCategoryRequest))
+          val response = await(repoDeleteCacheCategory(createDeleteCacheCategoryRequest))
 
           response.deleted shouldEqual 1
         }
 
     "deleteCacheCategoryByPackage should return a successful response when a valid package name is given" in
         new DeleteCacheCategoryByPackageSupport {
-          val response = await(deleteCacheByPackageCategory(createDeleteCacheCategoryByPackageRequest))
+          val response = await(repoDeleteCacheCategoryByPackage(createDeleteCacheCategoryByPackageRequest))
 
           response.deleted shouldEqual 1
         }
 
     "fetchCacheCategories should return all the cache categories stored in the database" in
         new FetchCacheCategoriesSupport {
-          val response = await(fetchCacheCategories(createFetchCacheCategoriesRequest))
+          val response = await(repoFetchCacheCategories(createFetchCacheCategoriesRequest))
 
           response.cacheCategories shouldEqual cacheCategorySeq
         }
 
     "findCacheCategoryById should return a CacheCategory object when a existing id is given" in
         new FindCacheCategoryByIdSupport {
-          val response = await(findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId)))
+          val response = await(repoFindCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId)))
 
           response.category.get.id shouldEqual cacheCategoryId
           response.category.get.data.packageName shouldEqual packageName
@@ -50,14 +50,14 @@ class CacheCategoryRepositoryClientSpec
 
     "findCacheCategoryById should return None when a non-existing id is given" in
         new FindCacheCategoryByIdSupport {
-          val response = await(findCacheCategoryById(createFindCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
+          val response = await(repoFindCacheCategoryById(createFindCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
 
           response.category shouldEqual None
         }
 
     "fetchCacheCategoryByPackage should return a CacheCategory object when a existing package name is given" in
         new FetchCacheCategoryByPackageSupport {
-          val response = await(fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName)))
+          val response = await(repoFetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName)))
 
           response.category.get.id shouldEqual cacheCategoryId
           response.category.get.data.packageName shouldEqual packageName
@@ -65,14 +65,14 @@ class CacheCategoryRepositoryClientSpec
 
     "fetchCacheCategoryByPackage should return None when a non-existing package name is given" in
         new FetchCacheCategoryByPackageSupport {
-          val response = await(fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = nonExistingPackageName)))
+          val response = await(repoFetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = nonExistingPackageName)))
 
           response.category shouldEqual None
         }
 
     "updateCacheCategory should return a successful response when the cache category is updated" in
         new UpdateCacheCategorySupport {
-          val response = await(updateCacheCategory(createUpdateCacheCategoryRequest))
+          val response = await(repoUpdateCacheCategory(createUpdateCacheCategoryRequest))
 
           response.updated shouldEqual 1
         }
