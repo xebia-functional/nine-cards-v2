@@ -38,6 +38,15 @@ case class CacheCategory(
   ratingsCount: Int,
   commentCount: Int) extends Serializable
 
+case class GeoInfo(
+    id: Int,
+    constrain: String,
+    occurrence: String,
+    wifi: String,
+    latitude: Double,
+    longitude: Double,
+    system: Boolean) extends Serializable
+
 case class AppItem(
   name: String,
   packageName: String,

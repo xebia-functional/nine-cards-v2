@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.repository.model._
 
 case class AddCacheCategoryRequest(data: CacheCategoryData)
 
-case class AddCacheCategoryResponse(cacheCategory: Option[CacheCategory])
+case class AddCacheCategoryResponse(cacheCategory: CacheCategory)
 
 case class DeleteCacheCategoryRequest(cacheCategory: CacheCategory)
 
@@ -33,7 +33,7 @@ case class UpdateCacheCategoryResponse(updated: Int)
 
 case class AddCardRequest(collectionId: Int, data: CardData)
 
-case class AddCardResponse(card: Option[Card])
+case class AddCardResponse(card: Card)
 
 case class DeleteCardRequest(card: Card)
 
@@ -53,7 +53,7 @@ case class UpdateCardResponse(updated: Int)
 
 case class AddCollectionRequest(data: CollectionData)
 
-case class AddCollectionResponse(collection: Option[Collection])
+case class AddCollectionResponse(collection: Collection)
 
 case class DeleteCollectionRequest(collection: Collection)
 
@@ -81,7 +81,7 @@ case class UpdateCollectionResponse(updated: Int)
 
 case class AddGeoInfoRequest(data: GeoInfoData)
 
-case class AddGeoInfoResponse(geoInfo: Option[GeoInfo])
+case class AddGeoInfoResponse(geoInfo: GeoInfo)
 
 case class DeleteGeoInfoRequest(geoInfo: GeoInfo)
 

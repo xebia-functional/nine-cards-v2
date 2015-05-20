@@ -8,6 +8,9 @@ import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image.{StoreImageAppResponse, StoreImageAppRequest, ImageServicesComponent}
 import com.fortysevendeg.ninecardslauncher.modules.repository._
+import com.fortysevendeg.ninecardslauncher.modules.repository.cacheCategory._
+import com.fortysevendeg.ninecardslauncher.modules.repository.collection.CollectionRepositoryServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.repository.geoInfo.GeoInfoRepositoryServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 
 import scala.collection.JavaConversions._
@@ -17,18 +20,20 @@ import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import play.api.libs.json._
 
 trait AppManagerServicesComponentImpl
-  extends AppManagerServicesComponent {
+    extends AppManagerServicesComponent {
 
   self: ContextWrapperProvider
-    with ImageServicesComponent
-    with RepositoryServicesComponent
-    with UserServicesComponent
-    with ApiServicesComponent =>
+      with ImageServicesComponent
+      with CacheCategoryRepositoryServicesComponent
+      with CollectionRepositoryServicesComponent
+      with GeoInfoRepositoryServicesComponent
+      with UserServicesComponent
+      with ApiServicesComponent =>
 
   lazy val appManagerServices = new AppManagerServicesImpl
 
   class AppManagerServicesImpl
-    extends AppManagerServices {
+      extends AppManagerServices {
 
     val packageManager = contextProvider.application.getPackageManager
 
@@ -75,8 +80,8 @@ trait AppManagerServicesComponentImpl
           GooglePlayPackagesResponse(_, packages) <- googlePlayPackages(packagesNoFound)
           storeImageResponses <- storeImages(packages)
         } yield {
-          PackagesResponse(storeImageResponses flatMap (_.packageName))
-        }).recover {
+            PackagesResponse(storeImageResponses flatMap (_.packageName))
+          }).recover {
           case _ => PackagesResponse(Seq.empty)
         }
       }
@@ -95,7 +100,7 @@ trait AppManagerServicesComponentImpl
     override def getCategorizedApps: Service[GetCategorizedAppsRequest, GetCategorizedAppsResponse] =
       request =>
         for {
-          GetCacheCategoryResponse(cacheCategory) <- repositoryServices.getCacheCategory(GetCacheCategoryRequest())
+          FetchCacheCategoriesResponse(cacheCategory) <- cacheCategoryRepositoryServices.fetchCacheCategories(FetchCacheCategoriesRequest())
           GetAppsResponse(apps) <- getApps(GetAppsRequest())
         } yield {
           val categorizedApps = apps map {
@@ -124,10 +129,10 @@ trait AppManagerServicesComponentImpl
           case _ => throw CategorizeAppsException()
         }
 
-    private def insertRespositories(packages: GooglePlaySimplePackages): Future[Seq[InsertCacheCategoryResponse]] =
+    private def insertRespositories(packages: GooglePlaySimplePackages): Future[Seq[AddCacheCategoryResponse]] =
       Future.sequence(packages.items map {
         app =>
-          repositoryServices.insertCacheCategory(InsertCacheCategoryRequest(
+          cacheCategoryRepositoryServices.addCacheCategory(AddCacheCategoryRequest(
             packageName = app.packageName,
             category = app.appCategory,
             starRating = app.starRating,
@@ -145,7 +150,7 @@ trait AppManagerServicesComponentImpl
         androidId <- userServices.getAndroidId
       } yield {
           apiServices.googlePlaySimplePackages(GooglePlaySimplePackagesRequest(androidId, token, packages))
-        }) getOrElse(throw new RuntimeException("User not found"))
+        }) getOrElse (throw new RuntimeException("User not found"))
 
     private def googlePlayPackages(packages: Seq[String]): Future[GooglePlayPackagesResponse] =
       (for {
@@ -154,7 +159,7 @@ trait AppManagerServicesComponentImpl
         androidId <- userServices.getAndroidId
       } yield {
           apiServices.googlePlayPackages(GooglePlayPackagesRequest(androidId, token, packages))
-        }) getOrElse(throw new RuntimeException("User not found"))
+        }) getOrElse (throw new RuntimeException("User not found"))
 
 
   }
