@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.modules.repository.collection
 import android.content.ContentResolver
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.models.Card
-import com.fortysevendeg.ninecardslauncher.modules.repository.card.{Conversions => CardConversions, DeleteCardRequest, CardItem, AddCardRequest}
-import com.fortysevendeg.ninecardslauncher.repository.{AddCardResponse, FetchCardsByCollectionRequest, FetchSortedCollectionsRequest, NineCardRepositoryClient}
+import com.fortysevendeg.ninecardslauncher.modules.repository.card.{AddCardRequest, CardItem, Conversions => CardConversions, DeleteCardRequest}
+import com.fortysevendeg.ninecardslauncher.repository.{FetchCardsByCollectionRequest, FetchSortedCollectionsRequest, NineCardRepositoryClient}
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 
