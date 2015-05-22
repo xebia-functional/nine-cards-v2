@@ -2,6 +2,7 @@ package com.fortysevendeg.repository.geoInfo
 
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
+import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 
@@ -37,8 +38,7 @@ class GeoInfoRepositoryClientSpec
         new FindGeoInfoByIdSupport {
           val response = await(repoFindGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)))
 
-          response.geoInfo.get.id shouldEqual geoInfoId
-          response.geoInfo.get.data.constrain shouldEqual constrain
+          response.geoInfo should beSome[GeoInfo].which(_.id shouldEqual geoInfoId)
         }
 
     "findGeoInfoById should return None when a non-existing id is given" in new FindGeoInfoByIdSupport {
@@ -51,8 +51,7 @@ class GeoInfoRepositoryClientSpec
         new FetchGeoInfoByConstrainSupport {
           val response = await(repoFetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)))
 
-          response.geoInfo.get.id shouldEqual geoInfoId
-          response.geoInfo.get.data.constrain shouldEqual constrain
+          response.geoInfo should beSome[GeoInfo].which(_.data.constrain shouldEqual constrain)
         }
 
     "fetchGeoInfoByConstrain should return None when a non-existing constrain is given" in

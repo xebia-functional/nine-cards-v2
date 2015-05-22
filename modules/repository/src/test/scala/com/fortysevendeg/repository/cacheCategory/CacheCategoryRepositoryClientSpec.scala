@@ -2,6 +2,7 @@ package com.fortysevendeg.repository.cacheCategory
 
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
+import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 
@@ -44,8 +45,7 @@ class CacheCategoryRepositoryClientSpec
         new FindCacheCategoryByIdSupport {
           val response = await(repoFindCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId)))
 
-          response.category.get.id shouldEqual cacheCategoryId
-          response.category.get.data.packageName shouldEqual packageName
+          response.category should beSome[CacheCategory].which(_.id shouldEqual cacheCategoryId)
         }
 
     "findCacheCategoryById should return None when a non-existing id is given" in
@@ -59,8 +59,7 @@ class CacheCategoryRepositoryClientSpec
         new FetchCacheCategoryByPackageSupport {
           val response = await(repoFetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName)))
 
-          response.category.get.id shouldEqual cacheCategoryId
-          response.category.get.data.packageName shouldEqual packageName
+          response.category should beSome[CacheCategory].which(_.data.packageName shouldEqual packageName)
         }
 
     "fetchCacheCategoryByPackage should return None when a non-existing package name is given" in

@@ -2,6 +2,7 @@ package com.fortysevendeg.repository.card
 
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
+import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -33,8 +34,7 @@ class CardRepositoryClientSpec
         new FindCardByIdSupport {
           val response = await(repoFindCardById(createFindCardByIdRequest(id = cardId)))
 
-          response.card.get.id shouldEqual cardId
-          response.card.get.data.intent shouldEqual intent
+          response.card should beSome[Card].which(_.id shouldEqual cardId)
         }
 
     "findCardById should return None when a non-existing id is given" in

@@ -2,6 +2,7 @@ package com.fortysevendeg.repository.collection
 
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
+import com.fortysevendeg.ninecardslauncher.repository.model.Collection
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -31,8 +32,7 @@ class CollectionRepositoryClientSpec
         new FindCollectionByIdSupport {
           val response = await(repoFindCollectionById(createFindCollectionByIdRequest(id = collectionId)))
 
-          response.collection.get.id shouldEqual collectionId
-          response.collection.get.data.name shouldEqual name
+          response.collection should beSome[Collection].which(_.id shouldEqual collectionId)
         }
 
     "findCollectionById should return None when a non-existing id is given" in
@@ -47,8 +47,7 @@ class CollectionRepositoryClientSpec
           val response = await(repoFetchCollectionByOriginalSharedCollectionId(
             createFetchCollectionBySharedCollectionIdRequest(sharedCollectionId = sharedCollectionIdInt)))
 
-          response.collection.get.id shouldEqual collectionId
-          response.collection.get.data.name shouldEqual name
+          response.collection should beSome[Collection].which(_.data.originalSharedCollectionId shouldEqual sharedCollectionIdInt)
         }
 
     "fetchCollectionByOriginalSharedCollectionId should return None when a non-existing shared collection id is given" in
@@ -63,8 +62,7 @@ class CollectionRepositoryClientSpec
         new FetchCollectionByPositionSupport {
           val response = await(repoFetchCollectionByPosition(createFetchCollectionByPositionRequest(position = position)))
 
-          response.collection.get.id shouldEqual collectionId
-          response.collection.get.data.name shouldEqual name
+          response.collection should beSome[Collection].which(_.data.position shouldEqual position)
         }
 
     "fetchCollectionByPosition should return None when a non-existing position is given" in
