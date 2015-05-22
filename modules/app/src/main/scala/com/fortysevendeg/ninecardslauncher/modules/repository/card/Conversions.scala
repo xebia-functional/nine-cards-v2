@@ -1,11 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository.card
 
 import com.fortysevendeg.ninecardslauncher.models.{Card, NineCardIntent}
-import com.fortysevendeg.ninecardslauncher.repository.{AddCardRequest => RepositoryAddCardRequest}
-import com.fortysevendeg.ninecardslauncher.repository.{DeleteCardRequest => RepositoryDeleteCardRequest}
-import com.fortysevendeg.ninecardslauncher.repository.{FetchCardsByCollectionRequest => RepositoryFetchCardsByCollectionRequest}
-import com.fortysevendeg.ninecardslauncher.repository.{FindCardByIdRequest => RepositoryFindCardByIdRequest}
-import com.fortysevendeg.ninecardslauncher.repository.{UpdateCardRequest => RepositoryUpdateCardRequest}
+import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
+import com.fortysevendeg.ninecardslauncher.{repository => repo}
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard}
 import com.fortysevendeg.ninecardslauncher.repository.model.{CardData => RepositoryCardData}
 import play.api.libs.json._
@@ -13,7 +10,6 @@ import play.api.libs.json._
 trait Conversions {
 
   def toCard(card: RepositoryCard) = {
-    import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
     val intent = Json.parse(card.data.intent).as[NineCardIntent]
     Card(
       id = card.id,
@@ -29,8 +25,7 @@ trait Conversions {
       notification = card.data.notification)
   }
 
-  def toRepositoryCard(card: Card) = {
-    import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
+  def toRepositoryCard(card: Card) =
     RepositoryCard(
       id = card.id,
       data = RepositoryCardData(
@@ -46,10 +41,9 @@ trait Conversions {
         notification = card.notification
       )
     )
-  }
   
   def toRepositoryAddCardRequest(request: AddCardRequest) =
-    RepositoryAddCardRequest(
+    repo.AddCardRequest(
       collectionId = request.collectionId,
       data = RepositoryCardData(
         position = request.cardItem.position,
@@ -66,16 +60,16 @@ trait Conversions {
     )
 
   def toRepositoryDeleteCardRequest(request: DeleteCardRequest) =
-    RepositoryDeleteCardRequest(card = toRepositoryCard(request.card))
+    repo.DeleteCardRequest(card = toRepositoryCard(request.card))
 
   def toRepositoryFetchCardsByCollectionRequest(request: FetchCardsByCollectionRequest) =
-    RepositoryFetchCardsByCollectionRequest(collectionId = request.collectionId)
+    repo.FetchCardsByCollectionRequest(collectionId = request.collectionId)
 
   def toRepositoryFindCardByIdRequest(request: FindCardByIdRequest) =
-    RepositoryFindCardByIdRequest(id = request.id)
+    repo.FindCardByIdRequest(id = request.id)
 
   def toRepositoryUpdateCardRequest(request: UpdateCardRequest) =
-    RepositoryUpdateCardRequest(
+    repo.UpdateCardRequest(
       RepositoryCard(
         id = request.id,
         data = RepositoryCardData(
