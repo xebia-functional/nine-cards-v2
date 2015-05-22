@@ -176,7 +176,8 @@ trait FindCollectionByIdSupport extends CollectionTestSupport {
 
 trait FetchCollectionByOriginalSharedCollectionIdSupport extends CollectionTestSupport {
 
-  def createFetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId: Int) = FetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = sharedCollectionId)
+  def createFetchCollectionBySharedCollectionIdRequest(sharedCollectionId: Int) =
+    FetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = sharedCollectionId)
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = CollectionUri,

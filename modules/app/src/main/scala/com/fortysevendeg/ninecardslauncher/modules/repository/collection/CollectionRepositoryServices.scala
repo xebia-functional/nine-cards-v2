@@ -13,7 +13,7 @@ trait CollectionRepositoryServices {
   def addCollection: Service[AddCollectionRequest, AddCollectionResponse]
   def deleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse]
   def fetchCollections: Service[FetchCollectionsRequest, FetchCollectionsResponse]
-  def fetchCollectionByOriginalSharedCollection: Service[FetchCollectionByOriginalSharedCollectionRequest, FetchCollectionByOriginalSharedCollectionResponse]
+  def fetchCollectionBySharedCollection: Service[FetchCollectionBySharedCollectionRequest, FetchCollectionBySharedCollectionResponse]
   def fetchCollectionByPosition: Service[FetchCollectionByPositionRequest, FetchCollectionByPositionResponse]
   def findCollectionById: Service[FindCollectionByIdRequest, FindCollectionByIdResponse]
   def updateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse]
@@ -87,17 +87,17 @@ trait CollectionRepositoryServicesComponentImpl
         promise.future
       }
 
-    override def fetchCollectionByOriginalSharedCollection: Service[FetchCollectionByOriginalSharedCollectionRequest, FetchCollectionByOriginalSharedCollectionResponse] =
+    override def fetchCollectionBySharedCollection: Service[FetchCollectionBySharedCollectionRequest, FetchCollectionBySharedCollectionResponse] =
       request => {
         val result = for {
-          collectionResponse <- repoFetchCollectionByOriginalSharedCollectionId(toRepositoryFetchCollectionByOriginalSharedCollectionRequest(request))
+          collectionResponse <- repoFetchCollectionByOriginalSharedCollectionId(toRepositoryFetchCollectionBySharedCollectionRequest(request))
           Some(repoCollection) = collectionResponse.collection
           collection = toCollection(repoCollection)
           cardsResponse <- repoFetchCardsByCollection(FetchCardsByCollectionRequest(collection.id))
-        } yield FetchCollectionByOriginalSharedCollectionResponse(Option(collection.copy(cards = cardsResponse.cards map toCard)))
+        } yield FetchCollectionBySharedCollectionResponse(Option(collection.copy(cards = cardsResponse.cards map toCard)))
 
         result recover {
-          case _ => FetchCollectionByOriginalSharedCollectionResponse(None)
+          case _ => FetchCollectionBySharedCollectionResponse(None)
         }
       }
 

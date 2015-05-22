@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository.geoInfo
 
 import com.fortysevendeg.ninecardslauncher.models.GeoInfo
-import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo => RepositoryGeoInfo, GeoInfoData => RepositoryGeoInfoData, CacheCategoryData, CacheCategory}
-import com.fortysevendeg.ninecardslauncher.repository.{AddGeoInfoRequest => RepositoryAddGeoInfoRequest, DeleteGeoInfoRequest => RepositoryDeleteGeoInfoRequest, FetchGeoInfoByConstrainRequest => RepositoryFetchGeoInfoByConstrainRequest, FindGeoInfoByIdRequest => RepositoryFindGeoInfoByIdRequest, UpdateGeoInfoRequest => RepositoryUpdateGeoInfoRequest}
+import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo => RepositoryGeoInfo, GeoInfoData => RepositoryGeoInfoData}
+import com.fortysevendeg.ninecardslauncher.{repository => repo}
 
 trait Conversions {
 
@@ -32,7 +32,7 @@ trait Conversions {
     )
 
   def toRepositoryAddGeoInfoRequest(request: AddGeoInfoRequest) =
-    RepositoryAddGeoInfoRequest(
+    repo.AddGeoInfoRequest(
       data = RepositoryGeoInfoData(
         constrain = request.constrain,
         occurrence = request.occurrence,
@@ -44,16 +44,16 @@ trait Conversions {
     )
 
   def toRepositoryDeleteGeoInfoRequest(request: DeleteGeoInfoRequest) =
-    RepositoryDeleteGeoInfoRequest(geoInfo = toRepositoryGeoInfo(request.geoInfo))
+    repo.DeleteGeoInfoRequest(geoInfo = toRepositoryGeoInfo(request.geoInfo))
 
   def toRepositoryFetchGeoInfoByConstrainRequest(request: FetchGeoInfoByConstrainRequest) =
-    RepositoryFetchGeoInfoByConstrainRequest(constrain = request.constrain)
+    repo.FetchGeoInfoByConstrainRequest(constrain = request.constrain)
 
   def toRepositoryFindGeoInfoByIdRequest(request: FindGeoInfoByIdRequest) =
-    RepositoryFindGeoInfoByIdRequest(id = request.id)
+    repo.FindGeoInfoByIdRequest(id = request.id)
 
   def toRepositoryUpdateGeoInfoRequest(request: UpdateGeoInfoRequest) =
-    RepositoryUpdateGeoInfoRequest(
+    repo.UpdateGeoInfoRequest(
       RepositoryGeoInfo(
         id = request.id,
         data = RepositoryGeoInfoData(

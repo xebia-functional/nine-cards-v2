@@ -45,7 +45,7 @@ class CollectionRepositoryClientSpec
     "fetchCollectionByOriginalSharedCollectionId should return a Collection object when a existing shared collection id is given" in
         new FetchCollectionByOriginalSharedCollectionIdSupport {
           val response = await(repoFetchCollectionByOriginalSharedCollectionId(
-            createFetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = sharedCollectionIdInt)))
+            createFetchCollectionBySharedCollectionIdRequest(sharedCollectionId = sharedCollectionIdInt)))
 
           response.collection.get.id shouldEqual collectionId
           response.collection.get.data.name shouldEqual name
@@ -54,7 +54,7 @@ class CollectionRepositoryClientSpec
     "fetchCollectionByOriginalSharedCollectionId should return None when a non-existing shared collection id is given" in
         new FetchCollectionByOriginalSharedCollectionIdSupport {
           val response = await(repoFetchCollectionByOriginalSharedCollectionId(
-            createFetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = nonExistingSharedCollectionIdInt)))
+            createFetchCollectionBySharedCollectionIdRequest(sharedCollectionId = nonExistingSharedCollectionIdInt)))
 
           response.collection shouldEqual None
         }

@@ -31,9 +31,9 @@ case class FetchCollectionByPositionRequest(position: Int)
 
 case class FetchCollectionByPositionResponse(collection: Option[Collection])
 
-case class FetchCollectionByOriginalSharedCollectionRequest(sharedCollectionId: Int)
+case class FetchCollectionBySharedCollectionRequest(sharedCollectionId: Int)
 
-case class FetchCollectionByOriginalSharedCollectionResponse(collection: Option[Collection])
+case class FetchCollectionBySharedCollectionResponse(collection: Option[Collection])
 
 case class FindCollectionByIdRequest(id: Int)
 

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository.collection
 
 import com.fortysevendeg.ninecardslauncher.models.Collection
-import com.fortysevendeg.ninecardslauncher.repository.{AddCollectionRequest => RepositoryAddCollectionRequest, DeleteCollectionRequest => RepositoryDeleteCollectionRequest, FetchCollectionByOriginalSharedCollectionIdRequest => RepositoryFetchCollectionByOriginalSharedCollectionRequest, FetchCollectionByPositionRequest => RepositoryFetchCollectionByPositionRequest, FindCollectionByIdRequest => RepositoryFindCollectionByIdRequest, UpdateCollectionRequest => RepositoryUpdateCollectionRequest, DeleteCacheCategoryRequest}
+import com.fortysevendeg.ninecardslauncher.{repository => repo}
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection}
 import com.fortysevendeg.ninecardslauncher.repository.model.{CollectionData => RepositoryCollectionData}
 
@@ -42,7 +42,7 @@ trait Conversions {
     )
 
   def toRepositoryAddCollectionRequest(request: AddCollectionRequest) =
-    RepositoryAddCollectionRequest(
+    repo.AddCollectionRequest(
       data = RepositoryCollectionData(
         position = request.position,
         name = request.name,
@@ -58,21 +58,21 @@ trait Conversions {
     )
 
   def toRepositoryDeleteCollectionRequest(request: DeleteCollectionRequest) =
-    RepositoryDeleteCollectionRequest(
+    repo.DeleteCollectionRequest(
       collection = toRepositoryCollection(request.collection)
     )
 
-  def toRepositoryFetchCollectionByOriginalSharedCollectionRequest(request: FetchCollectionByOriginalSharedCollectionRequest) =
-    RepositoryFetchCollectionByOriginalSharedCollectionRequest(sharedCollectionId = request.sharedCollectionId)
+  def toRepositoryFetchCollectionBySharedCollectionRequest(request: FetchCollectionBySharedCollectionRequest) =
+    repo.FetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = request.sharedCollectionId)
 
   def toRepositoryFetchCollectionByPositionRequest(request: FetchCollectionByPositionRequest) =
-    RepositoryFetchCollectionByPositionRequest(position = request.position)
+    repo.FetchCollectionByPositionRequest(position = request.position)
 
   def toRepositoryFindCollectionByIdRequest(request: FindCollectionByIdRequest) =
-    RepositoryFindCollectionByIdRequest(id = request.id)
+    repo.FindCollectionByIdRequest(id = request.id)
 
   def toRepositoryUpdateCollectionRequest(request: UpdateCollectionRequest) =
-    RepositoryUpdateCollectionRequest(
+    repo.UpdateCollectionRequest(
       RepositoryCollection(
         id = request.id,
         data = RepositoryCollectionData(
