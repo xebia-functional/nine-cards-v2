@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.api
 
-import com.fortysevendeg.ninecardslauncher.utils.Service
+import com.fortysevendeg.ninecardslauncher.commons.Service
 
 trait ApiServices {
 

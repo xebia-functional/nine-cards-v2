@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.googleconnector
 
 import android.app.Activity
-import com.fortysevendeg.ninecardslauncher.utils.Service
+import com.fortysevendeg.ninecardslauncher.commons.Service
 
 trait GoogleConnectorServices {
 

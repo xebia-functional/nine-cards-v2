@@ -28,16 +28,14 @@ class AppManagerServicesImpl(
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
         import scala.collection.JavaConverters._
-        val l: Seq[ResolveInfo] = packageManager.queryIntentActivities(mainIntent, 0).asScala
-        val apps = Seq(l: _*)
+        val apps: Seq[ResolveInfo] = packageManager.queryIntentActivities(mainIntent, 0).asScala
 
         val appItems: Seq[AppItem] = apps map {
           resolveInfo =>
             val name = resolveInfo.loadLabel(packageManager).toString
             val intent = new NineCardIntent(NineCardIntentExtras(
               package_name = Some(resolveInfo.activityInfo.applicationInfo.packageName),
-              class_name = Some(resolveInfo.activityInfo.name)
-            ))
+              class_name = Some(resolveInfo.activityInfo.name)))
             intent.setAction(OpenApp)
             import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
             AppItem(

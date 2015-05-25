@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.repository.RepositoryServices
-import com.fortysevendeg.ninecardslauncher.modules.user.{UserNotFoundException, UserService}
+import com.fortysevendeg.ninecardslauncher.modules.user.UserNotFoundException
 import com.fortysevendeg.ninecardslauncher2.R
 
 import scala.concurrent.ExecutionContext
