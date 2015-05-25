@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image.{ImageServices, StoreImageAppRequest, StoreImageAppResponse}
 import com.fortysevendeg.ninecardslauncher.modules.repository._
-import com.fortysevendeg.ninecardslauncher.modules.user.UserServices
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import play.api.libs.json.Json
 
@@ -18,7 +17,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class AppManagerServicesImpl(
     packageManager: PackageManager,
     apiServices: ApiServices,
-    userServices: UserServices,
     imageServices: ImageServices,
     repositoryServices: RepositoryServices)
   extends AppManagerServices {
@@ -60,7 +58,7 @@ class AppManagerServicesImpl(
           else None
       }
       (for {
-        GooglePlayPackagesResponse(_, packages) <- googlePlayPackages(packagesNoFound)
+        GooglePlayPackagesResponse(_, packages) <-  apiServices.googlePlayPackages(GooglePlayPackagesRequest(packagesNoFound))
         storeImageResponses <- storeImages(packages)
       } yield {
           PackagesResponse(storeImageResponses flatMap (_.packageName))
@@ -106,13 +104,13 @@ class AppManagerServicesImpl(
       (for {
         GetCategorizedAppsResponse(apps) <- getCategorizedApps(GetCategorizedAppsRequest())
         packagesWithoutCategory = apps.filter(_.category.isEmpty) map (_.packageName)
-        GooglePlaySimplePackagesResponse(_, packages) <- googlePlaySimplePackages(packagesWithoutCategory)
-        _ <- insertRespositories(packages)
+        GooglePlaySimplePackagesResponse(_, packages) <- apiServices.googlePlaySimplePackages(GooglePlaySimplePackagesRequest(packagesWithoutCategory))
+        _ <- insertRepositories(packages)
       } yield CategorizeAppsResponse()).recover {
         case _ => throw CategorizeAppsException()
       }
 
-  private def insertRespositories(packages: GooglePlaySimplePackages): Future[Seq[InsertCacheCategoryResponse]] =
+  private def insertRepositories(packages: GooglePlaySimplePackages): Future[Seq[InsertCacheCategoryResponse]] =
     Future.sequence(packages.items map {
       app =>
         repositoryServices.insertCacheCategory(InsertCacheCategoryRequest(
@@ -124,26 +122,6 @@ class AppManagerServicesImpl(
           commentCount = app.commentCount
         ))
     })
-
-  // TODO These methods should be remove when we'll add android and tocken in Api Component in ticket 9C-151
-  private def googlePlaySimplePackages(packages: Seq[String]): Future[GooglePlaySimplePackagesResponse] =
-    (for {
-      user <- userServices.getUser
-      token <- user.sessionToken
-      androidId <- userServices.getAndroidId
-    } yield {
-        apiServices.googlePlaySimplePackages(GooglePlaySimplePackagesRequest(androidId, token, packages))
-      }) getOrElse(throw new RuntimeException("User not found"))
-
-  private def googlePlayPackages(packages: Seq[String]): Future[GooglePlayPackagesResponse] =
-    (for {
-      user <- userServices.getUser
-      token <- user.sessionToken
-      androidId <- userServices.getAndroidId
-    } yield {
-        apiServices.googlePlayPackages(GooglePlayPackagesRequest(androidId, token, packages))
-      }) getOrElse(throw new RuntimeException("User not found"))
-
 
 
 }

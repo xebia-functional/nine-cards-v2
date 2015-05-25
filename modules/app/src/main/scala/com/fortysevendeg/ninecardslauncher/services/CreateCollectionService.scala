@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
+import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, InsertCollectionRequest, InsertGeoInfoRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
@@ -41,8 +41,6 @@ class CreateCollectionService
   private lazy val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext)
 
   lazy val appManagerServices = createAppManagerServices(contextProvider.application)
-
-  lazy val userServices = createUserServices(contextProvider.application)
 
   lazy val apiServices = createApiServices(contextProvider.application)
 
@@ -82,37 +80,30 @@ class CreateCollectionService
     super.onStartCommand(intent, flags, startId)
   }
 
-  private def createConfiguration() = (for {
-    user <- userServices.getUser
-    token <- user.sessionToken
-    androidId <- userServices.getAndroidId
-  } yield {
-      apiServices.getUserConfig(GetUserConfigRequest(androidId, token)) map {
-        response =>
-          response.userConfig map synchronizeGeoInfo
-          loadDeviceId map {
-            id =>
-              (for {
-                userConfig <- response.userConfig
-                device <- userConfig.devices.find(_.deviceId == id)
-              } yield {
-                  createCollectionFromDevice(device)
-                }) getOrElse {
-                Log.d(Tag, "UserConfig don't created")
-                closeService()
-              }
-          } getOrElse {
-            createCollectionFromMyDevice()
-          }
-      } recover {
-        case ex: Throwable =>
-          Log.d(Tag, s"UserConfig endpoind failed: ${ex.getMessage}")
-          closeService()
-      }
-    }) getOrElse {
-    Log.d(Tag, "User unserialize failed")
-    closeService()
-  }
+  private def createConfiguration() =
+    apiServices.getUserConfig(GetUserConfigRequest()) map {
+      response =>
+        response.userConfig map synchronizeGeoInfo
+        loadDeviceId map {
+          id =>
+            (for {
+              userConfig <- response.userConfig
+              device <- userConfig.devices.find(_.deviceId == id)
+            } yield {
+                createCollectionFromDevice(device)
+              }) getOrElse {
+              Log.d(Tag, "UserConfig don't created")
+              closeService()
+            }
+        } getOrElse {
+          createCollectionFromMyDevice()
+        }
+    } recover {
+      case ex: Throwable =>
+        Log.d(Tag, s"UserConfig endpoind failed: ${ex.getMessage}")
+        closeService()
+    }
+
 
   private def synchronizeGeoInfo(userConfig: UserConfig) = {
     userConfig.geoInfo.homeMorning map (addUserConfigUserLocation(_, NineCardsMoments.HomeMorning))
@@ -127,10 +118,10 @@ class CreateCollectionService
     import play.api.libs.json._
 
     val reads = Json.writes[UserConfigTimeSlot]
-    val ocurrenceStr: String = config.occurrence map (o => (Json.toJson(o)(reads)).toString()) mkString("[", ", ", "]")
+    val occurrenceString: String = config.occurrence map (o => Json.toJson(o)(reads).toString()) mkString("[", ", ", "]")
     val request = InsertGeoInfoRequest(
       constrain = constrain,
-      occurrence = ocurrenceStr,
+      occurrence = occurrenceString,
       wifi = config.wifi,
       latitude = config.lat,
       longitude = config.lng,

@@ -2,18 +2,21 @@ package com.fortysevendeg.ninecardslauncher.modules.api.impl
 
 import android.content.res.Resources
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiUserConfigService, ApiGooglePlayService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.modules.api._
+import com.fortysevendeg.ninecardslauncher.modules.repository.RepositoryServices
+import com.fortysevendeg.ninecardslauncher.modules.user.{UserNotFoundException, UserService}
 import com.fortysevendeg.ninecardslauncher2.R
 
 import scala.concurrent.ExecutionContext
 
 class ApiServicesImpl(
     resources: Resources,
-    userService: ApiUserService,
+    repositoryServices: RepositoryServices,
+    apiUserService: ApiUserService,
     googlePlayService: ApiGooglePlayService,
     userConfigService: ApiUserConfigService)
     extends ApiServices
@@ -33,54 +36,54 @@ class ApiServicesImpl(
   val HeaderLocalization = "X-Android-Market-Localization"
 
   val baseHeader: Seq[(String, String)] = Seq(
-    (HeaderAppId, getString(R.string.api_app_id)),
-    (HeaderAppKey, getString(R.string.api_app_key)),
-    (HeaderLocalization, getString(R.string.api_localization)))
+    (HeaderAppId, resources.getString(R.string.api_app_id)),
+    (HeaderAppKey, resources.getString(R.string.api_app_key)),
+    (HeaderLocalization, resources.getString(R.string.api_localization)))
 
+  import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
   
   override def login: Service[LoginRequest, LoginResponse] =
     request =>
       for {
-        response <- userService.login(fromLoginRequest(request), baseHeader)
+        response <- apiUserService.login(fromLoginRequest(request), baseHeader)
       } yield LoginResponse(response.statusCode, response.data map toUser)
 
   override def linkGoogleAccount: Service[LinkGoogleAccountRequest, LoginResponse] =
     request =>
       for {
-        response <- userService.linkAuthData(fromLinkGoogleAccountRequest(request), createHeader(request.deviceId, request.token))
+        response <- apiUserService.linkAuthData(fromLinkGoogleAccountRequest(request), createAuthHeader)
       } yield LoginResponse(response.statusCode, response.data map toUser)
 
   override def createInstallation: Service[InstallationRequest, InstallationResponse] =
     request =>
       for {
-        response <- userService.createInstallation(fromInstallationRequest(request), baseHeader)
+        response <- apiUserService.createInstallation(fromInstallationRequest(request), baseHeader)
       } yield InstallationResponse(response.statusCode, response.data map toInstallation)
 
   override def updateInstallation: Service[InstallationRequest, UpdateInstallationResponse] =
     request =>
       for {
-        response <- userService.updateInstallation(fromInstallationRequest(request), baseHeader)
+        response <- apiUserService.updateInstallation(fromInstallationRequest(request), baseHeader)
       } yield UpdateInstallationResponse(response.statusCode)
 
   override def googlePlayPackage: Service[GooglePlayPackageRequest, GooglePlayPackageResponse] =
     request =>
       for {
-        response <- googlePlayService.getGooglePlayPackage(request.packageName, createHeader(request.deviceId, request.token))
+        response <- googlePlayService.getGooglePlayPackage(request.packageName, createAuthHeader)
       } yield GooglePlayPackageResponse(response.statusCode, response.data map (playApp => toGooglePlayApp(playApp.docV2)))
 
   override def googlePlayPackages: Service[GooglePlayPackagesRequest, GooglePlayPackagesResponse] =
     request =>
       for {
-        response <- googlePlayService.getGooglePlayPackages(PackagesRequest(request.packageNames), createHeader(request.deviceId, request.token))
+        response <- googlePlayService.getGooglePlayPackages(PackagesRequest(request.packageNames), createAuthHeader)
       } yield GooglePlayPackagesResponse(response.statusCode, response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)
 
   override def googlePlaySimplePackages: Service[GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse] =
     request =>
       for {
-        response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(request.items), createHeader(request.deviceId, request.token))
+        response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(request.items), createAuthHeader)
       } yield GooglePlaySimplePackagesResponse(
         response.statusCode,
         response.data.map(playApp => toGooglePlaySimplePackages(playApp)).getOrElse(GooglePlaySimplePackages(Seq.empty, Seq.empty)))
@@ -88,7 +91,7 @@ class ApiServicesImpl(
   override def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse] =
     request =>
       for {
-        response <- userConfigService.getUserConfig(createHeader(request.deviceId, request.token))
+        response <- userConfigService.getUserConfig(createAuthHeader)
       } yield GetUserConfigResponse(response.statusCode, response.data map toUserConfig)
 
   override def saveDevice: Service[SaveDeviceRequest, SaveDeviceResponse] =
@@ -96,7 +99,7 @@ class ApiServicesImpl(
       for {
         response <- userConfigService.saveDevice(
           fromUserConfigDevice(request.userConfigDevice),
-          createHeader(request.deviceId, request.token))
+          createAuthHeader)
       } yield SaveDeviceResponse(response.statusCode, response.data map toUserConfig)
 
   override def saveGeoInfo: Service[SaveGeoInfoRequest, SaveGeoInfoResponse] =
@@ -104,7 +107,7 @@ class ApiServicesImpl(
       for {
         response <- userConfigService.saveGeoInfo(
           fromUserConfigGeoInfo(request.userConfigGeoInfo),
-          createHeader(request.deviceId, request.token))
+          createAuthHeader)
       } yield SaveGeoInfoResponse(response.statusCode, response.data map toUserConfig)
 
   override def checkpointPurchaseProduct: Service[CheckpointPurchaseProductRequest, CheckpointPurchaseProductResponse] =
@@ -112,14 +115,14 @@ class ApiServicesImpl(
       for {
         response <- userConfigService.checkpointPurchaseProduct(
           request.productId,
-          createHeader(request.deviceId, request.token))
+          createAuthHeader)
       } yield CheckpointPurchaseProductResponse(response.statusCode, response.data map toUserConfig)
 
   override def checkpointCustomCollection: Service[CheckpointCustomCollectionRequest, CheckpointCustomCollectionResponse] =
     request =>
       for {
         response <- userConfigService.checkpointCustomCollection(
-          createHeader(request.deviceId, request.token))
+          createAuthHeader)
       } yield CheckpointCustomCollectionResponse(response.statusCode, response.data map toUserConfig)
 
   override def checkpointJoinedBy: Service[CheckpointJoinedByRequest, CheckpointJoinedByResponse] =
@@ -127,7 +130,7 @@ class ApiServicesImpl(
       for {
         response <- userConfigService.checkpointJoinedBy(
           request.otherConfigId,
-          createHeader(request.deviceId, request.token))
+          createAuthHeader)
       } yield CheckpointJoinedByResponse(response.statusCode, response.data map toUserConfig)
 
   override def tester: Service[TesterRequest, TesterResponse] =
@@ -135,12 +138,20 @@ class ApiServicesImpl(
       for {
         response <- userConfigService.tester(
           request.replace,
-          createHeader(request.deviceId, request.token))
+          createAuthHeader)
       } yield TesterResponse(response.statusCode, response.data map toUserConfig)
 
-  private def getString(string: Int) = resources.getString(string)
+  private def createAuthHeader = {
+    val (token, androidId) = readAuthHeader 
+    baseHeader :+ (HeaderDevice, androidId) :+ (HeaderToken, token)
+  }
 
-  private def createHeader(device: String, token: String) =
-    baseHeader :+ (HeaderDevice, device) :+ (HeaderToken, token)
-
+  private def readAuthHeader: (String, String) = {
+    val result = for {
+      user <- repositoryServices.getUser
+      token <- user.sessionToken
+      androidId <- repositoryServices.getAndroidId
+    } yield (token, androidId)
+    result getOrElse (throw UserNotFoundException())
+  }
 }

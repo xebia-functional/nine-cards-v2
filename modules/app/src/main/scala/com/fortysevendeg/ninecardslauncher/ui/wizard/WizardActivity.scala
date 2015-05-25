@@ -36,8 +36,6 @@ class WizardActivity
 
   lazy val apiServices = createApiServices(contextProvider.application)
 
-  lazy val userServices = createUserServices(contextProvider.application)
-
   lazy val googleConnectorServices = createGoogleConnectorServices(contextProvider.application)
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
@@ -98,22 +96,16 @@ class WizardActivity
   private def searchDevices() = {
     val errorUi = uiShortToast(R.string.deviceNotFoundMessage) ~ showUser
     (for {
-      user <- userServices.getUser
-      token <- user.sessionToken
-      androidId <- userServices.getAndroidId
+      userConfigResponse <- apiServices.getUserConfig(GetUserConfigRequest())
     } yield {
-      apiServices.getUserConfig(GetUserConfigRequest(androidId, token)) map {
-        response =>
-          response.userConfig map {
-            userConfig =>
-              runUi(addDevicesToRadioGroup(userConfig.devices) ~
-                showDevices ~
-                (titleDevice <~ tvText(resGetString(R.string. addDeviceTitle, userConfig.plusProfile.displayName))))
-          } getOrElse runUi(errorUi)
-      } recover {
-        case _ => runUi(errorUi)
-      }
-    }) getOrElse runUi(errorUi)
+        userConfigResponse.userConfig map { userConfig =>
+          runUi(addDevicesToRadioGroup(userConfig.devices) ~
+            showDevices ~
+            (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, userConfig.plusProfile.displayName))))
+        }
+      }) recover {
+      case _ => runUi(errorUi)
+    }
   }
 
   private def showLoading =
