@@ -190,7 +190,7 @@ class CreateCollectionService
     AddCollectionRequest(
       position = pos,
       name = resGetString(category.toLowerCase).getOrElse(category.toLowerCase),
-      `type` = CollectionType.Apps,
+      collectionType = CollectionType.Apps,
       icon = category.toLowerCase,
       themedColorIndex = pos,
       appsCategory = Some(category),

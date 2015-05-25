@@ -25,7 +25,7 @@ trait CollectionRepositoryClient {
           val values = Map[String, Any](
             Position -> request.data.position,
             Name -> request.data.name,
-            Type -> request.data.`type`,
+            Type -> request.data.collectionType,
             Icon -> request.data.icon,
             ThemedColorIndex -> request.data.themedColorIndex,
             AppsCategory -> (request.data.appsCategory getOrElse ""),
@@ -106,7 +106,7 @@ trait CollectionRepositoryClient {
           val values = Map[String, Any](
             Position -> request.collection.data.position,
             Name -> request.collection.data.name,
-            Type -> request.collection.data.`type`,
+            Type -> request.collection.data.collectionType,
             Icon -> request.collection.data.icon,
             ThemedColorIndex -> request.collection.data.themedColorIndex,
             AppsCategory -> (request.collection.data.appsCategory getOrElse ""),

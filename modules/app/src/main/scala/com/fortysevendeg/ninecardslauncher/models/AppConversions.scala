@@ -21,7 +21,7 @@ trait AppConversions {
       term = appItem.name,
       imagePath = appItem.imagePath,
       intent = appItem.intent,
-      `type` = App)
+      cardType = App)
 
   def toAddCollectionRequestFromUserConfigSeq(items: Seq[UserConfigCollection], packagesNotInstalled: Seq[String]): Seq[AddCollectionRequest] =
     items.zipWithIndex.map (zipped => toAddCollectionRequest(zipped._1, zipped._2, packagesNotInstalled))
@@ -31,7 +31,7 @@ trait AppConversions {
     AddCollectionRequest(
       position = index,
       name = userConfigCollection.name,
-      `type` = userConfigCollection.collectionType,
+      collectionType = userConfigCollection.collectionType,
       icon = userConfigCollection.icon,
       themedColorIndex = color,
       appsCategory = userConfigCollection.category,
@@ -63,7 +63,7 @@ trait AppConversions {
             term = item.title,
             imagePath = imagePath,
             intent = Json.toJson(item.metadata).toString(),
-            `type` = App)
+            cardType = App)
         }
       case _ => None
     }

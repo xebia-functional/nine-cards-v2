@@ -28,7 +28,7 @@ trait CardTestData {
   val nonExistingCollectionId = 15
   val term = Random.nextString(5)
   val packageName = Random.nextString(5)
-  val `type` = Random.nextString(5)
+  val cardType = Random.nextString(5)
   val intent = Random.nextString(5)
   val imagePath = Random.nextString(5)
   val starRating = Random.nextDouble()
@@ -52,7 +52,7 @@ trait CardTestData {
       collectionId = collectionId,
       term = term,
       packageName = packageName,
-      `type` = `type`,
+      cardType = cardType,
       intent = intent,
       imagePath = imagePath,
       starRating = starRating,
@@ -66,7 +66,7 @@ trait CardTestData {
       position = position,
       term = term,
       packageName = packageNameOption,
-      `type` = `type`,
+      cardType = cardType,
       intent = intent,
       imagePath = imagePath,
       starRating = starRatingOption,
@@ -79,7 +79,7 @@ trait CardTestData {
     CollectionId -> collectionId,
     Term -> term,
     PackageName -> (packageNameOption getOrElse ""),
-    Type -> `type`,
+    Type -> cardType,
     Intent -> intent,
     ImagePath -> imagePath,
     StarRating -> (starRatingOption getOrElse 0.0d),
@@ -91,7 +91,7 @@ trait CardTestData {
     Position -> position,
     Term -> term,
     PackageName -> (packageNameOption getOrElse ""),
-    Type -> `type`,
+    Type -> cardType,
     Intent -> intent,
     ImagePath -> imagePath,
     StarRating -> (starRatingOption getOrElse 0.0d),
@@ -108,7 +108,7 @@ trait CardMockCursor extends MockCursor with CardTestData with Scope {
     (CollectionId, 2, cardSeq map (_ => collectionId), IntDataType),
     (Term, 3, cardSeq map (_.data.term), StringDataType),
     (PackageName, 4, cardSeq map (_.data.packageName getOrElse ""), StringDataType),
-    (Type, 5, cardSeq map (_.data.`type`), StringDataType),
+    (Type, 5, cardSeq map (_.data.cardType), StringDataType),
     (Intent, 6, cardSeq map (_.data.intent), StringDataType),
     (ImagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
     (StarRating, 8, cardSeq map (_.data.starRating getOrElse 0.0d), DoubleDataType),
@@ -146,7 +146,7 @@ trait AddCardSupport extends CardTestSupport {
     position = position,
     term = term,
     packageName = packageNameOption,
-    `type` = `type`,
+    cardType = cardType,
     intent = intent,
     imagePath = imagePath,
     starRating = starRatingOption,

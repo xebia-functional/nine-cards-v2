@@ -26,7 +26,7 @@ trait CollectionTestData {
   val position = Random.nextInt(10)
   val nonExistingPosition = 15
   val name = Random.nextString(5)
-  val `type` = Random.nextString(5)
+  val collectionType = Random.nextString(5)
   val icon = Random.nextString(5)
   val themedColorIndex = Random.nextInt(10)
   val appsCategory = Random.nextString(5)
@@ -53,7 +53,7 @@ trait CollectionTestData {
     data = CollectionEntityData(
       position = position,
       name = name,
-      `type` = `type`,
+      collectionType = collectionType,
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = appsCategory,
@@ -67,7 +67,7 @@ trait CollectionTestData {
     data = CollectionData(
       position = position,
       name = name,
-      `type` = `type`,
+      collectionType = collectionType,
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = appsCategoryOption,
@@ -79,7 +79,7 @@ trait CollectionTestData {
   def createCollectionValues = Map[String, Any](
     Position -> position,
     Name -> name,
-    Type -> `type`,
+    Type -> collectionType,
     Icon -> icon,
     ThemedColorIndex -> themedColorIndex,
     AppsCategory -> (appsCategoryOption getOrElse ""),
@@ -95,7 +95,7 @@ trait CollectionMockCursor extends MockCursor with CollectionTestData with Scope
     (NineCardsSqlHelper.Id, 0, collectionSeq map (_.id), IntDataType),
     (Position, 1, collectionSeq map (_.data.position), IntDataType),
     (Name, 2, collectionSeq map (_.data.name), StringDataType),
-    (Type, 3, collectionSeq map (_.data.`type`), StringDataType),
+    (Type, 3, collectionSeq map (_.data.collectionType), StringDataType),
     (Icon, 4, collectionSeq map (_.data.icon), StringDataType),
     (ThemedColorIndex, 5, collectionSeq map (_.data.themedColorIndex), IntDataType),
     (AppsCategory, 6, collectionSeq map (_.data.appsCategory getOrElse ""), StringDataType),
@@ -132,7 +132,7 @@ trait AddCollectionSupport extends CollectionTestSupport {
   def createAddCollectionRequest = AddCollectionRequest(CollectionData(
     position = position,
     name = name,
-    `type` = `type`,
+    collectionType = collectionType,
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = appsCategoryOption,

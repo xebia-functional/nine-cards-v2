@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.modules.repository.card.CardItem
 case class AddCollectionRequest(
     position: Int,
     name: String,
-    `type`: String,
+    collectionType: String,
     icon: String,
     themedColorIndex: Int,
     appsCategory: Option[String] = None,
@@ -43,7 +43,7 @@ case class UpdateCollectionRequest(
     id: Int,
     position: Int,
     name: String,
-    `type`: String,
+    collectionType: String,
     icon: String,
     themedColorIndex: Int,
     appsCategory: Option[String] = None,

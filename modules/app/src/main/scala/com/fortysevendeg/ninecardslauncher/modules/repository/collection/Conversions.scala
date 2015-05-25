@@ -14,7 +14,7 @@ trait Conversions {
       id = collection.id,
       position = collection.data.position,
       name = collection.data.name,
-      `type` = collection.data.`type`,
+      collectionType = collection.data.collectionType,
       icon = collection.data.icon,
       themedColorIndex = collection.data.themedColorIndex,
       appsCategory = collection.data.appsCategory,
@@ -30,7 +30,7 @@ trait Conversions {
       data = RepositoryCollectionData(
         position = collection.position,
         name = collection.name,
-        `type` = collection.`type`,
+        collectionType = collection.collectionType,
         icon = collection.icon,
         themedColorIndex = collection.themedColorIndex,
         appsCategory = collection.appsCategory,
@@ -46,7 +46,7 @@ trait Conversions {
       data = RepositoryCollectionData(
         position = request.position,
         name = request.name,
-        `type` = request.`type`,
+        collectionType = request.collectionType,
         icon = request.icon,
         themedColorIndex = request.themedColorIndex,
         appsCategory = request.appsCategory,
@@ -78,7 +78,7 @@ trait Conversions {
         data = RepositoryCollectionData(
           position = request.position,
           name = request.name,
-          `type` = request.`type`,
+          collectionType = request.collectionType,
           icon = request.icon,
           themedColorIndex = request.themedColorIndex,
           appsCategory = request.appsCategory,
