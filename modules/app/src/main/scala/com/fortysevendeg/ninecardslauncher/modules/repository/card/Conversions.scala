@@ -3,8 +3,7 @@ package com.fortysevendeg.ninecardslauncher.modules.repository.card
 import com.fortysevendeg.ninecardslauncher.models.{Card, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.{repository => repo}
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard}
-import com.fortysevendeg.ninecardslauncher.repository.model.{CardData => RepositoryCardData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData}
 import play.api.libs.json._
 
 trait Conversions {
