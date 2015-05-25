@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.ui.collections
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.{CardView, RecyclerView}
 import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.ui.commons.ToolbarLayout
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayout
 import macroid.FullDsl._
@@ -47,10 +46,7 @@ trait CollectionFragmentLayout
 }
 
 class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContextWrapper)
-  extends CollectionAdapterStyles
-  with ComponentRegistryImpl {
-
-  override val contextProvider: ContextWrapper = context
+  extends CollectionAdapterStyles {
 
   var icon = slot[ImageView]
 

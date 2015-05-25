@@ -2,7 +2,6 @@ package com.fortysevendeg.rest.client.http
 
 
 import com.fortysevendeg.BaseTestSupport
-import com.fortysevendeg.ninecardslauncher.api.model.Installation
 import com.fortysevendeg.rest.client.SampleRequest
 import com.squareup.{okhttp => okHttp}
 import org.specs2.mock.Mockito
@@ -13,9 +12,8 @@ import play.api.libs.json.Json
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext}
 
-trait OkHttpClientSupport
-  extends OkHttpClient
-  with Mockito
+class OkHttpClientSupport
+  extends Mockito
   with Scope {
 
   implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
@@ -42,24 +40,8 @@ trait OkHttpClientSupport
       .request(request)
       .code(200)
       .message("Alright")
-      .body(okHttp.ResponseBody.create(jsonMediaType, json))
+      .body(okHttp.ResponseBody.create(okHttp.MediaType.parse("application/json"), json))
       .build()
-
-  override val okHttpClient = new okHttp.OkHttpClient() {
-    override def newCall(request: okHttp.Request): okHttp.Call = {
-      new okHttp.Call(this, request) {
-        override def cancel(): Unit = {}
-        override def isCanceled: Boolean = false
-        override def enqueue(responseCallback: okHttp.Callback): Unit = {}
-        override def execute(): okHttp.Response = {
-          if (isValidMethod(request) && isValidBody(request))
-            okHttpResponse
-          else
-            throw new IllegalArgumentException("")
-        }
-      }
-    }
-  }
 
   private def isValidMethod(req: okHttp.Request): Boolean =
     acceptedMethod.getOrElse(req.method) == req.method
@@ -73,6 +55,22 @@ trait OkHttpClientSupport
       case _ => true
     }
 
+  val okHttpClient = new OkHttpClient(new okHttp.OkHttpClient() {
+    override def newCall(request: okHttp.Request): okHttp.Call = {
+      new okHttp.Call(this, request) {
+        override def cancel(): Unit = {}
+        override def isCanceled: Boolean = false
+        override def enqueue(responseCallback: okHttp.Callback): Unit = {}
+        override def execute(): okHttp.Response = {
+          if (isValidMethod(request) && isValidBody(request))
+            okHttpResponse
+          else
+            throw new IllegalArgumentException("")
+        }
+      }
+    }
+  })
+
 }
 
 class OkHttpClientSpec
@@ -85,7 +83,7 @@ class OkHttpClientSpec
 
       override val acceptedMethod = Some(Methods.GET.toString)
 
-      val response = Await.result(doGet(baseUrl, Seq.empty), Duration.Inf)
+      val response = Await.result(okHttpClient.doGet(baseUrl, Seq.empty), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -93,7 +91,7 @@ class OkHttpClientSpec
 
       override val acceptedMethod = Some(Methods.DELETE.toString)
 
-      val response = Await.result(doDelete(baseUrl, Seq.empty), Duration.Inf)
+      val response = Await.result(okHttpClient.doDelete(baseUrl, Seq.empty), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -101,7 +99,7 @@ class OkHttpClientSpec
 
       override val acceptedMethod = Some(Methods.POST.toString)
 
-      val response = Await.result(doPost(baseUrl, Seq.empty), Duration.Inf)
+      val response = Await.result(okHttpClient.doPost(baseUrl, Seq.empty), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -112,7 +110,7 @@ class OkHttpClientSpec
       val sampleRequest = SampleRequest("request")
       override val acceptedBody = Some(sampleRequest)
 
-      val response = Await.result(doPost[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
+      val response = Await.result(okHttpClient.doPost[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -120,7 +118,7 @@ class OkHttpClientSpec
 
       override val acceptedMethod = Some(Methods.PUT.toString)
 
-      val response = Await.result(doPut(baseUrl, Seq.empty), Duration.Inf)
+      val response = Await.result(okHttpClient.doPut(baseUrl, Seq.empty), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -131,7 +129,7 @@ class OkHttpClientSpec
       val sampleRequest = SampleRequest("request")
       override val acceptedBody = Some(sampleRequest)
 
-      val response = Await.result(doPut[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
+      val response = Await.result(okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -139,7 +137,7 @@ class OkHttpClientSpec
 
       override val acceptedMethod = Some(Methods.GET.toString)
 
-      Await.result(doDelete(baseUrl, Seq.empty), Duration.Inf) must throwA[IllegalArgumentException]
+      Await.result(okHttpClient.doDelete(baseUrl, Seq.empty), Duration.Inf) must throwA[IllegalArgumentException]
     }
 
     "returns Exception for an unexpected request" in new OkHttpClientSupport {
@@ -148,7 +146,7 @@ class OkHttpClientSpec
 
       override val acceptedBody = Some(SampleRequest("request"))
 
-      Await.result(doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")), Duration.Inf) must throwA[IllegalArgumentException]
+      Await.result(okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")), Duration.Inf) must throwA[IllegalArgumentException]
     }
 
   }

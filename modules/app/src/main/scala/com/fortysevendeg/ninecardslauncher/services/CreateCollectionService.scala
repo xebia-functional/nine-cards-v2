@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services
 
-import android.app.{NotificationManager, PendingIntent, Service}
-import android.content.{Context, Intent}
+import android.app.{PendingIntent, Service}
+import android.content.Intent
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
+import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.models._
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
@@ -28,10 +28,9 @@ import android.util.Log
 class CreateCollectionService
   extends Service
   with Contexts[Service]
-  with ComponentRegistryImpl
-  with AppConversions {
+  with Module {
 
-  override lazy val contextProvider: ContextWrapper = serviceContextWrapper
+  lazy val contextProvider: ContextWrapper = serviceContextWrapper
 
   val Tag = "9CARDS"
 
@@ -41,7 +40,15 @@ class CreateCollectionService
 
   private lazy val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext)
 
-  private lazy val notifyManager = getSystemService(Context.NOTIFICATION_SERVICE).asInstanceOf[NotificationManager]
+  lazy val appManagerServices = createAppManagerServices(contextProvider.application)
+
+  lazy val userServices = createUserServices(contextProvider.application)
+
+  lazy val apiServices = createApiServices(contextProvider.application)
+
+  lazy val repositoryServices = createRepositoryServices(contextProvider.application)
+
+  lazy val appConversions = createAppConversions(contextProvider.application)
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     loadDeviceId = Option(intent) flatMap {
@@ -152,7 +159,7 @@ class CreateCollectionService
     appManagerServices.createBitmapsForNoPackagesInstalled(IntentsRequest(intents)) map {
       response =>
         // Save collection in repository
-        val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections, response.packages) map repositoryServices.insertCollection
+        val insertFutures = appConversions.toInsertCollectionRequestFromUserConfigSeq(device.collections, response.packages) map repositoryServices.insertCollection
         insertFuturesInDB(insertFutures)
     } recover {
       case _ =>
@@ -184,7 +191,7 @@ class CreateCollectionService
   }
 
   private def createCollection(apps: Seq[AppItem], category: String, index: Int): InsertCollectionRequest = {
-    val appsCategory = apps.filter(_.category == Some(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
+    val appsCategory = apps.filter(_.category.contains(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
     val pos = if (index >= NumSpaces) index % NumSpaces else index
     InsertCollectionRequest(
       position = pos,
@@ -194,7 +201,7 @@ class CreateCollectionService
       themedColorIndex = pos,
       appsCategory = Some(category),
       sharedCollectionSubscribed = Option(false),
-      cards = toCartItemFromAppItemSeq(appsCategory)
+      cards = appConversions.toCartItemFromAppItemSeq(appsCategory)
     )
   }
 

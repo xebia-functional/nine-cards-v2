@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentActivity
 import android.support.v7.app.ActionBarActivity
 import android.widget.RadioButton
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
+import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.modules.api.GetUserConfigRequest
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.{GoogleOperationCanceledException, RequestTokenRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService
@@ -26,13 +26,19 @@ class WizardActivity
   extends ActionBarActivity
   with Contexts[FragmentActivity]
   with Layout
-  with ComponentRegistryImpl {
+  with Module {
 
   self =>
 
   private var finished = false
 
-  override lazy val contextProvider: ContextWrapper = activityContextWrapper
+  lazy val contextProvider: ContextWrapper = activityContextWrapper
+
+  lazy val apiServices = createApiServices(contextProvider.application)
+
+  lazy val userServices = createUserServices(contextProvider.application)
+
+  lazy val googleConnectorServices = createGoogleConnectorServices(contextProvider.application)
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -70,7 +76,7 @@ class WizardActivity
 
   private def selectUser = Transformer {
     case i: RadioButton if i.isChecked =>
-      googleConnectorServices.requestToken(activityContextWrapper)(RequestTokenRequest(i.getTag.toString)) map {
+      googleConnectorServices.requestToken(this)(RequestTokenRequest(i.getTag.toString)) map {
         response => runUi(showLoading ~ Ui(searchDevices()))
       } recover {
         case ex: GoogleOperationCanceledException => runUi(uiShortToast(R.string.canceledGooglePermission) ~ showUser)

@@ -6,9 +6,7 @@ import play.api.libs.json.{Writes, Reads}
 
 import scala.concurrent.ExecutionContext
 
-trait UserServiceClient {
-
-  val serviceClient: ServiceClient
+class ApiUserService(serviceClient: ServiceClient) {
 
   val prefixPathUser = "/users"
   val prefixPathInstallation = "/installations"

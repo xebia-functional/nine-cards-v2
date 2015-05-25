@@ -3,19 +3,15 @@ package com.fortysevendeg.ninecardslauncher.ui.launcher
 import android.content.Context
 import android.widget.FrameLayout
 import com.fortysevendeg.ninecardslauncher.models.Collection
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants
 import com.fortysevendeg.ninecardslauncher.ui.components.AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.ui.launcher.WorkSpaceType._
-import macroid.{Ui, ActivityContextWrapper, ContextWrapper, Tweak}
+import macroid.{Ui, ActivityContextWrapper, Tweak}
 
 import scala.annotation.tailrec
 
 class LauncherWorkSpaces(context: Context)(implicit activityContext: ActivityContextWrapper)
-  extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, null, 0)
-  with ComponentRegistryImpl {
-
-  override val contextProvider: ContextWrapper = activityContext
+  extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, null, 0) {
 
   override def getItemViewTypeCount: Int = 2
 
@@ -50,19 +46,19 @@ object LauncherWorkSpacesTweaks {
   @tailrec
   private def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
     collections match {
-      case Nil if newLauncherData.collections.length > 0 => acc :+ newLauncherData
+      case Nil if newLauncherData.collections.nonEmpty => acc :+ newLauncherData
       case Nil => acc
-      case h :: t if newLauncherData.collections.length == Constants.NumSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(false))
+      case h :: t if newLauncherData.collections.length == Constants.NumSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(widgets = false))
       case h :: t =>
         val g: Seq[Collection] = newLauncherData.collections :+ h
-        val n = LauncherData(false, g)
+        val n = LauncherData(widgets = false, collections = g)
         getCollectionsItems(t, acc, n)
     }
   }
 
   def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] {
     workspaces =>
-      workspaces.data = LauncherData(true) +: getCollectionsItems(collections, Seq.empty, LauncherData(false))
+      workspaces.data = LauncherData(widgets = true) +: getCollectionsItems(collections, Seq.empty, LauncherData(widgets = false))
       workspaces.init(pageSelected)
   }
 

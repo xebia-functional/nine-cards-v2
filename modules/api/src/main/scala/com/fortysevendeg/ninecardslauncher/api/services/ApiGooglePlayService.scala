@@ -6,9 +6,7 @@ import play.api.libs.json.{Writes, Reads}
 
 import scala.concurrent.ExecutionContext
 
-trait GooglePlayServiceClient {
-
-  val serviceClient: ServiceClient
+class ApiGooglePlayService(serviceClient: ServiceClient) {
 
   private val PrefixGooglePlay = "/googleplay"
   private val PackagePath = "package"
