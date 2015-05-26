@@ -139,6 +139,8 @@ trait CardTestSupport
     with CardTestData
     with DBUtils {
 
+  lazy val client = new CardRepositoryClient(contentResolverWrapper)
+
   def createAddCardRequest = AddCardRequest(collectionId = collectionId, CardData(
     position = position,
     term = term,
@@ -196,52 +198,51 @@ class CardRepositoryClientSpec
     extends Specification
     with Mockito
     with Scope
-    with CardTestSupport
-    with CardRepositoryClient {
+    with CardTestSupport {
 
   "CardRepositoryClient component" should {
 
     "addCard should return a valid Card object" in {
 
-      val response = await(addCard(createAddCardRequest))
+      val response = await(client.addCard(createAddCardRequest))
 
       response.card.get.id shouldEqual cardId
       response.card.get.data.intent shouldEqual intent
     }
 
     "deleteCard should return a successful response when a valid cache category id is given" in {
-      val response = await(deleteCard(createDeleteCardRequest))
+      val response = await(client.deleteCard(createDeleteCardRequest))
 
       response.deleted shouldEqual 1
     }
 
     "getCardById should return a Card object when a existing id is given" in {
-      val response = await(getCardById(createGetCardByIdRequest(id = cardId)))
+      val response = await(client.getCardById(createGetCardByIdRequest(id = cardId)))
 
       response.result.get.id shouldEqual cardId
       response.result.get.data.intent shouldEqual intent
     }
 
     "getCardById should return None when a non-existing id is given" in {
-      val response = await(getCardById(createGetCardByIdRequest(id = nonExistingCardId)))
+      val response = await(client.getCardById(createGetCardByIdRequest(id = nonExistingCardId)))
 
       response.result shouldEqual None
     }
 
     "getCardByCollection should return a Card sequence when a existing collection id is given" in {
-      val response = await(getCardByCollection(createGetCardByCollectionRequest(collectionId = collectionId)))
+      val response = await(client.getCardByCollection(createGetCardByCollectionRequest(collectionId = collectionId)))
 
       response.result shouldEqual cardSeq
     }
 
     "getCardByCollection should return an empty sequence when a non-existing collection id is given" in {
-      val response = await(getCardByCollection(createGetCardByCollectionRequest(collectionId = nonExistingCollectionId)))
+      val response = await(client.getCardByCollection(createGetCardByCollectionRequest(collectionId = nonExistingCollectionId)))
 
       response.result shouldEqual Seq.empty
     }
 
     "updateCard should return a successful response when the card is updated" in {
-      val response = await(updateCard(createUpdateCardRequest))
+      val response = await(client.updateCard(createUpdateCardRequest))
 
       response.updated shouldEqual 1
     }

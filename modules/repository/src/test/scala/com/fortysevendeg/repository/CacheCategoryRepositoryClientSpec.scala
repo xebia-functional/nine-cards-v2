@@ -11,8 +11,6 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Random
 
 trait CacheCategoryMockCursor extends MockCursor with CacheCategoryTestData {
@@ -96,6 +94,8 @@ trait CacheCategoryTestSupport
     with CacheCategoryTestData
     with DBUtils {
 
+  lazy val client = new CacheCategoryRepositoryClient(contentResolverWrapper)
+
   def createAddCacheCategoryRequest = AddCacheCategoryRequest(CacheCategoryData(
     packageName = packageName,
     category = category,
@@ -159,65 +159,64 @@ trait CacheCategoryTestSupport
 class CacheCategoryRepositoryClientSpec
     extends Specification
     with Mockito
-    with CacheCategoryTestSupport
-    with CacheCategoryRepositoryClient {
+    with CacheCategoryTestSupport {
 
   "CacheCategoryRepositoryClient component" should {
 
     "addCacheCategory should return a valid CacheCategory object" in {
 
-      val result = await(addCacheCategory(createAddCacheCategoryRequest))
+      val result = await(client.addCacheCategory(createAddCacheCategoryRequest))
 
       result.cacheCategory.get.id shouldEqual cacheCategoryId
       result.cacheCategory.get.data.packageName shouldEqual packageName
     }
 
     "deleteCacheCategory should return a successful response when a valid cache category id is given" in {
-      val response = await(deleteCacheCategory(createDeleteCacheCategoryRequest))
+      val response = await(client.deleteCacheCategory(createDeleteCacheCategoryRequest))
 
       response.deleted shouldEqual 1
     }
 
     "deleteCacheCategoryByPackage should return a successful response when a valid package name is given" in {
-      val response = await(deleteCacheByPackageCategory(createDeleteCacheCategoryByPackageRequest))
+      val response = await(client.deleteCacheByPackageCategory(createDeleteCacheCategoryByPackageRequest))
 
       response.deleted shouldEqual 1
     }
 
     "getAllCacheCategories should return all the cache categories stored in the database" in {
-      val response = await(getAllCacheCategories(createGetAllCacheCategoriesRequest))
+      val response = await(client.getAllCacheCategories(createGetAllCacheCategoriesRequest))
 
       response.cacheCategories shouldEqual cacheCategorySeq
     }
 
     "getCacheCategoryById should return a CacheCategory object when a existing id is given" in {
-      val response = await(getCacheCategoryById(createGetCacheCategoryByIdRequest(id = cacheCategoryId)))
+      val response = await(client.getCacheCategoryById(createGetCacheCategoryByIdRequest(id = cacheCategoryId)))
 
       response.result.get.id shouldEqual cacheCategoryId
       response.result.get.data.packageName shouldEqual packageName
     }
 
     "getCacheCategoryById should return None when a non-existing id is given" in {
-      val response = await(getCacheCategoryById(createGetCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
+      val response = await(client.getCacheCategoryById(createGetCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
 
       response.result shouldEqual None
     }
 
     "getCacheCategoryByPackage should return a CacheCategory object when a existing package name is given" in {
-      val response = await(getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = packageName)))
+      val response = await(client.getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = packageName)))
 
       response.result.get.id shouldEqual cacheCategoryId
       response.result.get.data.packageName shouldEqual packageName
     }
 
     "getCacheCategoryByPackage should return None when a non-existing package name is given" in {
-      val response = await(getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = nonExistingPackageName)))
+      val response = await(client.getCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = nonExistingPackageName)))
 
       response.result shouldEqual None
     }
 
     "updateCacheCategory should return a successful response when the cache category is updated" in {
-      val response = await(updateCacheCategory(createUpdateCacheCategoryRequest))
+      val response = await(client.updateCacheCategory(createUpdateCacheCategoryRequest))
 
       response.updated shouldEqual 1
     }
