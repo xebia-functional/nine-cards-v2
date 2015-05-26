@@ -1,32 +1,34 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository.impl
 
-import java.io.{IOException, File}
+import java.io.File
 
-import android.content.{SharedPreferences, ContentResolver}
+import android.content.{ContentResolver, SharedPreferences}
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.models.{Installation, User}
-import com.fortysevendeg.ninecardslauncher.modules.repository.Conversions
-import com.fortysevendeg.ninecardslauncher.modules.repository._
+import com.fortysevendeg.ninecardslauncher.modules.repository.{Conversions, _}
+import com.fortysevendeg.ninecardslauncher.modules.user.{GoogleTokenNotFoundException, GoogleUserNotFoundException, AndroidIdNotFoundException}
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.repositories.{CacheCategoryRepositoryClient, CardRepositoryClient, CollectionRepositoryClient, GeoInfoRepositoryClient}
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher.utils.FileUtils
 
-import scala.concurrent.{Future, Promise, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.{Failure, Success, Try}
 
 class RepositoryServicesImpl(
+  cacheCategoryRepositoryClient: CacheCategoryRepositoryClient,
+  collectionRepositoryClient: CollectionRepositoryClient,
+  cardRepositoryClient: CardRepositoryClient,
+  geoInfoRepositoryClient: GeoInfoRepositoryClient,
   cr: ContentResolver,
   filesDir: File,
   preferences: SharedPreferences)
   extends RepositoryServices
   with Conversions
-  with NineCardRepositoryClient
   with FileUtils {
 
-  override implicit val contentResolver: ContentResolver = cr
-
-  override implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
+  implicit val contentResolver: ContentResolver = cr
 
   val FilenameUser = "__user_entity__"
 
@@ -36,14 +38,13 @@ class RepositoryServicesImpl(
 
   val GoogleKeyToken = "__google_token__"
 
-  override def getCollections: Service[GetCollectionsRequest, GetCollectionsResponse] =
-    request => {
+  override def getCollections(request: GetCollectionsRequest)(implicit ec: ExecutionContext): Future[GetCollectionsResponse] = {
       val promise = Promise[GetCollectionsResponse]()
-      getSortedCollections(GetSortedCollectionsRequest()) map {
+      collectionRepositoryClient.getSortedCollections(GetSortedCollectionsRequest()) map {
         response =>
           val futures = toCollectionSeq(response.collections) map {
             collection =>
-              getCardByCollection(GetAllCardsByCollectionRequest(collection.id)) map {
+              cardRepositoryClient.getCardByCollection(GetAllCardsByCollectionRequest(collection.id)) map {
                 cardResponse =>
                   collection.copy(cards = cardResponse.result map toCard)
               }
@@ -60,39 +61,33 @@ class RepositoryServicesImpl(
       promise.future
     }
 
-  override def insertCacheCategory: Service[InsertCacheCategoryRequest, InsertCacheCategoryResponse] =
-    request => {
-      addCacheCategory(toAddCacheCategoryRequest(request)) map {
+  override def insertCacheCategory(request: InsertCacheCategoryRequest)(implicit ec: ExecutionContext): Future[InsertCacheCategoryResponse] =
+      cacheCategoryRepositoryClient.addCacheCategory(toAddCacheCategoryRequest(request)) map {
         response =>
           InsertCacheCategoryResponse(response.cacheCategory map toCacheCategory)
       }
-    }
 
-  override def getCacheCategory: Service[GetCacheCategoryRequest, GetCacheCategoryResponse] =
-    request => {
-      getAllCacheCategories(GetAllCacheCategoriesRequest()) map {
+  override def getCacheCategory(request: GetCacheCategoryRequest)(implicit ec: ExecutionContext): Future[GetCacheCategoryResponse] =
+      cacheCategoryRepositoryClient.getAllCacheCategories(GetAllCacheCategoriesRequest()) map {
         response =>
           GetCacheCategoryResponse(toCacheCategorySeq(response.cacheCategories))
       }
-    }
 
-  override def insertGeoInfo: Service[InsertGeoInfoRequest, InsertGeoInfoResponse] =
-    request =>
-      addGeoInfo(toAddGeoInfoRequest(request)) map {
+  override def insertGeoInfo(request: InsertGeoInfoRequest)(implicit ec: ExecutionContext): Future[InsertGeoInfoResponse] =
+      geoInfoRepositoryClient.addGeoInfo(toAddGeoInfoRequest(request)) map {
         response =>
           InsertGeoInfoResponse(response.geoInfo)
       }
 
-  override def insertCollection: Service[InsertCollectionRequest, InsertCollectionResponse] =
-    request => {
+  override def insertCollection(request: InsertCollectionRequest)(implicit ec: ExecutionContext): Future[InsertCollectionResponse] = {
       val promise = Promise[InsertCollectionResponse]()
-      addCollection(toAddCollectionRequest(request)) map {
+      collectionRepositoryClient.addCollection(toAddCollectionRequest(request)) map {
         response =>
           response.collection map {
             collection => {
               val futures = request.cards map {
                 card =>
-                  addCard(toAddCardRequest(collection.id, card))
+                  cardRepositoryClient.addCard(toAddCardRequest(collection.id, card))
               }
               Future.sequence(futures) map (p => promise.success(InsertCollectionResponse(true))) recover {
                 case _ => promise.success(InsertCollectionResponse(false))
@@ -106,71 +101,68 @@ class RepositoryServicesImpl(
       promise.future
     }
 
-  override def getUser: Option[User] =
-    loadFile[User](getFileUser) match {
-      case Success(us) => Some(us)
-      case Failure(ex) => None
+  override def getUser()(implicit ec: ExecutionContext): Future[User] =
+    tryToFuture(loadFile[User](getFileUser))
+
+  override def saveUser(user: User)(implicit ec: ExecutionContext): Future[Unit] =
+    tryToFuture(writeFile[User](getFileUser, user))
+
+  override def resetUser()(implicit ec: ExecutionContext): Future[Boolean] =
+    Future {
+      val fileUser = getFileUser
+      fileUser.exists() && fileUser.delete()
     }
 
-  override def getAndroidId: Option[String] = Try {
-    val cursor = Option(contentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
-    cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
-  } match {
-    case Success(id) => id
-    case Failure(ex) => None
-  }
-
-  override def getInstallation: Option[Installation] =
-    loadFile[Installation](getFileInstallation) match {
-      case Success(inst) => Some(inst)
-      case Failure(ex) => None
-    }
-
-  override def saveInstallation(installation: Installation): Either[Failure, Success] =
-    if (getFileInstallation.exists()) Right(false)
-    else tryToWriteFile[Installation](getFileInstallation, installation)
-
-
-  override def saveUser(user: User): Either[Failure, Success] =
-    tryToWriteFile[User](getFileUser, user)
-
-  override def resetUser: Either[Failure, Success] = {
-    val fileUser = getFileUser
-    if (fileUser.exists()) {
-      fileUser.delete() match {
-        case true => Right(true)
-        case false => Left(new IOException(s"Can't delete file ${fileUser.getAbsolutePath}"))
+  override def getAndroidId()(implicit ec: ExecutionContext): Future[String] =
+    tryToFuture{
+      Try {
+        val cursor = Option(contentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
+        val result = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+        result getOrElse (throw AndroidIdNotFoundException())
       }
     }
-    else Right(false)
-  }
+
+  override def getInstallation()(implicit ec: ExecutionContext): Future[Installation] =
+    tryToFuture(loadFile[Installation](getFileInstallation))
+
+  override def saveInstallation(installation: Installation)(implicit ec: ExecutionContext): Future[Boolean] =
+    Future {
+      if (getFileInstallation.exists()) false
+      else writeFile[Installation](getFileInstallation, installation) match {
+        case Success(_) => true
+        case Failure(e) => throw e
+      }
+    }
 
   private def getFileInstallation = new File(filesDir, FilenameInstallation)
 
   private def getFileUser = new File(filesDir, FilenameUser)
 
-  private def tryToWriteFile[T](file: File, content: T): Either[Failure, Success] =
-    writeFile[T](file, content) match {
-      case Success(_) => Right(true)
-      case Failure(e) => Left(e)
+  override def getGoogleUser()(implicit ec: ExecutionContext): Future[String] =
+    Future {
+      Option(preferences.getString(GoogleKeyUser, javaNull)) getOrElse (throw GoogleUserNotFoundException())
     }
 
-  override def getGoogleUser: Option[String] = Option(preferences.getString(GoogleKeyUser, null))
+  override def saveGoogleUser(user: String)(implicit ec: ExecutionContext): Future[Boolean] =
+    Future {
+      preferences.edit.putString(GoogleKeyUser, user).apply()
+      true
+    }
 
-  override def saveGoogleUser(user: String) = {
-    preferences.edit.putString(GoogleKeyUser, user).apply()
-    Right(true)
-  }
+  override def getGoogleToken()(implicit ec: ExecutionContext): Future[String] =
+    Future {
+      Option(preferences.getString(GoogleKeyToken, javaNull)) getOrElse (throw GoogleTokenNotFoundException())
+    }
 
-  override def getGoogleToken: Option[String] = Option(preferences.getString(GoogleKeyToken, null))
+  override def saveGoogleToken(token: String)(implicit ec: ExecutionContext): Future[Boolean] =
+    Future {
+      preferences.edit.putString(GoogleKeyToken, token).apply()
+      true
+    }
 
-  override def saveGoogleToken(token: String) = {
-    preferences.edit.putString(GoogleKeyToken, token).apply()
-    Right(true)
-  }
-
-  override def resetGoogleToken: Either[Failure, Success] = {
-    preferences.edit().remove(GoogleKeyToken).apply()
-    Right(true)
-  }
+  override def resetGoogleToken()(implicit ec: ExecutionContext): Future[Boolean] =
+    Future {
+      preferences.edit().remove(GoogleKeyToken).apply()
+      true
+    }
 }

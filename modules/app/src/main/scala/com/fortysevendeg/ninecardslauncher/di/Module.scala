@@ -21,7 +21,8 @@ import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.rest.client.ServiceClient
 
 trait Module
-  extends ApiModule {
+  extends ApiModule
+  with RepositoryModule {
 
   lazy val persistentServices: PersistenceServices = new PersistenceServicesImpl
   
@@ -50,6 +51,10 @@ trait Module
 
   def createRepositoryServices(context: Context): RepositoryServices =
     new RepositoryServicesImpl(
+      cacheCategoryRepositoryClient = createCacheCategoryClient(context),
+      collectionRepositoryClient = createCollectionClient(context),
+      cardRepositoryClient = createCardClient(context),
+      geoInfoRepositoryClient = createGeoInfoClient(context),
       cr = context.getContentResolver,
       filesDir = context.getFilesDir,
       preferences = context.getSharedPreferences(GoogleKeyPreferences, Context.MODE_PRIVATE))

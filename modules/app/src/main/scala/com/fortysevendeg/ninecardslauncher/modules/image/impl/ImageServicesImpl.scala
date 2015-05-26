@@ -1,20 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.modules.image.impl
 
-import java.io.{InputStream, FileOutputStream, File}
+import java.io.{File, FileOutputStream, InputStream}
 import java.net.{HttpURLConnection, URL}
 
-import android.content.pm.{PackageManager, ActivityInfo, ResolveInfo}
+import android.content.pm.{ActivityInfo, PackageManager, ResolveInfo}
 import android.content.res.Resources
 import android.graphics._
 import android.graphics.drawable.BitmapDrawable
 import android.util.DisplayMetrics
-import com.fortysevendeg.ninecardslauncher.commons.Service
-import com.fortysevendeg.ninecardslauncher.modules.image.{StoreImageAppResponse, StoreImageAppRequest, ImageServices}
+import com.fortysevendeg.ninecardslauncher.modules.image.ImageServices
 import com.fortysevendeg.ninecardslauncher2.R
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class ImageServicesImpl(
     resources: Resources,
@@ -64,42 +62,43 @@ class ImageServicesImpl(
         List(DisplayMetrics.DENSITY_XXHIGH, DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH)
     }
 
-  def createAppBitmap(term: String, info: ResolveInfo): String = {
-    val packageName: String = info.activityInfo.applicationInfo.packageName
-    val filename: String = convertToFilename(info.activityInfo)
+  def createAppBitmap(term: String, info: ResolveInfo)(implicit executionContext: ExecutionContext): Future[String] =
+    Future {
+      val packageName: String = info.activityInfo.applicationInfo.packageName
+      val filename: String = convertToFilename(info.activityInfo)
 
-    if (!new File(getPath(filename)).exists) {
-      getBestBitmapForApp(packageName, info.activityInfo.icon) map {
-        bitmap =>
-          saveBitmap(filename, bitmap)
-      } getOrElse {
-        val firstChar = Option(term) map {
-          t => if (t.length > 0) term.substring(0, 1).toUpperCase else "_"
-        } getOrElse "_"
-        if (!new File(getPath(firstChar)).exists) {
-          saveBitmap(firstChar, createDefaultBitmap(firstChar))
-        } else {
-          getPath(firstChar)
+      if (!new File(getPath(filename)).exists) {
+        getBestBitmapForApp(packageName, info.activityInfo.icon) map {
+          bitmap =>
+            saveBitmap(filename, bitmap)
+        } getOrElse {
+          val firstChar = Option(term) map {
+            t => if (t.length > 0) term.substring(0, 1).toUpperCase else "_"
+          } getOrElse "_"
+          if (!new File(getPath(firstChar)).exists) {
+            saveBitmap(firstChar, createDefaultBitmap(firstChar))
+          } else {
+            getPath(firstChar)
+          }
         }
+      } else {
+        getPath(filename)
       }
-    } else {
-      getPath(filename)
     }
-  }
 
   override def getImagePath(packageName: String, className: String): String = getPath(convertToFilename(packageName, className))
 
   override def getPath(filename: String): String = String.format("%s/%s", cacheDir.getPath, filename)
 
-  override def storeImageApp: Service[StoreImageAppRequest, StoreImageAppResponse] =
-    request =>
-      Future {
-        getBitmapFromURL(request.url) map {
-          bitmap =>
-            saveBitmapDensity(request.packageName, bitmap)
-            StoreImageAppResponse(Some(request.packageName))
-        } getOrElse StoreImageAppResponse(None)
+  override def storeImageApp(packageName: String, url: String)(implicit executionContext: ExecutionContext): Future[String] =
+    Future {
+      getBitmapFromURL(url) match {
+        case Success(bitmap) =>
+          saveBitmapDensity(packageName, bitmap)
+          packageName
+        case Failure(e) => throw e
       }
+    }
 
   private def saveBitmapDensity(filename: String, bitmap: Bitmap): String = {
     import DisplayMetrics._
@@ -191,7 +190,7 @@ class ImageServicesImpl(
     path
   }
 
-  private def getBitmapFromURL(uri: String): Option[Bitmap] =
+  private def getBitmapFromURL(uri: String): Try[Bitmap] =
     Try {
       val url: URL = new URL(uri)
       val connection: HttpURLConnection = url.openConnection.asInstanceOf[HttpURLConnection]
@@ -199,9 +198,6 @@ class ImageServicesImpl(
       connection.connect()
       val input: InputStream = connection.getInputStream
       BitmapFactory.decodeStream(input)
-    } match {
-      case Success(bitmap) => Some(bitmap)
-      case Failure(ex) => ex.printStackTrace(); None
     }
 
   private def getCurrentColor: Int = {

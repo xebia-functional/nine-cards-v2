@@ -66,7 +66,7 @@ class CreateCollectionService
 
     startForeground(NotificationId, builder.build)
 
-    appManagerServices.categorizeApps(CategorizeAppsRequest()) map {
+    appManagerServices.categorizeApps() map {
       response => createConfiguration()
     } recover {
       case ex: CategorizeAppsException =>
@@ -130,13 +130,13 @@ class CreateCollectionService
     repositoryServices.insertGeoInfo(request)
   }
 
-  private def createCollectionFromMyDevice() = appManagerServices.getCategorizedApps(GetCategorizedAppsRequest()) map {
-    response =>
+  private def createCollectionFromMyDevice() = appManagerServices.getCategorizedApps() map {
+    apps =>
       val categories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
         Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
         MediaAndVideo, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
         Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgets)
-      val inserts = createInsertSeq(response.apps, categories, Seq.empty)
+      val inserts = createInsertSeq(apps, categories, Seq.empty)
       val insertFutures = inserts map {
         insert =>
           repositoryServices.insertCollection(insert)
@@ -147,10 +147,10 @@ class CreateCollectionService
   private def createCollectionFromDevice(device: UserConfigDevice) = {
     // Store the icons for the apps not installed from internet
     val intents = device.collections flatMap (_.items map (_.metadata))
-    appManagerServices.createBitmapsForNoPackagesInstalled(IntentsRequest(intents)) map {
-      response =>
+    appManagerServices.createBitmapsForNoPackagesInstalled(intents) map {
+      packages =>
         // Save collection in repository
-        val insertFutures = appConversions.toInsertCollectionRequestFromUserConfigSeq(device.collections, response.packages) map repositoryServices.insertCollection
+        val insertFutures = appConversions.toInsertCollectionRequestFromUserConfigSeq(device.collections, packages) map repositoryServices.insertCollection
         insertFuturesInDB(insertFutures)
     } recover {
       case _ =>

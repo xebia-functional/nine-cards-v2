@@ -1,34 +1,34 @@
 package com.fortysevendeg.ninecardslauncher.modules.api
 
-import com.fortysevendeg.ninecardslauncher.commons.Service
+import scala.concurrent.{Future, ExecutionContext}
 
 trait ApiServices {
 
-  def login: Service[LoginRequest, LoginResponse]
+  def login(request: LoginRequest)(implicit executionContext: ExecutionContext): Future[LoginResponse]
 
-  def linkGoogleAccount: Service[LinkGoogleAccountRequest, LoginResponse]
+  def linkGoogleAccount(request: LinkGoogleAccountRequest)(implicit executionContext: ExecutionContext): Future[LoginResponse]
 
-  def createInstallation: Service[InstallationRequest, InstallationResponse]
+  def createInstallation(request: InstallationRequest)(implicit executionContext: ExecutionContext): Future[InstallationResponse]
 
-  def updateInstallation: Service[InstallationRequest, UpdateInstallationResponse]
+  def updateInstallation(request: InstallationRequest)(implicit executionContext: ExecutionContext): Future[UpdateInstallationResponse]
 
-  def googlePlayPackage: Service[GooglePlayPackageRequest, GooglePlayPackageResponse]
+  def googlePlayPackage(request: GooglePlayPackageRequest)(implicit executionContext: ExecutionContext): Future[GooglePlayPackageResponse]
 
-  def googlePlayPackages: Service[GooglePlayPackagesRequest, GooglePlayPackagesResponse]
+  def googlePlayPackages(request: GooglePlayPackagesRequest)(implicit executionContext: ExecutionContext): Future[GooglePlayPackagesResponse]
 
-  def googlePlaySimplePackages: Service[GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse]
+  def googlePlaySimplePackages(request: GooglePlaySimplePackagesRequest)(implicit executionContext: ExecutionContext): Future[GooglePlaySimplePackagesResponse]
 
-  def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse]
+  def getUserConfig(request: GetUserConfigRequest)(implicit executionContext: ExecutionContext): Future[GetUserConfigResponse]
 
-  def saveDevice: Service[SaveDeviceRequest, SaveDeviceResponse]
+  def saveDevice(request: SaveDeviceRequest)(implicit executionContext: ExecutionContext): Future[SaveDeviceResponse]
 
-  def saveGeoInfo: Service[SaveGeoInfoRequest, SaveGeoInfoResponse]
+  def saveGeoInfo(request: SaveGeoInfoRequest)(implicit executionContext: ExecutionContext): Future[SaveGeoInfoResponse]
 
-  def checkpointPurchaseProduct: Service[CheckpointPurchaseProductRequest, CheckpointPurchaseProductResponse]
+  def checkpointPurchaseProduct(request: CheckpointPurchaseProductRequest)(implicit executionContext: ExecutionContext): Future[CheckpointPurchaseProductResponse]
 
-  def checkpointCustomCollection: Service[CheckpointCustomCollectionRequest, CheckpointCustomCollectionResponse]
+  def checkpointCustomCollection(request: CheckpointCustomCollectionRequest)(implicit executionContext: ExecutionContext): Future[CheckpointCustomCollectionResponse]
 
-  def checkpointJoinedBy: Service[CheckpointJoinedByRequest, CheckpointJoinedByResponse]
+  def checkpointJoinedBy(request: CheckpointJoinedByRequest)(implicit executionContext: ExecutionContext): Future[CheckpointJoinedByResponse]
 
-  def tester: Service[TesterRequest, TesterResponse]
+  def tester(request: TesterRequest)(implicit executionContext: ExecutionContext): Future[TesterResponse]
 }

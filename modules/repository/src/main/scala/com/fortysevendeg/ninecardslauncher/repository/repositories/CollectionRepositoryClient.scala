@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{CollectionUri, ContentResolverWrapperComponent, NineCardsUri}
+import com.fortysevendeg.ninecardslauncher.commons.{CollectionUri, ContentResolverWrapper, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
@@ -8,18 +8,14 @@ import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Collection
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Future, ExecutionContext}
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait CollectionRepositoryClient extends DBUtils {
+class CollectionRepositoryClient(contentResolverWrapper: ContentResolverWrapper)
+  extends DBUtils {
 
-  self: ContentResolverWrapperComponent =>
-
-  implicit val executionContext: ExecutionContext
-
-  def addCollection: Service[AddCollectionRequest, AddCollectionResponse] =
-    request =>
+  def addCollection(request: AddCollectionRequest)(implicit ec: ExecutionContext): Future[AddCollectionResponse] =
       tryToFuture {
         Try {
           val values = Map[String, Any](
@@ -48,8 +44,7 @@ trait CollectionRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse] =
-    request =>
+  def deleteCollection(request: DeleteCollectionRequest)(implicit ec: ExecutionContext): Future[DeleteCollectionResponse] =
       tryToFuture {
         Try {
           val deleted = contentResolverWrapper.deleteById(
@@ -63,44 +58,39 @@ trait CollectionRepositoryClient extends DBUtils {
         }
       }
 
-  def getCollectionById: Service[GetCollectionByIdRequest, GetCollectionByIdResponse] =
-    request =>
+  def getCollectionById(request: GetCollectionByIdRequest)(implicit ec: ExecutionContext): Future[GetCollectionByIdResponse] =
       tryToFuture {
         getCollectionById(id = request.id) map {
           collection => GetCollectionByIdResponse(collection)
         }
       }
 
-  def getCollectionByOriginalSharedCollectionId:
-  Service[GetCollectionByOriginalSharedCollectionIdRequest, GetCollectionByOriginalSharedCollectionIdResponse] =
-    request =>
-      tryToFuture {
-        getCollection(
-          selection = s"$OriginalSharedCollectionId = ?",
-          selectionArgs = Seq(request.sharedCollectionId.toString)) map {
-          collection => GetCollectionByOriginalSharedCollectionIdResponse(collection)
-        }
+  def getCollectionByOriginalSharedCollectionId
+  (request: GetCollectionByOriginalSharedCollectionIdRequest)
+    (implicit ec: ExecutionContext): Future[GetCollectionByOriginalSharedCollectionIdResponse] =
+    tryToFuture {
+      getCollection(
+        selection = s"$OriginalSharedCollectionId = ?",
+        selectionArgs = Seq(request.sharedCollectionId.toString)) map {
+        collection => GetCollectionByOriginalSharedCollectionIdResponse(collection)
       }
+    }
 
-  def getCollectionByPosition: Service[GetCollectionByPositionRequest, GetCollectionByPositionResponse] =
-    request =>
+  def getCollectionByPosition(request: GetCollectionByPositionRequest)(implicit ec: ExecutionContext): Future[GetCollectionByPositionResponse] =
       tryToFuture {
         getCollection(selection = s"$Position = ?", selectionArgs = Array(request.position.toString)) map {
           collection => GetCollectionByPositionResponse(collection)
         }
       }
 
-  def getSortedCollections:
-  Service[GetSortedCollectionsRequest, GetSortedCollectionsResponse] =
-    request =>
+  def getSortedCollections(request: GetSortedCollectionsRequest)(implicit ec: ExecutionContext): Future[GetSortedCollectionsResponse] =
       tryToFuture {
         getCollections(sortOrder = s"$Position asc") map {
           collections => GetSortedCollectionsResponse(collections)
         }
       }
 
-  def updateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse] =
-    request =>
+  def updateCollection(request: UpdateCollectionRequest)(implicit ec: ExecutionContext): Future[UpdateCollectionResponse] =
       tryToFuture {
         Try {
           val values = Map[String, Any](

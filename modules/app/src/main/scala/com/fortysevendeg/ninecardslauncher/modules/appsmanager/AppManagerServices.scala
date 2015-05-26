@@ -1,16 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager
 
-import com.fortysevendeg.ninecardslauncher.commons.Service
+import com.fortysevendeg.ninecardslauncher.models.{AppItem, NineCardIntent}
+
+import scala.concurrent.{Future, ExecutionContext}
 
 trait AppManagerServices {
 
-  def getApps: Service[GetAppsRequest, GetAppsResponse]
+  def getApps()(implicit executionContext: ExecutionContext): Future[Seq[AppItem]]
 
-  def createBitmapsForNoPackagesInstalled: Service[IntentsRequest, PackagesResponse]
+  def createBitmapsForNoPackagesInstalled(intents: Seq[NineCardIntent])(implicit executionContext: ExecutionContext): Future[Seq[String]]
 
-  def getCategorizedApps: Service[GetCategorizedAppsRequest, GetCategorizedAppsResponse]
+  def getCategorizedApps()(implicit executionContext: ExecutionContext): Future[Seq[AppItem]]
 
-  def getAppsByCategory: Service[GetAppsByCategoryRequest, GetAppsByCategoryResponse]
+  def getAppsByCategory(category: String)(implicit executionContext: ExecutionContext): Future[Seq[AppItem]]
 
-  def categorizeApps: Service[CategorizeAppsRequest, CategorizeAppsResponse]
+  def categorizeApps()(implicit executionContext: ExecutionContext): Future[Unit]
 }

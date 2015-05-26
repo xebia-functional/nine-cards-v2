@@ -1,43 +1,40 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
-import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher.models.{Installation, User}
+
+import scala.concurrent.{Future, ExecutionContext}
 
 trait RepositoryServices {
 
-  type Success = Boolean
+  def getCollections(request: GetCollectionsRequest)(implicit ec: ExecutionContext): Future[GetCollectionsResponse]
 
-  type Failure = Throwable
+  def insertCacheCategory(request: InsertCacheCategoryRequest)(implicit ec: ExecutionContext): Future[InsertCacheCategoryResponse]
 
-  def getCollections: Service[GetCollectionsRequest, GetCollectionsResponse]
+  def getCacheCategory(request: GetCacheCategoryRequest)(implicit ec: ExecutionContext): Future[GetCacheCategoryResponse]
 
-  def insertCacheCategory: Service[InsertCacheCategoryRequest, InsertCacheCategoryResponse]
+  def insertGeoInfo(request: InsertGeoInfoRequest)(implicit ec: ExecutionContext): Future[InsertGeoInfoResponse]
 
-  def getCacheCategory: Service[GetCacheCategoryRequest, GetCacheCategoryResponse]
+  def insertCollection(request: InsertCollectionRequest)(implicit ec: ExecutionContext): Future[InsertCollectionResponse]
 
-  def insertGeoInfo: Service[InsertGeoInfoRequest, InsertGeoInfoResponse]
+  def getUser()(implicit ec: ExecutionContext): Future[User]
 
-  def insertCollection: Service[InsertCollectionRequest, InsertCollectionResponse]
+  def saveUser(user: User)(implicit ec: ExecutionContext): Future[Unit]
 
-  def getUser: Option[User]
+  def resetUser()(implicit ec: ExecutionContext): Future[Boolean]
 
-  def saveUser(user: User): Either[Failure, Success]
+  def getAndroidId()(implicit ec: ExecutionContext): Future[String]
 
-  def resetUser: Either[Failure, Success]
+  def getInstallation()(implicit ec: ExecutionContext): Future[Installation]
 
-  def getAndroidId: Option[String]
+  def saveInstallation(installation: Installation)(implicit ec: ExecutionContext): Future[Boolean]
 
-  def getInstallation: Option[Installation]
+  def getGoogleUser()(implicit ec: ExecutionContext): Future[String]
 
-  def saveInstallation(installation: Installation): Either[Failure, Success]
+  def saveGoogleUser(user: String)(implicit ec: ExecutionContext): Future[Boolean]
 
-  def getGoogleUser: Option[String]
+  def getGoogleToken()(implicit ec: ExecutionContext): Future[String]
 
-  def saveGoogleUser(user: String): Either[Failure, Success]
+  def saveGoogleToken(token: String)(implicit ec: ExecutionContext): Future[Boolean]
 
-  def getGoogleToken: Option[String]
-
-  def saveGoogleToken(token: String): Either[Failure, Success]
-
-  def resetGoogleToken: Either[Failure, Success]
+  def resetGoogleToken()(implicit ec: ExecutionContext): Future[Boolean]
 }
