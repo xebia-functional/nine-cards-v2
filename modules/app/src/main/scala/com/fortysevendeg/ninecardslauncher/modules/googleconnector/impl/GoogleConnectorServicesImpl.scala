@@ -26,7 +26,9 @@ class GoogleConnectorServicesImpl(
     val requestPromise = Promise[Unit]()
     repositoryServices.saveGoogleUser(username)
     invalidateToken()
-    (for {
+    // TODO - This need to be improved
+    requestPromise.completeWith(
+      for {
       account <- getAccount(username)
       androidId <- repositoryServices.getAndroidId
     } yield {
@@ -58,9 +60,7 @@ class GoogleConnectorServicesImpl(
             }
           }
         }, null)
-      }) recover {
-        case e: Throwable => requestPromise.failure(e)
-      }
+      })
     requestPromise.future
   }
 
