@@ -40,7 +40,12 @@ class CollectionsDetailsActivity
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
 
-  private var collectionsAdapter: Option[CollectionsPagerAdapter] = None
+  private def getAdapter: Option[CollectionsPagerAdapter] = {
+    viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
+      case adapter: CollectionsPagerAdapter => Some(adapter)
+      case _ => None
+    }
+  }
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
@@ -53,8 +58,7 @@ class CollectionsDetailsActivity
     for {
       FetchCollectionsResponse(collections) <- collectionRepositoryServices.fetchCollections(FetchCollectionsRequest())
     } yield {
-      val adapter = new CollectionsPagerAdapter(getSupportFragmentManager, collections)
-      collectionsAdapter = Some(adapter)
+      val adapter = CollectionsPagerAdapter(getSupportFragmentManager, collections)
       runUi(
         (viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(0)) ~
@@ -66,16 +70,12 @@ class CollectionsDetailsActivity
     }
   }
 
-  private def setIconCollection(collection: Collection): Ui[_] =
-    resGetDrawableIdentifier(iconCollectionDetail(collection.icon)) map (r => icon <~ ivSrc(r)) getOrElse Ui.nop
+  private def setIconCollection(collection: Collection): Ui[_] = icon <~ ivSrc(iconCollectionDetail(collection.icon))
 
-  private def updateCollection(collection: Collection, position: Int, fromLeft: Boolean): Ui[_] =
-    (for {
-      res <- resGetDrawableIdentifier(iconCollectionDetail(collection.icon))
-      adapter <- collectionsAdapter
-    } yield {
-        (icon <~ changeIcon(res, fromLeft)) ~ adapter.notifyChanged(position)
-      }).getOrElse(Ui.nop)
+  private def updateCollection(collection: Collection, position: Int, fromLeft: Boolean): Ui[_] = getAdapter map {
+    adapter =>
+      (icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft)) ~ adapter.notifyChanged(position)
+  } getOrElse Ui.nop
 
   private def updateToolbarColor(color: Int): Ui[_] =
     (toolbar <~ vBackgroundColor(color)) ~
@@ -120,7 +120,7 @@ class CollectionsDetailsActivity
   override def scrollType(sType: Int): Unit = {
     for {
       vp <- viewPager
-      adapter <- collectionsAdapter
+      adapter <- getAdapter
     } yield {
       adapter.setScrollType(sType)
       runUi(adapter.notifyChanged(vp.getCurrentItem))
