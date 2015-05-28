@@ -3,22 +3,25 @@ package com.fortysevendeg.ninecardslauncher.di
 import android.content.Context
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories.{GeoInfoRepositoryClient, CollectionRepositoryClient, CardRepositoryClient, CacheCategoryRepositoryClient}
+import macroid.ContextWrapper
 
 trait RepositoryModule {
 
-  def createContextResolverWrapper(context: Context) =
+  private def context()(implicit contextWrapper: ContextWrapper): Context = contextWrapper.bestAvailable
+
+  def createContextResolverWrapper()(implicit contextWrapper: ContextWrapper) =
     new ContentResolverWrapperImpl(context.getContentResolver)
 
-  def createCacheCategoryClient(context: Context) =
-    new CacheCategoryRepositoryClient(createContextResolverWrapper(context))
+  def createCacheCategoryClient()(implicit contextWrapper: ContextWrapper) =
+    new CacheCategoryRepositoryClient(createContextResolverWrapper)
 
-  def createCardClient(context: Context) =
-    new CardRepositoryClient(createContextResolverWrapper(context))
+  def createCardClient()(implicit contextWrapper: ContextWrapper) =
+    new CardRepositoryClient(createContextResolverWrapper)
 
-  def createCollectionClient(context: Context) =
-    new CollectionRepositoryClient(createContextResolverWrapper(context))
+  def createCollectionClient()(implicit contextWrapper: ContextWrapper) =
+    new CollectionRepositoryClient(createContextResolverWrapper)
 
-  def createGeoInfoClient(context: Context) =
-    new GeoInfoRepositoryClient(createContextResolverWrapper(context))
+  def createGeoInfoClient()(implicit contextWrapper: ContextWrapper) =
+    new GeoInfoRepositoryClient(createContextResolverWrapper)
 
 }

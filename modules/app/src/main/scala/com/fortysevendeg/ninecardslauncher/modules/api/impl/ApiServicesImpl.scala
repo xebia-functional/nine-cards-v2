@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.modules.api.impl
 import android.content.res.Resources
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
-import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.repository.RepositoryServices
@@ -19,7 +18,6 @@ class ApiServicesImpl(
     googlePlayService: ApiGooglePlayService,
     userConfigService: ApiUserConfigService)
     extends ApiServices
-    with Module
     with Conversions {
 
   implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global

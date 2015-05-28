@@ -71,8 +71,7 @@ class NineCardsServiceSpec
 
           val result = Await.result(apiUserConfigService.getUserConfig(Seq.empty), Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a saveDevice put call" in 
@@ -82,8 +81,7 @@ class NineCardsServiceSpec
             apiUserConfigService.saveDevice(createUserConfigDevice(), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a saveGeoInfo put call" in 
@@ -93,8 +91,7 @@ class NineCardsServiceSpec
             apiUserConfigService.saveGeoInfo(createUserConfigGeoInfo(), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a checkpoint purchase product put call" in 
@@ -104,8 +101,7 @@ class NineCardsServiceSpec
             apiUserConfigService.checkpointPurchaseProduct(productId, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a checkpoint custom collection put call" in 
@@ -115,8 +111,7 @@ class NineCardsServiceSpec
             apiUserConfigService.checkpointCustomCollection(Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a checkpoint joined by put call" in 
@@ -126,8 +121,7 @@ class NineCardsServiceSpec
             apiUserConfigService.checkpointJoinedBy(joinedById, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a tester put call" in 
@@ -137,8 +131,7 @@ class NineCardsServiceSpec
             apiUserConfigService.tester(testerValues, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
   }
@@ -152,8 +145,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.getSharedCollection(sharedCollectionIdFirst, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.sharedCollectionId shouldEqual sharedCollectionIdFirst
+          result.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
         }
 
     "returns the SharedCollectionList for a getSharedCollectionList get call" in 
@@ -163,10 +155,11 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.getSharedCollectionList(sharedCollectionType, 0, 0, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual sharedCollectionSize
-          result.data.get.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
-          result.data.get.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          result.data must beSome[SharedCollectionList].which { collectionList =>
+            collectionList.items must have size sharedCollectionSize
+            collectionList.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
+            collectionList.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          }
         }
 
     "returns the SharedCollectionList for a getSharedCollectionListByCategory get call" in 
@@ -176,10 +169,11 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.getSharedCollectionListByCategory(sharedCollectionType, sharedCollectionCategory, 0, 0, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual sharedCollectionSize
-          result.data.get.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
-          result.data.get.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          result.data must beSome[SharedCollectionList].which { collectionList =>
+            collectionList.items must have size sharedCollectionSize
+            collectionList.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
+            collectionList.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          }
         }
 
     "returns the searchSharedCollection for a getSharedCollectionListByCategory get call" in 
@@ -189,10 +183,11 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.searchSharedCollection(sharedCollectionKeywords, 0, 0, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual sharedCollectionSize
-          result.data.get.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
-          result.data.get.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          result.data must beSome[SharedCollectionList].which { collectionList =>
+            collectionList.items must have size sharedCollectionSize
+            collectionList.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
+            collectionList.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          }
         }
 
     "returns the SharedCollection for a shareCollection post call" in 
@@ -202,8 +197,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.shareCollection(createSharedCollection(), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.sharedCollectionId shouldEqual sharedCollectionIdFirst
+          result.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
         }
 
     "returns the SharedCollection for a rateSharedCollection post call" in 
@@ -213,8 +207,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.rateSharedCollection(sharedCollectionIdFirst, 0.0, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.sharedCollectionId shouldEqual sharedCollectionIdFirst
+          result.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
         }
 
     "returns the SharedCollection for a subscribeSharedCollection put call" in 
@@ -224,8 +217,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.subscribeSharedCollection(sharedCollectionIdFirst, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.sharedCollectionId shouldEqual sharedCollectionIdFirst
+          result.data must beSome[SharedCollectionSubscription].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
         }
 
     "returns the SharedCollection for a unsubscribeSharedCollection delete call" in 
@@ -235,7 +227,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.unsubscribeSharedCollection(sharedCollectionIdFirst, Seq.empty),
             Duration.Inf)
 
-          result.data.isEmpty shouldEqual true
+          result.data must beNone
         }
 
   }
@@ -249,8 +241,7 @@ class NineCardsServiceSpec
             apiGooglePlayService.getGooglePlayPackage(packageName1, Seq.empty), 
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.docV2.docid shouldEqual packageName1
+          result.data must beSome[GooglePlayPackage].which(_.docV2.docid shouldEqual packageName1)
         }
 
     "returns the GooglePlayPackages for a getGooglePlayPackages post call" in
@@ -260,10 +251,11 @@ class NineCardsServiceSpec
             apiGooglePlayService.getGooglePlayPackages(PackagesRequest(Seq(packageName1, packageName2)), Seq.empty), 
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual 2
-          result.data.get.items.head.docV2.docid shouldEqual packageName1
-          result.data.get.items(1).docV2.docid shouldEqual packageName2
+          result.data must beSome[GooglePlayPackages].which { packages =>
+            packages.items must have size 2
+            packages.items.head.docV2.docid shouldEqual packageName1
+            packages.items.last.docV2.docid shouldEqual packageName2
+          }
         }
 
     "returns the GooglePlaySimplePackages for a getGooglePlaySimplePackages post call" in
@@ -273,10 +265,11 @@ class NineCardsServiceSpec
             apiGooglePlayService.getGooglePlaySimplePackages(PackagesRequest(Seq(packageName1, packageName2)), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual 2
-          result.data.get.items.head.packageName shouldEqual packageName1
-          result.data.get.items(1).packageName shouldEqual packageName2
+          result.data must beSome[GooglePlaySimplePackages].which { packages =>
+            packages.items must have size 2
+            packages.items.head.packageName shouldEqual packageName1
+            packages.items.last.packageName shouldEqual packageName2
+          }
         }
 
     "returns the GooglePlaySearch for a search get call" in
@@ -286,8 +279,7 @@ class NineCardsServiceSpec
             apiGooglePlayService.searchGooglePlay(searchQuery, searchOffset, searchLimit, Seq.empty), 
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.originalQuery shouldEqual searchQuery
+          result.data must beSome[GooglePlaySearch].which(_.originalQuery shouldEqual searchQuery)
         }
   }
 
@@ -300,19 +292,17 @@ class NineCardsServiceSpec
             apiRecommendationService.getRecommendedApps(createRecommendationRequest(), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual 6
+          result.data must beSome[GooglePlayRecommendation].which(_.items must have size 6)
         }
 
-    "returns the CollectionsSponsored for a getSponsoredCollections get call" in
+    "returns the CollectionSponsored for a getSponsoredCollections get call" in
         new WithOkServiceSupport {
 
           val result = Await.result(
             apiRecommendationService.getSponsoredCollections(Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual 3
+          result.data must beSome[CollectionSponsored].which(_.items must have size 3)
         }
   }
 
@@ -325,8 +315,7 @@ class NineCardsServiceSpec
             apiUserConfigService.getUserConfig(Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a saveDevice put call" in
@@ -336,8 +325,7 @@ class NineCardsServiceSpec
             apiUserConfigService.saveDevice(createUserConfigDevice(), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a saveGeoInfo put call" in
@@ -347,8 +335,7 @@ class NineCardsServiceSpec
             apiUserConfigService.saveGeoInfo(createUserConfigGeoInfo(), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a checkpoint purchase product put call" in
@@ -358,8 +345,7 @@ class NineCardsServiceSpec
             apiUserConfigService.checkpointPurchaseProduct(productId, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a checkpoint custom collection put call" in
@@ -369,8 +355,7 @@ class NineCardsServiceSpec
             apiUserConfigService.checkpointCustomCollection(Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a checkpoint joined by put call" in
@@ -380,8 +365,7 @@ class NineCardsServiceSpec
             apiUserConfigService.checkpointJoinedBy(joinedById, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
     "returns the UserConfig for a tester put call" in
@@ -391,8 +375,7 @@ class NineCardsServiceSpec
             apiUserConfigService.tester(testerValues, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get._id shouldEqual userConfigIdFirst
+          result.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
   }
@@ -406,8 +389,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.getSharedCollection(sharedCollectionIdFirst, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.sharedCollectionId shouldEqual sharedCollectionIdFirst
+          result.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
         }
 
     "returns the SharedCollectionList for a getSharedCollectionList get call" in
@@ -417,10 +399,11 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.getSharedCollectionList(sharedCollectionType, 0, 0, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual sharedCollectionSize
-          result.data.get.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
-          result.data.get.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          result.data must beSome[SharedCollectionList].which { collectionList =>
+            collectionList.items must have size sharedCollectionSize
+            collectionList.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
+            collectionList.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          }
         }
 
     "returns the SharedCollectionList for a getSharedCollectionListByCategory get call" in
@@ -430,10 +413,11 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.getSharedCollectionListByCategory(sharedCollectionType, sharedCollectionCategory, 0, 0, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual sharedCollectionSize
-          result.data.get.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
-          result.data.get.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          result.data must beSome[SharedCollectionList].which { collectionList =>
+            collectionList.items must have size sharedCollectionSize
+            collectionList.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
+            collectionList.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          }
         }
 
     "returns the searchSharedCollection for a getSharedCollectionListByCategory get call" in
@@ -443,10 +427,11 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.searchSharedCollection(sharedCollectionKeywords, 0, 0, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual sharedCollectionSize
-          result.data.get.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
-          result.data.get.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          result.data must beSome[SharedCollectionList].which { collectionList =>
+            collectionList.items must have size sharedCollectionSize
+            collectionList.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
+            collectionList.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+          }
         }
 
     "returns the SharedCollection for a shareCollection post call" in
@@ -456,8 +441,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.shareCollection(createSharedCollection(), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.sharedCollectionId shouldEqual sharedCollectionIdFirst
+          result.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
         }
 
     "returns the SharedCollection for a rateSharedCollection post call" in
@@ -467,8 +451,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.rateSharedCollection(sharedCollectionIdFirst, 0.0, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.sharedCollectionId shouldEqual sharedCollectionIdFirst
+          result.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
         }
 
     "returns the SharedCollection for a subscribeSharedCollection put call" in
@@ -478,8 +461,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.subscribeSharedCollection(sharedCollectionIdFirst, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.sharedCollectionId shouldEqual sharedCollectionIdFirst
+          result.data must beSome[SharedCollectionSubscription].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
         }
 
     "returns the SharedCollection for a unsubscribeSharedCollection delete call" in
@@ -489,7 +471,7 @@ class NineCardsServiceSpec
             apiSharedCollectionsService.unsubscribeSharedCollection(sharedCollectionIdFirst, Seq.empty),
             Duration.Inf)
 
-          result.data.isEmpty shouldEqual true
+          result.data must beNone
         }
 
   }
@@ -503,8 +485,7 @@ class NineCardsServiceSpec
             apiGooglePlayService.getGooglePlayPackage(packageName1, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.docV2.docid shouldEqual packageName1
+          result.data must beSome[GooglePlayPackage].which(_.docV2.docid shouldEqual packageName1)
         }
 
     "returns the GooglePlayPackages for a getGooglePlayPackages post call" in
@@ -514,10 +495,11 @@ class NineCardsServiceSpec
             apiGooglePlayService.getGooglePlayPackages(PackagesRequest(Seq(packageName1, packageName2)), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual 2
-          result.data.get.items.head.docV2.docid shouldEqual packageName1
-          result.data.get.items(1).docV2.docid shouldEqual packageName2
+          result.data must beSome[GooglePlayPackages].which { collectionList =>
+            collectionList.items must have size 2
+            collectionList.items.head.docV2.docid shouldEqual packageName1
+            collectionList.items.last.docV2.docid shouldEqual packageName2
+          }
         }
 
     "returns the GooglePlaySimplePackages for a getGooglePlaySimplePackages post call" in
@@ -527,10 +509,11 @@ class NineCardsServiceSpec
             apiGooglePlayService.getGooglePlaySimplePackages(PackagesRequest(Seq(packageName1, packageName2)), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual 2
-          result.data.get.items.head.packageName shouldEqual packageName1
-          result.data.get.items(1).packageName shouldEqual packageName2
+          result.data must beSome[GooglePlaySimplePackages].which { collectionList =>
+            collectionList.items must have size 2
+            collectionList.items.head.packageName shouldEqual packageName1
+            collectionList.items.last.packageName shouldEqual packageName2
+          }
         }
 
     "returns the GooglePlaySearch for a search get call" in
@@ -540,8 +523,7 @@ class NineCardsServiceSpec
             apiGooglePlayService.searchGooglePlay(searchQuery, searchOffset, searchLimit, Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.originalQuery shouldEqual searchQuery
+          result.data must beSome[GooglePlaySearch].which(_.originalQuery shouldEqual searchQuery)
         }
   }
 
@@ -554,8 +536,7 @@ class NineCardsServiceSpec
             apiRecommendationService.getRecommendedApps(createRecommendationRequest(), Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          // TODO - Add some expectations
+          result.data must beSome[GooglePlayRecommendation].which(_.items must have size 6)
         }
 
     "returns the CollectionsSponsored for a getSponsoredCollections get call" in
@@ -565,8 +546,7 @@ class NineCardsServiceSpec
             apiRecommendationService.getSponsoredCollections(Seq.empty),
             Duration.Inf)
 
-          result.data.isDefined shouldEqual true
-          result.data.get.items.size shouldEqual 3
+          result.data must beSome[CollectionSponsored].which(_.items must have size 3)
         }
   }
 

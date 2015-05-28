@@ -32,15 +32,13 @@ class CollectionsDetailsActivity
   with Module
   with ScrolledListener {
 
-  lazy val contextProvider: ContextWrapper = activityContextWrapper
-
   lazy val systemBarTintManager = new SystemBarTintManager(this)
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
 
-  lazy val repositoryServices = createRepositoryServices(contextProvider.application)
+  lazy val repositoryServices = createRepositoryServices
 
   private def getAdapter: Option[CollectionsPagerAdapter] = {
     viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {

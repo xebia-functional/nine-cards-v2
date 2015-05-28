@@ -32,11 +32,9 @@ class WizardActivity
 
   private var finished = false
 
-  lazy val contextProvider: ContextWrapper = activityContextWrapper
+  lazy val apiServices = createApiServices
 
-  lazy val apiServices = createApiServices(contextProvider.application)
-
-  lazy val googleConnectorServices = createGoogleConnectorServices(contextProvider.application)
+  lazy val googleConnectorServices = createGoogleConnectorServices
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)

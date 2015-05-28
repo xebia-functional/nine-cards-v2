@@ -19,29 +19,32 @@ import com.fortysevendeg.ninecardslauncher.modules.user.UserService
 import com.fortysevendeg.ninecardslauncher.modules.user.impl.UserServiceImpl
 import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.rest.client.ServiceClient
+import macroid.ContextWrapper
 
 trait Module
   extends ApiModule
   with RepositoryModule {
 
   lazy val persistentServices: PersistenceServices = new PersistenceServicesImpl
+
+  private def context()(implicit contextWrapper: ContextWrapper): Context = contextWrapper.bestAvailable
   
-  def createApiServices(context: Context): ApiServices = {
+  def createApiServices()(implicit contextWrapper: ContextWrapper): ApiServices = {
     val serviceClient: ServiceClient = createServiceClient(context.getString(R.string.api_base_url))
     new ApiServicesImpl(
       resources = context.getResources,
-      repositoryServices = createRepositoryServices(context),
+      repositoryServices = createRepositoryServices,
       apiUserService = createApiUserService(serviceClient),
       googlePlayService = createApiGooglePlayService(serviceClient),
       userConfigService = createApiUserConfigService(serviceClient))
   }
 
-  def createUserServices(context: Context): UserService =
+  def createUserServices()(implicit contextWrapper: ContextWrapper): UserService =
     new UserServiceImpl(
-      apiServices = createApiServices(context),
-      repositoryServices = createRepositoryServices(context))
+      apiServices = createApiServices,
+      repositoryServices = createRepositoryServices)
 
-  def createImageServices(context: Context): ImageServices =
+  def createImageServices()(implicit contextWrapper: ContextWrapper): ImageServices =
     new ImageServicesImpl(
       resources = context.getResources,
       packageManager = context.getPackageManager,
@@ -49,31 +52,31 @@ trait Module
 
   val GoogleKeyPreferences = "__google_auth__"
 
-  def createRepositoryServices(context: Context): RepositoryServices =
+  def createRepositoryServices()(implicit contextWrapper: ContextWrapper): RepositoryServices =
     new RepositoryServicesImpl(
-      cacheCategoryRepositoryClient = createCacheCategoryClient(context),
-      collectionRepositoryClient = createCollectionClient(context),
-      cardRepositoryClient = createCardClient(context),
-      geoInfoRepositoryClient = createGeoInfoClient(context),
+      cacheCategoryRepositoryClient = createCacheCategoryClient,
+      collectionRepositoryClient = createCollectionClient,
+      cardRepositoryClient = createCardClient,
+      geoInfoRepositoryClient = createGeoInfoClient,
       cr = context.getContentResolver,
       filesDir = context.getFilesDir,
       preferences = context.getSharedPreferences(GoogleKeyPreferences, Context.MODE_PRIVATE))
 
-  def createAppManagerServices(context: Context): AppManagerServices =
+  def createAppManagerServices()(implicit contextWrapper: ContextWrapper): AppManagerServices =
     new AppManagerServicesImpl(
       packageManager = context.getPackageManager,
-      apiServices = createApiServices(context),
-      imageServices = createImageServices(context),
-      repositoryServices = createRepositoryServices(context))
+      apiServices = createApiServices,
+      imageServices = createImageServices,
+      repositoryServices = createRepositoryServices)
 
-  def createGoogleConnectorServices(context: Context): GoogleConnectorServices =
+  def createGoogleConnectorServices()(implicit contextWrapper: ContextWrapper): GoogleConnectorServices =
     new GoogleConnectorServicesImpl(
       accountManager = AccountManager.get(context),
       oAuthScopes = context.getString(R.string.oauth_scopes),
-      repositoryServices = createRepositoryServices(context),
-      userServices = createUserServices(context))
+      repositoryServices = createRepositoryServices,
+      userServices = createUserServices)
 
-  def createAppConversions(context: Context): AppConversions =
-    new AppConversions(createImageServices(context))
+  def createAppConversions()(implicit contextWrapper: ContextWrapper): AppConversions =
+    new AppConversions(createImageServices)
 
 }

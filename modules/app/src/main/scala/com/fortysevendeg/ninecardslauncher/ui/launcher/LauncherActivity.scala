@@ -26,11 +26,9 @@ class LauncherActivity
   with Layout
   with Module {
 
-  lazy val contextProvider: ContextWrapper = activityContextWrapper
+  lazy val userServices = createUserServices
 
-  lazy val userServices = createUserServices(contextProvider.application)
-
-  lazy val repositoryServices = createRepositoryServices(contextProvider.application)
+  lazy val repositoryServices = createRepositoryServices
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val SelectedPageDefault = 1

@@ -5,32 +5,30 @@ import android.content.Intent
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
+import android.util.Log
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, InsertCollectionRequest, InsertGeoInfoRequest}
+import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionRequest, InsertCollectionResponse, InsertGeoInfoRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.ui.commons.{CollectionType, NineCardsMoments}
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCategories._
+import com.fortysevendeg.ninecardslauncher.ui.commons.{CollectionType, NineCardsMoments}
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Contexts, ContextWrapper}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.Contexts
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import android.util.Log
 
 class CreateCollectionService
   extends Service
   with Contexts[Service]
   with Module {
-
-  lazy val contextProvider: ContextWrapper = serviceContextWrapper
 
   val Tag = "9CARDS"
 
@@ -40,13 +38,13 @@ class CreateCollectionService
 
   private lazy val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext)
 
-  lazy val appManagerServices = createAppManagerServices(contextProvider.application)
+  lazy val appManagerServices = createAppManagerServices
 
-  lazy val apiServices = createApiServices(contextProvider.application)
+  lazy val apiServices = createApiServices
 
-  lazy val repositoryServices = createRepositoryServices(contextProvider.application)
+  lazy val repositoryServices = createRepositoryServices
 
-  lazy val appConversions = createAppConversions(contextProvider.application)
+  lazy val appConversions = createAppConversions
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     loadDeviceId = Option(intent) flatMap {
