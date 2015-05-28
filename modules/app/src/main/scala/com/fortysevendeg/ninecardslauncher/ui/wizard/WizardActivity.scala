@@ -91,6 +91,7 @@ class WizardActivity
       }) ~ showWizard
   }
 
+  // TODO - Move this logic to a new UserConfigService (same layer level that UserService)
   private def searchDevices() = {
     val errorUi = uiShortToast(R.string.deviceNotFoundMessage) ~ showUser
     (for {

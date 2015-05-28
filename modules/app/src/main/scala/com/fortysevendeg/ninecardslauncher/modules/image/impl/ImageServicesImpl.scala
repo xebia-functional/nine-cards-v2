@@ -37,20 +37,19 @@ class ImageServicesImpl(
   }
 
   val paint = {
-    def determineMaxTextSize(maxWidth: Float): Int = {
-      var size: Int = 0
-      val paint: Paint = new Paint
-      do {
-        size = size + 1
-        paint.setTextSize(size)
-      } while (paint.measureText("M") < maxWidth)
-      size
+    def determineTextSize(maxWidth: Float, paint: Paint, textSize: Int = 1): Unit = {
+      paint.setTextSize(textSize)
+      if (paint.measureText("M") < maxWidth)
+        determineTextSize(maxWidth, paint, textSize + 1)
     }
+
     val paint = new Paint
     paint.setColor(Color.WHITE)
     paint.setStyle(Paint.Style.FILL)
     paint.setAntiAlias(true)
-    paint.setTextSize(determineMaxTextSize((defaultSize / 3) * 2))
+    determineTextSize(
+      maxWidth = defaultSize / 3 * 2,
+      paint = paint)
     paint
   }
 
@@ -135,32 +134,31 @@ class ImageServicesImpl(
     convertToFilename(activityInfo.applicationInfo.packageName, activityInfo.name)
 
   private def getBestBitmapForApp(packageName: String, icon: Int): Option[Bitmap] = {
+    def getDefaultBitmap =
+      Try {
+        packageManager.getApplicationIcon(packageName).asInstanceOf[BitmapDrawable].getBitmap
+      } match {
+        case Success(response) => Some(response)
+        case Failure(ex) => None
+      }
+
     def getBitmap(ic: Int): Option[Bitmap] = {
       Try {
-        Option(packageManager.getResourcesForApplication(packageName)) flatMap {
-          resources =>
-            var bitmap: Option[Bitmap] = None
-            for (density <- densities) {
-              if (bitmap.isEmpty) {
-                bitmap = Try {
-                  val d = resources.getDrawableForDensity(icon, density)
-                  d.asInstanceOf[BitmapDrawable].getBitmap
-                } match {
-                  case Success(response) => Some(response)
-                  case Failure(ex) => None
-                }
-              }
-            }
-            if (bitmap.isEmpty) {
-              bitmap = Try {
-                packageManager.getApplicationIcon(packageName).asInstanceOf[BitmapDrawable].getBitmap
+        (for {
+          resources <- Option(packageManager.getResourcesForApplication(packageName))
+          response <- {
+            densities.collectFirst { case density =>
+              Try {
+                val d = resources.getDrawableForDensity(icon, density)
+                d.asInstanceOf[BitmapDrawable].getBitmap
               } match {
                 case Success(response) => Some(response)
                 case Failure(ex) => None
               }
             }
-            bitmap
-        }
+          }
+        } yield response) getOrElse getDefaultBitmap
+
       } match {
         case Success(response) => response
         case Failure(ex) => None
@@ -177,7 +175,7 @@ class ImageServicesImpl(
 
   }
 
-  private def saveBitmap(filename: String, bitmap: Bitmap, force: Boolean = false): String = {
+  private[this] def saveBitmap(filename: String, bitmap: Bitmap, force: Boolean = false): String = {
     val path: String = getPath(filename)
     if (force || !new File(filename).exists) {
       Try {

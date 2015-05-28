@@ -24,9 +24,9 @@ package object commons {
   val javaNull = null
 
   def tryToFuture[A](function: => Try[A])(implicit ec: ExecutionContext): Future[A] =
-    Future(function).flatMap {
-      case Success(success) => Future.successful(success)
-      case Failure(failure) => Future.failed(failure)
+    Future(function) map {
+      case Success(success) => success
+      case Failure(failure) => throw failure
     }
 
 }

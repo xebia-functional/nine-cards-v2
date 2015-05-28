@@ -59,10 +59,7 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver) extends Conte
       where: String = "",
       whereParams: Seq[String] = Seq.empty,
       orderBy: String = "")(f: (Cursor) => Option[T]): Option[T] =
-    Option(contentResolver.query(getUri(nineCardsUri), projection.toArray, where, whereParams.toArray, orderBy)) match {
-      case None => None
-      case Some(cursor) => f(cursor)
-    }
+    Option(contentResolver.query(getUri(nineCardsUri), projection.toArray, where, whereParams.toArray, orderBy)) flatMap f
 
   override def fetchAll[T](
       nineCardsUri: NineCardsUri,
@@ -82,10 +79,7 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver) extends Conte
       where: String = "",
       whereParams: Seq[String] = Seq.empty,
       orderBy: String = "")(f: (Cursor) => Option[T]): Option[T] =
-    Option(contentResolver.query(withAppendedPath(getUri(nineCardsUri), id.toString), projection.toArray, where, whereParams.toArray, orderBy)) match {
-      case None => None
-      case Some(cursor) => f(cursor)
-    }
+    Option(contentResolver.query(withAppendedPath(getUri(nineCardsUri), id.toString), projection.toArray, where, whereParams.toArray, orderBy)) flatMap f
 
   def map2ContentValue(values: Map[String, Any]) = {
     val contentValues = new ContentValues()
