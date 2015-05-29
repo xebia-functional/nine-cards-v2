@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository.collection
 
 import com.fortysevendeg.ninecardslauncher.models.Collection
-import com.fortysevendeg.ninecardslauncher.{repository => repo}
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection, CollectionData => RepositoryCollectionData}
+import com.fortysevendeg.ninecardslauncher.{repository => repo}
 
 trait Conversions {
 

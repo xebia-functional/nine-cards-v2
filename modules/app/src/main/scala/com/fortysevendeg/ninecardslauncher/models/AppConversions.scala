@@ -24,7 +24,7 @@ trait AppConversions {
       cardType = App)
 
   def toAddCollectionRequestFromUserConfigSeq(items: Seq[UserConfigCollection], packagesNotInstalled: Seq[String]): Seq[AddCollectionRequest] =
-    items.zipWithIndex.map (zipped => toAddCollectionRequest(zipped._1, zipped._2, packagesNotInstalled))
+    items.zipWithIndex map (zipped => toAddCollectionRequest(zipped._1, zipped._2, packagesNotInstalled))
 
   def toAddCollectionRequest(userConfigCollection: UserConfigCollection, index: Int, packagesNotInstalled: Seq[String]): AddCollectionRequest = {
     val color = if (index >= NumSpaces) index % NumSpaces else index
@@ -43,7 +43,7 @@ trait AppConversions {
   }
 
   def toCartItemFromUserConfigSeq(items: Seq[UserConfigCollectionItem], packagesNotInstalled: Seq[String]): Seq[CardItem] =
-    items.zipWithIndex.map (zipped => toCardItem(zipped._1, zipped._2, packagesNotInstalled)).flatten
+    items.zipWithIndex flatMap (zipped => toCardItem(zipped._1, zipped._2, packagesNotInstalled))
 
   def toCardItem(item: UserConfigCollectionItem, pos: Int, packagesNotInstalled: Seq[String]): Option[CardItem] = {
     // TODO We only are working with apps for now

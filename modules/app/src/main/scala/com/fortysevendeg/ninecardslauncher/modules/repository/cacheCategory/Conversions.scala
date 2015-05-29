@@ -1,9 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository.cacheCategory
 
 import com.fortysevendeg.ninecardslauncher.models.CacheCategory
+import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory => RepositoryCacheCategory, CacheCategoryData => RepositoryCacheCategoryData}
 import com.fortysevendeg.ninecardslauncher.{repository => repo}
-import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory => RepositoryCacheCategory}
-import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategoryData => RepositoryCacheCategoryData}
 
 trait Conversions {
 
