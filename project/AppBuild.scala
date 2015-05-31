@@ -1,3 +1,7 @@
+import Libraries.akka._
+import Libraries.json._
+import Libraries.net._
+import Libraries.test._
 import ReplacePropertiesGenerator._
 import Settings._
 import Versions._
@@ -23,25 +27,35 @@ object AppBuild extends Build {
         run <<= (run in Android in app).dependsOn(setDebugTask(true)),
         packageName in Android := "com.fortysevendeg.ninecardslauncher"
       )
-      .aggregate(app, process)
+      .aggregate(app, api, repository)
 
   lazy val app = Project(id = "app", base = file("modules/app"))
-      .androidBuildWith(process)
+      .androidBuildWith(api, repository)
       .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
       .settings(packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask))
+      .settings(apkbuildExcludes in Android ++= Seq(
+    "META-INF/LICENSE",
+    "META-INF/LICENSE.txt",
+    "META-INF/NOTICE",
+    "META-INF/NOTICE.txt",
+    "reference.conf"))
       .settings(appSettings: _*)
 
   val api = Project(id = "api", base = file("modules/api"))
+      .settings(libraryDependencies ++= Seq(
+    playJson,
+    sprayClient % "provided",
+    okHttp % "provided",
+    akkaActor % "provided",
+    specs2,
+    mockito,
+    mockServer))
       .settings(apiSettings: _*)
 
   val repository = Project(id = "repository", base = file("modules/repository"))
+      .settings(libraryDependencies ++= Seq(
+    androidTest,
+    specs2,
+    mockito))
       .settings(repositorySettings: _*)
-
-  val services = Project(id = "services", base = file("modules/services"))
-      .settings(servicesSettings: _*)
-      .dependsOn(api, repository)
-
-  val process = Project(id = "process", base = file("modules/process"))
-      .settings(processSettings: _*)
-      .dependsOn(services)
 }
