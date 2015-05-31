@@ -2,10 +2,8 @@ import Libraries.android._
 import Libraries.graphics._
 import Libraries.macroid._
 import Libraries.playServices._
+import Versions._
 import Libraries.net._
-import Libraries.akka._
-import Libraries.json._
-import Libraries.test._
 import android.Keys._
 import sbt.Keys._
 import sbt._
@@ -20,12 +18,6 @@ object Settings {
         javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
         transitiveAndroidLibs in Android := false,
         libraryDependencies ++= commonDependencies,
-        apkbuildExcludes in Android ++= Seq(
-          "META-INF/LICENSE",
-          "META-INF/LICENSE.txt",
-          "META-INF/NOTICE",
-          "META-INF/NOTICE.txt",
-          "reference.conf"),
         dexMaxHeap in Android := "2048m",
         proguardScala in Android := true,
         useProguard in Android := true,
@@ -33,33 +25,35 @@ object Settings {
         proguardCache in Android := Seq.empty)
 
   // Api Module
-  lazy val apiSettings = commonSettings ++ librarySettings ++
-    Seq(libraryDependencies ++= apiDependencies)
+
+  lazy val apiSettings = commonSettings ++
+      Seq(
+        exportJars := true,
+        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
+        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+        javacOptions in Compile += "-deprecation",
+        proguardScala in Android := false
+      )
 
   // Repository Module
-  lazy val repositorySettings = commonSettings ++ librarySettings ++
-    Seq(libraryDependencies ++= repositoryDependencies)
 
-  // Services Module
-  lazy val servicesSettings = commonSettings ++ librarySettings
-
-  // Process Module
-  lazy val processSettings = commonSettings ++ librarySettings
+  lazy val repositorySettings = commonSettings ++
+      Seq(
+        exportJars := true,
+        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
+        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+        javacOptions in Compile += "-deprecation",
+        proguardScala in Android := false
+      )
 
   // Commons
+
   lazy val commonSettings = Seq(
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers)
 
-  // Library Commons
-  lazy val librarySettings = Seq(
-    exportJars := true,
-    scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
-    javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-    javacOptions in Compile += "-deprecation",
-    proguardScala in Android := false)
-
   lazy val commonDependencies = Seq(
+//    aar(multiDexLib),
     aar(androidSupportv4),
     aar(androidAppCompat),
     aar(macroidRoot),
@@ -69,20 +63,6 @@ object Settings {
     aar(playServicesBase),
     glide,
     okHttp)
-
-  lazy val apiDependencies = Seq(
-    playJson,
-    sprayClient % "provided",
-    okHttp % "provided",
-    akkaActor % "provided",
-    specs2,
-    mockito,
-    mockServer)
-
-  lazy val repositoryDependencies = Seq(
-    androidTest,
-    specs2,
-    mockito)
 
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,
