@@ -41,11 +41,8 @@ object Settings {
     Seq(libraryDependencies ++= repositoryDependencies)
 
   // Services Module
-  lazy val servicesSettings = commonSettings ++ //librarySettings ++
-    Seq(
-      javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-      transitiveAndroidLibs in Android := false,
-      libraryDependencies ++= servicesDependencies)
+  lazy val servicesSettings = commonSettings ++ librarySettings ++
+    Seq(libraryDependencies ++= servicesDependencies)
 
   // Process Module
   lazy val processSettings = commonSettings ++ librarySettings
