@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.View.OnClickListener
 import android.view.{View, ViewGroup}
-import com.fortysevendeg.ninecardslauncher.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageFragmentTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._

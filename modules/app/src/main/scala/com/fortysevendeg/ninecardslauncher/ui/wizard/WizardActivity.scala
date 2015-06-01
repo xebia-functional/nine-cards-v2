@@ -8,12 +8,16 @@ import android.support.v4.app.FragmentActivity
 import android.support.v7.app.ActionBarActivity
 import android.widget.RadioButton
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiUserConfigService, ApiGooglePlayService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.api.GetUserConfigRequest
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.{GoogleOperationCanceledException, RequestTokenRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService
+import com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigRequest
+import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesImpl, ApiServicesConfig}
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.rest.client.ServiceClient
+import com.fortysevendeg.rest.client.http.OkHttpClient
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Contexts, Transformer, Ui}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -33,6 +37,19 @@ class WizardActivity
   private var finished = false
 
   override lazy val contextProvider: ContextWrapper = activityContextWrapper
+
+  private lazy val serviceClient = new ServiceClient(
+    httpClient = new OkHttpClient(),
+    baseUrl = contextProvider.application.getString(R.string.api_base_url))
+
+  private lazy val apiServices = new ApiServicesImpl(
+    ApiServicesConfig(
+      contextProvider.application.getString(R.string.api_app_id),
+      contextProvider.application.getString(R.string.api_app_key),
+      contextProvider.application.getString(R.string.api_localization)),
+    new ApiUserService(serviceClient),
+    new ApiGooglePlayService(serviceClient),
+    new ApiUserConfigService(serviceClient))
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)

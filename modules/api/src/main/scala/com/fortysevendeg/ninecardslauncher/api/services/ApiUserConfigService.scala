@@ -6,9 +6,7 @@ import play.api.libs.json.{Reads, Writes}
 
 import scala.concurrent.ExecutionContext
 
-trait UserConfigServiceClient {
-
-  val serviceClient: ServiceClient
+class ApiUserConfigService(serviceClient: ServiceClient) {
 
   val prefixPathUserConfig = "/ninecards/userconfig"
 

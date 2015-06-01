@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.modules
 
-import com.fortysevendeg.ninecardslauncher.modules.api.ApiServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.AppManagerServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.GoogleConnectorServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
@@ -15,4 +14,3 @@ trait ComponentRegistry
   with PersistentServicesComponent
   with UserServicesComponent
   with GoogleConnectorServicesComponent
-  with ApiServicesComponent

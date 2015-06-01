@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
-import com.fortysevendeg.ninecardslauncher.models.{NineCardIntent, CacheCategory, Card, Collection}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{NineCardIntent, CacheCategory, Card, Collection}
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepositoryCollection, Card => RepositoryCard, CacheCategory => RepositoryCacheCategory, _}
 import play.api.libs.json._
@@ -25,7 +25,7 @@ trait Conversions {
     )
 
   def toCard(card: RepositoryCard) = {
-    import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
+    import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntentImplicits._
     val intent = Json.parse(card.data.intent).as[NineCardIntent]
     Card(
       id = card.id,

@@ -41,7 +41,11 @@ object Settings {
     Seq(libraryDependencies ++= repositoryDependencies)
 
   // Services Module
-  lazy val servicesSettings = commonSettings ++ librarySettings
+  lazy val servicesSettings = commonSettings ++ //librarySettings ++
+    Seq(
+      javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+      transitiveAndroidLibs in Android := false,
+      libraryDependencies ++= servicesDependencies)
 
   // Process Module
   lazy val processSettings = commonSettings ++ librarySettings
@@ -69,6 +73,9 @@ object Settings {
     aar(playServicesBase),
     glide,
     okHttp)
+
+  lazy val servicesDependencies = Seq(
+    aar(macroidRoot))
 
   lazy val apiDependencies = Seq(
     playJson,

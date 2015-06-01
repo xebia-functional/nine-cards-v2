@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.modules.user
 
 import com.fortysevendeg.ninecardslauncher.commons.Service
-import com.fortysevendeg.ninecardslauncher.models.{Installation, User}
-import com.fortysevendeg.ninecardslauncher.modules.api.{LoginResponse, LoginRequest}
+import com.fortysevendeg.ninecardslauncher.services.api.LoginRequest
+import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
 
 trait UserServices {
   def register(): Unit

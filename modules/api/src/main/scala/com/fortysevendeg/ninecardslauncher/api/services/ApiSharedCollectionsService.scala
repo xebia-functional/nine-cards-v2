@@ -6,9 +6,7 @@ import play.api.libs.json.{Writes, Reads}
 
 import scala.concurrent.ExecutionContext
 
-trait SharedCollectionsServiceClient {
-
-  val serviceClient: ServiceClient
+class ApiSharedCollectionsService(serviceClient: ServiceClient) {
 
   val prefixPathCollections = "/ninecards/collections"
 

@@ -8,11 +8,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
 
-trait ServiceClient {
-
-  val httpClient: HttpClient
-
-  val baseUrl: String
+class ServiceClient(httpClient: HttpClient, baseUrl: String) {
 
   def get[Res](
       path: String,

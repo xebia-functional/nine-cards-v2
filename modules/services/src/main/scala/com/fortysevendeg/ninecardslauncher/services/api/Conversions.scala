@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.modules.api
+package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
-import com.fortysevendeg.ninecardslauncher.models._
-import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
+import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntentImplicits._
 import play.api.libs.json._
 
 trait Conversions {
@@ -207,7 +207,6 @@ trait Conversions {
       categories = apiCollectionItem.categories)
 
   def toNineCardIntent(jsValue: JsValue): NineCardIntent = {
-    import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
     jsValue.as[NineCardIntent]
   }
 

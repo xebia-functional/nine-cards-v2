@@ -7,9 +7,8 @@ import play.api.libs.json.{Json, Writes}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait OkHttpClient extends HttpClient {
-  
-  val okHttpClient = new okHttp.OkHttpClient
+class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
+    extends HttpClient {
 
   val jsonMediaType = okHttp.MediaType.parse("application/json")
 

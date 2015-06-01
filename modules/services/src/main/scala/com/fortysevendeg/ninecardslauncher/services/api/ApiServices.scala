@@ -1,6 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.modules.api
-
-import com.fortysevendeg.ninecardslauncher.commons.Service
+package com.fortysevendeg.ninecardslauncher.services.api
 
 trait ApiServices {
 
@@ -31,8 +29,4 @@ trait ApiServices {
   def checkpointJoinedBy: Service[CheckpointJoinedByRequest, CheckpointJoinedByResponse]
 
   def tester: Service[TesterRequest, TesterResponse]
-}
-
-trait ApiServicesComponent {
-  val apiServices: ApiServices
 }
