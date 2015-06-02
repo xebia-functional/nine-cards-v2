@@ -61,9 +61,7 @@ object Settings {
     proguardScala in Android := false)
 
   lazy val commonDependencies = Seq(
-    aar(androidSupportv4),
     aar(androidAppCompat),
-    aar(macroidRoot),
     aar(macroidExtras),
     aar(androidRecyclerview),
     aar(androidCardView),
@@ -72,6 +70,7 @@ object Settings {
     okHttp)
 
   lazy val servicesDependencies = Seq(
+    aar(androidSupportv4),
     aar(macroidRoot))
 
   lazy val apiDependencies = Seq(
