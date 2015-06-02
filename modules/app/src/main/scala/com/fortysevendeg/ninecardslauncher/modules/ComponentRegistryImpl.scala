@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules
 
 import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
-import com.fortysevendeg.ninecardslauncher.modules.api.impl.ApiServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl.AppManagerServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl.GoogleConnectorServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.image.impl.ImageServicesComponentImpl
@@ -18,5 +17,4 @@ trait ComponentRegistryImpl
   with PersistentServicesComponentImpl
   with UserServicesComponentImpl
   with GoogleConnectorServicesComponentImpl
-  with ApiServicesComponentImpl
 

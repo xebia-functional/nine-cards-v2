@@ -13,8 +13,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Await, Future}
 
 trait SprayHttpClientSupport
-  extends SprayHttpClient
-  with Mockito
+  extends Mockito
   with Scope {
 
   implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
@@ -34,15 +33,6 @@ trait SprayHttpClientSupport
 
   val acceptedBody: Option[SampleRequest] = None
 
-  override def sendAndReceive(implicit executionContext: ExecutionContext) = {
-    (req: HttpRequest) => {
-      if (isValidMethod(req) && isValidBody(req))
-        Future.successful(mockResponse)
-      else
-        Future.failed(new IllegalArgumentException)
-    }
-  }
-
   private def isValidMethod(req: HttpRequest): Boolean =
     acceptedMethod.getOrElse(req.method) == req.method
 
@@ -50,6 +40,17 @@ trait SprayHttpClientSupport
     acceptedBody match {
       case Some(request) => Json.parse(req.entity.asString).as[SampleRequest](readsRequest) == request
       case _ => true
+    }
+  }
+
+  val sprayHttpClient = new SprayHttpClient() {
+    override def sendAndReceive(implicit executionContext: ExecutionContext) = {
+      (req: HttpRequest) => {
+        if (isValidMethod(req) && isValidBody(req))
+          Future.successful(mockResponse)
+        else
+          Future.failed(new IllegalArgumentException)
+      }
     }
   }
 
@@ -75,7 +76,7 @@ class SprayHttpClientSpec
 
       override val acceptedMethod = Some(HttpMethods.GET)
 
-      val response = Await.result(doGet(baseUrl, Seq.empty), Duration.Inf)
+      val response = Await.result(sprayHttpClient.doGet(baseUrl, Seq.empty), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -93,7 +94,7 @@ class SprayHttpClientSpec
 
       override val acceptedMethod = Some(HttpMethods.DELETE)
 
-      val response = Await.result(doDelete(baseUrl, Seq.empty), Duration.Inf)
+      val response = Await.result(sprayHttpClient.doDelete(baseUrl, Seq.empty), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -111,7 +112,7 @@ class SprayHttpClientSpec
 
       override val acceptedMethod = Some(HttpMethods.POST)
 
-      val response = Await.result(doPost(baseUrl, Seq.empty), Duration.Inf)
+      val response = Await.result(sprayHttpClient.doPost(baseUrl, Seq.empty), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -132,7 +133,7 @@ class SprayHttpClientSpec
       val sampleRequest = SampleRequest("request")
       override val acceptedBody = Some(sampleRequest)
 
-      val response = Await.result(doPost[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
+      val response = Await.result(sprayHttpClient.doPost[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -150,7 +151,7 @@ class SprayHttpClientSpec
 
       override val acceptedMethod = Some(HttpMethods.PUT)
 
-      val response = Await.result(doPut(baseUrl, Seq.empty), Duration.Inf)
+      val response = Await.result(sprayHttpClient.doPut(baseUrl, Seq.empty), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -171,7 +172,7 @@ class SprayHttpClientSpec
       val sampleRequest = SampleRequest("request")
       override val acceptedBody = Some(sampleRequest)
 
-      val response = Await.result(doPut[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
+      val response = Await.result(sprayHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, sampleRequest), Duration.Inf)
       response.body shouldEqual Some(json)
     }
 
@@ -189,7 +190,7 @@ class SprayHttpClientSpec
 
       override val acceptedMethod = Some(HttpMethods.GET)
 
-      Await.result(doDelete(baseUrl, Seq.empty), Duration.Inf) must throwA[IllegalArgumentException]
+      Await.result(sprayHttpClient.doDelete(baseUrl, Seq.empty), Duration.Inf) must throwA[IllegalArgumentException]
     }
 
     "returns Exception for an unexpected request" in new SprayHttpClientSupport {
@@ -208,7 +209,7 @@ class SprayHttpClientSpec
 
       override val acceptedBody = Some(SampleRequest("request"))
 
-      Await.result(doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")), Duration.Inf) must throwA[IllegalArgumentException]
+      Await.result(sprayHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")), Duration.Inf) must throwA[IllegalArgumentException]
     }
 
   }

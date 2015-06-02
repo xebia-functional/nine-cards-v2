@@ -1,18 +1,22 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 
 import android.content.Intent
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserService, ApiUserConfigService}
 import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
 import com.fortysevendeg.ninecardslauncher.commons.Service
-import com.fortysevendeg.ninecardslauncher.models._
-import com.fortysevendeg.ninecardslauncher.modules.api._
+import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
+import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesRequest, GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse, GooglePlayPackagesResponse}
+import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image.{StoreImageAppResponse, StoreImageAppRequest, ImageServicesComponent}
 import com.fortysevendeg.ninecardslauncher.modules.repository._
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
+import com.fortysevendeg.rest.client.ServiceClient
+import com.fortysevendeg.rest.client.http.OkHttpClient
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.Future
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import play.api.libs.json._
 
@@ -22,8 +26,7 @@ trait AppManagerServicesComponentImpl
   self: ContextWrapperProvider
     with ImageServicesComponent
     with RepositoryServicesComponent
-    with UserServicesComponent
-    with ApiServicesComponent =>
+    with UserServicesComponent =>
 
   lazy val appManagerServices = new AppManagerServicesImpl
 
@@ -31,6 +34,19 @@ trait AppManagerServicesComponentImpl
     extends AppManagerServices {
 
     val packageManager = contextProvider.application.getPackageManager
+
+    private lazy val serviceClient = new ServiceClient(
+      httpClient = new OkHttpClient(),
+      baseUrl = contextProvider.application.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_base_url))
+
+    private lazy val apiServices = new ApiServicesImpl(
+      ApiServicesConfig(
+        contextProvider.application.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_app_id),
+        contextProvider.application.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_app_key),
+        contextProvider.application.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_localization)),
+      new ApiUserService(serviceClient),
+      new ApiGooglePlayService(serviceClient),
+      new ApiUserConfigService(serviceClient))
 
     override def getApps: Service[GetAppsRequest, GetAppsResponse] =
       request =>
@@ -41,7 +57,7 @@ trait AppManagerServicesComponentImpl
           val l = packageManager.queryIntentActivities(mainIntent, 0).toSeq
           val apps = Seq(l: _*)
 
-          val appitems: Seq[AppItem] = apps map {
+          val appItems: Seq[AppItem] = apps map {
             resolveInfo =>
               val name = resolveInfo.loadLabel(packageManager).toString
               val intent = new NineCardIntent(NineCardIntentExtras(
@@ -49,7 +65,7 @@ trait AppManagerServicesComponentImpl
                 class_name = Some(resolveInfo.activityInfo.name)
               ))
               intent.setAction(OpenApp)
-              import com.fortysevendeg.ninecardslauncher.models.NineCardIntentImplicits._
+              import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntentImplicits._
               AppItem(
                 name = name,
                 packageName = resolveInfo.activityInfo.applicationInfo.packageName,
@@ -57,19 +73,16 @@ trait AppManagerServicesComponentImpl
                 intent = Json.toJson(intent).toString())
           }
 
-          GetAppsResponse(appitems)
+          GetAppsResponse(appItems)
         }
 
     override def createBitmapsForNoPackagesInstalled: Service[IntentsRequest, PackagesResponse] =
       request => {
-        val packagesNoFound = (request.intents map {
+        val packagesNoFound = request.intents flatMap {
           intent =>
-            if (Option(packageManager.resolveActivity(intent, 0)).isEmpty) {
-              intent.extractPackageName()
-            } else {
-              None
-            }
-        }).flatten
+            if (Option(packageManager.resolveActivity(intent, 0)).isEmpty) intent.extractPackageName()
+            else None
+        }
         (for {
           GooglePlayPackagesResponse(_, packages) <- googlePlayPackages(packagesNoFound)
           storeImageResponses <- storeImages(packages)

@@ -1,10 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.models
+package com.fortysevendeg.ninecardslauncher.services.api.models
 
 import android.content.Intent
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import macroid.ContextWrapper
 import play.api.libs.json._
+
+import NineCardsIntent._
 
 import scala.collection.JavaConversions._
 
@@ -187,3 +188,16 @@ case class UserConfigTimeSlot(
   from: String,
   to: String,
   days: Seq[Int])
+
+object NineCardsIntent {
+  val NineCardExtraPhone: String = "tel"
+  val NineCardExtraEmail: String = "email"
+  val NineCardExtraUrlAd: String = "url_ad"
+  val NineCardExtraPackageName: String = "package_name"
+  val NineCardExtraClassName: String = "class_name"
+  val OpenApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_APP"
+  val OpenRecommendedApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_RECOMMENDED_APP"
+  val OpenSms: String = "com.fortysevendeg.ninecardslauncher.OPEN_SMS"
+  val OpenPhone: String = "com.fortysevendeg.ninecardslauncher.OPEN_PHONE"
+  val OpenEmail: String = "com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"
+}

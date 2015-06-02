@@ -41,7 +41,8 @@ object Settings {
     Seq(libraryDependencies ++= repositoryDependencies)
 
   // Services Module
-  lazy val servicesSettings = commonSettings ++ librarySettings
+  lazy val servicesSettings = commonSettings ++ librarySettings ++
+    Seq(libraryDependencies ++= servicesDependencies)
 
   // Process Module
   lazy val processSettings = commonSettings ++ librarySettings
@@ -60,15 +61,17 @@ object Settings {
     proguardScala in Android := false)
 
   lazy val commonDependencies = Seq(
-    aar(androidSupportv4),
     aar(androidAppCompat),
-    aar(macroidRoot),
     aar(macroidExtras),
     aar(androidRecyclerview),
     aar(androidCardView),
     aar(playServicesBase),
     glide,
     okHttp)
+
+  lazy val servicesDependencies = Seq(
+    aar(androidSupportv4),
+    aar(macroidRoot))
 
   lazy val apiDependencies = Seq(
     playJson,

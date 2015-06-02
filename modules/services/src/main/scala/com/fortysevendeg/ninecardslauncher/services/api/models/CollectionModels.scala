@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.models
+package com.fortysevendeg.ninecardslauncher.services.api.models
 
 import scala.util.{Failure, Success, Try}
 

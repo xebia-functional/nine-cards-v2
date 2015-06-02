@@ -5,18 +5,22 @@ import android.content.{Context, Intent}
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
-import com.fortysevendeg.ninecardslauncher.models._
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiUserConfigService, ApiGooglePlayService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.models.AppConversions
+import com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigRequest
+import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
+import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
+import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, InsertCollectionRequest, InsertGeoInfoRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.ui.commons.{CollectionType, NineCardsMoments}
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCategories._
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.rest.client.ServiceClient
+import com.fortysevendeg.rest.client.http.OkHttpClient
 import macroid.{Contexts, ContextWrapper}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 
@@ -43,6 +47,19 @@ class CreateCollectionService
 
   private lazy val notifyManager = getSystemService(Context.NOTIFICATION_SERVICE).asInstanceOf[NotificationManager]
 
+  private lazy val serviceClient = new ServiceClient(
+    httpClient = new OkHttpClient(),
+    baseUrl = contextProvider.application.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_base_url))
+
+  private lazy val apiServices = new ApiServicesImpl(
+    ApiServicesConfig(
+      contextProvider.application.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_app_id),
+      contextProvider.application.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_app_key),
+      contextProvider.application.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_localization)),
+    new ApiUserService(serviceClient),
+    new ApiGooglePlayService(serviceClient),
+    new ApiUserConfigService(serviceClient))
+
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     loadDeviceId = Option(intent) flatMap {
       i => if (i.hasExtra(KeyDevice)) Some(i.getStringExtra(KeyDevice)) else None
@@ -50,12 +67,12 @@ class CreateCollectionService
 
     val builder = new NotificationCompat.Builder(this)
     val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
-    val title: String = getString(R.string.workingNotificationTitle)
+    val title: String = getString(com.fortysevendeg.ninecardslauncher2.R.string.workingNotificationTitle)
     builder.
       setContentTitle(title).
       setTicker(title).
-      setContentText(getString(R.string.loadingYourAppsMessage)).
-      setSmallIcon(R.drawable.icon_notification_working).
+      setContentText(getString(com.fortysevendeg.ninecardslauncher2.R.string.loadingYourAppsMessage)).
+      setSmallIcon(com.fortysevendeg.ninecardslauncher2.R.drawable.icon_notification_working).
       setProgress(0, 0, true).
       setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
 
@@ -120,7 +137,7 @@ class CreateCollectionService
     import play.api.libs.json._
 
     val reads = Json.writes[UserConfigTimeSlot]
-    val ocurrenceStr: String = config.occurrence map (o => (Json.toJson(o)(reads)).toString()) mkString("[", ", ", "]")
+    val ocurrenceStr: String = config.occurrence map (o => Json.toJson(o)(reads).toString()) mkString("[", ", ", "]")
     val request = InsertGeoInfoRequest(
       constrain = constrain,
       occurrence = ocurrenceStr,
@@ -184,7 +201,7 @@ class CreateCollectionService
   }
 
   private def createCollection(apps: Seq[AppItem], category: String, index: Int): InsertCollectionRequest = {
-    val appsCategory = apps.filter(_.category == Some(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
+    val appsCategory = apps.filter(_.category.contains(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
     val pos = if (index >= NumSpaces) index % NumSpaces else index
     InsertCollectionRequest(
       position = pos,

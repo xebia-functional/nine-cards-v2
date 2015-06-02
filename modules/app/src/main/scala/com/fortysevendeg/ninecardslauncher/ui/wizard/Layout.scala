@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.ui.wizard
 import android.accounts.Account
 import android.os.Build
 import android.widget._
-import com.fortysevendeg.ninecardslauncher.models.UserConfigDevice
+import com.fortysevendeg.ninecardslauncher.services.api.models.UserConfigDevice
 import com.fortysevendeg.ninecardslauncher.ui.commons.ToolbarLayout
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._

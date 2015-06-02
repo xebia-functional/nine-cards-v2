@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.modules.repository
 
-import com.fortysevendeg.ninecardslauncher.models.{CacheCategory, Collection}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{CacheCategory, Collection}
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
 
 case class GetCollectionsRequest()
