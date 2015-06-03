@@ -5,7 +5,6 @@ import android.content.{Context, Intent}
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
-import android.util.Log
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
@@ -94,10 +93,8 @@ class CreateCollectionService
       response => createConfiguration()
     } recover {
       case ex: CategorizeAppsException =>
-        Log.d(Tag, ex.getMessage)
         closeService()
       case _ =>
-        Log.d(Tag, "Categorize apps unexpected exception")
         closeService()
     }
 
@@ -120,7 +117,6 @@ class CreateCollectionService
               } yield {
                   createCollectionFromDevice(device)
                 }) getOrElse {
-                Log.d(Tag, "UserConfig don't created")
                 closeService()
               }
           } getOrElse {
@@ -128,11 +124,9 @@ class CreateCollectionService
           }
       } recover {
         case ex: Throwable =>
-          Log.d(Tag, s"UserConfig endpoind failed: ${ex.getMessage}")
           closeService()
       }
     }) getOrElse {
-    Log.d(Tag, "User unserialize failed")
     closeService()
   }
 
@@ -186,7 +180,6 @@ class CreateCollectionService
         insertFuturesInDB(insertFutures)
     } recover {
       case _ =>
-        Log.d(Tag, "Store images of apps not installed failed")
         closeService()
     }
   }
@@ -197,7 +190,6 @@ class CreateCollectionService
         closeService()
     } recover {
       case _ =>
-        Log.d(Tag, "Insert sequence failed")
         closeService()
     }
   }
