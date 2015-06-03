@@ -22,7 +22,7 @@ object Conversions {
       micros = cardEntity.data.micros,
       term = cardEntity.data.term,
       packageName = Option[String](cardEntity.data.packageName),
-      `type` = cardEntity.data.`type`,
+      cardType = cardEntity.data.`type`,
       intent = cardEntity.data.intent,
       imagePath = cardEntity.data.imagePath,
       starRating = Option[Double](cardEntity.data.starRating),
@@ -34,7 +34,7 @@ object Conversions {
     data = CollectionData(
       position = collectionEntity.data.position,
       name = collectionEntity.data.name,
-      `type` = collectionEntity.data.`type`,
+      collectionType = collectionEntity.data.`type`,
       icon = collectionEntity.data.icon,
       themedColorIndex = collectionEntity.data.themedColorIndex,
       appsCategory = Option[String](collectionEntity.data.appsCategory),

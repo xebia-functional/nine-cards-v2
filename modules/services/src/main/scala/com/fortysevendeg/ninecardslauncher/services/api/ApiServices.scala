@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
+import com.fortysevendeg.ninecardslauncher.services.Service
+
 trait ApiServices {
 
   def login: Service[LoginRequest, LoginResponse]

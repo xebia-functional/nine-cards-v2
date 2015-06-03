@@ -1,10 +1,10 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.commons.GeoInfoUri
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.provider._
 import com.fortysevendeg.ninecardslauncher.repository._
-import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfoData, GeoInfo}
+import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo, GeoInfoData}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import org.mockito.Mockito._
 import org.specs2.mock.Mockito
@@ -89,10 +89,13 @@ trait GeoInfoTestData {
 }
 
 trait GeoInfoTestSupport
-    extends BaseTestSupport
-    with MockContentResolverWrapper
-    with GeoInfoTestData
-    with DBUtils {
+  extends BaseTestSupport
+  with GeoInfoTestData
+  with DBUtils
+  with Mockito {
+
+  lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
+  lazy val geoInfoRepository = new GeoInfoRepository(contentResolverWrapper)
 
   def createAddGeoInfoRequest = AddGeoInfoRequest(GeoInfoData(
     constrain = constrain,
@@ -104,11 +107,11 @@ trait GeoInfoTestSupport
 
   def createDeleteGeoInfoRequest = DeleteGeoInfoRequest(geoInfo = geoInfo)
 
-  def createGetAllGeoInfoItemsRequest = GetAllGeoInfoItemsRequest()
+  def createGetAllGeoInfoItemsRequest = FetchGeoInfoItemsRequest()
 
-  def createGetGeoInfoByIdRequest(id: Int) = GetGeoInfoByIdRequest(id = id)
+  def createGetGeoInfoByIdRequest(id: Int) = FindGeoInfoByIdRequest(id = id)
 
-  def createGetGeoInfoByConstrainRequest(constrain: String) = GetGeoInfoByConstrainRequest(constrain = constrain)
+  def createGetGeoInfoByConstrainRequest(constrain: String) = FetchGeoInfoByConstrainRequest(constrain = constrain)
 
   def createUpdateGeoInfoRequest = UpdateGeoInfoRequest(geoInfo = geoInfo)
 
@@ -120,126 +123,132 @@ trait GeoInfoTestSupport
     nineCardsUri = GeoInfoUri,
     id = geoInfoId,
     projection = AllFields)(
-        f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(Some(geoInfoEntity))
+      f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(Some(geoInfoEntity))
 
   when(contentResolverWrapper.findById(
     nineCardsUri = GeoInfoUri,
     id = nonExistingGeoInfoId,
     projection = AllFields)(
-        f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(None)
+      f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.fetchAll(
     nineCardsUri = GeoInfoUri,
     projection = AllFields)(
-        f = getListFromCursor(geoInfoEntityFromCursor))).thenReturn(geoInfoEntitySeq)
+      f = getListFromCursor(geoInfoEntityFromCursor))).thenReturn(geoInfoEntitySeq)
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = GeoInfoUri,
     projection = AllFields,
     where = s"$Constrain = ?",
     whereParams = Seq(constrain))(
-        f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(Some(geoInfoEntity))
+      f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(Some(geoInfoEntity))
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = GeoInfoUri,
     projection = AllFields,
     where = s"$Constrain = ?",
     whereParams = Seq(nonExistingConstrain))(
-        f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(None)
+      f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.updateById(GeoInfoUri, geoInfoId, createGeoInfoValues)).thenReturn(1)
 }
 
-class GeoInfoRepositoryClientSpec
-    extends Specification
-    with Mockito
-    with GeoInfoTestSupport
-    with GeoInfoRepositoryClient {
+class GeoInfoRepositorySpec
+  extends Specification
+  with Mockito
+  with GeoInfoTestSupport {
 
   "GeoInfoRepositoryClient component" should {
 
     "addGeoInfo should return a valid GeoInfo object" in {
 
-      val response = await(addGeoInfo(createAddGeoInfoRequest))
+      val response = await(geoInfoRepository.addGeoInfo(createAddGeoInfoRequest))
 
-      response.geoInfo.get.id shouldEqual geoInfoId
-      response.geoInfo.get.data.constrain shouldEqual constrain
+      response.geoInfo.id shouldEqual geoInfoId
+      response.geoInfo.data.constrain shouldEqual constrain
     }
 
     "deleteGeoInfo should return a successful response when a valid geoInfo id is given" in {
-      val response = await(deleteGeoInfo(createDeleteGeoInfoRequest))
+      val response = await(geoInfoRepository.deleteGeoInfo(createDeleteGeoInfoRequest))
 
       response.deleted shouldEqual 1
     }
 
-    "getAllGeoInfoItems should return all the geoInfo items stored in the database" in {
-      val response = await(getAllGeoInfoItems(createGetAllGeoInfoItemsRequest))
+    "fetchGeoInfoItems should return all the geoInfo items stored in the database" in {
+      val response = await(geoInfoRepository.fetchGeoInfoItems(createGetAllGeoInfoItemsRequest))
 
       response.geoInfoItems shouldEqual geoInfoSeq
     }
 
-    "getGeoInfoById should return a GeoInfo object when a existing id is given" in {
-      val response = await(getGeoInfoById(createGetGeoInfoByIdRequest(id = geoInfoId)))
+    "findGeoInfoById should return a GeoInfo object when a existing id is given" in {
+      val response = await(geoInfoRepository.findGeoInfoById(createGetGeoInfoByIdRequest(id = geoInfoId)))
 
-      response.result.get.id shouldEqual geoInfoId
-      response.result.get.data.constrain shouldEqual constrain
+      response.geoInfo must beSome[GeoInfo].which { geoInfo =>
+        geoInfo.id shouldEqual geoInfoId
+        geoInfo.data.constrain shouldEqual constrain
+      }
     }
 
-    "getGeoInfoById should return None when a non-existing id is given" in {
-      val response = await(getGeoInfoById(createGetGeoInfoByIdRequest(id = nonExistingGeoInfoId)))
+    "findGeoInfoById should return None when a non-existing id is given" in {
+      val response = await(geoInfoRepository.findGeoInfoById(createGetGeoInfoByIdRequest(id = nonExistingGeoInfoId)))
 
-      response.result shouldEqual None
+      response.geoInfo must beNone
     }
 
     "getGeoInfoByConstrain should return a GeoInfo object when a existing constrain is given" in {
-      val response = await(getGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = constrain)))
+      val response = await(geoInfoRepository.fetchGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = constrain)))
 
-      response.result.get.id shouldEqual geoInfoId
-      response.result.get.data.constrain shouldEqual constrain
+      response.geoInfo must beSome[GeoInfo].which { geoInfo =>
+        geoInfo.id shouldEqual geoInfoId
+        geoInfo.data.constrain shouldEqual constrain
+      }
     }
 
     "getGeoInfoByConstrain should return None when a non-existing constrain is given" in {
-      val response = await(getGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = nonExistingConstrain)))
+      val response = await(geoInfoRepository.fetchGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = nonExistingConstrain)))
 
-      response.result shouldEqual None
+      response.geoInfo must beNone
     }
 
     "updateGeoInfo should return a successful response when the geoInfo item is updated" in {
-      val response = await(updateGeoInfo(createUpdateGeoInfoRequest))
+      val response = await(geoInfoRepository.updateGeoInfo(createUpdateGeoInfoRequest))
 
       response.updated shouldEqual 1
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in
-        new EmptyGeoInfoMockCursor
-            with Scope {
-          val result = getEntityFromCursor(geoInfoEntityFromCursor)(mockCursor)
+      new EmptyGeoInfoMockCursor
+        with Scope {
+        val result = getEntityFromCursor(geoInfoEntityFromCursor)(mockCursor)
 
-          result shouldEqual None
-        }
+        result must beNone
+      }
 
     "getEntityFromCursor should return a GeoInfo object when a cursor with data is given" in
-        new GeoInfoMockCursor
-            with Scope {
-          val result = getEntityFromCursor(geoInfoEntityFromCursor)(mockCursor)
+      new GeoInfoMockCursor
+        with Scope {
+        val result = getEntityFromCursor(geoInfoEntityFromCursor)(mockCursor)
 
-          result shouldEqual Some(geoInfoEntity)
+        result must beSome[GeoInfoEntity].which { geoInfo =>
+          geoInfo.id shouldEqual geoInfoEntity.id
+          geoInfo.data shouldEqual geoInfoEntity.data
         }
+      }
 
     "getListFromCursor should return an empty sequence when an empty cursor is given" in
-        new EmptyGeoInfoMockCursor
-            with Scope {
-          val result = getListFromCursor(geoInfoEntityFromCursor)(mockCursor)
+      new EmptyGeoInfoMockCursor
+        with Scope {
+        val result = getListFromCursor(geoInfoEntityFromCursor)(mockCursor)
 
-          result shouldEqual Seq.empty
-        }
+        result shouldEqual Seq.empty
+      }
 
     "getEntityFromCursor should return a GeoInfo sequence when a cursor with data is given" in
-        new GeoInfoMockCursor
-            with Scope {
-          val result = getListFromCursor(geoInfoEntityFromCursor)(mockCursor)
+      new GeoInfoMockCursor
+        with Scope {
+        val result = getListFromCursor(geoInfoEntityFromCursor)(mockCursor)
 
-          result shouldEqual geoInfoEntitySeq
-        }
+        result shouldEqual geoInfoEntitySeq
+      }
   }
 }

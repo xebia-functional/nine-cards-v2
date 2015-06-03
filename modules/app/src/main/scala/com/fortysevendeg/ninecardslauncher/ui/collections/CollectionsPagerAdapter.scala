@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.ui.collections
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdapter}
 import android.view.ViewGroup
-import com.fortysevendeg.ninecardslauncher.services.api.models.Collection
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 import macroid.{ContextWrapper, Ui}
 
 import scala.collection.mutable.WeakHashMap

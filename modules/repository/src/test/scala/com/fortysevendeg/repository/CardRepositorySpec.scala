@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.commons.CardUri
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, CardUri}
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.provider._
 import com.fortysevendeg.ninecardslauncher.repository._
@@ -21,7 +21,7 @@ trait CardMockCursor extends MockCursor with CardTestData {
     (CollectionId, 2, cardSeq map (_ => collectionId), IntDataType),
     (Term, 3, cardSeq map (_.data.term), StringDataType),
     (PackageName, 4, cardSeq map (_.data.packageName getOrElse ""), StringDataType),
-    (Type, 5, cardSeq map (_.data.`type`), StringDataType),
+    (Type, 5, cardSeq map (_.data.cardType), StringDataType),
     (Intent, 6, cardSeq map (_.data.intent), StringDataType),
     (ImagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
     (StarRating, 8, cardSeq map (_.data.starRating getOrElse 0.0d), DoubleDataType),
@@ -99,7 +99,7 @@ trait CardTestData {
       position = position,
       term = term,
       packageName = packageNameOption,
-      `type` = `type`,
+      cardType = `type`,
       intent = intent,
       imagePath = imagePath,
       starRating = starRatingOption,
@@ -134,16 +134,19 @@ trait CardTestData {
 }
 
 trait CardTestSupport
-    extends BaseTestSupport
-    with MockContentResolverWrapper
-    with CardTestData
-    with DBUtils {
+  extends BaseTestSupport
+  with CardTestData
+  with DBUtils
+  with Mockito {
+
+  lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
+  lazy val cardRepository = new CardRepository(contentResolverWrapper)
 
   def createAddCardRequest = AddCardRequest(collectionId = collectionId, CardData(
     position = position,
     term = term,
     packageName = packageNameOption,
-    `type` = `type`,
+    cardType = `type`,
     intent = intent,
     imagePath = imagePath,
     starRating = starRatingOption,
@@ -153,9 +156,9 @@ trait CardTestSupport
 
   def createDeleteCardRequest = DeleteCardRequest(card = card)
 
-  def createGetCardByIdRequest(id: Int) = GetCardByIdRequest(id = id)
+  def createGetCardByIdRequest(id: Int) = FindCardByIdRequest(id = id)
 
-  def createGetCardByCollectionRequest(collectionId: Int) = GetAllCardsByCollectionRequest(collectionId = collectionId)
+  def createGetCardByCollectionRequest(collectionId: Int) = FetchCardsByCollectionRequest(collectionId = collectionId)
 
   def createUpdateCardRequest = UpdateCardRequest(card = card)
 
@@ -167,115 +170,119 @@ trait CardTestSupport
     nineCardsUri = CardUri,
     id = cardId,
     projection = AllFields)(
-        f = getEntityFromCursor(cardEntityFromCursor))).thenReturn(Some(cardEntity))
+      f = getEntityFromCursor(cardEntityFromCursor))).thenReturn(Some(cardEntity))
 
   when(contentResolverWrapper.findById(
     nineCardsUri = CardUri,
     id = nonExistingCardId,
     projection = AllFields)(
-        f = getEntityFromCursor(cardEntityFromCursor))).thenReturn(None)
+      f = getEntityFromCursor(cardEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.fetchAll(
     nineCardsUri = CardUri,
     projection = AllFields,
     where = s"$CollectionId = ?",
     whereParams = Seq(collectionId.toString))(
-        f = getListFromCursor(cardEntityFromCursor))).thenReturn(cardEntitySeq)
+      f = getListFromCursor(cardEntityFromCursor))).thenReturn(cardEntitySeq)
 
   when(contentResolverWrapper.fetchAll(
     nineCardsUri = CardUri,
     projection = AllFields,
     where = s"$CollectionId = ?",
     whereParams = Seq(nonExistingCollectionId.toString))(
-        f = getListFromCursor(cardEntityFromCursor))).thenReturn(Seq.empty)
+      f = getListFromCursor(cardEntityFromCursor))).thenReturn(Seq.empty)
 
   when(contentResolverWrapper.updateById(nineCardsUri = CardUri, id = card.id, values = createUpdateCardValues)).thenReturn(1)
 }
 
-class CardRepositoryClientSpec
-    extends Specification
-    with Mockito
-    with Scope
-    with CardTestSupport
-    with CardRepositoryClient {
+class CardRepositorySpec
+  extends Specification
+  with Mockito
+  with Scope
+  with CardTestSupport {
 
   "CardRepositoryClient component" should {
 
     "addCard should return a valid Card object" in {
 
-      val response = await(addCard(createAddCardRequest))
+      val response = await(cardRepository.addCard(createAddCardRequest))
 
-      response.card.get.id shouldEqual cardId
-      response.card.get.data.intent shouldEqual intent
+      response.card.id shouldEqual cardId
+      response.card.data.intent shouldEqual intent
     }
 
     "deleteCard should return a successful response when a valid cache category id is given" in {
-      val response = await(deleteCard(createDeleteCardRequest))
+      val response = await(cardRepository.deleteCard(createDeleteCardRequest))
 
       response.deleted shouldEqual 1
     }
 
-    "getCardById should return a Card object when a existing id is given" in {
-      val response = await(getCardById(createGetCardByIdRequest(id = cardId)))
+    "findCardById should return a Card object when a existing id is given" in {
+      val response = await(cardRepository.findCardById(createGetCardByIdRequest(id = cardId)))
 
-      response.result.get.id shouldEqual cardId
-      response.result.get.data.intent shouldEqual intent
+      response.card must beSome[Card].which { card =>
+        card.id shouldEqual cardId
+        card.data.intent shouldEqual intent
+      }
     }
 
-    "getCardById should return None when a non-existing id is given" in {
-      val response = await(getCardById(createGetCardByIdRequest(id = nonExistingCardId)))
+    "findCardById should return None when a non-existing id is given" in {
+      val response = await(cardRepository.findCardById(createGetCardByIdRequest(id = nonExistingCardId)))
 
-      response.result shouldEqual None
+      response.card must beNone
     }
 
     "getCardByCollection should return a Card sequence when a existing collection id is given" in {
-      val response = await(getCardByCollection(createGetCardByCollectionRequest(collectionId = collectionId)))
+      val response = await(cardRepository.fetchCardsByCollection(createGetCardByCollectionRequest(collectionId = collectionId)))
 
-      response.result shouldEqual cardSeq
+      response.cards shouldEqual cardSeq
     }
 
     "getCardByCollection should return an empty sequence when a non-existing collection id is given" in {
-      val response = await(getCardByCollection(createGetCardByCollectionRequest(collectionId = nonExistingCollectionId)))
+      val response = await(cardRepository.fetchCardsByCollection(createGetCardByCollectionRequest(collectionId = nonExistingCollectionId)))
 
-      response.result shouldEqual Seq.empty
+      response.cards shouldEqual Seq.empty
     }
 
     "updateCard should return a successful response when the card is updated" in {
-      val response = await(updateCard(createUpdateCardRequest))
+      val response = await(cardRepository.updateCard(createUpdateCardRequest))
 
       response.updated shouldEqual 1
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in
-        new EmptyCardMockCursor
-            with Scope {
-          val result = getEntityFromCursor(cardEntityFromCursor)(mockCursor)
+      new EmptyCardMockCursor
+        with Scope {
+        val result = getEntityFromCursor(cardEntityFromCursor)(mockCursor)
 
-          result shouldEqual None
-        }
+        result must beNone
+      }
 
     "getEntityFromCursor should return a Card object when a cursor with data is given" in
-        new CardMockCursor
-            with Scope {
-          val result = getEntityFromCursor(cardEntityFromCursor)(mockCursor)
+      new CardMockCursor
+        with Scope {
+        val result = getEntityFromCursor(cardEntityFromCursor)(mockCursor)
 
-          result shouldEqual Some(cardEntity)
+        result must beSome[CardEntity].which { card =>
+          card.id shouldEqual cardEntity.id
+          card.data shouldEqual cardEntity.data
         }
+      }
 
     "getListFromCursor should return an empty sequence when an empty cursor is given" in
-        new EmptyCardMockCursor
-            with Scope {
-          val result = getListFromCursor(cardEntityFromCursor)(mockCursor)
+      new EmptyCardMockCursor
+        with Scope {
+        val result = getListFromCursor(cardEntityFromCursor)(mockCursor)
 
-          result shouldEqual Seq.empty
-        }
+        result shouldEqual Seq.empty
+      }
 
     "getListFromCursor should return a Card sequence when a cursor with data is given" in
-        new CardMockCursor
-            with Scope {
-          val result = getListFromCursor(cardEntityFromCursor)(mockCursor)
+      new CardMockCursor
+        with Scope {
+        val result = getListFromCursor(cardEntityFromCursor)(mockCursor)
 
-          result shouldEqual cardEntitySeq
-        }
+        result shouldEqual cardEntitySeq
+      }
   }
 }

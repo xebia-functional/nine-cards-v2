@@ -1,22 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.repository.model
+package com.fortysevendeg.ninecardslauncher.services.persistence.models
 
-case class CacheCategory(
-  id: Int,
-  data: CacheCategoryData)
-
-case class CacheCategoryData(
-  packageName: String,
-  category: String,
-  starRating: Double,
-  numDownloads: String,
-  ratingsCount: Int,
-  commentCount: Int)
+import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntent
 
 case class Collection(
   id: Int,
-  data: CollectionData)
-
-case class CollectionData(
   position: Int,
   name: String,
   collectionType: String,
@@ -26,32 +13,40 @@ case class CollectionData(
   constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
-  sharedCollectionSubscribed: Option[Boolean])
+  sharedCollectionSubscribed: Boolean,
+  cards: Seq[Card] = Seq.empty
+  ) extends Serializable
 
 case class Card(
   id: Int,
-  data: CardData)
-
-case class CardData(
   position: Int,
   micros: Int = 0,
   term: String,
   packageName: Option[String],
   cardType: String,
-  intent: String,
+  intent: NineCardIntent,
   imagePath: String,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
-  notification: Option[String] = None)
+  notification: Option[String] = None
+  ) extends Serializable
+
+case class CacheCategory(
+  id: Int,
+  packageName: String,
+  category: String,
+  starRating: Double,
+  numDownloads: String,
+  ratingsCount: Int,
+  commentCount: Int
+  ) extends Serializable
 
 case class GeoInfo(
   id: Int,
-  data: GeoInfoData)
-
-case class GeoInfoData(
   constrain: String,
   occurrence: String,
   wifi: String,
   latitude: Double,
   longitude: Double,
-  system: Boolean)
+  system: Boolean
+  ) extends Serializable
