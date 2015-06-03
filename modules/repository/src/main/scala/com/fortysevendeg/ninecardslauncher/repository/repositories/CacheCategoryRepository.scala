@@ -18,12 +18,12 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
     tryToFuture {
       Try {
         val values = Map[String, Any](
-          PackageName -> request.data.packageName,
-          Category -> request.data.category,
-          StarRating -> request.data.starRating,
-          NumDownloads -> request.data.numDownloads,
-          RatingsCount -> request.data.ratingsCount,
-          CommentCount -> request.data.commentCount)
+          packageName -> request.data.packageName,
+          category -> request.data.category,
+          starRating -> request.data.starRating,
+          numDownloads -> request.data.numDownloads,
+          ratingsCount -> request.data.ratingsCount,
+          commentCount -> request.data.commentCount)
 
         val id = contentResolverWrapper.insert(
           nineCardsUri = CacheCategoryUri,
@@ -58,7 +58,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
       Try {
         val deleted = contentResolverWrapper.delete(
           nineCardsUri = CacheCategoryUri,
-          where = s"$PackageName = ?",
+          where = s"$packageName = ?",
           whereParams = Seq(request.packageName))
 
         DeleteCacheCategoryByPackageResponse(deleted = deleted)
@@ -73,7 +73,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
       Try {
         val cacheCategories = contentResolverWrapper.fetchAll(
           nineCardsUri = CacheCategoryUri,
-          projection = AllFields)(getListFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
+          projection = allFields)(getListFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
         FetchCacheCategoriesResponse(cacheCategories)
       } recover {
@@ -88,7 +88,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
         val cacheCategory = contentResolverWrapper.findById(
           nineCardsUri = CacheCategoryUri,
           id = request.id,
-          projection = AllFields)(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
+          projection = allFields)(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
         FindCacheCategoryByIdResponse(cacheCategory)
       } recover {
@@ -102,8 +102,8 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
       Try {
         val cacheCategory = contentResolverWrapper.fetch(
           nineCardsUri = CacheCategoryUri,
-          projection = AllFields,
-          where = s"$PackageName = ?",
+          projection = allFields,
+          where = s"$packageName = ?",
           whereParams = Seq(request.`package`))(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
 
@@ -118,12 +118,12 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
     tryToFuture {
       Try {
         val values = Map[String, Any](
-          PackageName -> request.cacheCategory.data.packageName,
-          Category -> request.cacheCategory.data.category,
-          StarRating -> request.cacheCategory.data.starRating,
-          NumDownloads -> request.cacheCategory.data.numDownloads,
-          RatingsCount -> request.cacheCategory.data.ratingsCount,
-          CommentCount -> request.cacheCategory.data.commentCount)
+          packageName -> request.cacheCategory.data.packageName,
+          category -> request.cacheCategory.data.category,
+          starRating -> request.cacheCategory.data.starRating,
+          numDownloads -> request.cacheCategory.data.numDownloads,
+          ratingsCount -> request.cacheCategory.data.ratingsCount,
+          commentCount -> request.cacheCategory.data.commentCount)
 
         val updated = contentResolverWrapper.updateById(
           nineCardsUri = CacheCategoryUri,

@@ -14,43 +14,43 @@ case class GeoInfoEntityData(
     system: Boolean)
 
 object GeoInfoEntity {
-  val Table = "GeoInfo"
-  val Constrain = "constrain"
-  val Occurrence = "occurrence"
-  val Wifi = "wifi"
-  val Latitude = "latitude"
-  val Longitude = "longitude"
-  val System = "system"
+  val table = "GeoInfo"
+  val constrain = "constrain"
+  val occurrence = "occurrence"
+  val wifi = "wifi"
+  val latitude = "latitude"
+  val longitude = "longitude"
+  val system = "system"
 
-  val AllFields = Seq[String](
-    NineCardsSqlHelper.Id,
-    Constrain,
-    Occurrence,
-    Wifi,
-    Latitude,
-    Longitude,
-    System)
+  val allFields = Seq[String](
+    NineCardsSqlHelper.id,
+    constrain,
+    occurrence,
+    wifi,
+    latitude,
+    longitude,
+    system)
 
   def geoInfoEntityFromCursor(cursor: Cursor) =
     GeoInfoEntity(
-      id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
+      id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = GeoInfoEntityData(
-        constrain = cursor.getString(cursor.getColumnIndex(Constrain)),
-        occurrence = cursor.getString(cursor.getColumnIndex(Occurrence)),
-        wifi = cursor.getString(cursor.getColumnIndex(Wifi)),
-        latitude = cursor.getDouble(cursor.getColumnIndex(Latitude)),
-        longitude = cursor.getDouble(cursor.getColumnIndex(Longitude)),
-        system = cursor.getInt(cursor.getColumnIndex(System)) > 0))
+        constrain = cursor.getString(cursor.getColumnIndex(constrain)),
+        occurrence = cursor.getString(cursor.getColumnIndex(occurrence)),
+        wifi = cursor.getString(cursor.getColumnIndex(wifi)),
+        latitude = cursor.getDouble(cursor.getColumnIndex(latitude)),
+        longitude = cursor.getDouble(cursor.getColumnIndex(longitude)),
+        system = cursor.getInt(cursor.getColumnIndex(system)) > 0))
 }
 
 object GeoInfoEntityData {
 
   def geoInfoEntityDataFromCursor(cursor: Cursor) =
     GeoInfoEntityData(
-      constrain = cursor.getString(cursor.getColumnIndex(Constrain)),
-      occurrence = cursor.getString(cursor.getColumnIndex(Occurrence)),
-      wifi = cursor.getString(cursor.getColumnIndex(Wifi)),
-      latitude = cursor.getDouble(cursor.getColumnIndex(Latitude)),
-      longitude = cursor.getDouble(cursor.getColumnIndex(Longitude)),
-      system = cursor.getInt(cursor.getColumnIndex(System)) > 0)
+      constrain = cursor.getString(cursor.getColumnIndex(constrain)),
+      occurrence = cursor.getString(cursor.getColumnIndex(occurrence)),
+      wifi = cursor.getString(cursor.getColumnIndex(wifi)),
+      latitude = cursor.getDouble(cursor.getColumnIndex(latitude)),
+      longitude = cursor.getDouble(cursor.getColumnIndex(longitude)),
+      system = cursor.getInt(cursor.getColumnIndex(system)) > 0)
 }

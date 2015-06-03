@@ -18,12 +18,12 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
       tryToFuture {
         Try {
           val values = Map[String, Any](
-            Constrain -> request.data.constrain,
-            Occurrence -> request.data.occurrence,
-            Wifi -> request.data.wifi,
-            Latitude -> request.data.latitude,
-            Longitude -> request.data.longitude,
-            System -> request.data.system)
+            constrain -> request.data.constrain,
+            occurrence -> request.data.occurrence,
+            wifi -> request.data.wifi,
+            latitude -> request.data.latitude,
+            longitude -> request.data.longitude,
+            system -> request.data.system)
 
           val id = contentResolverWrapper.insert(
             nineCardsUri = GeoInfoUri,
@@ -58,7 +58,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
         Try {
           val geoInfoItems = contentResolverWrapper.fetchAll(
             nineCardsUri = GeoInfoUri,
-            projection = AllFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
+            projection = allFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
           FetchGeoInfoItemsResponse(geoInfoItems)
         } recover {
@@ -73,7 +73,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
           val geoInfo = contentResolverWrapper.findById(
             nineCardsUri = GeoInfoUri,
             id = request.id,
-            projection = AllFields)(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
+            projection = allFields)(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
           FindGeoInfoByIdResponse(geoInfo)
         } recover {
@@ -88,8 +88,8 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
         Try {
           val geoInfo = contentResolverWrapper.fetch(
             nineCardsUri = GeoInfoUri,
-            projection = AllFields,
-            where = s"$Constrain = ?",
+            projection = allFields,
+            where = s"$constrain = ?",
             whereParams = Array(request.constrain))(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
           FetchGeoInfoByConstrainResponse(geoInfo)
@@ -103,12 +103,12 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
       tryToFuture {
         Try {
           val values = Map[String, Any](
-            Constrain -> request.geoInfo.data.constrain,
-            Occurrence -> request.geoInfo.data.occurrence,
-            Wifi -> request.geoInfo.data.wifi,
-            Latitude -> request.geoInfo.data.latitude,
-            Longitude -> request.geoInfo.data.longitude,
-            System -> request.geoInfo.data.system)
+            constrain -> request.geoInfo.data.constrain,
+            occurrence -> request.geoInfo.data.occurrence,
+            wifi -> request.geoInfo.data.wifi,
+            latitude -> request.geoInfo.data.latitude,
+            longitude -> request.geoInfo.data.longitude,
+            system -> request.geoInfo.data.system)
 
           val updated = contentResolverWrapper.updateById(
             nineCardsUri = GeoInfoUri,

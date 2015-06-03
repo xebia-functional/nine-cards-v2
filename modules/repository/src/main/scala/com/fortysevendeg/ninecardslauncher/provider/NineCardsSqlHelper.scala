@@ -5,55 +5,55 @@ import android.database.sqlite.{SQLiteDatabase, SQLiteOpenHelper}
 import android.os.Handler
 
 class NineCardsSqlHelper(context: Context)
-    extends SQLiteOpenHelper(context, NineCardsSqlHelper.DatabaseName, null, NineCardsSqlHelper.DatabaseVersion)
+    extends SQLiteOpenHelper(context, NineCardsSqlHelper.databaseName, null, NineCardsSqlHelper.databaseVersion)
     with DBUtils {
 
   override def onCreate(db: SQLiteDatabase) = {
 
-    db.execSQL("CREATE TABLE " + CacheCategoryEntity.Table +
-        "(" + NineCardsSqlHelper.Id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        CacheCategoryEntity.PackageName + " TEXT not null, " +
-        CacheCategoryEntity.Category + " TEXT not null, " +
-        CacheCategoryEntity.StarRating + " DOUBLE, " +
-        CacheCategoryEntity.NumDownloads + " TEXT, " +
-        CacheCategoryEntity.RatingsCount + " INTEGER, " +
-        CacheCategoryEntity.CommentCount + " INTEGER )")
+    db.execSQL("CREATE TABLE " + CacheCategoryEntity.table +
+        "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        CacheCategoryEntity.packageName + " TEXT not null, " +
+        CacheCategoryEntity.category + " TEXT not null, " +
+        CacheCategoryEntity.starRating + " DOUBLE, " +
+        CacheCategoryEntity.numDownloads + " TEXT, " +
+        CacheCategoryEntity.ratingsCount + " INTEGER, " +
+        CacheCategoryEntity.commentCount + " INTEGER )")
 
-    db.execSQL("CREATE TABLE " + CollectionEntity.Table +
-        "(" + NineCardsSqlHelper.Id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        CollectionEntity.Position + " INTEGER not null, " +
-        CollectionEntity.Name + " TEXT not null, " +
-        CollectionEntity.Type + " TEXT not null, " +
-        CollectionEntity.Icon + " TEXT not null, " +
-        CollectionEntity.ThemedColorIndex + " INTEGER not null, " +
-        CollectionEntity.AppsCategory + " TEXT, " +
-        CollectionEntity.OriginalSharedCollectionId + " TEXT, " +
-        CollectionEntity.SharedCollectionId + " TEXT, " +
-        CollectionEntity.SharedCollectionSubscribed + " INTEGER, " +
-        CollectionEntity.Constrains + " TEXT )")
+    db.execSQL("CREATE TABLE " + CollectionEntity.table +
+        "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        CollectionEntity.position + " INTEGER not null, " +
+        CollectionEntity.name + " TEXT not null, " +
+        CollectionEntity.collectionType + " TEXT not null, " +
+        CollectionEntity.icon + " TEXT not null, " +
+        CollectionEntity.themedColorIndex + " INTEGER not null, " +
+        CollectionEntity.appsCategory + " TEXT, " +
+        CollectionEntity.originalSharedCollectionId + " TEXT, " +
+        CollectionEntity.sharedCollectionId + " TEXT, " +
+        CollectionEntity.sharedCollectionSubscribed + " INTEGER, " +
+        CollectionEntity.constrains + " TEXT )")
 
-    db.execSQL("CREATE TABLE " + CardEntity.Table +
-        "(" + NineCardsSqlHelper.Id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        CardEntity.Position + " INTEGER not null, " +
-        CardEntity.CollectionId + " INTEGER not null, " +
-        CardEntity.Term + " TEXT not null, " +
-        CardEntity.PackageName + " TEXT, " +
-        CardEntity.Type + " TEXT not null, " +
-        CardEntity.Intent + " TEXT, " +
-        CardEntity.ImagePath + " TEXT, " +
-        CardEntity.StarRating + " DOUBLE, " +
-        CardEntity.Micros + " INTEGER, " +
-        CardEntity.Notification + " TEXT, " +
-        CardEntity.NumDownloads + " TEXT )")
+    db.execSQL("CREATE TABLE " + CardEntity.table +
+        "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        CardEntity.position + " INTEGER not null, " +
+        CardEntity.collectionId + " INTEGER not null, " +
+        CardEntity.term + " TEXT not null, " +
+        CardEntity.packageName + " TEXT, " +
+        CardEntity.cardType + " TEXT not null, " +
+        CardEntity.intent + " TEXT, " +
+        CardEntity.imagePath + " TEXT, " +
+        CardEntity.starRating + " DOUBLE, " +
+        CardEntity.micros + " INTEGER, " +
+        CardEntity.notification + " TEXT, " +
+        CardEntity.numDownloads + " TEXT )")
 
-    db.execSQL("CREATE TABLE " + GeoInfoEntity.Table +
-        "(" + NineCardsSqlHelper.Id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        GeoInfoEntity.Constrain + " TEXT not null, " +
-        GeoInfoEntity.Occurrence + " TEXT not null, " +
-        GeoInfoEntity.Wifi + " TEXT, " +
-        GeoInfoEntity.Latitude + " DOUBLE, " +
-        GeoInfoEntity.Longitude + " DOUBLE, " +
-        GeoInfoEntity.System + " INTEGER )")
+    db.execSQL("CREATE TABLE " + GeoInfoEntity.table +
+        "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        GeoInfoEntity.constrain + " TEXT not null, " +
+        GeoInfoEntity.occurrence + " TEXT not null, " +
+        GeoInfoEntity.wifi + " TEXT, " +
+        GeoInfoEntity.latitude + " DOUBLE, " +
+        GeoInfoEntity.longitude + " DOUBLE, " +
+        GeoInfoEntity.system + " INTEGER )")
 
     new Handler().postDelayed(
       new Runnable() {
@@ -64,13 +64,13 @@ class NineCardsSqlHelper(context: Context)
 
     (oldVersion + 1 to newVersion) foreach {
       case 2 =>
-        db.execSQL("ALTER TABLE " + CardEntity.Table + " ADD COLUMN " + CardEntity.Notification + " TEXT")
+        db.execSQL("ALTER TABLE " + CardEntity.table + " ADD COLUMN " + CardEntity.notification + " TEXT")
       case 3 =>
-        db.execSQL("ALTER TABLE " + CardEntity.Table + " ADD COLUMN " + CardEntity.Micros + " INTEGER")
+        db.execSQL("ALTER TABLE " + CardEntity.table + " ADD COLUMN " + CardEntity.micros + " INTEGER")
       case 4 =>
-        db.execSQL("ALTER TABLE " + CollectionEntity.Table + " ADD COLUMN " + CollectionEntity.SharedCollectionId + " TEXT")
-        db.execSQL("ALTER TABLE " + CollectionEntity.Table + " ADD COLUMN " + CollectionEntity.OriginalSharedCollectionId + " TEXT")
-        db.execSQL("ALTER TABLE " + CollectionEntity.Table + " ADD COLUMN " + CollectionEntity.SharedCollectionSubscribed + " INTEGER")
+        db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.sharedCollectionId + " TEXT")
+        db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.originalSharedCollectionId + " TEXT")
+        db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.sharedCollectionSubscribed + " INTEGER")
     }
 
     new Handler().post(
@@ -81,7 +81,7 @@ class NineCardsSqlHelper(context: Context)
 }
 
 object NineCardsSqlHelper {
-  val Id = "_id"
-  val DatabaseName = "nineCards"
-  val DatabaseVersion = 4
+  val id = "_id"
+  val databaseName = "nineCards"
+  val databaseVersion = 4
 }

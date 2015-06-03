@@ -19,17 +19,17 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper) extends DBU
       Try {
 
         val values = Map[String, Any](
-          Position -> request.data.position,
-          CollectionId -> request.collectionId,
-          Term -> request.data.term,
-          PackageName -> (request.data.packageName getOrElse ""),
-          Type -> request.data.cardType,
-          Intent -> request.data.intent,
-          ImagePath -> request.data.imagePath,
-          StarRating -> (request.data.starRating getOrElse 0.0d),
-          Micros -> request.data.micros,
-          NumDownloads -> (request.data.numDownloads getOrElse ""),
-          Notification -> (request.data.notification getOrElse ""))
+          position -> request.data.position,
+          collectionId -> request.collectionId,
+          term -> request.data.term,
+          packageName -> (request.data.packageName getOrElse ""),
+          cardType -> request.data.cardType,
+          intent -> request.data.intent,
+          imagePath -> request.data.imagePath,
+          starRating -> (request.data.starRating getOrElse 0.0d),
+          micros -> request.data.micros,
+          numDownloads -> (request.data.numDownloads getOrElse ""),
+          notification -> (request.data.notification getOrElse ""))
 
         val id = contentResolverWrapper.insert(
           nineCardsUri = CardUri,
@@ -63,7 +63,7 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper) extends DBU
         val card = contentResolverWrapper.findById(
           nineCardsUri = CardUri,
           id = request.id,
-          projection = AllFields)(getEntityFromCursor(cardEntityFromCursor)) map toCard
+          projection = allFields)(getEntityFromCursor(cardEntityFromCursor)) map toCard
 
         FindCardByIdResponse(card)
 
@@ -78,8 +78,8 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper) extends DBU
       Try {
         val cards = contentResolverWrapper.fetchAll(
           nineCardsUri = CardUri,
-          projection = AllFields,
-          where = s"$CollectionId = ?",
+          projection = allFields,
+          where = s"$collectionId = ?",
           whereParams = Array(request.collectionId.toString))(getListFromCursor(cardEntityFromCursor)) map toCard
 
         FetchCardsByCollectionResponse(cards)
@@ -93,16 +93,16 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper) extends DBU
     tryToFuture {
       Try {
         val values = Map[String, Any](
-          Position -> request.card.data.position,
-          Term -> request.card.data.term,
-          PackageName -> (request.card.data.packageName getOrElse ""),
-          Type -> request.card.data.cardType,
-          Intent -> request.card.data.intent,
-          ImagePath -> request.card.data.imagePath,
-          StarRating -> (request.card.data.starRating getOrElse 0.0d),
-          Micros -> request.card.data.micros,
-          NumDownloads -> (request.card.data.numDownloads getOrElse ""),
-          Notification -> (request.card.data.notification getOrElse ""))
+          position -> request.card.data.position,
+          term -> request.card.data.term,
+          packageName -> (request.card.data.packageName getOrElse ""),
+          cardType -> request.card.data.cardType,
+          intent -> request.card.data.intent,
+          imagePath -> request.card.data.imagePath,
+          starRating -> (request.card.data.starRating getOrElse 0.0d),
+          micros -> request.card.data.micros,
+          numDownloads -> (request.card.data.numDownloads getOrElse ""),
+          notification -> (request.card.data.notification getOrElse ""))
 
         val updated = contentResolverWrapper.updateById(
           nineCardsUri = CardUri,

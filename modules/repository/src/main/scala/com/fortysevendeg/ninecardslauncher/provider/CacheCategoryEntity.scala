@@ -14,43 +14,43 @@ case class CacheCategoryEntityData(
     commentCount: Int)
 
 object CacheCategoryEntity {
-  val Table = "cacheCategory"
-  val PackageName = "packageName"
-  val Category = "category"
-  val StarRating = "starRating"
-  val NumDownloads = "numDownloads"
-  val RatingsCount = "ratingsCount"
-  val CommentCount = "commentCount"
+  val table = "cacheCategory"
+  val packageName = "packageName"
+  val category = "category"
+  val starRating = "starRating"
+  val numDownloads = "numDownloads"
+  val ratingsCount = "ratingsCount"
+  val commentCount = "commentCount"
 
-  val AllFields = Seq[String](
-    NineCardsSqlHelper.Id,
-    PackageName,
-    Category,
-    StarRating,
-    NumDownloads,
-    RatingsCount,
-    CommentCount)
+  val allFields = Seq[String](
+    NineCardsSqlHelper.id,
+    packageName,
+    category,
+    starRating,
+    numDownloads,
+    ratingsCount,
+    commentCount)
 
   def cacheCategoryEntityFromCursor(cursor: Cursor) =
     CacheCategoryEntity(
-      id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
+      id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = CacheCategoryEntityData(
-        packageName = cursor.getString(cursor.getColumnIndex(PackageName)),
-        category = cursor.getString(cursor.getColumnIndex(Category)),
-        starRating = cursor.getDouble(cursor.getColumnIndex(StarRating)),
-        numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
-        ratingsCount = cursor.getInt(cursor.getColumnIndex(RatingsCount)),
-        commentCount = cursor.getInt(cursor.getColumnIndex(CommentCount))))
+        packageName = cursor.getString(cursor.getColumnIndex(packageName)),
+        category = cursor.getString(cursor.getColumnIndex(category)),
+        starRating = cursor.getDouble(cursor.getColumnIndex(starRating)),
+        numDownloads = cursor.getString(cursor.getColumnIndex(numDownloads)),
+        ratingsCount = cursor.getInt(cursor.getColumnIndex(ratingsCount)),
+        commentCount = cursor.getInt(cursor.getColumnIndex(commentCount))))
 }
 
 object CacheCategoryEntityData {
 
   def cacheCategoryEntityDataFromCursor(cursor: Cursor) =
     CacheCategoryEntityData(
-      packageName = cursor.getString(cursor.getColumnIndex(PackageName)),
-      category = cursor.getString(cursor.getColumnIndex(Category)),
-      starRating = cursor.getDouble(cursor.getColumnIndex(StarRating)),
-      numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
-      ratingsCount = cursor.getInt(cursor.getColumnIndex(RatingsCount)),
-      commentCount = cursor.getInt(cursor.getColumnIndex(CommentCount)))
+      packageName = cursor.getString(cursor.getColumnIndex(packageName)),
+      category = cursor.getString(cursor.getColumnIndex(category)),
+      starRating = cursor.getDouble(cursor.getColumnIndex(starRating)),
+      numDownloads = cursor.getString(cursor.getColumnIndex(numDownloads)),
+      ratingsCount = cursor.getInt(cursor.getColumnIndex(ratingsCount)),
+      commentCount = cursor.getInt(cursor.getColumnIndex(commentCount)))
 }

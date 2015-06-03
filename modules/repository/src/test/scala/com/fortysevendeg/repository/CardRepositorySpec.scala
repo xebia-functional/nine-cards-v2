@@ -1,7 +1,7 @@
 package com.fortysevendeg.repository
 
 import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, CardUri}
-import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
+import com.fortysevendeg.ninecardslauncher.provider.CardEntity.cardEntityFromCursor
 import com.fortysevendeg.ninecardslauncher.provider._
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData}
@@ -16,18 +16,18 @@ import scala.util.Random
 trait CardMockCursor extends MockCursor with CardTestData {
 
   val cursorData = Seq(
-    (NineCardsSqlHelper.Id, 0, cardSeq map (_.id), IntDataType),
-    (Position, 1, cardSeq map (_.data.position), IntDataType),
-    (CollectionId, 2, cardSeq map (_ => collectionId), IntDataType),
-    (Term, 3, cardSeq map (_.data.term), StringDataType),
-    (PackageName, 4, cardSeq map (_.data.packageName getOrElse ""), StringDataType),
-    (Type, 5, cardSeq map (_.data.cardType), StringDataType),
-    (Intent, 6, cardSeq map (_.data.intent), StringDataType),
-    (ImagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
-    (StarRating, 8, cardSeq map (_.data.starRating getOrElse 0.0d), DoubleDataType),
-    (Micros, 9, cardSeq map (_.data.micros), IntDataType),
-    (NumDownloads, 10, cardSeq map (_.data.numDownloads getOrElse ""), StringDataType),
-    (Notification, 11, cardSeq map (_.data.notification getOrElse ""), StringDataType)
+    (NineCardsSqlHelper.id, 0, cardSeq map (_.id), IntDataType),
+    (CardEntity.position, 1, cardSeq map (_.data.position), IntDataType),
+    (CardEntity.collectionId, 2, cardSeq map (_ => collectionId), IntDataType),
+    (CardEntity.term, 3, cardSeq map (_.data.term), StringDataType),
+    (CardEntity.packageName, 4, cardSeq map (_.data.packageName getOrElse ""), StringDataType),
+    (CardEntity.cardType, 5, cardSeq map (_.data.cardType), StringDataType),
+    (CardEntity.intent, 6, cardSeq map (_.data.intent), StringDataType),
+    (CardEntity.imagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
+    (CardEntity.starRating, 8, cardSeq map (_.data.starRating getOrElse 0.0d), DoubleDataType),
+    (CardEntity.micros, 9, cardSeq map (_.data.micros), IntDataType),
+    (CardEntity.numDownloads, 10, cardSeq map (_.data.numDownloads getOrElse ""), StringDataType),
+    (CardEntity.notification, 11, cardSeq map (_.data.notification getOrElse ""), StringDataType)
   )
 
   prepareCursor[Card](cardSeq.size, cursorData)
@@ -36,18 +36,18 @@ trait CardMockCursor extends MockCursor with CardTestData {
 trait EmptyCardMockCursor extends MockCursor with CardTestData {
 
   val cursorData = Seq(
-    (NineCardsSqlHelper.Id, 0, Seq.empty, IntDataType),
-    (Position, 1, Seq.empty, IntDataType),
-    (CollectionId, 2, Seq.empty, IntDataType),
-    (Term, 3, Seq.empty, StringDataType),
-    (PackageName, 4, Seq.empty, StringDataType),
-    (Type, 5, Seq.empty, StringDataType),
-    (Intent, 6, Seq.empty, StringDataType),
-    (ImagePath, 7, Seq.empty, StringDataType),
-    (StarRating, 8, Seq.empty, DoubleDataType),
-    (Micros, 9, Seq.empty, IntDataType),
-    (NumDownloads, 10, Seq.empty, StringDataType),
-    (Notification, 11, Seq.empty, StringDataType)
+    (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
+    (CardEntity.position, 1, Seq.empty, IntDataType),
+    (CardEntity.collectionId, 2, Seq.empty, IntDataType),
+    (CardEntity.term, 3, Seq.empty, StringDataType),
+    (CardEntity.packageName, 4, Seq.empty, StringDataType),
+    (CardEntity.cardType, 5, Seq.empty, StringDataType),
+    (CardEntity.intent, 6, Seq.empty, StringDataType),
+    (CardEntity.imagePath, 7, Seq.empty, StringDataType),
+    (CardEntity.starRating, 8, Seq.empty, DoubleDataType),
+    (CardEntity.micros, 9, Seq.empty, IntDataType),
+    (CardEntity.numDownloads, 10, Seq.empty, StringDataType),
+    (CardEntity.notification, 11, Seq.empty, StringDataType)
   )
 
   prepareCursor[Card](0, cursorData)
@@ -108,29 +108,29 @@ trait CardTestData {
       notification = notificationOption)))
 
   def createInsertCardValues = Map[String, Any](
-    Position -> position,
-    CollectionId -> collectionId,
-    Term -> term,
-    PackageName -> (packageNameOption getOrElse ""),
-    Type -> `type`,
-    Intent -> intent,
-    ImagePath -> imagePath,
-    StarRating -> (starRatingOption getOrElse 0.0d),
-    Micros -> micros,
-    NumDownloads -> (numDownloadsOption getOrElse ""),
-    Notification -> (notificationOption getOrElse ""))
+    CardEntity.position -> position,
+    CardEntity.collectionId -> collectionId,
+    CardEntity.term -> term,
+    CardEntity.packageName -> (packageNameOption getOrElse ""),
+    CardEntity.cardType -> `type`,
+    CardEntity.intent -> intent,
+    CardEntity.imagePath -> imagePath,
+    CardEntity.starRating -> (starRatingOption getOrElse 0.0d),
+    CardEntity.micros -> micros,
+    CardEntity.numDownloads -> (numDownloadsOption getOrElse ""),
+    CardEntity.notification -> (notificationOption getOrElse ""))
 
   def createUpdateCardValues = Map[String, Any](
-    Position -> position,
-    Term -> term,
-    PackageName -> (packageNameOption getOrElse ""),
-    Type -> `type`,
-    Intent -> intent,
-    ImagePath -> imagePath,
-    StarRating -> (starRatingOption getOrElse 0.0d),
-    Micros -> micros,
-    NumDownloads -> (numDownloadsOption getOrElse ""),
-    Notification -> (notificationOption getOrElse ""))
+    CardEntity.position -> position,
+    CardEntity.term -> term,
+    CardEntity.packageName -> (packageNameOption getOrElse ""),
+    CardEntity.cardType -> `type`,
+    CardEntity.intent -> intent,
+    CardEntity.imagePath -> imagePath,
+    CardEntity.starRating -> (starRatingOption getOrElse 0.0d),
+    CardEntity.micros -> micros,
+    CardEntity.numDownloads -> (numDownloadsOption getOrElse ""),
+    CardEntity.notification -> (notificationOption getOrElse ""))
 }
 
 trait CardTestSupport
@@ -169,26 +169,26 @@ trait CardTestSupport
   when(contentResolverWrapper.findById(
     nineCardsUri = CardUri,
     id = cardId,
-    projection = AllFields)(
+    projection = CardEntity.allFields)(
       f = getEntityFromCursor(cardEntityFromCursor))).thenReturn(Some(cardEntity))
 
   when(contentResolverWrapper.findById(
     nineCardsUri = CardUri,
     id = nonExistingCardId,
-    projection = AllFields)(
+    projection = CardEntity.allFields)(
       f = getEntityFromCursor(cardEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.fetchAll(
     nineCardsUri = CardUri,
-    projection = AllFields,
-    where = s"$CollectionId = ?",
+    projection = CardEntity.allFields,
+    where = s"${CardEntity.collectionId} = ?",
     whereParams = Seq(collectionId.toString))(
       f = getListFromCursor(cardEntityFromCursor))).thenReturn(cardEntitySeq)
 
   when(contentResolverWrapper.fetchAll(
     nineCardsUri = CardUri,
-    projection = AllFields,
-    where = s"$CollectionId = ?",
+    projection = CardEntity.allFields,
+    where = s"${CardEntity.collectionId} = ?",
     whereParams = Seq(nonExistingCollectionId.toString))(
       f = getListFromCursor(cardEntityFromCursor))).thenReturn(Seq.empty)
 

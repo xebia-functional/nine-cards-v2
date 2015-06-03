@@ -18,16 +18,16 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
     tryToFuture {
       Try {
         val values = Map[String, Any](
-          Position -> request.data.position,
-          Name -> request.data.name,
-          Type -> request.data.collectionType,
-          Icon -> request.data.icon,
-          ThemedColorIndex -> request.data.themedColorIndex,
-          AppsCategory -> (request.data.appsCategory getOrElse ""),
-          Constrains -> (request.data.constrains getOrElse ""),
-          OriginalSharedCollectionId -> (request.data.originalSharedCollectionId getOrElse ""),
-          SharedCollectionId -> (request.data.sharedCollectionId getOrElse ""),
-          SharedCollectionSubscribed -> (request.data.sharedCollectionSubscribed getOrElse false))
+          position -> request.data.position,
+          name -> request.data.name,
+          collectionType -> request.data.collectionType,
+          icon -> request.data.icon,
+          themedColorIndex -> request.data.themedColorIndex,
+          appsCategory -> (request.data.appsCategory getOrElse ""),
+          constrains -> (request.data.constrains getOrElse ""),
+          originalSharedCollectionId -> (request.data.originalSharedCollectionId getOrElse ""),
+          sharedCollectionId -> (request.data.sharedCollectionId getOrElse ""),
+          sharedCollectionSubscribed -> (request.data.sharedCollectionSubscribed getOrElse false))
 
         val id = contentResolverWrapper.insert(
           nineCardsUri = CollectionUri,
@@ -67,7 +67,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
   def fetchCollectionByOriginalSharedCollectionId(request: FetchCollectionByOriginalSharedCollectionIdRequest)(implicit executionContext: ExecutionContext): Future[FetchCollectionByOriginalSharedCollectionIdResponse] =
     tryToFuture {
       fetchCollection(
-        selection = s"$OriginalSharedCollectionId = ?",
+        selection = s"$originalSharedCollectionId = ?",
         selectionArgs = Seq(request.sharedCollectionId.toString)) map {
         collection => FetchCollectionByOriginalSharedCollectionIdResponse(collection)
       }
@@ -75,14 +75,14 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
 
   def fetchCollectionByPosition(request: FetchCollectionByPositionRequest)(implicit executionContext: ExecutionContext): Future[FetchCollectionByPositionResponse] =
     tryToFuture {
-      fetchCollection(selection = s"$Position = ?", selectionArgs = Array(request.position.toString)) map {
+      fetchCollection(selection = s"$position = ?", selectionArgs = Array(request.position.toString)) map {
         collection => FetchCollectionByPositionResponse(collection)
       }
     }
 
   def fetchSortedCollections(request: FetchSortedCollectionsRequest)(implicit executionContext: ExecutionContext): Future[FetchSortedCollectionsResponse] =
     tryToFuture {
-      fetchCollections(sortOrder = s"$Position asc") map {
+      fetchCollections(sortOrder = s"$position asc") map {
         collections => FetchSortedCollectionsResponse(collections)
       }
     }
@@ -91,16 +91,16 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
     tryToFuture {
       Try {
         val values = Map[String, Any](
-          Position -> request.collection.data.position,
-          Name -> request.collection.data.name,
-          Type -> request.collection.data.collectionType,
-          Icon -> request.collection.data.icon,
-          ThemedColorIndex -> request.collection.data.themedColorIndex,
-          AppsCategory -> (request.collection.data.appsCategory getOrElse ""),
-          Constrains -> (request.collection.data.constrains getOrElse ""),
-          OriginalSharedCollectionId -> (request.collection.data.originalSharedCollectionId getOrElse ""),
-          SharedCollectionId -> (request.collection.data.sharedCollectionId getOrElse ""),
-          SharedCollectionSubscribed -> (request.collection.data.sharedCollectionSubscribed getOrElse false))
+          position -> request.collection.data.position,
+          name -> request.collection.data.name,
+          collectionType -> request.collection.data.collectionType,
+          icon -> request.collection.data.icon,
+          themedColorIndex -> request.collection.data.themedColorIndex,
+          appsCategory -> (request.collection.data.appsCategory getOrElse ""),
+          constrains -> (request.collection.data.constrains getOrElse ""),
+          originalSharedCollectionId -> (request.collection.data.originalSharedCollectionId getOrElse ""),
+          sharedCollectionId -> (request.collection.data.sharedCollectionId getOrElse ""),
+          sharedCollectionSubscribed -> (request.collection.data.sharedCollectionSubscribed getOrElse false))
 
         val updated = contentResolverWrapper.updateById(
           nineCardsUri = CollectionUri,
@@ -116,7 +116,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
 
   private def fetchCollection(
     nineCardsUri: NineCardsUri = CollectionUri,
-    projection: Seq[String] = AllFields,
+    projection: Seq[String] = allFields,
     selection: String = "",
     selectionArgs: Seq[String] = Seq.empty[String],
     sortOrder: String = ""
@@ -133,7 +133,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
   private def findCollectionById(
     nineCardsUri: NineCardsUri = CollectionUri,
     id: Int,
-    projection: Seq[String] = AllFields,
+    projection: Seq[String] = allFields,
     selection: String = "",
     selectionArgs: Seq[String] = Seq.empty[String],
     sortOrder: String = ""
@@ -150,7 +150,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
 
   private def fetchCollections(
     nineCardsUri: NineCardsUri = CollectionUri,
-    projection: Seq[String] = AllFields,
+    projection: Seq[String] = allFields,
     selection: String = "",
     selectionArgs: Seq[String] = Seq.empty[String],
     sortOrder: String = ""

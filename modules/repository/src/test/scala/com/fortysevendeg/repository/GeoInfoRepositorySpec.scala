@@ -1,7 +1,7 @@
 package com.fortysevendeg.repository
 
 import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, GeoInfoUri}
-import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
+import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity.geoInfoEntityFromCursor
 import com.fortysevendeg.ninecardslauncher.provider._
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo, GeoInfoData}
@@ -16,13 +16,13 @@ import scala.util.Random
 trait GeoInfoMockCursor extends MockCursor with GeoInfoTestData {
 
   val cursorData = Seq(
-    (NineCardsSqlHelper.Id, 0, geoInfoSeq map (_.id), IntDataType),
-    (Constrain, 1, geoInfoSeq map (_.data.constrain), StringDataType),
-    (Occurrence, 2, geoInfoSeq map (_.data.occurrence), StringDataType),
-    (Wifi, 3, geoInfoSeq map (_.data.wifi), StringDataType),
-    (Latitude, 4, geoInfoSeq map (_.data.latitude), DoubleDataType),
-    (Longitude, 5, geoInfoSeq map (_.data.longitude), DoubleDataType),
-    (System, 6, geoInfoSeq map (item => if (item.data.system) 1 else 0), IntDataType)
+    (NineCardsSqlHelper.id, 0, geoInfoSeq map (_.id), IntDataType),
+    (GeoInfoEntity.constrain, 1, geoInfoSeq map (_.data.constrain), StringDataType),
+    (GeoInfoEntity.occurrence, 2, geoInfoSeq map (_.data.occurrence), StringDataType),
+    (GeoInfoEntity.wifi, 3, geoInfoSeq map (_.data.wifi), StringDataType),
+    (GeoInfoEntity.latitude, 4, geoInfoSeq map (_.data.latitude), DoubleDataType),
+    (GeoInfoEntity.longitude, 5, geoInfoSeq map (_.data.longitude), DoubleDataType),
+    (GeoInfoEntity.system, 6, geoInfoSeq map (item => if (item.data.system) 1 else 0), IntDataType)
   )
 
   prepareCursor[GeoInfo](geoInfoSeq.size, cursorData)
@@ -31,13 +31,13 @@ trait GeoInfoMockCursor extends MockCursor with GeoInfoTestData {
 trait EmptyGeoInfoMockCursor extends MockCursor with GeoInfoTestData {
 
   val cursorData = Seq(
-    (NineCardsSqlHelper.Id, 0, Seq.empty, IntDataType),
-    (Constrain, 1, Seq.empty, StringDataType),
-    (Occurrence, 2, Seq.empty, StringDataType),
-    (Wifi, 3, Seq.empty, StringDataType),
-    (Latitude, 4, Seq.empty, DoubleDataType),
-    (Longitude, 5, Seq.empty, DoubleDataType),
-    (System, 6, Seq.empty, IntDataType)
+    (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
+    (GeoInfoEntity.constrain, 1, Seq.empty, StringDataType),
+    (GeoInfoEntity.occurrence, 2, Seq.empty, StringDataType),
+    (GeoInfoEntity.wifi, 3, Seq.empty, StringDataType),
+    (GeoInfoEntity.latitude, 4, Seq.empty, DoubleDataType),
+    (GeoInfoEntity.longitude, 5, Seq.empty, DoubleDataType),
+    (GeoInfoEntity.system, 6, Seq.empty, IntDataType)
   )
 
   prepareCursor[GeoInfo](0, cursorData)
@@ -80,12 +80,12 @@ trait GeoInfoTestData {
       system = system)))
 
   def createGeoInfoValues = Map[String, Any](
-    Constrain -> constrain,
-    Occurrence -> occurrence,
-    Wifi -> wifi,
-    Latitude -> latitude,
-    Longitude -> longitude,
-    System -> system)
+    GeoInfoEntity.constrain -> constrain,
+    GeoInfoEntity.occurrence -> occurrence,
+    GeoInfoEntity.wifi -> wifi,
+    GeoInfoEntity.latitude -> latitude,
+    GeoInfoEntity.longitude -> longitude,
+    GeoInfoEntity.system -> system)
 }
 
 trait GeoInfoTestSupport
@@ -122,31 +122,31 @@ trait GeoInfoTestSupport
   when(contentResolverWrapper.findById(
     nineCardsUri = GeoInfoUri,
     id = geoInfoId,
-    projection = AllFields)(
+    projection = GeoInfoEntity.allFields)(
       f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(Some(geoInfoEntity))
 
   when(contentResolverWrapper.findById(
     nineCardsUri = GeoInfoUri,
     id = nonExistingGeoInfoId,
-    projection = AllFields)(
+    projection = GeoInfoEntity.allFields)(
       f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.fetchAll(
     nineCardsUri = GeoInfoUri,
-    projection = AllFields)(
+    projection = GeoInfoEntity.allFields)(
       f = getListFromCursor(geoInfoEntityFromCursor))).thenReturn(geoInfoEntitySeq)
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = GeoInfoUri,
-    projection = AllFields,
-    where = s"$Constrain = ?",
+    projection = GeoInfoEntity.allFields,
+    where = s"${GeoInfoEntity.constrain} = ?",
     whereParams = Seq(constrain))(
       f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(Some(geoInfoEntity))
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = GeoInfoUri,
-    projection = AllFields,
-    where = s"$Constrain = ?",
+    projection = GeoInfoEntity.allFields,
+    where = s"${GeoInfoEntity.constrain} = ?",
     whereParams = Seq(nonExistingConstrain))(
       f = getEntityFromCursor(geoInfoEntityFromCursor))).thenReturn(None)
 

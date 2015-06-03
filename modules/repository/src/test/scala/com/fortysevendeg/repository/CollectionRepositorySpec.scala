@@ -1,7 +1,7 @@
 package com.fortysevendeg.repository
 
 import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, CollectionUri}
-import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
+import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity.collectionEntityFromCursor
 import com.fortysevendeg.ninecardslauncher.provider._
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
@@ -16,17 +16,17 @@ import scala.util.Random
 trait CollectionMockCursor extends MockCursor with CollectionTestData {
 
   val cursorData = Seq(
-    (NineCardsSqlHelper.Id, 0, collectionSeq map (_.id), IntDataType),
-    (Position, 1, collectionSeq map (_.data.position), IntDataType),
-    (Name, 2, collectionSeq map (_.data.name), StringDataType),
-    (Type, 3, collectionSeq map (_.data.collectionType), StringDataType),
-    (Icon, 4, collectionSeq map (_.data.icon), StringDataType),
-    (ThemedColorIndex, 5, collectionSeq map (_.data.themedColorIndex), IntDataType),
-    (AppsCategory, 6, collectionSeq map (_.data.appsCategory getOrElse ""), StringDataType),
-    (Constrains, 7, collectionSeq map (_.data.constrains getOrElse ""), StringDataType),
-    (OriginalSharedCollectionId, 8, collectionSeq map (_.data.originalSharedCollectionId getOrElse ""), StringDataType),
-    (SharedCollectionId, 9, collectionSeq map (_.data.sharedCollectionId getOrElse ""), StringDataType),
-    (SharedCollectionSubscribed, 10, collectionSeq map (item => if (item.data.sharedCollectionSubscribed getOrElse false) 1 else 0), IntDataType)
+    (NineCardsSqlHelper.id, 0, collectionSeq map (_.id), IntDataType),
+    (CollectionEntity.position, 1, collectionSeq map (_.data.position), IntDataType),
+    (CollectionEntity.name, 2, collectionSeq map (_.data.name), StringDataType),
+    (CollectionEntity.collectionType, 3, collectionSeq map (_.data.collectionType), StringDataType),
+    (CollectionEntity.icon, 4, collectionSeq map (_.data.icon), StringDataType),
+    (CollectionEntity.themedColorIndex, 5, collectionSeq map (_.data.themedColorIndex), IntDataType),
+    (CollectionEntity.appsCategory, 6, collectionSeq map (_.data.appsCategory getOrElse ""), StringDataType),
+    (CollectionEntity.constrains, 7, collectionSeq map (_.data.constrains getOrElse ""), StringDataType),
+    (CollectionEntity.originalSharedCollectionId, 8, collectionSeq map (_.data.originalSharedCollectionId getOrElse ""), StringDataType),
+    (CollectionEntity.sharedCollectionId, 9, collectionSeq map (_.data.sharedCollectionId getOrElse ""), StringDataType),
+    (CollectionEntity.sharedCollectionSubscribed, 10, collectionSeq map (item => if (item.data.sharedCollectionSubscribed getOrElse false) 1 else 0), IntDataType)
   )
 
   prepareCursor[Collection](collectionSeq.size, cursorData)
@@ -35,17 +35,17 @@ trait CollectionMockCursor extends MockCursor with CollectionTestData {
 trait EmptyCollectionMockCursor extends MockCursor with CollectionTestData {
 
   val cursorData = Seq(
-    (NineCardsSqlHelper.Id, 0, Seq.empty, IntDataType),
-    (Position, 1, Seq.empty, IntDataType),
-    (Name, 2, Seq.empty, StringDataType),
-    (Type, 3, Seq.empty, StringDataType),
-    (Icon, 4, Seq.empty, StringDataType),
-    (ThemedColorIndex, 5, Seq.empty, IntDataType),
-    (AppsCategory, 6, Seq.empty, StringDataType),
-    (Constrains, 7, Seq.empty, StringDataType),
-    (OriginalSharedCollectionId, 8, Seq.empty, StringDataType),
-    (SharedCollectionId, 9, Seq.empty, StringDataType),
-    (SharedCollectionSubscribed, 10, Seq.empty, IntDataType)
+    (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
+    (CollectionEntity.position, 1, Seq.empty, IntDataType),
+    (CollectionEntity.name, 2, Seq.empty, StringDataType),
+    (CollectionEntity.collectionType, 3, Seq.empty, StringDataType),
+    (CollectionEntity.icon, 4, Seq.empty, StringDataType),
+    (CollectionEntity.themedColorIndex, 5, Seq.empty, IntDataType),
+    (CollectionEntity.appsCategory, 6, Seq.empty, StringDataType),
+    (CollectionEntity.constrains, 7, Seq.empty, StringDataType),
+    (CollectionEntity.originalSharedCollectionId, 8, Seq.empty, StringDataType),
+    (CollectionEntity.sharedCollectionId, 9, Seq.empty, StringDataType),
+    (CollectionEntity.sharedCollectionSubscribed, 10, Seq.empty, IntDataType)
   )
 
   prepareCursor[Collection](0, cursorData)
@@ -108,16 +108,16 @@ trait CollectionTestData {
       sharedCollectionSubscribed = sharedCollectionSubscribedOption)))
 
   def createCollectionValues = Map[String, Any](
-    Position -> position,
-    Name -> name,
-    Type -> `type`,
-    Icon -> icon,
-    ThemedColorIndex -> themedColorIndex,
-    AppsCategory -> (appsCategoryOption getOrElse ""),
-    Constrains -> (constrainsOption getOrElse ""),
-    OriginalSharedCollectionId -> (originalSharedCollectionIdOption getOrElse ""),
-    SharedCollectionId -> (sharedCollectionIdOption getOrElse ""),
-    SharedCollectionSubscribed -> (sharedCollectionSubscribedOption getOrElse false))
+    CollectionEntity.position -> position,
+    CollectionEntity.name -> name,
+    CollectionEntity.collectionType -> `type`,
+    CollectionEntity.icon -> icon,
+    CollectionEntity.themedColorIndex -> themedColorIndex,
+    CollectionEntity.appsCategory -> (appsCategoryOption getOrElse ""),
+    CollectionEntity.constrains -> (constrainsOption getOrElse ""),
+    CollectionEntity.originalSharedCollectionId -> (originalSharedCollectionIdOption getOrElse ""),
+    CollectionEntity.sharedCollectionId -> (sharedCollectionIdOption getOrElse ""),
+    CollectionEntity.sharedCollectionSubscribed -> (sharedCollectionSubscribedOption getOrElse false))
 }
 
 trait CollectionTestSupport
@@ -160,7 +160,7 @@ trait CollectionTestSupport
   when(contentResolverWrapper.findById(
     nineCardsUri = CollectionUri,
     id = collectionId,
-    projection = AllFields,
+    projection = CollectionEntity.allFields,
     where = "",
     whereParams = Seq.empty,
     orderBy = "")(
@@ -169,7 +169,7 @@ trait CollectionTestSupport
   when(contentResolverWrapper.findById(
     nineCardsUri = CollectionUri,
     id = nonExistingCollectionId,
-    projection = AllFields,
+    projection = CollectionEntity.allFields,
     where = "",
     whereParams = Seq.empty,
     orderBy = "")(
@@ -177,40 +177,40 @@ trait CollectionTestSupport
 
   when(contentResolverWrapper.fetchAll(
     nineCardsUri = CollectionUri,
-    projection = AllFields,
+    projection = CollectionEntity.allFields,
     where = "",
     whereParams = Seq.empty,
-    orderBy = s"$Position asc")(
+    orderBy = s"${CollectionEntity.position} asc")(
       f = getListFromCursor(collectionEntityFromCursor))).thenReturn(collectionEntitySeq)
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = CollectionUri,
-    projection = AllFields,
-    where = s"$Position = ?",
+    projection = CollectionEntity.allFields,
+    where = s"${CollectionEntity.position} = ?",
     whereParams = Seq(position.toString),
     orderBy = "")(
       f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(Some(collectionEntity))
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = CollectionUri,
-    projection = AllFields,
-    where = s"$Position = ?",
+    projection = CollectionEntity.allFields,
+    where = s"${CollectionEntity.position} = ?",
     whereParams = Seq(nonExistingPosition.toString),
     orderBy = "")(
       f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = CollectionUri,
-    projection = AllFields,
-    where = s"$OriginalSharedCollectionId = ?",
+    projection = CollectionEntity.allFields,
+    where = s"${CollectionEntity.originalSharedCollectionId} = ?",
     whereParams = Seq(sharedCollectionId),
     orderBy = "")(
       f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(Some(collectionEntity))
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = CollectionUri,
-    projection = AllFields,
-    where = s"$OriginalSharedCollectionId = ?",
+    projection = CollectionEntity.allFields,
+    where = s"${CollectionEntity.originalSharedCollectionId} = ?",
     whereParams = Seq(nonExistingSharedCollectionId),
     orderBy = "")(
       f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(None)

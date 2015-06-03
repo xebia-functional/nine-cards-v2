@@ -8,10 +8,10 @@ import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image._
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
-import com.fortysevendeg.ninecardslauncher.services.api._
+import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesRequest, GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse, GooglePlayPackagesResponse}
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
-import com.fortysevendeg.ninecardslauncher.services.persistence._
+import com.fortysevendeg.ninecardslauncher.services.persistence.{FetchCacheCategoriesResponse, AddCacheCategoryRequest, AddCacheCategoryResponse, FetchCacheCategoriesRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import com.fortysevendeg.rest.client.ServiceClient
