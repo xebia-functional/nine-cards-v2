@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager
 
-import com.fortysevendeg.ninecardslauncher.services.api.models.{NineCardIntent, AppItem}
+import com.fortysevendeg.ninecardslauncher.models.AppItem
+import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntent
 
 case class GetAppsRequest()
 

@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
-import com.fortysevendeg.ninecardslauncher.services.Service
-
 trait PersistenceServices {
 
   def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse]

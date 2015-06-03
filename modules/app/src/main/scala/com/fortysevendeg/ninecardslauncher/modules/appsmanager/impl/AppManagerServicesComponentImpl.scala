@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, ContextWrapperProvider, Service}
+import com.fortysevendeg.ninecardslauncher.models.AppItem
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image.{ImageServicesComponent, StoreImageAppRequest, StoreImageAppResponse}
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
