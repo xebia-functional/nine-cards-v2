@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
-import com.fortysevendeg.ninecardslauncher.modules.RegistryImpl
+import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories.{CacheCategoryRepository, CardRepository, CollectionRepository, GeoInfoRepository}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
@@ -31,7 +31,7 @@ class CollectionsDetailsActivity
   extends ActionBarActivity
   with Contexts[FragmentActivity]
   with Layout
-  with RegistryImpl
+  with ComponentRegistryImpl
   with ScrolledListener {
 
   override lazy val contextProvider: ContextWrapper = activityContextWrapper
@@ -154,7 +154,7 @@ class OnPageChangeCollectionsListener(
                                        updateToolbarColor: Int => Ui[_],
                                        updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit context: ContextWrapper)
   extends OnPageChangeListener
-  with RegistryImpl {
+  with ComponentRegistryImpl {
 
   override val contextProvider: ContextWrapper = context
 

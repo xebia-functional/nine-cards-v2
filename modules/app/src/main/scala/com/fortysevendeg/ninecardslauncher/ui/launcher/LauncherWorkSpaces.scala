@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.ui.launcher
 
 import android.content.Context
 import android.widget.FrameLayout
-import com.fortysevendeg.ninecardslauncher.modules.RegistryImpl
+import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants
 import com.fortysevendeg.ninecardslauncher.ui.components.AnimatedWorkSpaces
@@ -13,7 +13,7 @@ import scala.annotation.tailrec
 
 class LauncherWorkSpaces(context: Context)(implicit activityContext: ActivityContextWrapper)
   extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, null, 0)
-  with RegistryImpl {
+  with ComponentRegistryImpl {
 
   override val contextProvider: ContextWrapper = activityContext
 

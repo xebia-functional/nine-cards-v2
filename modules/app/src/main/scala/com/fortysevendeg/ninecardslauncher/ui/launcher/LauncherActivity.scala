@@ -7,7 +7,7 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
-import com.fortysevendeg.ninecardslauncher.modules.RegistryImpl
+import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories.{GeoInfoRepository, CollectionRepository, CardRepository, CacheCategoryRepository}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
@@ -27,7 +27,7 @@ class LauncherActivity
   extends Activity
   with Contexts[Activity]
   with Layout
-  with RegistryImpl {
+  with ComponentRegistryImpl {
 
   override lazy val contextProvider: ContextWrapper = activityContextWrapper
 

@@ -10,7 +10,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.models._
-import com.fortysevendeg.ninecardslauncher.modules.RegistryImpl
+import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.repository.repositories.{CacheCategoryRepository, CardRepository, CollectionRepository, GeoInfoRepository}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 class CreateCollectionService
   extends Service
   with Contexts[Service]
-  with RegistryImpl
+  with ComponentRegistryImpl
   with AppConversions {
 
   override lazy val contextProvider: ContextWrapper = serviceContextWrapper

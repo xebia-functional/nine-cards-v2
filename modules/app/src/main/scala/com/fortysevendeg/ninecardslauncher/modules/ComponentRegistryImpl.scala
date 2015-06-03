@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.modules.persistent.impl.PersistentSer
 import com.fortysevendeg.ninecardslauncher.modules.user.impl.UserServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 
-trait RegistryImpl
+trait ComponentRegistryImpl
   extends ComponentRegistry
   with ContextWrapperProvider
   with ImageServicesComponentImpl

@@ -9,7 +9,7 @@ import android.support.v7.app.ActionBarActivity
 import android.widget.RadioButton
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiUserConfigService, ApiGooglePlayService, ApiUserService}
-import com.fortysevendeg.ninecardslauncher.modules.RegistryImpl
+import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.{GoogleOperationCanceledException, RequestTokenRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigRequest
@@ -30,7 +30,7 @@ class WizardActivity
   extends ActionBarActivity
   with Contexts[FragmentActivity]
   with Layout
-  with RegistryImpl {
+  with ComponentRegistryImpl {
 
   self =>
 
