@@ -7,18 +7,18 @@ import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.repository.repositories.{CacheCategoryRepository, CardRepository, CollectionRepository, GeoInfoRepository}
+import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigRequest
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest, AddCollectionResponse, AddGeoInfoRequest}
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCategories._
@@ -63,7 +63,8 @@ class CreateCollectionService
     new ApiGooglePlayService(serviceClient),
     new ApiUserConfigService(serviceClient))
 
-  private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(contextProvider.application.getContentResolver)
+  private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
+    contextProvider.application.getContentResolver)
 
   private lazy val persistenceServices = new PersistenceServicesImpl(
     new CacheCategoryRepository(contentResolverWrapper),
@@ -180,7 +181,8 @@ class CreateCollectionService
     appManagerServices.createBitmapsForNoPackagesInstalled(IntentsRequest(intents)) map {
       response =>
         // Save collection in repository
-        val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections, response.packages) map persistenceServices.addCollection
+        val insertFutures = toInsertCollectionRequestFromUserConfigSeq(
+          device.collections, response.packages) map persistenceServices.addCollection
         insertFuturesInDB(insertFutures)
     } recover {
       case _ =>
@@ -201,7 +203,10 @@ class CreateCollectionService
   }
 
   @tailrec
-  private def createInsertSeq(apps: Seq[AppItem], categories: Seq[String], acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
+  private def createInsertSeq(
+    apps: Seq[AppItem],
+    categories: Seq[String],
+    acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
     categories match {
       case Nil => acc
       case h :: t =>

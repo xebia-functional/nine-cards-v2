@@ -1,16 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 
 import android.content.Intent
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, ContextWrapperProvider, Service}
 import com.fortysevendeg.ninecardslauncher.models.AppItem
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.image.{ImageServicesComponent, StoreImageAppRequest, StoreImageAppResponse}
+import com.fortysevendeg.ninecardslauncher.modules.image._
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
-import com.fortysevendeg.ninecardslauncher.repository.repositories.{CacheCategoryRepository, CardRepository, CollectionRepository, GeoInfoRepository}
+import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
-import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesRequest, GooglePlayPackagesResponse, GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
@@ -49,7 +49,8 @@ trait AppManagerServicesComponentImpl
       new ApiGooglePlayService(serviceClient),
       new ApiUserConfigService(serviceClient))
 
-    private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(contextProvider.application.getContentResolver)
+    private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
+      contextProvider.application.getContentResolver)
 
     private lazy val persistenceServices = new PersistenceServicesImpl(
       new CacheCategoryRepository(contentResolverWrapper),
@@ -96,8 +97,8 @@ trait AppManagerServicesComponentImpl
           GooglePlayPackagesResponse(_, packages) <- googlePlayPackages(packagesNoFound)
           storeImageResponses <- storeImages(packages)
         } yield {
-          PackagesResponse(storeImageResponses flatMap (_.packageName))
-        }).recover {
+            PackagesResponse(storeImageResponses flatMap (_.packageName))
+          }).recover {
           case _ => PackagesResponse(Seq.empty)
         }
       }
@@ -116,7 +117,8 @@ trait AppManagerServicesComponentImpl
     override def getCategorizedApps: Service[GetCategorizedAppsRequest, GetCategorizedAppsResponse] =
       request =>
         for {
-          FetchCacheCategoriesResponse(cacheCategory) <- persistenceServices.fetchCacheCategories(FetchCacheCategoriesRequest())
+          FetchCacheCategoriesResponse(cacheCategory) <- persistenceServices.fetchCacheCategories(
+            FetchCacheCategoriesRequest())
           GetAppsResponse(apps) <- getApps(GetAppsRequest())
         } yield {
           val categorizedApps = apps map {
@@ -166,7 +168,7 @@ trait AppManagerServicesComponentImpl
         androidId <- userServices.getAndroidId
       } yield {
           apiServices.googlePlaySimplePackages(GooglePlaySimplePackagesRequest(androidId, token, packages))
-        }) getOrElse(throw new RuntimeException("User not found"))
+        }) getOrElse (throw new RuntimeException("User not found"))
 
     private def googlePlayPackages(packages: Seq[String]): Future[GooglePlayPackagesResponse] =
       (for {
@@ -175,7 +177,7 @@ trait AppManagerServicesComponentImpl
         androidId <- userServices.getAndroidId
       } yield {
           apiServices.googlePlayPackages(GooglePlayPackagesRequest(androidId, token, packages))
-        }) getOrElse(throw new RuntimeException("User not found"))
+        }) getOrElse (throw new RuntimeException("User not found"))
 
 
   }

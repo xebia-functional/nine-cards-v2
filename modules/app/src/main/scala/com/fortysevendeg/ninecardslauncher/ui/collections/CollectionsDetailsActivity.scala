@@ -12,7 +12,7 @@ import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.repository.repositories.{CacheCategoryRepository, CardRepository, CollectionRepository, GeoInfoRepository}
+import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
@@ -42,7 +42,8 @@ class CollectionsDetailsActivity
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
 
-  private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(contextProvider.application.getContentResolver)
+  private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
+    contextProvider.application.getContentResolver)
 
   private lazy val persistenceServices = new PersistenceServicesImpl(
     new CacheCategoryRepository(contentResolverWrapper),
@@ -150,9 +151,10 @@ object ScrollType {
 }
 
 class OnPageChangeCollectionsListener(
-                                       collections: Seq[Collection],
-                                       updateToolbarColor: Int => Ui[_],
-                                       updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit context: ContextWrapper)
+  collections: Seq[Collection],
+  updateToolbarColor: Int => Ui[_],
+  updateCollection: (Collection, Int, Boolean) => Ui[_]
+  )(implicit context: ContextWrapper)
   extends OnPageChangeListener
   with ComponentRegistryImpl {
 
