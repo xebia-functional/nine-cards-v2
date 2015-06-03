@@ -114,11 +114,13 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
       }
     }
 
-  private def fetchCollection(nineCardsUri: NineCardsUri = CollectionUri,
-                              projection: Seq[String] = AllFields,
-                              selection: String = "",
-                              selectionArgs: Seq[String] = Seq.empty[String],
-                              sortOrder: String = "") =
+  private def fetchCollection(
+    nineCardsUri: NineCardsUri = CollectionUri,
+    projection: Seq[String] = AllFields,
+    selection: String = "",
+    selectionArgs: Seq[String] = Seq.empty[String],
+    sortOrder: String = ""
+    ) =
     Try {
       contentResolverWrapper.fetch(
         nineCardsUri = nineCardsUri,
@@ -128,12 +130,14 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
         orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
     }
 
-  private def findCollectionById(nineCardsUri: NineCardsUri = CollectionUri,
-                                 id: Int,
-                                 projection: Seq[String] = AllFields,
-                                 selection: String = "",
-                                 selectionArgs: Seq[String] = Seq.empty[String],
-                                 sortOrder: String = "") =
+  private def findCollectionById(
+    nineCardsUri: NineCardsUri = CollectionUri,
+    id: Int,
+    projection: Seq[String] = AllFields,
+    selection: String = "",
+    selectionArgs: Seq[String] = Seq.empty[String],
+    sortOrder: String = ""
+    ) =
     Try {
       contentResolverWrapper.findById(
         nineCardsUri = nineCardsUri,
@@ -144,11 +148,13 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
         orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
     }
 
-  private def fetchCollections(nineCardsUri: NineCardsUri = CollectionUri,
-                               projection: Seq[String] = AllFields,
-                               selection: String = "",
-                               selectionArgs: Seq[String] = Seq.empty[String],
-                               sortOrder: String = "") =
+  private def fetchCollections(
+    nineCardsUri: NineCardsUri = CollectionUri,
+    projection: Seq[String] = AllFields,
+    selection: String = "",
+    selectionArgs: Seq[String] = Seq.empty[String],
+    sortOrder: String = ""
+    ) =
     Try {
       contentResolverWrapper.fetchAll(
         nineCardsUri = nineCardsUri,

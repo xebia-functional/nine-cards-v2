@@ -26,69 +26,77 @@ trait ContentResolverWrapper {
 class ContentResolverWrapperImpl(contentResolver: ContentResolver) extends ContentResolverWrapper {
 
   override def insert(
-                       nineCardsUri: NineCardsUri,
-                       values: Map[String, Any]): Int = {
+    nineCardsUri: NineCardsUri,
+    values: Map[String, Any]
+    ): Int = {
     val uri = contentResolver.insert(getUri(nineCardsUri), map2ContentValue(values))
     Integer.parseInt(uri.getPathSegments.get(1))
   }
 
   override def update(
-                       nineCardsUri: NineCardsUri,
-                       values: Map[String, Any],
-                       where: String = "",
-                       whereParams: Seq[String] = Seq.empty): Int =
+    nineCardsUri: NineCardsUri,
+    values: Map[String, Any],
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty
+    ): Int =
     contentResolver.update(getUri(nineCardsUri), map2ContentValue(values), where, whereParams.toArray)
 
   override def updateById(
-                           nineCardsUri: NineCardsUri,
-                           id: Int,
-                           values: Map[String, Any],
-                           where: String = "",
-                           whereParams: Seq[String] = Seq.empty): Int =
+    nineCardsUri: NineCardsUri,
+    id: Int,
+    values: Map[String, Any],
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty
+    ): Int =
     contentResolver.update(withAppendedPath(getUri(nineCardsUri), id.toString), map2ContentValue(values), where, whereParams.toArray)
 
   override def delete(
-                       nineCardsUri: NineCardsUri,
-                       where: String = "",
-                       whereParams: Seq[String] = Seq.empty): Int =
+    nineCardsUri: NineCardsUri,
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty
+    ): Int =
     contentResolver.delete(getUri(nineCardsUri), where, whereParams.toArray)
 
   override def deleteById(
-                           nineCardsUri: NineCardsUri,
-                           id: Int,
-                           where: String = "",
-                           whereParams: Seq[String] = Seq.empty): Int =
+    nineCardsUri: NineCardsUri,
+    id: Int,
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty
+    ): Int =
     contentResolver.delete(withAppendedPath(getUri(nineCardsUri), id.toString), where, whereParams.toArray)
 
   override def fetch[T](
-                         nineCardsUri: NineCardsUri,
-                         projection: Seq[String],
-                         where: String = "",
-                         whereParams: Seq[String] = Seq.empty,
-                         orderBy: String = "")(f: (Cursor) => Option[T]): Option[T] =
+    nineCardsUri: NineCardsUri,
+    projection: Seq[String],
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""
+    )(f: (Cursor) => Option[T]): Option[T] =
     Option(contentResolver.query(getUri(nineCardsUri), projection.toArray, where, whereParams.toArray, orderBy)) match {
       case None => None
       case Some(cursor) => f(cursor)
     }
 
   override def fetchAll[T](
-                            nineCardsUri: NineCardsUri,
-                            projection: Seq[String],
-                            where: String = "",
-                            whereParams: Seq[String] = Seq.empty,
-                            orderBy: String = "")(f: (Cursor) => Seq[T]): Seq[T] =
+    nineCardsUri: NineCardsUri,
+    projection: Seq[String],
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""
+    )(f: (Cursor) => Seq[T]): Seq[T] =
     Option(contentResolver.query(getUri(nineCardsUri), projection.toArray, where, whereParams.toArray, orderBy)) match {
       case None => Seq.empty
       case Some(cursor) => f(cursor)
     }
 
   override def findById[T](
-                            nineCardsUri: NineCardsUri,
-                            id: Int,
-                            projection: Seq[String],
-                            where: String = "",
-                            whereParams: Seq[String] = Seq.empty,
-                            orderBy: String = "")(f: (Cursor) => Option[T]): Option[T] =
+    nineCardsUri: NineCardsUri,
+    id: Int,
+    projection: Seq[String],
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""
+    )(f: (Cursor) => Option[T]): Option[T] =
     Option(contentResolver.query(withAppendedPath(getUri(nineCardsUri), id.toString), projection.toArray, where, whereParams.toArray, orderBy)) match {
       case None => None
       case Some(cursor) => f(cursor)
