@@ -1,14 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.models
 
-import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.image.ImageServices
 import com.fortysevendeg.ninecardslauncher.modules.repository.{CardItem, InsertCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.ui.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import play.api.libs.json._
 
-trait AppConversions {
-
-  self : ImageServicesComponent =>
+class AppConversions(imageServices: ImageServices) {
 
   def toCartItemFromAppItemSeq(items: Seq[AppItem]): Seq[CardItem] =
     items.zipWithIndex.map (zipped => toCardItem(zipped._1, zipped._2))
@@ -42,7 +40,7 @@ trait AppConversions {
   }
 
   def toCartItemFromUserConfigSeq(items: Seq[UserConfigCollectionItem], packagesNotInstalled: Seq[String]): Seq[CardItem] =
-    items.zipWithIndex.map (zipped => toCardItem(zipped._1, zipped._2, packagesNotInstalled)).flatten
+    items.zipWithIndex.flatMap(zipped => toCardItem(zipped._1, zipped._2, packagesNotInstalled))
 
   def toCardItem(item: UserConfigCollectionItem, pos: Int, packagesNotInstalled: Seq[String]): Option[CardItem] = {
     // TODO We only are working with apps for now

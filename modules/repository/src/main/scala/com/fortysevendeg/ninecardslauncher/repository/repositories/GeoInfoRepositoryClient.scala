@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, GeoInfoUri}
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapper, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
@@ -8,18 +8,14 @@ import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Future, ExecutionContext}
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait GeoInfoRepositoryClient extends DBUtils {
+class GeoInfoRepositoryClient(contentResolverWrapper: ContentResolverWrapper)
+  extends DBUtils {
 
-  self: ContentResolverWrapperComponent =>
-
-  implicit val executionContext: ExecutionContext
-
-  def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
-    request =>
+  def addGeoInfo(request: AddGeoInfoRequest)(implicit ec: ExecutionContext): Future[AddGeoInfoResponse] =
       tryToFuture {
         Try {
           val values = Map[String, Any](
@@ -44,8 +40,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
-    request =>
+  def deleteGeoInfo(request: DeleteGeoInfoRequest)(implicit ec: ExecutionContext): Future[DeleteGeoInfoResponse] =
       tryToFuture {
         Try {
           val deleted = contentResolverWrapper.deleteById(
@@ -59,8 +54,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def getAllGeoInfoItems: Service[GetAllGeoInfoItemsRequest, GetAllGeoInfoItemsResponse] =
-    request =>
+  def getAllGeoInfoItems(request: GetAllGeoInfoItemsRequest)(implicit ec: ExecutionContext): Future[GetAllGeoInfoItemsResponse] =
       tryToFuture {
         Try {
           val geoInfoItems = contentResolverWrapper.fetchAll(
@@ -74,8 +68,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def getGeoInfoById: Service[GetGeoInfoByIdRequest, GetGeoInfoByIdResponse] =
-    request =>
+  def getGeoInfoById(request: GetGeoInfoByIdRequest)(implicit ec: ExecutionContext): Future[GetGeoInfoByIdResponse] =
       tryToFuture {
         Try {
           val geoInfo = contentResolverWrapper.findById(
@@ -91,8 +84,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
       }
 
 
-  def getGeoInfoByConstrain: Service[GetGeoInfoByConstrainRequest, GetGeoInfoByConstrainResponse] =
-    request =>
+  def getGeoInfoByConstrain(request: GetGeoInfoByConstrainRequest)(implicit ec: ExecutionContext): Future[GetGeoInfoByConstrainResponse] =
       tryToFuture {
         Try {
           val geoInfo = contentResolverWrapper.fetch(
@@ -108,8 +100,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
-    request =>
+  def updateGeoInfo(request: UpdateGeoInfoRequest)(implicit ec: ExecutionContext): Future[UpdateGeoInfoResponse] =
       tryToFuture {
         Try {
           val values = Map[String, Any](

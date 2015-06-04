@@ -9,9 +9,7 @@ import spray.httpx.marshalling.Marshaller
 
 import scala.concurrent.{Future, ExecutionContext}
 
-trait SprayHttpClient extends HttpClient {
-
-  implicit val actorSystem: ActorSystem
+class SprayHttpClient(implicit actorSystem: ActorSystem) extends HttpClient {
 
   override def doGet(
       url: String,

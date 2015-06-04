@@ -12,7 +12,8 @@ import play.api.libs.json.Json
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-trait ServiceClientSupport {
+trait ServiceClientSupport
+    extends Mockito {
 
   val baseUrl = "http://sampleUrl"
 
@@ -20,15 +21,17 @@ trait ServiceClientSupport {
 
   implicit val readsResponse = Json.reads[SampleResponse]
   implicit val writesRequest = Json.writes[SampleRequest]
+
+  val httpClient = mock[HttpClient]
+
+  val serviceClient = new ServiceClient(httpClient, baseUrl)
 }
 
-trait WithSuccessfullyHttpClient
-    extends ServiceClient
-    with ServiceClientSupport
-    with Mockito
+trait WithSuccessfullyHttpClientMock
+    extends Mockito
     with Scope {
 
-  override val httpClient = mock[HttpClient]
+  val httpClient: HttpClient
 
   val mockResponse = mock[HttpClientResponse]
 
@@ -56,13 +59,11 @@ trait WithSuccessfullyHttpClient
 
 }
 
-trait WithFailedHttpClient
-    extends ServiceClient
-    with ServiceClientSupport
-    with Mockito
+trait WithFailedHttpClientMock
+    extends Mockito
     with Scope {
 
-  override val httpClient = mock[HttpClient]
+  val httpClient: HttpClient
 
   val exception = new IllegalArgumentException
 
@@ -89,88 +90,96 @@ class ServiceClientSpec
   "Service Client component" should {
 
     "returns a valid response for a valid call to get with response" in
-        new WithSuccessfullyHttpClient {
-          val response = Await.result(get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
+        new ServiceClientSupport with WithSuccessfullyHttpClientMock {
+          val response = Await.result(serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doGet(any, any)(any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
         }
 
     "returns a valid response for a valid call to get without response" in
-        new WithSuccessfullyHttpClient {
-          val response = Await.result(get(baseUrl, Seq.empty, None, true), Duration.Inf)
+        new ServiceClientSupport with WithSuccessfullyHttpClientMock {
+          val response = Await.result(serviceClient.get(baseUrl, Seq.empty, None, true), Duration.Inf)
           there was one(httpClient).doGet(any, any)(any)
           there was noMoreCallsTo(httpClient)
           response.data shouldEqual None
         }
 
     "returns a valid response for a valid call to delete with response" in
-        new WithSuccessfullyHttpClient {
-          val response = Await.result(delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
+        new ServiceClientSupport with WithSuccessfullyHttpClientMock {
+          val response = Await.result(serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doDelete(any, any)(any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
         }
 
     "returns a valid response for a valid call to post" in
-        new WithSuccessfullyHttpClient {
-          val response = Await.result(emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
+        new ServiceClientSupport with WithSuccessfullyHttpClientMock {
+          val response = Await.result(serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doPost(any, any)(any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
         }
 
     "returns a valid response for a valid call to post with valid arguments" in
-        new WithSuccessfullyHttpClient {
+        new ServiceClientSupport with WithSuccessfullyHttpClientMock {
           val request = SampleRequest("sample-request")
-          val response = Await.result(post[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)), Duration.Inf)
+          val response = Await.result(serviceClient.post[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doPost[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
         }
 
     "returns a valid response for a valid call to put" in
-        new WithSuccessfullyHttpClient {
-          val response = Await.result(emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
+        new ServiceClientSupport with WithSuccessfullyHttpClientMock {
+          val response = Await.result(serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doPut(any, any)(any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
         }
 
     "returns a valid response for a valid call to put with valid arguments" in
-        new WithSuccessfullyHttpClient {
+        new ServiceClientSupport with WithSuccessfullyHttpClientMock {
           val request = SampleRequest("sample-request")
-          val response = Await.result(put[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)), Duration.Inf)
+          val response = Await.result(serviceClient.put[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)), Duration.Inf)
           there was one(httpClient).doPut[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any, any)
           there was noMoreCallsTo(httpClient)
           response shouldEqual sampleResponse
         }
 
     "throws a ServiceClientException when no Reads found for the response type" in
-        new WithSuccessfullyHttpClient {
+        new ServiceClientSupport with WithSuccessfullyHttpClientMock {
           Await.result(
-            get[Test](baseUrl, Seq.empty),
+            serviceClient.get[Test](baseUrl, Seq.empty),
             Duration.Inf) must throwA[ServiceClientException]
         }
 
     "returns a failed response when the call to get method throw an exception" in
-        new WithFailedHttpClient {
-          Await.result(get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf) must throwA[IllegalArgumentException]
+        new ServiceClientSupport with WithFailedHttpClientMock {
+          Await.result(
+            serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)),
+            Duration.Inf) must throwA[IllegalArgumentException]
         }
 
     "returns a failed response when the call to delete method throw an exception" in
-        new WithFailedHttpClient {
-          Await.result(delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf) must throwA[IllegalArgumentException]
+        new ServiceClientSupport with WithFailedHttpClientMock {
+          Await.result(
+            serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)),
+            Duration.Inf) must throwA[IllegalArgumentException]
         }
 
     "returns a failed response when the call to post method throw an exception" in
-        new WithFailedHttpClient {
-          Await.result(emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf) must throwA[IllegalArgumentException]
+        new ServiceClientSupport with WithFailedHttpClientMock {
+          Await.result(
+            serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)),
+            Duration.Inf) must throwA[IllegalArgumentException]
         }
 
     "returns a failed response when the call to put method throw an exception" in
-        new WithFailedHttpClient {
-          Await.result(emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)), Duration.Inf) must throwA[IllegalArgumentException]
+        new ServiceClientSupport with WithFailedHttpClientMock {
+          Await.result(
+            serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)),
+            Duration.Inf) must throwA[IllegalArgumentException]
         }
 
   }

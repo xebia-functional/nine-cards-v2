@@ -7,18 +7,18 @@ import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.ActionBarActivity
 import android.widget.RadioButton
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.modules.api.GetUserConfigRequest
-import com.fortysevendeg.ninecardslauncher.modules.googleconnector.{GoogleOperationCanceledException, RequestTokenRequest}
+import com.fortysevendeg.ninecardslauncher.modules.googleconnector.GoogleOperationCanceledException
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Contexts, Transformer, Ui}
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -26,13 +26,15 @@ class WizardActivity
   extends ActionBarActivity
   with Contexts[FragmentActivity]
   with Layout
-  with ComponentRegistryImpl {
+  with Module {
 
   self =>
 
   private var finished = false
 
-  override lazy val contextProvider: ContextWrapper = activityContextWrapper
+  lazy val apiServices = createApiServices
+
+  lazy val googleConnectorServices = createGoogleConnectorServices
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -70,7 +72,7 @@ class WizardActivity
 
   private def selectUser = Transformer {
     case i: RadioButton if i.isChecked =>
-      googleConnectorServices.requestToken(activityContextWrapper)(RequestTokenRequest(i.getTag.toString)) map {
+      googleConnectorServices.requestToken(this, i.getTag.toString) map {
         response => runUi(showLoading ~ Ui(searchDevices()))
       } recover {
         case ex: GoogleOperationCanceledException => runUi(uiShortToast(R.string.canceledGooglePermission) ~ showUser)
@@ -89,25 +91,20 @@ class WizardActivity
       }) ~ showWizard
   }
 
+  // TODO - Move this logic to a new UserConfigService (same layer level that UserService)
   private def searchDevices() = {
     val errorUi = uiShortToast(R.string.deviceNotFoundMessage) ~ showUser
     (for {
-      user <- userServices.getUser
-      token <- user.sessionToken
-      androidId <- userServices.getAndroidId
+      userConfigResponse <- apiServices.getUserConfig(GetUserConfigRequest())
     } yield {
-      apiServices.getUserConfig(GetUserConfigRequest(androidId, token)) map {
-        response =>
-          response.userConfig map {
-            userConfig =>
-              runUi(addDevicesToRadioGroup(userConfig.devices) ~
-                showDevices ~
-                (titleDevice <~ tvText(resGetString(R.string. addDeviceTitle, userConfig.plusProfile.displayName))))
-          } getOrElse runUi(errorUi)
-      } recover {
-        case _ => runUi(errorUi)
-      }
-    }) getOrElse runUi(errorUi)
+        userConfigResponse.userConfig map { userConfig =>
+          runUi(addDevicesToRadioGroup(userConfig.devices) ~
+            showDevices ~
+            (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, userConfig.plusProfile.displayName))))
+        }
+      }) recover {
+      case _ => runUi(errorUi)
+    }
   }
 
   private def showLoading =

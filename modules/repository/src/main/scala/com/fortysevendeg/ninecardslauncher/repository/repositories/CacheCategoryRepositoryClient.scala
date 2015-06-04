@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{CacheCategoryUri, ContentResolverWrapperComponent}
+import com.fortysevendeg.ninecardslauncher.commons.{CacheCategoryUri, ContentResolverWrapper}
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
@@ -8,18 +8,14 @@ import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Future, ExecutionContext}
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait CacheCategoryRepositoryClient extends DBUtils {
+class CacheCategoryRepositoryClient(contentResolverWrapper: ContentResolverWrapper)
+  extends DBUtils {
 
-  self: ContentResolverWrapperComponent =>
-
-  implicit val executionContext: ExecutionContext
-
-  def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
-    request =>
+  def addCacheCategory(request: AddCacheCategoryRequest)(implicit ec: ExecutionContext): Future[AddCacheCategoryResponse] =
       tryToFuture {
         Try {
           val values = Map[String, Any](
@@ -44,8 +40,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
-    request =>
+  def deleteCacheCategory(request: DeleteCacheCategoryRequest)(implicit ec: ExecutionContext): Future[DeleteCacheCategoryResponse] =
       tryToFuture {
         Try {
           val deleted = contentResolverWrapper.deleteById(
@@ -59,8 +54,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCacheByPackageCategory: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
-    request =>
+  def deleteCacheByPackageCategory(request: DeleteCacheCategoryByPackageRequest)(implicit ec: ExecutionContext): Future[DeleteCacheCategoryByPackageResponse] =
       tryToFuture {
         Try {
           val deleted = contentResolverWrapper.delete(
@@ -75,8 +69,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def getAllCacheCategories: Service[GetAllCacheCategoriesRequest, GetAllCacheCategoriesResponse] =
-    request =>
+  def getAllCacheCategories(request: GetAllCacheCategoriesRequest)(implicit ec: ExecutionContext): Future[GetAllCacheCategoriesResponse] =
       tryToFuture {
         Try {
           val cacheCategories = contentResolverWrapper.fetchAll(
@@ -90,8 +83,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def getCacheCategoryById: Service[GetCacheCategoryByIdRequest, GetCacheCategoryByIdResponse] =
-    request =>
+  def getCacheCategoryById(request: GetCacheCategoryByIdRequest)(implicit ec: ExecutionContext): Future[GetCacheCategoryByIdResponse] =
       tryToFuture {
         Try {
           val cacheCategory = contentResolverWrapper.findById(
@@ -106,8 +98,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def getCacheCategoryByPackage: Service[GetCacheCategoryByPackageRequest, GetCacheCategoryByPackageResponse] =
-    request =>
+  def getCacheCategoryByPackage(request: GetCacheCategoryByPackageRequest)(implicit ec: ExecutionContext): Future[GetCacheCategoryByPackageResponse] =
       tryToFuture {
         Try {
           val cacheCategory = contentResolverWrapper.fetch(
@@ -124,8 +115,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def updateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
-    request =>
+  def updateCacheCategory(request: UpdateCacheCategoryRequest)(implicit ec: ExecutionContext): Future[UpdateCacheCategoryResponse] =
       tryToFuture {
         Try {
           val values = Map[String, Any](

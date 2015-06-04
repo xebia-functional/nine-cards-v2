@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.models.{AppItem, Collection}
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ActivityResult._
@@ -24,9 +24,11 @@ class LauncherActivity
   extends Activity
   with Contexts[Activity]
   with Layout
-  with ComponentRegistryImpl {
+  with Module {
 
-  override lazy val contextProvider: ContextWrapper = activityContextWrapper
+  lazy val userServices = createUserServices
+
+  lazy val repositoryServices = createRepositoryServices
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val SelectedPageDefault = 1

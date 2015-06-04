@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.modules.api
 
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
 import com.fortysevendeg.ninecardslauncher.models._
-import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import play.api.libs.json._
 
 trait Conversions {

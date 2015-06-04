@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{CardUri, ContentResolverWrapperComponent}
+import com.fortysevendeg.ninecardslauncher.commons.{CardUri, ContentResolverWrapper}
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
@@ -8,18 +8,14 @@ import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import com.fortysevendeg.ninecardslauncher.utils._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Future, ExecutionContext}
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait CardRepositoryClient extends DBUtils {
+class CardRepositoryClient(contentResolverWrapper: ContentResolverWrapper)
+  extends DBUtils {
 
-  self: ContentResolverWrapperComponent =>
-
-  implicit val executionContext: ExecutionContext
-
-  def addCard: Service[AddCardRequest, AddCardResponse] =
-    request =>
+  def addCard(request: AddCardRequest)(implicit ec: ExecutionContext): Future[AddCardResponse] =
       tryToFuture {
         Try {
 
@@ -50,8 +46,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCard: Service[DeleteCardRequest, DeleteCardResponse] =
-    request =>
+  def deleteCard(request: DeleteCardRequest)(implicit ec: ExecutionContext): Future[DeleteCardResponse] =
       tryToFuture {
         Try {
           val deleted = contentResolverWrapper.deleteById(nineCardsUri = CardUri, id = request.card.id)
@@ -63,8 +58,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def getCardById: Service[GetCardByIdRequest, GetCardByIdResponse] =
-    request =>
+  def getCardById(request: GetCardByIdRequest)(implicit ec: ExecutionContext): Future[GetCardByIdResponse] =
       tryToFuture {
         Try {
           val card = contentResolverWrapper.findById(
@@ -80,8 +74,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def getCardByCollection: Service[GetAllCardsByCollectionRequest, GetAllCardsByCollectionResponse] =
-    request =>
+  def getCardByCollection(request: GetAllCardsByCollectionRequest)(implicit ec: ExecutionContext): Future[GetAllCardsByCollectionResponse] =
       tryToFuture {
         Try {
           val cards = contentResolverWrapper.fetchAll(
@@ -97,8 +90,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def updateCard: Service[UpdateCardRequest, UpdateCardResponse] =
-    request =>
+  def updateCard(request: UpdateCardRequest)(implicit ec: ExecutionContext): Future[UpdateCardResponse] =
       tryToFuture {
         Try {
           val values = Map[String, Any](

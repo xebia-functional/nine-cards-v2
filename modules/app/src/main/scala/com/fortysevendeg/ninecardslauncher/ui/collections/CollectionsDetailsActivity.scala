@@ -10,10 +10,10 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.models.Collection
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
 import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.modules.theme.ThemeUtils._
 import com.fortysevendeg.ninecardslauncher.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
@@ -29,16 +29,16 @@ class CollectionsDetailsActivity
   extends ActionBarActivity
   with Contexts[FragmentActivity]
   with Layout
-  with ComponentRegistryImpl
+  with Module
   with ScrolledListener {
-
-  override lazy val contextProvider: ContextWrapper = activityContextWrapper
 
   lazy val systemBarTintManager = new SystemBarTintManager(this)
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
+
+  lazy val repositoryServices = createRepositoryServices
 
   private def getAdapter: Option[CollectionsPagerAdapter] = {
     viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
@@ -143,10 +143,7 @@ class OnPageChangeCollectionsListener(
   collections: Seq[Collection],
   updateToolbarColor: Int => Ui[_],
   updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit context: ContextWrapper)
-   extends OnPageChangeListener
-   with ComponentRegistryImpl {
-
-  override val contextProvider: ContextWrapper = context
+   extends OnPageChangeListener {
 
   var lastSelected = -1
 
@@ -157,8 +154,8 @@ class OnPageChangeCollectionsListener(
     val nextCollection: Option[Collection] = collections.lift(position + 1)
     nextCollection map {
       next =>
-        val startColor = resGetColor(persistentServices.getIndexColor(selectedCollection.themedColorIndex))
-        val endColor = resGetColor(persistentServices.getIndexColor(next.themedColorIndex))
+        val startColor = resGetColor(getIndexColor(selectedCollection.themedColorIndex))
+        val endColor = resGetColor(getIndexColor(next.themedColorIndex))
         val color = interpolateColors(positionOffset, startColor, endColor)
         runUi(updateToolbarColor(color))
     }

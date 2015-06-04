@@ -1,37 +1,34 @@
 package com.fortysevendeg.ninecardslauncher.services
 
-import android.app.{NotificationManager, PendingIntent, Service}
-import android.content.{Context, Intent}
+import android.app.{PendingIntent, Service}
+import android.content.Intent
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
+import android.util.Log
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.di.Module
 import com.fortysevendeg.ninecardslauncher.models._
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
+import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionRequest, InsertCollectionResponse, InsertGeoInfoRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.ui.commons.{CollectionType, NineCardsMoments}
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCategories._
+import com.fortysevendeg.ninecardslauncher.ui.commons.{CollectionType, NineCardsMoments}
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Contexts, ContextWrapper}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.Contexts
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import android.util.Log
 
 class CreateCollectionService
   extends Service
   with Contexts[Service]
-  with ComponentRegistryImpl
-  with AppConversions {
-
-  override lazy val contextProvider: ContextWrapper = serviceContextWrapper
+  with Module {
 
   val Tag = "9CARDS"
 
@@ -41,7 +38,13 @@ class CreateCollectionService
 
   private lazy val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext)
 
-  private lazy val notifyManager = getSystemService(Context.NOTIFICATION_SERVICE).asInstanceOf[NotificationManager]
+  lazy val appManagerServices = createAppManagerServices
+
+  lazy val apiServices = createApiServices
+
+  lazy val repositoryServices = createRepositoryServices
+
+  lazy val appConversions = createAppConversions
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     loadDeviceId = Option(intent) flatMap {
@@ -61,7 +64,7 @@ class CreateCollectionService
 
     startForeground(NotificationId, builder.build)
 
-    appManagerServices.categorizeApps(CategorizeAppsRequest()) map {
+    appManagerServices.categorizeApps() map {
       response => createConfiguration()
     } recover {
       case ex: CategorizeAppsException =>
@@ -75,37 +78,30 @@ class CreateCollectionService
     super.onStartCommand(intent, flags, startId)
   }
 
-  private def createConfiguration() = (for {
-    user <- userServices.getUser
-    token <- user.sessionToken
-    androidId <- userServices.getAndroidId
-  } yield {
-      apiServices.getUserConfig(GetUserConfigRequest(androidId, token)) map {
-        response =>
-          response.userConfig map synchronizeGeoInfo
-          loadDeviceId map {
-            id =>
-              (for {
-                userConfig <- response.userConfig
-                device <- userConfig.devices.find(_.deviceId == id)
-              } yield {
-                  createCollectionFromDevice(device)
-                }) getOrElse {
-                Log.d(Tag, "UserConfig don't created")
-                closeService()
-              }
-          } getOrElse {
-            createCollectionFromMyDevice()
-          }
-      } recover {
-        case ex: Throwable =>
-          Log.d(Tag, s"UserConfig endpoind failed: ${ex.getMessage}")
-          closeService()
-      }
-    }) getOrElse {
-    Log.d(Tag, "User unserialize failed")
-    closeService()
-  }
+  private def createConfiguration() =
+    apiServices.getUserConfig(GetUserConfigRequest()) map {
+      response =>
+        response.userConfig map synchronizeGeoInfo
+        loadDeviceId map {
+          id =>
+            (for {
+              userConfig <- response.userConfig
+              device <- userConfig.devices.find(_.deviceId == id)
+            } yield {
+                createCollectionFromDevice(device)
+              }) getOrElse {
+              Log.d(Tag, "UserConfig don't created")
+              closeService()
+            }
+        } getOrElse {
+          createCollectionFromMyDevice()
+        }
+    } recover {
+      case ex: Throwable =>
+        Log.d(Tag, s"UserConfig endpoind failed: ${ex.getMessage}")
+        closeService()
+    }
+
 
   private def synchronizeGeoInfo(userConfig: UserConfig) = {
     userConfig.geoInfo.homeMorning map (addUserConfigUserLocation(_, NineCardsMoments.HomeMorning))
@@ -120,10 +116,10 @@ class CreateCollectionService
     import play.api.libs.json._
 
     val reads = Json.writes[UserConfigTimeSlot]
-    val ocurrenceStr: String = config.occurrence map (o => (Json.toJson(o)(reads)).toString()) mkString("[", ", ", "]")
+    val occurrenceString: String = config.occurrence map (o => Json.toJson(o)(reads).toString()) mkString("[", ", ", "]")
     val request = InsertGeoInfoRequest(
       constrain = constrain,
-      occurrence = ocurrenceStr,
+      occurrence = occurrenceString,
       wifi = config.wifi,
       latitude = config.lat,
       longitude = config.lng,
@@ -132,13 +128,13 @@ class CreateCollectionService
     repositoryServices.insertGeoInfo(request)
   }
 
-  private def createCollectionFromMyDevice() = appManagerServices.getCategorizedApps(GetCategorizedAppsRequest()) map {
-    response =>
+  private def createCollectionFromMyDevice() = appManagerServices.getCategorizedApps() map {
+    apps =>
       val categories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
         Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
         MediaAndVideo, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
         Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgets)
-      val inserts = createInsertSeq(response.apps, categories, Seq.empty)
+      val inserts = createInsertSeq(apps, categories, Seq.empty)
       val insertFutures = inserts map {
         insert =>
           repositoryServices.insertCollection(insert)
@@ -149,10 +145,10 @@ class CreateCollectionService
   private def createCollectionFromDevice(device: UserConfigDevice) = {
     // Store the icons for the apps not installed from internet
     val intents = device.collections flatMap (_.items map (_.metadata))
-    appManagerServices.createBitmapsForNoPackagesInstalled(IntentsRequest(intents)) map {
-      response =>
+    appManagerServices.createBitmapsForNoPackagesInstalled(intents) map {
+      packages =>
         // Save collection in repository
-        val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections, response.packages) map repositoryServices.insertCollection
+        val insertFutures = appConversions.toInsertCollectionRequestFromUserConfigSeq(device.collections, packages) map repositoryServices.insertCollection
         insertFuturesInDB(insertFutures)
     } recover {
       case _ =>
@@ -184,7 +180,7 @@ class CreateCollectionService
   }
 
   private def createCollection(apps: Seq[AppItem], category: String, index: Int): InsertCollectionRequest = {
-    val appsCategory = apps.filter(_.category == Some(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
+    val appsCategory = apps.filter(_.category.contains(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
     val pos = if (index >= NumSpaces) index % NumSpaces else index
     InsertCollectionRequest(
       position = pos,
@@ -194,7 +190,7 @@ class CreateCollectionService
       themedColorIndex = pos,
       appsCategory = Some(category),
       sharedCollectionSubscribed = Option(false),
-      cards = toCartItemFromAppItemSeq(appsCategory)
+      cards = appConversions.toCartItemFromAppItemSeq(appsCategory)
     )
   }
 

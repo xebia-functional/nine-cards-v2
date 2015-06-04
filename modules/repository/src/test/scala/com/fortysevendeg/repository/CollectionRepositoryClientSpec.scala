@@ -126,6 +126,8 @@ trait CollectionTestSupport
     with CollectionTestData
     with DBUtils {
 
+  lazy val client = new CollectionRepositoryClient(contentResolverWrapper)
+
   def createAddCollectionRequest = AddCollectionRequest(CollectionData(
     position = position,
     name = name,
@@ -219,72 +221,71 @@ class CollectionRepositoryClientSpec
     extends Specification
     with Mockito
     with Scope
-    with CollectionTestSupport
-    with CollectionRepositoryClient {
+    with CollectionTestSupport {
 
   "CollectionRepositoryClient component" should {
 
     "addCollection should return a valid Collection object" in {
 
-      val response = await(addCollection(createAddCollectionRequest))
+      val response = await(client.addCollection(createAddCollectionRequest))
 
       response.collection.get.id shouldEqual collectionId
       response.collection.get.data.name shouldEqual name
     }
 
     "deleteCollection should return a successful response when a valid cache category id is given" in {
-      val response = await(deleteCollection(createDeleteCollectionRequest))
+      val response = await(client.deleteCollection(createDeleteCollectionRequest))
 
       response.deleted shouldEqual 1
     }
 
     "getCollectionById should return a Collection object when a existing id is given" in {
-      val response = await(getCollectionById(createGetCollectionByIdRequest(id = collectionId)))
+      val response = await(client.getCollectionById(createGetCollectionByIdRequest(id = collectionId)))
 
       response.result.get.id shouldEqual collectionId
       response.result.get.data.name shouldEqual name
     }
 
     "getCollectionById should return None when a non-existing id is given" in {
-      val response = await(getCollectionById(createGetCollectionByIdRequest(id = nonExistingCollectionId)))
+      val response = await(client.getCollectionById(createGetCollectionByIdRequest(id = nonExistingCollectionId)))
 
       response.result shouldEqual None
     }
 
     "getCollectionByOriginalSharedCollectionId should return a Collection object when a existing shared collection id is given" in {
-      val response = await(getCollectionByOriginalSharedCollectionId(createGetCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = sharedCollectionIdInt)))
+      val response = await(client.getCollectionByOriginalSharedCollectionId(createGetCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = sharedCollectionIdInt)))
 
       response.result.get.id shouldEqual collectionId
       response.result.get.data.name shouldEqual name
     }
 
     "getCollectionByOriginalSharedCollectionId should return None when a non-existing shared collection id is given" in {
-      val response = await(getCollectionByOriginalSharedCollectionId(createGetCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = nonExistingSharedCollectionIdInt)))
+      val response = await(client.getCollectionByOriginalSharedCollectionId(createGetCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = nonExistingSharedCollectionIdInt)))
 
       response.result shouldEqual None
     }
 
     "getCollectionByPosition should return a Collection object when a existing position is given" in {
-      val response = await(getCollectionByPosition(createGetCollectionByPositionRequest(position = position)))
+      val response = await(client.getCollectionByPosition(createGetCollectionByPositionRequest(position = position)))
 
       response.result.get.id shouldEqual collectionId
       response.result.get.data.name shouldEqual name
     }
 
     "getCollectionByPosition should return None when a non-existing position is given" in {
-      val response = await(getCollectionByPosition(createGetCollectionByPositionRequest(position = nonExistingPosition)))
+      val response = await(client.getCollectionByPosition(createGetCollectionByPositionRequest(position = nonExistingPosition)))
 
       response.result shouldEqual None
     }
 
     "getSortedCollections should return all the cache categories stored in the database" in {
-      val response = await(getSortedCollections(createGetSortedCollectionsRequest))
+      val response = await(client.getSortedCollections(createGetSortedCollectionsRequest))
 
       response.collections shouldEqual collectionSeq
     }
 
     "updateCollection should return a successful response when the collection is updated" in {
-      val response = await(updateCollection(createUpdateCollectionRequest))
+      val response = await(client.updateCollection(createUpdateCollectionRequest))
 
       response.updated shouldEqual 1
     }

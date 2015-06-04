@@ -16,10 +16,17 @@
 
 package com.fortysevendeg.ninecardslauncher
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 package object commons {
 
-  type Service[Req, Res] = Req => Future[Res]
+  val javaNull = null
+
+  def tryToFuture[A](function: => Try[A])(implicit ec: ExecutionContext): Future[A] =
+    Future(function) map {
+      case Success(success) => success
+      case Failure(failure) => throw failure
+    }
 
 }

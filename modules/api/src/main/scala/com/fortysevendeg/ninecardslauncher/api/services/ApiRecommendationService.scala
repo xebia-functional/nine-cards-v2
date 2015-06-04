@@ -6,9 +6,7 @@ import play.api.libs.json.{Writes, Reads}
 
 import scala.concurrent.ExecutionContext
 
-trait RecommendationServiceClient {
-
-  val serviceClient: ServiceClient
+class ApiRecommendationService(serviceClient: ServiceClient) {
 
   private val PrefixRecommendation = "/collections"
   private val Prefix9CardsRecommendation = "/ninecards/collections"

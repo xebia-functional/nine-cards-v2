@@ -1,12 +1,13 @@
 package com.fortysevendeg.repository
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapper, ContentResolverWrapperComponent, NineCardsUri}
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapper, NineCardsUri}
 import org.specs2.mock.Mockito
 
 import scala.util.Random
 
-trait MockContentResolverWrapper extends ContentResolverWrapperComponent with Mockito {
+trait MockContentResolverWrapper extends Mockito {
+
   lazy val contentResolverWrapper = mock[MockContentResolverWrapperImpl]
 
   class MockContentResolverWrapperImpl extends ContentResolverWrapper {
