@@ -10,18 +10,20 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.services.api.models.Collection
+import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
-import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import com.fortysevendeg.ninecardslauncher.services.persistence._
+import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 import com.fortysevendeg.ninecardslauncher.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Contexts, Tweak, Ui}
-import com.fortysevendeg.ninecardslauncher.ui.commons.ImageResourceNamed._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -40,6 +42,15 @@ class CollectionsDetailsActivity
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
 
+  private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
+    contextProvider.application.getContentResolver)
+
+  private lazy val persistenceServices = new PersistenceServicesImpl(
+    new CacheCategoryRepository(contentResolverWrapper),
+    new CardRepository(contentResolverWrapper),
+    new CollectionRepository(contentResolverWrapper),
+    new GeoInfoRepository(contentResolverWrapper))
+
   private def getAdapter: Option[CollectionsPagerAdapter] = {
     viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
       case adapter: CollectionsPagerAdapter => Some(adapter)
@@ -56,7 +67,7 @@ class CollectionsDetailsActivity
     systemBarTintManager.setStatusBarTintEnabled(true)
 
     for {
-      GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest())
+      FetchCollectionsResponse(collections) <- persistenceServices.fetchCollections(FetchCollectionsRequest())
     } yield {
       val adapter = CollectionsPagerAdapter(getSupportFragmentManager, collections)
       runUi(
@@ -142,9 +153,10 @@ object ScrollType {
 class OnPageChangeCollectionsListener(
   collections: Seq[Collection],
   updateToolbarColor: Int => Ui[_],
-  updateCollection: (Collection, Int, Boolean) => Ui[_])(implicit context: ContextWrapper)
-   extends OnPageChangeListener
-   with ComponentRegistryImpl {
+  updateCollection: (Collection, Int, Boolean) => Ui[_]
+  )(implicit context: ContextWrapper)
+  extends OnPageChangeListener
+  with ComponentRegistryImpl {
 
   override val contextProvider: ContextWrapper = context
 

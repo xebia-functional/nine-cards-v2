@@ -5,29 +5,32 @@ import android.content.{Context, Intent}
 import android.os.IBinder
 import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiUserConfigService, ApiGooglePlayService, ApiUserService}
-import com.fortysevendeg.ninecardslauncher.models.AppConversions
+import android.util.Log
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.api.services._
+import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
+import com.fortysevendeg.ninecardslauncher.models._
+import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
+import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
+import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigRequest
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
-import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, InsertCollectionRequest, InsertGeoInfoRequest}
-import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
+import com.fortysevendeg.ninecardslauncher.services.persistence._
+import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.ui.commons.{CollectionType, NineCardsMoments}
 import com.fortysevendeg.ninecardslauncher.ui.commons.NineCategories._
+import com.fortysevendeg.ninecardslauncher.ui.commons.{CollectionType, NineCardsMoments}
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
-import macroid.{Contexts, ContextWrapper}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.{ContextWrapper, Contexts}
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import android.util.Log
 
 class CreateCollectionService
   extends Service
@@ -59,6 +62,15 @@ class CreateCollectionService
     new ApiUserService(serviceClient),
     new ApiGooglePlayService(serviceClient),
     new ApiUserConfigService(serviceClient))
+
+  private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
+    contextProvider.application.getContentResolver)
+
+  private lazy val persistenceServices = new PersistenceServicesImpl(
+    new CacheCategoryRepository(contentResolverWrapper),
+    new CardRepository(contentResolverWrapper),
+    new CollectionRepository(contentResolverWrapper),
+    new GeoInfoRepository(contentResolverWrapper))
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     loadDeviceId = Option(intent) flatMap {
@@ -138,7 +150,7 @@ class CreateCollectionService
 
     val reads = Json.writes[UserConfigTimeSlot]
     val ocurrenceStr: String = config.occurrence map (o => Json.toJson(o)(reads).toString()) mkString("[", ", ", "]")
-    val request = InsertGeoInfoRequest(
+    val request = AddGeoInfoRequest(
       constrain = constrain,
       occurrence = ocurrenceStr,
       wifi = config.wifi,
@@ -146,7 +158,7 @@ class CreateCollectionService
       longitude = config.lng,
       system = true
     )
-    repositoryServices.insertGeoInfo(request)
+    persistenceServices.addGeoInfo(request)
   }
 
   private def createCollectionFromMyDevice() = appManagerServices.getCategorizedApps(GetCategorizedAppsRequest()) map {
@@ -158,7 +170,7 @@ class CreateCollectionService
       val inserts = createInsertSeq(response.apps, categories, Seq.empty)
       val insertFutures = inserts map {
         insert =>
-          repositoryServices.insertCollection(insert)
+          persistenceServices.addCollection(insert)
       }
       insertFuturesInDB(insertFutures)
   }
@@ -169,7 +181,8 @@ class CreateCollectionService
     appManagerServices.createBitmapsForNoPackagesInstalled(IntentsRequest(intents)) map {
       response =>
         // Save collection in repository
-        val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections, response.packages) map repositoryServices.insertCollection
+        val insertFutures = toInsertCollectionRequestFromUserConfigSeq(
+          device.collections, response.packages) map persistenceServices.addCollection
         insertFuturesInDB(insertFutures)
     } recover {
       case _ =>
@@ -178,7 +191,7 @@ class CreateCollectionService
     }
   }
 
-  private def insertFuturesInDB(insertFutures: Seq[Future[InsertCollectionResponse]]) = {
+  private def insertFuturesInDB(insertFutures: Seq[Future[AddCollectionResponse]]) = {
     Future.sequence(insertFutures) map {
       responses =>
         closeService()
@@ -190,7 +203,10 @@ class CreateCollectionService
   }
 
   @tailrec
-  private def createInsertSeq(apps: Seq[AppItem], categories: Seq[String], acc: Seq[InsertCollectionRequest]): Seq[InsertCollectionRequest] = {
+  private def createInsertSeq(
+    apps: Seq[AppItem],
+    categories: Seq[String],
+    acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
     categories match {
       case Nil => acc
       case h :: t =>
@@ -200,13 +216,13 @@ class CreateCollectionService
     }
   }
 
-  private def createCollection(apps: Seq[AppItem], category: String, index: Int): InsertCollectionRequest = {
+  private def createCollection(apps: Seq[AppItem], category: String, index: Int): AddCollectionRequest = {
     val appsCategory = apps.filter(_.category.contains(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
     val pos = if (index >= NumSpaces) index % NumSpaces else index
-    InsertCollectionRequest(
+    AddCollectionRequest(
       position = pos,
       name = resGetString(category.toLowerCase).getOrElse(category.toLowerCase),
-      `type` = CollectionType.Apps,
+      collectionType = CollectionType.Apps,
       icon = category.toLowerCase,
       themedColorIndex = pos,
       appsCategory = Some(category),

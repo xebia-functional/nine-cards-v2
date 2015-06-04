@@ -1,31 +1,32 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 
 import android.content.Intent
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserService, ApiUserConfigService}
-import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
-import com.fortysevendeg.ninecardslauncher.commons.Service
-import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
-import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesRequest, GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse, GooglePlayPackagesResponse}
-import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.ninecardslauncher.api.services._
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, ContextWrapperProvider, Service}
+import com.fortysevendeg.ninecardslauncher.models.AppItem
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.image.{StoreImageAppResponse, StoreImageAppRequest, ImageServicesComponent}
-import com.fortysevendeg.ninecardslauncher.modules.repository._
+import com.fortysevendeg.ninecardslauncher.modules.image._
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
+import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesRequest, GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse, GooglePlayPackagesResponse}
+import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
+import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.ninecardslauncher.services.persistence.{FetchCacheCategoriesResponse, AddCacheCategoryRequest, AddCacheCategoryResponse, FetchCacheCategoriesRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
+import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
+import play.api.libs.json._
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
-import play.api.libs.json._
 
 trait AppManagerServicesComponentImpl
   extends AppManagerServicesComponent {
 
   self: ContextWrapperProvider
     with ImageServicesComponent
-    with RepositoryServicesComponent
     with UserServicesComponent =>
 
   lazy val appManagerServices = new AppManagerServicesImpl
@@ -47,6 +48,15 @@ trait AppManagerServicesComponentImpl
       new ApiUserService(serviceClient),
       new ApiGooglePlayService(serviceClient),
       new ApiUserConfigService(serviceClient))
+
+    private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
+      contextProvider.application.getContentResolver)
+
+    private lazy val persistenceServices = new PersistenceServicesImpl(
+      new CacheCategoryRepository(contentResolverWrapper),
+      new CardRepository(contentResolverWrapper),
+      new CollectionRepository(contentResolverWrapper),
+      new GeoInfoRepository(contentResolverWrapper))
 
     override def getApps: Service[GetAppsRequest, GetAppsResponse] =
       request =>
@@ -87,8 +97,8 @@ trait AppManagerServicesComponentImpl
           GooglePlayPackagesResponse(_, packages) <- googlePlayPackages(packagesNoFound)
           storeImageResponses <- storeImages(packages)
         } yield {
-          PackagesResponse(storeImageResponses flatMap (_.packageName))
-        }).recover {
+            PackagesResponse(storeImageResponses flatMap (_.packageName))
+          }).recover {
           case _ => PackagesResponse(Seq.empty)
         }
       }
@@ -107,7 +117,8 @@ trait AppManagerServicesComponentImpl
     override def getCategorizedApps: Service[GetCategorizedAppsRequest, GetCategorizedAppsResponse] =
       request =>
         for {
-          GetCacheCategoryResponse(cacheCategory) <- repositoryServices.getCacheCategory(GetCacheCategoryRequest())
+          FetchCacheCategoriesResponse(cacheCategory) <- persistenceServices.fetchCacheCategories(
+            FetchCacheCategoriesRequest())
           GetAppsResponse(apps) <- getApps(GetAppsRequest())
         } yield {
           val categorizedApps = apps map {
@@ -136,10 +147,10 @@ trait AppManagerServicesComponentImpl
           case _ => throw CategorizeAppsException()
         }
 
-    private def insertRespositories(packages: GooglePlaySimplePackages): Future[Seq[InsertCacheCategoryResponse]] =
+    private def insertRespositories(packages: GooglePlaySimplePackages): Future[Seq[AddCacheCategoryResponse]] =
       Future.sequence(packages.items map {
         app =>
-          repositoryServices.insertCacheCategory(InsertCacheCategoryRequest(
+          persistenceServices.addCacheCategory(AddCacheCategoryRequest(
             packageName = app.packageName,
             category = app.appCategory,
             starRating = app.starRating,
@@ -157,7 +168,7 @@ trait AppManagerServicesComponentImpl
         androidId <- userServices.getAndroidId
       } yield {
           apiServices.googlePlaySimplePackages(GooglePlaySimplePackagesRequest(androidId, token, packages))
-        }) getOrElse(throw new RuntimeException("User not found"))
+        }) getOrElse (throw new RuntimeException("User not found"))
 
     private def googlePlayPackages(packages: Seq[String]): Future[GooglePlayPackagesResponse] =
       (for {
@@ -166,7 +177,7 @@ trait AppManagerServicesComponentImpl
         androidId <- userServices.getAndroidId
       } yield {
           apiServices.googlePlayPackages(GooglePlayPackagesRequest(androidId, token, packages))
-        }) getOrElse(throw new RuntimeException("User not found"))
+        }) getOrElse (throw new RuntimeException("User not found"))
 
 
   }

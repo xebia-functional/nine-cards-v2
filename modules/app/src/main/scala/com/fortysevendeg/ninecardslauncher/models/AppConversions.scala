@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.models
 
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
-import com.fortysevendeg.ninecardslauncher.modules.repository.{CardItem, InsertCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.ninecardslauncher.services.persistence.{CardItem, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.ui.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import play.api.libs.json._
@@ -21,17 +21,17 @@ trait AppConversions {
       term = appItem.name,
       imagePath = appItem.imagePath,
       intent = appItem.intent,
-      `type` = App)
+      cardType = App)
 
-  def toInsertCollectionRequestFromUserConfigSeq(items: Seq[UserConfigCollection], packagesNotInstalled: Seq[String]): Seq[InsertCollectionRequest] =
+  def toInsertCollectionRequestFromUserConfigSeq(items: Seq[UserConfigCollection], packagesNotInstalled: Seq[String]): Seq[AddCollectionRequest] =
     items.zipWithIndex.map (zipped => toInsertCollectionRequest(zipped._1, zipped._2, packagesNotInstalled))
 
-  def toInsertCollectionRequest(userConfigCollection: UserConfigCollection, index: Int, packagesNotInstalled: Seq[String]): InsertCollectionRequest = {
+  def toInsertCollectionRequest(userConfigCollection: UserConfigCollection, index: Int, packagesNotInstalled: Seq[String]): AddCollectionRequest = {
     val color = if (index >= NumSpaces) index % NumSpaces else index
-    InsertCollectionRequest(
+    AddCollectionRequest(
       position = index,
       name = userConfigCollection.name,
-      `type` = userConfigCollection.collectionType,
+      collectionType = userConfigCollection.collectionType,
       icon = userConfigCollection.icon,
       themedColorIndex = color,
       appsCategory = userConfigCollection.category,
@@ -63,7 +63,7 @@ trait AppConversions {
             term = item.title,
             imagePath = imagePath,
             intent = Json.toJson(item.metadata).toString(),
-            `type` = App)
+            cardType = App)
         }
       case _ => None
     }

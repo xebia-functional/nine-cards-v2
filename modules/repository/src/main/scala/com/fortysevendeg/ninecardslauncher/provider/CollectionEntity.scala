@@ -18,59 +18,59 @@ case class CollectionEntityData(
     sharedCollectionSubscribed: Boolean)
 
 object CollectionEntity {
-  val Table = "Collection"
-  val Position = "position"
-  val Name = "name"
-  val Type = "type"
-  val Icon = "icon"
-  val ThemedColorIndex = "themedColorIndex"
-  val AppsCategory = "appsCategory"
-  val Constrains = "constrains"
-  val OriginalSharedCollectionId = "originalSharedCollectionId"
-  val SharedCollectionId = "sharedCollectionId"
-  val SharedCollectionSubscribed = "sharedCollectionSubscribed"
+  val table = "Collection"
+  val position = "position"
+  val name = "name"
+  val collectionType = "type"
+  val icon = "icon"
+  val themedColorIndex = "themedColorIndex"
+  val appsCategory = "appsCategory"
+  val constrains = "constrains"
+  val originalSharedCollectionId = "originalSharedCollectionId"
+  val sharedCollectionId = "sharedCollectionId"
+  val sharedCollectionSubscribed = "sharedCollectionSubscribed"
 
-  val AllFields = Seq[String](
-    NineCardsSqlHelper.Id,
-    Position,
-    Name,
-    Type,
-    Icon,
-    ThemedColorIndex,
-    AppsCategory,
-    Constrains,
-    OriginalSharedCollectionId,
-    SharedCollectionId,
-    SharedCollectionSubscribed)
+  val allFields = Seq[String](
+    NineCardsSqlHelper.id,
+    position,
+    name,
+    collectionType,
+    icon,
+    themedColorIndex,
+    appsCategory,
+    constrains,
+    originalSharedCollectionId,
+    sharedCollectionId,
+    sharedCollectionSubscribed)
 
   def collectionEntityFromCursor(cursor: Cursor) =
     CollectionEntity(
-      id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
+      id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = CollectionEntityData(
-        position = cursor.getInt(cursor.getColumnIndex(Position)),
-        name = cursor.getString(cursor.getColumnIndex(Name)),
-        `type` = cursor.getString(cursor.getColumnIndex(Type)),
-        icon = cursor.getString(cursor.getColumnIndex(Icon)),
-        themedColorIndex = cursor.getInt(cursor.getColumnIndex(ThemedColorIndex)),
-        appsCategory = cursor.getString(cursor.getColumnIndex(AppsCategory)),
-        constrains = cursor.getString(cursor.getColumnIndex(Constrains)),
-        originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(OriginalSharedCollectionId)),
-        sharedCollectionId = cursor.getString(cursor.getColumnIndex(SharedCollectionId)),
-        sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(SharedCollectionSubscribed)) > 0))
+        position = cursor.getInt(cursor.getColumnIndex(position)),
+        name = cursor.getString(cursor.getColumnIndex(name)),
+        `type` = cursor.getString(cursor.getColumnIndex(collectionType)),
+        icon = cursor.getString(cursor.getColumnIndex(icon)),
+        themedColorIndex = cursor.getInt(cursor.getColumnIndex(themedColorIndex)),
+        appsCategory = cursor.getString(cursor.getColumnIndex(appsCategory)),
+        constrains = cursor.getString(cursor.getColumnIndex(constrains)),
+        originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(originalSharedCollectionId)),
+        sharedCollectionId = cursor.getString(cursor.getColumnIndex(sharedCollectionId)),
+        sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(sharedCollectionSubscribed)) > 0))
 }
 
 object CollectionEntityData {
 
   def collectionEntityDataFromCursor(cursor: Cursor) =
     CollectionEntityData(
-      position = cursor.getInt(cursor.getColumnIndex(Position)),
-      name = cursor.getString(cursor.getColumnIndex(Name)),
-      `type` = cursor.getString(cursor.getColumnIndex(Type)),
-      icon = cursor.getString(cursor.getColumnIndex(Icon)),
-      themedColorIndex = cursor.getInt(cursor.getColumnIndex(ThemedColorIndex)),
-      appsCategory = cursor.getString(cursor.getColumnIndex(AppsCategory)),
-      constrains = cursor.getString(cursor.getColumnIndex(Constrains)),
-      originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(OriginalSharedCollectionId)),
-      sharedCollectionId = cursor.getString(cursor.getColumnIndex(SharedCollectionId)),
-      sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(SharedCollectionSubscribed)) > 0)
+      position = cursor.getInt(cursor.getColumnIndex(position)),
+      name = cursor.getString(cursor.getColumnIndex(name)),
+      `type` = cursor.getString(cursor.getColumnIndex(collectionType)),
+      icon = cursor.getString(cursor.getColumnIndex(icon)),
+      themedColorIndex = cursor.getInt(cursor.getColumnIndex(themedColorIndex)),
+      appsCategory = cursor.getString(cursor.getColumnIndex(appsCategory)),
+      constrains = cursor.getString(cursor.getColumnIndex(constrains)),
+      originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(originalSharedCollectionId)),
+      sharedCollectionId = cursor.getString(cursor.getColumnIndex(sharedCollectionId)),
+      sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(sharedCollectionSubscribed)) > 0)
 }

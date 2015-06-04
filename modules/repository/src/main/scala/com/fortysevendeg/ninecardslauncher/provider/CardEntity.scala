@@ -19,63 +19,63 @@ case class CardEntityData(
     notification: String)
 
 object CardEntity {
-  val Table = "Card"
-  val Position = "position"
-  val CollectionId = "collection_id"
-  val Term = "term"
-  val PackageName = "packageName"
-  val Type = "type"
-  val Intent = "intent"
-  val ImagePath = "imagePath"
-  val StarRating = "starRating"
-  val Micros = "micros"
-  val NumDownloads = "numDownloads"
-  val Notification = "notification"
+  val table = "Card"
+  val position = "position"
+  val collectionId = "collection_id"
+  val term = "term"
+  val packageName = "packageName"
+  val cardType = "type"
+  val intent = "intent"
+  val imagePath = "imagePath"
+  val starRating = "starRating"
+  val micros = "micros"
+  val numDownloads = "numDownloads"
+  val notification = "notification"
 
-  val AllFields = Seq[String](
-    NineCardsSqlHelper.Id,
-    Position,
-    CollectionId,
-    Term,
-    PackageName,
-    Type,
-    Intent,
-    ImagePath,
-    StarRating,
-    Micros,
-    NumDownloads,
-    Notification)
+  val allFields = Seq[String](
+    NineCardsSqlHelper.id,
+    position,
+    collectionId,
+    term,
+    packageName,
+    cardType,
+    intent,
+    imagePath,
+    starRating,
+    micros,
+    numDownloads,
+    notification)
 
   def cardEntityFromCursor(cursor: Cursor) =
     CardEntity(
-      id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.Id)),
+      id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = CardEntityData(
-        position = cursor.getInt(cursor.getColumnIndex(Position)),
-        collectionId = cursor.getInt(cursor.getColumnIndex(CollectionId)),
-        term = cursor.getString(cursor.getColumnIndex(Term)),
-        packageName = cursor.getString(cursor.getColumnIndex(PackageName)),
-        `type` = cursor.getString(cursor.getColumnIndex(Type)),
-        intent = cursor.getString(cursor.getColumnIndex(Intent)),
-        imagePath = cursor.getString(cursor.getColumnIndex(ImagePath)),
-        starRating = cursor.getDouble(cursor.getColumnIndex(StarRating)),
-        micros = cursor.getInt(cursor.getColumnIndex(Micros)),
-        numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
-        notification = cursor.getString(cursor.getColumnIndex(Notification))))
+        position = cursor.getInt(cursor.getColumnIndex(position)),
+        collectionId = cursor.getInt(cursor.getColumnIndex(collectionId)),
+        term = cursor.getString(cursor.getColumnIndex(term)),
+        packageName = cursor.getString(cursor.getColumnIndex(packageName)),
+        `type` = cursor.getString(cursor.getColumnIndex(cardType)),
+        intent = cursor.getString(cursor.getColumnIndex(intent)),
+        imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
+        starRating = cursor.getDouble(cursor.getColumnIndex(starRating)),
+        micros = cursor.getInt(cursor.getColumnIndex(micros)),
+        numDownloads = cursor.getString(cursor.getColumnIndex(numDownloads)),
+        notification = cursor.getString(cursor.getColumnIndex(notification))))
 }
 
 object CardEntityData {
 
   def cardEntityDataFromCursor(cursor: Cursor) =
     CardEntityData(
-      position = cursor.getInt(cursor.getColumnIndex(Position)),
-      collectionId = cursor.getInt(cursor.getColumnIndex(CollectionId)),
-      term = cursor.getString(cursor.getColumnIndex(Term)),
-      packageName = cursor.getString(cursor.getColumnIndex(PackageName)),
-      `type` = cursor.getString(cursor.getColumnIndex(Type)),
-      intent = cursor.getString(cursor.getColumnIndex(Intent)),
-      imagePath = cursor.getString(cursor.getColumnIndex(ImagePath)),
-      starRating = cursor.getDouble(cursor.getColumnIndex(StarRating)),
-      micros = cursor.getInt(cursor.getColumnIndex(Micros)),
-      numDownloads = cursor.getString(cursor.getColumnIndex(NumDownloads)),
-      notification = cursor.getString(cursor.getColumnIndex(Notification)))
+      position = cursor.getInt(cursor.getColumnIndex(position)),
+      collectionId = cursor.getInt(cursor.getColumnIndex(collectionId)),
+      term = cursor.getString(cursor.getColumnIndex(term)),
+      packageName = cursor.getString(cursor.getColumnIndex(packageName)),
+      `type` = cursor.getString(cursor.getColumnIndex(cardType)),
+      intent = cursor.getString(cursor.getColumnIndex(intent)),
+      imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
+      starRating = cursor.getDouble(cursor.getColumnIndex(starRating)),
+      micros = cursor.getInt(cursor.getColumnIndex(micros)),
+      numDownloads = cursor.getString(cursor.getColumnIndex(numDownloads)),
+      notification = cursor.getString(cursor.getColumnIndex(notification)))
 }

@@ -13,15 +13,15 @@ class NineCardsContentProvider extends ContentProvider {
   lazy val database: Option[SQLiteDatabase] = Option[SQLiteDatabase](nineCardsSqlHelper.getWritableDatabase)
 
   private def getUriInfo(uri: Uri): (String, MimeType) = uriMatcher.`match`(uri) match {
-    case CodeCacheCategoryAllItems => (CacheCategoryEntity.Table, MimeTypeAllItems)
-    case CodeCacheCategorySingleItem => (CacheCategoryEntity.Table, MimeTypeSingleItem)
-    case CodeCardAllItems => (CardEntity.Table, MimeTypeAllItems)
-    case CodeCardSingleItem => (CardEntity.Table, MimeTypeSingleItem)
-    case CodeCollectionAllItems => (CollectionEntity.Table, MimeTypeAllItems)
-    case CodeCollectionSingleItem => (CollectionEntity.Table, MimeTypeSingleItem)
-    case CodeGeoInfoAllItems => (GeoInfoEntity.Table, MimeTypeAllItems)
-    case CodeGeoInfoSingleItem => (GeoInfoEntity.Table, MimeTypeSingleItem)
-    case _ => throw new IllegalArgumentException(InvalidUri + uri)
+    case `codeCacheCategoryAllItems` => (CacheCategoryEntity.table, MimeTypeAllItems)
+    case `codeCacheCategorySingleItem` => (CacheCategoryEntity.table, MimeTypeSingleItem)
+    case `codeCardAllItems` => (CardEntity.table, MimeTypeAllItems)
+    case `codeCardSingleItem` => (CardEntity.table, MimeTypeSingleItem)
+    case `codeCollectionAllItems` => (CollectionEntity.table, MimeTypeAllItems)
+    case `codeCollectionSingleItem` => (CollectionEntity.table, MimeTypeSingleItem)
+    case `codeGeoInfoAllItems` => (GeoInfoEntity.table, MimeTypeAllItems)
+    case `codeGeoInfoSingleItem` => (GeoInfoEntity.table, MimeTypeSingleItem)
+    case _ => throw new IllegalArgumentException(invalidUri + uri)
   }
 
   override def onCreate(): Boolean = database match {
@@ -36,8 +36,8 @@ class NineCardsContentProvider extends ContentProvider {
 
   override def getType(uri: Uri): String = {
     getUriInfo(uri) match {
-      case (_, MimeTypeAllItems) => MimeTypeAllItemsValue
-      case (_, MimeTypeSingleItem) => MimeTypeSingleItemValue
+      case (_, MimeTypeAllItems) => mimeTypeAllItemsValue
+      case (_, MimeTypeSingleItem) => mimeTypeSingleItemValue
     }
   }
 
@@ -49,7 +49,7 @@ class NineCardsContentProvider extends ContentProvider {
         getOrOpenDatabase.update(
           tableName,
           values,
-          s"${NineCardsSqlHelper.Id} = ?",
+          s"${NineCardsSqlHelper.id} = ?",
           Seq(uri.getPathSegments.get(1)).toArray)
       case MimeTypeAllItems =>
         getOrOpenDatabase.update(tableName, values, selection, selectionArgs)
@@ -63,8 +63,8 @@ class NineCardsContentProvider extends ContentProvider {
       case MimeTypeAllItems =>
         ContentUris.withAppendedId(
         getUri(CacheCategoryUri),
-          getOrOpenDatabase.insert(tableName, NineCardsSqlHelper.DatabaseName, values))
-      case _ => throw new IllegalArgumentException(InvalidUri + uri)
+          getOrOpenDatabase.insert(tableName, NineCardsSqlHelper.databaseName, values))
+      case _ => throw new IllegalArgumentException(invalidUri + uri)
     }
   }
 
@@ -75,7 +75,7 @@ class NineCardsContentProvider extends ContentProvider {
       case MimeTypeSingleItem =>
         getOrOpenDatabase.delete(
           tableName,
-          s"${NineCardsSqlHelper.Id} = ?",
+          s"${NineCardsSqlHelper.id} = ?",
           Seq(uri.getPathSegments.get(1)).toArray)
       case MimeTypeAllItems =>
         getOrOpenDatabase.delete(tableName, selection, selectionArgs)
@@ -97,7 +97,7 @@ class NineCardsContentProvider extends ContentProvider {
         queryBuilder.query(
           getOrOpenDatabase,
           projection,
-          s"${NineCardsSqlHelper.Id} = ?",
+          s"${NineCardsSqlHelper.id} = ?",
           Seq(uri.getPathSegments.get(1)).toArray,
           null,
           null,
@@ -116,35 +116,35 @@ class NineCardsContentProvider extends ContentProvider {
 }
 
 object NineCardsContentProvider {
-  val InvalidUri = "Invalid uri: "
-  val AuthorityPart = "com.fortysevendeg.ninecardslauncher2"
-  val ContentPrefix = "content://"
-  val CodeCacheCategoryAllItems = 1
-  val CodeCacheCategorySingleItem = 2
-  val CodeCardAllItems = 3
-  val CodeCardSingleItem = 4
-  val CodeCollectionAllItems = 5
-  val CodeCollectionSingleItem = 6
-  val CodeGeoInfoAllItems = 7
-  val CodeGeoInfoSingleItem = 8
-  val MimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.com.fortysevendeg.ninecardslauncher"
-  val MimeTypeSingleItemValue = "vnd.android.cursor.item/vnd.com.fortysevendeg.ninecardslauncher"
+  val invalidUri = "Invalid uri: "
+  val authorityPart = "com.fortysevendeg.ninecardslauncher2"
+  val contentPrefix = "content://"
+  val codeCacheCategoryAllItems = 1
+  val codeCacheCategorySingleItem = 2
+  val codeCardAllItems = 3
+  val codeCardSingleItem = 4
+  val codeCollectionAllItems = 5
+  val codeCollectionSingleItem = 6
+  val codeGeoInfoAllItems = 7
+  val codeGeoInfoSingleItem = 8
+  val mimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.com.fortysevendeg.ninecardslauncher"
+  val mimeTypeSingleItemValue = "vnd.android.cursor.item/vnd.com.fortysevendeg.ninecardslauncher"
 
   val uriMatcher = new UriMatcher(UriMatcher.NO_MATCH)
-  uriMatcher.addURI(AuthorityPart, CacheCategoryEntity.Table, CodeCacheCategoryAllItems)
-  uriMatcher.addURI(AuthorityPart, s"${CacheCategoryEntity.Table}/#", CodeCacheCategorySingleItem)
-  uriMatcher.addURI(AuthorityPart, CardEntity.Table, CodeCardAllItems)
-  uriMatcher.addURI(AuthorityPart, s"${CardEntity.Table}/#", CodeCardSingleItem)
-  uriMatcher.addURI(AuthorityPart, CollectionEntity.Table, CodeCollectionAllItems)
-  uriMatcher.addURI(AuthorityPart, s"${CollectionEntity.Table}/#", CodeCollectionSingleItem)
-  uriMatcher.addURI(AuthorityPart, GeoInfoEntity.Table, CodeGeoInfoAllItems)
-  uriMatcher.addURI(AuthorityPart, s"${GeoInfoEntity.Table}/#", CodeGeoInfoSingleItem)
+  uriMatcher.addURI(authorityPart, CacheCategoryEntity.table, codeCacheCategoryAllItems)
+  uriMatcher.addURI(authorityPart, s"${CacheCategoryEntity.table}/#", codeCacheCategorySingleItem)
+  uriMatcher.addURI(authorityPart, CardEntity.table, codeCardAllItems)
+  uriMatcher.addURI(authorityPart, s"${CardEntity.table}/#", codeCardSingleItem)
+  uriMatcher.addURI(authorityPart, CollectionEntity.table, codeCollectionAllItems)
+  uriMatcher.addURI(authorityPart, s"${CollectionEntity.table}/#", codeCollectionSingleItem)
+  uriMatcher.addURI(authorityPart, GeoInfoEntity.table, codeGeoInfoAllItems)
+  uriMatcher.addURI(authorityPart, s"${GeoInfoEntity.table}/#", codeGeoInfoSingleItem)
 
   def getUri(nineCardsUri: NineCardsUri): Uri = nineCardsUri match {
-    case CacheCategoryUri => Uri.parse(s"$ContentPrefix$AuthorityPart/${CacheCategoryEntity.Table}")
-    case CardUri => Uri.parse(s"$ContentPrefix$AuthorityPart/${CardEntity.Table}")
-    case CollectionUri => Uri.parse(s"$ContentPrefix$AuthorityPart/${CollectionEntity.Table}")
-    case GeoInfoUri => Uri.parse(s"$ContentPrefix$AuthorityPart/${GeoInfoEntity.Table}")
+    case CacheCategoryUri => Uri.parse(s"$contentPrefix$authorityPart/${CacheCategoryEntity.table}")
+    case CardUri => Uri.parse(s"$contentPrefix$authorityPart/${CardEntity.table}")
+    case CollectionUri => Uri.parse(s"$contentPrefix$authorityPart/${CollectionEntity.table}")
+    case GeoInfoUri => Uri.parse(s"$contentPrefix$authorityPart/${GeoInfoEntity.table}")
   }
 }
 

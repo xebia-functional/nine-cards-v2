@@ -5,15 +5,14 @@ import com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl.AppManagerSe
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.impl.GoogleConnectorServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.image.impl.ImageServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.persistent.impl.PersistentServicesComponentImpl
-import com.fortysevendeg.ninecardslauncher.modules.repository.impl.RepositoryServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.modules.user.impl.UserServicesComponentImpl
+import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 
 trait ComponentRegistryImpl
   extends ComponentRegistry
   with ContextWrapperProvider
   with ImageServicesComponentImpl
   with AppManagerServicesComponentImpl
-  with RepositoryServicesComponentImpl
   with PersistentServicesComponentImpl
   with UserServicesComponentImpl
   with GoogleConnectorServicesComponentImpl

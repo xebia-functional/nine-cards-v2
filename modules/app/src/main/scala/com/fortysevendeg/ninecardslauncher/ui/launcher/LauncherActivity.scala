@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.services.api.models.{AppItem, Collection}
+import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
-import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageActivityTweaks._
+import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import com.fortysevendeg.ninecardslauncher.services.persistence._
+import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 import com.fortysevendeg.ninecardslauncher.ui.commons.ActivityResult._
+import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
@@ -27,6 +30,14 @@ class LauncherActivity
   with ComponentRegistryImpl {
 
   override lazy val contextProvider: ContextWrapper = activityContextWrapper
+
+  private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(contextProvider.application.getContentResolver)
+
+  private lazy val persistenceServices = new PersistenceServicesImpl(
+    new CacheCategoryRepository(contentResolverWrapper),
+    new CardRepository(contentResolverWrapper),
+    new CollectionRepository(contentResolverWrapper),
+    new GeoInfoRepository(contentResolverWrapper))
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val SelectedPageDefault = 1
@@ -49,7 +60,7 @@ class LauncherActivity
 
   private def generateCollections =
     for {
-      GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest())
+      FetchCollectionsResponse(collections) <- persistenceServices.fetchCollections(FetchCollectionsRequest())
     } yield {
       // Check if there are collections in DB, if there aren't we go to wizard
       if (collections.isEmpty) {

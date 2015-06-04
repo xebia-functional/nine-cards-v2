@@ -7,7 +7,7 @@ import scala.annotation.tailrec
 
 trait DBUtils {
 
-  def execAllVersionsDB() = (1 to DatabaseVersion) foreach { version => execVersion(version) }
+  def execAllVersionsDB() = (1 to databaseVersion) foreach { version => execVersion(version) }
 
   def execVersionsDB(oldVersion: Int, newVersion: Int) =
     (oldVersion + 1 to newVersion) foreach { version => execVersion(version) }
