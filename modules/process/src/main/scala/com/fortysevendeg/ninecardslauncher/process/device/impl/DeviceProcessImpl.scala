@@ -72,7 +72,7 @@ class DeviceProcessImpl(
     for {
       token <- getSessionToken
       androidId <- persistenceServices.getAndroidId
-    } yield (token,  androidId)
+    } yield (androidId, token)
 
   private def getSessionToken(implicit context: ContextWrapper): Future[String] =
     persistenceServices.getUser map (_.sessionToken getOrElse (throw new RuntimeException("User not found")))
