@@ -3,8 +3,9 @@ package com.fortysevendeg.ninecardslauncher.receivers
 import android.content.{ComponentName, Intent, Context, BroadcastReceiver}
 import android.net.Uri
 import android.widget.Toast
-import com.fortysevendeg.ninecardslauncher.ui.commons.NineCardsIntent._
 import com.fortysevendeg.ninecardslauncher2.R
+
+import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardsIntentExtras._
 
 import scala.util.{Success, Failure, Try}
 

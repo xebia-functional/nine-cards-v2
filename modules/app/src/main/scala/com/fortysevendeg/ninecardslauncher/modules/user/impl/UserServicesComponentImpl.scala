@@ -10,8 +10,8 @@ import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, Us
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.modules.user._
 import com.fortysevendeg.ninecardslauncher.services.api.Conversions
+import com.fortysevendeg.ninecardslauncher.services.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
-import com.fortysevendeg.ninecardslauncher.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.rest.client.ServiceClient

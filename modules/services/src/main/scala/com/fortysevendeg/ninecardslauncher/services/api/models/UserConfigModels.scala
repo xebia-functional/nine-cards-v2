@@ -4,9 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import macroid.ContextWrapper
 import play.api.libs.json._
-
-import NineCardsIntent._
-
+import NineCardsIntentExtras._
 import scala.collection.JavaConversions._
 
 case class UserConfig(
@@ -189,7 +187,7 @@ case class UserConfigTimeSlot(
   to: String,
   days: Seq[Int])
 
-object NineCardsIntent {
+object NineCardsIntentExtras {
   val NineCardExtraPhone: String = "tel"
   val NineCardExtraEmail: String = "email"
   val NineCardExtraUrlAd: String = "url_ad"

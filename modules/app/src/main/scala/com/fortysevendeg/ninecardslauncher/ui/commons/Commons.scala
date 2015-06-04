@@ -115,19 +115,6 @@ object CardType {
   val NineCardsExtension = "NINE_CARDS_EXTENSION"
 }
 
-object NineCardsIntent {
-  val NineCardExtraPhone: String = "tel"
-  val NineCardExtraEmail: String = "email"
-  val NineCardExtraUrlAd: String = "url_ad"
-  val NineCardExtraPackageName: String = "package_name"
-  val NineCardExtraClassName: String = "class_name"
-  val OpenApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_APP"
-  val OpenRecommendedApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_RECOMMENDED_APP"
-  val OpenSms: String = "com.fortysevendeg.ninecardslauncher.OPEN_SMS"
-  val OpenPhone: String = "com.fortysevendeg.ninecardslauncher.OPEN_PHONE"
-  val OpenEmail: String = "com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"
-}
-
 object ImageResourceNamed {
 
   def iconCollectionWorkspace(category: String)(implicit context: ContextWrapper): Int =
