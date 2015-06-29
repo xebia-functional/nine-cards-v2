@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.models
 
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppItem
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{CardItem, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.ui.commons.CardType._

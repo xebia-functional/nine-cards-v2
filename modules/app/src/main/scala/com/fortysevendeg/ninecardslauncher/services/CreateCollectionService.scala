@@ -11,12 +11,16 @@ import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
+import com.fortysevendeg.ninecardslauncher.modules.appsmanager.IntentsRequest
+import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppItem
+import com.fortysevendeg.ninecardslauncher.process.device.{CategorizeAppsException, CategorizeAppsRequest, GetCategorizedAppsRequest}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigRequest
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
@@ -27,6 +31,7 @@ import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import macroid.{ContextWrapper, Contexts}
+import com.fortysevendeg.ninecardslauncher.process.device.utils.AppItemUtils._
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -72,6 +77,14 @@ class CreateCollectionService
     new CollectionRepository(contentResolverWrapper),
     new GeoInfoRepository(contentResolverWrapper))
 
+  private lazy val appsServices = new AppsServicesImpl()
+
+  private lazy val deviceProcess = new DeviceProcessImpl(
+    appsService = appsServices,
+    serviceClient = serviceClient,
+    apiServices = apiServices,
+    persistenceServices = persistenceServices)
+
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     loadDeviceId = Option(intent) flatMap {
       i => if (i.hasExtra(KeyDevice)) Some(i.getStringExtra(KeyDevice)) else None
@@ -90,7 +103,7 @@ class CreateCollectionService
 
     startForeground(NotificationId, builder.build)
 
-    appManagerServices.categorizeApps(CategorizeAppsRequest()) map {
+    deviceProcess.categorizeApps(CategorizeAppsRequest()) map {
       response => createConfiguration()
     } recover {
       case ex: CategorizeAppsException =>
@@ -161,7 +174,7 @@ class CreateCollectionService
     persistenceServices.addGeoInfo(request)
   }
 
-  private def createCollectionFromMyDevice() = appManagerServices.getCategorizedApps(GetCategorizedAppsRequest()) map {
+  private def createCollectionFromMyDevice() = deviceProcess.getCategorizedApps(GetCategorizedAppsRequest()) map {
     response =>
       val categories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
         Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
@@ -217,7 +230,7 @@ class CreateCollectionService
   }
 
   private def createCollection(apps: Seq[AppItem], category: String, index: Int): AddCollectionRequest = {
-    val appsCategory = apps.filter(_.category.contains(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
+    val appsCategory = apps.filter(_.category.contains(category)).sortWith(mfIndex(_) < mfIndex(_)).take(NumSpaces)
     val pos = if (index >= NumSpaces) index % NumSpaces else index
     AddCollectionRequest(
       position = pos,

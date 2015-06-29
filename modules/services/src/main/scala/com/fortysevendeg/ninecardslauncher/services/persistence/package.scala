@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 package object persistence {
 

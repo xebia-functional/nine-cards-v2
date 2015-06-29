@@ -1,9 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.utils
+package com.fortysevendeg.ninecardslauncher.services.utils
 
 import java.io._
 import java.util.zip.{GZIPInputStream, GZIPOutputStream}
-import com.fortysevendeg.ninecardslauncher.utils.ResourceUtils._
+
 import scala.util.Try
+import scala.util.control.Exception._
 
 trait FileUtils {
 
@@ -35,5 +36,9 @@ trait FileUtils {
           gzos.close()
       }
     }
+
+  def withResource[C <: Closeable, R](closeable: C)(f: C => R) = {
+    allCatch.andFinally(closeable.close())(f(closeable))
+  }
 
 }

@@ -1,12 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import java.io.File
+
+import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
+import com.fortysevendeg.ninecardslauncher.services.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.{repository => repo}
+import macroid.ContextWrapper
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 class PersistenceServicesImpl(
   cacheCategoryRepository: CacheCategoryRepository,
@@ -15,7 +22,20 @@ class PersistenceServicesImpl(
   geoInfoRepository: GeoInfoRepository
   )
   extends PersistenceServices
-  with Conversions {
+  with Conversions
+  with FileUtils {
+
+  // TODO These contants don't should be here
+
+  val AccountType = "com.google"
+
+  val AndroidId = "android_id"
+
+  val ContentGServices = "content://com.google.android.gsf.gservices"
+
+  val FilenameUser = "__user_entity__"
+
+  val FilenameInstallation = "__installation_entity__"
 
   implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
@@ -263,4 +283,47 @@ class PersistenceServicesImpl(
 
     Future.sequence(result)
   }
+
+  override def getUser()(implicit context: ContextWrapper): Future[User] =
+    tryToFuture(loadFile[User](getFileUser))
+
+  override def saveUser(user: User)(implicit context: ContextWrapper): Future[Unit] =
+    tryToFuture(writeFile[User](getFileUser, user))
+
+  override def resetUser()(implicit context: ContextWrapper): Future[Boolean] =
+    Future {
+      val fileUser = getFileUser
+      fileUser.exists() && fileUser.delete()
+    }
+
+  override def getAndroidId()(implicit context: ContextWrapper): Future[String] =
+    tryToFuture{
+      Try {
+        val cursor = Option(context.application.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
+        val result = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+        result getOrElse (throw new RuntimeException("AndroidId not found"))
+      }
+    }
+
+  override def getInstallation()(implicit context: ContextWrapper): Future[Installation] =
+    tryToFuture(loadFile[Installation](getFileInstallation))
+
+  override def saveInstallation(installation: Installation)(implicit context: ContextWrapper): Future[Boolean] =
+    Future {
+      if (getFileInstallation.exists()) false
+      else writeFile[Installation](getFileInstallation, installation) match {
+        case Success(_) => true
+        case Failure(e) => throw e
+      }
+    }
+
+  private def getFileInstallation(implicit context: ContextWrapper) = new File(context.application.getFilesDir, FilenameInstallation)
+
+  private def getFileUser(implicit context: ContextWrapper) = new File(context.application.getFilesDir, FilenameUser)
+
+  private def tryToFuture[A](function: => Try[A]): Future[A] =
+    Future(function).flatMap {
+      case Success(success) => Future.successful(success)
+      case Failure(failure) => Future.failed(failure)
+    }
 }
