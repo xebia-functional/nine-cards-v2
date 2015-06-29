@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.apps.impl
 
 import android.content.Intent
+import android.content.pm.ResolveInfo
 import com.fortysevendeg.ninecardslauncher.services.apps._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import macroid.ContextWrapper
@@ -20,8 +21,7 @@ class AppsServicesImpl
 
         val packageManager = getPackageManager
 
-        val l = packageManager.queryIntentActivities(mainIntent, 0).toSeq
-        val apps = Seq(l: _*)
+        val apps: Seq[ResolveInfo] = packageManager.queryIntentActivities(mainIntent, 0).toSeq
 
         val appItems: Seq[Application] = apps map {
           resolveInfo =>

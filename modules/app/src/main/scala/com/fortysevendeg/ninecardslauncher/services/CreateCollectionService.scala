@@ -31,6 +31,7 @@ import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import macroid.{ContextWrapper, Contexts}
+import com.fortysevendeg.ninecardslauncher.process.device.utils.AppItemUtils._
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -229,7 +230,7 @@ class CreateCollectionService
   }
 
   private def createCollection(apps: Seq[AppItem], category: String, index: Int): AddCollectionRequest = {
-    val appsCategory = apps.filter(_.category.contains(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
+    val appsCategory = apps.filter(_.category.contains(category)).sortWith(mfIndex(_) < mfIndex(_)).take(NumSpaces)
     val pos = if (index >= NumSpaces) index % NumSpaces else index
     AddCollectionRequest(
       position = pos,
