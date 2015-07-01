@@ -3,6 +3,7 @@ import Libraries.graphics._
 import Libraries.macroid._
 import Libraries.playServices._
 import Libraries.net._
+import Libraries.scala._
 import Libraries.akka._
 import Libraries.json._
 import Libraries.test._
@@ -14,12 +15,12 @@ object Settings {
 
   // App Module
   // For multidex add `multiDex ++` to this settings
-  lazy val appSettings = commonSettings ++
+  lazy val appSettings = basicSettings ++
       Seq(
         run <<= run in Android,
         javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
         transitiveAndroidLibs in Android := false,
-        libraryDependencies ++= commonDependencies,
+        libraryDependencies ++= appDependencies,
         apkbuildExcludes in Android ++= Seq(
           "META-INF/LICENSE",
           "META-INF/LICENSE.txt",
@@ -33,26 +34,30 @@ object Settings {
         proguardCache in Android := Seq.empty)
 
   // Api Module
-  lazy val apiSettings = commonSettings ++ librarySettings ++
+  lazy val apiSettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= apiDependencies)
 
   // Repository Module
-  lazy val repositorySettings = commonSettings ++ librarySettings ++
+  lazy val repositorySettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= repositoryDependencies)
 
   // Services Module
-  lazy val servicesSettings = commonSettings ++ librarySettings ++
-    Seq(libraryDependencies ++= servicesDependencies)
+  lazy val servicesSettings = basicSettings ++ librarySettings
 
   // Process Module
-  lazy val processSettings = commonSettings ++ librarySettings
+  lazy val processSettings = basicSettings ++ librarySettings
 
-  // Commons
-  lazy val commonSettings = Seq(
+  // Commons Module
+  lazy val commonsSettings = basicSettings ++ librarySettings
+
+  // Basic Setting for all modules
+  lazy val basicSettings = Seq(
     scalaVersion := Versions.scalaV,
-    resolvers ++= commonResolvers)
+    resolvers ++= commonResolvers,
+    libraryDependencies ++= Seq(scalaz)
+  )
 
-  // Library Commons
+  // Settings associated to library modules
   lazy val librarySettings = Seq(
     exportJars := true,
     scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
@@ -60,18 +65,16 @@ object Settings {
     javacOptions in Compile += "-deprecation",
     proguardScala in Android := false)
 
-  lazy val commonDependencies = Seq(
+  lazy val appDependencies = Seq(
     aar(androidAppCompat),
     aar(macroidExtras),
+    aar(macroidRoot),
+    aar(androidSupportv4),
     aar(androidRecyclerview),
     aar(androidCardView),
     aar(playServicesBase),
     glide,
     okHttp)
-
-  lazy val servicesDependencies = Seq(
-    aar(androidSupportv4),
-    aar(macroidRoot))
 
   lazy val apiDependencies = Seq(
     playJson,

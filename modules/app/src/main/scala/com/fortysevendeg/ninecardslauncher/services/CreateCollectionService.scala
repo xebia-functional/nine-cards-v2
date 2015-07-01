@@ -8,7 +8,8 @@ import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.api.services._
-import com.fortysevendeg.ninecardslauncher.commons.ContentResolverWrapperImpl
+import com.fortysevendeg.ninecardslauncher.commons.{ContextSupportProvider, ContentResolverWrapperImpl}
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.IntentsRequest
@@ -40,8 +41,11 @@ import scala.concurrent.Future
 class CreateCollectionService
   extends Service
   with Contexts[Service]
+  with ContextSupportProvider
   with ComponentRegistryImpl
   with AppConversions {
+
+  implicit lazy val contextSupport = ContextSupport(this)
 
   override lazy val contextProvider: ContextWrapper = serviceContextWrapper
 

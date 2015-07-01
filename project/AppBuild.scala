@@ -22,25 +22,28 @@ object AppBuild extends Build {
         run <<= (run in Android in app).dependsOn(setDebugTask(true)),
         packageName in Android := "com.fortysevendeg.ninecardslauncher"
       )
-      .aggregate(app, process)
+      .aggregate(app)
 
   lazy val app = Project(id = "app", base = file("modules/app"))
-      .androidBuildWith(process)
-      .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
-      .settings(packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask))
-      .settings(appSettings: _*)
+    .androidBuildWith(process)
+    .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
+    .settings(packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask))
+    .settings(appSettings: _*)
 
-  val api = Project(id = "api", base = file("modules/api"))
-      .settings(apiSettings: _*)
+  lazy val process = Project(id = "process", base = file("modules/process"))
+    .settings(processSettings: _*)
+    .androidBuildWith(services)
 
-  val repository = Project(id = "repository", base = file("modules/repository"))
-      .settings(repositorySettings: _*)
+  lazy val services = Project(id = "services", base = file("modules/services"))
+    .settings(servicesSettings: _*)
+    .dependsOn(commons, api, repository)
 
-  val services = Project(id = "services", base = file("modules/services"))
-      .settings(servicesSettings: _*)
-      .dependsOn(api, repository)
+  lazy val api = Project(id = "api", base = file("modules/api"))
+    .settings(apiSettings: _*)
 
-  val process = Project(id = "process", base = file("modules/process"))
-      .settings(processSettings: _*)
-      .dependsOn(services)
+  lazy val repository = Project(id = "repository", base = file("modules/repository"))
+    .settings(repositorySettings: _*)
+
+  lazy val commons = Project(id = "commons", base = file("modules/commons"))
+    .settings(commonsSettings: _*)
 }

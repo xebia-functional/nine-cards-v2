@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsServices, GetInstalledAppsRequest, GetInstalledAppsResponse}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.rest.client.ServiceClient
-import macroid.ContextWrapper
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,19 +19,19 @@ class DeviceProcessImpl(
     extends DeviceProcess
     with DeviceConversions {
 
-  override def getApps(request: GetAppsRequest)(implicit context: ContextWrapper): Future[GetAppsResponse] =
+  override def getApps(request: GetAppsRequest)(implicit context: ContextSupport): Future[GetAppsResponse] =
     for {
       GetInstalledAppsResponse(apps) <- appsService.getInstalledApps(GetInstalledAppsRequest())
     } yield GetAppsResponse(toAppItemSeq(apps))
 
-  override def getAppsByCategory(request: GetAppsByCategoryRequest)(implicit context: ContextWrapper): Future[GetAppsByCategoryResponse] =
+  override def getAppsByCategory(request: GetAppsByCategoryRequest)(implicit context: ContextSupport): Future[GetAppsByCategoryResponse] =
     getCategorizedApps(GetCategorizedAppsRequest()) map {
       response =>
         val apps = response.apps.filter(_.category == Some(request.category))
         GetAppsByCategoryResponse(apps)
     }
 
-  override def getCategorizedApps(request: GetCategorizedAppsRequest)(implicit context: ContextWrapper): Future[GetCategorizedAppsResponse] =
+  override def getCategorizedApps(request: GetCategorizedAppsRequest)(implicit context: ContextSupport): Future[GetCategorizedAppsResponse] =
     for {
       FetchCacheCategoriesResponse(cacheCategory) <- persistenceServices.fetchCacheCategories(
         FetchCacheCategoriesRequest())
@@ -44,7 +44,7 @@ class DeviceProcessImpl(
       GetCategorizedAppsResponse(categorizedApps)
     }
 
-  override def categorizeApps(request: CategorizeAppsRequest)(implicit context: ContextWrapper): Future[CategorizeAppsResponse] =
+  override def categorizeApps(request: CategorizeAppsRequest)(implicit context: ContextSupport): Future[CategorizeAppsResponse] =
     (for {
       GetCategorizedAppsResponse(apps) <- getCategorizedApps(GetCategorizedAppsRequest())
       packagesWithoutCategory = apps.filter(_.category.isEmpty) map (_.packageName)
@@ -68,13 +68,13 @@ class DeviceProcessImpl(
         ))
     })
 
-  private def getTokenAndAndroidId()(implicit context: ContextWrapper): Future[(String, String)] =
+  private def getTokenAndAndroidId()(implicit context: ContextSupport): Future[(String, String)] =
     for {
       token <- getSessionToken
       androidId <- persistenceServices.getAndroidId
     } yield (androidId, token)
 
-  private def getSessionToken(implicit context: ContextWrapper): Future[String] =
+  private def getSessionToken(implicit context: ContextSupport): Future[String] =
     persistenceServices.getUser map (_.sessionToken getOrElse (throw new RuntimeException("User not found")))
 
 }

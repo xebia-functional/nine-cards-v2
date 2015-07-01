@@ -10,12 +10,14 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
+import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Contexts, Tweak, Ui}
 import CollectionFragment._
+import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardsIntentExtras._
 
 class CollectionFragment
   extends Fragment
@@ -58,9 +60,15 @@ class CollectionFragment
     super.onViewCreated(view, savedInstanceState)
   }
 
+  def execute(intent: NineCardIntent) = intent.getAction match {
+    case OpenApp | OpenRecommendedApp | OpenSms | OpenPhone | OpenEmail =>
+      getActivity.sendBroadcast(intent.toIntent)
+    case _ => getActivity.startActivity(intent)
+  }
+
   def loadCollection(collection: Collection, heightCard: Int): Ui[_] = {
     val adapter = new CollectionAdapter(collection, heightCard, card => Ui {
-      card.intent.execute
+      execute(card.intent)
     })
     (recyclerView <~ rvLayoutManager(layoutManager) <~
       rvFixedSize <~
