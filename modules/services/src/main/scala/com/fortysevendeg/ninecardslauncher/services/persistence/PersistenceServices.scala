@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
-import macroid.ContextWrapper
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 trait PersistenceServices {
 
@@ -57,16 +57,16 @@ trait PersistenceServices {
 
   def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse]
 
-  def getUser()(implicit context: ContextWrapper): Future[User]
+  def getUser()(implicit context: ContextSupport): Future[User]
 
-  def saveUser(user: User)(implicit context: ContextWrapper): Future[Unit]
+  def saveUser(user: User)(implicit context: ContextSupport): Future[Unit]
 
-  def resetUser()(implicit context: ContextWrapper): Future[Boolean]
+  def resetUser()(implicit context: ContextSupport): Future[Boolean]
 
-  def getAndroidId()(implicit context: ContextWrapper): Future[String]
+  def getAndroidId()(implicit context: ContextSupport): Future[String]
 
-  def getInstallation()(implicit context: ContextWrapper): Future[Installation]
+  def getInstallation()(implicit context: ContextSupport): Future[Installation]
 
-  def saveInstallation(installation: Installation)(implicit context: ContextWrapper): Future[Boolean]
+  def saveInstallation(installation: Installation)(implicit context: ContextSupport): Future[Boolean]
 
 }

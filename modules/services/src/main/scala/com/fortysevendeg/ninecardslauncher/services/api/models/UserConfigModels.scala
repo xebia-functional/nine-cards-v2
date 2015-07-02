@@ -2,9 +2,9 @@ package com.fortysevendeg.ninecardslauncher.services.api.models
 
 import android.content.Intent
 import android.net.Uri
-import macroid.ContextWrapper
+import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardsIntentExtras._
 import play.api.libs.json._
-import NineCardsIntentExtras._
+
 import scala.collection.JavaConversions._
 
 case class UserConfig(
@@ -88,13 +88,6 @@ case class NineCardIntent(
 
   def extractUrlAd(): Option[String] =
     Option(intentExtras.url_ad.getOrElse(getStringExtra(NineCardExtraUrlAd)))
-
-  def execute(implicit context: ContextWrapper) =
-    getAction match {
-      case OpenApp | OpenRecommendedApp | OpenSms | OpenPhone | OpenEmail =>
-        context.application.sendBroadcast(toIntent)
-      case _ => context.application.startActivity(this)
-    }
 
   def toIntent: Intent = {
     val intent = new Intent(this)

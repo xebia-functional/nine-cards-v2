@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 import java.io.File
 
 import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -10,7 +11,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conv
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.services.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.{repository => repo}
-import macroid.ContextWrapper
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -284,31 +284,31 @@ class PersistenceServicesImpl(
     Future.sequence(result)
   }
 
-  override def getUser()(implicit context: ContextWrapper): Future[User] =
+  override def getUser()(implicit context: ContextSupport): Future[User] =
     tryToFuture(loadFile[User](getFileUser))
 
-  override def saveUser(user: User)(implicit context: ContextWrapper): Future[Unit] =
+  override def saveUser(user: User)(implicit context: ContextSupport): Future[Unit] =
     tryToFuture(writeFile[User](getFileUser, user))
 
-  override def resetUser()(implicit context: ContextWrapper): Future[Boolean] =
+  override def resetUser()(implicit context: ContextSupport): Future[Boolean] =
     Future {
       val fileUser = getFileUser
       fileUser.exists() && fileUser.delete()
     }
 
-  override def getAndroidId()(implicit context: ContextWrapper): Future[String] =
+  override def getAndroidId()(implicit context: ContextSupport): Future[String] =
     tryToFuture{
       Try {
-        val cursor = Option(context.application.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
+        val cursor = Option(context.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
         val result = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
         result getOrElse (throw new RuntimeException("AndroidId not found"))
       }
     }
 
-  override def getInstallation()(implicit context: ContextWrapper): Future[Installation] =
+  override def getInstallation()(implicit context: ContextSupport): Future[Installation] =
     tryToFuture(loadFile[Installation](getFileInstallation))
 
-  override def saveInstallation(installation: Installation)(implicit context: ContextWrapper): Future[Boolean] =
+  override def saveInstallation(installation: Installation)(implicit context: ContextSupport): Future[Boolean] =
     Future {
       if (getFileInstallation.exists()) false
       else writeFile[Installation](getFileInstallation, installation) match {
@@ -317,9 +317,9 @@ class PersistenceServicesImpl(
       }
     }
 
-  private def getFileInstallation(implicit context: ContextWrapper) = new File(context.application.getFilesDir, FilenameInstallation)
+  private def getFileInstallation(implicit context: ContextSupport) = new File(context.getFilesDir, FilenameInstallation)
 
-  private def getFileUser(implicit context: ContextWrapper) = new File(context.application.getFilesDir, FilenameUser)
+  private def getFileUser(implicit context: ContextSupport) = new File(context.getFilesDir, FilenameUser)
 
   private def tryToFuture[A](function: => Try[A]): Future[A] =
     Future(function).flatMap {

@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.services.apps
 
-import macroid.ContextWrapper
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 
 import scala.concurrent.Future
 
 trait AppsServices {
-  def getInstalledApps(request: GetInstalledAppsRequest)(implicit context: ContextWrapper): Future[GetInstalledAppsResponse]
+  def getInstalledApps(request: GetInstalledAppsRequest)(implicit context: ContextSupport): Future[GetInstalledAppsResponse]
 }
