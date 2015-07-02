@@ -36,13 +36,15 @@ object AppBuild extends Build {
 
   lazy val services = Project(id = "services", base = file("modules/services"))
     .settings(servicesSettings: _*)
-    .dependsOn(commons, api, repository)
+    .dependsOn(api, repository)
 
   lazy val api = Project(id = "api", base = file("modules/api"))
     .settings(apiSettings: _*)
+    .dependsOn(commons)
 
   lazy val repository = Project(id = "repository", base = file("modules/repository"))
     .settings(repositorySettings: _*)
+    .dependsOn(commons)
 
   lazy val commons = Project(id = "commons", base = file("modules/commons"))
     .settings(commonsSettings: _*)

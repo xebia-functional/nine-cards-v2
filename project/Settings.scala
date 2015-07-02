@@ -85,6 +85,7 @@ object Settings {
   lazy val servicesDependencies = Seq(androidProvidedLib)
 
   lazy val apiDependencies = Seq(
+    androidProvidedLib,
     playJson,
     sprayClient % "provided",
     okHttp % "provided",
