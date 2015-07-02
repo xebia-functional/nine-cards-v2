@@ -42,13 +42,16 @@ object Settings {
     Seq(libraryDependencies ++= repositoryDependencies)
 
   // Services Module
-  lazy val servicesSettings = basicSettings ++ librarySettings
+  lazy val servicesSettings = basicSettings ++ librarySettings ++
+      Seq(libraryDependencies ++= servicesDependencies)
 
   // Process Module
-  lazy val processSettings = basicSettings ++ librarySettings
+  lazy val processSettings = basicSettings ++ librarySettings ++
+      Seq(libraryDependencies ++= processDependencies)
 
   // Commons Module
-  lazy val commonsSettings = basicSettings ++ librarySettings
+  lazy val commonsSettings = basicSettings ++ librarySettings ++
+      Seq(libraryDependencies ++= commonsDependencies)
 
   // Basic Setting for all modules
   lazy val basicSettings = Seq(
@@ -76,6 +79,11 @@ object Settings {
     glide,
     okHttp)
 
+
+  lazy val processDependencies = Seq(androidProvidedLib)
+
+  lazy val servicesDependencies = Seq(androidProvidedLib)
+
   lazy val apiDependencies = Seq(
     playJson,
     sprayClient % "provided",
@@ -89,6 +97,8 @@ object Settings {
     androidTest,
     specs2,
     mockito)
+
+  lazy val commonsDependencies = Seq(androidProvidedLib)
 
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,
