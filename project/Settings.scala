@@ -19,7 +19,7 @@ object Settings {
       Seq(
         run <<= run in Android,
         javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-        transitiveAndroidLibs in Android := false,
+        transitiveAndroidLibs in Android := true,
         libraryDependencies ++= appDependencies,
         apkbuildExcludes in Android ++= Seq(
           "META-INF/LICENSE",
@@ -94,7 +94,7 @@ object Settings {
     mockServer)
 
   lazy val repositoryDependencies = Seq(
-    androidTest,
+    androidProvidedLib,
     specs2,
     mockito)
 
