@@ -1,10 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.commons.contexts
 
-import android.content.Context
+import java.io.File
 
-case class ContextSupport(private val context: Context) {
-  def getPackageManager = context.getPackageManager
-  def getResources = context.getResources
-  def getContentResolver = context.getContentResolver
-  def getFilesDir = context.getFilesDir
+import android.content.ContentResolver
+import android.content.pm.PackageManager
+import android.content.res.Resources
+
+trait ContextSupport {
+  def getPackageManager: PackageManager
+  def getResources: Resources
+  def getContentResolver: ContentResolver
+  def getFilesDir: File
 }

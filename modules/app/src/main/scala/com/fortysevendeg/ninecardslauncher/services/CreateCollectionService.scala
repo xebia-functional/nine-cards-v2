@@ -8,13 +8,13 @@ import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.api.services._
-import com.fortysevendeg.ninecardslauncher.commons.{ContextSupportProvider, ContentResolverWrapperImpl}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.IntentsRequest
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppItem
+import com.fortysevendeg.ninecardslauncher.process.device.utils.AppItemUtils._
 import com.fortysevendeg.ninecardslauncher.process.device.{CategorizeAppsException, CategorizeAppsRequest, GetCategorizedAppsRequest}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
@@ -32,7 +32,6 @@ import com.fortysevendeg.ninecardslauncher.ui.wizard.WizardActivity
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import macroid.{ContextWrapper, Contexts}
-import com.fortysevendeg.ninecardslauncher.process.device.utils.AppItemUtils._
 
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,8 +43,6 @@ class CreateCollectionService
   with ContextSupportProvider
   with ComponentRegistryImpl
   with AppConversions {
-
-  implicit lazy val contextSupport = ContextSupport(this)
 
   override lazy val contextProvider: ContextWrapper = serviceContextWrapper
 
