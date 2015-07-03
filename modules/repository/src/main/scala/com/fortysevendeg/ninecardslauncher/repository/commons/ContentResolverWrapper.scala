@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.commons
+package com.fortysevendeg.ninecardslauncher.repository.commons
 
 import android.content.{ContentResolver, ContentValues}
 import android.database.Cursor
 import android.net.Uri._
-import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
+import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider._
 
 trait ContentResolverWrapper {
   def insert(nineCardsUri: NineCardsUri, values: Map[String, Any]): Int

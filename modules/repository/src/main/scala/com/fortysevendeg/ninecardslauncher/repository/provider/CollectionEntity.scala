@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.provider
+package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
+import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity._
 
 case class CollectionEntity(id: Int, data: CollectionEntityData)
 

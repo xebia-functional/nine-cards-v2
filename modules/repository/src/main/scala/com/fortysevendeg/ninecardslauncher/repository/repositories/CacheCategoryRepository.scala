@@ -1,12 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{CacheCategoryUri, ContentResolverWrapper}
-import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
-import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapper}
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
-import com.fortysevendeg.ninecardslauncher.utils._
+import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity._
+import com.fortysevendeg.ninecardslauncher.repository.provider.DBUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try

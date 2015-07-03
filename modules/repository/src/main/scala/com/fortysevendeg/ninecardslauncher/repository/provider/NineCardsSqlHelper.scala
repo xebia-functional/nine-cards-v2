@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.provider
+package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.content.Context
 import android.database.sqlite.{SQLiteDatabase, SQLiteOpenHelper}

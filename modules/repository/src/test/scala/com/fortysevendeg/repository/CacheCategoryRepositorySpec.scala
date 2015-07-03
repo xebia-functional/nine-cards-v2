@@ -1,10 +1,10 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.commons.{CacheCategoryUri, ContentResolverWrapperImpl}
-import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity.cacheCategoryEntityFromCursor
-import com.fortysevendeg.ninecardslauncher.provider._
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, CacheCategoryData}
+import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity.cacheCategoryEntityFromCursor
+import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import org.mockito.Mockito._
 import org.specs2.mock.Mockito

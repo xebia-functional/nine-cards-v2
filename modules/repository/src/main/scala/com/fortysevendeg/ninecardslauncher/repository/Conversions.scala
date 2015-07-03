@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository
 
-import com.fortysevendeg.ninecardslauncher.provider.{CacheCategoryEntity, GeoInfoEntity, CardEntity, CollectionEntity}
 import com.fortysevendeg.ninecardslauncher.repository.model._
+import com.fortysevendeg.ninecardslauncher.repository.provider._
 
 object Conversions {
 
