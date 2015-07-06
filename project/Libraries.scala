@@ -10,6 +10,7 @@ object Libraries {
     lazy val scalaReflect = "org.scala-lang" % "scala-reflect" % Versions.scalaV
     lazy val scalap = "org.scala-lang" % "scalap" % Versions.scalaV
     lazy val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.3"
+    lazy val scalazConcurrent = "org.scalaz" %% "scalaz-concurrent" % "7.1.3"
   }
 
   object android {
