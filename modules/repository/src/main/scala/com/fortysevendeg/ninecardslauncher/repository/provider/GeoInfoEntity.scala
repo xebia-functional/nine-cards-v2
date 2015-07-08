@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.provider
+package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
+import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
 
 case class GeoInfoEntity(id: Int, data: GeoInfoEntityData)
 

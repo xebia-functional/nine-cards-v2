@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.provider
+package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.content.{ContentProvider, ContentUris, ContentValues, UriMatcher}
 import android.database.Cursor
 import android.database.sqlite.{SQLiteDatabase, SQLiteQueryBuilder}
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.provider.NineCardsContentProvider._
+import com.fortysevendeg.ninecardslauncher.repository.commons._
+import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider._
 
 class NineCardsContentProvider extends ContentProvider {
 

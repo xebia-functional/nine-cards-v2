@@ -1,12 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapper, GeoInfoUri}
-import com.fortysevendeg.ninecardslauncher.provider.DBUtils
-import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapper, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
-import com.fortysevendeg.ninecardslauncher.utils._
+import com.fortysevendeg.ninecardslauncher.repository.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
