@@ -3,10 +3,8 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
-import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategoryData, CacheCategory}
-import com.fortysevendeg.ninecardslauncher.utils._
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapper}
-import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
+import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, CacheCategoryData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.DBUtils
 
