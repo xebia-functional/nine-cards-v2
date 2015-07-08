@@ -1,15 +1,24 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppItem
+import com.fortysevendeg.ninecardslauncher.services.api.models.{User, GooglePlaySimplePackages}
 import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.apps.{AppsServices, GetInstalledAppsRequest, GetInstalledAppsResponse}
+import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence._
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.rest.client.ServiceClient
+
+import scalaz._
+import Scalaz._
+import EitherT._
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scalaz.concurrent.Task
 
 class DeviceProcessImpl(
     appsService: AppsServices,
@@ -19,44 +28,36 @@ class DeviceProcessImpl(
     extends DeviceProcess
     with DeviceConversions {
 
-  override def getApps(request: GetAppsRequest)(implicit context: ContextSupport): Future[GetAppsResponse] =
-    for {
-      GetInstalledAppsResponse(apps) <- appsService.getInstalledApps(GetInstalledAppsRequest())
-    } yield GetAppsResponse(toAppItemSeq(apps))
+  override def getApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppItem]] =
+    appsService.getInstalledApps ▹ eitherT map toAppItemSeq
 
-  override def getAppsByCategory(request: GetAppsByCategoryRequest)(implicit context: ContextSupport): Future[GetAppsByCategoryResponse] =
-    getCategorizedApps(GetCategorizedAppsRequest()) map {
-      response =>
-        val apps = response.apps.filter(_.category == Some(request.category))
-        GetAppsByCategoryResponse(apps)
-    }
+  override def getAppsByCategory(category: String)(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppItem]] =
+    getCategorizedApps ▹ eitherT map (_.filter(_.category.contains(category)))
 
-  override def getCategorizedApps(request: GetCategorizedAppsRequest)(implicit context: ContextSupport): Future[GetCategorizedAppsResponse] =
+
+  override def getCategorizedApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppItem]] =
     for {
-      FetchCacheCategoriesResponse(cacheCategory) <- persistenceServices.fetchCacheCategories(
-        FetchCacheCategoriesRequest())
-      GetAppsResponse(apps) <- getApps(GetAppsRequest())
+      cacheCategories <- persistenceServices.fetchCacheCategories ▹ eitherT
+      apps <- getApps ▹ eitherT
     } yield {
-      val categorizedApps = apps map {
+      apps map {
         app =>
-          app.copy(category = cacheCategory.find(_.packageName == app.packageName).map(_.category))
+          app.copy(category = cacheCategories.find(_.packageName == app.packageName).map(_.category))
       }
-      GetCategorizedAppsResponse(categorizedApps)
     }
 
-  override def categorizeApps(request: CategorizeAppsRequest)(implicit context: ContextSupport): Future[CategorizeAppsResponse] =
-    (for {
-      GetCategorizedAppsResponse(apps) <- getCategorizedApps(GetCategorizedAppsRequest())
+  override def categorizeApps()(implicit context: ContextSupport): Task[NineCardsException \/ Unit] = {
+    for {
+      apps <- getCategorizedApps ▹ eitherT
       packagesWithoutCategory = apps.filter(_.category.isEmpty) map (_.packageName)
-      (androidId, token) <- getTokenAndAndroidId
-      GooglePlaySimplePackagesResponse(_, packages) <- apiServices.googlePlaySimplePackages(GooglePlaySimplePackagesRequest(androidId, token, packagesWithoutCategory))
-      _ <- insertRepositories(packages)
-    } yield CategorizeAppsResponse()).recover {
-      case _ => throw CategorizeAppsException()
-    }
+      androidIdAndToken <- getTokenAndAndroidId ▹ eitherT
+      response <- apiServices.googlePlaySimplePackages(GooglePlaySimplePackagesRequest(androidIdAndToken.androidId, androidIdAndToken.token, packagesWithoutCategory)) ▹ eitherT
+      _ <- insertRepositories(response.apps) ▹ eitherT
+    } yield ()
+  }
 
-  private[this] def insertRepositories(packages: GooglePlaySimplePackages): Future[Seq[AddCacheCategoryResponse]] =
-    Future.sequence(packages.items map {
+  private[this] def insertRepositories(packages: GooglePlaySimplePackages): Task[NineCardsException \/ List[CacheCategory]] = {
+    val tasks = packages.items map {
       app =>
         persistenceServices.addCacheCategory(AddCacheCategoryRequest(
           packageName = app.packageName,
@@ -66,16 +67,29 @@ class DeviceProcessImpl(
           ratingsCount = app.ratingCount,
           commentCount = app.commentCount
         ))
-    })
+    }
+    Task.gatherUnordered(tasks) map (_.collect { case \/-(category) => category }.right[NineCardsException])
+  }
 
-  private def getTokenAndAndroidId()(implicit context: ContextSupport): Future[(String, String)] =
+  case class AndroidIdAndToken(androidId: String, token: String)
+
+  private def getTokenAndAndroidId()(implicit context: ContextSupport): Task[NineCardsException \/ AndroidIdAndToken] = {
+    val tokenTask = getSessionToken map {
+      case -\/(ex) => -\/(NineCardsException(msg = "Android Id not found", cause = ex.some))
+      case \/-(r) => \/-(r)
+    }
     for {
-      token <- getSessionToken
-      androidId <- persistenceServices.getAndroidId
-    } yield (androidId, token)
+      token <- tokenTask ▹ eitherT
+      androidId <- persistenceServices.getAndroidId ▹ eitherT
+    } yield AndroidIdAndToken(androidId = androidId, token = token)
+  }
 
-  private def getSessionToken(implicit context: ContextSupport): Future[String] =
-    persistenceServices.getUser map (_.sessionToken getOrElse (throw new RuntimeException("User not found")))
+  private def getSessionToken(implicit context: ContextSupport): Task[NineCardsException \/ String] =
+    persistenceServices.getUser map {
+      case \/-(User(_, Some(sessionToken), _, _)) => \/-(sessionToken) //TODO refactor to named params once available in Scala
+      case -\/(ex) => -\/(ex)
+      case _ => -\/(NineCardsException("Session token doesn't exists"))
+    }
 
 }
 

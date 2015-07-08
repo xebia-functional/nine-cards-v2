@@ -32,16 +32,14 @@ trait CacheCategoryConversions {
       )
     )
 
-  def toAddCacheCategoryRequest(request: AddCacheCategoryRequest) =
-    repo.AddCacheCategoryRequest(
-      data = RepoCacheCategoryData(
-        packageName = request.packageName,
-        category = request.category,
-        starRating = request.starRating,
-        numDownloads = request.numDownloads,
-        ratingsCount = request.ratingsCount,
-        commentCount = request.commentCount
-      )
+  def toRepositoryCacheCategoryData(request: AddCacheCategoryRequest) =
+    RepoCacheCategoryData(
+      packageName = request.packageName,
+      category = request.category,
+      starRating = request.starRating,
+      numDownloads = request.numDownloads,
+      ratingsCount = request.ratingsCount,
+      commentCount = request.commentCount
     )
 
   def toRepositoryDeleteCacheCategoryRequest(request: DeleteCacheCategoryRequest) =

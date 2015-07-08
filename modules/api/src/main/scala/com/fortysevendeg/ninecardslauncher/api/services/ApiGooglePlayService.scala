@@ -1,10 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.api.services
 
 import com.fortysevendeg.ninecardslauncher.api.model._
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.rest.client.ServiceClient
+import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import play.api.libs.json.{Writes, Reads}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Future, ExecutionContext}
+import scalaz.\/
+import scalaz.concurrent.Task
 
 class ApiGooglePlayService(serviceClient: ServiceClient) {
 
@@ -32,8 +36,8 @@ class ApiGooglePlayService(serviceClient: ServiceClient) {
 
   def getGooglePlaySimplePackages(
       packageRequest: PackagesRequest,
-      headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[GooglePlaySimplePackages], writes: Writes[PackagesRequest]) =
-    serviceClient.post[PackagesRequest, GooglePlaySimplePackages](
+      headers: Seq[(String, String)])(implicit reads: Reads[GooglePlaySimplePackages], writes: Writes[PackagesRequest]): Task[NineCardsException \/ ServiceClientResponse[GooglePlaySimplePackages]] =
+    serviceClient.postTask[PackagesRequest, GooglePlaySimplePackages](
       path = s"$PrefixGooglePlay/$PackagesPath/$SimplePackagesPath",
       headers = headers,
       body = packageRequest,

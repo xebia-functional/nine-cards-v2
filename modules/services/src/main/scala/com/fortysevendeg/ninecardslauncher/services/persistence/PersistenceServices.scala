@@ -1,13 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 
 import scala.concurrent.Future
+import scalaz.\/
+import scalaz.concurrent.Task
 
 trait PersistenceServices {
 
-  def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse]
+  def addCacheCategory(request: AddCacheCategoryRequest): Task[NineCardsException \/ CacheCategory]
 
   def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse]
 
@@ -15,7 +19,7 @@ trait PersistenceServices {
 
   def fetchCacheCategoryByPackage: Service[FetchCacheCategoryByPackageRequest, FetchCacheCategoryByPackageResponse]
 
-  def fetchCacheCategories: Service[FetchCacheCategoriesRequest, FetchCacheCategoriesResponse]
+  def fetchCacheCategories: Task[NineCardsException \/ Seq[CacheCategory]]
 
   def findCacheCategoryById: Service[FindCacheCategoryByIdRequest, FindCacheCategoryByIdResponse]
 
@@ -57,13 +61,13 @@ trait PersistenceServices {
 
   def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse]
 
-  def getUser()(implicit context: ContextSupport): Future[User]
+  def getUser(implicit context: ContextSupport): Task[NineCardsException \/ User]
 
   def saveUser(user: User)(implicit context: ContextSupport): Future[Unit]
 
   def resetUser()(implicit context: ContextSupport): Future[Boolean]
 
-  def getAndroidId()(implicit context: ContextSupport): Future[String]
+  def getAndroidId(implicit context: ContextSupport): Task[NineCardsException \/ String]
 
   def getInstallation()(implicit context: ContextSupport): Future[Installation]
 

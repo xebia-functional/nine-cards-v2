@@ -1,6 +1,7 @@
 package com.fortysevendeg.rest.client.http
 
 import akka.actor.ActorSystem
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import play.api.libs.json.{Json, Writes}
 import spray.client.pipelining._
 import spray.http.HttpHeaders.RawHeader
@@ -8,6 +9,8 @@ import spray.http.{HttpEntity, MediaTypes, HttpRequest, HttpResponse}
 import spray.httpx.marshalling.Marshaller
 
 import scala.concurrent.{Future, ExecutionContext}
+import scalaz.\/
+import scalaz.concurrent.Task
 
 class SprayHttpClient(implicit actorSystem: ActorSystem) extends HttpClient {
 
@@ -31,6 +34,8 @@ class SprayHttpClient(implicit actorSystem: ActorSystem) extends HttpClient {
     val pipeline = preparePipeline(toHttpHeader(httpHeaders))
     transformResponse(pipeline(Post(url)))
   }
+
+  override def doPostTask[Req: Writes](url: String, httpHeaders: Seq[(String, String)], body: Req): Task[\/[NineCardsException, HttpClientResponse]] = ???
 
   override def doPost[Req: Writes](
       url: String,
@@ -76,7 +81,6 @@ class SprayHttpClient(implicit actorSystem: ActorSystem) extends HttpClient {
       response => HttpClientResponse(response.status.intValue, readResponse(response.entity)),
       cause => cause
     )
-
   private def readResponse(httpEntity: HttpEntity): Option[String] =
     if (httpEntity.isEmpty) None else Some(httpEntity.asString)
 }
