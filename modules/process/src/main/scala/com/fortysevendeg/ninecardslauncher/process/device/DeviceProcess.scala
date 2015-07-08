@@ -1,13 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.process.device
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppItem
 
 import scala.concurrent.Future
+import scalaz.\/
+import scalaz.concurrent.Task
 
 
 trait DeviceProcess {
-  def getApps(request: GetAppsRequest)(implicit context: ContextSupport): Future[GetAppsResponse]
-  def getCategorizedApps(request: GetCategorizedAppsRequest)(implicit context: ContextSupport): Future[GetCategorizedAppsResponse]
-  def getAppsByCategory(request: GetAppsByCategoryRequest)(implicit context: ContextSupport): Future[GetAppsByCategoryResponse]
-  def categorizeApps(request: CategorizeAppsRequest)(implicit context: ContextSupport): Future[CategorizeAppsResponse]
+  def getApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppItem]]
+  def getCategorizedApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppItem]]
+  def getAppsByCategory(category: String)(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppItem]]
+  def categorizeApps()(implicit context: ContextSupport):  Task[NineCardsException \/ Unit]
 }

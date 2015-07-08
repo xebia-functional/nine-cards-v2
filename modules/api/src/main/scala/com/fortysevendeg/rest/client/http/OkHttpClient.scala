@@ -1,11 +1,14 @@
 package com.fortysevendeg.rest.client.http
 
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.rest.client.http.Methods._
 import com.squareup.okhttp.Headers
 import com.squareup.{okhttp => okHttp}
 import play.api.libs.json.{Json, Writes}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scalaz.\/
+import scalaz.concurrent.Task
 
 class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
     extends HttpClient {
@@ -29,6 +32,15 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
   override def doPost[Req: Writes](url: String, httpHeaders:  Seq[(String, String)], body: Req)(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(POST, url, httpHeaders, Some(Json.toJson(body).toString()))
 
+  def doPostTask[Req: Writes](url: String, httpHeaders: Seq[(String, String)], body: Req): Task[NineCardsException \/ HttpClientResponse] =
+    Task {
+      \/.fromTryCatchThrowable[HttpClientResponse, NineCardsException] {
+        val builder = createBuilderRequest(url, httpHeaders)
+        val request = builder.post(createBody(Some(Json.toJson(body).toString()))).build()
+        val response = okHttpClient.newCall(request).execute()
+        HttpClientResponse(response.code(), Option(response.body()) map (_.string()))
+      }
+    }
 
   override def doPut(url: String, httpHeaders:  Seq[(String, String)])(implicit executionContext: ExecutionContext): Future[HttpClientResponse] =
     doMethod(PUT, url, httpHeaders)

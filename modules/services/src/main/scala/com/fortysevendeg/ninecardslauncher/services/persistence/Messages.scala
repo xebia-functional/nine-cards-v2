@@ -11,8 +11,6 @@ case class AddCacheCategoryRequest(
   commentCount: Int
   )
 
-case class AddCacheCategoryResponse(cacheCategory: CacheCategory)
-
 case class DeleteCacheCategoryRequest(cacheCategory: CacheCategory)
 
 case class DeleteCacheCategoryResponse(deleted: Int)
@@ -20,10 +18,6 @@ case class DeleteCacheCategoryResponse(deleted: Int)
 case class DeleteCacheCategoryByPackageRequest(`package`: String)
 
 case class DeleteCacheCategoryByPackageResponse(deleted: Int)
-
-case class FetchCacheCategoriesRequest()
-
-case class FetchCacheCategoriesResponse(cacheCategories: Seq[CacheCategory])
 
 case class FindCacheCategoryByIdRequest(id: Int)
 

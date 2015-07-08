@@ -4,6 +4,8 @@ import java.io.File
 
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -14,16 +16,21 @@ import com.fortysevendeg.ninecardslauncher.{repository => repo}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
+import scalaz._
+import Scalaz._
+import EitherT._
+import scalaz.concurrent.Task
+import Service._
 
 class PersistenceServicesImpl(
-  cacheCategoryRepository: CacheCategoryRepository,
-  cardRepository: CardRepository,
-  collectionRepository: CollectionRepository,
-  geoInfoRepository: GeoInfoRepository
-  )
-  extends PersistenceServices
-  with Conversions
-  with FileUtils {
+    cacheCategoryRepository: CacheCategoryRepository,
+    cardRepository: CardRepository,
+    collectionRepository: CollectionRepository,
+    geoInfoRepository: GeoInfoRepository
+    )
+    extends PersistenceServices
+    with Conversions
+    with FileUtils {
 
   // TODO These contants don't should be here
 
@@ -39,13 +46,8 @@ class PersistenceServicesImpl(
 
   implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
-  override def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
-    request => {
-      cacheCategoryRepository.addCacheCategory(toAddCacheCategoryRequest(request)) map {
-        response =>
-          AddCacheCategoryResponse(toCacheCategory(response.cacheCategory))
-      }
-    }
+  override def addCacheCategory(request: AddCacheCategoryRequest): Task[NineCardsException \/ CacheCategory] =
+    cacheCategoryRepository.addCacheCategory(toRepositoryCacheCategoryData(request)) ▹ eitherT map toCacheCategory
 
   override def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
     request => {
@@ -71,13 +73,9 @@ class PersistenceServicesImpl(
       }
     }
 
-  override def fetchCacheCategories: Service[FetchCacheCategoriesRequest, FetchCacheCategoriesResponse] =
-    request => {
-      cacheCategoryRepository.fetchCacheCategories(repo.FetchCacheCategoriesRequest()) map {
-        response =>
-          FetchCacheCategoriesResponse(toCacheCategorySeq(response.cacheCategories))
-      }
-    }
+  override def fetchCacheCategories: Task[NineCardsException \/ Seq[CacheCategory]] =
+    cacheCategoryRepository.fetchCacheCategories ▹ eitherT map toCacheCategorySeq
+
 
   override def findCacheCategoryById: Service[FindCacheCategoryByIdRequest, FindCacheCategoryByIdResponse] =
     request => {
@@ -284,8 +282,11 @@ class PersistenceServicesImpl(
     Future.sequence(result)
   }
 
-  override def getUser()(implicit context: ContextSupport): Future[User] =
-    tryToFuture(loadFile[User](getFileUser))
+  override def getUser(implicit context: ContextSupport): Task[NineCardsException \/ User] =
+    Task(loadFile[User](getFileUser) match {
+      case Success(user) => \/-(user)
+      case Failure(ex) => -\/(NineCardsException(msg = "User not found", cause = ex.some))
+    })
 
   override def saveUser(user: User)(implicit context: ContextSupport): Future[Unit] =
     tryToFuture(writeFile[User](getFileUser, user))
@@ -296,13 +297,11 @@ class PersistenceServicesImpl(
       fileUser.exists() && fileUser.delete()
     }
 
-  override def getAndroidId()(implicit context: ContextSupport): Future[String] =
-    tryToFuture{
-      Try {
-        val cursor = Option(context.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
-        val result = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
-        result getOrElse (throw new RuntimeException("AndroidId not found"))
-      }
+  override def getAndroidId(implicit context: ContextSupport): Task[NineCardsException \/ String] =
+    Task {
+      val cursor = Option(context.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
+      val result = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+      result map (\/-(_)) getOrElse -\/(NineCardsException(msg = "Android Id not found"))
     }
 
   override def getInstallation()(implicit context: ContextSupport): Future[Installation] =

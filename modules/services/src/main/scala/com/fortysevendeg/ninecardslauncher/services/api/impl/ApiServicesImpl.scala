@@ -2,10 +2,16 @@ package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
 import scala.concurrent.ExecutionContext
+import scalaz.concurrent.Task
+import scalaz._
+import Scalaz._
+import EitherT._
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 
 case class ApiServicesConfig(appId: String, appKey: String, localization: String)
 
@@ -74,10 +80,9 @@ class ApiServicesImpl(
         response <- googlePlayService.getGooglePlayPackages(PackagesRequest(request.packageNames), createHeader(request.deviceId, request.token))
       } yield GooglePlayPackagesResponse(response.statusCode, response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)
 
-  override def googlePlaySimplePackages: Service[GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse] =
-    request =>
+  override def googlePlaySimplePackages(request: GooglePlaySimplePackagesRequest): Task[NineCardsException \/ GooglePlaySimplePackagesResponse] =
       for {
-        response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(request.items), createHeader(request.deviceId, request.token))
+        response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(request.items), createHeader(request.deviceId, request.token)) ▹ eitherT
       } yield GooglePlaySimplePackagesResponse(
         response.statusCode,
         response.data.map(playApp => toGooglePlaySimplePackages(playApp)).getOrElse(GooglePlaySimplePackages(Seq.empty, Seq.empty)))

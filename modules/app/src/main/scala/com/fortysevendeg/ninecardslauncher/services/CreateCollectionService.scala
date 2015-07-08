@@ -15,7 +15,6 @@ import com.fortysevendeg.ninecardslauncher.modules.appsmanager.IntentsRequest
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppItem
 import com.fortysevendeg.ninecardslauncher.process.device.utils.AppItemUtils._
-import com.fortysevendeg.ninecardslauncher.process.device.{CategorizeAppsException, CategorizeAppsRequest, GetCategorizedAppsRequest}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigRequest
@@ -36,13 +35,15 @@ import macroid.{ContextWrapper, Contexts}
 import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scalaz._
+import scalaz.concurrent.Task
 
 class CreateCollectionService
-  extends Service
-  with Contexts[Service]
-  with ContextSupportProvider
-  with ComponentRegistryImpl
-  with AppConversions {
+    extends Service
+    with Contexts[Service]
+    with ContextSupportProvider
+    with ComponentRegistryImpl
+    with AppConversions {
 
   override lazy val contextProvider: ContextWrapper = serviceContextWrapper
 
@@ -95,25 +96,21 @@ class CreateCollectionService
     val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
     val title: String = getString(com.fortysevendeg.ninecardslauncher2.R.string.workingNotificationTitle)
     builder.
-      setContentTitle(title).
-      setTicker(title).
-      setContentText(getString(com.fortysevendeg.ninecardslauncher2.R.string.loadingYourAppsMessage)).
-      setSmallIcon(com.fortysevendeg.ninecardslauncher2.R.drawable.icon_notification_working).
-      setProgress(0, 0, true).
-      setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
+        setContentTitle(title).
+        setTicker(title).
+        setContentText(getString(com.fortysevendeg.ninecardslauncher2.R.string.loadingYourAppsMessage)).
+        setSmallIcon(com.fortysevendeg.ninecardslauncher2.R.drawable.icon_notification_working).
+        setProgress(0, 0, true).
+        setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
 
     startForeground(NotificationId, builder.build)
 
-    deviceProcess.categorizeApps(CategorizeAppsRequest()) map {
-      response => createConfiguration()
-    } recover {
-      case ex: CategorizeAppsException =>
+    (Task.fork(deviceProcess.categorizeApps()) map {
+      case -\/(ex) =>
         Log.d(Tag, ex.getMessage)
         closeService()
-      case _ =>
-        Log.d(Tag, "Categorize apps unexpected exception")
-        closeService()
-    }
+      case \/-(_) => createConfiguration()
+    }).attemptRun
 
     super.onStartCommand(intent, flags, startId)
   }
@@ -175,19 +172,22 @@ class CreateCollectionService
     persistenceServices.addGeoInfo(request)
   }
 
-  private def createCollectionFromMyDevice() = deviceProcess.getCategorizedApps(GetCategorizedAppsRequest()) map {
-    response =>
+  private def createCollectionFromMyDevice() = (Task.fork(deviceProcess.getCategorizedApps) map {
+    case -\/(ex) =>
+      Log.d(Tag, ex.getMessage)
+      closeService()
+    case \/-(apps)  =>
       val categories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
         Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
         MediaAndVideo, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
         Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgets)
-      val inserts = createInsertSeq(response.apps, categories, Seq.empty)
+      val inserts = createInsertSeq(apps, categories, Seq.empty)
       val insertFutures = inserts map {
         insert =>
           persistenceServices.addCollection(insert)
       }
       insertFuturesInDB(insertFutures)
-  }
+  }).attemptRun
 
   private def createCollectionFromDevice(device: UserConfigDevice) = {
     // Store the icons for the apps not installed from internet
@@ -218,9 +218,9 @@ class CreateCollectionService
 
   @tailrec
   private def createInsertSeq(
-    apps: Seq[AppItem],
-    categories: Seq[String],
-    acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
+      apps: Seq[AppItem],
+      categories: Seq[String],
+      acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
     categories match {
       case Nil => acc
       case h :: t =>

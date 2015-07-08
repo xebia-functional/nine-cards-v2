@@ -1,5 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+
+import scalaz.\/
+import scalaz.concurrent.Task
+
 trait ApiServices {
 
   def login: Service[LoginRequest, LoginResponse]
@@ -14,7 +19,7 @@ trait ApiServices {
 
   def googlePlayPackages: Service[GooglePlayPackagesRequest, GooglePlayPackagesResponse]
 
-  def googlePlaySimplePackages: Service[GooglePlaySimplePackagesRequest, GooglePlaySimplePackagesResponse]
+  def googlePlaySimplePackages(request: GooglePlaySimplePackagesRequest): Task[NineCardsException \/ GooglePlaySimplePackagesResponse]
 
   def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse]
 

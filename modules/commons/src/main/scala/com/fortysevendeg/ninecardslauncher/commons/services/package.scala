@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.commons
 
 import scala.language.{higherKinds, implicitConversions}
 import scalaz._
-import Scalaz._
 import scalaz.concurrent.Task
 
 package object services {
