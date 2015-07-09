@@ -1,6 +1,5 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, CacheCategoryData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity.cacheCategoryEntityFromCursor
@@ -90,10 +89,10 @@ trait CacheCategoryTestData {
 }
 
 trait CacheCategoryTestSupport
-    extends BaseTestSupport
-    with CacheCategoryTestData
-    with DBUtils
-    with Mockito {
+  extends BaseTestSupport
+  with CacheCategoryTestData
+  with DBUtils
+  with Mockito {
 
   lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
   lazy val cacheCategoryRepository = new CacheCategoryRepository(contentResolverWrapper)
@@ -105,16 +104,6 @@ trait CacheCategoryTestSupport
     numDownloads = numDownloads,
     ratingsCount = ratingsCount,
     commentCount = commentCount)
-
-  def createDeleteCacheCategoryRequest = DeleteCacheCategoryRequest(cacheCategory = cacheCategory)
-
-  def createDeleteCacheCategoryByPackageRequest = DeleteCacheCategoryByPackageRequest(packageName = packageName)
-
-  def createFindCacheCategoryByIdRequest(id: Int) = FindCacheCategoryByIdRequest(id = id)
-
-  def createFetchCacheCategoryByPackageRequest(packageName: String) = FetchCacheCategoryByPackageRequest(`package` = packageName)
-
-  def createUpdateCacheCategoryRequest = UpdateCacheCategoryRequest(cacheCategory = cacheCategory)
 
   when(contentResolverWrapper.insert(CacheCategoryUri, createCacheCategoryValues)).thenReturn(cacheCategoryId)
 
@@ -129,47 +118,47 @@ trait CacheCategoryTestSupport
     nineCardsUri = CacheCategoryUri,
     id = cacheCategoryId,
     projection = CacheCategoryEntity.allFields)(
-        f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(Some(cacheCategoryEntity))
+      f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(Some(cacheCategoryEntity))
 
   when(contentResolverWrapper.findById(
     nineCardsUri = CacheCategoryUri,
     id = nonExistingCacheCategoryId,
     projection = CacheCategoryEntity.allFields)(
-        f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(None)
+      f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.fetchAll(
     nineCardsUri = CacheCategoryUri,
     projection = CacheCategoryEntity.allFields)(
-        f = getListFromCursor(cacheCategoryEntityFromCursor))).thenReturn(cacheCategoryEntitySeq)
+      f = getListFromCursor(cacheCategoryEntityFromCursor))).thenReturn(cacheCategoryEntitySeq)
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = CacheCategoryUri,
     projection = CacheCategoryEntity.allFields,
     where = s"${CacheCategoryEntity.packageName} = ?",
     whereParams = Seq(packageName))(
-        f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(Some(cacheCategoryEntity))
+      f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(Some(cacheCategoryEntity))
 
   when(contentResolverWrapper.fetch(
     nineCardsUri = CacheCategoryUri,
     projection = CacheCategoryEntity.allFields,
     where = s"${CacheCategoryEntity.packageName} = ?",
     whereParams = Seq(nonExistingPackageName))(
-        f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(None)
+      f = getEntityFromCursor(cacheCategoryEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.updateById(CacheCategoryUri, cacheCategoryId, createCacheCategoryValues)).thenReturn(1)
 }
 
 class CacheCategoryRepositorySpec
-    extends Specification
-    with Mockito
-    with DisjunctionMatchers
-    with CacheCategoryTestSupport {
+  extends Specification
+  with Mockito
+  with DisjunctionMatchers
+  with CacheCategoryTestSupport {
 
   "CacheCategoryRepositoryClient component" should {
 
     "addCacheCategory should return a valid CacheCategory object" in {
 
-      val result = runTask(cacheCategoryRepository.addCacheCategory(createCacheCategoryData))
+      val result = runTask(cacheCategoryRepository.addCacheCategory(data = createCacheCategoryData))
 
       result must be_\/-[CacheCategory].which {
         cacheCategory =>
@@ -179,15 +168,21 @@ class CacheCategoryRepositorySpec
     }
 
     "deleteCacheCategory should return a successful response when a valid cache category id is given" in {
-      val response = await(cacheCategoryRepository.deleteCacheCategory(createDeleteCacheCategoryRequest))
+      val result = runTask(cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory))
 
-      response.deleted shouldEqual 1
+      result must be_\/-[Int].which {
+        deleted =>
+          deleted shouldEqual 1
+      }
     }
 
     "deleteCacheCategoryByPackage should return a successful response when a valid package name is given" in {
-      val response = await(cacheCategoryRepository.deleteCacheCategoryByPackage(createDeleteCacheCategoryByPackageRequest))
+      val result = runTask(cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = packageName))
 
-      response.deleted shouldEqual 1
+      result must be_\/-[Int].which {
+        deleted =>
+          deleted shouldEqual 1
+      }
     }
 
     "fetchCacheCategories should return all the cache categories stored in the database" in {
@@ -200,74 +195,90 @@ class CacheCategoryRepositorySpec
     }
 
     "findCacheCategoryById should return a CacheCategory object when a existing id is given" in {
-      val response = await(cacheCategoryRepository.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId)))
+      val result = runTask(cacheCategoryRepository.findCacheCategoryById(id = cacheCategoryId))
 
-      response.cacheCategory must beSome[CacheCategory].which { cacheCategory =>
-        cacheCategory.id shouldEqual cacheCategoryId
-        cacheCategory.data.packageName shouldEqual packageName
+      result must be_\/-[Option[CacheCategory]].which {
+        maybeCacheCategory =>
+          maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
+            cacheCategory.id shouldEqual cacheCategoryId
+            cacheCategory.data.packageName shouldEqual packageName
+          }
       }
     }
 
     "findCacheCategoryById should return None when a non-existing id is given" in {
-      val response = await(cacheCategoryRepository.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
+      val result = runTask(cacheCategoryRepository.findCacheCategoryById(id = nonExistingCacheCategoryId))
 
-      response.cacheCategory must beNone
+      result must be_\/-[Option[CacheCategory]].which {
+        maybeCacheCategory =>
+          maybeCacheCategory must beNone
+      }
     }
 
     "fetchCacheCategoryByPackage should return a CacheCategory object when a existing package name is given" in {
-      val response = await(cacheCategoryRepository.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName)))
+      val result = runTask(cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = packageName))
 
-      response.cacheCategory must beSome[CacheCategory].which { cacheCategory =>
-        cacheCategory.id shouldEqual cacheCategoryId
-        cacheCategory.data.packageName shouldEqual packageName
+      result must be_\/-[Option[CacheCategory]].which {
+        maybeCacheCategory =>
+          maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
+            cacheCategory.id shouldEqual cacheCategoryId
+            cacheCategory.data.packageName shouldEqual packageName
+          }
       }
     }
 
     "fetchCacheCategoryByPackage should return None when a non-existing package name is given" in {
-      val response = await(cacheCategoryRepository.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = nonExistingPackageName)))
+      val result = runTask(cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = nonExistingPackageName))
 
-      response.cacheCategory must beNone
+      result must be_\/-[Option[CacheCategory]].which {
+        maybeCacheCategory =>
+          maybeCacheCategory must beNone
+      }
     }
 
     "updateCacheCategory should return a successful response when the cache category is updated" in {
-      val response = await(cacheCategoryRepository.updateCacheCategory(createUpdateCacheCategoryRequest))
+      val result = runTask(cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory))
 
-      response.updated shouldEqual 1
+      result must be_\/-[Int].which {
+        updated =>
+          updated shouldEqual 1
+      }
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in
-        new EmptyCacheCategoryMockCursor
-            with Scope {
-          val result = getEntityFromCursor(cacheCategoryEntityFromCursor)(mockCursor)
+      new EmptyCacheCategoryMockCursor
+        with Scope {
+        val result = getEntityFromCursor(cacheCategoryEntityFromCursor)(mockCursor)
 
-          result must beNone
-        }
+        result must beNone
+      }
 
     "getEntityFromCursor should return a CacheCategory object when a cursor with data is given" in
-        new CacheCategoryMockCursor
-            with Scope {
-          val result = getEntityFromCursor(cacheCategoryEntityFromCursor)(mockCursor)
+      new CacheCategoryMockCursor
+        with Scope {
+        val result = getEntityFromCursor(cacheCategoryEntityFromCursor)(mockCursor)
 
-          result must beSome[CacheCategoryEntity].which { cacheCategory =>
-            cacheCategory.id shouldEqual cacheCategoryEntity.id
-            cacheCategory.data shouldEqual cacheCategoryEntity.data
-          }
+        result must beSome[CacheCategoryEntity].which { cacheCategory =>
+          cacheCategory.id shouldEqual cacheCategoryEntity.id
+          cacheCategory.data shouldEqual cacheCategoryEntity.data
         }
+      }
 
     "getListFromCursor should return an empty sequence when an empty cursor is given" in
-        new EmptyCacheCategoryMockCursor
-            with Scope {
-          val result = getListFromCursor(cacheCategoryEntityFromCursor)(mockCursor)
+      new EmptyCacheCategoryMockCursor
+        with Scope {
+        val result = getListFromCursor(cacheCategoryEntityFromCursor)(mockCursor)
 
-          result shouldEqual Seq.empty
-        }
+        result shouldEqual Seq.empty
+      }
 
     "getEntityFromCursor should return a CacheCategory sequence when a cursor with data is given" in
-        new CacheCategoryMockCursor
-            with Scope {
-          val result = getListFromCursor(cacheCategoryEntityFromCursor)(mockCursor)
+      new CacheCategoryMockCursor
+        with Scope {
+        val result = getListFromCursor(cacheCategoryEntityFromCursor)(mockCursor)
 
-          result shouldEqual cacheCategoryEntitySeq
-        }
+        result shouldEqual cacheCategoryEntitySeq
+      }
   }
+
 }

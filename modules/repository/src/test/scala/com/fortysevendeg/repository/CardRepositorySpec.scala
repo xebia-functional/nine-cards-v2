@@ -2,11 +2,12 @@ package com.fortysevendeg.repository
 
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapperImpl}
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, Card, CardData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity.cardEntityFromCursor
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import org.mockito.Mockito._
+import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -142,7 +143,7 @@ trait CardTestSupport
   lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
   lazy val cardRepository = new CardRepository(contentResolverWrapper)
 
-  def createAddCardRequest = AddCardRequest(collectionId = collectionId, CardData(
+  def createCardData = CardData(
     position = position,
     term = term,
     packageName = packageNameOption,
@@ -152,15 +153,7 @@ trait CardTestSupport
     starRating = starRatingOption,
     micros = micros,
     numDownloads = numDownloadsOption,
-    notification = notificationOption))
-
-  def createDeleteCardRequest = DeleteCardRequest(card = card)
-
-  def createGetCardByIdRequest(id: Int) = FindCardByIdRequest(id = id)
-
-  def createGetCardByCollectionRequest(collectionId: Int) = FetchCardsByCollectionRequest(collectionId = collectionId)
-
-  def createUpdateCardRequest = UpdateCardRequest(card = card)
+    notification = notificationOption)
 
   when(contentResolverWrapper.insert(CardUri, createInsertCardValues)).thenReturn(cardId)
 
@@ -199,55 +192,77 @@ class CardRepositorySpec
   extends Specification
   with Mockito
   with Scope
+  with DisjunctionMatchers
   with CardTestSupport {
 
   "CardRepositoryClient component" should {
 
     "addCard should return a valid Card object" in {
 
-      val response = await(cardRepository.addCard(createAddCardRequest))
+      val result = runTask(cardRepository.addCard(collectionId = collectionId, data = createCardData))
 
-      response.card.id shouldEqual cardId
-      response.card.data.intent shouldEqual intent
+      result must be_\/-[Card].which {
+        card =>
+          card.id shouldEqual cardId
+          card.data.intent shouldEqual intent
+      }
     }
 
-    "deleteCard should return a successful response when a valid cache category id is given" in {
-      val response = await(cardRepository.deleteCard(createDeleteCardRequest))
+    "deleteCard should return a successful result when a valid cache category id is given" in {
+      val result = runTask(cardRepository.deleteCard(card = card))
 
-      response.deleted shouldEqual 1
+      result must be_\/-[Int].which {
+        deleted =>
+          deleted shouldEqual 1
+      }
     }
 
     "findCardById should return a Card object when a existing id is given" in {
-      val response = await(cardRepository.findCardById(createGetCardByIdRequest(id = cardId)))
+      val result = runTask(cardRepository.findCardById(id = cardId))
 
-      response.card must beSome[Card].which { card =>
-        card.id shouldEqual cardId
-        card.data.intent shouldEqual intent
+      result must be_\/-[Option[Card]].which {
+        maybeCard =>
+          maybeCard must beSome[Card].which { card =>
+            card.id shouldEqual cardId
+            card.data.intent shouldEqual intent
+          }
       }
     }
 
     "findCardById should return None when a non-existing id is given" in {
-      val response = await(cardRepository.findCardById(createGetCardByIdRequest(id = nonExistingCardId)))
+      val result = runTask(cardRepository.findCardById(id = nonExistingCardId))
 
-      response.card must beNone
+      result must be_\/-[Option[Card]].which {
+        maybeCard =>
+          maybeCard must beNone
+      }
     }
 
-    "getCardByCollection should return a Card sequence when a existing collection id is given" in {
-      val response = await(cardRepository.fetchCardsByCollection(createGetCardByCollectionRequest(collectionId = collectionId)))
+    "fetchCardsByCollection should return a Card sequence when a existing collection id is given" in {
+      val result = runTask(cardRepository.fetchCardsByCollection(collectionId = collectionId))
 
-      response.cards shouldEqual cardSeq
+      result must be_\/-[Seq[Card]].which {
+        cards =>
+          cards shouldEqual cardSeq
+      }
     }
 
-    "getCardByCollection should return an empty sequence when a non-existing collection id is given" in {
-      val response = await(cardRepository.fetchCardsByCollection(createGetCardByCollectionRequest(collectionId = nonExistingCollectionId)))
+    "fetchCardsByCollection should return an empty sequence when a non-existing collection id is given" in {
+      val result = runTask(cardRepository.fetchCardsByCollection(collectionId = nonExistingCollectionId))
 
-      response.cards shouldEqual Seq.empty
+      result must be_\/-[Seq[Card]].which {
+        cards =>
+          cards shouldEqual Seq.empty
+      }
     }
 
-    "updateCard should return a successful response when the card is updated" in {
-      val response = await(cardRepository.updateCard(createUpdateCardRequest))
+    "updateCard should return a successful result when the card is updated" in {
+      val result = runTask(cardRepository.updateCard(card = card))
 
-      response.updated shouldEqual 1
+      result must be_\/-[Int].which {
+        updated =>
+          updated shouldEqual 1
+      }
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in

@@ -1,12 +1,14 @@
 package com.fortysevendeg.repository
 
+import android.R.id
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CollectionUri, ContentResolverWrapperImpl}
-import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection, CollectionData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.collectionEntityFromCursor
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import org.mockito.Mockito._
+import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -57,7 +59,7 @@ trait CollectionTestData {
   val position = Random.nextInt(10)
   val nonExistingPosition = 15
   val name = Random.nextString(5)
-  val `type` = Random.nextString(5)
+  val collectionType = Random.nextString(5)
   val icon = Random.nextString(5)
   val themedColorIndex = Random.nextInt(10)
   val appsCategory = Random.nextString(5)
@@ -84,7 +86,7 @@ trait CollectionTestData {
     data = CollectionEntityData(
       position = position,
       name = name,
-      `type` = `type`,
+      `type` = collectionType,
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = appsCategory,
@@ -98,7 +100,7 @@ trait CollectionTestData {
     data = CollectionData(
       position = position,
       name = name,
-      collectionType = `type`,
+      collectionType = collectionType,
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = appsCategoryOption,
@@ -110,7 +112,7 @@ trait CollectionTestData {
   def createCollectionValues = Map[String, Any](
     CollectionEntity.position -> position,
     CollectionEntity.name -> name,
-    CollectionEntity.collectionType -> `type`,
+    CollectionEntity.collectionType -> collectionType,
     CollectionEntity.icon -> icon,
     CollectionEntity.themedColorIndex -> themedColorIndex,
     CollectionEntity.appsCategory -> (appsCategoryOption getOrElse ""),
@@ -129,29 +131,17 @@ trait CollectionTestSupport
   lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
   lazy val collectionRepository = new CollectionRepository(contentResolverWrapper)
 
-  def createAddCollectionRequest = AddCollectionRequest(CollectionData(
+  def createCollectionData = CollectionData(
     position = position,
     name = name,
-    collectionType = `type`,
+    collectionType = collectionType,
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = appsCategoryOption,
     constrains = constrainsOption,
     originalSharedCollectionId = originalSharedCollectionIdOption,
     sharedCollectionId = sharedCollectionIdOption,
-    sharedCollectionSubscribed = sharedCollectionSubscribedOption))
-
-  def createDeleteCollectionRequest = DeleteCollectionRequest(collection = collection)
-
-  def createGetCollectionByIdRequest(id: Int) = FindCollectionByIdRequest(id = id)
-
-  def createGetCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId: Int) = FetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = sharedCollectionId)
-
-  def createGetCollectionByPositionRequest(position: Int) = FetchCollectionByPositionRequest(position = position)
-
-  def createGetSortedCollectionsRequest = FetchSortedCollectionsRequest()
-
-  def createUpdateCollectionRequest = UpdateCollectionRequest(collection = collection)
+    sharedCollectionSubscribed = sharedCollectionSubscribedOption)
 
   when(contentResolverWrapper.insert(CollectionUri, createCollectionValues)).thenReturn(collectionId)
 
@@ -160,19 +150,13 @@ trait CollectionTestSupport
   when(contentResolverWrapper.findById(
     nineCardsUri = CollectionUri,
     id = collectionId,
-    projection = CollectionEntity.allFields,
-    where = "",
-    whereParams = Seq.empty,
-    orderBy = "")(
+    projection = CollectionEntity.allFields)(
       f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(Some(collectionEntity))
 
   when(contentResolverWrapper.findById(
     nineCardsUri = CollectionUri,
     id = nonExistingCollectionId,
-    projection = CollectionEntity.allFields,
-    where = "",
-    whereParams = Seq.empty,
-    orderBy = "")(
+    projection = CollectionEntity.allFields)(
       f = getEntityFromCursor(collectionEntityFromCursor))).thenReturn(None)
 
   when(contentResolverWrapper.fetchAll(
@@ -222,79 +206,111 @@ class CollectionRepositorySpec
   extends Specification
   with Mockito
   with Scope
+  with DisjunctionMatchers
   with CollectionTestSupport {
 
   "CollectionRepositoryClient component" should {
 
     "addCollection should return a valid Collection object" in {
 
-      val response = await(collectionRepository.addCollection(createAddCollectionRequest))
+      val result = runTask(collectionRepository.addCollection(data = createCollectionData))
 
-      response.collection.id shouldEqual collectionId
-      response.collection.data.name shouldEqual name
+      result must be_\/-[Collection].which {
+        collection =>
+          collection.id shouldEqual collectionId
+          collection.data.name shouldEqual name
+      }
     }
 
-    "deleteCollection should return a successful response when a valid cache category id is given" in {
-      val response = await(collectionRepository.deleteCollection(createDeleteCollectionRequest))
+    "deleteCollection should return a successful result when a valid cache category id is given" in {
+      val result = runTask(collectionRepository.deleteCollection(collection))
 
-      response.deleted shouldEqual 1
+      result must be_\/-[Int].which {
+        deleted =>
+          deleted shouldEqual 1
+      }
     }
 
     "findCollectionById should return a Collection object when a existing id is given" in {
-      val response = await(collectionRepository.findCollectionById(createGetCollectionByIdRequest(id = collectionId)))
+      val result = runTask(collectionRepository.findCollectionById(id = collectionId))
 
-      response.collection must beSome[Collection].which { collection =>
-        collection.id shouldEqual collectionId
-        collection.data.name shouldEqual name
+      result must be_\/-[Option[Collection]].which {
+        maybeCollection =>
+          maybeCollection must beSome[Collection].which { collection =>
+            collection.id shouldEqual collectionId
+            collection.data.name shouldEqual name
+          }
       }
     }
 
     "findCollectionById should return None when a non-existing id is given" in {
-      val response = await(collectionRepository.findCollectionById(createGetCollectionByIdRequest(id = nonExistingCollectionId)))
+      val result = runTask(collectionRepository.findCollectionById(id = nonExistingCollectionId))
 
-      response.collection must beNone
-    }
-
-    "fetchCollectionByOriginalSharedCollectionId should return a Collection object when a existing shared collection id is given" in {
-      val response = await(collectionRepository.fetchCollectionByOriginalSharedCollectionId(createGetCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = sharedCollectionIdInt)))
-
-      response.collection must beSome[Collection].which { collection =>
-        collection.id shouldEqual collectionId
-        collection.data.name shouldEqual name
+      result must be_\/-[Option[Collection]].which {
+        maybeCollection =>
+          maybeCollection must beNone
       }
     }
 
-    "fetchCollectionByOriginalSharedCollectionId should return None when a non-existing shared collection id is given" in {
-      val response = await(collectionRepository.fetchCollectionByOriginalSharedCollectionId(createGetCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = nonExistingSharedCollectionIdInt)))
+    "fetchCollectionBySharedCollectionId should return a Collection object when a existing shared collection id is given" in {
+      val result = runTask(collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = sharedCollectionIdInt))
 
-      response.collection must beNone
+      result must be_\/-[Option[Collection]].which {
+        maybeCollection =>
+          maybeCollection must beSome[Collection].which { collection =>
+            collection.id shouldEqual collectionId
+            collection.data.name shouldEqual name
+          }
+      }
+    }
+
+    "fetchCollectionBySharedCollectionId should return None when a non-existing shared collection id is given" in {
+      val result = runTask(collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = nonExistingSharedCollectionIdInt))
+
+      result must be_\/-[Option[Collection]].which {
+        maybeCollection =>
+          maybeCollection must beNone
+      }
     }
 
     "fetchCollectionByPosition should return a Collection object when a existing position is given" in {
-      val response = await(collectionRepository.fetchCollectionByPosition(createGetCollectionByPositionRequest(position = position)))
+      val result = runTask(collectionRepository.fetchCollectionByPosition(position = position))
 
-      response.collection must beSome[Collection].which { collection =>
-        collection.id shouldEqual collectionId
-        collection.data.position shouldEqual position
+      result must be_\/-[Option[Collection]].which {
+        maybeCollection =>
+          maybeCollection must beSome[Collection].which { collection =>
+            collection.id shouldEqual collectionId
+            collection.data.position shouldEqual position
+          }
       }
     }
 
     "fetchCollectionByPosition should return None when a non-existing position is given" in {
-      val response = await(collectionRepository.fetchCollectionByPosition(createGetCollectionByPositionRequest(position = nonExistingPosition)))
+      val result = runTask(collectionRepository.fetchCollectionByPosition(position = nonExistingPosition))
 
-      response.collection must beNone
+      result must be_\/-[Option[Collection]].which {
+        maybeCollection =>
+          maybeCollection must beNone
+      }
     }
 
     "fetchSortedCollections should return all the cache categories stored in the database" in {
-      val response = await(collectionRepository.fetchSortedCollections(createGetSortedCollectionsRequest))
+      val result = runTask(collectionRepository.fetchSortedCollections)
 
-      response.collections shouldEqual collectionSeq
+      result must be_\/-[Seq[Collection]].which {
+        collections =>
+          collections shouldEqual collectionSeq
+      }
+
     }
 
-    "updateCollection should return a successful response when the collection is updated" in {
-      val response = await(collectionRepository.updateCollection(createUpdateCollectionRequest))
+    "updateCollection should return a successful result when the collection is updated" in {
+      val result = runTask(collectionRepository.updateCollection(collection = collection))
 
-      response.updated shouldEqual 1
+      result must be_\/-[Int].which {
+        updated =>
+          updated shouldEqual 1
+      }
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in
