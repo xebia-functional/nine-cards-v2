@@ -1,10 +1,10 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, CardUri}
-import com.fortysevendeg.ninecardslauncher.provider.CardEntity.cardEntityFromCursor
-import com.fortysevendeg.ninecardslauncher.provider._
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData}
+import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity.cardEntityFromCursor
+import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import org.mockito.Mockito._
 import org.specs2.mock.Mockito

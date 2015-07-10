@@ -1,12 +1,13 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.commons.{CacheCategoryUri, ContentResolverWrapperImpl}
-import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity.cacheCategoryEntityFromCursor
-import com.fortysevendeg.ninecardslauncher.provider._
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, CacheCategoryData}
+import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity.cacheCategoryEntityFromCursor
+import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import org.mockito.Mockito._
+import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -97,23 +98,21 @@ trait CacheCategoryTestSupport
   lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
   lazy val cacheCategoryRepository = new CacheCategoryRepository(contentResolverWrapper)
 
-  def createAddCacheCategoryRequest = AddCacheCategoryRequest(CacheCategoryData(
+  def createCacheCategoryData = CacheCategoryData(
     packageName = packageName,
     category = category,
     starRating = starRating,
     numDownloads = numDownloads,
     ratingsCount = ratingsCount,
-    commentCount = commentCount))
+    commentCount = commentCount)
 
   def createDeleteCacheCategoryRequest = DeleteCacheCategoryRequest(cacheCategory = cacheCategory)
 
   def createDeleteCacheCategoryByPackageRequest = DeleteCacheCategoryByPackageRequest(packageName = packageName)
 
-  def createGetAllCacheCategoriesRequest = FetchCacheCategoriesRequest()
+  def createFindCacheCategoryByIdRequest(id: Int) = FindCacheCategoryByIdRequest(id = id)
 
-  def createGetCacheCategoryByIdRequest(id: Int) = FindCacheCategoryByIdRequest(id = id)
-
-  def createGetCacheCategoriesByPackage(packageName: String) = FetchCacheCategoryByPackageRequest(`package` = packageName)
+  def createFetchCacheCategoryByPackageRequest(packageName: String) = FetchCacheCategoryByPackageRequest(`package` = packageName)
 
   def createUpdateCacheCategoryRequest = UpdateCacheCategoryRequest(cacheCategory = cacheCategory)
 
@@ -163,16 +162,20 @@ trait CacheCategoryTestSupport
 class CacheCategoryRepositorySpec
     extends Specification
     with Mockito
+    with DisjunctionMatchers
     with CacheCategoryTestSupport {
 
   "CacheCategoryRepositoryClient component" should {
 
     "addCacheCategory should return a valid CacheCategory object" in {
 
-      val result = await(cacheCategoryRepository.addCacheCategory(createAddCacheCategoryRequest))
+      val result = runTask(cacheCategoryRepository.addCacheCategory(createCacheCategoryData))
 
-      result.cacheCategory.id shouldEqual cacheCategoryId
-      result.cacheCategory.data.packageName shouldEqual packageName
+      result must be_\/-[CacheCategory].which {
+        cacheCategory =>
+          cacheCategory.id shouldEqual cacheCategoryId
+          cacheCategory.data.packageName shouldEqual packageName
+      }
     }
 
     "deleteCacheCategory should return a successful response when a valid cache category id is given" in {
@@ -187,14 +190,17 @@ class CacheCategoryRepositorySpec
       response.deleted shouldEqual 1
     }
 
-    "getAllCacheCategories should return all the cache categories stored in the database" in {
-      val response = await(cacheCategoryRepository.fetchCacheCategories(createGetAllCacheCategoriesRequest))
+    "fetchCacheCategories should return all the cache categories stored in the database" in {
+      val result = runTask(cacheCategoryRepository.fetchCacheCategories)
 
-      response.cacheCategories shouldEqual cacheCategorySeq
+      result must be_\/-[Seq[CacheCategory]].which {
+        cacheCategories =>
+          cacheCategories shouldEqual cacheCategorySeq
+      }
     }
 
-    "getCacheCategoryById should return a CacheCategory object when a existing id is given" in {
-      val response = await(cacheCategoryRepository.findCacheCategoryById(createGetCacheCategoryByIdRequest(id = cacheCategoryId)))
+    "findCacheCategoryById should return a CacheCategory object when a existing id is given" in {
+      val response = await(cacheCategoryRepository.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId)))
 
       response.cacheCategory must beSome[CacheCategory].which { cacheCategory =>
         cacheCategory.id shouldEqual cacheCategoryId
@@ -202,14 +208,14 @@ class CacheCategoryRepositorySpec
       }
     }
 
-    "getCacheCategoryById should return None when a non-existing id is given" in {
-      val response = await(cacheCategoryRepository.findCacheCategoryById(createGetCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
+    "findCacheCategoryById should return None when a non-existing id is given" in {
+      val response = await(cacheCategoryRepository.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = nonExistingCacheCategoryId)))
 
       response.cacheCategory must beNone
     }
 
-    "getCacheCategoryByPackage should return a CacheCategory object when a existing package name is given" in {
-      val response = await(cacheCategoryRepository.fetchCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = packageName)))
+    "fetchCacheCategoryByPackage should return a CacheCategory object when a existing package name is given" in {
+      val response = await(cacheCategoryRepository.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName)))
 
       response.cacheCategory must beSome[CacheCategory].which { cacheCategory =>
         cacheCategory.id shouldEqual cacheCategoryId
@@ -217,8 +223,8 @@ class CacheCategoryRepositorySpec
       }
     }
 
-    "getCacheCategoryByPackage should return None when a non-existing package name is given" in {
-      val response = await(cacheCategoryRepository.fetchCacheCategoryByPackage(createGetCacheCategoriesByPackage(packageName = nonExistingPackageName)))
+    "fetchCacheCategoryByPackage should return None when a non-existing package name is given" in {
+      val response = await(cacheCategoryRepository.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = nonExistingPackageName)))
 
       response.cacheCategory must beNone
     }

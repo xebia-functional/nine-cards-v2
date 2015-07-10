@@ -1,11 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.modules.appsmanager.impl
 
 import com.fortysevendeg.ninecardslauncher.api.services._
-import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, ContextWrapperProvider, Service}
+import com.fortysevendeg.ninecardslauncher.commons.{ContextWrapperProvider, Service}
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image._
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 import com.fortysevendeg.ninecardslauncher.process.device._
+import com.fortysevendeg.ninecardslauncher.repository.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesRequest, GooglePlayPackagesResponse}

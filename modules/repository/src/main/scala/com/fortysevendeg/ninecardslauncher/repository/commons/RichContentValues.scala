@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.commons
+package com.fortysevendeg.ninecardslauncher.repository.commons
 
 import android.content.ContentValues
 

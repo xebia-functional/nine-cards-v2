@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.provider
+package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.provider.NineCardsSqlHelper._
+import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsSqlHelper._
 
 import scala.annotation.tailrec
 

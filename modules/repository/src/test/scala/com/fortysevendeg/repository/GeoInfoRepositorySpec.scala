@@ -1,10 +1,10 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperImpl, GeoInfoUri}
-import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity.geoInfoEntityFromCursor
-import com.fortysevendeg.ninecardslauncher.provider._
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapperImpl, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo, GeoInfoData}
+import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity.geoInfoEntityFromCursor
+import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import org.mockito.Mockito._
 import org.specs2.mock.Mockito

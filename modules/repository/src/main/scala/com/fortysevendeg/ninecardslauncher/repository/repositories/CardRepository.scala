@@ -1,12 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.{CardUri, ContentResolverWrapper}
-import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
-import com.fortysevendeg.ninecardslauncher.provider.DBUtils
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
 import com.fortysevendeg.ninecardslauncher.repository._
+import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapper}
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
-import com.fortysevendeg.ninecardslauncher.utils._
+import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
+import com.fortysevendeg.ninecardslauncher.repository.provider.DBUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try

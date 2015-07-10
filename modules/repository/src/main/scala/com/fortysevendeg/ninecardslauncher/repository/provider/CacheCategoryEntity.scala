@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.provider
+package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
+import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity._
 
 case class CacheCategoryEntity(id: Int, data: CacheCategoryEntityData)
 
