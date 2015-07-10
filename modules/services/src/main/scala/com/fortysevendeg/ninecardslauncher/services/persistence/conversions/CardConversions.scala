@@ -5,7 +5,6 @@ import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
-import com.fortysevendeg.ninecardslauncher.{repository => repo}
 import play.api.libs.json.Json
 
 trait CardConversions {
@@ -43,48 +42,34 @@ trait CardConversions {
       )
     )
 
-  def toRepositoryAddCardRequest(request: AddCardRequest) =
-    repo.AddCardRequest(
-      collectionId = request.collectionId,
+  def toRepositoryCard(request: UpdateCardRequest) =
+    RepoCard(
+      id = request.id,
       data = RepoCardData(
-        position = request.cardItem.position,
-        term = request.cardItem.term,
-        cardType = request.cardItem.cardType,
-        micros = request.cardItem.micros,
-        packageName = request.cardItem.packageName,
-        intent = request.cardItem.intent,
-        imagePath = request.cardItem.imagePath,
-        starRating = request.cardItem.starRating,
-        numDownloads = request.cardItem.numDownloads,
-        notification = request.cardItem.notification
+        position = request.position,
+        micros = request.micros,
+        term = request.term,
+        packageName = request.packageName,
+        cardType = request.cardType,
+        intent = request.intent,
+        imagePath = request.imagePath,
+        starRating = request.starRating,
+        numDownloads = request.numDownloads,
+        notification = request.notification
       )
     )
 
-  def toRepositoryDeleteCardRequest(request: DeleteCardRequest) =
-    repo.DeleteCardRequest(card = toRepositoryCard(request.card))
-
-  def toRepositoryFetchCardsByCollectionRequest(request: FetchCardsByCollectionRequest) =
-    repo.FetchCardsByCollectionRequest(collectionId = request.collectionId)
-
-  def toRepositoryFindCardByIdRequest(request: FindCardByIdRequest) =
-    repo.FindCardByIdRequest(id = request.id)
-
-  def toRepositoryUpdateCardRequest(request: UpdateCardRequest) =
-    repo.UpdateCardRequest(
-      RepoCard(
-        id = request.id,
-        data = RepoCardData(
-          position = request.position,
-          micros = request.micros,
-          term = request.term,
-          packageName = request.packageName,
-          cardType = request.cardType,
-          intent = request.intent,
-          imagePath = request.imagePath,
-          starRating = request.starRating,
-          numDownloads = request.numDownloads,
-          notification = request.notification
-        )
-      )
+  def toRepositoryCardData(cardItem: CardItem) =
+    RepoCardData(
+      position = cardItem.position,
+      term = cardItem.term,
+      cardType = cardItem.cardType,
+      micros = cardItem.micros,
+      packageName = cardItem.packageName,
+      intent = cardItem.intent,
+      imagePath = cardItem.imagePath,
+      starRating = cardItem.starRating,
+      numDownloads = cardItem.numDownloads,
+      notification = cardItem.notification
     )
 }
