@@ -14,7 +14,7 @@ class ImageServicesImpl
     extends ImageServices
     with Tasks {
 
-  override def saveAppIcon(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
+  override def getAppPackagePathAndSaveIfNotExists(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
     getPathByApp(request.packageName, request.className) map {
       case -\/(ex) => -\/(NineCardsException(msg = "Not possible get the file", cause = ex.some))
       case \/-(file) =>
@@ -29,7 +29,7 @@ class ImageServicesImpl
         }
     }
 
-  override def saveImageFromUrl(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
+  override def getAppWebsitePathAndSaveIfNotExists(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
     getPathByPackageName(request.packageName) map {
       case -\/(ex) => -\/(NineCardsException(msg = "Not possible get the file", cause = ex.some))
       case \/-(file) =>
