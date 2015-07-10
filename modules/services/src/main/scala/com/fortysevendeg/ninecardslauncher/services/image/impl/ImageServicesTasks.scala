@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.util.{DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
 import scala.util.{Success, Failure, Try}
@@ -16,18 +17,9 @@ import scalaz._
 import Scalaz._
 import scalaz.concurrent.Task
 
-trait Tasks {
+trait ImageServicesTasks {
 
   val noDensity = 0
-
-  // TODO We need a better option for that
-  val colors = List(
-    Color.parseColor("#FF9800"),
-    Color.parseColor("#F44336"),
-    Color.parseColor("#9C27B0"),
-    Color.parseColor("#2196F3"),
-    Color.parseColor("#673AB7")
-  )
 
   val resourceUtils = new ResourceUtils
 
@@ -52,13 +44,6 @@ trait Tasks {
       }
     }
 
-  def exists(file: File): Task[NineCardsException \/ Boolean] =
-    Task {
-      \/.fromTryCatchThrowable[Boolean, NineCardsException] {
-        file.exists()
-      }
-    }
-
   def getBitmapByApp(packageName: String, icon: Int)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
     Task {
       \/.fromTryCatchThrowable[Bitmap, NineCardsException] {
@@ -77,7 +62,7 @@ trait Tasks {
       }
     }
 
-  def getBitmapByName(text: String)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
+  def getBitmapByName(text: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
     Task {
       \/.fromTryCatchThrowable[Bitmap, NineCardsException] {
         val bitmap: Bitmap = Bitmap.createBitmap(defaultSize, defaultSize, Bitmap.Config.RGB_565)
@@ -87,7 +72,8 @@ trait Tasks {
         val x: Int = ((defaultSize / 2) - bounds.exactCenterX).toInt
         val y: Int = ((defaultSize / 2) - bounds.exactCenterY).toInt
         val canvas: Canvas = new Canvas(bitmap)
-        canvas.drawColor(randomColor)
+        val color = config.colors(scala.util.Random.nextInt(config.colors.length))
+        canvas.drawColor(color)
         canvas.drawText(text, x, y, paint)
         bitmap
       }
@@ -111,7 +97,7 @@ trait Tasks {
       }
     }
 
-  def getBitmapByAppOrName(packageName: String, icon: Int, name: String)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
+  def getBitmapByAppOrName(packageName: String, icon: Int, name: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
     getBitmapByApp(packageName, icon) map {
       case -\/(_) =>
         (getBitmapByName(name) map {
@@ -121,7 +107,7 @@ trait Tasks {
       case \/-(r) => \/-(r)
     }
 
-  def getBitmapFromURLOrName(url: String, name: String)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
+  def getBitmapFromURLOrName(url: String, name: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
     getBitmapFromURL(url) map {
       case -\/(_) =>
         (getBitmapByName(name) map {
@@ -180,6 +166,6 @@ trait Tasks {
       context.getPackageManager.getApplicationIcon(packageName).asInstanceOf[BitmapDrawable].getBitmap
     }
 
-  private[this] def randomColor: Int = colors(scala.util.Random.nextInt(colors.length))
-
 }
+
+object ImageServicesTasks extends ImageServicesTasks

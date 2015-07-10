@@ -10,3 +10,6 @@ case class AppWebsite(
     packageName: String,
     url: String,
     name: String)
+
+case class ImageServicesConfig(
+    colors: List[Int])
