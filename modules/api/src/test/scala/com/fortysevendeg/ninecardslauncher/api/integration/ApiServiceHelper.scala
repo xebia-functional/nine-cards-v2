@@ -3,19 +3,13 @@ package com.fortysevendeg.ninecardslauncher.api.integration
 import akka.actor.ActorSystem
 import com.fortysevendeg.ninecardslauncher.api.model._
 import com.fortysevendeg.rest.client.ServiceClient
-import com.fortysevendeg.rest.client.http.{OkHttpClient, SprayHttpClient}
-
-import scala.concurrent.ExecutionContext
+import com.fortysevendeg.rest.client.http.OkHttpClient
 
 trait ApiServiceHelper {
-
-  implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
   implicit val actorSystem: ActorSystem = ActorSystem("http-spray-client")
 
   val fakeBaseUrl = "http://localhost:9999"
-
-  val serviceSprayHttpClient = new ServiceClient(new SprayHttpClient, fakeBaseUrl)
 
   val serviceOkHttpClient = new ServiceClient(new OkHttpClient, fakeBaseUrl)
 
