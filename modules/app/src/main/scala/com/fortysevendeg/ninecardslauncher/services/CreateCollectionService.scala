@@ -18,7 +18,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.utils.AppItemUtils._
 import com.fortysevendeg.ninecardslauncher.repository.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
-import com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigRequest
+import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
@@ -121,7 +121,7 @@ class CreateCollectionService
     token <- user.sessionToken
     androidId <- userServices.getAndroidId
   } yield {
-      apiServices.getUserConfig(GetUserConfigRequest(androidId, token)) map {
+      apiServices.getUserConfig()(RequestConfig(androidId, token)) map {
         response =>
           response.userConfig map synchronizeGeoInfo
           loadDeviceId map {

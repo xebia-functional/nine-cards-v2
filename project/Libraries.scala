@@ -41,7 +41,6 @@ object Libraries {
   }
 
   object net {
-    lazy val sprayClient = "io.spray" %% "spray-client" % Versions.sprayClientV
     lazy val okHttp = "com.squareup.okhttp" % "okhttp" % Versions.okHttpV
   }
 
@@ -54,10 +53,6 @@ object Libraries {
 
   object graphics {
     lazy val glide = "com.github.bumptech.glide" % "glide" % Versions.glideV
-  }
-
-  object akka {
-    lazy val akkaActor = "com.typesafe.akka" %% "akka-actor" % Versions.akkaActorV
   }
 
   object playServices {
