@@ -29,8 +29,8 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
           values = values)
 
         CacheCategory(
-            id = id,
-            data = data)
+          id = id,
+          data = data)
       }
     }
 
