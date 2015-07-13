@@ -51,7 +51,7 @@ class DeviceProcessImpl(
       apps <- getCategorizedApps ▹ eitherT
       packagesWithoutCategory = apps.filter(_.category.isEmpty) map (_.packageName)
       androidIdAndToken <- getTokenAndAndroidId ▹ eitherT
-      response <- apiServices.googlePlaySimplePackages(GooglePlaySimplePackagesRequest(androidIdAndToken.androidId, androidIdAndToken.token, packagesWithoutCategory)) ▹ eitherT
+      response <- apiServices.googlePlaySimplePackages(packagesWithoutCategory)(RequestConfig(androidIdAndToken.androidId, androidIdAndToken.token)) ▹ eitherT
       _ <- insertRepositories(response.apps) ▹ eitherT
     } yield ()
   }

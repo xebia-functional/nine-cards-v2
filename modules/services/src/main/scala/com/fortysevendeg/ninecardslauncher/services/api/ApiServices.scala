@@ -1,37 +1,72 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfigGeoInfo, UserConfigDevice, GoogleDevice}
 
 import scalaz.\/
 import scalaz.concurrent.Task
 
 trait ApiServices {
 
-  def login: Service[LoginRequest, LoginResponse]
+  def login(
+    email: String,
+    device: GoogleDevice
+    ): Task[NineCardsException \/ LoginResponse]
 
-  def linkGoogleAccount: Service[LinkGoogleAccountRequest, LoginResponse]
+  def linkGoogleAccount(
+    email: String,
+    devices: Seq[GoogleDevice]
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ LoginResponse]
 
-  def createInstallation: Service[InstallationRequest, InstallationResponse]
+  def createInstallation(
+    id: Option[String],
+    deviceType: Option[String],
+    deviceToken: Option[String],
+    userId: Option[String]
+    ): Task[NineCardsException \/ InstallationResponse]
 
-  def updateInstallation: Service[InstallationRequest, UpdateInstallationResponse]
+  def updateInstallation(
+    id: Option[String],
+    deviceType: Option[String],
+    deviceToken: Option[String],
+    userId: Option[String]
+    ): Task[NineCardsException \/ UpdateInstallationResponse]
 
-  def googlePlayPackage: Service[GooglePlayPackageRequest, GooglePlayPackageResponse]
+  def googlePlayPackage(
+    packageName: String
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GooglePlayPackageResponse]
 
-  def googlePlayPackages: Service[GooglePlayPackagesRequest, GooglePlayPackagesResponse]
+  def googlePlayPackages(
+    packageNames: Seq[String]
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GooglePlayPackagesResponse]
 
-  def googlePlaySimplePackages(request: GooglePlaySimplePackagesRequest): Task[NineCardsException \/ GooglePlaySimplePackagesResponse]
+  def googlePlaySimplePackages(
+    items: Seq[String]
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GooglePlaySimplePackagesResponse]
 
-  def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse]
+  def getUserConfig(
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GetUserConfigResponse]
 
-  def saveDevice: Service[SaveDeviceRequest, SaveDeviceResponse]
+  def saveDevice(
+    userConfigDevice: UserConfigDevice
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ SaveDeviceResponse]
 
-  def saveGeoInfo: Service[SaveGeoInfoRequest, SaveGeoInfoResponse]
+  def saveGeoInfo(
+    userConfigGeoInfo: UserConfigGeoInfo
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ SaveGeoInfoResponse]
 
-  def checkpointPurchaseProduct: Service[CheckpointPurchaseProductRequest, CheckpointPurchaseProductResponse]
+  def checkpointPurchaseProduct(
+    productId: String
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ CheckpointPurchaseProductResponse]
 
-  def checkpointCustomCollection: Service[CheckpointCustomCollectionRequest, CheckpointCustomCollectionResponse]
+  def checkpointCustomCollection(
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ CheckpointCustomCollectionResponse]
 
-  def checkpointJoinedBy: Service[CheckpointJoinedByRequest, CheckpointJoinedByResponse]
+  def checkpointJoinedBy(
+    otherConfigId: String
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ CheckpointJoinedByResponse]
 
-  def tester: Service[TesterRequest, TesterResponse]
+  def tester(
+    replace: Map[String, String]
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ TesterResponse]
 }
