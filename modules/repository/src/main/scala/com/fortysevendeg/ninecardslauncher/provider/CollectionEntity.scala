@@ -8,7 +8,7 @@ case class CollectionEntity(id: Int, data: CollectionEntityData)
 case class CollectionEntityData(
     position: Int,
     name: String,
-    `type`: String,
+    collectionType: String,
     icon: String,
     themedColorIndex: Int,
     appsCategory: String,
@@ -49,7 +49,7 @@ object CollectionEntity {
       data = CollectionEntityData(
         position = cursor.getInt(cursor.getColumnIndex(Position)),
         name = cursor.getString(cursor.getColumnIndex(Name)),
-        `type` = cursor.getString(cursor.getColumnIndex(Type)),
+        collectionType = cursor.getString(cursor.getColumnIndex(Type)),
         icon = cursor.getString(cursor.getColumnIndex(Icon)),
         themedColorIndex = cursor.getInt(cursor.getColumnIndex(ThemedColorIndex)),
         appsCategory = cursor.getString(cursor.getColumnIndex(AppsCategory)),
@@ -65,7 +65,7 @@ object CollectionEntityData {
     CollectionEntityData(
       position = cursor.getInt(cursor.getColumnIndex(Position)),
       name = cursor.getString(cursor.getColumnIndex(Name)),
-      `type` = cursor.getString(cursor.getColumnIndex(Type)),
+      collectionType = cursor.getString(cursor.getColumnIndex(Type)),
       icon = cursor.getString(cursor.getColumnIndex(Icon)),
       themedColorIndex = cursor.getInt(cursor.getColumnIndex(ThemedColorIndex)),
       appsCategory = cursor.getString(cursor.getColumnIndex(AppsCategory)),

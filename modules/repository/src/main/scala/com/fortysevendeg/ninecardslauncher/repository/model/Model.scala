@@ -19,7 +19,7 @@ case class Collection(
 case class CollectionData(
   position: Int,
   name: String,
-  `type`: String,
+  collectionType: String,
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[String] = None,
@@ -37,7 +37,7 @@ case class CardData(
   micros: Int = 0,
   term: String,
   packageName: Option[String],
-  `type`: String,
+  cardType: String,
   intent: String,
   imagePath: String,
   starRating: Option[Double] = None,

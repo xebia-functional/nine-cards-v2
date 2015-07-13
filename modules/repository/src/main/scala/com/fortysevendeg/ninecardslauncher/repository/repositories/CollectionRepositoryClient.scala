@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.{CollectionUri, ContentResolverWrapperComponent, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.provider.CollectionEntity._
-import com.fortysevendeg.ninecardslauncher.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Collection
@@ -12,20 +12,20 @@ import scala.concurrent.ExecutionContext
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait CollectionRepositoryClient extends DBUtils {
+trait CollectionRepositoryClient {
 
   self: ContentResolverWrapperComponent =>
 
   implicit val executionContext: ExecutionContext
 
-  def addCollection: Service[AddCollectionRequest, AddCollectionResponse] =
+  def repoAddCollection: Service[AddCollectionRequest, AddCollectionResponse] =
     request =>
       tryToFuture {
         Try {
           val values = Map[String, Any](
             Position -> request.data.position,
             Name -> request.data.name,
-            Type -> request.data.`type`,
+            Type -> request.data.collectionType,
             Icon -> request.data.icon,
             ThemedColorIndex -> request.data.themedColorIndex,
             AppsCategory -> (request.data.appsCategory getOrElse ""),
@@ -39,16 +39,16 @@ trait CollectionRepositoryClient extends DBUtils {
             values = values)
 
           AddCollectionResponse(
-            collection = Some(Collection(
+            collection = Collection(
               id = id,
-              data = request.data)))
+              data = request.data))
 
         } recover {
           case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
-  def deleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse] =
+  def repoDeleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -63,50 +63,50 @@ trait CollectionRepositoryClient extends DBUtils {
         }
       }
 
-  def getCollectionById: Service[GetCollectionByIdRequest, GetCollectionByIdResponse] =
+  def repoFindCollectionById: Service[FindCollectionByIdRequest, FindCollectionByIdResponse] =
     request =>
       tryToFuture {
-        getCollectionById(id = request.id) map {
-          collection => GetCollectionByIdResponse(collection)
+        findCollectionById(id = request.id) map {
+          collection => FindCollectionByIdResponse(collection)
         }
       }
 
-  def getCollectionByOriginalSharedCollectionId:
-  Service[GetCollectionByOriginalSharedCollectionIdRequest, GetCollectionByOriginalSharedCollectionIdResponse] =
+  def repoFetchCollectionByOriginalSharedCollectionId:
+  Service[FetchCollectionByOriginalSharedCollectionIdRequest, FetchCollectionByOriginalSharedCollectionIdResponse] =
     request =>
       tryToFuture {
-        getCollection(
+        fetchCollection(
           selection = s"$OriginalSharedCollectionId = ?",
           selectionArgs = Seq(request.sharedCollectionId.toString)) map {
-          collection => GetCollectionByOriginalSharedCollectionIdResponse(collection)
+          collection => FetchCollectionByOriginalSharedCollectionIdResponse(collection)
         }
       }
 
-  def getCollectionByPosition: Service[GetCollectionByPositionRequest, GetCollectionByPositionResponse] =
+  def repoFetchCollectionByPosition: Service[FetchCollectionByPositionRequest, FetchCollectionByPositionResponse] =
     request =>
       tryToFuture {
-        getCollection(selection = s"$Position = ?", selectionArgs = Array(request.position.toString)) map {
-          collection => GetCollectionByPositionResponse(collection)
+        fetchCollection(selection = s"$Position = ?", selectionArgs = Array(request.position.toString)) map {
+          collection => FetchCollectionByPositionResponse(collection)
         }
       }
 
-  def getSortedCollections:
-  Service[GetSortedCollectionsRequest, GetSortedCollectionsResponse] =
+  def repoFetchSortedCollections:
+  Service[FetchSortedCollectionsRequest, FetchSortedCollectionsResponse] =
     request =>
       tryToFuture {
-        getCollections(sortOrder = s"$Position asc") map {
-          collections => GetSortedCollectionsResponse(collections)
+        fetchCollections(sortOrder = s"$Position asc") map {
+          collections => FetchSortedCollectionsResponse(collections)
         }
       }
 
-  def updateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse] =
+  def repoUpdateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse] =
     request =>
       tryToFuture {
         Try {
           val values = Map[String, Any](
             Position -> request.collection.data.position,
             Name -> request.collection.data.name,
-            Type -> request.collection.data.`type`,
+            Type -> request.collection.data.collectionType,
             Icon -> request.collection.data.icon,
             ThemedColorIndex -> request.collection.data.themedColorIndex,
             AppsCategory -> (request.collection.data.appsCategory getOrElse ""),
@@ -127,7 +127,7 @@ trait CollectionRepositoryClient extends DBUtils {
         }
       }
 
-  private def getCollection(
+  private def fetchCollection(
       nineCardsUri: NineCardsUri = CollectionUri,
       projection: Seq[String] = AllFields,
       selection: String = "",
@@ -142,7 +142,7 @@ trait CollectionRepositoryClient extends DBUtils {
         orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
     }
 
-  private def getCollectionById(
+  private def findCollectionById(
       nineCardsUri: NineCardsUri = CollectionUri,
       id: Int,
       projection: Seq[String] = AllFields,
@@ -159,7 +159,7 @@ trait CollectionRepositoryClient extends DBUtils {
         orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
     }
 
-  private def getCollections(
+  private def fetchCollections(
       nineCardsUri: NineCardsUri = CollectionUri,
       projection: Seq[String] = AllFields,
       selection: String = "",

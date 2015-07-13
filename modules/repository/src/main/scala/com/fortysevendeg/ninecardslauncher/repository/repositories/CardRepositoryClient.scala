@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.{CardUri, ContentResolverWrapperComponent}
 import com.fortysevendeg.ninecardslauncher.provider.CardEntity._
-import com.fortysevendeg.ninecardslauncher.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
@@ -12,13 +12,13 @@ import scala.concurrent.ExecutionContext
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait CardRepositoryClient extends DBUtils {
+trait CardRepositoryClient {
 
   self: ContentResolverWrapperComponent =>
 
   implicit val executionContext: ExecutionContext
 
-  def addCard: Service[AddCardRequest, AddCardResponse] =
+  def repoAddCard: Service[AddCardRequest, AddCardResponse] =
     request =>
       tryToFuture {
         Try {
@@ -28,7 +28,7 @@ trait CardRepositoryClient extends DBUtils {
             CollectionId -> request.collectionId,
             Term -> request.data.term,
             PackageName -> (request.data.packageName getOrElse ""),
-            Type -> request.data.`type`,
+            Type -> request.data.cardType,
             Intent -> request.data.intent,
             ImagePath -> request.data.imagePath,
             StarRating -> (request.data.starRating getOrElse 0.0d),
@@ -41,16 +41,16 @@ trait CardRepositoryClient extends DBUtils {
             values = values)
 
           AddCardResponse(
-            card = Some(Card(
+            card = Card(
               id = id,
-              data = request.data)))
+              data = request.data))
 
         } recover {
           case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
-  def deleteCard: Service[DeleteCardRequest, DeleteCardResponse] =
+  def repoDeleteCard: Service[DeleteCardRequest, DeleteCardResponse] =
     request =>
       tryToFuture {
         Try {
@@ -63,7 +63,7 @@ trait CardRepositoryClient extends DBUtils {
         }
       }
 
-  def getCardById: Service[GetCardByIdRequest, GetCardByIdResponse] =
+  def repoFindCardById: Service[FindCardByIdRequest, FindCardByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -72,15 +72,15 @@ trait CardRepositoryClient extends DBUtils {
             id = request.id,
             projection = AllFields)(getEntityFromCursor(cardEntityFromCursor)) map toCard
 
-          GetCardByIdResponse(card)
+          FindCardByIdResponse(card)
 
         } recover {
           case e: Exception =>
-            GetCardByIdResponse(result = None)
+            FindCardByIdResponse(card = None)
         }
       }
 
-  def getCardByCollection: Service[GetAllCardsByCollectionRequest, GetAllCardsByCollectionResponse] =
+  def repoFetchCardsByCollection: Service[FetchCardsByCollectionRequest, FetchCardsByCollectionResponse] =
     request =>
       tryToFuture {
         Try {
@@ -90,14 +90,14 @@ trait CardRepositoryClient extends DBUtils {
             where = s"$CollectionId = ?",
             whereParams = Array(request.collectionId.toString))(getListFromCursor(cardEntityFromCursor)) map toCard
 
-          GetAllCardsByCollectionResponse(cards)
+          FetchCardsByCollectionResponse(cards)
         } recover {
           case e: Exception =>
-            GetAllCardsByCollectionResponse(result = Seq.empty[Card])
+            FetchCardsByCollectionResponse(cards = Seq.empty[Card])
         }
       }
 
-  def updateCard: Service[UpdateCardRequest, UpdateCardResponse] =
+  def repoUpdateCard: Service[UpdateCardRequest, UpdateCardResponse] =
     request =>
       tryToFuture {
         Try {
@@ -105,7 +105,7 @@ trait CardRepositoryClient extends DBUtils {
             Position -> request.card.data.position,
             Term -> request.card.data.term,
             PackageName -> (request.card.data.packageName getOrElse ""),
-            Type -> request.card.data.`type`,
+            Type -> request.card.data.cardType,
             Intent -> request.card.data.intent,
             ImagePath -> request.card.data.imagePath,
             StarRating -> (request.card.data.starRating getOrElse 0.0d),

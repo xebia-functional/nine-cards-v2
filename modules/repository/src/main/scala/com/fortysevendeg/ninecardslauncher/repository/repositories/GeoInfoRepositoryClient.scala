@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.{ContentResolverWrapperComponent, GeoInfoUri}
-import com.fortysevendeg.ninecardslauncher.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
 import com.fortysevendeg.ninecardslauncher.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
 import com.fortysevendeg.ninecardslauncher.repository._
@@ -12,13 +12,13 @@ import scala.concurrent.ExecutionContext
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait GeoInfoRepositoryClient extends DBUtils {
+trait GeoInfoRepositoryClient {
 
   self: ContentResolverWrapperComponent =>
 
   implicit val executionContext: ExecutionContext
 
-  def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
+  def repoAddGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -35,16 +35,16 @@ trait GeoInfoRepositoryClient extends DBUtils {
             values = values)
 
           AddGeoInfoResponse(
-            geoInfo = Some(GeoInfo(
+            geoInfo = GeoInfo(
               id = id,
-              data = request.data)))
+              data = request.data))
 
         } recover {
           case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
-  def deleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
+  def repoDeleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {
@@ -59,7 +59,7 @@ trait GeoInfoRepositoryClient extends DBUtils {
         }
       }
 
-  def getAllGeoInfoItems: Service[GetAllGeoInfoItemsRequest, GetAllGeoInfoItemsResponse] =
+  def repoFetchGeoInfoItems: Service[FetchGeoInfoItemsRequest, FetchGeoInfoItemsResponse] =
     request =>
       tryToFuture {
         Try {
@@ -67,14 +67,14 @@ trait GeoInfoRepositoryClient extends DBUtils {
             nineCardsUri = GeoInfoUri,
             projection = AllFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
-          GetAllGeoInfoItemsResponse(geoInfoItems)
+          FetchGeoInfoItemsResponse(geoInfoItems)
         } recover {
           case e: Exception =>
-            GetAllGeoInfoItemsResponse(geoInfoItems = Seq.empty)
+            FetchGeoInfoItemsResponse(geoInfoItems = Seq.empty)
         }
       }
 
-  def getGeoInfoById: Service[GetGeoInfoByIdRequest, GetGeoInfoByIdResponse] =
+  def repoFindGeoInfoById: Service[FindGeoInfoByIdRequest, FindGeoInfoByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -83,15 +83,14 @@ trait GeoInfoRepositoryClient extends DBUtils {
             id = request.id,
             projection = AllFields)(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
-          GetGeoInfoByIdResponse(geoInfo)
+          FindGeoInfoByIdResponse(geoInfo)
         } recover {
           case e: Exception =>
-            GetGeoInfoByIdResponse(result = None)
+            FindGeoInfoByIdResponse(geoInfo = None)
         }
       }
-
-
-  def getGeoInfoByConstrain: Service[GetGeoInfoByConstrainRequest, GetGeoInfoByConstrainResponse] =
+  
+  def repoFetchGeoInfoByConstrain: Service[FetchGeoInfoByConstrainRequest, FetchGeoInfoByConstrainResponse] =
     request =>
       tryToFuture {
         Try {
@@ -101,14 +100,14 @@ trait GeoInfoRepositoryClient extends DBUtils {
             where = s"$Constrain = ?",
             whereParams = Array(request.constrain))(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
 
-          GetGeoInfoByConstrainResponse(geoInfo)
+          FetchGeoInfoByConstrainResponse(geoInfo)
         } recover {
           case e: Exception =>
-            GetGeoInfoByConstrainResponse(result = None)
+            FetchGeoInfoByConstrainResponse(geoInfo = None)
         }
       }
 
-  def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
+  def repoUpdateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
     request =>
       tryToFuture {
         Try {

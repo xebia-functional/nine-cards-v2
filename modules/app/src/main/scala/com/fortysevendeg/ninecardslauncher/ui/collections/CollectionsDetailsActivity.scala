@@ -13,7 +13,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.models.Collection
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.GetAppsRequest
-import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.modules.repository.collection.{FetchCollectionsResponse, FetchCollectionsRequest}
 import com.fortysevendeg.ninecardslauncher.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.ui.components.SlidingTabLayoutTweaks._
@@ -56,7 +56,7 @@ class CollectionsDetailsActivity
     systemBarTintManager.setStatusBarTintEnabled(true)
 
     for {
-      GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest())
+      FetchCollectionsResponse(collections) <- collectionRepositoryServices.fetchCollections(FetchCollectionsRequest())
     } yield {
       val adapter = CollectionsPagerAdapter(getSupportFragmentManager, collections)
       runUi(

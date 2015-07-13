@@ -9,7 +9,8 @@ import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.api._
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
-import com.fortysevendeg.ninecardslauncher.modules.repository.{InsertCollectionResponse, CardItem, InsertCollectionRequest, InsertGeoInfoRequest}
+import com.fortysevendeg.ninecardslauncher.modules.repository.collection.{AddCollectionResponse, AddCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.modules.repository.geoInfo.AddGeoInfoRequest
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.ui.commons.Constants._
@@ -121,7 +122,7 @@ class CreateCollectionService
 
     val reads = Json.writes[UserConfigTimeSlot]
     val ocurrenceStr: String = config.occurrence map (o => (Json.toJson(o)(reads)).toString()) mkString("[", ", ", "]")
-    val request = InsertGeoInfoRequest(
+    val request = AddGeoInfoRequest(
       constrain = constrain,
       occurrence = ocurrenceStr,
       wifi = config.wifi,
@@ -129,7 +130,7 @@ class CreateCollectionService
       longitude = config.lng,
       system = true
     )
-    repositoryServices.insertGeoInfo(request)
+    geoInfoRepositoryServices.addGeoInfo(request)
   }
 
   private def createCollectionFromMyDevice() = appManagerServices.getCategorizedApps(GetCategorizedAppsRequest()) map {
@@ -138,12 +139,12 @@ class CreateCollectionService
         Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
         MediaAndVideo, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
         Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgets)
-      val inserts = createInsertSeq(response.apps, categories, Seq.empty)
+      val inserts = createAddSeq(response.apps, categories, Seq.empty)
       val insertFutures = inserts map {
         insert =>
-          repositoryServices.insertCollection(insert)
+          collectionRepositoryServices.addCollection(insert)
       }
-      insertFuturesInDB(insertFutures)
+      addFuturesInDB(insertFutures)
   }
 
   private def createCollectionFromDevice(device: UserConfigDevice) = {
@@ -152,8 +153,8 @@ class CreateCollectionService
     appManagerServices.createBitmapsForNoPackagesInstalled(IntentsRequest(intents)) map {
       response =>
         // Save collection in repository
-        val insertFutures = toInsertCollectionRequestFromUserConfigSeq(device.collections, response.packages) map repositoryServices.insertCollection
-        insertFuturesInDB(insertFutures)
+        val addFutures = toAddCollectionRequestFromUserConfigSeq(device.collections, response.packages) map collectionRepositoryServices.addCollection
+        addFuturesInDB(addFutures)
     } recover {
       case _ =>
         Log.d(Tag, "Store images of apps not installed failed")
@@ -161,7 +162,7 @@ class CreateCollectionService
     }
   }
 
-  private def insertFuturesInDB(insertFutures: Seq[Future[InsertCollectionResponse]]) = {
+  private def addFuturesInDB(insertFutures: Seq[Future[AddCollectionResponse]]) = {
     Future.sequence(insertFutures) map {
       responses =>
         closeService()
@@ -173,23 +174,23 @@ class CreateCollectionService
   }
 
   @tailrec
-  private def createInsertSeq(apps: Seq[AppItem], categories: Seq[String], acc: Seq[InsertCollectionRequest]): Seq[InsertCollectionRequest] = {
+  private def createAddSeq(apps: Seq[AppItem], categories: Seq[String], acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
     categories match {
       case Nil => acc
       case h :: t =>
         val insert = createCollection(apps, h, acc.length)
         val a = if (insert.cards.length >= minAppsToAdd) acc :+ insert else acc
-        createInsertSeq(apps, t, a)
+        createAddSeq(apps, t, a)
     }
   }
 
-  private def createCollection(apps: Seq[AppItem], category: String, index: Int): InsertCollectionRequest = {
+  private def createCollection(apps: Seq[AppItem], category: String, index: Int): AddCollectionRequest = {
     val appsCategory = apps.filter(_.category == Some(category)).sortWith(_.getMFIndex < _.getMFIndex).take(NumSpaces)
     val pos = if (index >= NumSpaces) index % NumSpaces else index
-    InsertCollectionRequest(
+    AddCollectionRequest(
       position = pos,
       name = resGetString(category.toLowerCase).getOrElse(category.toLowerCase),
-      `type` = CollectionType.Apps,
+      collectionType = CollectionType.Apps,
       icon = category.toLowerCase,
       themedColorIndex = pos,
       appsCategory = Some(category),

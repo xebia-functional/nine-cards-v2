@@ -5,14 +5,20 @@ import com.fortysevendeg.ninecardslauncher.modules.appsmanager.AppManagerService
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.GoogleConnectorServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.persistent.PersistentServicesComponent
-import com.fortysevendeg.ninecardslauncher.modules.repository.RepositoryServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.repository.cacheCategory.CacheCategoryRepositoryServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.repository.card.CardRepositoryServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.repository.collection.CollectionRepositoryServicesComponent
+import com.fortysevendeg.ninecardslauncher.modules.repository.geoInfo.GeoInfoRepositoryServicesComponent
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
 
 trait ComponentRegistry
-  extends ImageServicesComponent
-  with AppManagerServicesComponent
-  with RepositoryServicesComponent
-  with PersistentServicesComponent
-  with UserServicesComponent
-  with GoogleConnectorServicesComponent
-  with ApiServicesComponent
+    extends ImageServicesComponent
+    with AppManagerServicesComponent
+    with CacheCategoryRepositoryServicesComponent
+    with CardRepositoryServicesComponent
+    with CollectionRepositoryServicesComponent
+    with GeoInfoRepositoryServicesComponent
+    with PersistentServicesComponent
+    with UserServicesComponent
+    with GoogleConnectorServicesComponent
+    with ApiServicesComponent

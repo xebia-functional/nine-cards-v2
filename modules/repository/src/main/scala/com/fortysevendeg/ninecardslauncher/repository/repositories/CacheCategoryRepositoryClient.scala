@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.{CacheCategoryUri, ContentResolverWrapperComponent}
 import com.fortysevendeg.ninecardslauncher.provider.CacheCategoryEntity._
-import com.fortysevendeg.ninecardslauncher.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.provider.DBUtils._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
@@ -12,13 +12,13 @@ import scala.concurrent.ExecutionContext
 import scala.util.Try
 import scala.util.control.NonFatal
 
-trait CacheCategoryRepositoryClient extends DBUtils {
+trait CacheCategoryRepositoryClient {
 
   self: ContentResolverWrapperComponent =>
 
   implicit val executionContext: ExecutionContext
 
-  def addCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
+  def repoAddCacheCategory: Service[AddCacheCategoryRequest, AddCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -35,16 +35,16 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             values = values)
 
           AddCacheCategoryResponse(
-            cacheCategory = Some(CacheCategory(
+            cacheCategory = CacheCategory(
               id = id,
-              data = request.data)))
+              data = request.data))
 
         } recover {
           case NonFatal(e) => throw RepositoryInsertException()
         }
       }
 
-  def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
+  def repoDeleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {
@@ -59,7 +59,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def deleteCacheByPackageCategory: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
+  def repoDeleteCacheCategoryByPackage: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
     request =>
       tryToFuture {
         Try {
@@ -75,7 +75,7 @@ trait CacheCategoryRepositoryClient extends DBUtils {
         }
       }
 
-  def getAllCacheCategories: Service[GetAllCacheCategoriesRequest, GetAllCacheCategoriesResponse] =
+  def repoFetchCacheCategories: Service[FetchCacheCategoriesRequest, FetchCacheCategoriesResponse] =
     request =>
       tryToFuture {
         Try {
@@ -83,14 +83,14 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             nineCardsUri = CacheCategoryUri,
             projection = AllFields)(getListFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
-          GetAllCacheCategoriesResponse(cacheCategories)
+          FetchCacheCategoriesResponse(cacheCategories)
         } recover {
           case e: Exception =>
-            GetAllCacheCategoriesResponse(cacheCategories = Seq.empty)
+            FetchCacheCategoriesResponse(cacheCategories = Seq.empty)
         }
       }
 
-  def getCacheCategoryById: Service[GetCacheCategoryByIdRequest, GetCacheCategoryByIdResponse] =
+  def repoFindCacheCategoryById: Service[FindCacheCategoryByIdRequest, FindCacheCategoryByIdResponse] =
     request =>
       tryToFuture {
         Try {
@@ -99,14 +99,14 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             id = request.id,
             projection = AllFields)(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
-          GetCacheCategoryByIdResponse(cacheCategory)
+          FindCacheCategoryByIdResponse(cacheCategory)
         } recover {
           case e: Exception =>
-            GetCacheCategoryByIdResponse(result = None)
+            FindCacheCategoryByIdResponse(category = None)
         }
       }
 
-  def getCacheCategoryByPackage: Service[GetCacheCategoryByPackageRequest, GetCacheCategoryByPackageResponse] =
+  def repoFetchCacheCategoryByPackage: Service[FetchCacheCategoryByPackageRequest, FetchCacheCategoryByPackageResponse] =
     request =>
       tryToFuture {
         Try {
@@ -117,14 +117,14 @@ trait CacheCategoryRepositoryClient extends DBUtils {
             whereParams = Seq(request.`package`))(getEntityFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
 
 
-          GetCacheCategoryByPackageResponse(cacheCategory)
+          FetchCacheCategoryByPackageResponse(cacheCategory)
         } recover {
           case e: Exception =>
-            GetCacheCategoryByPackageResponse(result = None)
+            FetchCacheCategoryByPackageResponse(category = None)
         }
       }
 
-  def updateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
+  def repoUpdateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
     request =>
       tryToFuture {
         Try {

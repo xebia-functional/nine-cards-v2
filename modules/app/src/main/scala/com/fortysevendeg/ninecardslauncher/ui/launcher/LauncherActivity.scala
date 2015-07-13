@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.models.{AppItem, Collection}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
-import com.fortysevendeg.ninecardslauncher.modules.repository.{GetCollectionsRequest, GetCollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.modules.repository.collection.{FetchCollectionsRequest, FetchCollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.ui.launcher.LauncherWorkSpacesTweaks._
@@ -49,7 +49,7 @@ class LauncherActivity
 
   private def generateCollections =
     for {
-      GetCollectionsResponse(collections) <- repositoryServices.getCollections(GetCollectionsRequest())
+      FetchCollectionsResponse(collections) <- collectionRepositoryServices.fetchCollections(FetchCollectionsRequest())
     } yield {
       // Check if there are collections in DB, if there aren't we go to wizard
       if (collections.isEmpty) {

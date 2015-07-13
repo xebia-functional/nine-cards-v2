@@ -6,7 +6,7 @@ case class Collection(
   id: Int,
   position: Int,
   name: String,
-  `type`: String,
+  collectionType: String,
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[String] = None,
@@ -22,7 +22,7 @@ case class Card(
   micros: Int = 0,
   term: String,
   packageName: Option[String],
-  `type`: String,
+  cardType: String,
   intent: NineCardIntent,
   imagePath: String,
   starRating: Option[Double] = None,
@@ -37,6 +37,15 @@ case class CacheCategory(
   numDownloads: String,
   ratingsCount: Int,
   commentCount: Int) extends Serializable
+
+case class GeoInfo(
+    id: Int,
+    constrain: String,
+    occurrence: String,
+    wifi: String,
+    latitude: Double,
+    longitude: Double,
+    system: Boolean) extends Serializable
 
 case class AppItem(
   name: String,
