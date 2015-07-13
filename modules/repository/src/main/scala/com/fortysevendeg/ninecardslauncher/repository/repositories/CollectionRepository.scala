@@ -1,19 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
-import com.fortysevendeg.ninecardslauncher.repository._
-import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, CollectionUri, ContentResolverWrapper, NineCardsUri}
-import com.fortysevendeg.ninecardslauncher.repository.model.{CollectionData, Card, Collection}
-import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.allFields
-import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.position
+import com.fortysevendeg.ninecardslauncher.repository.commons.{CollectionUri, ContentResolverWrapper, NineCardsUri}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
+import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.{allFields, position, _}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CollectionEntity, DBUtils}
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
-import scala.util.control.NonFatal
 import scalaz.\/
 import scalaz.concurrent.Task
 
@@ -21,7 +15,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
 
   def addCollection(data: CollectionData): Task[NineCardsException \/ Collection] =
     Task {
-      \/.fromTryCatchThrowable[Collection, NineCardsException] {
+      fromTryCatchNineCardsException[Collection] {
         val values = Map[String, Any](
           position -> data.position,
           name -> data.name,
@@ -44,7 +38,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
 
   def deleteCollection(collection: Collection): Task[NineCardsException \/ Int] =
     Task {
-      \/.fromTryCatchThrowable[Int, NineCardsException] {
+      fromTryCatchNineCardsException[Int] {
         contentResolverWrapper.deleteById(
           nineCardsUri = CollectionUri,
           id = collection.id)
@@ -53,7 +47,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
 
   def findCollectionById(id: Int): Task[NineCardsException \/ Option[Collection]] =
     Task {
-      \/.fromTryCatchThrowable[Option[Collection], NineCardsException] {
+      fromTryCatchNineCardsException[Option[Collection]] {
         contentResolverWrapper.findById(
           nineCardsUri = CollectionUri,
           id = id,
@@ -63,7 +57,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
 
   def fetchCollectionBySharedCollectionId(sharedCollectionId: Int): Task[NineCardsException \/ Option[Collection]] =
     Task {
-      \/.fromTryCatchThrowable[Option[Collection], NineCardsException] {
+      fromTryCatchNineCardsException[Option[Collection]] {
         fetchCollection(
           selection = s"$originalSharedCollectionId = ?",
           selectionArgs = Seq(sharedCollectionId.toString))
@@ -72,21 +66,21 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
 
   def fetchCollectionByPosition(position: Int): Task[NineCardsException \/ Option[Collection]] =
     Task {
-      \/.fromTryCatchThrowable[Option[Collection], NineCardsException] {
+      fromTryCatchNineCardsException[Option[Collection]] {
         fetchCollection(selection = s"${CollectionEntity.position} = ?", selectionArgs = Seq(position.toString))
       }
     }
 
   def fetchSortedCollections: Task[NineCardsException \/ Seq[Collection]] =
     Task {
-      \/.fromTryCatchThrowable[Seq[Collection], NineCardsException] {
+      fromTryCatchNineCardsException[Seq[Collection]] {
         fetchCollections(sortOrder = s"${CollectionEntity.position} asc")
       }
     }
 
   def updateCollection(collection: Collection): Task[NineCardsException \/ Int] =
     Task {
-      \/.fromTryCatchThrowable[Int, NineCardsException] {
+      fromTryCatchNineCardsException[Int] {
         val values = Map[String, Any](
           position -> collection.data.position,
           name -> collection.data.name,

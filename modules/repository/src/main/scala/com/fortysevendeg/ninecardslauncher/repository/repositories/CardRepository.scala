@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapper}
@@ -14,7 +15,7 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper) extends DBU
 
   def addCard(collectionId: Int, data: CardData): Task[NineCardsException \/ Card] =
     Task {
-      \/.fromTryCatchThrowable[Card, NineCardsException] {
+      fromTryCatchNineCardsException[Card] {
         val values = Map[String, Any](
           position -> data.position,
           CardEntity.collectionId -> collectionId,
@@ -38,14 +39,14 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper) extends DBU
 
   def deleteCard(card: Card): Task[NineCardsException \/ Int] =
     Task {
-      \/.fromTryCatchThrowable[Int, NineCardsException] {
+      fromTryCatchNineCardsException[Int] {
         contentResolverWrapper.deleteById(nineCardsUri = CardUri, id = card.id)
       }
     }
 
   def findCardById(id: Int): Task[NineCardsException \/ Option[Card]] =
     Task {
-      \/.fromTryCatchThrowable[Option[Card], NineCardsException] {
+      fromTryCatchNineCardsException[Option[Card]] {
         contentResolverWrapper.findById(
           nineCardsUri = CardUri,
           id = id,
@@ -55,7 +56,7 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper) extends DBU
 
   def fetchCardsByCollection(collectionId: Int): Task[NineCardsException \/ Seq[Card]] =
     Task {
-      \/.fromTryCatchThrowable[Seq[Card], NineCardsException] {
+      fromTryCatchNineCardsException[Seq[Card]] {
         contentResolverWrapper.fetchAll(
           nineCardsUri = CardUri,
           projection = allFields,
@@ -66,7 +67,7 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper) extends DBU
 
   def updateCard(card: Card): Task[NineCardsException \/ Int] =
     Task {
-      \/.fromTryCatchThrowable[Int, NineCardsException] {
+      fromTryCatchNineCardsException[Int] {
         val values = Map[String, Any](
           position -> card.data.position,
           term -> card.data.term,

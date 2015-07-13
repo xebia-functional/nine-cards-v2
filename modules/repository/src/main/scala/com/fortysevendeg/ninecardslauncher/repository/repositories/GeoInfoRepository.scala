@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
 import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapper, GeoInfoUri}
@@ -14,7 +15,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
 
   def addGeoInfo(data: GeoInfoData): Task[NineCardsException \/ GeoInfo] =
     Task {
-      \/.fromTryCatchThrowable[GeoInfo, NineCardsException] {
+      fromTryCatchNineCardsException[GeoInfo] {
         val values = Map[String, Any](
           constrain -> data.constrain,
           occurrence -> data.occurrence,
@@ -33,7 +34,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
 
   def deleteGeoInfo(geoInfo: GeoInfo): Task[NineCardsException \/ Int] =
     Task {
-      \/.fromTryCatchThrowable[Int, NineCardsException] {
+      fromTryCatchNineCardsException[Int] {
         contentResolverWrapper.deleteById(
           nineCardsUri = GeoInfoUri,
           id = geoInfo.id)
@@ -42,7 +43,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
 
   def fetchGeoInfoItems: Task[NineCardsException \/ Seq[GeoInfo]] =
     Task {
-      \/.fromTryCatchThrowable[Seq[GeoInfo], NineCardsException] {
+      fromTryCatchNineCardsException[Seq[GeoInfo]] {
         contentResolverWrapper.fetchAll(
           nineCardsUri = GeoInfoUri,
           projection = allFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
@@ -51,7 +52,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
 
   def findGeoInfoById(id: Int): Task[NineCardsException \/ Option[GeoInfo]] =
     Task {
-      \/.fromTryCatchThrowable[Option[GeoInfo], NineCardsException] {
+      fromTryCatchNineCardsException[Option[GeoInfo]] {
         contentResolverWrapper.findById(
           nineCardsUri = GeoInfoUri,
           id = id,
@@ -62,7 +63,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
 
   def fetchGeoInfoByConstrain(constrain: String): Task[NineCardsException \/ Option[GeoInfo]] =
     Task {
-      \/.fromTryCatchThrowable[Option[GeoInfo], NineCardsException] {
+      fromTryCatchNineCardsException[Option[GeoInfo]] {
         contentResolverWrapper.fetch(
           nineCardsUri = GeoInfoUri,
           projection = allFields,
@@ -73,7 +74,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends 
 
   def updateGeoInfo(geoInfo: GeoInfo): Task[NineCardsException \/ Int] =
     Task {
-      \/.fromTryCatchThrowable[Int, NineCardsException] {
+      fromTryCatchNineCardsException[Int] {
         val values = Map[String, Any](
           constrain -> geoInfo.data.constrain,
           occurrence -> geoInfo.data.occurrence,

@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapper}
@@ -14,7 +15,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
 
   def addCacheCategory(data: CacheCategoryData): Task[NineCardsException \/ CacheCategory] =
     Task {
-      \/.fromTryCatchThrowable[CacheCategory, NineCardsException] {
+      fromTryCatchNineCardsException[CacheCategory] {
         val values = Map[String, Any](
           packageName -> data.packageName,
           category -> data.category,
@@ -35,7 +36,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
 
   def deleteCacheCategory(cacheCategory: CacheCategory): Task[NineCardsException \/ Int] =
     Task {
-      \/.fromTryCatchThrowable[Int, NineCardsException] {
+      fromTryCatchNineCardsException[Int] {
         contentResolverWrapper.deleteById(
           nineCardsUri = CacheCategoryUri,
           id = cacheCategory.id)
@@ -44,7 +45,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
 
   def deleteCacheCategoryByPackage(packageName: String): Task[NineCardsException \/ Int] =
     Task {
-      \/.fromTryCatchThrowable[Int, NineCardsException] {
+      fromTryCatchNineCardsException[Int] {
         contentResolverWrapper.delete(
           nineCardsUri = CacheCategoryUri,
           where = s"${CacheCategoryEntity.packageName} = ?",
@@ -54,7 +55,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
 
   def fetchCacheCategories: Task[NineCardsException \/ Seq[CacheCategory]] =
     Task {
-      \/.fromTryCatchThrowable[Seq[CacheCategory], NineCardsException] {
+      fromTryCatchNineCardsException[Seq[CacheCategory]] {
         contentResolverWrapper.fetchAll(
           nineCardsUri = CacheCategoryUri,
           projection = allFields)(getListFromCursor(cacheCategoryEntityFromCursor)) map toCacheCategory
@@ -63,7 +64,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
 
   def findCacheCategoryById(id: Int): Task[NineCardsException \/ Option[CacheCategory]] =
     Task {
-      \/.fromTryCatchThrowable[Option[CacheCategory], NineCardsException] {
+      fromTryCatchNineCardsException[Option[CacheCategory]] {
         contentResolverWrapper.findById(
           nineCardsUri = CacheCategoryUri,
           id = id,
@@ -73,7 +74,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
 
   def fetchCacheCategoryByPackage(packageName: String): Task[NineCardsException \/ Option[CacheCategory]] =
     Task {
-      \/.fromTryCatchThrowable[Option[CacheCategory], NineCardsException] {
+      fromTryCatchNineCardsException[Option[CacheCategory]] {
         contentResolverWrapper.fetch(
           nineCardsUri = CacheCategoryUri,
           projection = allFields,
@@ -84,7 +85,7 @@ class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) ex
 
   def updateCacheCategory(cacheCategory: CacheCategory): Task[NineCardsException \/ Int] =
     Task {
-      \/.fromTryCatchThrowable[Int, NineCardsException] {
+      fromTryCatchNineCardsException[Int] {
         val values = Map[String, Any](
           packageName -> cacheCategory.data.packageName,
           category -> cacheCategory.data.category,
