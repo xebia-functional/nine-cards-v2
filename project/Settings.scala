@@ -79,10 +79,12 @@ object Settings {
     glide,
     okHttp)
 
-
   lazy val processDependencies = Seq(androidProvidedLib)
 
-  lazy val servicesDependencies = Seq(androidProvidedLib)
+  lazy val servicesDependencies = Seq(
+    androidProvidedLib,
+    specs2,
+    mockito)
 
   lazy val apiDependencies = Seq(
     androidProvidedLib,
