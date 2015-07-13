@@ -4,7 +4,6 @@ import Libraries.macroid._
 import Libraries.playServices._
 import Libraries.net._
 import Libraries.scala._
-import Libraries.akka._
 import Libraries.json._
 import Libraries.test._
 import android.Keys._
@@ -89,9 +88,7 @@ object Settings {
   lazy val apiDependencies = Seq(
     androidProvidedLib,
     playJson,
-    sprayClient % "provided",
     okHttp % "provided",
-    akkaActor % "provided",
     specs2,
     mockito,
     mockServer)

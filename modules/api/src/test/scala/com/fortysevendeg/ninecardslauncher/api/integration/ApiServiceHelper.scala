@@ -1,13 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.api.integration
 
-import akka.actor.ActorSystem
 import com.fortysevendeg.ninecardslauncher.api.model._
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 
 trait ApiServiceHelper {
-
-  implicit val actorSystem: ActorSystem = ActorSystem("http-spray-client")
 
   val fakeBaseUrl = "http://localhost:9999"
 
