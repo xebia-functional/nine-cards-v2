@@ -6,17 +6,18 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 case class CardEntity(id: Int, data: CardEntityData)
 
 case class CardEntityData(
-    position: Int,
-    collectionId: Int,
-    term: String,
-    packageName: String,
-    `type`: String,
-    intent: String,
-    imagePath: String,
-    starRating: Double,
-    micros: Int,
-    numDownloads: String,
-    notification: String)
+  position: Int,
+  collectionId: Int,
+  term: String,
+  packageName: String,
+  `type`: String,
+  intent: String,
+  imagePath: String,
+  starRating: Double,
+  micros: Int,
+  numDownloads: String,
+  notification: String
+  )
 
 object CardEntity {
   val table = "Card"

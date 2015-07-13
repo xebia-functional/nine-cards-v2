@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory => RepoCacheCategory, CacheCategoryData => RepoCacheCategoryData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
-import com.fortysevendeg.ninecardslauncher.{repository => repo}
 
 trait CacheCategoryConversions {
 
@@ -32,6 +31,19 @@ trait CacheCategoryConversions {
       )
     )
 
+  def toRepositoryCacheCategory(request: UpdateCacheCategoryRequest) =
+    RepoCacheCategory(
+      id = request.id,
+      data = RepoCacheCategoryData(
+        packageName = request.packageName,
+        category = request.category,
+        starRating = request.starRating,
+        numDownloads = request.numDownloads,
+        ratingsCount = request.ratingsCount,
+        commentCount = request.commentCount
+      )
+    )
+
   def toRepositoryCacheCategoryData(request: AddCacheCategoryRequest) =
     RepoCacheCategoryData(
       packageName = request.packageName,
@@ -40,37 +52,5 @@ trait CacheCategoryConversions {
       numDownloads = request.numDownloads,
       ratingsCount = request.ratingsCount,
       commentCount = request.commentCount
-    )
-
-  def toRepositoryDeleteCacheCategoryRequest(request: DeleteCacheCategoryRequest) =
-    repo.DeleteCacheCategoryRequest(
-      cacheCategory = toRepositoryCacheCategory(request.cacheCategory)
-    )
-
-  def toRepositoryDeleteCacheCategoryByPackageRequest(request: DeleteCacheCategoryByPackageRequest) =
-    repo.DeleteCacheCategoryByPackageRequest(
-      packageName = request.`package`)
-
-  def toRepositoryFetchCacheCategoryByPackageRequest(request: FetchCacheCategoryByPackageRequest) =
-    repo.FetchCacheCategoryByPackageRequest(
-      `package` = request.`package`)
-
-  def toRepositoryFindCacheCategoryByIdRequest(request: FindCacheCategoryByIdRequest) =
-    repo.FindCacheCategoryByIdRequest(
-      id = request.id)
-
-  def toRepositoryUpdateCacheCategoryRequest(request: UpdateCacheCategoryRequest) =
-    repo.UpdateCacheCategoryRequest(
-      cacheCategory = RepoCacheCategory(
-        id = request.id,
-        data = RepoCacheCategoryData(
-          packageName = request.packageName,
-          category = request.category,
-          starRating = request.starRating,
-          numDownloads = request.numDownloads,
-          ratingsCount = request.ratingsCount,
-          commentCount = request.commentCount
-        )
-      )
     )
 }

@@ -2,7 +2,8 @@ package com.fortysevendeg.ninecardslauncher.repository.model
 
 case class CacheCategory(
   id: Int,
-  data: CacheCategoryData)
+  data: CacheCategoryData
+  )
 
 case class CacheCategoryData(
   packageName: String,
@@ -10,11 +11,13 @@ case class CacheCategoryData(
   starRating: Double,
   numDownloads: String,
   ratingsCount: Int,
-  commentCount: Int)
+  commentCount: Int
+  )
 
 case class Collection(
   id: Int,
-  data: CollectionData)
+  data: CollectionData
+  )
 
 case class CollectionData(
   position: Int,
@@ -26,11 +29,13 @@ case class CollectionData(
   constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
-  sharedCollectionSubscribed: Option[Boolean])
+  sharedCollectionSubscribed: Option[Boolean]
+  )
 
 case class Card(
   id: Int,
-  data: CardData)
+  data: CardData
+  )
 
 case class CardData(
   position: Int,
@@ -42,11 +47,13 @@ case class CardData(
   imagePath: String,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
-  notification: Option[String] = None)
+  notification: Option[String] = None
+  )
 
 case class GeoInfo(
   id: Int,
-  data: GeoInfoData)
+  data: GeoInfoData
+  )
 
 case class GeoInfoData(
   constrain: String,
@@ -54,4 +61,5 @@ case class GeoInfoData(
   wifi: String,
   latitude: Double,
   longitude: Double,
-  system: Boolean)
+  system: Boolean
+  )
