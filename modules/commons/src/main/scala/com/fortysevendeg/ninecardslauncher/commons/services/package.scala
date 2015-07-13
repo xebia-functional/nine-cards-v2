@@ -1,7 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+
 import scala.language.{higherKinds, implicitConversions}
 import scalaz._
+import Scalaz._
 import scalaz.concurrent.Task
 
 package object services {

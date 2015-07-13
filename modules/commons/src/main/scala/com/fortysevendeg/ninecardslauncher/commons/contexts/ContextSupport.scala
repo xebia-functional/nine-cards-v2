@@ -11,4 +11,5 @@ trait ContextSupport {
   def getResources: Resources
   def getContentResolver: ContentResolver
   def getFilesDir: File
+  def getAppIconsDir: File
 }
