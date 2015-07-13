@@ -3,23 +3,20 @@ package com.fortysevendeg.ninecardslauncher.modules.user.impl
 import java.io.File
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiUserConfigService, ApiGooglePlayService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.commons.ContextWrapperProvider
+import com.fortysevendeg.ninecardslauncher.modules.user._
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
-import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.modules.user._
-import com.fortysevendeg.ninecardslauncher.services.api.Conversions
 import com.fortysevendeg.ninecardslauncher.services.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
-import com.fortysevendeg.ninecardslauncher.commons.Service
 import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 
-import scala.util.{Try, Failure, Success}
-
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
+import scalaz.\/-
 
 trait UserServicesComponentImpl
   extends UserServicesComponent {
@@ -30,7 +27,6 @@ trait UserServicesComponentImpl
 
   class UserServicesImpl
     extends UserServices
-    with Conversions
     with FileUtils {
 
     val DeviceType = "ANDROID"
@@ -81,7 +77,7 @@ trait UserServicesComponentImpl
         case Failure(ex) => None
       }
 
-    override def signIn: Service[LoginRequest, SignInResponse] =
+    override def signIn: LoginRequest => Future[SignInResponse] =
       request => {
         apiServices.login(request) map {
           response =>
@@ -125,7 +121,7 @@ trait UserServicesComponentImpl
             inst =>
               inst.id map {
                 id =>
-                  apiServices.updateInstallation(toInstallationRequest(inst)) map {
+                  apiServices.updateInstallation(inst.id, inst.deviceType, inst.deviceToken, inst.userId) map {
                     response =>
                       synchronizingChangesInstallation = false
                       if (pendingSynchronizedInstallation) {
@@ -134,10 +130,13 @@ trait UserServicesComponentImpl
                       }
                   }
               } getOrElse {
-                apiServices.createInstallation(toInstallationRequest(inst)) map {
+                apiServices.createInstallation(inst.id, inst.deviceType, inst.deviceToken, inst.userId) map {
                   response =>
                     synchronizingChangesInstallation = false
-                    response.installation map saveInstallation
+                    response match {
+                      case \/-(r) => r.installation map saveInstallation
+                      case _ =>
+                    }
                     if (pendingSynchronizedInstallation) {
                       pendingSynchronizedInstallation = false
                       synchronizeInstallation()

@@ -85,13 +85,6 @@ trait Conversions {
       deviceToken = installation.deviceToken,
       userId = installation.userId)
 
-  def toInstallationRequest(installation: Installation): InstallationRequest =
-    InstallationRequest(
-      id = installation.id,
-      deviceType = installation.deviceType,
-      deviceToken = installation.deviceToken,
-      userId = installation.userId)
-
   def toGooglePlayPackageSeq(googlePlayPackages: Seq[apiModel.GooglePlayPackage]): Seq[GooglePlayPackage] =
     googlePlayPackages map toGooglePlayPackage
 

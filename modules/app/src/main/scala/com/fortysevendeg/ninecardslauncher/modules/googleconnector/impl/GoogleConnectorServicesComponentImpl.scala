@@ -6,8 +6,7 @@ import android.os.{Build, Bundle}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons.{ContextWrapperProvider, Service}
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector._
-import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
-import com.fortysevendeg.ninecardslauncher.services.api.LoginRequest
+import com.fortysevendeg.ninecardslauncher.modules.user.{LoginRequest, UserServicesComponent}
 import com.fortysevendeg.ninecardslauncher.services.api.models.GoogleDevice
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher2.R
