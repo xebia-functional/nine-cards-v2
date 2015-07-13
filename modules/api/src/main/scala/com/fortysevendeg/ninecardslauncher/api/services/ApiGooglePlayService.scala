@@ -6,7 +6,6 @@ import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import play.api.libs.json.{Reads, Writes}
 
-import scala.concurrent.ExecutionContext
 import scalaz.\/
 import scalaz.concurrent.Task
 
@@ -19,7 +18,7 @@ class ApiGooglePlayService(serviceClient: ServiceClient) {
   private val DetailedPackagesPath = "detailed"
   private val SimplePackagesPath = "simple"
 
-  def getGooglePlayPackage(packageName: String, headers: Seq[(String, String)])(implicit executionContext: ExecutionContext, reads: Reads[GooglePlayPackage]) =
+  def getGooglePlayPackage(packageName: String, headers: Seq[(String, String)])(implicit reads: Reads[GooglePlayPackage]) =
     serviceClient.get[GooglePlayPackage](
       path = s"$PrefixGooglePlay/$PackagePath/$packageName",
       headers = headers,
@@ -28,7 +27,7 @@ class ApiGooglePlayService(serviceClient: ServiceClient) {
   def getGooglePlayPackages(
     packageRequest: PackagesRequest,
     headers: Seq[(String, String)]
-    )(implicit executionContext: ExecutionContext, reads: Reads[GooglePlayPackages], writes: Writes[PackagesRequest]) =
+    )(implicit reads: Reads[GooglePlayPackages], writes: Writes[PackagesRequest]) =
     serviceClient.post[PackagesRequest, GooglePlayPackages](
       path = s"$PrefixGooglePlay/$PackagesPath/$DetailedPackagesPath",
       headers = headers,
@@ -50,7 +49,7 @@ class ApiGooglePlayService(serviceClient: ServiceClient) {
     offset: Int,
     limit: Int,
     headers: Seq[(String, String)]
-    )(implicit executionContext: ExecutionContext, reads: Reads[GooglePlaySearch]) =
+    )(implicit reads: Reads[GooglePlaySearch]) =
     serviceClient.get[GooglePlaySearch](
       path = s"$PrefixGooglePlay/$SearchPath/$query/$offset/$limit",
       headers = headers,

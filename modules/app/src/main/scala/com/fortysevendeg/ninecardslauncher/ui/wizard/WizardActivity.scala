@@ -7,22 +7,22 @@ import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.ActionBarActivity
 import android.widget.RadioButton
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiUserConfigService, ApiGooglePlayService, ApiUserService}
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.googleconnector.{GoogleOperationCanceledException, RequestTokenRequest}
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService
-import com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigRequest
-import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesImpl, ApiServicesConfig}
+import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
+import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.ui.commons.GoogleServicesConstants._
 import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Contexts, Transformer, Ui}
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -113,7 +113,7 @@ class WizardActivity
       token <- user.sessionToken
       androidId <- userServices.getAndroidId
     } yield {
-      apiServices.getUserConfig(GetUserConfigRequest(androidId, token)) map {
+      apiServices.getUserConfig()(RequestConfig(androidId, token)) map {
         response =>
           response.userConfig map {
             userConfig =>

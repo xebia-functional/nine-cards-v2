@@ -1,13 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
-import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntentImplicits._
+import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json._
 
 trait Conversions {
 
-  def fromLoginRequest(login: LoginRequest): apiModel.User =
+  def toUser(
+    email: String,
+    device: GoogleDevice
+    ): apiModel.User =
     apiModel.User(
       _id = None,
       email = None,
@@ -16,8 +19,8 @@ trait Conversions {
       password = None,
       authData = Some(apiModel.AuthData(
         google = Some(apiModel.AuthGoogle(
-          email = login.email,
-          devices = List(fromGoogleDevice(login.device))
+          email = email,
+          devices = List(fromGoogleDevice(device))
         )),
         facebook = None,
         twitter = None,
@@ -50,22 +53,30 @@ trait Conversions {
       secretToken = device.secretToken,
       permissions = device.permissions)
 
-  def fromLinkGoogleAccountRequest(googleRequest: LinkGoogleAccountRequest): apiModel.AuthData =
+  def toAuthData(
+    email: String,
+    devices: Seq[GoogleDevice]
+    ): apiModel.AuthData =
     apiModel.AuthData(
       google = Some(apiModel.AuthGoogle(
-        email = googleRequest.email,
-        devices = googleRequest.devices map fromGoogleDevice
+        email = email,
+        devices = devices map fromGoogleDevice
       )),
       facebook = None,
       twitter = None,
       anonymous = None)
 
-  def fromInstallationRequest(installation: InstallationRequest): apiModel.Installation =
+  def toInstallation(
+    id: Option[String],
+    deviceType: Option[String],
+    deviceToken: Option[String],
+    userId: Option[String]
+    ): apiModel.Installation =
     apiModel.Installation(
-      _id = installation.id,
-      deviceType = installation.deviceType,
-      deviceToken = installation.deviceToken,
-      userId = installation.userId)
+      _id = id,
+      deviceType = deviceType,
+      deviceToken = deviceToken,
+      userId = userId)
 
   def toInstallation(installation: apiModel.Installation): Installation =
     Installation(
@@ -242,7 +253,7 @@ trait Conversions {
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
 
-  def fromUserConfigDevice(device: UserConfigDevice): apiModel.UserConfigDevice =
+  def toConfigDevice(device: UserConfigDevice): apiModel.UserConfigDevice =
     apiModel.UserConfigDevice(
       deviceId = device.deviceId,
       deviceName = device.deviceName,
@@ -273,7 +284,7 @@ trait Conversions {
       metadata = Json.parse("{\"name\": \"test\"}"), // TODO Create metadata for item
       categories = collectionItem.categories)
 
-  def fromUserConfigGeoInfo(apiGeoInfo: UserConfigGeoInfo): apiModel.UserConfigGeoInfo =
+  def toUserConfigGeoInfo(apiGeoInfo: UserConfigGeoInfo): apiModel.UserConfigGeoInfo =
     apiModel.UserConfigGeoInfo(
       homeMorning = apiGeoInfo.homeMorning map fromUserConfigUserLocation,
       homeNight = apiGeoInfo.homeNight map fromUserConfigUserLocation,

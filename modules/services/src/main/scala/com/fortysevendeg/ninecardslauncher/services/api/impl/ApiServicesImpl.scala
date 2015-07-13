@@ -19,7 +19,8 @@ class ApiServicesImpl(
   apiServicesConfig: ApiServicesConfig,
   apiUserService: ApiUserService,
   googlePlayService: ApiGooglePlayService,
-  userConfigService: ApiUserConfigService)
+  userConfigService: ApiUserConfigService
+  )
   extends ApiServices
   with Conversions {
 
@@ -44,102 +45,120 @@ class ApiServicesImpl(
   import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
 
-  override def login: Service[LoginRequest, LoginResponse] =
-    request =>
-      for {
-        response <- apiUserService.login(fromLoginRequest(request), baseHeader)
-      } yield LoginResponse(response.statusCode, response.data map toUser)
+  override def login(
+    email: String,
+    device: GoogleDevice
+    ): Task[NineCardsException \/ LoginResponse] =
+    for {
+      response <- apiUserService.login(toUser(email, device), baseHeader) ▹ eitherT
+    } yield LoginResponse(response.statusCode, response.data map toUser)
 
-  override def linkGoogleAccount: Service[LinkGoogleAccountRequest, LoginResponse] =
-    request =>
-      for {
-        response <- apiUserService.linkAuthData(fromLinkGoogleAccountRequest(request), createHeader(request.deviceId, request.token))
-      } yield LoginResponse(response.statusCode, response.data map toUser)
+  override def linkGoogleAccount(
+    email: String,
+    devices: Seq[GoogleDevice]
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ LoginResponse] =
+    for {
+      response <- apiUserService.linkAuthData(toAuthData(email, devices), requestConfig.toHeader) ▹ eitherT
+    } yield LoginResponse(response.statusCode, response.data map toUser)
 
-  override def createInstallation: Service[InstallationRequest, InstallationResponse] =
-    request =>
-      for {
-        response <- apiUserService.createInstallation(fromInstallationRequest(request), baseHeader)
-      } yield InstallationResponse(response.statusCode, response.data map toInstallation)
+  override def createInstallation(
+    id: Option[String],
+    deviceType: Option[String],
+    deviceToken: Option[String],
+    userId: Option[String]
+    ): Task[NineCardsException \/ InstallationResponse] =
+    for {
+      response <- apiUserService.createInstallation(toInstallation(id, deviceType, deviceToken, userId), baseHeader) ▹ eitherT
+    } yield InstallationResponse(response.statusCode, response.data map toInstallation)
 
-  override def updateInstallation: Service[InstallationRequest, UpdateInstallationResponse] =
-    request =>
-      for {
-        response <- apiUserService.updateInstallation(fromInstallationRequest(request), baseHeader)
-      } yield UpdateInstallationResponse(response.statusCode)
+  override def updateInstallation(
+    id: Option[String],
+    deviceType: Option[String],
+    deviceToken: Option[String],
+    userId: Option[String]
+    ): Task[NineCardsException \/ UpdateInstallationResponse] =
+    for {
+      response <- apiUserService.updateInstallation(toInstallation(id, deviceType, deviceToken, userId), baseHeader) ▹ eitherT
+    } yield UpdateInstallationResponse(response.statusCode)
 
-  override def googlePlayPackage: Service[GooglePlayPackageRequest, GooglePlayPackageResponse] =
-    request =>
-      for {
-        response <- googlePlayService.getGooglePlayPackage(request.packageName, createHeader(request.deviceId, request.token))
-      } yield GooglePlayPackageResponse(response.statusCode, response.data map (playApp => toGooglePlayApp(playApp.docV2)))
+  override def googlePlayPackage(
+    packageName: String
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GooglePlayPackageResponse] =
+    for {
+      response <- googlePlayService.getGooglePlayPackage(packageName, requestConfig.toHeader) ▹ eitherT
+    } yield GooglePlayPackageResponse(response.statusCode, response.data map (playApp => toGooglePlayApp(playApp.docV2)))
 
-  override def googlePlayPackages: Service[GooglePlayPackagesRequest, GooglePlayPackagesResponse] =
-    request =>
-      for {
-        response <- googlePlayService.getGooglePlayPackages(PackagesRequest(request.packageNames), createHeader(request.deviceId, request.token))
-      } yield GooglePlayPackagesResponse(response.statusCode, response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)
+  override def googlePlayPackages(
+    packageNames: Seq[String]
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GooglePlayPackagesResponse] =
+    for {
+      response <- googlePlayService.getGooglePlayPackages(PackagesRequest(packageNames), requestConfig.toHeader) ▹ eitherT
+    } yield GooglePlayPackagesResponse(response.statusCode, response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)
 
-  override def googlePlaySimplePackages(request: GooglePlaySimplePackagesRequest): Task[NineCardsException \/ GooglePlaySimplePackagesResponse] =
-      for {
-        response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(request.items), createHeader(request.deviceId, request.token)) ▹ eitherT
-      } yield GooglePlaySimplePackagesResponse(
-        response.statusCode,
-        response.data.map(playApp => toGooglePlaySimplePackages(playApp)).getOrElse(GooglePlaySimplePackages(Seq.empty, Seq.empty)))
+  override def googlePlaySimplePackages(
+    items: Seq[String]
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GooglePlaySimplePackagesResponse] =
+    for {
+      response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(items), requestConfig.toHeader) ▹ eitherT
+    } yield GooglePlaySimplePackagesResponse(
+      response.statusCode,
+      response.data.map(playApp => toGooglePlaySimplePackages(playApp)).getOrElse(GooglePlaySimplePackages(Seq.empty, Seq.empty)))
 
-  override def getUserConfig: Service[GetUserConfigRequest, GetUserConfigResponse] =
-    request =>
-      for {
-        response <- userConfigService.getUserConfig(createHeader(request.deviceId, request.token))
-      } yield GetUserConfigResponse(response.statusCode, response.data map toUserConfig)
+  override def getUserConfig(
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GetUserConfigResponse] =
+    for {
+      response <- userConfigService.getUserConfig(requestConfig.toHeader) ▹ eitherT
+    } yield GetUserConfigResponse(response.statusCode, response.data map toUserConfig)
 
-  override def saveDevice: Service[SaveDeviceRequest, SaveDeviceResponse] =
-    request =>
-      for {
-        response <- userConfigService.saveDevice(
-          fromUserConfigDevice(request.userConfigDevice),
-          createHeader(request.deviceId, request.token))
-      } yield SaveDeviceResponse(response.statusCode, response.data map toUserConfig)
+  override def saveDevice(
+    userConfigDevice: UserConfigDevice
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ SaveDeviceResponse] =
+    for {
+      response <- userConfigService.saveDevice(
+        toConfigDevice(userConfigDevice),
+        requestConfig.toHeader) ▹ eitherT
+    } yield SaveDeviceResponse(response.statusCode, response.data map toUserConfig)
 
-  override def saveGeoInfo: Service[SaveGeoInfoRequest, SaveGeoInfoResponse] =
-    request =>
-      for {
-        response <- userConfigService.saveGeoInfo(
-          fromUserConfigGeoInfo(request.userConfigGeoInfo),
-          createHeader(request.deviceId, request.token))
-      } yield SaveGeoInfoResponse(response.statusCode, response.data map toUserConfig)
+  override def saveGeoInfo(
+    userConfigGeoInfo: UserConfigGeoInfo
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ SaveGeoInfoResponse] =
+    for {
+      response <- userConfigService.saveGeoInfo(
+        toUserConfigGeoInfo(userConfigGeoInfo),
+        requestConfig.toHeader) ▹ eitherT
+    } yield SaveGeoInfoResponse(response.statusCode, response.data map toUserConfig)
 
-  override def checkpointPurchaseProduct: Service[CheckpointPurchaseProductRequest, CheckpointPurchaseProductResponse] =
-    request =>
-      for {
-        response <- userConfigService.checkpointPurchaseProduct(
-          request.productId,
-          createHeader(request.deviceId, request.token))
-      } yield CheckpointPurchaseProductResponse(response.statusCode, response.data map toUserConfig)
+  override def checkpointPurchaseProduct(
+    productId: String
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ CheckpointPurchaseProductResponse] =
+    for {
+      response <- userConfigService.checkpointPurchaseProduct(
+        productId, requestConfig.toHeader) ▹ eitherT
+    } yield CheckpointPurchaseProductResponse(response.statusCode, response.data map toUserConfig)
 
-  override def checkpointCustomCollection: Service[CheckpointCustomCollectionRequest, CheckpointCustomCollectionResponse] =
-    request =>
-      for {
-        response <- userConfigService.checkpointCustomCollection(createHeader(request.deviceId, request.token))
-      } yield CheckpointCustomCollectionResponse(response.statusCode, response.data map toUserConfig)
+  override def checkpointCustomCollection(
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ CheckpointCustomCollectionResponse] =
+    for {
+      response <- userConfigService.checkpointCustomCollection(requestConfig.toHeader) ▹ eitherT
+    } yield CheckpointCustomCollectionResponse(response.statusCode, response.data map toUserConfig)
 
-  override def checkpointJoinedBy: Service[CheckpointJoinedByRequest, CheckpointJoinedByResponse] =
-    request =>
-      for {
-        response <- userConfigService.checkpointJoinedBy(
-          request.otherConfigId,
-          createHeader(request.deviceId, request.token))
-      } yield CheckpointJoinedByResponse(response.statusCode, response.data map toUserConfig)
+  override def checkpointJoinedBy(
+    otherConfigId: String
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ CheckpointJoinedByResponse] =
+    for {
+      response <- userConfigService.checkpointJoinedBy(otherConfigId, requestConfig.toHeader) ▹ eitherT
+    } yield CheckpointJoinedByResponse(response.statusCode, response.data map toUserConfig)
 
-  override def tester: Service[TesterRequest, TesterResponse] =
-    request =>
+  override def tester(
+    replace: Map[String, String]
+    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ TesterResponse] =
       for {
-        response <- userConfigService.tester(
-          request.replace,
-          createHeader(request.deviceId, request.token))
+        response <- userConfigService.tester(replace, requestConfig.toHeader) ▹ eitherT
       } yield TesterResponse(response.statusCode, response.data map toUserConfig)
 
-  private def createHeader(device: String, token: String) =
-    baseHeader :+ (headerDevice, device) :+ (headerToken, token)
+  implicit class RequestHeaderHeader(request: RequestConfig) {
+    def toHeader: Seq[(String, String)] =
+      baseHeader :+(headerDevice, request.deviceId) :+(headerToken, request.token)
+  }
 
 }

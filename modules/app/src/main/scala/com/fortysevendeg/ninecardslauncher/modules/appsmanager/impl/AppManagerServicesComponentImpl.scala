@@ -5,11 +5,10 @@ import com.fortysevendeg.ninecardslauncher.commons.{ContextWrapperProvider, Serv
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager._
 import com.fortysevendeg.ninecardslauncher.modules.image._
 import com.fortysevendeg.ninecardslauncher.modules.user.UserServicesComponent
-import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.repository.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
-import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesRequest, GooglePlayPackagesResponse}
+import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesResponse, RequestConfig}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 
@@ -80,7 +79,7 @@ trait AppManagerServicesComponentImpl
         token <- user.sessionToken
         androidId <- userServices.getAndroidId
       } yield {
-          apiServices.googlePlayPackages(GooglePlayPackagesRequest(androidId, token, packages))
+          apiServices.googlePlayPackages(packages)(RequestConfig(androidId, token))
         }) getOrElse (throw new RuntimeException("User not found"))
 
 
