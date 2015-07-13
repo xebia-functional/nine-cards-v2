@@ -1,7 +1,6 @@
 package com.fortysevendeg.rest.client
 
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientResponse}
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse

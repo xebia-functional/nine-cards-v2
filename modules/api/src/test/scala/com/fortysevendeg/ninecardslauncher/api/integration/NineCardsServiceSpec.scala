@@ -11,8 +11,6 @@ import org.specs2.mutable.Specification
 import org.specs2.specification._
 import org.specs2.specification.core.Fragments
 
-import scala.concurrent.ExecutionContext
-
 trait NineCardsServiceSpecification
   extends Specification
   with DisjunctionMatchers
@@ -26,8 +24,6 @@ trait NineCardsServiceSpecification
     extends Scope {
 
     val serviceClient = new ServiceClient(new OkHttpClient, fakeBaseUrl)
-
-    implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
     lazy val apiGooglePlayService = new ApiGooglePlayService(serviceClient)
 

@@ -6,7 +6,6 @@ import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCar
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
-import scala.concurrent.ExecutionContext
 import scalaz.concurrent.Task
 import scalaz._
 import Scalaz._
@@ -23,8 +22,6 @@ class ApiServicesImpl(
   )
   extends ApiServices
   with Conversions {
-
-  implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
   val headerAppId = "X-Appsly-Application-Id"
 

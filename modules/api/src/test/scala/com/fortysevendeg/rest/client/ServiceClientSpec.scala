@@ -10,7 +10,6 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import play.api.libs.json.Json
 
-import scala.concurrent.ExecutionContext
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/-}
 
@@ -23,8 +22,6 @@ trait ServiceClientSpecification
     extends Scope {
 
     val baseUrl = "http://sampleUrl"
-
-    implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
     implicit val readsResponse = Json.reads[SampleResponse]
     implicit val writesRequest = Json.writes[SampleRequest]
