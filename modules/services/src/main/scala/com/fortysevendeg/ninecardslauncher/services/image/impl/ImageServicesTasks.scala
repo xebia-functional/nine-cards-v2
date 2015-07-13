@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.util.{DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
@@ -98,22 +99,18 @@ trait ImageServicesTasks {
     }
 
   def getBitmapByAppOrName(packageName: String, icon: Int, name: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
-    getBitmapByApp(packageName, icon) map {
-      case -\/(_) =>
-        (getBitmapByName(name) map {
-          case -\/(ex) => -\/(NineCardsException(msg = "Bitmap not created", cause = ex.some))
-          case \/-(r) => \/-(r)
-        }).run
-      case \/-(r) => \/-(r)
-    }
+    manageBitmapTask(name)(getBitmapByApp(packageName, icon))
 
   def getBitmapFromURLOrName(url: String, name: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
-    getBitmapFromURL(url) map {
+    manageBitmapTask(name)(getBitmapFromURL(url))
+
+  private[this] def manageBitmapTask(name: String)(getBitmap: => Task[NineCardsException \/ Bitmap])(implicit context: ContextSupport, config: ImageServicesConfig) =
+    getBitmap map {
       case -\/(_) =>
-        (getBitmapByName(name) map {
+        toEnsureAttemptRun(getBitmapByName(name) map {
           case -\/(ex) => -\/(NineCardsException(msg = "Bitmap not created", cause = ex.some))
           case \/-(r) => \/-(r)
-        }).run
+        })
       case \/-(r) => \/-(r)
     }
 
