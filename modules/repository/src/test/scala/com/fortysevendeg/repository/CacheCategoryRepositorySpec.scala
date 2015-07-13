@@ -89,8 +89,7 @@ trait CacheCategoryTestData {
 }
 
 trait CacheCategoryTestSupport
-  extends BaseTestSupport
-  with CacheCategoryTestData
+  extends CacheCategoryTestData
   with DBUtils
   with Mockito {
 
@@ -158,7 +157,7 @@ class CacheCategoryRepositorySpec
 
     "addCacheCategory should return a valid CacheCategory object" in {
 
-      val result = runTask(cacheCategoryRepository.addCacheCategory(data = createCacheCategoryData))
+      val result = cacheCategoryRepository.addCacheCategory(data = createCacheCategoryData).run
 
       result must be_\/-[CacheCategory].which {
         cacheCategory =>
@@ -168,7 +167,7 @@ class CacheCategoryRepositorySpec
     }
 
     "deleteCacheCategory should return a successful response when a valid cache category id is given" in {
-      val result = runTask(cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory))
+      val result = cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory).run
 
       result must be_\/-[Int].which {
         deleted =>
@@ -177,7 +176,7 @@ class CacheCategoryRepositorySpec
     }
 
     "deleteCacheCategoryByPackage should return a successful response when a valid package name is given" in {
-      val result = runTask(cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = packageName))
+      val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = packageName).run
 
       result must be_\/-[Int].which {
         deleted =>
@@ -186,7 +185,7 @@ class CacheCategoryRepositorySpec
     }
 
     "fetchCacheCategories should return all the cache categories stored in the database" in {
-      val result = runTask(cacheCategoryRepository.fetchCacheCategories)
+      val result = cacheCategoryRepository.fetchCacheCategories.run
 
       result must be_\/-[Seq[CacheCategory]].which {
         cacheCategories =>
@@ -195,7 +194,7 @@ class CacheCategoryRepositorySpec
     }
 
     "findCacheCategoryById should return a CacheCategory object when a existing id is given" in {
-      val result = runTask(cacheCategoryRepository.findCacheCategoryById(id = cacheCategoryId))
+      val result = cacheCategoryRepository.findCacheCategoryById(id = cacheCategoryId).run
 
       result must be_\/-[Option[CacheCategory]].which {
         maybeCacheCategory =>
@@ -207,7 +206,7 @@ class CacheCategoryRepositorySpec
     }
 
     "findCacheCategoryById should return None when a non-existing id is given" in {
-      val result = runTask(cacheCategoryRepository.findCacheCategoryById(id = nonExistingCacheCategoryId))
+      val result = cacheCategoryRepository.findCacheCategoryById(id = nonExistingCacheCategoryId).run
 
       result must be_\/-[Option[CacheCategory]].which {
         maybeCacheCategory =>
@@ -216,7 +215,7 @@ class CacheCategoryRepositorySpec
     }
 
     "fetchCacheCategoryByPackage should return a CacheCategory object when a existing package name is given" in {
-      val result = runTask(cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = packageName))
+      val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = packageName).run
 
       result must be_\/-[Option[CacheCategory]].which {
         maybeCacheCategory =>
@@ -228,7 +227,7 @@ class CacheCategoryRepositorySpec
     }
 
     "fetchCacheCategoryByPackage should return None when a non-existing package name is given" in {
-      val result = runTask(cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = nonExistingPackageName))
+      val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = nonExistingPackageName).run
 
       result must be_\/-[Option[CacheCategory]].which {
         maybeCacheCategory =>
@@ -237,7 +236,7 @@ class CacheCategoryRepositorySpec
     }
 
     "updateCacheCategory should return a successful response when the cache category is updated" in {
-      val result = runTask(cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory))
+      val result = cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory).run
 
       result must be_\/-[Int].which {
         updated =>

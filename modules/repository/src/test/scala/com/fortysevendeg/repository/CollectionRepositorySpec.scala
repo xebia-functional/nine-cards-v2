@@ -1,9 +1,7 @@
 package com.fortysevendeg.repository
 
-import android.R.id
-import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CollectionUri, ContentResolverWrapperImpl}
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card, Collection, CollectionData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.collectionEntityFromCursor
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
@@ -123,8 +121,7 @@ trait CollectionTestData {
 }
 
 trait CollectionTestSupport
-  extends BaseTestSupport
-  with CollectionTestData
+  extends CollectionTestData
   with DBUtils
   with Mockito {
 
@@ -213,7 +210,7 @@ class CollectionRepositorySpec
 
     "addCollection should return a valid Collection object" in {
 
-      val result = runTask(collectionRepository.addCollection(data = createCollectionData))
+      val result = collectionRepository.addCollection(data = createCollectionData).run
 
       result must be_\/-[Collection].which {
         collection =>
@@ -223,7 +220,7 @@ class CollectionRepositorySpec
     }
 
     "deleteCollection should return a successful result when a valid cache category id is given" in {
-      val result = runTask(collectionRepository.deleteCollection(collection))
+      val result = collectionRepository.deleteCollection(collection).run
 
       result must be_\/-[Int].which {
         deleted =>
@@ -232,7 +229,7 @@ class CollectionRepositorySpec
     }
 
     "findCollectionById should return a Collection object when a existing id is given" in {
-      val result = runTask(collectionRepository.findCollectionById(id = collectionId))
+      val result = collectionRepository.findCollectionById(id = collectionId).run
 
       result must be_\/-[Option[Collection]].which {
         maybeCollection =>
@@ -244,7 +241,7 @@ class CollectionRepositorySpec
     }
 
     "findCollectionById should return None when a non-existing id is given" in {
-      val result = runTask(collectionRepository.findCollectionById(id = nonExistingCollectionId))
+      val result = collectionRepository.findCollectionById(id = nonExistingCollectionId).run
 
       result must be_\/-[Option[Collection]].which {
         maybeCollection =>
@@ -253,7 +250,7 @@ class CollectionRepositorySpec
     }
 
     "fetchCollectionBySharedCollectionId should return a Collection object when a existing shared collection id is given" in {
-      val result = runTask(collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = sharedCollectionIdInt))
+      val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = sharedCollectionIdInt).run
 
       result must be_\/-[Option[Collection]].which {
         maybeCollection =>
@@ -265,7 +262,7 @@ class CollectionRepositorySpec
     }
 
     "fetchCollectionBySharedCollectionId should return None when a non-existing shared collection id is given" in {
-      val result = runTask(collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = nonExistingSharedCollectionIdInt))
+      val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = nonExistingSharedCollectionIdInt).run
 
       result must be_\/-[Option[Collection]].which {
         maybeCollection =>
@@ -274,7 +271,7 @@ class CollectionRepositorySpec
     }
 
     "fetchCollectionByPosition should return a Collection object when a existing position is given" in {
-      val result = runTask(collectionRepository.fetchCollectionByPosition(position = position))
+      val result = collectionRepository.fetchCollectionByPosition(position = position).run
 
       result must be_\/-[Option[Collection]].which {
         maybeCollection =>
@@ -286,7 +283,7 @@ class CollectionRepositorySpec
     }
 
     "fetchCollectionByPosition should return None when a non-existing position is given" in {
-      val result = runTask(collectionRepository.fetchCollectionByPosition(position = nonExistingPosition))
+      val result = collectionRepository.fetchCollectionByPosition(position = nonExistingPosition).run
 
       result must be_\/-[Option[Collection]].which {
         maybeCollection =>
@@ -295,7 +292,7 @@ class CollectionRepositorySpec
     }
 
     "fetchSortedCollections should return all the cache categories stored in the database" in {
-      val result = runTask(collectionRepository.fetchSortedCollections)
+      val result = collectionRepository.fetchSortedCollections.run
 
       result must be_\/-[Seq[Collection]].which {
         collections =>
@@ -305,7 +302,7 @@ class CollectionRepositorySpec
     }
 
     "updateCollection should return a successful result when the collection is updated" in {
-      val result = runTask(collectionRepository.updateCollection(collection = collection))
+      val result = collectionRepository.updateCollection(collection = collection).run
 
       result must be_\/-[Int].which {
         updated =>

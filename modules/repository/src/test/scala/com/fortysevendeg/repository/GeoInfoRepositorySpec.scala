@@ -1,8 +1,7 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapperImpl, GeoInfoUri}
-import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, GeoInfo, GeoInfoData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo, GeoInfoData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity.geoInfoEntityFromCursor
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
@@ -90,8 +89,7 @@ trait GeoInfoTestData {
 }
 
 trait GeoInfoTestSupport
-  extends BaseTestSupport
-  with GeoInfoTestData
+  extends GeoInfoTestData
   with DBUtils
   with Mockito {
 
@@ -154,7 +152,7 @@ class GeoInfoRepositorySpec
 
     "addGeoInfo should return a valid GeoInfo object" in {
 
-      val result = runTask(geoInfoRepository.addGeoInfo(createGeoInfoData))
+      val result = geoInfoRepository.addGeoInfo(createGeoInfoData).run
 
       result must be_\/-[GeoInfo].which {
         geoInfo =>
@@ -164,7 +162,7 @@ class GeoInfoRepositorySpec
     }
 
     "deleteGeoInfo should return a successful result when a valid geoInfo id is given" in {
-      val result = runTask(geoInfoRepository.deleteGeoInfo(geoInfo))
+      val result = geoInfoRepository.deleteGeoInfo(geoInfo).run
 
       result must be_\/-[Int].which {
         deleted =>
@@ -173,7 +171,7 @@ class GeoInfoRepositorySpec
     }
 
     "fetchGeoInfoItems should return all the geoInfo items stored in the database" in {
-      val result = runTask(geoInfoRepository.fetchGeoInfoItems)
+      val result = geoInfoRepository.fetchGeoInfoItems.run
 
       result must be_\/-[Seq[GeoInfo]].which {
         geoInfoItems =>
@@ -182,7 +180,7 @@ class GeoInfoRepositorySpec
     }
 
     "findGeoInfoById should return a GeoInfo object when a existing id is given" in {
-      val result = runTask(geoInfoRepository.findGeoInfoById(geoInfoId))
+      val result = geoInfoRepository.findGeoInfoById(geoInfoId).run
 
       result must be_\/-[Option[GeoInfo]].which {
         maybeGeoInfo =>
@@ -194,7 +192,7 @@ class GeoInfoRepositorySpec
     }
 
     "findGeoInfoById should return None when a non-existing id is given" in {
-      val result = runTask(geoInfoRepository.findGeoInfoById(nonExistingGeoInfoId))
+      val result = geoInfoRepository.findGeoInfoById(nonExistingGeoInfoId).run
 
       result must be_\/-[Option[GeoInfo]].which {
         maybeGeoInfo =>
@@ -203,7 +201,7 @@ class GeoInfoRepositorySpec
     }
 
     "fetchGeoInfoByConstrain should return a GeoInfo object when a existing constrain is given" in {
-      val result = runTask(geoInfoRepository.fetchGeoInfoByConstrain(constrain))
+      val result = geoInfoRepository.fetchGeoInfoByConstrain(constrain).run
 
       result must be_\/-[Option[GeoInfo]].which {
         maybeGeoInfo =>
@@ -215,7 +213,7 @@ class GeoInfoRepositorySpec
     }
 
     "fetchGeoInfoByConstrain should return None when a non-existing constrain is given" in {
-      val result = runTask(geoInfoRepository.fetchGeoInfoByConstrain(nonExistingConstrain))
+      val result = geoInfoRepository.fetchGeoInfoByConstrain(nonExistingConstrain).run
 
       result must be_\/-[Option[GeoInfo]].which {
         maybeGeoInfo =>
@@ -224,7 +222,7 @@ class GeoInfoRepositorySpec
     }
 
     "updateGeoInfo should return a successful result when the geoInfo item is updated" in {
-      val result = runTask(geoInfoRepository.updateGeoInfo(geoInfo))
+      val result = geoInfoRepository.updateGeoInfo(geoInfo).run
 
       result must be_\/-[Int].which {
         updated =>

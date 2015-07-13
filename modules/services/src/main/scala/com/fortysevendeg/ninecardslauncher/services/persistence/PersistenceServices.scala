@@ -29,7 +29,7 @@ trait PersistenceServices {
 
   def deleteCard(request: DeleteCardRequest): Task[NineCardsException \/ Int]
 
-  def fetchCardsByCollection(request: FetchCardsByCollectionRequest): Task[NineCardsException \/ Seq[CacheCategory]]
+  def fetchCardsByCollection(request: FetchCardsByCollectionRequest): Task[NineCardsException \/ Seq[Card]]
 
   def findCardById(request: FindCardByIdRequest): Task[NineCardsException \/ Option[Card]]
 

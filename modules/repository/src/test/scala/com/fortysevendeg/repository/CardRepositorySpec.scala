@@ -1,8 +1,7 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapperImpl}
-import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, Card, CardData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity.cardEntityFromCursor
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
@@ -135,8 +134,7 @@ trait CardTestData {
 }
 
 trait CardTestSupport
-  extends BaseTestSupport
-  with CardTestData
+  extends CardTestData
   with DBUtils
   with Mockito {
 
@@ -199,7 +197,7 @@ class CardRepositorySpec
 
     "addCard should return a valid Card object" in {
 
-      val result = runTask(cardRepository.addCard(collectionId = collectionId, data = createCardData))
+      val result = cardRepository.addCard(collectionId = collectionId, data = createCardData).run
 
       result must be_\/-[Card].which {
         card =>
@@ -209,7 +207,7 @@ class CardRepositorySpec
     }
 
     "deleteCard should return a successful result when a valid cache category id is given" in {
-      val result = runTask(cardRepository.deleteCard(card = card))
+      val result = cardRepository.deleteCard(card = card).run
 
       result must be_\/-[Int].which {
         deleted =>
@@ -218,7 +216,7 @@ class CardRepositorySpec
     }
 
     "findCardById should return a Card object when a existing id is given" in {
-      val result = runTask(cardRepository.findCardById(id = cardId))
+      val result = cardRepository.findCardById(id = cardId).run
 
       result must be_\/-[Option[Card]].which {
         maybeCard =>
@@ -230,7 +228,7 @@ class CardRepositorySpec
     }
 
     "findCardById should return None when a non-existing id is given" in {
-      val result = runTask(cardRepository.findCardById(id = nonExistingCardId))
+      val result = cardRepository.findCardById(id = nonExistingCardId).run
 
       result must be_\/-[Option[Card]].which {
         maybeCard =>
@@ -239,7 +237,7 @@ class CardRepositorySpec
     }
 
     "fetchCardsByCollection should return a Card sequence when a existing collection id is given" in {
-      val result = runTask(cardRepository.fetchCardsByCollection(collectionId = collectionId))
+      val result = cardRepository.fetchCardsByCollection(collectionId = collectionId).run
 
       result must be_\/-[Seq[Card]].which {
         cards =>
@@ -248,7 +246,7 @@ class CardRepositorySpec
     }
 
     "fetchCardsByCollection should return an empty sequence when a non-existing collection id is given" in {
-      val result = runTask(cardRepository.fetchCardsByCollection(collectionId = nonExistingCollectionId))
+      val result = cardRepository.fetchCardsByCollection(collectionId = nonExistingCollectionId).run
 
       result must be_\/-[Seq[Card]].which {
         cards =>
@@ -257,7 +255,7 @@ class CardRepositorySpec
     }
 
     "updateCard should return a successful result when the card is updated" in {
-      val result = runTask(cardRepository.updateCard(card = card))
+      val result = cardRepository.updateCard(card = card).run
 
       result must be_\/-[Int].which {
         updated =>
