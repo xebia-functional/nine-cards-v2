@@ -63,7 +63,7 @@ class ImageServicesSpec
 
       when(mockTasks.getPathByApp(appPackage.packageName, appPackage.className)(contextSupport)) thenReturn fileExistsTask
 
-      val result = mockImageService.androidAppPackage(appPackage)(contextSupport).run
+      val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run
 
       result must be_\/-[String].which {
         path =>
@@ -76,7 +76,7 @@ class ImageServicesSpec
 
       when(mockTasks.getPathByApp(appPackage.packageName, appPackage.className)(contextSupport)) thenReturn fileNotExistsTask
 
-      val result = mockImageService.androidAppPackage(appPackage)(contextSupport).run
+      val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run
 
       there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
 
@@ -95,7 +95,7 @@ class ImageServicesSpec
 
       when(mockTasks.getPathByPackageName(appWebsite.packageName)(contextSupport)) thenReturn fileExistsTask
 
-      val result = mockImageService.androidAppWebsite(appWebsite)(contextSupport).run
+      val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run
 
       result must be_\/-[String].which {
         path =>
@@ -108,7 +108,7 @@ class ImageServicesSpec
 
       when(mockTasks.getPathByPackageName(appWebsite.packageName)(contextSupport)) thenReturn fileNotExistsTask
 
-      val result = mockImageService.androidAppWebsite(appWebsite)(contextSupport).run
+      val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run
 
       there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
 

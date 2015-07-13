@@ -19,16 +19,14 @@ class ImageServicesImpl(config: ImageServicesConfig, tasks: ImageServicesTasks =
 
   implicit val implicitConfig: ImageServicesConfig = config
 
-  /** Obtains the path from package creating a new entry if non is found the very first time */
-  override def androidAppPackage(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
+  override def saveAppIcon(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
     tasks.getPathByApp(request.packageName, request.className) map {
       case -\/(ex) => -\/(NineCardsException(msg = "Not possible get the file", cause = ex.some))
       case \/-(file) =>
         createIfNotExists(file)(tasks.getBitmapByAppOrName(request.packageName, request.icon, request.name))
     }
 
-  /** Obtains the path from url creating a new entry if non is found the very first time */
-  override def androidAppWebsite(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
+  override def saveAppIcon(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
     tasks.getPathByPackageName(request.packageName) map {
       case -\/(ex) => -\/(NineCardsException(msg = "Not possible get the file", cause = ex.some))
       case \/-(file) =>
