@@ -1,6 +1,7 @@
 package com.fortysevendeg.rest.client
 
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientResponse}
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
@@ -92,20 +93,20 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     ): Task[NineCardsException \/ Option[T]] =
     Task {
       (clientResponse.body, emptyResponse, maybeReads) match {
-        case (Some(d), false, Some(r)) => \/-(transformResponseTask[T](d, r))
+        case (Some(d), false, Some(r)) => transformResponse[T](d, r)
         case (None, false, _) => -\/(new NineCardsException("No content")) // TODO - Make ServiceClientException extends NineCardsException
         case (Some(d), false, None) => -\/(new NineCardsException("No transformer found for type"))
         case _ => \/-(None)
       }
     }
 
-  private def transformResponseTask[T](
+  private def transformResponse[T](
     content: String,
     reads: Reads[T]
-    ): Option[T] =
+    ): NineCardsException \/ Option[T] =
     Try(Json.parse(content).as[T](reads)) match {
-      case Success(s) => Some(s)
-      case Failure(fail) => None
+      case Success(s) => \/-(Some(s))
+      case Failure(e) => -\/(NineCardsException(msg = e.getMessage, cause = Some(e)))
     }
 
 }
