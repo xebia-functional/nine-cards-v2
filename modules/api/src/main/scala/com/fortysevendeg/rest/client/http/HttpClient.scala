@@ -29,12 +29,6 @@ trait HttpClient {
     body: Req
     ): Task[NineCardsException \/ HttpClientResponse]
 
-  def doPostTask[Req: Writes](
-    url: String,
-    httpHeaders: Seq[(String, String)],
-    body: Req
-    ): Task[NineCardsException \/ HttpClientResponse]
-
   def doPut(
     url: String,
     httpHeaders: Seq[(String, String)]

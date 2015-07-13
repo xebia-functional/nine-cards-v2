@@ -44,16 +44,6 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
     ): Task[NineCardsException \/ HttpClientResponse] =
     doMethod(POST, url, httpHeaders, Some(Json.toJson(body).toString()))
 
-  def doPostTask[Req: Writes](url: String, httpHeaders: Seq[(String, String)], body: Req): Task[NineCardsException \/ HttpClientResponse] =
-    Task {
-      \/.fromTryCatchThrowable[HttpClientResponse, NineCardsException] {
-        val builder = createBuilderRequest(url, httpHeaders)
-        val request = builder.post(createBody(Some(Json.toJson(body).toString()))).build()
-        val response = okHttpClient.newCall(request).execute()
-        HttpClientResponse(response.code(), Option(response.body()) map (_.string()))
-      }
-    }
-
   override def doPut(
     url: String,
     httpHeaders: Seq[(String, String)]

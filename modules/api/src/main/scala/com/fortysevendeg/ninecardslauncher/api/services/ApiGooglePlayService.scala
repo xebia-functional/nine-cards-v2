@@ -38,7 +38,7 @@ class ApiGooglePlayService(serviceClient: ServiceClient) {
     packageRequest: PackagesRequest,
     headers: Seq[(String, String)]
     )(implicit reads: Reads[GooglePlaySimplePackages], writes: Writes[PackagesRequest]): Task[NineCardsException \/ ServiceClientResponse[GooglePlaySimplePackages]] =
-    serviceClient.postTask[PackagesRequest, GooglePlaySimplePackages](
+    serviceClient.post[PackagesRequest, GooglePlaySimplePackages](
       path = s"$PrefixGooglePlay/$PackagesPath/$SimplePackagesPath",
       headers = headers,
       body = packageRequest,

@@ -50,19 +50,6 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
       response <- readResponse(clientResponse, reads, emptyResponse) ▹ eitherT
     } yield ServiceClientResponse(clientResponse.statusCode, response)
 
-  def postTask[Req, Res](
-    path: String,
-    headers: Seq[(String, String)] = Seq.empty,
-    body: Req,
-    reads: Option[Reads[Res]] = None,
-    emptyResponse: Boolean = false
-    )(implicit writes: Writes[Req]): Task[NineCardsException \/ ServiceClientResponse[Res]] =
-    for {
-      clientResponse <- httpClient.doPostTask[Req](baseUrl.concat(path), headers, body) ▹ eitherT
-      response <- readResponse(clientResponse, reads, emptyResponse) ▹ eitherT
-    } yield ServiceClientResponse(clientResponse.statusCode, response)
-
-
   def emptyPut[Res](
     path: String,
     headers: Seq[(String, String)] = Seq.empty,
