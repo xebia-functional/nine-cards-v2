@@ -6,13 +6,13 @@ import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.{repository => repo}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.services.utils.FileUtils
-import com.fortysevendeg.ninecardslauncher.{repository => repo}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -23,14 +23,14 @@ import scalaz.concurrent.Task
 import Service._
 
 class PersistenceServicesImpl(
-    cacheCategoryRepository: CacheCategoryRepository,
-    cardRepository: CardRepository,
-    collectionRepository: CollectionRepository,
-    geoInfoRepository: GeoInfoRepository
-    )
-    extends PersistenceServices
-    with Conversions
-    with FileUtils {
+  cacheCategoryRepository: CacheCategoryRepository,
+  cardRepository: CardRepository,
+  collectionRepository: CollectionRepository,
+  geoInfoRepository: GeoInfoRepository
+  )
+  extends PersistenceServices
+  with Conversions
+  with FileUtils {
 
   // TODO These contants don't should be here
 
@@ -49,237 +49,149 @@ class PersistenceServicesImpl(
   override def addCacheCategory(request: AddCacheCategoryRequest): Task[NineCardsException \/ CacheCategory] =
     cacheCategoryRepository.addCacheCategory(toRepositoryCacheCategoryData(request)) ▹ eitherT map toCacheCategory
 
-  override def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse] =
-    request => {
-      cacheCategoryRepository.deleteCacheCategory(toRepositoryDeleteCacheCategoryRequest(request)) map {
-        response =>
-          DeleteCacheCategoryResponse(response.deleted)
-      }
-    }
+  override def deleteCacheCategory(request: DeleteCacheCategoryRequest): Task[NineCardsException \/ Int] =
+    cacheCategoryRepository.deleteCacheCategory(toRepositoryCacheCategory(request.cacheCategory))
 
-  override def deleteCacheCategoryByPackage: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse] =
-    request => {
-      cacheCategoryRepository.deleteCacheCategoryByPackage(toRepositoryDeleteCacheCategoryByPackageRequest(request)) map {
-        response =>
-          DeleteCacheCategoryByPackageResponse(response.deleted)
-      }
-    }
+  override def deleteCacheCategoryByPackage(request: DeleteCacheCategoryByPackageRequest): Task[NineCardsException \/ Int] =
+    cacheCategoryRepository.deleteCacheCategoryByPackage(request.packageName)
 
-  override def fetchCacheCategoryByPackage: Service[FetchCacheCategoryByPackageRequest, FetchCacheCategoryByPackageResponse] =
-    request => {
-      cacheCategoryRepository.fetchCacheCategoryByPackage(toRepositoryFetchCacheCategoryByPackageRequest(request)) map {
-        response =>
-          FetchCacheCategoryByPackageResponse(response.cacheCategory map toCacheCategory)
-      }
+  override def fetchCacheCategoryByPackage(request: FetchCacheCategoryByPackageRequest): Task[NineCardsException \/ Option[CacheCategory]] =
+    cacheCategoryRepository.fetchCacheCategoryByPackage(request.packageName) ▹ eitherT map {
+      _ map toCacheCategory
     }
 
   override def fetchCacheCategories: Task[NineCardsException \/ Seq[CacheCategory]] =
     cacheCategoryRepository.fetchCacheCategories ▹ eitherT map toCacheCategorySeq
 
+  override def findCacheCategoryById(request: FindCacheCategoryByIdRequest): Task[NineCardsException \/ Option[CacheCategory]] =
+    cacheCategoryRepository.findCacheCategoryById(request.id) ▹ eitherT map {
+      _ map toCacheCategory
+    }
 
-  override def findCacheCategoryById: Service[FindCacheCategoryByIdRequest, FindCacheCategoryByIdResponse] =
-    request => {
-      cacheCategoryRepository.findCacheCategoryById(toRepositoryFindCacheCategoryByIdRequest(request)) map {
-        response =>
-          FindCacheCategoryByIdResponse(response.cacheCategory map toCacheCategory)
+  override def updateCacheCategory(request: UpdateCacheCategoryRequest): Task[NineCardsException \/ Int] =
+    cacheCategoryRepository.updateCacheCategory(toRepositoryCacheCategory(request))
+
+  override def addCard(request: AddCardRequest): Task[NineCardsException \/ Card] =
+    cardRepository.addCard(request.collectionId, toRepositoryCardData(request.cardItem)) ▹ eitherT map toCard
+
+
+  override def deleteCard(request: DeleteCardRequest): Task[NineCardsException \/ Int] =
+    cardRepository.deleteCard(toRepositoryCard(request.card))
+
+
+  override def fetchCardsByCollection(request: FetchCardsByCollectionRequest): Task[NineCardsException \/ Seq[Card]] =
+    cardRepository.fetchCardsByCollection(request.collectionId) ▹ eitherT map {
+      _ map toCard
+    }
+
+  override def findCardById(request: FindCardByIdRequest): Task[NineCardsException \/ Option[Card]] =
+    cardRepository.findCardById(request.id) ▹ eitherT map {
+      _ map toCard
+    }
+
+
+  override def updateCard(request: UpdateCardRequest): Task[NineCardsException \/ Int] =
+    cardRepository.updateCard(toRepositoryCard(request))
+
+  override def addCollection(request: AddCollectionRequest): Task[NineCardsException \/ Collection] =
+    for {
+      collection <- collectionRepository.addCollection(toRepositoryCollectionData(request)) ▹ eitherT
+      addedCards <- addCards(collection.id, request.cards) ▹ eitherT
+    } yield toCollection(collection).copy(cards = addedCards)
+
+  override def deleteCollection(request: DeleteCollectionRequest): Task[NineCardsException \/ Int] = {
+    for {
+      deletedCards <- deleteCards(request.collection.cards) ▹ eitherT
+      deletedCollection <- collectionRepository.deleteCollection(toRepositoryCollection(request.collection)) ▹ eitherT
+    } yield deletedCollection
+  }
+
+  override def fetchCollections(request: FetchCollectionsRequest): Task[NineCardsException \/ Seq[Collection]] =
+    for {
+      collectionsWithoutCards <- collectionRepository.fetchSortedCollections ▹ eitherT
+      collectionWithCards <- fetchCards(collectionsWithoutCards) ▹ eitherT
+    } yield collectionWithCards.sortWith(_.position < _.position)
+
+  override def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest): Task[NineCardsException \/ Option[Collection]] =
+    for {
+      collection <- collectionRepository.fetchCollectionBySharedCollectionId(request.sharedCollectionId) ▹ eitherT
+      cards <- fetchCards(collection) ▹ eitherT
+    } yield collection map (toCollection(_, cards))
+
+
+  override def fetchCollectionByPosition(request: FetchCollectionByPositionRequest): Task[NineCardsException \/ Option[Collection]] =
+    for {
+      collection <- collectionRepository.fetchCollectionByPosition(request.position) ▹ eitherT
+      cards <- fetchCards(collection) ▹ eitherT
+    } yield collection map (toCollection(_, cards))
+
+  override def findCollectionById(request: FindCollectionByIdRequest): Task[NineCardsException \/ Option[Collection]] = {
+    for {
+      collection <- collectionRepository.findCollectionById(request.id) ▹ eitherT
+      cards <- fetchCards(collection) ▹ eitherT
+    } yield collection map (toCollection(_, cards))
+  }
+
+  override def updateCollection(request: UpdateCollectionRequest): Task[NineCardsException \/ Int] =
+    collectionRepository.updateCollection(toRepositoryCollection(request))
+
+  override def addGeoInfo(request: AddGeoInfoRequest): Task[NineCardsException \/ GeoInfo] =
+    geoInfoRepository.addGeoInfo(toRepositoryGeoInfoData(request)) ▹ eitherT map toGeoInfo
+
+  override def deleteGeoInfo(request: DeleteGeoInfoRequest): Task[NineCardsException \/ Int] =
+    geoInfoRepository.deleteGeoInfo(toRepositoryGeoInfo(request.geoInfo))
+
+  override def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest): Task[NineCardsException \/ Option[GeoInfo]] =
+    geoInfoRepository.fetchGeoInfoByConstrain(request.constrain) ▹ eitherT map {
+      _ map toGeoInfo
+    }
+
+  override def fetchGeoInfoItems(request: FetchGeoInfoItemsRequest): Task[NineCardsException \/ Seq[GeoInfo]] =
+    geoInfoRepository.fetchGeoInfoItems ▹ eitherT map toGeoInfoSeq
+
+  override def findGeoInfoById(request: FindGeoInfoByIdRequest): Task[NineCardsException \/ Option[GeoInfo]] =
+    geoInfoRepository.findGeoInfoById(request.id) ▹ eitherT map {
+      _ map toGeoInfo
+    }
+
+  override def updateGeoInfo(request: UpdateGeoInfoRequest): Task[NineCardsException \/ Int] =
+    geoInfoRepository.updateGeoInfo(toRepositoryGeoInfo(request))
+
+  private[this] def addCards(collectionId: Int, cards: Seq[CardItem]): Task[NineCardsException \/ Seq[Card]] = {
+    val addedCards = cards map {
+      card =>
+        cardRepository.addCard(collectionId = collectionId, data = toRepositoryCardData(cardItem = card))
+    }
+
+    Task.gatherUnordered(addedCards) map (_.collect { case \/-(card) => toCard(card) }.right[NineCardsException])
+  }
+
+  private[this] def deleteCards(cards: Seq[Card]): Task[NineCardsException \/ Int] = {
+    val deletedCards = cards map {
+      card =>
+        cardRepository.deleteCard(toRepositoryCard(card))
+    }
+
+    Task.gatherUnordered(deletedCards) map (_.collect { case \/-(value) => value }.sum.right[NineCardsException])
+  }
+
+  private[this] def fetchCards(maybeCollection: Option[repo.model.Collection]) = {
+    maybeCollection match {
+      case Some(collection) => cardRepository.fetchCardsByCollection(collection.id)
+      case None => Task(\/-(Seq.empty))
+    }
+  }
+
+  private[this] def fetchCards(collections: Seq[repo.model.Collection]): Task[NineCardsException \/ Seq[Collection]] = {
+    val result = collections map { collection =>
+      toDisjunctionTask {
+        for {
+          cards <- cardRepository.fetchCardsByCollection(collection.id) ▹ eitherT
+        } yield toCollection(collection, cards)
       }
     }
 
-  override def updateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse] =
-    request =>
-      cacheCategoryRepository.updateCacheCategory(toRepositoryUpdateCacheCategoryRequest(request)) map {
-        response =>
-          UpdateCacheCategoryResponse(updated = response.updated)
-      }
-
-  override def addCard: Service[AddCardRequest, AddCardResponse] =
-    request =>
-      cardRepository.addCard(toRepositoryAddCardRequest(request)) map {
-        response =>
-          AddCardResponse(card = toCard(response.card))
-      }
-
-  override def deleteCard: Service[DeleteCardRequest, DeleteCardResponse] =
-    request =>
-      cardRepository.deleteCard(toRepositoryDeleteCardRequest(request)) map {
-        response =>
-          DeleteCardResponse(deleted = response.deleted)
-      }
-
-  override def fetchCardsByCollection: Service[FetchCardsByCollectionRequest, FetchCardsByCollectionResponse] =
-    request =>
-      cardRepository.fetchCardsByCollection(toRepositoryFetchCardsByCollectionRequest(request)) map {
-        response =>
-          FetchCardsByCollectionResponse(cards = response.cards map toCard)
-      }
-
-  override def findCardById: Service[FindCardByIdRequest, FindCardByIdResponse] =
-    request =>
-      cardRepository.findCardById(toRepositoryFindCardByIdRequest(request)) map {
-        response =>
-          FindCardByIdResponse(card = response.card map toCard)
-      }
-
-  override def updateCard: Service[UpdateCardRequest, UpdateCardResponse] =
-    request =>
-      cardRepository.updateCard(toRepositoryUpdateCardRequest(request)) map {
-        response =>
-          UpdateCardResponse(updated = response.updated)
-      }
-
-  override def addCollection: Service[AddCollectionRequest, AddCollectionResponse] =
-    request => {
-      val result = for {
-        addCollectionResponse <- collectionRepository.addCollection(toRepositoryAddCollectionRequest(request))
-        addCardsResponse <- addCards(addCollectionResponse.collection.id, request.cards)
-      } yield AddCollectionResponse(success = true)
-
-      result recover {
-        case _ => AddCollectionResponse(success = false)
-      }
-    }
-
-  override def deleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse] =
-    request => {
-      val result = for {
-        deleteCardsResponse <- deleteCards(request.collection.cards)
-        deleteCollectionResponse <- collectionRepository.deleteCollection(toRepositoryDeleteCollectionRequest(request))
-      } yield DeleteCollectionResponse(deleted = deleteCollectionResponse.deleted)
-
-      result recover {
-        case _ => DeleteCollectionResponse(deleted = 0)
-      }
-    }
-
-  override def fetchCollections: Service[FetchCollectionsRequest, FetchCollectionsResponse] =
-    request => {
-      val result = for {
-        collectionsResponse <- collectionRepository.fetchSortedCollections(repo.FetchSortedCollectionsRequest())
-        collectionWithCards <- fetchCards(collectionsResponse.collections map toCollection)
-      } yield FetchCollectionsResponse(collectionWithCards)
-
-      result recover {
-        case _ => FetchCollectionsResponse(Seq.empty)
-      }
-    }
-
-  override def fetchCollectionBySharedCollection: Service[FetchCollectionBySharedCollectionRequest, FetchCollectionBySharedCollectionResponse] =
-    request => {
-      val result = for {
-        collectionResponse <- collectionRepository.fetchCollectionByOriginalSharedCollectionId(toRepositoryFetchCollectionBySharedCollectionRequest(request))
-        Some(repoCollection) = collectionResponse.collection
-        collection = toCollection(repoCollection)
-        cardsResponse <- cardRepository.fetchCardsByCollection(repo.FetchCardsByCollectionRequest(collection.id))
-      } yield FetchCollectionBySharedCollectionResponse(Option(collection.copy(cards = cardsResponse.cards map toCard)))
-
-      result recover {
-        case _ => FetchCollectionBySharedCollectionResponse(None)
-      }
-    }
-
-  override def fetchCollectionByPosition: Service[FetchCollectionByPositionRequest, FetchCollectionByPositionResponse] =
-    request => {
-      val result = for {
-        collectionResponse <- collectionRepository.fetchCollectionByPosition(toRepositoryFetchCollectionByPositionRequest(request))
-        Some(repoCollection) = collectionResponse.collection
-        collection = toCollection(repoCollection)
-        cardsResponse <- cardRepository.fetchCardsByCollection(repo.FetchCardsByCollectionRequest(collection.id))
-      } yield FetchCollectionByPositionResponse(Option(collection.copy(cards = cardsResponse.cards map toCard)))
-
-      result recover {
-        case _ => FetchCollectionByPositionResponse(None)
-      }
-    }
-
-  override def findCollectionById: Service[FindCollectionByIdRequest, FindCollectionByIdResponse] =
-    request => {
-      val result = for {
-        collectionResponse <- collectionRepository.findCollectionById(toRepositoryFindCollectionByIdRequest(request))
-        Some(repoCollection) = collectionResponse.collection
-        collection = toCollection(repoCollection)
-        cardsResponse <- cardRepository.fetchCardsByCollection(repo.FetchCardsByCollectionRequest(collection.id))
-      } yield FindCollectionByIdResponse(Option(collection.copy(cards = cardsResponse.cards map toCard)))
-
-      result recover {
-        case _ => FindCollectionByIdResponse(None)
-      }
-    }
-
-  override def updateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse] =
-    request =>
-      collectionRepository.updateCollection(toRepositoryUpdateCollectionRequest(request)) map {
-        response =>
-          UpdateCollectionResponse(updated = response.updated)
-      }
-
-  override def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse] =
-    request =>
-      geoInfoRepository.addGeoInfo(toRepositoryAddGeoInfoRequest(request)) map {
-        response =>
-          AddGeoInfoResponse(geoInfo = toGeoInfo(response.geoInfo))
-      }
-
-  override def deleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse] =
-    request =>
-      geoInfoRepository.deleteGeoInfo(toRepositoryDeleteGeoInfoRequest(request)) map {
-        response =>
-          DeleteGeoInfoResponse(deleted = response.deleted)
-      }
-
-  override def fetchGeoInfoByConstrain: Service[FetchGeoInfoByConstrainRequest, FetchGeoInfoByConstrainResponse] =
-    request =>
-      geoInfoRepository.fetchGeoInfoByConstrain(toRepositoryFetchGeoInfoByConstrainRequest(request)) map {
-        response =>
-          FetchGeoInfoByConstrainResponse(geoInfo = response.geoInfo map toGeoInfo)
-      }
-
-  override def fetchGeoInfoItems: Service[FetchGeoInfoItemsRequest, FetchGeoInfoItemsResponse] =
-    request =>
-      geoInfoRepository.fetchGeoInfoItems(repo.FetchGeoInfoItemsRequest()) map {
-        response =>
-          FetchGeoInfoItemsResponse(geoInfoItems = toGeoInfoSeq(response.geoInfoItems))
-      }
-
-  override def findGeoInfoById: Service[FindGeoInfoByIdRequest, FindGeoInfoByIdResponse] =
-    request =>
-      geoInfoRepository.findGeoInfoById(toRepositoryFindGeoInfoByIdRequest(request)) map {
-        response =>
-          FindGeoInfoByIdResponse(geoInfo = response.geoInfo map toGeoInfo)
-      }
-
-  override def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse] =
-    request =>
-      geoInfoRepository.updateGeoInfo(toRepositoryUpdateGeoInfoRequest(request)) map {
-        response =>
-          UpdateGeoInfoResponse(updated = response.updated)
-      }
-
-  private[this] def addCards(collectionId: Int, cards: Seq[CardItem]) =
-    Future.sequence(
-      cards map {
-        card =>
-          cardRepository.addCard(toRepositoryAddCardRequest(AddCardRequest(collectionId, card)))
-      }
-    )
-
-  private[this] def deleteCards(cards: Seq[Card]) =
-    Future.sequence(
-      cards map {
-        card =>
-          cardRepository.deleteCard(toRepositoryDeleteCardRequest(DeleteCardRequest(card)))
-      }
-    )
-
-  private[this] def fetchCards(collections: Seq[Collection]): Future[Seq[Collection]] = {
-    val result = collections map {
-      collection =>
-        cardRepository.fetchCardsByCollection(repo.FetchCardsByCollectionRequest(collection.id)) map {
-          response =>
-            collection.copy(cards = response.cards map toCard)
-        }
-    }
-
-    Future.sequence(result)
+    Task.gatherUnordered(result) map (_.collect { case \/-(collection) => collection }.right[NineCardsException])
   }
 
   override def getUser(implicit context: ContextSupport): Task[NineCardsException \/ User] =

@@ -15,7 +15,7 @@ case class DeleteCacheCategoryRequest(cacheCategory: CacheCategory)
 
 case class DeleteCacheCategoryResponse(deleted: Int)
 
-case class DeleteCacheCategoryByPackageRequest(`package`: String)
+case class DeleteCacheCategoryByPackageRequest(packageName: String)
 
 case class DeleteCacheCategoryByPackageResponse(deleted: Int)
 
@@ -23,7 +23,7 @@ case class FindCacheCategoryByIdRequest(id: Int)
 
 case class FindCacheCategoryByIdResponse(category: Option[CacheCategory])
 
-case class FetchCacheCategoryByPackageRequest(`package`: String)
+case class FetchCacheCategoryByPackageRequest(packageName: String)
 
 case class FetchCacheCategoryByPackageResponse(category: Option[CacheCategory])
 

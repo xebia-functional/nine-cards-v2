@@ -6,12 +6,13 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEnti
 case class CacheCategoryEntity(id: Int, data: CacheCategoryEntityData)
 
 case class CacheCategoryEntityData(
-    packageName: String,
-    category: String,
-    starRating: Double,
-    numDownloads: String,
-    ratingsCount: Int,
-    commentCount: Int)
+  packageName: String,
+  category: String,
+  starRating: Double,
+  numDownloads: String,
+  ratingsCount: Int,
+  commentCount: Int
+  )
 
 object CacheCategoryEntity {
   val table = "cacheCategory"

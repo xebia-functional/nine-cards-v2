@@ -1,11 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Collection => RepoCollection, CollectionData => RepoCollectionData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepoCard, Collection => RepoCollection, CollectionData => RepoCollectionData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
-import com.fortysevendeg.ninecardslauncher.{repository => repo}
 
-trait CollectionConversions {
+trait CollectionConversions extends CardConversions {
 
   def toCollectionSeq(collections: Seq[RepoCollection]) = collections map toCollection
 
@@ -22,6 +21,22 @@ trait CollectionConversions {
       originalSharedCollectionId = collection.data.originalSharedCollectionId,
       sharedCollectionId = collection.data.sharedCollectionId,
       sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed getOrElse false
+    )
+
+  def toCollection(collection: RepoCollection, cards: Seq[RepoCard]) =
+    Collection(
+      id = collection.id,
+      position = collection.data.position,
+      name = collection.data.name,
+      collectionType = collection.data.collectionType,
+      icon = collection.data.icon,
+      themedColorIndex = collection.data.themedColorIndex,
+      appsCategory = collection.data.appsCategory,
+      constrains = collection.data.constrains,
+      originalSharedCollectionId = collection.data.originalSharedCollectionId,
+      sharedCollectionId = collection.data.sharedCollectionId,
+      sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed getOrElse false,
+      cards = cards map toCard
     )
 
   def toRepositoryCollection(collection: Collection) =
@@ -41,8 +56,9 @@ trait CollectionConversions {
       )
     )
 
-  def toRepositoryAddCollectionRequest(request: AddCollectionRequest) =
-    repo.AddCollectionRequest(
+  def toRepositoryCollection(request: UpdateCollectionRequest) =
+    RepoCollection(
+      id = request.id,
       data = RepoCollectionData(
         position = request.position,
         name = request.name,
@@ -57,37 +73,17 @@ trait CollectionConversions {
       )
     )
 
-  def toRepositoryDeleteCollectionRequest(request: DeleteCollectionRequest) =
-    repo.DeleteCollectionRequest(
-      collection = toRepositoryCollection(request.collection)
+  def toRepositoryCollectionData(request: AddCollectionRequest) =
+    RepoCollectionData(
+      position = request.position,
+      name = request.name,
+      collectionType = request.collectionType,
+      icon = request.icon,
+      themedColorIndex = request.themedColorIndex,
+      appsCategory = request.appsCategory,
+      constrains = request.constrains,
+      originalSharedCollectionId = request.originalSharedCollectionId,
+      sharedCollectionId = request.sharedCollectionId,
+      sharedCollectionSubscribed = request.sharedCollectionSubscribed
     )
-
-  def toRepositoryFetchCollectionBySharedCollectionRequest(request: FetchCollectionBySharedCollectionRequest) =
-    repo.FetchCollectionByOriginalSharedCollectionIdRequest(sharedCollectionId = request.sharedCollectionId)
-
-  def toRepositoryFetchCollectionByPositionRequest(request: FetchCollectionByPositionRequest) =
-    repo.FetchCollectionByPositionRequest(position = request.position)
-
-  def toRepositoryFindCollectionByIdRequest(request: FindCollectionByIdRequest) =
-    repo.FindCollectionByIdRequest(id = request.id)
-
-  def toRepositoryUpdateCollectionRequest(request: UpdateCollectionRequest) =
-    repo.UpdateCollectionRequest(
-      RepoCollection(
-        id = request.id,
-        data = RepoCollectionData(
-          position = request.position,
-          name = request.name,
-          collectionType = request.collectionType,
-          icon = request.icon,
-          themedColorIndex = request.themedColorIndex,
-          appsCategory = request.appsCategory,
-          constrains = request.constrains,
-          originalSharedCollectionId = request.originalSharedCollectionId,
-          sharedCollectionId = request.sharedCollectionId,
-          sharedCollectionSubscribed = request.sharedCollectionSubscribed
-        )
-      )
-    )
-
 }

@@ -62,7 +62,7 @@ class NineCardsContentProvider extends ContentProvider {
     mimeType match {
       case MimeTypeAllItems =>
         ContentUris.withAppendedId(
-        getUri(CacheCategoryUri),
+          getUri(CacheCategoryUri),
           getOrOpenDatabase.insert(tableName, NineCardsSqlHelper.databaseName, values))
       case _ => throw new IllegalArgumentException(invalidUri + uri)
     }
@@ -83,11 +83,12 @@ class NineCardsContentProvider extends ContentProvider {
   }
 
   override def query(
-      uri: Uri,
-      projection: Array[String],
-      selection: String,
-      selectionArgs: Array[String],
-      sortOrder: String): Cursor = {
+    uri: Uri,
+    projection: Array[String],
+    selection: String,
+    selectionArgs: Array[String],
+    sortOrder: String
+    ): Cursor = {
     val (tableName, mimeType) = getUriInfo(uri)
 
     mimeType match {

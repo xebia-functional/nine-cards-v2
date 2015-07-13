@@ -1,12 +1,12 @@
 package com.fortysevendeg.repository
 
-import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapperImpl, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo, GeoInfoData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity.geoInfoEntityFromCursor
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import org.mockito.Mockito._
+import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -89,31 +89,20 @@ trait GeoInfoTestData {
 }
 
 trait GeoInfoTestSupport
-  extends BaseTestSupport
-  with GeoInfoTestData
+  extends GeoInfoTestData
   with DBUtils
   with Mockito {
 
   lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
   lazy val geoInfoRepository = new GeoInfoRepository(contentResolverWrapper)
 
-  def createAddGeoInfoRequest = AddGeoInfoRequest(GeoInfoData(
+  def createGeoInfoData = GeoInfoData(
     constrain = constrain,
     occurrence = occurrence,
     wifi = wifi,
     latitude = latitude,
     longitude = longitude,
-    system = system))
-
-  def createDeleteGeoInfoRequest = DeleteGeoInfoRequest(geoInfo = geoInfo)
-
-  def createGetAllGeoInfoItemsRequest = FetchGeoInfoItemsRequest()
-
-  def createGetGeoInfoByIdRequest(id: Int) = FindGeoInfoByIdRequest(id = id)
-
-  def createGetGeoInfoByConstrainRequest(constrain: String) = FetchGeoInfoByConstrainRequest(constrain = constrain)
-
-  def createUpdateGeoInfoRequest = UpdateGeoInfoRequest(geoInfo = geoInfo)
+    system = system)
 
   when(contentResolverWrapper.insert(GeoInfoUri, createGeoInfoValues)).thenReturn(geoInfoId)
 
@@ -156,64 +145,89 @@ trait GeoInfoTestSupport
 class GeoInfoRepositorySpec
   extends Specification
   with Mockito
+  with DisjunctionMatchers
   with GeoInfoTestSupport {
 
   "GeoInfoRepositoryClient component" should {
 
     "addGeoInfo should return a valid GeoInfo object" in {
 
-      val response = await(geoInfoRepository.addGeoInfo(createAddGeoInfoRequest))
+      val result = geoInfoRepository.addGeoInfo(createGeoInfoData).run
 
-      response.geoInfo.id shouldEqual geoInfoId
-      response.geoInfo.data.constrain shouldEqual constrain
+      result must be_\/-[GeoInfo].which {
+        geoInfo =>
+          geoInfo.id shouldEqual geoInfoId
+          geoInfo.data.constrain shouldEqual constrain
+      }
     }
 
-    "deleteGeoInfo should return a successful response when a valid geoInfo id is given" in {
-      val response = await(geoInfoRepository.deleteGeoInfo(createDeleteGeoInfoRequest))
+    "deleteGeoInfo should return a successful result when a valid geoInfo id is given" in {
+      val result = geoInfoRepository.deleteGeoInfo(geoInfo).run
 
-      response.deleted shouldEqual 1
+      result must be_\/-[Int].which {
+        deleted =>
+          deleted shouldEqual 1
+      }
     }
 
     "fetchGeoInfoItems should return all the geoInfo items stored in the database" in {
-      val response = await(geoInfoRepository.fetchGeoInfoItems(createGetAllGeoInfoItemsRequest))
+      val result = geoInfoRepository.fetchGeoInfoItems.run
 
-      response.geoInfoItems shouldEqual geoInfoSeq
+      result must be_\/-[Seq[GeoInfo]].which {
+        geoInfoItems =>
+          geoInfoItems shouldEqual geoInfoSeq
+      }
     }
 
     "findGeoInfoById should return a GeoInfo object when a existing id is given" in {
-      val response = await(geoInfoRepository.findGeoInfoById(createGetGeoInfoByIdRequest(id = geoInfoId)))
+      val result = geoInfoRepository.findGeoInfoById(geoInfoId).run
 
-      response.geoInfo must beSome[GeoInfo].which { geoInfo =>
-        geoInfo.id shouldEqual geoInfoId
-        geoInfo.data.constrain shouldEqual constrain
+      result must be_\/-[Option[GeoInfo]].which {
+        maybeGeoInfo =>
+          maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
+            geoInfo.id shouldEqual geoInfoId
+            geoInfo.data.constrain shouldEqual constrain
+          }
       }
     }
 
     "findGeoInfoById should return None when a non-existing id is given" in {
-      val response = await(geoInfoRepository.findGeoInfoById(createGetGeoInfoByIdRequest(id = nonExistingGeoInfoId)))
+      val result = geoInfoRepository.findGeoInfoById(nonExistingGeoInfoId).run
 
-      response.geoInfo must beNone
-    }
-
-    "getGeoInfoByConstrain should return a GeoInfo object when a existing constrain is given" in {
-      val response = await(geoInfoRepository.fetchGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = constrain)))
-
-      response.geoInfo must beSome[GeoInfo].which { geoInfo =>
-        geoInfo.id shouldEqual geoInfoId
-        geoInfo.data.constrain shouldEqual constrain
+      result must be_\/-[Option[GeoInfo]].which {
+        maybeGeoInfo =>
+          maybeGeoInfo must beNone
       }
     }
 
-    "getGeoInfoByConstrain should return None when a non-existing constrain is given" in {
-      val response = await(geoInfoRepository.fetchGeoInfoByConstrain(createGetGeoInfoByConstrainRequest(constrain = nonExistingConstrain)))
+    "fetchGeoInfoByConstrain should return a GeoInfo object when a existing constrain is given" in {
+      val result = geoInfoRepository.fetchGeoInfoByConstrain(constrain).run
 
-      response.geoInfo must beNone
+      result must be_\/-[Option[GeoInfo]].which {
+        maybeGeoInfo =>
+          maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
+            geoInfo.id shouldEqual geoInfoId
+            geoInfo.data.constrain shouldEqual constrain
+          }
+      }
     }
 
-    "updateGeoInfo should return a successful response when the geoInfo item is updated" in {
-      val response = await(geoInfoRepository.updateGeoInfo(createUpdateGeoInfoRequest))
+    "fetchGeoInfoByConstrain should return None when a non-existing constrain is given" in {
+      val result = geoInfoRepository.fetchGeoInfoByConstrain(nonExistingConstrain).run
 
-      response.updated shouldEqual 1
+      result must be_\/-[Option[GeoInfo]].which {
+        maybeGeoInfo =>
+          maybeGeoInfo must beNone
+      }
+    }
+
+    "updateGeoInfo should return a successful result when the geoInfo item is updated" in {
+      val result = geoInfoRepository.updateGeoInfo(geoInfo).run
+
+      result must be_\/-[Int].which {
+        updated =>
+          updated shouldEqual 1
+      }
     }
 
     "getEntityFromCursor should return None when an empty cursor is given" in

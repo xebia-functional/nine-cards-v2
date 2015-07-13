@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
+import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 import scala.concurrent.Future
 import scalaz.\/
@@ -13,53 +13,53 @@ trait PersistenceServices {
 
   def addCacheCategory(request: AddCacheCategoryRequest): Task[NineCardsException \/ CacheCategory]
 
-  def deleteCacheCategory: Service[DeleteCacheCategoryRequest, DeleteCacheCategoryResponse]
+  def deleteCacheCategory(request: DeleteCacheCategoryRequest): Task[NineCardsException \/ Int]
 
-  def deleteCacheCategoryByPackage: Service[DeleteCacheCategoryByPackageRequest, DeleteCacheCategoryByPackageResponse]
+  def deleteCacheCategoryByPackage(request: DeleteCacheCategoryByPackageRequest): Task[NineCardsException \/ Int]
 
-  def fetchCacheCategoryByPackage: Service[FetchCacheCategoryByPackageRequest, FetchCacheCategoryByPackageResponse]
+  def fetchCacheCategoryByPackage(request: FetchCacheCategoryByPackageRequest): Task[NineCardsException \/ Option[CacheCategory]]
 
   def fetchCacheCategories: Task[NineCardsException \/ Seq[CacheCategory]]
 
-  def findCacheCategoryById: Service[FindCacheCategoryByIdRequest, FindCacheCategoryByIdResponse]
+  def findCacheCategoryById(request: FindCacheCategoryByIdRequest): Task[NineCardsException \/ Option[CacheCategory]]
 
-  def updateCacheCategory: Service[UpdateCacheCategoryRequest, UpdateCacheCategoryResponse]
+  def updateCacheCategory(request: UpdateCacheCategoryRequest): Task[NineCardsException \/ Int]
 
-  def addCard: Service[AddCardRequest, AddCardResponse]
+  def addCard(request: AddCardRequest): Task[NineCardsException \/ Card]
 
-  def deleteCard: Service[DeleteCardRequest, DeleteCardResponse]
+  def deleteCard(request: DeleteCardRequest): Task[NineCardsException \/ Int]
 
-  def fetchCardsByCollection: Service[FetchCardsByCollectionRequest, FetchCardsByCollectionResponse]
+  def fetchCardsByCollection(request: FetchCardsByCollectionRequest): Task[NineCardsException \/ Seq[Card]]
 
-  def findCardById: Service[FindCardByIdRequest, FindCardByIdResponse]
+  def findCardById(request: FindCardByIdRequest): Task[NineCardsException \/ Option[Card]]
 
-  def updateCard: Service[UpdateCardRequest, UpdateCardResponse]
+  def updateCard(request: UpdateCardRequest): Task[NineCardsException \/ Int]
 
-  def addCollection: Service[AddCollectionRequest, AddCollectionResponse]
+  def addCollection(request: AddCollectionRequest): Task[NineCardsException \/ Collection]
 
-  def deleteCollection: Service[DeleteCollectionRequest, DeleteCollectionResponse]
+  def deleteCollection(request: DeleteCollectionRequest): Task[NineCardsException \/ Int]
 
-  def fetchCollections: Service[FetchCollectionsRequest, FetchCollectionsResponse]
+  def fetchCollections(request: FetchCollectionsRequest): Task[NineCardsException \/ Seq[Collection]]
 
-  def fetchCollectionBySharedCollection: Service[FetchCollectionBySharedCollectionRequest, FetchCollectionBySharedCollectionResponse]
+  def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest): Task[NineCardsException \/ Option[Collection]]
 
-  def fetchCollectionByPosition: Service[FetchCollectionByPositionRequest, FetchCollectionByPositionResponse]
+  def fetchCollectionByPosition(request: FetchCollectionByPositionRequest): Task[NineCardsException \/ Option[Collection]]
 
-  def findCollectionById: Service[FindCollectionByIdRequest, FindCollectionByIdResponse]
+  def findCollectionById(request: FindCollectionByIdRequest): Task[NineCardsException \/ Option[Collection]]
 
-  def updateCollection: Service[UpdateCollectionRequest, UpdateCollectionResponse]
+  def updateCollection(request: UpdateCollectionRequest): Task[NineCardsException \/ Int]
 
-  def addGeoInfo: Service[AddGeoInfoRequest, AddGeoInfoResponse]
+  def addGeoInfo(request: AddGeoInfoRequest): Task[NineCardsException \/ GeoInfo]
 
-  def deleteGeoInfo: Service[DeleteGeoInfoRequest, DeleteGeoInfoResponse]
+  def deleteGeoInfo(request: DeleteGeoInfoRequest): Task[NineCardsException \/ Int]
 
-  def fetchGeoInfoByConstrain: Service[FetchGeoInfoByConstrainRequest, FetchGeoInfoByConstrainResponse]
+  def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest): Task[NineCardsException \/ Option[GeoInfo]]
 
-  def fetchGeoInfoItems: Service[FetchGeoInfoItemsRequest, FetchGeoInfoItemsResponse]
+  def fetchGeoInfoItems(request: FetchGeoInfoItemsRequest): Task[NineCardsException \/ Seq[GeoInfo]]
 
-  def findGeoInfoById: Service[FindGeoInfoByIdRequest, FindGeoInfoByIdResponse]
+  def findGeoInfoById(request: FindGeoInfoByIdRequest): Task[NineCardsException \/ Option[GeoInfo]]
 
-  def updateGeoInfo: Service[UpdateGeoInfoRequest, UpdateGeoInfoResponse]
+  def updateGeoInfo(request: UpdateGeoInfoRequest): Task[NineCardsException \/ Int]
 
   def getUser(implicit context: ContextSupport): Task[NineCardsException \/ User]
 

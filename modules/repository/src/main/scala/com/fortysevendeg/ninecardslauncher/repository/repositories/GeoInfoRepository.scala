@@ -1,123 +1,92 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
-import com.fortysevendeg.ninecardslauncher.repository._
 import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapper, GeoInfoUri}
-import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
-import com.fortysevendeg.ninecardslauncher.repository.provider.DBUtils
+import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo, GeoInfoData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
+import com.fortysevendeg.ninecardslauncher.repository.provider.{DBUtils, GeoInfoEntity}
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
-import scala.util.control.NonFatal
+import scalaz.\/
+import scalaz.concurrent.Task
 
 class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends DBUtils {
 
-  def addGeoInfo(request: AddGeoInfoRequest)(implicit executionContext: ExecutionContext): Future[AddGeoInfoResponse] =
-      tryToFuture {
-        Try {
-          val values = Map[String, Any](
-            constrain -> request.data.constrain,
-            occurrence -> request.data.occurrence,
-            wifi -> request.data.wifi,
-            latitude -> request.data.latitude,
-            longitude -> request.data.longitude,
-            system -> request.data.system)
+  def addGeoInfo(data: GeoInfoData): Task[NineCardsException \/ GeoInfo] =
+    Task {
+      fromTryCatchNineCardsException[GeoInfo] {
+        val values = Map[String, Any](
+          constrain -> data.constrain,
+          occurrence -> data.occurrence,
+          wifi -> data.wifi,
+          latitude -> data.latitude,
+          longitude -> data.longitude,
+          system -> data.system)
 
-          val id = contentResolverWrapper.insert(
-            nineCardsUri = GeoInfoUri,
-            values = values)
+        val id = contentResolverWrapper.insert(
+          nineCardsUri = GeoInfoUri,
+          values = values)
 
-          AddGeoInfoResponse(
-            geoInfo = GeoInfo(
-              id = id,
-              data = request.data))
-
-        } recover {
-          case NonFatal(e) => throw RepositoryInsertException()
-        }
+        GeoInfo(id = id, data = data)
       }
+    }
 
-  def deleteGeoInfo(request: DeleteGeoInfoRequest)(implicit executionContext: ExecutionContext): Future[DeleteGeoInfoResponse] =
-      tryToFuture {
-        Try {
-          val deleted = contentResolverWrapper.deleteById(
-            nineCardsUri = GeoInfoUri,
-            id = request.geoInfo.id)
-
-          DeleteGeoInfoResponse(deleted = deleted)
-
-        } recover {
-          case NonFatal(e) => throw RepositoryDeleteException()
-        }
+  def deleteGeoInfo(geoInfo: GeoInfo): Task[NineCardsException \/ Int] =
+    Task {
+      fromTryCatchNineCardsException[Int] {
+        contentResolverWrapper.deleteById(
+          nineCardsUri = GeoInfoUri,
+          id = geoInfo.id)
       }
+    }
 
-  def fetchGeoInfoItems(request: FetchGeoInfoItemsRequest)(implicit executionContext: ExecutionContext): Future[FetchGeoInfoItemsResponse] =
-      tryToFuture {
-        Try {
-          val geoInfoItems = contentResolverWrapper.fetchAll(
-            nineCardsUri = GeoInfoUri,
-            projection = allFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
-
-          FetchGeoInfoItemsResponse(geoInfoItems)
-        } recover {
-          case e: Exception =>
-            FetchGeoInfoItemsResponse(geoInfoItems = Seq.empty)
-        }
+  def fetchGeoInfoItems: Task[NineCardsException \/ Seq[GeoInfo]] =
+    Task {
+      fromTryCatchNineCardsException[Seq[GeoInfo]] {
+        contentResolverWrapper.fetchAll(
+          nineCardsUri = GeoInfoUri,
+          projection = allFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
       }
+    }
 
-  def findGeoInfoById(request: FindGeoInfoByIdRequest)(implicit executionContext: ExecutionContext): Future[FindGeoInfoByIdResponse] =
-      tryToFuture {
-        Try {
-          val geoInfo = contentResolverWrapper.findById(
-            nineCardsUri = GeoInfoUri,
-            id = request.id,
-            projection = allFields)(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
-
-          FindGeoInfoByIdResponse(geoInfo)
-        } recover {
-          case e: Exception =>
-            FindGeoInfoByIdResponse(geoInfo = None)
-        }
+  def findGeoInfoById(id: Int): Task[NineCardsException \/ Option[GeoInfo]] =
+    Task {
+      fromTryCatchNineCardsException[Option[GeoInfo]] {
+        contentResolverWrapper.findById(
+          nineCardsUri = GeoInfoUri,
+          id = id,
+          projection = allFields)(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
       }
+    }
 
 
-  def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest)(implicit executionContext: ExecutionContext): Future[FetchGeoInfoByConstrainResponse] =
-      tryToFuture {
-        Try {
-          val geoInfo = contentResolverWrapper.fetch(
-            nineCardsUri = GeoInfoUri,
-            projection = allFields,
-            where = s"$constrain = ?",
-            whereParams = Array(request.constrain))(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
-
-          FetchGeoInfoByConstrainResponse(geoInfo)
-        } recover {
-          case e: Exception =>
-            FetchGeoInfoByConstrainResponse(geoInfo = None)
-        }
+  def fetchGeoInfoByConstrain(constrain: String): Task[NineCardsException \/ Option[GeoInfo]] =
+    Task {
+      fromTryCatchNineCardsException[Option[GeoInfo]] {
+        contentResolverWrapper.fetch(
+          nineCardsUri = GeoInfoUri,
+          projection = allFields,
+          where = s"${GeoInfoEntity.constrain} = ?",
+          whereParams = Array(constrain))(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
       }
+    }
 
-  def updateGeoInfo(request: UpdateGeoInfoRequest)(implicit executionContext: ExecutionContext): Future[UpdateGeoInfoResponse] =
-      tryToFuture {
-        Try {
-          val values = Map[String, Any](
-            constrain -> request.geoInfo.data.constrain,
-            occurrence -> request.geoInfo.data.occurrence,
-            wifi -> request.geoInfo.data.wifi,
-            latitude -> request.geoInfo.data.latitude,
-            longitude -> request.geoInfo.data.longitude,
-            system -> request.geoInfo.data.system)
+  def updateGeoInfo(geoInfo: GeoInfo): Task[NineCardsException \/ Int] =
+    Task {
+      fromTryCatchNineCardsException[Int] {
+        val values = Map[String, Any](
+          constrain -> geoInfo.data.constrain,
+          occurrence -> geoInfo.data.occurrence,
+          wifi -> geoInfo.data.wifi,
+          latitude -> geoInfo.data.latitude,
+          longitude -> geoInfo.data.longitude,
+          system -> geoInfo.data.system)
 
-          val updated = contentResolverWrapper.updateById(
-            nineCardsUri = GeoInfoUri,
-            id = request.geoInfo.id,
-            values = values)
-
-          UpdateGeoInfoResponse(updated = updated)
-
-        } recover {
-          case NonFatal(e) => throw RepositoryUpdateException()
-        }
+        contentResolverWrapper.updateById(
+          nineCardsUri = GeoInfoUri,
+          id = geoInfo.id,
+          values = values)
       }
+    }
 }

@@ -6,12 +6,13 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
 case class GeoInfoEntity(id: Int, data: GeoInfoEntityData)
 
 case class GeoInfoEntityData(
-    constrain: String,
-    occurrence: String,
-    wifi: String,
-    latitude: Double,
-    longitude: Double,
-    system: Boolean)
+  constrain: String,
+  occurrence: String,
+  wifi: String,
+  latitude: Double,
+  longitude: Double,
+  system: Boolean
+  )
 
 object GeoInfoEntity {
   val table = "GeoInfo"

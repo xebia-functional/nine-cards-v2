@@ -5,61 +5,62 @@ import android.database.sqlite.{SQLiteDatabase, SQLiteOpenHelper}
 import android.os.Handler
 
 class NineCardsSqlHelper(context: Context)
-    extends SQLiteOpenHelper(context, NineCardsSqlHelper.databaseName, null, NineCardsSqlHelper.databaseVersion)
-    with DBUtils {
+  extends SQLiteOpenHelper(context, NineCardsSqlHelper.databaseName, null, NineCardsSqlHelper.databaseVersion)
+  with DBUtils {
 
   override def onCreate(db: SQLiteDatabase) = {
 
     db.execSQL("CREATE TABLE " + CacheCategoryEntity.table +
-        "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        CacheCategoryEntity.packageName + " TEXT not null, " +
-        CacheCategoryEntity.category + " TEXT not null, " +
-        CacheCategoryEntity.starRating + " DOUBLE, " +
-        CacheCategoryEntity.numDownloads + " TEXT, " +
-        CacheCategoryEntity.ratingsCount + " INTEGER, " +
-        CacheCategoryEntity.commentCount + " INTEGER )")
+      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      CacheCategoryEntity.packageName + " TEXT not null, " +
+      CacheCategoryEntity.category + " TEXT not null, " +
+      CacheCategoryEntity.starRating + " DOUBLE, " +
+      CacheCategoryEntity.numDownloads + " TEXT, " +
+      CacheCategoryEntity.ratingsCount + " INTEGER, " +
+      CacheCategoryEntity.commentCount + " INTEGER )")
 
     db.execSQL("CREATE TABLE " + CollectionEntity.table +
-        "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        CollectionEntity.position + " INTEGER not null, " +
-        CollectionEntity.name + " TEXT not null, " +
-        CollectionEntity.collectionType + " TEXT not null, " +
-        CollectionEntity.icon + " TEXT not null, " +
-        CollectionEntity.themedColorIndex + " INTEGER not null, " +
-        CollectionEntity.appsCategory + " TEXT, " +
-        CollectionEntity.originalSharedCollectionId + " TEXT, " +
-        CollectionEntity.sharedCollectionId + " TEXT, " +
-        CollectionEntity.sharedCollectionSubscribed + " INTEGER, " +
-        CollectionEntity.constrains + " TEXT )")
+      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      CollectionEntity.position + " INTEGER not null, " +
+      CollectionEntity.name + " TEXT not null, " +
+      CollectionEntity.collectionType + " TEXT not null, " +
+      CollectionEntity.icon + " TEXT not null, " +
+      CollectionEntity.themedColorIndex + " INTEGER not null, " +
+      CollectionEntity.appsCategory + " TEXT, " +
+      CollectionEntity.originalSharedCollectionId + " TEXT, " +
+      CollectionEntity.sharedCollectionId + " TEXT, " +
+      CollectionEntity.sharedCollectionSubscribed + " INTEGER, " +
+      CollectionEntity.constrains + " TEXT )")
 
     db.execSQL("CREATE TABLE " + CardEntity.table +
-        "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        CardEntity.position + " INTEGER not null, " +
-        CardEntity.collectionId + " INTEGER not null, " +
-        CardEntity.term + " TEXT not null, " +
-        CardEntity.packageName + " TEXT, " +
-        CardEntity.cardType + " TEXT not null, " +
-        CardEntity.intent + " TEXT, " +
-        CardEntity.imagePath + " TEXT, " +
-        CardEntity.starRating + " DOUBLE, " +
-        CardEntity.micros + " INTEGER, " +
-        CardEntity.notification + " TEXT, " +
-        CardEntity.numDownloads + " TEXT )")
+      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      CardEntity.position + " INTEGER not null, " +
+      CardEntity.collectionId + " INTEGER not null, " +
+      CardEntity.term + " TEXT not null, " +
+      CardEntity.packageName + " TEXT, " +
+      CardEntity.cardType + " TEXT not null, " +
+      CardEntity.intent + " TEXT, " +
+      CardEntity.imagePath + " TEXT, " +
+      CardEntity.starRating + " DOUBLE, " +
+      CardEntity.micros + " INTEGER, " +
+      CardEntity.notification + " TEXT, " +
+      CardEntity.numDownloads + " TEXT )")
 
     db.execSQL("CREATE TABLE " + GeoInfoEntity.table +
-        "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-        GeoInfoEntity.constrain + " TEXT not null, " +
-        GeoInfoEntity.occurrence + " TEXT not null, " +
-        GeoInfoEntity.wifi + " TEXT, " +
-        GeoInfoEntity.latitude + " DOUBLE, " +
-        GeoInfoEntity.longitude + " DOUBLE, " +
-        GeoInfoEntity.system + " INTEGER )")
+      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      GeoInfoEntity.constrain + " TEXT not null, " +
+      GeoInfoEntity.occurrence + " TEXT not null, " +
+      GeoInfoEntity.wifi + " TEXT, " +
+      GeoInfoEntity.latitude + " DOUBLE, " +
+      GeoInfoEntity.longitude + " DOUBLE, " +
+      GeoInfoEntity.system + " INTEGER )")
 
     new Handler().postDelayed(
       new Runnable() {
         override def run() = execAllVersionsDB()
       }, 0)
   }
+
   override def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = {
 
     (oldVersion + 1 to newVersion) foreach {

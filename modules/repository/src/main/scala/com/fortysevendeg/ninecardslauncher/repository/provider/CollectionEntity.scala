@@ -6,16 +6,17 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.
 case class CollectionEntity(id: Int, data: CollectionEntityData)
 
 case class CollectionEntityData(
-    position: Int,
-    name: String,
-    `type`: String,
-    icon: String,
-    themedColorIndex: Int,
-    appsCategory: String,
-    constrains: String,
-    originalSharedCollectionId: String,
-    sharedCollectionId: String,
-    sharedCollectionSubscribed: Boolean)
+  position: Int,
+  name: String,
+  `type`: String,
+  icon: String,
+  themedColorIndex: Int,
+  appsCategory: String,
+  constrains: String,
+  originalSharedCollectionId: String,
+  sharedCollectionId: String,
+  sharedCollectionSubscribed: Boolean
+  )
 
 object CollectionEntity {
   val table = "Collection"
