@@ -9,7 +9,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.util.{DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
@@ -26,28 +26,28 @@ trait ImageServicesTasks {
 
   def getPathByName(name: String)(implicit context: ContextSupport): Task[NineCardsException \/ File] =
     Task {
-      \/.fromTryCatchThrowable[File, NineCardsException] {
+      fromTryCatchNineCardsException[File] {
         new File(resourceUtils.getPath(if (name.isEmpty) "_" else name.substring(0, 1).toUpperCase))
       }
     }
 
   def getPathByApp(packageName: String, className: String)(implicit context: ContextSupport): Task[NineCardsException \/ File] =
     Task {
-      \/.fromTryCatchThrowable[File, NineCardsException] {
+      fromTryCatchNineCardsException[File] {
         new File(resourceUtils.getPathPackage(packageName, className))
       }
     }
 
   def getPathByPackageName(packageName: String)(implicit context: ContextSupport): Task[NineCardsException \/ File] =
     Task {
-      \/.fromTryCatchThrowable[File, NineCardsException] {
+      fromTryCatchNineCardsException[File] {
         new File(resourceUtils.getPath(packageName))
       }
     }
 
   def getBitmapByApp(packageName: String, icon: Int)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
     Task {
-      \/.fromTryCatchThrowable[Bitmap, NineCardsException] {
+      fromTryCatchNineCardsException[Bitmap] {
         val packageManager = context.getPackageManager
         (Option(packageManager.getResourcesForApplication(packageName)) map {
           resources =>
@@ -65,7 +65,7 @@ trait ImageServicesTasks {
 
   def getBitmapByName(text: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
     Task {
-      \/.fromTryCatchThrowable[Bitmap, NineCardsException] {
+      fromTryCatchNineCardsException[Bitmap] {
         val bitmap: Bitmap = Bitmap.createBitmap(defaultSize, defaultSize, Bitmap.Config.RGB_565)
         val bounds: Rect = new Rect
         val paint = defaultPaint
@@ -82,7 +82,7 @@ trait ImageServicesTasks {
 
   def getBitmapFromURL(uri: String)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
     Task {
-      \/.fromTryCatchThrowable[Bitmap, NineCardsException] {
+      fromTryCatchNineCardsException[Bitmap] {
         val is = new URL(uri).getContent.asInstanceOf[InputStream]
         BitmapFactory.decodeStream(is)
       }
@@ -90,7 +90,7 @@ trait ImageServicesTasks {
 
   def saveBitmap(file: File, bitmap: Bitmap): Task[NineCardsException \/ Unit] =
     Task {
-      \/.fromTryCatchThrowable[Unit, NineCardsException] {
+      fromTryCatchNineCardsException[Unit] {
         val out: FileOutputStream = new FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, out)
         out.flush()

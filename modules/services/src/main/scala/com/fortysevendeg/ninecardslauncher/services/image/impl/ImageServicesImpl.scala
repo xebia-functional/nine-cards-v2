@@ -12,20 +12,23 @@ import Scalaz._
 import EitherT._
 import scalaz.concurrent.Task
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 
 class ImageServicesImpl(config: ImageServicesConfig, tasks: ImageServicesTasks = ImageServicesTasks)
     extends ImageServices {
 
   implicit val implicitConfig: ImageServicesConfig = config
 
-  override def getAppPackagePathAndSaveIfNotExists(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
+  /** Obtains the path from package creating a new entry if non is found the very first time */
+  override def androidAppPackage(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
     tasks.getPathByApp(request.packageName, request.className) map {
       case -\/(ex) => -\/(NineCardsException(msg = "Not possible get the file", cause = ex.some))
       case \/-(file) =>
         createIfNotExists(file)(tasks.getBitmapByAppOrName(request.packageName, request.icon, request.name))
     }
 
-  override def getAppWebsitePathAndSaveIfNotExists(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
+  /** Obtains the path from url creating a new entry if non is found the very first time */
+  override def androidAppWebsite(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
     tasks.getPathByPackageName(request.packageName) map {
       case -\/(ex) => -\/(NineCardsException(msg = "Not possible get the file", cause = ex.some))
       case \/-(file) =>

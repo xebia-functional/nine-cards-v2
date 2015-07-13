@@ -4,7 +4,6 @@ import java.io.File
 
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.services.BaseTestSupport
 import com.fortysevendeg.ninecardslauncher.services.image.impl.{ImageServicesImpl, ImageServicesTasks}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -56,7 +55,6 @@ trait ImageServicesSpecification
 
 class ImageServicesSpec
     extends ImageServicesSpecification
-    with BaseTestSupport
     with DisjunctionMatchers {
 
   "Image Services with App Packages" should {
@@ -65,7 +63,7 @@ class ImageServicesSpec
 
       when(mockTasks.getPathByApp(appPackage.packageName, appPackage.className)(contextSupport)) thenReturn fileExistsTask
 
-      val result = runTask(mockImageService.getAppPackagePathAndSaveIfNotExists(appPackage)(contextSupport))
+      val result = mockImageService.androidAppPackage(appPackage)(contextSupport).run
 
       result must be_\/-[String].which {
         path =>
@@ -78,7 +76,7 @@ class ImageServicesSpec
 
       when(mockTasks.getPathByApp(appPackage.packageName, appPackage.className)(contextSupport)) thenReturn fileNotExistsTask
 
-      val result = runTask(mockImageService.getAppPackagePathAndSaveIfNotExists(appPackage)(contextSupport))
+      val result = mockImageService.androidAppPackage(appPackage)(contextSupport).run
 
       there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
 
@@ -97,7 +95,7 @@ class ImageServicesSpec
 
       when(mockTasks.getPathByPackageName(appWebsite.packageName)(contextSupport)) thenReturn fileExistsTask
 
-      val result = runTask(mockImageService.getAppWebsitePathAndSaveIfNotExists(appWebsite)(contextSupport))
+      val result = mockImageService.androidAppWebsite(appWebsite)(contextSupport).run
 
       result must be_\/-[String].which {
         path =>
@@ -110,7 +108,7 @@ class ImageServicesSpec
 
       when(mockTasks.getPathByPackageName(appWebsite.packageName)(contextSupport)) thenReturn fileNotExistsTask
 
-      val result = runTask(mockImageService.getAppWebsitePathAndSaveIfNotExists(appWebsite)(contextSupport))
+      val result = mockImageService.androidAppWebsite(appWebsite)(contextSupport).run
 
       there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
 

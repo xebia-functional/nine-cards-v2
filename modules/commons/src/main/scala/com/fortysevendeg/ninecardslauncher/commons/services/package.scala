@@ -19,11 +19,6 @@ package object services {
 
     implicit def toDisjunctionT[E <: Throwable, A](f: Task[E \/ A]): EitherT[Task, E, A] = EitherT.eitherT(f)
 
-    def toEnsureAttemptRun[ A](f: Task[NineCardsException \/ A]): NineCardsException \/ A = f.attemptRun match {
-      case -\/(ex) => -\/(NineCardsException(msg = ex.getMessage, cause = ex.some))
-      case \/-(d) => d
-    }
-
   }
 
 }

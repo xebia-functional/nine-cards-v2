@@ -8,8 +8,8 @@ import scalaz.concurrent.Task
 
 trait ImageServices {
 
-  def getAppPackagePathAndSaveIfNotExists(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ String]
+  def androidAppPackage(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ String]
 
-  def getAppWebsitePathAndSaveIfNotExists(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ String]
+  def androidAppWebsite(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ String]
 
 }
