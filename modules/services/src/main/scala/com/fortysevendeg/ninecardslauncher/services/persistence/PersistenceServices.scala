@@ -5,7 +5,6 @@ import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCar
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
-import scala.concurrent.Future
 import scalaz.\/
 import scalaz.concurrent.Task
 
@@ -71,6 +70,6 @@ trait PersistenceServices {
 
   def getInstallation(implicit context: ContextSupport): Task[NineCardsException \/ Installation]
 
-  def saveInstallation(installation: Installation)(implicit context: ContextSupport): Task[NineCardsException \/ Boolean]
+  def saveInstallation(installation: Installation)(implicit context: ContextSupport): Task[NineCardsException \/ Unit]
 
 }

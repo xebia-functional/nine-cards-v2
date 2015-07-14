@@ -15,8 +15,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conv
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.services.utils.FileUtils
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success}
 import scalaz._
 import Scalaz._
 import EitherT._
@@ -27,8 +26,7 @@ class PersistenceServicesImpl(
   cacheCategoryRepository: CacheCategoryRepository,
   cardRepository: CardRepository,
   collectionRepository: CollectionRepository,
-  geoInfoRepository: GeoInfoRepository
-  )
+  geoInfoRepository: GeoInfoRepository)
   extends PersistenceServices
   with Conversions
   with FileUtils {
@@ -44,8 +42,6 @@ class PersistenceServicesImpl(
   val FilenameUser = "__user_entity__"
 
   val FilenameInstallation = "__installation_entity__"
-
-  implicit val executionContext: ExecutionContext = ExecutionContext.Implicits.global
 
   override def addCacheCategory(request: AddCacheCategoryRequest): Task[NineCardsException \/ CacheCategory] =
     cacheCategoryRepository.addCacheCategory(toRepositoryCacheCategoryData(request)) ▹ eitherT map toCacheCategory
@@ -232,22 +228,15 @@ class PersistenceServicesImpl(
       }
     }
 
-  override def saveInstallation(installation: Installation)(implicit context: ContextSupport): Task[NineCardsException \/ Boolean] =
+  override def saveInstallation(installation: Installation)(implicit context: ContextSupport): Task[NineCardsException \/ Unit] =
     Task {
-      if (getFileInstallation.exists()) \/-(false)
-      else writeFile[Installation](getFileInstallation, installation) match {
-        case Success(_) => \/-(true)
-        case Failure(ex) => -\/(NineCardsException(msg = "Installation not found", cause = ex.some))
+      writeFile[Installation](getFileInstallation, installation) match {
+        case Success(result) => \/-(result)
+        case Failure(ex) => -\/(NineCardsException(msg = "Installation not saved", cause = ex.some))
       }
     }
 
   private def getFileInstallation(implicit context: ContextSupport) = new File(context.getFilesDir, FilenameInstallation)
 
   private def getFileUser(implicit context: ContextSupport) = new File(context.getFilesDir, FilenameUser)
-
-  private def tryToFuture[A](function: => Try[A]): Future[A] =
-    Future(function).flatMap {
-      case Success(success) => Future.successful(success)
-      case Failure(failure) => Future.failed(failure)
-    }
 }
