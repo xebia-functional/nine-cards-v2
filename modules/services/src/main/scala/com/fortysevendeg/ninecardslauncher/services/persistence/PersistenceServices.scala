@@ -63,14 +63,14 @@ trait PersistenceServices {
 
   def getUser(implicit context: ContextSupport): Task[NineCardsException \/ User]
 
-  def saveUser(user: User)(implicit context: ContextSupport): Future[Unit]
+  def saveUser(user: User)(implicit context: ContextSupport): Task[NineCardsException \/ Unit]
 
-  def resetUser()(implicit context: ContextSupport): Future[Boolean]
+  def resetUser(implicit context: ContextSupport): Task[NineCardsException \/ Boolean]
 
   def getAndroidId(implicit context: ContextSupport): Task[NineCardsException \/ String]
 
-  def getInstallation()(implicit context: ContextSupport): Future[Installation]
+  def getInstallation(implicit context: ContextSupport): Task[NineCardsException \/ Installation]
 
-  def saveInstallation(installation: Installation)(implicit context: ContextSupport): Future[Boolean]
+  def saveInstallation(installation: Installation)(implicit context: ContextSupport): Task[NineCardsException \/ Boolean]
 
 }

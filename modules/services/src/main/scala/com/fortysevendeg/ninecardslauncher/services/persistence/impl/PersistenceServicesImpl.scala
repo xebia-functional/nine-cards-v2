@@ -5,6 +5,7 @@ import java.io.File
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.{repository => repo}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
@@ -200,13 +201,20 @@ class PersistenceServicesImpl(
       case Failure(ex) => -\/(NineCardsException(msg = "User not found", cause = ex.some))
     })
 
-  override def saveUser(user: User)(implicit context: ContextSupport): Future[Unit] =
-    tryToFuture(writeFile[User](getFileUser, user))
+  override def saveUser(user: User)(implicit context: ContextSupport): Task[NineCardsException \/ Unit] =
+    Task {
+      writeFile[User](getFileUser, user) match {
+        case Success(result) => \/-(result)
+        case Failure(ex) => -\/(NineCardsException(msg = "User not saved", cause = ex.some))
+      }
+    }
 
-  override def resetUser()(implicit context: ContextSupport): Future[Boolean] =
-    Future {
-      val fileUser = getFileUser
-      fileUser.exists() && fileUser.delete()
+  override def resetUser(implicit context: ContextSupport): Task[NineCardsException \/ Boolean] =
+    Task {
+      fromTryCatchNineCardsException[Boolean] {
+        val fileUser = getFileUser
+        fileUser.exists() && fileUser.delete()
+      }
     }
 
   override def getAndroidId(implicit context: ContextSupport): Task[NineCardsException \/ String] =
@@ -216,15 +224,20 @@ class PersistenceServicesImpl(
       result map (\/-(_)) getOrElse -\/(NineCardsException(msg = "Android Id not found"))
     }
 
-  override def getInstallation()(implicit context: ContextSupport): Future[Installation] =
-    tryToFuture(loadFile[Installation](getFileInstallation))
+  override def getInstallation(implicit context: ContextSupport): Task[NineCardsException \/ Installation] =
+    Task {
+      loadFile[Installation](getFileInstallation) match {
+        case Success(installation) => \/-(installation)
+        case Failure(ex) => -\/(NineCardsException(msg = "Installation not found", cause = ex.some))
+      }
+    }
 
-  override def saveInstallation(installation: Installation)(implicit context: ContextSupport): Future[Boolean] =
-    Future {
-      if (getFileInstallation.exists()) false
+  override def saveInstallation(installation: Installation)(implicit context: ContextSupport): Task[NineCardsException \/ Boolean] =
+    Task {
+      if (getFileInstallation.exists()) \/-(false)
       else writeFile[Installation](getFileInstallation, installation) match {
-        case Success(_) => true
-        case Failure(e) => throw e
+        case Success(_) => \/-(true)
+        case Failure(ex) => -\/(NineCardsException(msg = "Installation not found", cause = ex.some))
       }
     }
 
