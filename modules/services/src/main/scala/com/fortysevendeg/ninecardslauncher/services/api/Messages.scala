@@ -4,19 +4,9 @@ import com.fortysevendeg.ninecardslauncher.services.api.models._
 
 case class RequestConfig(deviceId: String, token: String)
 
-case class LoginRequest(
-  email: String,
-  device: GoogleDevice)
-
 case class LoginResponse(
   statusCode: Int,
   user: Option[User])
-
-case class InstallationRequest(
-  id: Option[String],
-  deviceType: Option[String],
-  deviceToken: Option[String],
-  userId: Option[String])
 
 case class InstallationResponse(
   statusCode: Int,

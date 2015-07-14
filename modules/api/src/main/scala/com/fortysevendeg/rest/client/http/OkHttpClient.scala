@@ -1,6 +1,7 @@
 package com.fortysevendeg.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions._
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.rest.client.http.Methods._
 import com.squareup.okhttp.Headers
 import com.squareup.{okhttp => okHttp}
