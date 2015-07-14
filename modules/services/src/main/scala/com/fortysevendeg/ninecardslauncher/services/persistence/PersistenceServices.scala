@@ -54,7 +54,7 @@ trait PersistenceServices {
 
   def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest): Task[NineCardsException \/ Option[GeoInfo]]
 
-  def fetchGeoInfoItems(request: FetchGeoInfoItemsRequest): Task[NineCardsException \/ Seq[GeoInfo]]
+  def fetchGeoInfoItems: Task[NineCardsException \/ Seq[GeoInfo]]
 
   def findGeoInfoById(request: FindGeoInfoByIdRequest): Task[NineCardsException \/ Option[GeoInfo]]
 

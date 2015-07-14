@@ -143,7 +143,7 @@ class PersistenceServicesImpl(
       _ map toGeoInfo
     }
 
-  override def fetchGeoInfoItems(request: FetchGeoInfoItemsRequest): Task[NineCardsException \/ Seq[GeoInfo]] =
+  override def fetchGeoInfoItems: Task[NineCardsException \/ Seq[GeoInfo]] =
     geoInfoRepository.fetchGeoInfoItems ▹ eitherT map toGeoInfoSeq
 
   override def findGeoInfoById(request: FindGeoInfoByIdRequest): Task[NineCardsException \/ Option[GeoInfo]] =

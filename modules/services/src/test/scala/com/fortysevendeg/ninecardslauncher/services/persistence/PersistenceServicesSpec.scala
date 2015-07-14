@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
+import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import org.mockito.Mockito._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
@@ -38,12 +38,6 @@ trait PersistenceServicesSpecification
 
   trait ValidRepositoryServicesResponses extends Mockito with RepositoryServicesScope with PersistenceServicesData {
 
-    val seqCacheCategory = createSeqCacheCategory()
-    val cacheCategory = seqCacheCategory.head
-    val repoCacheCategoryData = createRepoCacheCategoryData()
-    val seqRepoCacheCategory = createSeqRepoCacheCategory(data = repoCacheCategoryData)
-    val repoCacheCategory = seqRepoCacheCategory.head
-
     when(mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData)).thenReturn(Task(\/-(repoCacheCategory)))
 
     when(mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory)).thenReturn(Task(\/-(1)))
@@ -61,17 +55,27 @@ trait PersistenceServicesSpecification
     when(mockCacheCategoryRepository.findCacheCategoryById(nonExistentCacheCategoryId)).thenReturn(Task(\/-(None)))
 
     when(mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory)).thenReturn(Task(\/-(1)))
+
+    when(mockGeoInfoRepository.addGeoInfo(repoGeoInfoData)).thenReturn(Task(\/-(repoGeoInfo)))
+
+    when(mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo)).thenReturn(Task(\/-(1)))
+
+    when(mockGeoInfoRepository.fetchGeoInfoItems).thenReturn(Task(\/-(seqRepoGeoInfo)))
+
+    when(mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain)).thenReturn(Task(\/-(Option(repoGeoInfo))))
+
+    when(mockGeoInfoRepository.fetchGeoInfoByConstrain(nonExistentConstrain)).thenReturn(Task(\/-(None)))
+
+    when(mockGeoInfoRepository.findGeoInfoById(geoInfoId)).thenReturn(Task(\/-(Option(repoGeoInfo))))
+
+    when(mockGeoInfoRepository.findGeoInfoById(nonExistentGeoInfoId)).thenReturn(Task(\/-(None)))
+
+    when(mockGeoInfoRepository.updateGeoInfo(repoGeoInfo)).thenReturn(Task(\/-(1)))
   }
 
   trait ErrorRepositoryServicesResponses extends Mockito with RepositoryServicesScope with PersistenceServicesData {
 
     val exception = NineCardsException("Irrelevant message")
-
-    val seqCacheCategory = createSeqCacheCategory()
-    val cacheCategory = seqCacheCategory.head
-    val repoCacheCategoryData = createRepoCacheCategoryData()
-    val seqRepoCacheCategory = createSeqRepoCacheCategory(data = repoCacheCategoryData)
-    val repoCacheCategory = seqRepoCacheCategory.head
 
     when(mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData)).thenReturn(Task(-\/(exception)))
 
@@ -86,6 +90,18 @@ trait PersistenceServicesSpecification
     when(mockCacheCategoryRepository.findCacheCategoryById(cacheCategoryId)).thenReturn(Task(-\/(exception)))
 
     when(mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory)).thenReturn(Task(-\/(exception)))
+
+    when(mockGeoInfoRepository.addGeoInfo(repoGeoInfoData)).thenReturn(Task(-\/(exception)))
+
+    when(mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo)).thenReturn(Task(-\/(exception)))
+
+    when(mockGeoInfoRepository.fetchGeoInfoItems).thenReturn(Task(-\/(exception)))
+
+    when(mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain)).thenReturn(Task(-\/(exception)))
+
+    when(mockGeoInfoRepository.findGeoInfoById(geoInfoId)).thenReturn(Task(-\/(exception)))
+
+    when(mockGeoInfoRepository.updateGeoInfo(repoGeoInfo)).thenReturn(Task(-\/(exception)))
   }
 }
 
@@ -208,6 +224,111 @@ class PersistenceServicesSpec
 
     "updateCacheCategory should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCacheCategory(createUpdateCacheCategoryRequest())
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "addGeoInfo should return a GeoInfo value for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest())
+
+      result.run must be_\/-[GeoInfo].which { geoInfo =>
+        geoInfo.id shouldEqual geoInfoId
+        geoInfo.constrain shouldEqual constrain
+      }
+    }
+
+    "addGeoInfo should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest())
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "deleteGeoInfo should return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo))
+
+      result.run must be_\/-[Int].which { deleted =>
+        deleted shouldEqual 1
+      }
+    }
+
+    "deleteGeoInfo should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "fetchGeoInfoItems should return a list of GeoInfo elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchGeoInfoItems
+
+      result.run must be_\/-[Seq[GeoInfo]].which { cacheCategories =>
+        cacheCategories.size shouldEqual seqGeoInfo.size
+      }
+    }
+
+    "fetchGeoInfoItems should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchGeoInfoItems
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "fetchGeoInfoByConstrain should return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain))
+
+      result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
+        maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
+          geoInfo.constrain shouldEqual constrain
+        }
+      }
+    }
+
+    "fetchGeoInfoByConstrain should return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = nonExistentConstrain))
+
+      result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
+        maybeGeoInfo must beNone
+      }
+    }
+
+    "fetchGeoInfoByConstrain should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "findGeoInfoById should return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId))
+
+      result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
+        maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
+          geoInfo.constrain shouldEqual constrain
+        }
+      }
+    }
+
+    "findGeoInfoById should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = nonExistentGeoInfoId))
+
+      result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
+        maybeGeoInfo must beNone
+      }
+    }
+
+    "findGeoInfoById should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "updateGeoInfo should return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest())
+
+      result.run must be_\/-[Int].which { updated =>
+        updated shouldEqual 1
+      }
+    }
+
+    "updateGeoInfo should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest())
 
       result.run must be_-\/[NineCardsException]
     }
