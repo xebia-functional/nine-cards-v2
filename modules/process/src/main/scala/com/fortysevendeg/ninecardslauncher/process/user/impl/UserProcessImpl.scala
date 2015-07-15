@@ -39,10 +39,9 @@ class UserProcessImpl(
 
   override def unregister(implicit context: ContextSupport): Task[NineCardsException \/ Unit] =
     for {
-      save <- persistenceServices.saveInstallation(BasicInstallation) ▹ eitherT
       _ <- syncInstallation(BasicInstallation) ▹ eitherT
       _ <- persistenceServices.resetUser ▹ eitherT
-    } yield save
+    } yield (())
 
   private[this] def syncInstallation(installation: Installation)(implicit context: ContextSupport): Task[NineCardsException \/ Int] =
     installation.id map {
