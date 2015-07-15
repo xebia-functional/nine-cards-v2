@@ -207,12 +207,8 @@ trait Conversions {
     UserConfigCollectionItem(
       itemType = apiCollectionItem.itemType,
       title = apiCollectionItem.title,
-      metadata = toNineCardIntent(apiCollectionItem.metadata),
+      metadata = apiCollectionItem.metadata,
       categories = apiCollectionItem.categories)
-
-  def toNineCardIntent(jsValue: JsValue): NineCardIntent = {
-    jsValue.as[NineCardIntent]
-  }
 
   def toUserConfigGeoInfo(apiGeoInfo: apiModel.UserConfigGeoInfo): UserConfigGeoInfo =
     UserConfigGeoInfo(
