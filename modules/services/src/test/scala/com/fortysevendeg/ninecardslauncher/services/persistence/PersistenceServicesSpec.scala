@@ -38,70 +38,92 @@ trait PersistenceServicesSpecification
 
   trait ValidRepositoryServicesResponses extends Mockito with RepositoryServicesScope with PersistenceServicesData {
 
-    when(mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData)).thenReturn(Task(\/-(repoCacheCategory)))
+    mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Task(\/-(repoCacheCategory))
 
-    when(mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory)).thenReturn(Task(\/-(1)))
+    mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Task(\/-(1))
 
-    when(mockCacheCategoryRepository.deleteCacheCategoryByPackage(packageName)).thenReturn(Task(\/-(1)))
+    mockCacheCategoryRepository.deleteCacheCategoryByPackage(packageName) returns Task(\/-(1))
 
-    when(mockCacheCategoryRepository.fetchCacheCategories).thenReturn(Task(\/-(seqRepoCacheCategory)))
+    mockCacheCategoryRepository.fetchCacheCategories returns Task(\/-(seqRepoCacheCategory))
 
-    when(mockCacheCategoryRepository.fetchCacheCategoryByPackage(packageName)).thenReturn(Task(\/-(Option(repoCacheCategory))))
+    mockCacheCategoryRepository.fetchCacheCategoryByPackage(packageName) returns Task(\/-(Option(repoCacheCategory)))
 
-    when(mockCacheCategoryRepository.fetchCacheCategoryByPackage(nonExistentPackageName)).thenReturn(Task(\/-(None)))
+    mockCacheCategoryRepository.fetchCacheCategoryByPackage(nonExistentPackageName) returns Task(\/-(None))
 
-    when(mockCacheCategoryRepository.findCacheCategoryById(cacheCategoryId)).thenReturn(Task(\/-(Option(repoCacheCategory))))
+    mockCacheCategoryRepository.findCacheCategoryById(cacheCategoryId) returns Task(\/-(Option(repoCacheCategory)))
 
-    when(mockCacheCategoryRepository.findCacheCategoryById(nonExistentCacheCategoryId)).thenReturn(Task(\/-(None)))
+    mockCacheCategoryRepository.findCacheCategoryById(nonExistentCacheCategoryId) returns Task(\/-(None))
 
-    when(mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory)).thenReturn(Task(\/-(1)))
+    mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory) returns Task(\/-(1))
 
-    when(mockGeoInfoRepository.addGeoInfo(repoGeoInfoData)).thenReturn(Task(\/-(repoGeoInfo)))
+    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Task(\/-(repoGeoInfo))
 
-    when(mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo)).thenReturn(Task(\/-(1)))
+    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Task(\/-(1))
 
-    when(mockGeoInfoRepository.fetchGeoInfoItems).thenReturn(Task(\/-(seqRepoGeoInfo)))
+    mockGeoInfoRepository.fetchGeoInfoItems returns Task(\/-(seqRepoGeoInfo))
 
-    when(mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain)).thenReturn(Task(\/-(Option(repoGeoInfo))))
+    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Task(\/-(Option(repoGeoInfo)))
 
-    when(mockGeoInfoRepository.fetchGeoInfoByConstrain(nonExistentConstrain)).thenReturn(Task(\/-(None)))
+    mockGeoInfoRepository.fetchGeoInfoByConstrain(nonExistentConstrain) returns Task(\/-(None))
 
-    when(mockGeoInfoRepository.findGeoInfoById(geoInfoId)).thenReturn(Task(\/-(Option(repoGeoInfo))))
+    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Task(\/-(Option(repoGeoInfo)))
 
-    when(mockGeoInfoRepository.findGeoInfoById(nonExistentGeoInfoId)).thenReturn(Task(\/-(None)))
+    mockGeoInfoRepository.findGeoInfoById(nonExistentGeoInfoId) returns Task(\/-(None))
 
-    when(mockGeoInfoRepository.updateGeoInfo(repoGeoInfo)).thenReturn(Task(\/-(1)))
+    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Task(\/-(1))
+
+    mockCardRepository.addCard(collectionId, repoCardData) returns Task(\/-(repoCard))
+
+    mockCardRepository.deleteCard(repoCard) returns Task(\/-(1))
+
+    mockCardRepository.fetchCardsByCollection(collectionId) returns Task(\/-(seqRepoCard))
+
+    mockCardRepository.findCardById(cardId) returns Task(\/-(Option(repoCard)))
+
+    mockCardRepository.findCardById(nonExistentCardId) returns Task(\/-(None))
+
+    mockCardRepository.updateCard(repoCard) returns Task(\/-(1))
   }
 
   trait ErrorRepositoryServicesResponses extends Mockito with RepositoryServicesScope with PersistenceServicesData {
 
     val exception = NineCardsException("Irrelevant message")
 
-    when(mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData)).thenReturn(Task(-\/(exception)))
+    mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Task(-\/(exception))
 
-    when(mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory)).thenReturn(Task(-\/(exception)))
+    mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Task(-\/(exception))
 
-    when(mockCacheCategoryRepository.deleteCacheCategoryByPackage(packageName)).thenReturn(Task(-\/(exception)))
+    mockCacheCategoryRepository.deleteCacheCategoryByPackage(packageName) returns Task(-\/(exception))
 
-    when(mockCacheCategoryRepository.fetchCacheCategories).thenReturn(Task(-\/(exception)))
+    mockCacheCategoryRepository.fetchCacheCategories returns Task(-\/(exception))
 
-    when(mockCacheCategoryRepository.fetchCacheCategoryByPackage(packageName)).thenReturn(Task(-\/(exception)))
+    mockCacheCategoryRepository.fetchCacheCategoryByPackage(packageName) returns Task(-\/(exception))
 
-    when(mockCacheCategoryRepository.findCacheCategoryById(cacheCategoryId)).thenReturn(Task(-\/(exception)))
+    mockCacheCategoryRepository.findCacheCategoryById(cacheCategoryId) returns Task(-\/(exception))
 
-    when(mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory)).thenReturn(Task(-\/(exception)))
+    mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory) returns Task(-\/(exception))
 
-    when(mockGeoInfoRepository.addGeoInfo(repoGeoInfoData)).thenReturn(Task(-\/(exception)))
+    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Task(-\/(exception))
 
-    when(mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo)).thenReturn(Task(-\/(exception)))
+    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Task(-\/(exception))
 
-    when(mockGeoInfoRepository.fetchGeoInfoItems).thenReturn(Task(-\/(exception)))
+    mockGeoInfoRepository.fetchGeoInfoItems returns Task(-\/(exception))
 
-    when(mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain)).thenReturn(Task(-\/(exception)))
+    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Task(-\/(exception))
 
-    when(mockGeoInfoRepository.findGeoInfoById(geoInfoId)).thenReturn(Task(-\/(exception)))
+    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Task(-\/(exception))
 
-    when(mockGeoInfoRepository.updateGeoInfo(repoGeoInfo)).thenReturn(Task(-\/(exception)))
+    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Task(-\/(exception))
+
+    mockCardRepository.addCard(collectionId, repoCardData) returns Task(-\/(exception))
+
+    mockCardRepository.deleteCard(repoCard) returns Task(-\/(exception))
+
+    mockCardRepository.fetchCardsByCollection(collectionId) returns Task(-\/(exception))
+
+    mockCardRepository.findCardById(cardId) returns Task(-\/(exception))
+
+    mockCardRepository.updateCard(repoCard) returns Task(-\/(exception))
   }
 }
 
@@ -260,8 +282,8 @@ class PersistenceServicesSpec
     "fetchGeoInfoItems should return a list of GeoInfo elements for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoItems
 
-      result.run must be_\/-[Seq[GeoInfo]].which { cacheCategories =>
-        cacheCategories.size shouldEqual seqGeoInfo.size
+      result.run must be_\/-[Seq[GeoInfo]].which { geoInfoItems =>
+        geoInfoItems.size shouldEqual seqGeoInfo.size
       }
     }
 
@@ -329,6 +351,87 @@ class PersistenceServicesSpec
 
     "updateGeoInfo should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest())
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "addCard should return a Card value for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addCard(createAddCardRequest())
+
+      result.run must be_\/-[Card].which { card =>
+        card.id shouldEqual cardId
+        card.cardType shouldEqual cardType
+      }
+    }
+
+    "addCard should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addCard(createAddCardRequest())
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "deleteCard should return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card))
+
+      result.run must be_\/-[Int].which { deleted =>
+        deleted shouldEqual 1
+      }
+    }
+
+    "deleteCard should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "fetchCardsByCollection should return a list of Card elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId))
+
+      result.run must be_\/-[Seq[Card]].which { cards =>
+        cards.size shouldEqual seqCard.size
+      }
+    }
+
+    "fetchCardItems should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "findCardById should return a Card for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId))
+
+      result.run must be_\/-[Option[Card]].which { maybeCard =>
+        maybeCard must beSome[Card].which { card =>
+          card.cardType shouldEqual cardType
+        }
+      }
+    }
+
+    "findCardById should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = nonExistentCardId))
+
+      result.run must be_\/-[Option[Card]].which { maybeCard =>
+        maybeCard must beNone
+      }
+    }
+
+    "findCardById should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "updateCard should return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.updateCard(createUpdateCardRequest())
+
+      result.run must be_\/-[Int].which { updated =>
+        updated shouldEqual 1
+      }
+    }
+
+    "updateCard should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateCard(createUpdateCardRequest())
 
       result.run must be_-\/[NineCardsException]
     }
