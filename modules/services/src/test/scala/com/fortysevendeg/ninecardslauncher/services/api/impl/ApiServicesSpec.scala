@@ -156,7 +156,7 @@ class ApiServicesSpec
         val result = apiServices.login("", serviceModel.GoogleDevice("", "", "", Seq.empty)).run
         result must be_\/-[LoginResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.user shouldEqual Some(toUser(user))
+          response.user shouldEqual toUser(user)
         }
       }
 
@@ -175,7 +175,7 @@ class ApiServicesSpec
         val result = apiServices.linkGoogleAccount("", Seq(serviceModel.GoogleDevice("", "", "", Seq.empty))).run
         result must be_\/-[LoginResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.user shouldEqual Some(toUser(user))
+          response.user shouldEqual toUser(user)
         }
       }
 

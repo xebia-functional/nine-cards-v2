@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.api.impl
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
@@ -48,7 +49,8 @@ class ApiServicesImpl(
     ): Task[NineCardsException \/ LoginResponse] =
     for {
       response <- apiUserService.login(toUser(email, device), baseHeader) ▹ eitherT
-    } yield LoginResponse(response.statusCode, response.data map toUser)
+      user <- readOption(response.data, "User not found") ▹ eitherT
+    } yield LoginResponse(response.statusCode, toUser(user))
 
   override def linkGoogleAccount(
     email: String,
@@ -56,7 +58,8 @@ class ApiServicesImpl(
     )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ LoginResponse] =
     for {
       response <- apiUserService.linkAuthData(toAuthData(email, devices), requestConfig.toHeader) ▹ eitherT
-    } yield LoginResponse(response.statusCode, response.data map toUser)
+      user <- readOption(response.data, "User not found") ▹ eitherT
+    } yield LoginResponse(response.statusCode, toUser(user))
 
   override def createInstallation(
     id: Option[String],
@@ -156,6 +159,10 @@ class ApiServicesImpl(
   implicit class RequestHeaderHeader(request: RequestConfig) {
     def toHeader: Seq[(String, String)] =
       baseHeader :+(headerDevice, request.deviceId) :+(headerToken, request.token)
+  }
+
+  private[this] def readOption[T](maybe: Option[T], msg: String = ""): Task[NineCardsException \/ T] = {
+    Task(fromTryCatchNineCardsException(maybe getOrElse (throw new NineCardsException(msg))))
   }
 
 }

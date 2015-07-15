@@ -6,7 +6,7 @@ case class RequestConfig(deviceId: String, token: String)
 
 case class LoginResponse(
   statusCode: Int,
-  user: Option[User])
+  user: User)
 
 case class InstallationResponse(
   statusCode: Int,
