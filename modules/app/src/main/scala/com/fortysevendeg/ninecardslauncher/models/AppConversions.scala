@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.models
 
 import com.fortysevendeg.ninecardslauncher.modules.image.ImageServicesComponent
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppItem
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{CardItem, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.ui.commons.CardType._
@@ -12,10 +12,10 @@ trait AppConversions {
 
   self : ImageServicesComponent =>
 
-  def toCartItemFromAppItemSeq(items: Seq[AppItem]): Seq[CardItem] =
+  def toCartItemFromAppItemSeq(items: Seq[AppCategorized]): Seq[CardItem] =
     items.zipWithIndex.map (zipped => toCardItem(zipped._1, zipped._2))
 
-  def toCardItem(appItem: AppItem, pos: Int) =
+  def toCardItem(appItem: AppCategorized, pos: Int) =
     CardItem(
       position = pos,
       packageName = Some(appItem.packageName),

@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.models._
 import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.IntentsRequest
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppItem
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.device.utils.AppItemUtils._
 import com.fortysevendeg.ninecardslauncher.repository.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
@@ -219,7 +219,7 @@ class CreateCollectionService
 
   @tailrec
   private def createInsertSeq(
-      apps: Seq[AppItem],
+      apps: Seq[AppCategorized],
       categories: Seq[String],
       acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
     categories match {
@@ -231,7 +231,7 @@ class CreateCollectionService
     }
   }
 
-  private def createCollection(apps: Seq[AppItem], category: String, index: Int): AddCollectionRequest = {
+  private def createCollection(apps: Seq[AppCategorized], category: String, index: Int): AddCollectionRequest = {
     val appsCategory = apps.filter(_.category.contains(category)).sortWith(mfIndex(_) < mfIndex(_)).take(NumSpaces)
     val pos = if (index >= NumSpaces) index % NumSpaces else index
     AddCollectionRequest(

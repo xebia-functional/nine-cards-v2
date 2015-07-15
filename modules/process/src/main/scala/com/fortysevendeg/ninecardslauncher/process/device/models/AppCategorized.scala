@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.device.models
 
-case class AppItem(
+case class AppCategorized(
   name: String,
   packageName: String,
+  className: String,
   imagePath: String,
-  intent: String,
   category: Option[String] = None,
-  starRating: Double = .0,
+  starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
-  ratingsCount: Int = 0,
-  commentCount: Int = 0,
-  micros: Int = 0)
+  ratingsCount: Option[Int] = None,
+  commentCount: Option[Int] = None)
