@@ -30,7 +30,7 @@ trait Conversions {
   def fromGoogleDevice(device: GoogleDevice): apiModel.AuthGoogleDevice =
     apiModel.AuthGoogleDevice(
       name = device.name,
-      deviceId = device.devideId,
+      deviceId = device.deviceId,
       secretToken = device.secretToken,
       permissions = device.permissions)
 
@@ -49,7 +49,7 @@ trait Conversions {
   def toGoogleDevice(device: apiModel.AuthGoogleDevice): GoogleDevice =
     GoogleDevice(
       name = device.name,
-      devideId = device.deviceId,
+      deviceId = device.deviceId,
       secretToken = device.secretToken,
       permissions = device.permissions)
 
