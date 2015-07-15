@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimpleP
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.image.{AppWebsite, ImageServices}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.servies.persistence.models.CacheCategory
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.rest.client.ServiceClient
 
 import scalaz.EitherT._
