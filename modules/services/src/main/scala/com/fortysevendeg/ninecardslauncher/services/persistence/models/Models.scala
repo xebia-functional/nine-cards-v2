@@ -12,7 +12,7 @@ case class Collection(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Boolean,
-  cards: Seq[Card] = Seq.empty) extends Serializable
+  cards: Seq[Card] = Seq.empty)
 
 case class Card(
   id: Int,
@@ -25,7 +25,7 @@ case class Card(
   imagePath: String,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
-  notification: Option[String] = None) extends Serializable
+  notification: Option[String] = None)
 
 case class CacheCategory(
   id: Int,
@@ -34,7 +34,7 @@ case class CacheCategory(
   starRating: Double,
   numDownloads: String,
   ratingsCount: Int,
-  commentCount: Int) extends Serializable
+  commentCount: Int)
 
 case class GeoInfo(
   id: Int,
@@ -43,4 +43,4 @@ case class GeoInfo(
   wifi: String,
   latitude: Double,
   longitude: Double,
-  system: Boolean) extends Serializable
+  system: Boolean)
