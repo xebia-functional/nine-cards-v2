@@ -8,8 +8,7 @@ case class AddCacheCategoryRequest(
   starRating: Double,
   numDownloads: String,
   ratingsCount: Int,
-  commentCount: Int
-  )
+  commentCount: Int)
 
 case class DeleteCacheCategoryRequest(cacheCategory: CacheCategory)
 
@@ -33,15 +32,22 @@ case class UpdateCacheCategoryRequest(
   starRating: Double,
   numDownloads: String,
   ratingsCount: Int,
-  commentCount: Int
-  )
+  commentCount: Int)
 
 case class UpdateCacheCategoryResponse(updated: Int)
 
 case class AddCardRequest(
   collectionId: Int,
-  cardItem: CardItem
-  )
+  position: Int,
+  micros: Int = 0,
+  term: String,
+  packageName: Option[String],
+  cardType: String,
+  intent: String,
+  imagePath: String,
+  starRating: Option[Double] = None,
+  numDownloads: Option[String] = None,
+  notification: Option[String] = None)
 
 case class AddCardResponse(card: Card)
 
@@ -68,8 +74,7 @@ case class UpdateCardRequest(
   imagePath: String,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
-  notification: Option[String] = None
-  )
+  notification: Option[String] = None)
 
 case class UpdateCardResponse(updated: Int)
 
@@ -83,8 +88,7 @@ case class CardItem(
   imagePath: String,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
-  notification: Option[String] = None
-  )
+  notification: Option[String] = None)
 
 case class AddCollectionRequest(
   position: Int,
@@ -97,8 +101,7 @@ case class AddCollectionRequest(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Option[Boolean],
-  cards: Seq[CardItem]
-  )
+  cards: Seq[Card])
 
 case class AddCollectionResponse(success: Boolean)
 
@@ -106,15 +109,13 @@ case class DeleteCollectionRequest(collection: Collection)
 
 case class DeleteCollectionResponse(deleted: Int)
 
-case class FetchCollectionsRequest()
-
 case class FetchCollectionsResponse(collections: Seq[Collection])
 
 case class FetchCollectionByPositionRequest(position: Int)
 
 case class FetchCollectionByPositionResponse(collection: Option[Collection])
 
-case class FetchCollectionBySharedCollectionRequest(sharedCollectionId: Int)
+case class FetchCollectionBySharedCollectionRequest(sharedCollectionId: String)
 
 case class FetchCollectionBySharedCollectionResponse(collection: Option[Collection])
 
@@ -134,8 +135,7 @@ case class UpdateCollectionRequest(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Option[Boolean],
-  cards: Seq[CardItem]
-  )
+  cards: Seq[Card])
 
 case class UpdateCollectionResponse(updated: Int)
 
@@ -145,16 +145,13 @@ case class AddGeoInfoRequest(
   wifi: String,
   latitude: Double,
   longitude: Double,
-  system: Boolean
-  )
+  system: Boolean)
 
 case class AddGeoInfoResponse(geoInfo: GeoInfo)
 
 case class DeleteGeoInfoRequest(geoInfo: GeoInfo)
 
 case class DeleteGeoInfoResponse(deleted: Int)
-
-case class FetchGeoInfoItemsRequest()
 
 case class FetchGeoInfoItemsResponse(geoInfoItems: Seq[GeoInfo])
 
@@ -173,7 +170,6 @@ case class UpdateGeoInfoRequest(
   wifi: String,
   latitude: Double,
   longitude: Double,
-  system: Boolean
-  )
+  system: Boolean)
 
 case class UpdateGeoInfoResponse(updated: Int)

@@ -1,10 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
-import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
-import play.api.libs.json.Json
 
 import scala.util.Random
 
@@ -28,20 +25,32 @@ trait PersistenceServicesData {
   val wifi = Random.nextString(5)
   val longitude = Random.nextDouble()
   val latitude = Random.nextDouble()
-  val system = Random.nextBoolean
+  val system = Random.nextBoolean()
 
   val collectionId = Random.nextInt(10)
+  val nonExistentCollectionId = Random.nextInt(10) + 100
+  val name: String = Random.nextString(5)
+  val collectionType: String = Random.nextString(5)
+  val icon: String = Random.nextString(5)
+  val themedColorIndex: Int = Random.nextInt(10)
+  val appsCategory: String = Random.nextString(5)
+  val constrains: String = Random.nextString(5)
+  val originalSharedCollectionId: String = Random.nextString(5)
+  val sharedCollectionId: String = Random.nextString(5)
+  val nonExistentSharedCollectionId: String = Random.nextString(5)
+  val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
 
   val cardId = Random.nextInt(10)
   val nonExistentCardId = Random.nextInt(10) + 100
   val position: Int = Random.nextInt(10)
+  val nonExistentPosition: Int = Random.nextInt(10) + 100
   val micros: Int = Random.nextInt(10)
   val term: String = Random.nextString(5)
   val cardType: String = Random.nextString(5)
   val intent: String = Random.nextString(5)
   val imagePath: String = Random.nextString(5)
   val notification: String = Random.nextString(5)
-  
+
   def createSeqCacheCategory(
     num: Int = 5,
     id: Int = cacheCategoryId,
@@ -116,6 +125,62 @@ trait PersistenceServicesData {
     latitude = latitude,
     system = system)
 
+  def createSeqCollection(
+    num: Int = 5,
+    id: Int = collectionId,
+    position: Int = position,
+    name: String = name,
+    collectionType: String = collectionType,
+    icon: String = icon,
+    themedColorIndex: Int = themedColorIndex,
+    appsCategory: String = appsCategory,
+    constrains: String = constrains,
+    originalSharedCollectionId: String = originalSharedCollectionId,
+    sharedCollectionId: String = sharedCollectionId,
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
+    cards: Seq[Card] = seqCard) =
+    (0 until 5) map (item => Collection(
+      id = id + item,
+      position = position,
+      name = name,
+      collectionType = collectionType,
+      icon = icon,
+      themedColorIndex = themedColorIndex,
+      appsCategory = Option(appsCategory),
+      constrains = Option(constrains),
+      originalSharedCollectionId = Option(originalSharedCollectionId),
+      sharedCollectionId = Option(sharedCollectionId),
+      sharedCollectionSubscribed = sharedCollectionSubscribed,
+      cards = cards))
+
+  def createSeqRepoCollection(
+    num: Int = 5,
+    id: Int = collectionId,
+    data: repositoryModel.CollectionData = createRepoCollectionData()
+    ) = (0 until 5) map (item => repositoryModel.Collection(id = id + item, data = data))
+
+  def createRepoCollectionData(
+    position: Int = position,
+    name: String = name,
+    collectionType: String = collectionType,
+    icon: String = icon,
+    themedColorIndex: Int = themedColorIndex,
+    appsCategory: String = appsCategory,
+    constrains: String = constrains,
+    originalSharedCollectionId: String = originalSharedCollectionId,
+    sharedCollectionId: String = sharedCollectionId,
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) = repositoryModel.CollectionData(
+    position = position,
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    constrains = Option(constrains),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = Option(sharedCollectionSubscribed))
+
   def createSeqCard(
     num: Int = 5,
     id: Int = cardId,
@@ -187,6 +252,12 @@ trait PersistenceServicesData {
   val repoCardData = createRepoCardData()
   val seqRepoCard = createSeqRepoCard(data = repoCardData)
   val repoCard = seqRepoCard.head
+
+  val seqCollection = createSeqCollection()
+  val collection = seqCollection.head
+  val repoCollectionData = createRepoCollectionData()
+  val seqRepoCollection = createSeqRepoCollection(data = repoCollectionData)
+  val repoCollection = seqRepoCollection.head
 
   def createAddCacheCategoryRequest(
     packageName: String = packageName,
@@ -281,17 +352,16 @@ trait PersistenceServicesData {
     numDownloads: String = numDownloads,
     notification: String = notification) = AddCardRequest(
     collectionId = collectionId,
-    cardItem = CardItem(
-      position = position,
-      micros = micros,
-      term = term,
-      packageName = Option(packageName),
-      cardType = cardType,
-      intent = intent,
-      imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
-      notification = Option(notification)))
+    position = position,
+    micros = micros,
+    term = term,
+    packageName = Option(packageName),
+    cardType = cardType,
+    intent = intent,
+    imagePath = imagePath,
+    starRating = Option(starRating),
+    numDownloads = Option(numDownloads),
+    notification = Option(notification))
 
   def createDeleteCardRequest(card: Card) = DeleteCardRequest(card = card)
 
@@ -324,4 +394,63 @@ trait PersistenceServicesData {
     numDownloads = Option(numDownloads),
     notification = Option(notification))
 
+  def createAddCollectionRequest(
+    position: Int = position,
+    name: String = name,
+    collectionType: String = collectionType,
+    icon: String = icon,
+    themedColorIndex: Int = themedColorIndex,
+    appsCategory: String = appsCategory,
+    constrains: String = constrains,
+    originalSharedCollectionId: String = originalSharedCollectionId,
+    sharedCollectionId: String = sharedCollectionId,
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
+    cards: Seq[Card] = seqCard) = AddCollectionRequest(
+    position = position,
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    constrains = Option(constrains),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
+    cards = seqCard)
+
+  def createDeleteCollectionRequest(collection: Collection) = DeleteCollectionRequest(collection = collection)
+
+  def createFetchCollectionByPositionRequest(position: Int) = FetchCollectionByPositionRequest(
+    position = position)
+
+  def createFetchCollectionBySharedCollection(sharedCollectionId: String) = FetchCollectionBySharedCollectionRequest(
+    sharedCollectionId = sharedCollectionId)
+
+  def createFindCollectionByIdRequest(id: Int) = FindCollectionByIdRequest(id = id)
+
+  def createUpdateCollectionRequest(
+    id: Int = collectionId,
+    position: Int = position,
+    name: String = name,
+    collectionType: String = collectionType,
+    icon: String = icon,
+    themedColorIndex: Int = themedColorIndex,
+    appsCategory: String = appsCategory,
+    constrains: String = constrains,
+    originalSharedCollectionId: String = originalSharedCollectionId,
+    sharedCollectionId: String = sharedCollectionId,
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
+    cards: Seq[Card] = seqCard) = UpdateCollectionRequest(
+    id = id,
+    position = position,
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    constrains = Option(constrains),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
+    cards = seqCard)
 }

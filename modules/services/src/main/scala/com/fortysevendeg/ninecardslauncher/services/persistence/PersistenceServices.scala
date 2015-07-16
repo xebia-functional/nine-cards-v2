@@ -38,7 +38,7 @@ trait PersistenceServices {
 
   def deleteCollection(request: DeleteCollectionRequest): Task[NineCardsException \/ Int]
 
-  def fetchCollections(request: FetchCollectionsRequest): Task[NineCardsException \/ Seq[Collection]]
+  def fetchCollections: Task[NineCardsException \/ Seq[Collection]]
 
   def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest): Task[NineCardsException \/ Option[Collection]]
 

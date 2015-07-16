@@ -4,7 +4,6 @@ import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCar
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
-import org.mockito.Mockito._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -74,15 +73,39 @@ trait PersistenceServicesSpecification
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Task(\/-(repoCard))
 
-    mockCardRepository.deleteCard(repoCard) returns Task(\/-(1))
+    (seqRepoCard) foreach { repoCard =>
+      mockCardRepository.deleteCard(repoCard) returns Task(\/-(1))
+    }
 
-    mockCardRepository.fetchCardsByCollection(collectionId) returns Task(\/-(seqRepoCard))
+    (0 to 5) foreach { index =>
+      mockCardRepository.fetchCardsByCollection(collectionId + index) returns Task(\/-(seqRepoCard))
+    }
 
     mockCardRepository.findCardById(cardId) returns Task(\/-(Option(repoCard)))
 
     mockCardRepository.findCardById(nonExistentCardId) returns Task(\/-(None))
 
     mockCardRepository.updateCard(repoCard) returns Task(\/-(1))
+
+    mockCollectionRepository.addCollection(repoCollectionData) returns Task(\/-(repoCollection))
+
+    mockCollectionRepository.deleteCollection(repoCollection) returns Task(\/-(1))
+
+    mockCollectionRepository.fetchCollectionByPosition(position) returns Task(\/-(Option(repoCollection)))
+
+    mockCollectionRepository.fetchCollectionByPosition(nonExistentPosition) returns Task(\/-(None))
+
+    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns Task(\/-(Option(repoCollection)))
+
+    mockCollectionRepository.fetchCollectionBySharedCollectionId(nonExistentSharedCollectionId) returns Task(\/-(None))
+
+    mockCollectionRepository.fetchSortedCollections returns Task(\/-(seqRepoCollection))
+
+    mockCollectionRepository.findCollectionById(collectionId) returns Task(\/-(Option(repoCollection)))
+
+    mockCollectionRepository.findCollectionById(nonExistentCollectionId) returns Task(\/-(None))
+
+    mockCollectionRepository.updateCollection(repoCollection) returns Task(\/-(1))
   }
 
   trait ErrorRepositoryServicesResponses extends Mockito with RepositoryServicesScope with PersistenceServicesData {
@@ -117,13 +140,31 @@ trait PersistenceServicesSpecification
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Task(-\/(exception))
 
-    mockCardRepository.deleteCard(repoCard) returns Task(-\/(exception))
+    (seqRepoCard) foreach { repoCard =>
+      mockCardRepository.deleteCard(repoCard) returns Task(-\/(exception))
+    }
 
-    mockCardRepository.fetchCardsByCollection(collectionId) returns Task(-\/(exception))
+    (0 to 5) foreach { index =>
+      mockCardRepository.fetchCardsByCollection(collectionId + index) returns Task(-\/(exception))
+    }
 
     mockCardRepository.findCardById(cardId) returns Task(-\/(exception))
 
     mockCardRepository.updateCard(repoCard) returns Task(-\/(exception))
+
+    mockCollectionRepository.addCollection(repoCollectionData) returns Task(-\/(exception))
+
+    mockCollectionRepository.deleteCollection(repoCollection) returns Task(-\/(exception))
+
+    mockCollectionRepository.fetchCollectionByPosition(position) returns Task(-\/(exception))
+
+    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns Task(-\/(exception))
+
+    mockCollectionRepository.fetchSortedCollections returns Task(-\/(exception))
+
+    mockCollectionRepository.findCollectionById(collectionId) returns Task(-\/(exception))
+
+    mockCollectionRepository.updateCollection(repoCollection) returns Task(-\/(exception))
   }
 }
 
@@ -432,6 +473,137 @@ class PersistenceServicesSpec
 
     "updateCard should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCard(createUpdateCardRequest())
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "addCollection should return a Collection value for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addCollection(createAddCollectionRequest())
+
+      result.run must be_\/-[Collection].which { collection =>
+        collection.id shouldEqual collectionId
+        collection.collectionType shouldEqual collectionType
+      }
+    }
+
+    "addCollection should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addCollection(createAddCollectionRequest())
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "deleteCollection should return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection))
+
+      result.run must be_\/-[Int].which { deleted =>
+        deleted shouldEqual 1
+      }
+    }
+
+    "deleteCollection should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "fetchCollectionByPosition should return a Collection for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position))
+
+      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
+        maybeCollection must beSome[Collection].which { collection =>
+          collection.id shouldEqual collectionId
+          collection.position shouldEqual position
+        }
+      }
+    }
+
+    "fetchCollectionByPosition should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(nonExistentPosition))
+
+      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
+        maybeCollection must beNone
+      }
+    }
+
+    "fetchCollectionByPosition should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "fetchCollectionBySharedCollection should return a Collection for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId))
+
+      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
+        maybeCollection must beSome[Collection].which { collection =>
+          collection.id shouldEqual collectionId
+          collection.sharedCollectionId shouldEqual Option(sharedCollectionId)
+        }
+      }
+    }
+
+    "fetchCollectionBySharedCollection should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(nonExistentSharedCollectionId))
+
+      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
+        maybeCollection must beNone
+      }
+    }
+
+    "fetchCollectionBySharedCollection should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "fetchCollections should return a list of Collection elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollections
+
+      result.run must be_\/-[Seq[Collection]].which { collections =>
+        collections.size shouldEqual seqCollection.size
+      }
+    }
+
+    "fetchCollections should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollections
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "findCollectionById should return a Collection for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId))
+
+      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
+        maybeCollection must beSome[Collection].which { collection =>
+          collection.collectionType shouldEqual collectionType
+        }
+      }
+    }
+
+    "findCollectionById should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = nonExistentCollectionId))
+
+      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
+        maybeCollection must beNone
+      }
+    }
+
+    "findCollectionById should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId))
+
+      result.run must be_-\/[NineCardsException]
+    }
+
+    "updateCollection should return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.updateCollection(createUpdateCollectionRequest())
+
+      result.run must be_\/-[Int].which { updated =>
+        updated shouldEqual 1
+      }
+    }
+
+    "updateCollection should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateCollection(createUpdateCollectionRequest())
 
       result.run must be_-\/[NineCardsException]
     }

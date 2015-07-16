@@ -55,17 +55,29 @@ trait CardConversions {
       )
     )
 
-  def toRepositoryCardData(cardItem: CardItem) =
+  def toRepositoryCardData(card: Card) =
     RepoCardData(
-      position = cardItem.position,
-      term = cardItem.term,
-      cardType = cardItem.cardType,
-      micros = cardItem.micros,
-      packageName = cardItem.packageName,
-      intent = cardItem.intent,
-      imagePath = cardItem.imagePath,
-      starRating = cardItem.starRating,
-      numDownloads = cardItem.numDownloads,
-      notification = cardItem.notification
-    )
+      position = card.position,
+      term = card.term,
+      cardType = card.cardType,
+      micros = card.micros,
+      packageName = card.packageName,
+      intent = card.intent,
+      imagePath = card.imagePath,
+      starRating = card.starRating,
+      numDownloads = card.numDownloads,
+      notification = card.notification)
+
+  def toRepositoryCardData(request: AddCardRequest) =
+    RepoCardData(
+      position = request.position,
+      micros = request.micros,
+      term = request.term,
+      packageName = request.packageName,
+      cardType = request.cardType,
+      intent = request.intent,
+      imagePath = request.imagePath,
+      starRating = request.starRating,
+      numDownloads = request.numDownloads,
+      notification = request.notification)
 }
