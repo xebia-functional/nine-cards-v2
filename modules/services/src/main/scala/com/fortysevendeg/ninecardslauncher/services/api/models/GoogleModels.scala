@@ -4,7 +4,7 @@ case class GooglePlayPackage(app: GooglePlayApp)
 
 case class GoogleDevice(
     name: String,
-    devideId: String,
+    deviceId: String,
     secretToken: String,
     permissions: Seq[String])
 

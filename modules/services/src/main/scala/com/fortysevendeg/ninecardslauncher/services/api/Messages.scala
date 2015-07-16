@@ -6,18 +6,18 @@ case class RequestConfig(deviceId: String, token: String)
 
 case class LoginResponse(
   statusCode: Int,
-  user: Option[User])
+  user: User)
 
 case class InstallationResponse(
   statusCode: Int,
-  installation: Option[Installation])
+  installation: Installation)
 
 case class UpdateInstallationResponse(
   statusCode: Int)
 
 case class GooglePlayPackageResponse(
   statusCode: Int,
-  app: Option[GooglePlayApp])
+  app: GooglePlayApp)
 
 case class GooglePlayPackagesResponse(
   statusCode: Int,
@@ -29,33 +29,33 @@ case class GooglePlaySimplePackagesResponse(
 
 trait UserConfigResponse {
   def statusCode: Int
-  def userConfig: Option[UserConfig]
+  def userConfig: UserConfig
 }
 
 case class GetUserConfigResponse(
   statusCode: Int,
-  userConfig: Option[UserConfig]) extends UserConfigResponse
+  userConfig: UserConfig) extends UserConfigResponse
 
 case class SaveDeviceResponse(
   statusCode: Int,
-  userConfig: Option[UserConfig]) extends UserConfigResponse
+  userConfig: UserConfig) extends UserConfigResponse
 
 case class SaveGeoInfoResponse(
   statusCode: Int,
-  userConfig: Option[UserConfig]) extends UserConfigResponse
+  userConfig: UserConfig) extends UserConfigResponse
 
 case class CheckpointPurchaseProductResponse(
   statusCode: Int,
-  userConfig: Option[UserConfig]) extends UserConfigResponse
+  userConfig: UserConfig) extends UserConfigResponse
 
 case class CheckpointCustomCollectionResponse(
   statusCode: Int,
-  userConfig: Option[UserConfig]) extends UserConfigResponse
+  userConfig: UserConfig) extends UserConfigResponse
 
 case class CheckpointJoinedByResponse(
   statusCode: Int,
-  userConfig: Option[UserConfig]) extends UserConfigResponse
+  userConfig: UserConfig) extends UserConfigResponse
 
 case class TesterResponse(
   statusCode: Int,
-  userConfig: Option[UserConfig]) extends UserConfigResponse
+  userConfig: UserConfig) extends UserConfigResponse
