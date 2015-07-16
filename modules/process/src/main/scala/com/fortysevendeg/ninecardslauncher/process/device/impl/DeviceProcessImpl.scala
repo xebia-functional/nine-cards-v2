@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
-import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite, ImageServices}
+import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.rest.client.ServiceClient
@@ -57,15 +57,19 @@ class DeviceProcessImpl(
   private[this] def getApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppCategorized]] =
     for {
       applications <- appsService.getInstalledApps ▹ eitherT
-      _ <- createBitmapsFromAppPackage(toAppPackageSeq(applications)) ▹ eitherT
+      paths <- createBitmapsFromAppPackage(toAppPackageSeq(applications)) ▹ eitherT
     } yield {
       applications map {
         app =>
+          val path = paths.find {
+            path =>
+              path.packageName.equals(app.packageName) && path.className.equals(app.className)
+          } map (_.path) getOrElse ""
           AppCategorized(
             name = app.name,
             packageName = app.packageName,
             className = app.className,
-            imagePath = "image") // TODO we should relate the image created with the app
+            imagePath = path)
       }
     }
 
@@ -74,14 +78,14 @@ class DeviceProcessImpl(
     Task.gatherUnordered(tasks) map (_.collect { case \/-(category) => category }.right[NineCardsException])
   }
 
-  private[this] def createBitmapsFromAppPackage(apps: Seq[AppPackage])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[String]] = {
+  private[this] def createBitmapsFromAppPackage(apps: Seq[AppPackage])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppPackagePath]] = {
     val tasks = apps map imageServices.saveAppIcon
-    Task.gatherUnordered(tasks) map (_.collect { case \/-(path) => path }.right[NineCardsException])
+    Task.gatherUnordered(tasks) map (_.collect { case \/-(app) => app }.right[NineCardsException])
   }
 
-  private[this] def createBitmapsFromAppWebSite(apps: Seq[AppWebsite])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[String]] = {
+  private[this] def createBitmapsFromAppWebSite(apps: Seq[AppWebsite])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppWebsitePath]] = {
     val tasks = apps map imageServices.saveAppIcon
-    Task.gatherUnordered(tasks) map (_.collect { case \/-(path) => path }.right[NineCardsException])
+    Task.gatherUnordered(tasks) map (_.collect { case \/-(app) => app }.right[NineCardsException])
   }
 
 }
