@@ -16,8 +16,6 @@ import Scalaz._
 import EitherT._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import scalaz.concurrent.Task
 
 class DeviceProcessImpl(

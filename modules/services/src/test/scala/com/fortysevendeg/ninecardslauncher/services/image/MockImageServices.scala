@@ -15,8 +15,8 @@ import scalaz.\/
 import scalaz.concurrent.Task
 
 trait MockImageServices
-    extends Scope
-    with Mockito {
+  extends Scope
+  with Mockito {
 
   val appPackage = AppPackage(
     "com.fortysevendeg.ninecardslauncher.test",
