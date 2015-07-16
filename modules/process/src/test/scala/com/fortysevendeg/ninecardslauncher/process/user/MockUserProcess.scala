@@ -59,8 +59,8 @@ trait MockUserProcess
   when(resources.getDisplayMetrics) thenReturn mock[DisplayMetrics]
 
   val contextSupport = mock[ContextSupport]
-  when(contextSupport.getPackageManager) thenReturn mock[PackageManager]
-  when(contextSupport.getAppIconsDir) thenReturn appIconDir
-  when(contextSupport.getResources) thenReturn resources
+  contextSupport.getPackageManager returns mock[PackageManager]
+  contextSupport.getAppIconsDir returns appIconDir
+  contextSupport.getResources returns resources
 
 }
