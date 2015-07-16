@@ -52,7 +52,7 @@ trait GoogleConnectorServicesComponentImpl
                   email = request.username,
                   device = GoogleDevice(
                     name = Build.MODEL,
-                    devideId = androidId,
+                    deviceId = androidId,
                     secretToken = token,
                     permissions = Seq(contextProvider.application.getString(R.string.oauth_scopes))
                   )

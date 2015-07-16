@@ -156,7 +156,7 @@ class ApiServicesSpec
         val result = apiServices.login("", serviceModel.GoogleDevice("", "", "", Seq.empty)).run
         result must be_\/-[LoginResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.user shouldEqual Some(toUser(user))
+          response.user shouldEqual toUser(user)
         }
       }
 
@@ -175,7 +175,7 @@ class ApiServicesSpec
         val result = apiServices.linkGoogleAccount("", Seq(serviceModel.GoogleDevice("", "", "", Seq.empty))).run
         result must be_\/-[LoginResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.user shouldEqual Some(toUser(user))
+          response.user shouldEqual toUser(user)
         }
       }
 
@@ -194,7 +194,7 @@ class ApiServicesSpec
         val result = apiServices.createInstallation(Some(""), Some(""), Some(""), Some("")).run
         result must be_\/-[InstallationResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.installation shouldEqual Some(toInstallation(installation))
+          response.installation shouldEqual toInstallation(installation)
         }
       }
 
@@ -231,7 +231,7 @@ class ApiServicesSpec
         val result = apiServices.googlePlayPackage("").run
         result must be_\/-[GooglePlayPackageResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.app shouldEqual googlePlayPackages.items.headOption.map(app => toGooglePlayApp(app.docV2))
+          response.app shouldEqual toGooglePlayApp(googlePlayPackages.items.head.docV2)
         }
       }
 
@@ -288,7 +288,7 @@ class ApiServicesSpec
         val result = apiServices.getUserConfig().run
         result must be_\/-[GetUserConfigResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.userConfig shouldEqual Some(toUserConfig(userConfig))
+          response.userConfig shouldEqual toUserConfig(userConfig)
         }
       }
 
@@ -307,7 +307,7 @@ class ApiServicesSpec
         val result = apiServices.saveDevice(serviceModel.UserConfigDevice("", "", Seq.empty)).run
         result must be_\/-[SaveDeviceResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.userConfig shouldEqual Some(toUserConfig(userConfig))
+          response.userConfig shouldEqual toUserConfig(userConfig)
         }
       }
 
@@ -326,7 +326,7 @@ class ApiServicesSpec
         val result = apiServices.saveGeoInfo(serviceModel.UserConfigGeoInfo(None, None, None, None)).run
         result must be_\/-[SaveGeoInfoResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.userConfig shouldEqual Some(toUserConfig(userConfig))
+          response.userConfig shouldEqual toUserConfig(userConfig)
         }
       }
 
@@ -345,7 +345,7 @@ class ApiServicesSpec
         val result = apiServices.checkpointPurchaseProduct("").run
         result must be_\/-[CheckpointPurchaseProductResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.userConfig shouldEqual Some(toUserConfig(userConfig))
+          response.userConfig shouldEqual toUserConfig(userConfig)
         }
       }
 
@@ -364,7 +364,7 @@ class ApiServicesSpec
         val result = apiServices.checkpointCustomCollection().run
         result must be_\/-[CheckpointCustomCollectionResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.userConfig shouldEqual Some(toUserConfig(userConfig))
+          response.userConfig shouldEqual toUserConfig(userConfig)
         }
       }
 
@@ -383,7 +383,7 @@ class ApiServicesSpec
         val result = apiServices.checkpointJoinedBy("").run
         result must be_\/-[CheckpointJoinedByResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.userConfig shouldEqual Some(toUserConfig(userConfig))
+          response.userConfig shouldEqual toUserConfig(userConfig)
         }
       }
 
@@ -402,7 +402,7 @@ class ApiServicesSpec
         val result = apiServices.tester(Map.empty).run
         result must be_\/-[TesterResponse].which { response =>
           response.statusCode shouldEqual statusCode
-          response.userConfig shouldEqual Some(toUserConfig(userConfig))
+          response.userConfig shouldEqual toUserConfig(userConfig)
         }
       }
 
