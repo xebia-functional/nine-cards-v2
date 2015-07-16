@@ -118,7 +118,7 @@ class UserProcessSpec
   "Sign In in UserProcess" should {
 
     "returns status code with initial installation calling to create installation in ApiServices" in new InitialUserProcessScope {
-      val result = userProcess.signIn(email, googleDevice)(contextSupport).run
+      val result = userProcess.signIn(email, device)(contextSupport).run
 
       there was one(mockApiServices).login(anyString, any[GoogleDevice])
       there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
@@ -132,7 +132,7 @@ class UserProcessSpec
     }
 
     "returns status code with full installation calling to update installation in ApiServices" in new UserProcessScope {
-      val result = userProcess.signIn(email, googleDevice)(contextSupport).run
+      val result = userProcess.signIn(email, device)(contextSupport).run
 
       there was one(mockApiServices).login(anyString, any[GoogleDevice])
       there was one(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
@@ -146,7 +146,7 @@ class UserProcessSpec
     }
 
     "returns a NineCardsException if login in ApiService returns a exception and shouldn't sync installation" in new LoginErrorUserProcessScope {
-      val result = userProcess.signIn(email, googleDevice)(contextSupport).run
+      val result = userProcess.signIn(email, device)(contextSupport).run
       there was one(mockApiServices).login(anyString, any[GoogleDevice])
       there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
       there was exactly(0)(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
@@ -154,7 +154,7 @@ class UserProcessSpec
     }
 
     "returns a NineCardsException if save user fails and shouldn't sync installation" in new SaveUserErrorUserProcessScope {
-      val result = userProcess.signIn(email, googleDevice)(contextSupport).run
+      val result = userProcess.signIn(email, device)(contextSupport).run
       there was one(mockApiServices).login(anyString, any[GoogleDevice])
       there was one(mockPersistenceServices).saveUser(user)(contextSupport)
       there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])

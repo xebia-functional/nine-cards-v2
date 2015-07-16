@@ -2,7 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.user.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.process.user.{SignInResponse, UserProcess}
+import com.fortysevendeg.ninecardslauncher.process.user.models.Device
+import com.fortysevendeg.ninecardslauncher.process.user.{Conversions, SignInResponse, UserProcess}
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, GoogleDevice}
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
@@ -18,15 +19,16 @@ class UserProcessImpl(
   apiServices: ApiServices,
   persistenceServices: PersistenceServices
   )
-  extends UserProcess {
+  extends UserProcess
+  with Conversions {
 
-  val DeviceType = "ANDROID"
+  private val deviceType = "ANDROID"
 
-  private val BasicInstallation = Installation(id = None, deviceType = Some(DeviceType), deviceToken = None, userId = None)
+  private val basicInstallation = Installation(id = None, deviceType = Some(deviceType), deviceToken = None, userId = None)
 
-  override def signIn(email: String, device: GoogleDevice)(implicit context: ContextSupport): Task[NineCardsException \/ SignInResponse] =
+  override def signIn(email: String, device: Device)(implicit context: ContextSupport): Task[NineCardsException \/ SignInResponse] =
     for {
-      loginResponse <- apiServices.login(email, device) ▹ eitherT
+      loginResponse <- apiServices.login(email, toGoogleDevice(device)) ▹ eitherT
       _ <- persistenceServices.saveUser(loginResponse.user) ▹ eitherT
       installation <- persistenceServices.getInstallation ▹ eitherT
       _ <- syncInstallation(installation) ▹ eitherT
@@ -34,12 +36,12 @@ class UserProcessImpl(
 
   override def register(implicit context: ContextSupport): Task[NineCardsException \/ Unit] = persistenceServices.getInstallation map {
     case \/-(r) => \/-(r)
-    case -\/(ex) => toEnsureAttemptRun(persistenceServices.saveInstallation(BasicInstallation))
+    case -\/(ex) => toEnsureAttemptRun(persistenceServices.saveInstallation(basicInstallation))
   }
 
   override def unregister(implicit context: ContextSupport): Task[NineCardsException \/ Unit] =
     for {
-      _ <- syncInstallation(BasicInstallation) ▹ eitherT
+      _ <- syncInstallation(basicInstallation) ▹ eitherT
       _ <- persistenceServices.resetUser ▹ eitherT
     } yield (())
 

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User, GoogleDevice}
 import org.mockito.Mockito._
 import org.specs2.mock.Mockito
@@ -23,11 +24,17 @@ trait MockUserProcess
 
   val email = "example@47deg.com"
 
-  val googleDevice = GoogleDevice(
+  val device = Device(
     "Nexus X",
     "",
     "",
     Seq.empty)
+
+  val googleDevice = GoogleDevice(
+    device.name,
+    device.deviceId,
+    device.secretToken,
+    device.permissions)
 
   val user = User(
     Option(userId),
@@ -53,10 +60,10 @@ trait MockUserProcess
   val fileFolder = "/file/example"
 
   val appIconDir = mock[File]
-  when(appIconDir.getPath) thenReturn fileFolder
+  appIconDir.getPath returns fileFolder
 
   val resources = mock[Resources]
-  when(resources.getDisplayMetrics) thenReturn mock[DisplayMetrics]
+  resources.getDisplayMetrics returns mock[DisplayMetrics]
 
   val contextSupport = mock[ContextSupport]
   contextSupport.getPackageManager returns mock[PackageManager]
