@@ -35,7 +35,7 @@ trait PersistenceServicesSpecification
       geoInfoRepository = mockGeoInfoRepository)
   }
 
-  trait ValidRepositoryServicesResponses extends Mockito with RepositoryServicesScope with PersistenceServicesData {
+  trait ValidRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 
     mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Task(\/-(repoCacheCategory))
 
@@ -108,7 +108,7 @@ trait PersistenceServicesSpecification
     mockCollectionRepository.updateCollection(repoCollection) returns Task(\/-(1))
   }
 
-  trait ErrorRepositoryServicesResponses extends Mockito with RepositoryServicesScope with PersistenceServicesData {
+  trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 
     val exception = NineCardsException("Irrelevant message")
 
