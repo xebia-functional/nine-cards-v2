@@ -66,7 +66,7 @@ case class UserConfigCollection(
 case class UserConfigCollectionItem(
   itemType: String,
   title: String,
-  metadata: NineCardIntent,
+  metadata: JsValue,
   categories: Option[Seq[String]])
 
 case class NineCardIntent(
