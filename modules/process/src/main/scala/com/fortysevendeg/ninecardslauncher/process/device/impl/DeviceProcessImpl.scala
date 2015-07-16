@@ -11,7 +11,6 @@ import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
-import com.fortysevendeg.rest.client.ServiceClient
 
 import scalaz.EitherT._
 import scalaz.Scalaz._
@@ -20,7 +19,6 @@ import scalaz.concurrent.Task
 
 class DeviceProcessImpl(
   appsService: AppsServices,
-  serviceClient: ServiceClient,
   apiServices: ApiServices,
   persistenceServices: PersistenceServices,
   imageServices: ImageServices
@@ -28,7 +26,7 @@ class DeviceProcessImpl(
   extends DeviceProcess
   with DeviceConversions {
 
-  private val apiUtils = new ApiUtils(persistenceServices)
+  val apiUtils = new ApiUtils(persistenceServices)
 
   override def getCategorizedApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppCategorized]] =
     for {

@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 
 import scala.util.{Failure, Success, Try}
 
-object AppItemUtils {
+object AppCategorizedUtils {
 
   val AvgDownloadsDefault = 1.0
 

@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.modules.ComponentRegistryImpl
 import com.fortysevendeg.ninecardslauncher.modules.appsmanager.IntentsRequest
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
-import com.fortysevendeg.ninecardslauncher.process.device.utils.AppItemUtils._
+import com.fortysevendeg.ninecardslauncher.process.device.utils.AppCategorizedUtils._
 import com.fortysevendeg.ninecardslauncher.repository.commons.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.CreateCollectionService._
