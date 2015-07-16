@@ -166,13 +166,15 @@ trait PersistenceServicesSpecification
 
     mockCollectionRepository.updateCollection(repoCollection) returns Task(-\/(exception))
   }
+
 }
 
 class PersistenceServicesSpec
   extends PersistenceServicesSpecification {
 
-  "PersistenceServices" should {
-    "addCacheCategory should return a CacheCategory value for a valid request" in new ValidRepositoryServicesResponses {
+  "addCacheCategory" should {
+
+    "return a CacheCategory value for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.addCacheCategory(createAddCacheCategoryRequest())
 
       result.run must be_\/-[CacheCategory].which { cacheCategory =>
@@ -181,13 +183,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "addCacheCategory should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addCacheCategory(createAddCacheCategoryRequest())
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "deleteCacheCategory should return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+  "deleteCacheCategory" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.deleteCacheCategory(createDeleteCacheCategoryRequest(cacheCategory = cacheCategory))
 
       result.run must be_\/-[Int].which { deleted =>
@@ -195,13 +200,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "deleteCacheCategory should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteCacheCategory(createDeleteCacheCategoryRequest(cacheCategory = cacheCategory))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "deleteCacheCategoryByPackage should return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+  "deleteCacheCategoryByPackage" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.deleteCacheCategoryByPackage(createDeleteCacheCategoryByPackageRequest(packageName = packageName))
 
       result.run must be_\/-[Int].which { deleted =>
@@ -209,13 +217,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "deleteCacheCategoryByPackage should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteCacheCategoryByPackage(createDeleteCacheCategoryByPackageRequest(packageName = packageName))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "fetchCacheCategories should return a list of CacheCategory elements for a valid request" in new ValidRepositoryServicesResponses {
+  "fetchCacheCategories" should {
+
+    "return a list of CacheCategory elements for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCacheCategories
 
       result.run must be_\/-[Seq[CacheCategory]].which { cacheCategories =>
@@ -223,13 +234,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchCacheCategories should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCacheCategories
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "fetchCacheCategoryByPackage should return a CacheCategory for a valid request" in new ValidRepositoryServicesResponses {
+  "fetchCacheCategoryByPackage" should {
+
+    "return a CacheCategory for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName))
 
       result.run must be_\/-[Option[CacheCategory]].which { maybeCacheCategory =>
@@ -239,7 +253,7 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchCacheCategoryByPackage should return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
+    "return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = nonExistentPackageName))
 
       result.run must be_\/-[Option[CacheCategory]].which { maybeCacheCategory =>
@@ -247,13 +261,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchCacheCategoryByPackage should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "findCacheCategoryById should return a CacheCategory for a valid request" in new ValidRepositoryServicesResponses {
+  "findCacheCategoryById" should {
+
+    "return a CacheCategory for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId))
 
       result.run must be_\/-[Option[CacheCategory]].which { maybeCacheCategory =>
@@ -263,7 +280,7 @@ class PersistenceServicesSpec
       }
     }
 
-    "findCacheCategoryById should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = nonExistentCacheCategoryId))
 
       result.run must be_\/-[Option[CacheCategory]].which { maybeCacheCategory =>
@@ -271,13 +288,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "findCacheCategoryById should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "updateCacheCategory should return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+  "updateCacheCategory" should {
+
+    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.updateCacheCategory(createUpdateCacheCategoryRequest())
 
       result.run must be_\/-[Int].which { updated =>
@@ -285,13 +305,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "updateCacheCategory should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCacheCategory(createUpdateCacheCategoryRequest())
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "addGeoInfo should return a GeoInfo value for a valid request" in new ValidRepositoryServicesResponses {
+  "addGeoInfo" should {
+
+    "return a GeoInfo value for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest())
 
       result.run must be_\/-[GeoInfo].which { geoInfo =>
@@ -300,13 +323,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "addGeoInfo should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest())
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "deleteGeoInfo should return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+  "deleteGeoInfo" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo))
 
       result.run must be_\/-[Int].which { deleted =>
@@ -314,13 +340,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "deleteGeoInfo should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "fetchGeoInfoItems should return a list of GeoInfo elements for a valid request" in new ValidRepositoryServicesResponses {
+  "fetchGeoInfoItems" should {
+
+    "return a list of GeoInfo elements for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoItems
 
       result.run must be_\/-[Seq[GeoInfo]].which { geoInfoItems =>
@@ -328,13 +357,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchGeoInfoItems should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoItems
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "fetchGeoInfoByConstrain should return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
+  "fetchGeoInfoByConstrain" should {
+
+    "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain))
 
       result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
@@ -344,7 +376,7 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchGeoInfoByConstrain should return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
+    "return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = nonExistentConstrain))
 
       result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
@@ -352,13 +384,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchGeoInfoByConstrain should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "findGeoInfoById should return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
+  "fetchGeoInfoByConstrain" should {
+
+    "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId))
 
       result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
@@ -368,7 +403,7 @@ class PersistenceServicesSpec
       }
     }
 
-    "findGeoInfoById should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = nonExistentGeoInfoId))
 
       result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
@@ -376,13 +411,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "findGeoInfoById should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "updateGeoInfo should return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+  "updateGeoInfo" should {
+
+    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest())
 
       result.run must be_\/-[Int].which { updated =>
@@ -390,13 +428,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "updateGeoInfo should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest())
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "addCard should return a Card value for a valid request" in new ValidRepositoryServicesResponses {
+  "addCard" should {
+
+    "return a Card value for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.addCard(createAddCardRequest())
 
       result.run must be_\/-[Card].which { card =>
@@ -405,13 +446,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "addCard should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addCard(createAddCardRequest())
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "deleteCard should return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+  "deleteCard" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card))
 
       result.run must be_\/-[Int].which { deleted =>
@@ -419,13 +463,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "deleteCard should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "fetchCardsByCollection should return a list of Card elements for a valid request" in new ValidRepositoryServicesResponses {
+  "fetchCardsByCollection" should {
+
+    "return a list of Card elements for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId))
 
       result.run must be_\/-[Seq[Card]].which { cards =>
@@ -433,13 +480,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchCardItems should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "findCardById should return a Card for a valid request" in new ValidRepositoryServicesResponses {
+  "findCardById" should {
+
+    "return a Card for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId))
 
       result.run must be_\/-[Option[Card]].which { maybeCard =>
@@ -449,7 +499,7 @@ class PersistenceServicesSpec
       }
     }
 
-    "findCardById should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCardById(createFindCardByIdRequest(id = nonExistentCardId))
 
       result.run must be_\/-[Option[Card]].which { maybeCard =>
@@ -457,13 +507,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "findCardById should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "updateCard should return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+  "updateCard" should {
+
+    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.updateCard(createUpdateCardRequest())
 
       result.run must be_\/-[Int].which { updated =>
@@ -471,13 +524,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "updateCard should return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCard(createUpdateCardRequest())
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "addCollection should return a Collection value for a valid request" in new ValidRepositoryServicesResponses {
+  "addCollection" should {
+
+    "return a Collection value for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.addCollection(createAddCollectionRequest())
 
       result.run must be_\/-[Collection].which { collection =>
@@ -486,13 +542,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "addCollection should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addCollection(createAddCollectionRequest())
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "deleteCollection should return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+  "deleteCollection" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection))
 
       result.run must be_\/-[Int].which { deleted =>
@@ -500,13 +559,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "deleteCollection should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "fetchCollectionByPosition should return a Collection for a valid request" in new ValidRepositoryServicesResponses {
+  "fetchCollectionByPosition" should {
+
+    "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position))
 
       result.run must be_\/-[Option[Collection]].which { maybeCollection =>
@@ -517,7 +579,7 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchCollectionByPosition should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(nonExistentPosition))
 
       result.run must be_\/-[Option[Collection]].which { maybeCollection =>
@@ -525,13 +587,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchCollectionByPosition should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "fetchCollectionBySharedCollection should return a Collection for a valid request" in new ValidRepositoryServicesResponses {
+  "fetchCollectionBySharedCollection" should {
+
+    "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId))
 
       result.run must be_\/-[Option[Collection]].which { maybeCollection =>
@@ -542,7 +607,7 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchCollectionBySharedCollection should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(nonExistentSharedCollectionId))
 
       result.run must be_\/-[Option[Collection]].which { maybeCollection =>
@@ -550,13 +615,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchCollectionBySharedCollection should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "fetchCollections should return a list of Collection elements for a valid request" in new ValidRepositoryServicesResponses {
+  "fetchCollections" should {
+
+    "return a list of Collection elements for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollections
 
       result.run must be_\/-[Seq[Collection]].which { collections =>
@@ -564,13 +632,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "fetchCollections should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCollections
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "findCollectionById should return a Collection for a valid request" in new ValidRepositoryServicesResponses {
+  "findCollectionById" should {
+
+    "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId))
 
       result.run must be_\/-[Option[Collection]].which { maybeCollection =>
@@ -580,7 +651,7 @@ class PersistenceServicesSpec
       }
     }
 
-    "findCollectionById should return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = nonExistentCollectionId))
 
       result.run must be_\/-[Option[Collection]].which { maybeCollection =>
@@ -588,13 +659,16 @@ class PersistenceServicesSpec
       }
     }
 
-    "findCollectionById should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId))
 
       result.run must be_-\/[NineCardsException]
     }
+  }
 
-    "updateCollection should return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+  "updateCollection" should {
+
+    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.updateCollection(createUpdateCollectionRequest())
 
       result.run must be_\/-[Int].which { updated =>
@@ -602,7 +676,7 @@ class PersistenceServicesSpec
       }
     }
 
-    "updateCollection should return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCollection(createUpdateCollectionRequest())
 
       result.run must be_-\/[NineCardsException]
