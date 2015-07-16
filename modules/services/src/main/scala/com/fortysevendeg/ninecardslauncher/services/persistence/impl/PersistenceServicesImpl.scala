@@ -69,7 +69,7 @@ class PersistenceServicesImpl(
     cacheCategoryRepository.updateCacheCategory(toRepositoryCacheCategory(request))
 
   override def addCard(request: AddCardRequest): Task[NineCardsException \/ Card] =
-    cardRepository.addCard(request.collectionId, toRepositoryCardData(request.cardItem)) ▹ eitherT map toCard
+    cardRepository.addCard(request.collectionId, toRepositoryCardData(request)) ▹ eitherT map toCard
 
 
   override def deleteCard(request: DeleteCardRequest): Task[NineCardsException \/ Int] =
@@ -103,7 +103,7 @@ class PersistenceServicesImpl(
     } yield deletedCollection
   }
 
-  override def fetchCollections(request: FetchCollectionsRequest): Task[NineCardsException \/ Seq[Collection]] =
+  override def fetchCollections: Task[NineCardsException \/ Seq[Collection]] =
     for {
       collectionsWithoutCards <- collectionRepository.fetchSortedCollections ▹ eitherT
       collectionWithCards <- fetchCards(collectionsWithoutCards) ▹ eitherT
@@ -143,7 +143,7 @@ class PersistenceServicesImpl(
       _ map toGeoInfo
     }
 
-  override def fetchGeoInfoItems(request: FetchGeoInfoItemsRequest): Task[NineCardsException \/ Seq[GeoInfo]] =
+  override def fetchGeoInfoItems: Task[NineCardsException \/ Seq[GeoInfo]] =
     geoInfoRepository.fetchGeoInfoItems ▹ eitherT map toGeoInfoSeq
 
   override def findGeoInfoById(request: FindGeoInfoByIdRequest): Task[NineCardsException \/ Option[GeoInfo]] =
@@ -154,10 +154,10 @@ class PersistenceServicesImpl(
   override def updateGeoInfo(request: UpdateGeoInfoRequest): Task[NineCardsException \/ Int] =
     geoInfoRepository.updateGeoInfo(toRepositoryGeoInfo(request))
 
-  private[this] def addCards(collectionId: Int, cards: Seq[CardItem]): Task[NineCardsException \/ Seq[Card]] = {
+  private[this] def addCards(collectionId: Int, cards: Seq[Card]): Task[NineCardsException \/ Seq[Card]] = {
     val addedCards = cards map {
       card =>
-        cardRepository.addCard(collectionId = collectionId, data = toRepositoryCardData(cardItem = card))
+        cardRepository.addCard(collectionId = collectionId, data = toRepositoryCardData(card = card))
     }
 
     Task.gatherUnordered(addedCards) map (_.collect { case \/-(card) => toCard(card) }.right[NineCardsException])

@@ -1,16 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepoCard, CardData => RepoCardData}
-import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
-import play.api.libs.json.Json
 
 trait CardConversions {
 
   def toCard(card: RepoCard) = {
-    val intent = Json.parse(card.data.intent).as[NineCardIntent]
     Card(
       id = card.id,
       position = card.data.position,
@@ -18,7 +14,7 @@ trait CardConversions {
       term = card.data.term,
       packageName = card.data.packageName,
       cardType = card.data.cardType,
-      intent = intent,
+      intent = card.data.intent,
       imagePath = card.data.imagePath,
       starRating = card.data.starRating,
       numDownloads = card.data.numDownloads,
@@ -34,7 +30,7 @@ trait CardConversions {
         term = card.term,
         packageName = card.packageName,
         cardType = card.cardType,
-        intent = Json.toJson(card.intent).toString(),
+        intent = card.intent,
         imagePath = card.imagePath,
         starRating = card.starRating,
         numDownloads = card.numDownloads,
@@ -59,17 +55,29 @@ trait CardConversions {
       )
     )
 
-  def toRepositoryCardData(cardItem: CardItem) =
+  def toRepositoryCardData(card: Card) =
     RepoCardData(
-      position = cardItem.position,
-      term = cardItem.term,
-      cardType = cardItem.cardType,
-      micros = cardItem.micros,
-      packageName = cardItem.packageName,
-      intent = cardItem.intent,
-      imagePath = cardItem.imagePath,
-      starRating = cardItem.starRating,
-      numDownloads = cardItem.numDownloads,
-      notification = cardItem.notification
-    )
+      position = card.position,
+      term = card.term,
+      cardType = card.cardType,
+      micros = card.micros,
+      packageName = card.packageName,
+      intent = card.intent,
+      imagePath = card.imagePath,
+      starRating = card.starRating,
+      numDownloads = card.numDownloads,
+      notification = card.notification)
+
+  def toRepositoryCardData(request: AddCardRequest) =
+    RepoCardData(
+      position = request.position,
+      micros = request.micros,
+      term = request.term,
+      packageName = request.packageName,
+      cardType = request.cardType,
+      intent = request.intent,
+      imagePath = request.imagePath,
+      starRating = request.starRating,
+      numDownloads = request.numDownloads,
+      notification = request.notification)
 }
