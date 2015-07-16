@@ -55,7 +55,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
       }
     }
 
-  def fetchCollectionBySharedCollectionId(sharedCollectionId: Int): Task[NineCardsException \/ Option[Collection]] =
+  def fetchCollectionBySharedCollectionId(sharedCollectionId: String): Task[NineCardsException \/ Option[Collection]] =
     Task {
       fromTryCatchNineCardsException[Option[Collection]] {
         fetchCollection(

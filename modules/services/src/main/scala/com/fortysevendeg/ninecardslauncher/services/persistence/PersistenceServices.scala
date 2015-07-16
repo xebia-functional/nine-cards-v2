@@ -38,7 +38,7 @@ trait PersistenceServices {
 
   def deleteCollection(request: DeleteCollectionRequest): Task[NineCardsException \/ Int]
 
-  def fetchCollections(request: FetchCollectionsRequest): Task[NineCardsException \/ Seq[Collection]]
+  def fetchCollections: Task[NineCardsException \/ Seq[Collection]]
 
   def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest): Task[NineCardsException \/ Option[Collection]]
 
@@ -54,7 +54,7 @@ trait PersistenceServices {
 
   def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest): Task[NineCardsException \/ Option[GeoInfo]]
 
-  def fetchGeoInfoItems(request: FetchGeoInfoItemsRequest): Task[NineCardsException \/ Seq[GeoInfo]]
+  def fetchGeoInfoItems: Task[NineCardsException \/ Seq[GeoInfo]]
 
   def findGeoInfoById(request: FindGeoInfoByIdRequest): Task[NineCardsException \/ Option[GeoInfo]]
 
