@@ -17,6 +17,7 @@ object NineCardExtensions {
   def fromTryCatchNineCardsException[T](a: => T): NineCardsException \/ T = try {
     \/-(a)
   } catch {
+    case e: NineCardsException => -\/(e)
     case NonFatal(t) => -\/(NineCardsException(t.getMessage, Some(t)))
   }
 
