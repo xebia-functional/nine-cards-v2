@@ -7,7 +7,6 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import org.mockito.Mockito._
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
@@ -30,9 +29,9 @@ trait MockImageServices
     "Sample Name")
 
   val contextSupport = mock[ContextSupport]
-  when(contextSupport.getPackageManager) thenReturn mock[PackageManager]
-  when(contextSupport.getAppIconsDir) thenReturn appIconDir
-  when(contextSupport.getResources) thenReturn resources
+  contextSupport.getPackageManager returns mock[PackageManager]
+  contextSupport.getAppIconsDir returns appIconDir
+  contextSupport.getResources returns resources
 
   val fileFolder = "/file/example"
 
@@ -40,19 +39,31 @@ trait MockImageServices
 
   val filePath = s"$fileFolder/$fileName"
 
+  val appPackagePath = AppPackagePath(
+    packageName = appPackage.packageName,
+    className = appPackage.className,
+    path = filePath
+  )
+
+  val appWebsitePath = AppWebsitePath(
+    packageName = appWebsite.packageName,
+    url = appWebsite.url,
+    path = filePath
+  )
+
   val appIconDir = mock[File]
-  when(appIconDir.getPath) thenReturn fileFolder
+  appIconDir.getPath returns fileFolder
 
   val resources = mock[Resources]
-  when(resources.getDisplayMetrics) thenReturn mock[DisplayMetrics]
+  resources.getDisplayMetrics returns mock[DisplayMetrics]
 
   val imageServiceConfig = ImageServicesConfig(List(1, 2, 3, 4, 5))
 
   val fileExistsTask = Task {
     \/.fromTryCatchThrowable[File, NineCardsException] {
         val file = mock[File]
-        when(file.exists()) thenReturn true
-        when(file.getAbsolutePath) thenReturn filePath
+        file.exists() returns true
+        file.getAbsolutePath returns filePath
         file
       }
   }
@@ -60,8 +71,8 @@ trait MockImageServices
   val fileNotExistsTask = Task {
     \/.fromTryCatchThrowable[File, NineCardsException] {
         val file = mock[File]
-        when(file.exists()) thenReturn false
-        when(file.getAbsolutePath) thenReturn filePath
+        file.exists() returns false
+        file.getAbsolutePath returns filePath
         file
       }
   }

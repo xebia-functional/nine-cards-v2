@@ -99,9 +99,9 @@ class ImageServicesSpec
     "returns filename when the file exists" in new FilesExistsImageServicesScope {
       val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run
 
-      result must be_\/-[String].which {
-        path =>
-          path shouldEqual filePath
+      result must be_\/-.which {
+        app =>
+          app shouldEqual appPackagePath
       }
     }
 
@@ -110,9 +110,9 @@ class ImageServicesSpec
 
       there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
 
-      result must be_\/-[String].which {
-        path =>
-          path shouldEqual filePath
+      result must be_\/-.which {
+        app =>
+          app shouldEqual appPackagePath
       }
     }
 
@@ -129,9 +129,9 @@ class ImageServicesSpec
     "returns filename when the file exists" in new FilesExistsImageServicesScope {
       val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run
 
-      result must be_\/-[String].which {
-        path =>
-          path shouldEqual filePath
+      result must be_\/-.which {
+        app =>
+          app shouldEqual appWebsitePath
       }
     }
 
@@ -140,9 +140,9 @@ class ImageServicesSpec
 
       there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
 
-      result must be_\/-[String].which {
-        path =>
-          path shouldEqual filePath
+      result must be_\/-.which {
+        app =>
+          app shouldEqual appWebsitePath
       }
     }
 
