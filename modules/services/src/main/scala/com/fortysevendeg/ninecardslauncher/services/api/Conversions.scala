@@ -107,25 +107,25 @@ trait Conversions {
       aggregateRating = toGooglePlayAggregateRating(googlePlayApp.aggregateRating)
     )
   
-  val IconImageType = 4
+  val iconImageType = 4
 
-  val IconBackgroundType = 2
+  val iconBackgroundType = 2
 
-  val IconScreenShootType = 1
+  val iconScreenShootType = 1
 
-  val IconVideoType = 3
+  val iconVideoType = 3
 
   def getIcon(images: Seq[apiModel.GooglePlayImage]): Option[String] =
-    images.find(_.imageType == IconImageType) map (_.imageUrl)
+    images.find(_.imageType == iconImageType) map (_.imageUrl)
 
   def getBackground(images: Seq[apiModel.GooglePlayImage]): Option[String] =
-    images.find(_.imageType == IconBackgroundType) map (_.imageUrl)
+    images.find(_.imageType == iconBackgroundType) map (_.imageUrl)
 
   def getScreenShoots(images: Seq[apiModel.GooglePlayImage]): Seq[String] =
-    images.filter(_.imageType == IconScreenShootType) map (_.imageUrl)
+    images.filter(_.imageType == iconScreenShootType) map (_.imageUrl)
 
   def getVideo(images: Seq[apiModel.GooglePlayImage]): Option[String] =
-    images.find(_.imageType == IconVideoType) map (_.imageUrl)
+    images.find(_.imageType == iconVideoType) map (_.imageUrl)
 
   def toGooglePlayImage(googlePlayImage: apiModel.GooglePlayImage): GooglePlayImage =
     GooglePlayImage(
