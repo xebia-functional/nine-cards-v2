@@ -4,7 +4,6 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppItem
 
-import scala.concurrent.Future
 import scalaz.\/
 import scalaz.concurrent.Task
 

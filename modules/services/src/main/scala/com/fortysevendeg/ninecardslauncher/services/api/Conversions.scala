@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
-import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json._
 
