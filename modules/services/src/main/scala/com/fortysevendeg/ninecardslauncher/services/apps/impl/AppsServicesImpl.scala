@@ -29,7 +29,8 @@ class AppsServicesImpl
               Application(
                 name = resolveInfo.loadLabel(packageManager).toString,
                 packageName = resolveInfo.activityInfo.applicationInfo.packageName,
-                className = resolveInfo.activityInfo.name)
+                className = resolveInfo.activityInfo.name,
+                icon = resolveInfo.activityInfo.icon)
           }
         }
       }

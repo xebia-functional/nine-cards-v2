@@ -1,18 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.process.user
 
-import java.io.File
-
-import android.content.pm.PackageManager
-import android.content.res.Resources
-import android.util.DisplayMetrics
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
-import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User, GoogleDevice}
-import org.mockito.Mockito._
+import com.fortysevendeg.ninecardslauncher.services.api.models.{GoogleDevice, Installation, User}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait MockUserProcess
+trait UserProcessData
   extends Scope
   with Mockito {
 
@@ -58,16 +51,5 @@ trait MockUserProcess
   )
 
   val fileFolder = "/file/example"
-
-  val appIconDir = mock[File]
-  appIconDir.getPath returns fileFolder
-
-  val resources = mock[Resources]
-  resources.getDisplayMetrics returns mock[DisplayMetrics]
-
-  val contextSupport = mock[ContextSupport]
-  contextSupport.getPackageManager returns mock[PackageManager]
-  contextSupport.getAppIconsDir returns appIconDir
-  contextSupport.getResources returns resources
 
 }

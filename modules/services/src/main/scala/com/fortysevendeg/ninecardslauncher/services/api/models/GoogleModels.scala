@@ -13,28 +13,13 @@ case class GooglePlayApp(
     title: String,
     creator: String,
     descriptionHtml: Option[String],
-    image: Seq[GooglePlayImage],
+    icon: Option[String],
+    background: Option[String],
+    screenshots: Seq[String],
+    video: Option[String],
     details: GooglePlayDetails,
     offer: Seq[GooglePlayOffer],
-    aggregateRating: GooglePlayAggregateRating) {
-
-    val IconImageType = 4
-
-    val IconBackgroundType = 2
-
-    val IconScreenShootType = 1
-
-    val IconVideoType = 3
-
-    def getIcon: Option[String] = image.find(_.imageType == IconImageType) map (_.imageUrl)
-
-    def getBackground: Option[String] = image.find(_.imageType == IconBackgroundType) map (_.imageUrl)
-
-    def getScreenShoots: Seq[String] = image.filter(_.imageType == IconScreenShootType) map (_.imageUrl)
-
-    def getVideo: Option[String] = image.find(_.imageType == IconVideoType) map (_.imageUrl)
-
-}
+    aggregateRating: GooglePlayAggregateRating)
 
 case class GooglePlayImage(
     imageType: Int,

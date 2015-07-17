@@ -65,7 +65,7 @@ trait AppManagerServicesComponentImpl
     private def storeImages(packages: Seq[GooglePlayPackage]): Future[Seq[StoreImageAppResponse]] =
       Future.sequence(packages map {
         p =>
-          (p.app.docid, p.app.getIcon)
+          (p.app.docid, p.app.icon)
       } flatMap {
         case (packageName, maybeIcon) => maybeIcon map {
           icon =>
