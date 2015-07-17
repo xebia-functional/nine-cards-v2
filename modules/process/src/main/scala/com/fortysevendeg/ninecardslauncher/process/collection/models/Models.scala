@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.models
+package com.fortysevendeg.ninecardslauncher.process.collection.models
 
 case class Collection(
   id: Int,
@@ -12,7 +12,7 @@ case class Collection(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Boolean,
-  cards: Seq[Card] = Seq.empty)
+  cards: Seq[Card] = Seq.empty) extends Serializable
 
 case class Card(
   id: Int,
@@ -21,26 +21,8 @@ case class Card(
   term: String,
   packageName: Option[String],
   cardType: String,
-  intent: String,
+  intent: NineCardIntent,
   imagePath: String,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
-  notification: Option[String] = None)
-
-case class CacheCategory(
-  id: Int,
-  packageName: String,
-  category: String,
-  starRating: Double,
-  numDownloads: String,
-  ratingsCount: Int,
-  commentCount: Int)
-
-case class GeoInfo(
-  id: Int,
-  constrain: String,
-  occurrence: String,
-  wifi: String,
-  latitude: Double,
-  longitude: Double,
-  system: Boolean)
+  notification: Option[String] = None) extends Serializable
