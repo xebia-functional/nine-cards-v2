@@ -17,7 +17,8 @@ trait CollectionRepositorySpecification
   with DisjunctionMatchers
   with Mockito {
 
-  trait CollectionRepositoryScope extends Scope {
+  trait CollectionRepositoryScope
+    extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
     lazy val collectionRepository = new CollectionRepository(contentResolverWrapper)
@@ -134,7 +135,10 @@ trait CollectionRepositorySpecification
   }
 }
 
-trait CollectionMockCursor extends MockCursor with DBUtils with CollectionRepositoryTestData {
+trait CollectionMockCursor
+  extends MockCursor
+  with DBUtils
+  with CollectionRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, collectionSeq map (_.id), IntDataType),
@@ -153,7 +157,10 @@ trait CollectionMockCursor extends MockCursor with DBUtils with CollectionReposi
   prepareCursor[Collection](collectionSeq.size, cursorData)
 }
 
-trait EmptyCollectionMockCursor extends MockCursor with DBUtils with CollectionRepositoryTestData {
+trait EmptyCollectionMockCursor
+  extends MockCursor
+  with DBUtils
+  with CollectionRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -172,7 +179,8 @@ trait EmptyCollectionMockCursor extends MockCursor with DBUtils with CollectionR
   prepareCursor[Collection](0, cursorData)
 }
 
-class CollectionRepositorySpec extends CollectionRepositorySpecification {
+class CollectionRepositorySpec
+  extends CollectionRepositorySpecification {
 
   "CollectionRepositoryClient component" should {
 

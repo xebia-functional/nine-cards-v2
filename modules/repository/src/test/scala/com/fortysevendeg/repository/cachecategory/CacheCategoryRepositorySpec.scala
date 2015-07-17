@@ -17,7 +17,8 @@ trait CacheCategoryRepositorySpecification
   with DisjunctionMatchers
   with Mockito {
 
-  trait CacheCategoryRepositoryScope extends Scope {
+  trait CacheCategoryRepositoryScope
+    extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
     lazy val cacheCategoryRepository = new CacheCategoryRepository(contentResolverWrapper)
@@ -111,7 +112,10 @@ trait CacheCategoryRepositorySpecification
   }
 }
 
-trait CacheCategoryMockCursor extends MockCursor with DBUtils with CacheCategoryRepositoryTestData {
+trait CacheCategoryMockCursor
+  extends MockCursor
+  with DBUtils
+  with CacheCategoryRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, cacheCategorySeq map (_.id), IntDataType),
@@ -126,7 +130,10 @@ trait CacheCategoryMockCursor extends MockCursor with DBUtils with CacheCategory
   prepareCursor[CacheCategory](cacheCategorySeq.size, cursorData)
 }
 
-trait EmptyCacheCategoryMockCursor extends MockCursor with DBUtils with CacheCategoryRepositoryTestData {
+trait EmptyCacheCategoryMockCursor
+  extends MockCursor
+  with DBUtils
+  with CacheCategoryRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -141,7 +148,8 @@ trait EmptyCacheCategoryMockCursor extends MockCursor with DBUtils with CacheCat
   prepareCursor[CacheCategory](0, cursorData)
 }
 
-class CacheCategoryRepositorySpec extends CacheCategoryRepositorySpecification {
+class CacheCategoryRepositorySpec
+  extends CacheCategoryRepositorySpecification {
 
   "CacheCategoryRepositoryClient component" should {
 

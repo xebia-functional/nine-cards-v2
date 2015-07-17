@@ -17,7 +17,8 @@ trait GeoInfoRepositorySpecification
   with DisjunctionMatchers
   with Mockito {
 
-  trait GeoInfoRepositoryScope extends Scope {
+  trait GeoInfoRepositoryScope
+    extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
     lazy val geoInfoRepository = new GeoInfoRepository(contentResolverWrapper)
@@ -102,7 +103,10 @@ trait GeoInfoRepositorySpecification
 
 }
 
-trait GeoInfoMockCursor extends MockCursor with DBUtils with GeoInfoRepositoryTestData {
+trait GeoInfoMockCursor
+  extends MockCursor
+  with DBUtils
+  with GeoInfoRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, geoInfoSeq map (_.id), IntDataType),
@@ -117,7 +121,10 @@ trait GeoInfoMockCursor extends MockCursor with DBUtils with GeoInfoRepositoryTe
   prepareCursor[GeoInfo](geoInfoSeq.size, cursorData)
 }
 
-trait EmptyGeoInfoMockCursor extends MockCursor with DBUtils with GeoInfoRepositoryTestData {
+trait EmptyGeoInfoMockCursor
+  extends MockCursor
+  with DBUtils
+  with GeoInfoRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -132,7 +139,8 @@ trait EmptyGeoInfoMockCursor extends MockCursor with DBUtils with GeoInfoReposit
   prepareCursor[GeoInfo](0, cursorData)
 }
 
-class GeoInfoRepositorySpec extends GeoInfoRepositorySpecification {
+class GeoInfoRepositorySpec
+  extends GeoInfoRepositorySpecification {
 
   "GeoInfoRepositoryClient component" should {
 

@@ -17,7 +17,8 @@ trait CardRepositorySpecification
   with DisjunctionMatchers
   with Mockito {
 
-  trait CardRepositoryScope extends Scope {
+  trait CardRepositoryScope
+    extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
     lazy val cardRepository = new CardRepository(contentResolverWrapper)
@@ -91,7 +92,10 @@ trait CardRepositorySpecification
   }
 }
 
-trait CardMockCursor extends MockCursor with DBUtils with CardRepositoryTestData {
+trait CardMockCursor
+  extends MockCursor
+  with DBUtils
+  with CardRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, cardSeq map (_.id), IntDataType),
@@ -111,7 +115,10 @@ trait CardMockCursor extends MockCursor with DBUtils with CardRepositoryTestData
   prepareCursor[Card](cardSeq.size, cursorData)
 }
 
-trait EmptyCardMockCursor extends MockCursor with DBUtils with CardRepositoryTestData {
+trait EmptyCardMockCursor
+  extends MockCursor
+  with DBUtils
+  with CardRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -131,7 +138,8 @@ trait EmptyCardMockCursor extends MockCursor with DBUtils with CardRepositoryTes
   prepareCursor[Card](0, cursorData)
 }
 
-class CardRepositorySpec extends CardRepositorySpecification {
+class CardRepositorySpec
+  extends CardRepositorySpecification {
 
   "CardRepositoryClient component" should {
 
