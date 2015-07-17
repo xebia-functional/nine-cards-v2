@@ -195,7 +195,10 @@ trait DeviceProcessData {
       title = "",
       creator = "",
       descriptionHtml = None,
-      image = Seq(GooglePlayImage(4, urlForCreateImage, None)),
+      icon = Some(urlForCreateImage),
+      background = None,
+      screenshots = Seq.empty,
+      video = None,
       details = GooglePlayDetails(GooglePlayAppDetails(Seq("SOCIAL"), "", None, None, None, 1, Option("1"), None, Seq.empty)),
       offer = Seq.empty,
       aggregateRating = GooglePlayAggregateRating(0, None, 0, 0, 0, 0, 0, 0)

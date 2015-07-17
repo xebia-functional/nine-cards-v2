@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device
 
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
-import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlaySimplePackage, GooglePlayPackage}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlaySimplePackage, GooglePlayPackage, GooglePlayApp}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence.AddCacheCategoryRequest
@@ -18,12 +18,11 @@ trait DeviceConversions {
   )
 
   def toAppWebSiteSeq(googlePlayPackages: Seq[GooglePlayPackage]): Seq[AppWebsite] = googlePlayPackages map {
-    case googlePlayPackage if googlePlayPackage.app.getIcon.isDefined =>
+    case GooglePlayPackage(GooglePlayApp(docid, title, _, _, Some(icon), _)) =>
       AppWebsite(
-        packageName = googlePlayPackage.app.docid,
-        url = googlePlayPackage.app.getIcon getOrElse "",
-        name = googlePlayPackage.app.title
-      )
+        packageName = docid,
+        url = icon,
+        name = title)
   }
 
   def toAddCacheCategoryRequestSeq(items: Seq[GooglePlaySimplePackage]): Seq[AddCacheCategoryRequest] = items map {

@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
-import com.fortysevendeg.ninecardslauncher.services.api.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json._
 
@@ -99,11 +98,34 @@ trait Conversions {
       title = googlePlayApp.title,
       creator = googlePlayApp.creator,
       descriptionHtml = googlePlayApp.descriptionHtml,
-      image = googlePlayApp.image map toGooglePlayImage,
+      icon = getIcon(googlePlayApp.image),
+      background = getBackground(googlePlayApp.image),
+      screenshots = getScreenShoots(googlePlayApp.image),
+      video = getVideo(googlePlayApp.image),
       details = toGooglePlayDetails(googlePlayApp.details),
       offer = googlePlayApp.offer map toGooglePlayOffer,
       aggregateRating = toGooglePlayAggregateRating(googlePlayApp.aggregateRating)
     )
+  
+  val iconImageType = 4
+
+  val iconBackgroundType = 2
+
+  val iconScreenShootType = 1
+
+  val iconVideoType = 3
+
+  def getIcon(images: Seq[apiModel.GooglePlayImage]): Option[String] =
+    images.find(_.imageType == iconImageType) map (_.imageUrl)
+
+  def getBackground(images: Seq[apiModel.GooglePlayImage]): Option[String] =
+    images.find(_.imageType == iconBackgroundType) map (_.imageUrl)
+
+  def getScreenShoots(images: Seq[apiModel.GooglePlayImage]): Seq[String] =
+    images.filter(_.imageType == iconScreenShootType) map (_.imageUrl)
+
+  def getVideo(images: Seq[apiModel.GooglePlayImage]): Option[String] =
+    images.find(_.imageType == iconVideoType) map (_.imageUrl)
 
   def toGooglePlayImage(googlePlayImage: apiModel.GooglePlayImage): GooglePlayImage =
     GooglePlayImage(
