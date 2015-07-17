@@ -18,7 +18,7 @@ trait DeviceConversions {
   )
 
   def toAppWebSiteSeq(googlePlayPackages: Seq[GooglePlayPackage]): Seq[AppWebsite] = googlePlayPackages map {
-    case GooglePlayPackage(GooglePlayApp(docid, title, _, _, Some(icon), _)) =>
+    case GooglePlayPackage(GooglePlayApp(docid, title, _, _, Some(icon), _, _, _, _, _, _)) =>
       AppWebsite(
         packageName = docid,
         url = icon,

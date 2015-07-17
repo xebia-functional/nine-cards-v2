@@ -192,7 +192,7 @@ class DeviceProcessSpec
             apps(2).packageName shouldEqual appsCategorized(2).packageName
 
             apps.head.imagePath shouldEqual appsCategorized.head.imagePath
-            apps(1).imagePath shouldEqual ""
+            apps(1).imagePath shouldEqual None
             apps(2).imagePath shouldEqual appsCategorized(2).imagePath
         }
       }

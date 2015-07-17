@@ -4,7 +4,7 @@ case class AppCategorized(
   name: String,
   packageName: String,
   className: String,
-  imagePath: String,
+  imagePath: Option[String],
   category: Option[String] = None,
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,

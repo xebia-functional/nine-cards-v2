@@ -62,7 +62,7 @@ class DeviceProcessImpl(
           val path = paths.find {
             path =>
               path.packageName.equals(app.packageName) && path.className.equals(app.className)
-          } map (_.path) getOrElse ""
+          } map (_.path)
           AppCategorized(
             name = app.name,
             packageName = app.packageName,
