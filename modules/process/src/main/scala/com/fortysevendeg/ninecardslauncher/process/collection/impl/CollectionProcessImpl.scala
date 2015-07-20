@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection.impl
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, NineCardApp}
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, Collection, UnformedItem}
 import com.fortysevendeg.ninecardslauncher.process.collection.{DeviceProcessConfig, CollectionProcess, Conversions}
 import com.fortysevendeg.ninecardslauncher.process.commons.CollectionType
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
@@ -26,8 +26,13 @@ class CollectionProcessImpl(deviceProcessConfig: DeviceProcessConfig, persistenc
     mediaAndVideo, medical, musicAndAudio, newsAndMagazines, personalization, photography,
     productivity, shopping, social, sports, tools, transportation, travelAndLocal, weather, appWidgets)
 
-  override def createCollectionsFromMyDevice(apps: Seq[NineCardApp])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[Collection]] = {
-    val tasks = generateAddCollections(apps, categories, Seq.empty) map persistenceServices.addCollection
+  override def createCollectionsFromUnformedItems(items: Seq[UnformedItem])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[Collection]] = {
+    val tasks = generateAddCollections(items, categories, Seq.empty) map persistenceServices.addCollection
+    Task.gatherUnordered(tasks) map (_.collect { case \/-(collection) => toCollection(collection) }.right[NineCardsException])
+  }
+
+  override def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[Collection]] = {
+    val tasks = toAddCollectionRequestFromFormedCollections(items) map persistenceServices.addCollection
     Task.gatherUnordered(tasks) map (_.collect { case \/-(collection) => toCollection(collection) }.right[NineCardsException])
   }
 
@@ -36,20 +41,20 @@ class CollectionProcessImpl(deviceProcessConfig: DeviceProcessConfig, persistenc
 
   @tailrec
   private[this] def generateAddCollections(
-    apps: Seq[NineCardApp],
+    items: Seq[UnformedItem],
     categories: Seq[String],
     acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
     categories match {
       case Nil => acc
       case h :: t =>
-        val insert = generateAddCollection(apps, h, acc.length)
+        val insert = generateAddCollection(items, h, acc.length)
         val a = if (insert.cards.length >= minAppsToAdd) acc :+ insert else acc
-        generateAddCollections(apps, t, a)
+        generateAddCollections(items, t, a)
     }
   }
 
-  private[this] def generateAddCollection(apps: Seq[NineCardApp], category: String, index: Int): AddCollectionRequest = {
-    val appsCategory = apps.filter(_.category.contains(category)).sortWith(mfIndex(_) < mfIndex(_)).take(numSpaces)
+  private[this] def generateAddCollection(items: Seq[UnformedItem], category: String, index: Int): AddCollectionRequest = {
+    val appsCategory = items.filter(_.category.contains(category)).sortWith(mfIndex(_) < mfIndex(_)).take(numSpaces)
     val pos = if (index >= numSpaces) index % numSpaces else index
     AddCollectionRequest(
       position = pos,

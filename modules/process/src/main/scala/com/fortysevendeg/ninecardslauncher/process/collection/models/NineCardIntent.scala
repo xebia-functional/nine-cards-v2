@@ -7,7 +7,7 @@ import play.api.libs.json._
 
 import scala.collection.JavaConversions._
 
-case class NineCardApp(
+case class UnformedItem(
   name: String,
   packageName: String,
   className: String,
@@ -17,6 +17,22 @@ case class NineCardApp(
   numDownloads: String,
   ratingsCount: Int,
   commentCount: Int)
+
+case class FormedCollection(
+  name: String,
+  originalSharedCollectionId: Option[String],
+  sharedCollectionId: Option[String],
+  sharedCollectionSubscribed: Option[Boolean],
+  items: Seq[FormedItem],
+  collectionType: String,
+  constrains: Seq[String],
+  icon: String,
+  category: Option[String])
+
+case class FormedItem(
+  itemType: String,
+  title: String,
+  intent: String)
 
 case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
 

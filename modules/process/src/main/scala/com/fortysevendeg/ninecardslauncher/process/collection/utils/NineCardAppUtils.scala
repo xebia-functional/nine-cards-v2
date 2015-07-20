@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.utils
 
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardApp
+import com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedItem
 
 import scala.util.{Failure, Success, Try}
 
@@ -8,7 +8,7 @@ object NineCardAppUtils {
 
   val AvgDownloadsDefault = 1.0
 
-  def mfIndex(appItem: NineCardApp): Double = {
+  def mfIndex(appItem: UnformedItem): Double = {
     val avgDownloads = Try {
       val nDownloads = appItem.numDownloads.replace(",", "").replace("+", "").toDouble
       nDownloads match {
