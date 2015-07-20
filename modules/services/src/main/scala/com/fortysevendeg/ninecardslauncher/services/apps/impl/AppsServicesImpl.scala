@@ -6,6 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.services.apps._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 
 import scala.collection.JavaConversions._
 import scalaz.\/
@@ -16,7 +17,7 @@ class AppsServicesImpl
 
   override def getInstalledApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[Application]] =
       Task {
-        \/.fromTryCatchThrowable[Seq[Application], NineCardsException] {
+        fromTryCatchNineCardsException[Seq[Application]] {
           val mainIntent: Intent = new Intent(Intent.ACTION_MAIN, null)
           mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
