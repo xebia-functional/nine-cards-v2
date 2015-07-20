@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
@@ -57,10 +58,10 @@ trait Conversions {
       imagePath = item.imagePath
     )
 
-  def toAddCollectionRequestFromFormedCollections(formedCollections: Seq[FormedCollection]): Seq[AddCollectionRequest] =
+  def toAddCollectionRequestFromFormedCollections(formedCollections: Seq[FormedCollection])(implicit context: ContextSupport): Seq[AddCollectionRequest] =
     formedCollections.zipWithIndex.map(zipped => toAddCollectionRequest(zipped._1, zipped._2))
 
-  def toAddCollectionRequest(formedCollection: FormedCollection, position: Int) = AddCollectionRequest(
+  def toAddCollectionRequest(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport) = AddCollectionRequest(
     position = position,
     name = formedCollection.name,
     collectionType = formedCollection.collectionType,
@@ -74,10 +75,10 @@ trait Conversions {
     cards = toCardFromFormedItems(formedCollection.items)
   )
 
-  def toCardFromFormedItems(items: Seq[FormedItem]) =
+  def toCardFromFormedItems(items: Seq[FormedItem])(implicit context: ContextSupport) =
     items.zipWithIndex.map(zipped => toCard(zipped._1, zipped._2))
 
-  def toCard(item: FormedItem, position: Int): ServicesCard = { // TODO change when ticket 9C-189 will be merged
+  def toCard(item: FormedItem, position: Int)(implicit context: ContextSupport): ServicesCard = { // TODO change when ticket 9C-189 will be merged
     val nineCardIntent = jsonToNineCardIntent(item.intent)
     val path = (item.itemType match {
       case `app` =>
