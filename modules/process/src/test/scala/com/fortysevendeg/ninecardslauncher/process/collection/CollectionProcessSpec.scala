@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection
 
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.process.collection.DeviceProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardIntent, Collection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
@@ -21,11 +22,13 @@ trait CollectionProcessSpecification
   trait CollectionProcessScope
     extends Scope {
 
+    val deviceProcessConfig = DeviceProcessConfig(Map.empty)
+
     val mockPersistenceServices = mock[PersistenceServices]
     val mockIntent = mock[Intent]
     val mockNineCardIntent = mock[NineCardIntent]
 
-    val collectionProcess = new CollectionProcessImpl(mockPersistenceServices)
+    val collectionProcess = new CollectionProcessImpl(deviceProcessConfig, mockPersistenceServices)
   }
 
   trait ValidPersistenceServicesResponses extends CollectionProcessData {

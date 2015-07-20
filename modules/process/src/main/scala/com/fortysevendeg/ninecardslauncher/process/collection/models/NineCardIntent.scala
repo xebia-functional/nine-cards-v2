@@ -7,32 +7,43 @@ import play.api.libs.json._
 
 import scala.collection.JavaConversions._
 
+case class NineCardApp(
+  name: String,
+  packageName: String,
+  className: String,
+  imagePath: String,
+  category: String,
+  starRating: Double,
+  numDownloads: String,
+  ratingsCount: Int,
+  commentCount: Int)
+
 case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
 
   def this(intent: Intent, intentExtras: NineCardIntentExtras) = this(intentExtras)
 
   def extractPackageName(): Option[String] =
-    Option(intentExtras.package_name.getOrElse(getStringExtra(NineCardExtraPackageName)))
+    Option(intentExtras.package_name.getOrElse(getStringExtra(nineCardExtraPackageName)))
 
   def extractClassName(): Option[String] =
-    Option(intentExtras.class_name.getOrElse(getStringExtra(NineCardExtraClassName)))
+    Option(intentExtras.class_name.getOrElse(getStringExtra(nineCardExtraClassName)))
 
   def extractPhone(): Option[String] =
-    Option(intentExtras.tel.getOrElse(getStringExtra(NineCardExtraPhone)))
+    Option(intentExtras.tel.getOrElse(getStringExtra(nineCardExtraPhone)))
 
   def extractEmail(): Option[String] =
-    Option(intentExtras.email.getOrElse(getStringExtra(NineCardExtraEmail)))
+    Option(intentExtras.email.getOrElse(getStringExtra(nineCardExtraEmail)))
 
   def extractUrlAd(): Option[String] =
-    Option(intentExtras.url_ad.getOrElse(getStringExtra(NineCardExtraUrlAd)))
+    Option(intentExtras.url_ad.getOrElse(getStringExtra(nineCardExtraUrlAd)))
 
   def toIntent: Intent = {
     val intent = new Intent(this)
-    extractPackageName() map (packageName => intent.putExtra(NineCardExtraPackageName, packageName))
-    extractClassName() map (className => intent.putExtra(NineCardExtraClassName, className))
-    extractPhone() map (phone => intent.putExtra(NineCardExtraPhone, phone))
-    extractEmail() map (email => intent.putExtra(NineCardExtraEmail, email))
-    extractUrlAd() map (urlAd => intent.putExtra(NineCardExtraUrlAd, urlAd))
+    extractPackageName() map (packageName => intent.putExtra(nineCardExtraPackageName, packageName))
+    extractClassName() map (className => intent.putExtra(nineCardExtraClassName, className))
+    extractPhone() map (phone => intent.putExtra(nineCardExtraPhone, phone))
+    extractEmail() map (email => intent.putExtra(nineCardExtraEmail, email))
+    extractUrlAd() map (urlAd => intent.putExtra(nineCardExtraUrlAd, urlAd))
     intent
   }
 }
@@ -45,16 +56,16 @@ case class NineCardIntentExtras(
   class_name: Option[String] = None)
 
 object NineCardsIntentExtras {
-  val NineCardExtraPhone: String = "tel"
-  val NineCardExtraEmail: String = "email"
-  val NineCardExtraUrlAd: String = "url_ad"
-  val NineCardExtraPackageName: String = "package_name"
-  val NineCardExtraClassName: String = "class_name"
-  val OpenApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_APP"
-  val OpenRecommendedApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_RECOMMENDED_APP"
-  val OpenSms: String = "com.fortysevendeg.ninecardslauncher.OPEN_SMS"
-  val OpenPhone: String = "com.fortysevendeg.ninecardslauncher.OPEN_PHONE"
-  val OpenEmail: String = "com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"
+  val nineCardExtraPhone: String = "tel"
+  val nineCardExtraEmail: String = "email"
+  val nineCardExtraUrlAd: String = "url_ad"
+  val nineCardExtraPackageName: String = "package_name"
+  val nineCardExtraClassName: String = "class_name"
+  val openApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_APP"
+  val openRecommendedApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_RECOMMENDED_APP"
+  val openSms: String = "com.fortysevendeg.ninecardslauncher.OPEN_SMS"
+  val openPhone: String = "com.fortysevendeg.ninecardslauncher.OPEN_PHONE"
+  val openEmail: String = "com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"
 }
 
 object NineCardIntentImplicits {
