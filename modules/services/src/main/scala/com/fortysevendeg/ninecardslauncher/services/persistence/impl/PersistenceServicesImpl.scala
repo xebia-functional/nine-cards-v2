@@ -154,10 +154,10 @@ class PersistenceServicesImpl(
   override def updateGeoInfo(request: UpdateGeoInfoRequest): Task[NineCardsException \/ Int] =
     geoInfoRepository.updateGeoInfo(toRepositoryGeoInfo(request))
 
-  private[this] def addCards(collectionId: Int, cards: Seq[Card]): Task[NineCardsException \/ Seq[Card]] = {
+  private[this] def addCards(collectionId: Int, cards: Seq[AddCardRequest]): Task[NineCardsException \/ Seq[Card]] = {
     val addedCards = cards map {
-      card =>
-        cardRepository.addCard(collectionId = collectionId, data = toRepositoryCardData(card = card))
+      addCardRequest =>
+        cardRepository.addCard(collectionId = collectionId, data = toRepositoryCardData(request = addCardRequest))
     }
 
     Task.gatherUnordered(addedCards) map (_.collect { case \/-(card) => toCard(card) }.right[NineCardsException])

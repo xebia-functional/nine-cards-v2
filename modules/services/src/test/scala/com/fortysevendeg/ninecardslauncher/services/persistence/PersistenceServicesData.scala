@@ -181,6 +181,32 @@ trait PersistenceServicesData {
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = Option(sharedCollectionSubscribed))
 
+  def createSeqAddCardRequest(
+    num: Int = 5,
+    collectionId: Int = collectionId,
+    position: Int = position,
+    micros: Int = micros,
+    term: String = term,
+    packageName: String = packageName,
+    cardType: String = cardType,
+    intent: String = intent,
+    imagePath: String = imagePath,
+    starRating: Double = starRating,
+    numDownloads: String = numDownloads,
+    notification: String = notification) =
+    (0 until 5) map (item => AddCardRequest(
+      collectionId = collectionId,
+      position = position,
+      micros = micros,
+      term = term,
+      packageName = Option(packageName),
+      cardType = cardType,
+      intent = intent,
+      imagePath = imagePath,
+      starRating = Option(starRating),
+      numDownloads = Option(numDownloads),
+      notification = Option(notification)))
+
   def createSeqCard(
     num: Int = 5,
     id: Int = cardId,
@@ -341,6 +367,7 @@ trait PersistenceServicesData {
     system = system)
 
   def createAddCardRequest(
+    collectionId: Int = collectionId,
     position: Int = position,
     micros: Int = micros,
     term: String = term,
@@ -416,7 +443,7 @@ trait PersistenceServicesData {
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
-    cards = seqCard)
+    cards = createSeqAddCardRequest())
 
   def createDeleteCollectionRequest(collection: Collection) = DeleteCollectionRequest(collection = collection)
 
