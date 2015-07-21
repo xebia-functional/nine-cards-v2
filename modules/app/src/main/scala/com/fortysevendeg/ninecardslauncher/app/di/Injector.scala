@@ -81,7 +81,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     namesCategories = nameCategories)
 
   lazy val collectionProcess = new CollectionProcessImpl(
-    deviceProcessConfig = collectionProcessConfig,
+    collectionProcessConfig = collectionProcessConfig,
     persistenceServices = persistenceServices)
 
   lazy val userProcess = new UserProcessImpl(
