@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest,
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import play.api.libs.json.Json
+import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 
 trait Conversions {
 
@@ -64,7 +65,7 @@ trait Conversions {
     name = formedCollection.name,
     collectionType = formedCollection.collectionType,
     icon = formedCollection.icon,
-    themedColorIndex = position,
+    themedColorIndex = position % numSpaces,
     appsCategory = formedCollection.category,
     constrains = None,
     originalSharedCollectionId = formedCollection.sharedCollectionId,
@@ -85,7 +86,7 @@ trait Conversions {
           className <- nineCardIntent.extractClassName()
         } yield resourceUtils.getPathPackage(packageName, className)
       case _ => None
-    }) getOrElse ""
+    }) getOrElse "" // TODO We should use a default image
     AddCardRequest(
       position = position,
       term = item.title,

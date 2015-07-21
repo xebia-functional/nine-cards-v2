@@ -17,7 +17,7 @@ import scalaz.Scalaz._
 import scalaz._
 import scalaz.concurrent.Task
 
-class CollectionProcessImpl(deviceProcessConfig: CollectionProcessConfig, persistenceServices: PersistenceServices)
+class CollectionProcessImpl(collectionProcessConfig: CollectionProcessConfig, persistenceServices: PersistenceServices)
   extends CollectionProcess
   with Conversions {
 
@@ -58,7 +58,7 @@ class CollectionProcessImpl(deviceProcessConfig: CollectionProcessConfig, persis
     val pos = if (index >= numSpaces) index % numSpaces else index
     AddCollectionRequest(
       position = pos,
-      name = deviceProcessConfig.namesCategories.getOrElse(category.toLowerCase, category.toLowerCase),
+      name = collectionProcessConfig.namesCategories.getOrElse(category.toLowerCase, category.toLowerCase),
       collectionType = CollectionType.apps,
       icon = category.toLowerCase,
       themedColorIndex = pos,
