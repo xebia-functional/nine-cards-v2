@@ -1,13 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardIntent, Collection, Card}
+import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
+import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel, AddCollectionRequest}
 import play.api.libs.json.Json
 
+import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import scala.util.Random
 
 trait CollectionProcessData {
+
+  val categories = Seq(game, booksAndReference, business, comics, communication, education,
+    entertainment, finance, healthAndFitness, librariesAndDemo, lifestyle, appWallpaper,
+    mediaAndVideo, medical, musicAndAudio, newsAndMagazines, personalization, photography,
+    productivity, shopping, social, sports, tools, transportation, travelAndLocal, weather, appWidgets)
 
   val collectionId = Random.nextInt(10)
   val nonExistentCollectionId = Random.nextInt(10) + 100
@@ -27,10 +34,13 @@ trait CollectionProcessData {
   val micros: Int = Random.nextInt(10)
   val term: String = Random.nextString(5)
   val packageName = Random.nextString(5)
+  val className = Random.nextString(5)
   val cardType: String = Random.nextString(5)
   val imagePath: String = Random.nextString(5)
   val starRating = Random.nextDouble()
   val numDownloads = Random.nextString(5)
+  val ratingsCount = Random.nextInt()
+  val commentCount = Random.nextInt()
   val notification: String = Random.nextString(5)
   val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
 
@@ -47,7 +57,8 @@ trait CollectionProcessData {
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    cards: Seq[Card] = seqCard) = (0 until 5) map (
+    cards: Seq[Card] = seqCard
+    ) = (0 until 5) map (
     item =>
       Collection(
         id = id + item,
@@ -75,7 +86,8 @@ trait CollectionProcessData {
     constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) = (0 until 5) map (
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed
+    ) = (0 until 5) map (
     item =>
       servicesModel.Collection(
         id = id + item,
@@ -102,7 +114,8 @@ trait CollectionProcessData {
     imagePath: String = imagePath,
     starRating: Double = starRating,
     numDownloads: String = numDownloads,
-    notification: String = notification) = (0 until 5) map (
+    notification: String = notification
+    ) = (0 until 5) map (
     item =>
       Card(
         id = id + item,
@@ -129,7 +142,8 @@ trait CollectionProcessData {
     imagePath: String = imagePath,
     starRating: Double = starRating,
     numDownloads: String = numDownloads,
-    notification: String = notification) = (0 until 5) map (
+    notification: String = notification
+    ) = (0 until 5) map (
     item =>
       servicesModel.Card(
         id = id + item,
@@ -144,6 +158,24 @@ trait CollectionProcessData {
         numDownloads = Option(numDownloads),
         notification = Option(notification)))
 
+  def createSeqUnformedItem(
+    num: Int = 150
+    ) =
+    (0 until num) map {
+      item =>
+        UnformedItem(
+          name = name,
+          packageName = packageName,
+          className = className,
+          imagePath = imagePath,
+          category = categories(Random.nextInt(categories.length)),
+          starRating = starRating,
+          numDownloads = numDownloads,
+          ratingsCount = ratingsCount,
+          commentCount = commentCount
+        )
+    }
+
   val seqCard = createSeqCard()
   val card = seqCard.head
   val seqServicesCard = createSeqServicesCard()
@@ -153,4 +185,48 @@ trait CollectionProcessData {
   val collection = seqCollection.head
   val seqServicesCollection = createSeqServicesCollection()
   val servicesCollection = seqServicesCollection.head
+
+  val unformedItems = createSeqUnformedItem()
+
+  val categoriesUnformedItems: Seq[String] = categories flatMap {
+    category =>
+      val count = unformedItems.count(_.category == category)
+      if (count >= minAppsToAdd) Option(category) else None
+  }
+
+  val collectionForUnformedItem = servicesModel.Collection(
+    id = position,
+    position = position,
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    constrains = Option(constrains),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = sharedCollectionSubscribed
+  )
+
+  def createSeqFormedCollection(
+    num: Int = 150
+    ) =
+    (0 until num) map {
+      item =>
+        FormedCollection(
+          name = name,
+          originalSharedCollectionId = Option(originalSharedCollectionId),
+          sharedCollectionId = Option(sharedCollectionId),
+          sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
+          items = Seq.empty,
+          collectionType = collectionType,
+          constrains = Seq(constrains),
+          icon = icon,
+          category = Option(categories(Random.nextInt(categories.length)))
+        )
+    }
+
+
+  val seqFormedCollection = createSeqFormedCollection()
+
 }

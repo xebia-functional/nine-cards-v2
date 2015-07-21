@@ -36,7 +36,7 @@ class CollectionProcessImpl(deviceProcessConfig: DeviceProcessConfig, persistenc
     Task.gatherUnordered(tasks) map (_.collect { case \/-(collection) => toCollection(collection) }.right[NineCardsException])
   }
 
-  override def getCollections: Task[\/[NineCardsException, Seq[Collection]]] =
+  override def getCollections: Task[NineCardsException \/ Seq[Collection]] =
     persistenceServices.fetchCollections ▹ eitherT map toCollectionSeq
 
   @tailrec
