@@ -101,7 +101,7 @@ case class AddCollectionRequest(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Option[Boolean],
-  cards: Seq[Card])
+  cards: Seq[AddCardRequest])
 
 case class AddCollectionResponse(success: Boolean)
 
