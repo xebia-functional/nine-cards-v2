@@ -21,11 +21,6 @@ class CollectionProcessImpl(deviceProcessConfig: CollectionProcessConfig, persis
   extends CollectionProcess
   with Conversions {
 
-  val categories = Seq(game, booksAndReference, business, comics, communication, education,
-    entertainment, finance, healthAndFitness, librariesAndDemo, lifestyle, appWallpaper,
-    mediaAndVideo, medical, musicAndAudio, newsAndMagazines, personalization, photography,
-    productivity, shopping, social, sports, tools, transportation, travelAndLocal, weather, appWidgets)
-
   override def createCollectionsFromUnformedItems(items: Seq[UnformedItem])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[Collection]] = {
     val tasks = generateAddCollections(items, categories, Seq.empty) map persistenceServices.addCollection
     Task.gatherUnordered(tasks) map (_.collect { case \/-(collection) => toCollection(collection) }.right[NineCardsException])
