@@ -37,7 +37,7 @@ case class UpdateCacheCategoryRequest(
 case class UpdateCacheCategoryResponse(updated: Int)
 
 case class AddCardRequest(
-  collectionId: Int,
+  collectionId: Option[Int] = None,
   position: Int,
   micros: Int = 0,
   term: String,

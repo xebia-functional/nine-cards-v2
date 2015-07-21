@@ -195,7 +195,7 @@ trait PersistenceServicesData {
     numDownloads: String = numDownloads,
     notification: String = notification) =
     (0 until 5) map (item => AddCardRequest(
-      collectionId = collectionId,
+      collectionId = Option(collectionId),
       position = position,
       micros = micros,
       term = term,
@@ -378,7 +378,7 @@ trait PersistenceServicesData {
     starRating: Double = starRating,
     numDownloads: String = numDownloads,
     notification: String = notification) = AddCardRequest(
-    collectionId = collectionId,
+    collectionId = Option(collectionId),
     position = position,
     micros = micros,
     term = term,

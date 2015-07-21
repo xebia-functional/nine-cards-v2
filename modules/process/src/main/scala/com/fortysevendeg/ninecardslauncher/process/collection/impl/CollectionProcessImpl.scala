@@ -64,7 +64,7 @@ class CollectionProcessImpl(deviceProcessConfig: DeviceProcessConfig, persistenc
       themedColorIndex = pos,
       appsCategory = Some(category),
       sharedCollectionSubscribed = Option(false),
-      cards = toCardSeq(appsCategory)
+      cards = toAddCardRequestSeq(appsCategory)
     )
   }
 

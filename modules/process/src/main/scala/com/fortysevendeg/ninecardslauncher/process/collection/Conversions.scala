@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
-import com.fortysevendeg.ninecardslauncher.services.persistence.AddCollectionRequest
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import play.api.libs.json.Json
@@ -44,19 +44,17 @@ trait Conversions {
     numDownloads = servicesCard.numDownloads,
     notification = servicesCard.notification)
 
-  def toCardSeq(items: Seq[UnformedItem]): Seq[ServicesCard] =
-    items.zipWithIndex map (zipped => toCardFromUnformedItems(zipped._1, zipped._2))
+  def toAddCardRequestSeq(items: Seq[UnformedItem]): Seq[AddCardRequest] =
+    items.zipWithIndex map (zipped => toAddCardRequestFromUnformedItems(zipped._1, zipped._2))
 
-  def toCardFromUnformedItems(item: UnformedItem, position: Int): ServicesCard = // TODO change when ticket 9C-189 will be merged
-    ServicesCard(
-      id = position,
-      position = position,
-      term = item.name,
-      packageName = Option(item.packageName),
-      cardType = app,
-      intent = nineCardIntentToJson(toNineCardIntent(item)),
-      imagePath = item.imagePath
-    )
+  def toAddCardRequestFromUnformedItems(item: UnformedItem, position: Int) = AddCardRequest(
+    position = position,
+    term = item.name,
+    packageName = Option(item.packageName),
+    cardType = app,
+    intent = nineCardIntentToJson(toNineCardIntent(item)),
+    imagePath = item.imagePath
+  )
 
   def toAddCollectionRequestFromFormedCollections(formedCollections: Seq[FormedCollection])(implicit context: ContextSupport): Seq[AddCollectionRequest] =
     formedCollections.zipWithIndex.map(zipped => toAddCollectionRequest(zipped._1, zipped._2))
@@ -72,13 +70,13 @@ trait Conversions {
     originalSharedCollectionId = formedCollection.sharedCollectionId,
     sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
     sharedCollectionId = formedCollection.sharedCollectionId,
-    cards = toCardFromFormedItems(formedCollection.items)
+    cards = toAddCardRequestFromFormedItems(formedCollection.items)
   )
 
-  def toCardFromFormedItems(items: Seq[FormedItem])(implicit context: ContextSupport) =
-    items.zipWithIndex.map(zipped => toCard(zipped._1, zipped._2))
+  def toAddCardRequestFromFormedItems(items: Seq[FormedItem])(implicit context: ContextSupport) =
+    items.zipWithIndex.map(zipped => toAddCardRequest(zipped._1, zipped._2))
 
-  def toCard(item: FormedItem, position: Int)(implicit context: ContextSupport): ServicesCard = { // TODO change when ticket 9C-189 will be merged
+  def toAddCardRequest(item: FormedItem, position: Int)(implicit context: ContextSupport): AddCardRequest = {
     val nineCardIntent = jsonToNineCardIntent(item.intent)
     val path = (item.itemType match {
       case `app` =>
@@ -88,8 +86,7 @@ trait Conversions {
         } yield resourceUtils.getPathPackage(packageName, className)
       case _ => None
     }) getOrElse ""
-    ServicesCard(
-      id = position,
+    AddCardRequest(
       position = position,
       term = item.title,
       packageName = nineCardIntent.extractPackageName(),
