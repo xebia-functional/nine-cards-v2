@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, Collection, UnformedItem}
-import com.fortysevendeg.ninecardslauncher.process.collection.{DeviceProcessConfig, CollectionProcess, Conversions}
+import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, CollectionProcess, Conversions}
 import com.fortysevendeg.ninecardslauncher.process.commons.CollectionType
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
@@ -17,7 +17,7 @@ import scalaz.Scalaz._
 import scalaz._
 import scalaz.concurrent.Task
 
-class CollectionProcessImpl(deviceProcessConfig: DeviceProcessConfig, persistenceServices: PersistenceServices)
+class CollectionProcessImpl(deviceProcessConfig: CollectionProcessConfig, persistenceServices: PersistenceServices)
   extends CollectionProcess
   with Conversions {
 

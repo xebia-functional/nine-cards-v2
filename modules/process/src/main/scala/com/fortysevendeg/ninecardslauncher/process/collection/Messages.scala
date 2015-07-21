@@ -1,5 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
-case class DeviceProcessConfig(
+case class CollectionProcessConfig(
   namesCategories: Map[String, String]
   )

@@ -32,13 +32,13 @@ trait CollectionProcessSpecification
     contextSupport.getPackageManager returns mock[PackageManager]
     contextSupport.getResources returns resources
 
-    val deviceProcessConfig = DeviceProcessConfig(Map.empty)
+    val collectionProcessConfig = CollectionProcessConfig(Map.empty)
 
     val mockPersistenceServices = mock[PersistenceServices]
     val mockIntent = mock[Intent]
     val mockNineCardIntent = mock[NineCardIntent]
 
-    val collectionProcess = new CollectionProcessImpl(deviceProcessConfig, mockPersistenceServices)
+    val collectionProcess = new CollectionProcessImpl(collectionProcessConfig, mockPersistenceServices)
   }
 
   trait ValidPersistenceServicesResponses
