@@ -1,21 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import java.io.{InputStream, File, FileOutputStream}
-import java.net.{HttpURLConnection, URL}
+import java.io.{File, FileOutputStream, InputStream}
+import java.net.URL
 
 import android.content.res.Resources
 import android.graphics._
 import android.graphics.drawable.BitmapDrawable
 import android.util.{DisplayMetrics, TypedValue}
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
-import scala.util.{Success, Failure, Try}
+import scala.util.{Failure, Success, Try}
+import scalaz.Scalaz._
 import scalaz._
-import Scalaz._
 import scalaz.concurrent.Task
 
 trait ImageServicesTasks {

@@ -69,8 +69,10 @@ class PersistenceServicesImpl(
     cacheCategoryRepository.updateCacheCategory(toRepositoryCacheCategory(request))
 
   override def addCard(request: AddCardRequest): Task[NineCardsException \/ Card] =
-    cardRepository.addCard(request.collectionId, toRepositoryCardData(request)) ▹ eitherT map toCard
-
+    request.collectionId match {
+      case Some(collectionId) => cardRepository.addCard(collectionId, toRepositoryCardData(request)) ▹ eitherT map toCard
+      case None => Task { -\/(NineCardsException("CollectionId can't be empty")) }
+    }
 
   override def deleteCard(request: DeleteCardRequest): Task[NineCardsException \/ Int] =
     cardRepository.deleteCard(toRepositoryCard(request.card))
@@ -86,14 +88,13 @@ class PersistenceServicesImpl(
       _ map toCard
     }
 
-
   override def updateCard(request: UpdateCardRequest): Task[NineCardsException \/ Int] =
     cardRepository.updateCard(toRepositoryCard(request))
 
   override def addCollection(request: AddCollectionRequest): Task[NineCardsException \/ Collection] =
     for {
       collection <- collectionRepository.addCollection(toRepositoryCollectionData(request)) ▹ eitherT
-      addedCards <- addCards(collection.id, request.cards) ▹ eitherT
+      addedCards <- addCards(request.cards map (_.copy(collectionId = Option(collection.id)))) ▹ eitherT
     } yield toCollection(collection).copy(cards = addedCards)
 
   override def deleteCollection(request: DeleteCollectionRequest): Task[NineCardsException \/ Int] = {
@@ -154,13 +155,9 @@ class PersistenceServicesImpl(
   override def updateGeoInfo(request: UpdateGeoInfoRequest): Task[NineCardsException \/ Int] =
     geoInfoRepository.updateGeoInfo(toRepositoryGeoInfo(request))
 
-  private[this] def addCards(collectionId: Int, cards: Seq[AddCardRequest]): Task[NineCardsException \/ Seq[Card]] = {
-    val addedCards = cards map {
-      addCardRequest =>
-        cardRepository.addCard(collectionId = collectionId, data = toRepositoryCardData(request = addCardRequest))
-    }
-
-    Task.gatherUnordered(addedCards) map (_.collect { case \/-(card) => toCard(card) }.right[NineCardsException])
+  private[this] def addCards(cards: Seq[AddCardRequest]): Task[NineCardsException \/ Seq[Card]] = {
+    val addedCards = cards map addCard
+    Task.gatherUnordered(addedCards) map (_.collect { case \/-(card) => card }.right[NineCardsException])
   }
 
   private[this] def deleteCards(cards: Seq[Card]): Task[NineCardsException \/ Int] = {

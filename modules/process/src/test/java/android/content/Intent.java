@@ -35,30 +35,30 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
     public static  android.content.Intent getIntent(java.lang.String uri) throws java.net.URISyntaxException { throw new RuntimeException("<Stub>!"); }
     public static  android.content.Intent parseUri(java.lang.String uri, int flags) throws java.net.URISyntaxException { throw new RuntimeException("<Stub>!"); }
     public static  android.content.Intent getIntentOld(java.lang.String uri) throws java.net.URISyntaxException { throw new RuntimeException("<Stub>!"); }
-    public  java.lang.String getAction() { throw new RuntimeException("<Stub>!"); }
+    public  java.lang.String getAction() { return ""; }
     public  android.net.Uri getData() { throw new RuntimeException("<Stub>!"); }
     public  java.lang.String getDataString() { throw new RuntimeException("<Stub>!"); }
     public  java.lang.String getScheme() { throw new RuntimeException("<Stub>!"); }
-    public  java.lang.String getType() { throw new RuntimeException("<Stub>!"); }
+    public  java.lang.String getType() { return ""; }
     public  java.lang.String resolveType(android.content.Context context) { throw new RuntimeException("<Stub>!"); }
     public  java.lang.String resolveType(android.content.ContentResolver resolver) { throw new RuntimeException("<Stub>!"); }
     public  java.lang.String resolveTypeIfNeeded(android.content.ContentResolver resolver) { throw new RuntimeException("<Stub>!"); }
     public  boolean hasCategory(java.lang.String category) { throw new RuntimeException("<Stub>!"); }
-    public  java.util.Set<java.lang.String> getCategories() { throw new RuntimeException("<Stub>!"); }
+    public  java.util.Set<java.lang.String> getCategories() { return new java.util.HashSet<String>(); }
     public  android.content.Intent getSelector() { throw new RuntimeException("<Stub>!"); }
     public  android.content.ClipData getClipData() { throw new RuntimeException("<Stub>!"); }
     public  void setExtrasClassLoader(java.lang.ClassLoader loader) { throw new RuntimeException("<Stub>!"); }
     public  boolean hasExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
     public  boolean hasFileDescriptors() { throw new RuntimeException("<Stub>!"); }
-    public  boolean getBooleanExtra(java.lang.String name, boolean defaultValue) { throw new RuntimeException("<Stub>!"); }
+    public  boolean getBooleanExtra(java.lang.String name, boolean defaultValue) { return true; }
     public  byte getByteExtra(java.lang.String name, byte defaultValue) { throw new RuntimeException("<Stub>!"); }
     public  short getShortExtra(java.lang.String name, short defaultValue) { throw new RuntimeException("<Stub>!"); }
     public  char getCharExtra(java.lang.String name, char defaultValue) { throw new RuntimeException("<Stub>!"); }
-    public  int getIntExtra(java.lang.String name, int defaultValue) { throw new RuntimeException("<Stub>!"); }
-    public  long getLongExtra(java.lang.String name, long defaultValue) { throw new RuntimeException("<Stub>!"); }
-    public  float getFloatExtra(java.lang.String name, float defaultValue) { throw new RuntimeException("<Stub>!"); }
-    public  double getDoubleExtra(java.lang.String name, double defaultValue) { throw new RuntimeException("<Stub>!"); }
-    public  java.lang.String getStringExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
+    public  int getIntExtra(java.lang.String name, int defaultValue) { return 0; }
+    public  long getLongExtra(java.lang.String name, long defaultValue) { return 0; }
+    public  float getFloatExtra(java.lang.String name, float defaultValue) { return 0; }
+    public  double getDoubleExtra(java.lang.String name, double defaultValue) { return 0; }
+    public  java.lang.String getStringExtra(java.lang.String name) { return ""; }
     public  java.lang.CharSequence getCharSequenceExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
     public <T extends android.os.Parcelable> T getParcelableExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
     public  android.os.Parcelable[] getParcelableArrayExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
@@ -79,9 +79,9 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
     public  java.lang.CharSequence[] getCharSequenceArrayExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
     public  android.os.Bundle getBundleExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
     public  android.os.Bundle getExtras() { throw new RuntimeException("<Stub>!"); }
-    public  int getFlags() { throw new RuntimeException("<Stub>!"); }
+    public  int getFlags() { return 1; }
     public  java.lang.String getPackage() { throw new RuntimeException("<Stub>!"); }
-    public  android.content.ComponentName getComponent() { throw new RuntimeException("<Stub>!"); }
+    public  android.content.ComponentName getComponent() { return new android.content.ComponentName("", ""); }
     public  android.graphics.Rect getSourceBounds() { throw new RuntimeException("<Stub>!"); }
     public  android.content.ComponentName resolveActivity(android.content.pm.PackageManager pm) { throw new RuntimeException("<Stub>!"); }
     public  android.content.pm.ActivityInfo resolveActivityInfo(android.content.pm.PackageManager pm, int flags) { throw new RuntimeException("<Stub>!"); }
@@ -108,26 +108,26 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
     public  android.content.Intent putExtra(java.lang.String name, java.lang.CharSequence value) { return this; }
     public  android.content.Intent putExtra(java.lang.String name, android.os.Parcelable value) { return this; }
     public  android.content.Intent putExtra(java.lang.String name, android.os.Parcelable[] value) { return this; }
-    public  android.content.Intent putParcelableArrayListExtra(java.lang.String name, java.util.ArrayList<? extends android.os.Parcelable> value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putIntegerArrayListExtra(java.lang.String name, java.util.ArrayList<java.lang.Integer> value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putStringArrayListExtra(java.lang.String name, java.util.ArrayList<java.lang.String> value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putCharSequenceArrayListExtra(java.lang.String name, java.util.ArrayList<java.lang.CharSequence> value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, java.io.Serializable value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, boolean[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, byte[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, short[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, char[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, int[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, long[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, float[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, double[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, java.lang.String[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, java.lang.CharSequence[] value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtra(java.lang.String name, android.os.Bundle value) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtras(android.content.Intent src) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent putExtras(android.os.Bundle extras) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent replaceExtras(android.content.Intent src) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent replaceExtras(android.os.Bundle extras) { throw new RuntimeException("<Stub>!"); }
+    public  android.content.Intent putParcelableArrayListExtra(java.lang.String name, java.util.ArrayList<? extends android.os.Parcelable> value) { return this; }
+    public  android.content.Intent putIntegerArrayListExtra(java.lang.String name, java.util.ArrayList<java.lang.Integer> value) { return this; }
+    public  android.content.Intent putStringArrayListExtra(java.lang.String name, java.util.ArrayList<java.lang.String> value) { return this; }
+    public  android.content.Intent putCharSequenceArrayListExtra(java.lang.String name, java.util.ArrayList<java.lang.CharSequence> value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, java.io.Serializable value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, boolean[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, byte[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, short[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, char[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, int[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, long[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, float[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, double[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, java.lang.String[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, java.lang.CharSequence[] value) { return this; }
+    public  android.content.Intent putExtra(java.lang.String name, android.os.Bundle value) { return this; }
+    public  android.content.Intent putExtras(android.content.Intent src) { return this; }
+    public  android.content.Intent putExtras(android.os.Bundle extras) { return this; }
+    public  android.content.Intent replaceExtras(android.content.Intent src) { return this; }
+    public  android.content.Intent replaceExtras(android.os.Bundle extras) { return this; }
     public  void removeExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
     public  android.content.Intent setFlags(int flags) { return this; }
     public  android.content.Intent addFlags(int flags) { throw new RuntimeException("<Stub>!"); }
