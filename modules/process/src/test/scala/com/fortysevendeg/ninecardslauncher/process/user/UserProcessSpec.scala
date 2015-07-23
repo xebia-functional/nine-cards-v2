@@ -73,6 +73,9 @@ trait UserProcessSpecification
     mockPersistenceServices.getInstallation(contextSupport) returns
       Task(\/-(installation))
 
+    mockPersistenceServices.existsInstallation(contextSupport) returns
+      Task(\/-(true))
+
     mockPersistenceServices.resetUser(contextSupport) returns
       Task(\/-(true))
 
@@ -84,8 +87,8 @@ trait UserProcessSpecification
 
     self: UserProcessScope =>
 
-    mockPersistenceServices.getInstallation(contextSupport) returns
-      Task(\/-(initialInstallation))
+    mockPersistenceServices.existsInstallation(contextSupport) returns
+      Task(\/-(false))
 
   }
 

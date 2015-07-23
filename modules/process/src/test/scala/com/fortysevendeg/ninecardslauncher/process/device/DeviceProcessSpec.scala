@@ -231,14 +231,14 @@ class DeviceProcessSpec
 
     "when seq is empty" in
       new DeviceProcessScope {
-        val result = deviceProcess.createBitmapsForNoPackagesInstalled(Seq.empty)(contextSupport).run
+        val result = deviceProcess.createBitmapsFromPackages(Seq.empty)(contextSupport).run
         result must be_\/-[Unit]
       }
 
 
     "when seq has packages" in
       new DeviceProcessScope with CreateImagesDataScope {
-        val result = deviceProcess.createBitmapsForNoPackagesInstalled(Seq(packageNameForCreateImage))(contextSupport).run
+        val result = deviceProcess.createBitmapsFromPackages(Seq(packageNameForCreateImage))(contextSupport).run
         result must be_\/-[Unit]
       }
 

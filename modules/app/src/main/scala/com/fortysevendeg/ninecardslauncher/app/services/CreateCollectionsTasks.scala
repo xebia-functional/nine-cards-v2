@@ -29,7 +29,7 @@ trait CreateCollectionsTasks
       _ <- di.deviceProcess.categorizeApps ▹ eitherT
       userCollections <- di.userConfigProcess.getUserCollection(deviceId) ▹ eitherT
       appsCategorized <- di.deviceProcess.getCategorizedApps ▹ eitherT
-      _ <- di.deviceProcess.createBitmapsForNoPackagesInstalled(getAppsNotInstalled(appsCategorized, userCollections)) ▹ eitherT
+      _ <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(appsCategorized, userCollections)) ▹ eitherT
       collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(userCollections)) ▹ eitherT
     } yield collections
 
