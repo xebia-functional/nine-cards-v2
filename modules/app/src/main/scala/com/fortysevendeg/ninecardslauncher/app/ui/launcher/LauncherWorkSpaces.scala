@@ -1,17 +1,24 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.content.Context
+import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.WorkSpaceType._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
-import macroid.{ActivityContextWrapper, Tweak, Ui}
+import macroid.{ContextWrapper, ActivityContextWrapper, Tweak, Ui}
 
 import scala.annotation.tailrec
 
-class LauncherWorkSpaces(context: Context)(implicit activityContext: ActivityContextWrapper)
-  extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, null, 0) {
+class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int, defStyleRes: Int)(implicit activityContext: ActivityContextWrapper)
+  extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr, defStyleRes) {
+
+  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, null, 0, 0)
+
+  def this(context: Context, attr: AttributeSet)(implicit activityContext: ActivityContextWrapper) = this(context, attr, 0, 0)
+
+  def this(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit activityContext: ActivityContextWrapper) = this(context, attr, defStyleAttr, 0)
 
   override def getItemViewTypeCount: Int = 2
 

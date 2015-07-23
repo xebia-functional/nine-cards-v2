@@ -4,12 +4,19 @@ import android.content.Context
 import android.graphics.PorterDuff.Mode
 import android.graphics.{Rect, Color, PorterDuffColorFilter}
 import android.support.v4.view.MotionEventCompat
+import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.ImageView
 import macroid.{Tweak, ActivityContextWrapper, ContextWrapper}
 
-class TintableImageView(context: Context)(implicit activityContext: ActivityContextWrapper)
-  extends ImageView(context, null, 0) {
+class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int, defStyleRes: Int)
+  extends ImageView(context, attr, defStyleAttr, defStyleRes) {
+
+  def this(context: Context) = this(context, null, 0, 0)
+
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0, 0)
+
+  def this(context: Context, attr: AttributeSet, defStyleAttr: Int) = this(context, attr, defStyleAttr, 0)
 
   var defaultColor = Color.WHITE
 
