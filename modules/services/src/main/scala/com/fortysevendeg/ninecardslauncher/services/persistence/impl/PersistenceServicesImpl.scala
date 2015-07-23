@@ -225,6 +225,13 @@ class PersistenceServicesImpl(
       }
     }
 
+  override def existsInstallation(implicit context: ContextSupport): Task[NineCardsException \/ Boolean] =
+    Task {
+      fromTryCatchNineCardsException[Boolean] {
+        getFileInstallation.exists()
+      }
+    }
+
   override def saveInstallation(installation: Installation)(implicit context: ContextSupport): Task[NineCardsException \/ Unit] =
     Task {
       writeFile[Installation](getFileInstallation, installation) match {

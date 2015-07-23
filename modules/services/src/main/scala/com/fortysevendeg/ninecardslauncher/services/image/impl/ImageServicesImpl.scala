@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.services.image.impl
 
 import java.io.File
 
-import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.services.image._
@@ -12,7 +11,6 @@ import Scalaz._
 import EitherT._
 import scalaz.concurrent.Task
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 
 class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageServicesTasks = ImageServicesTasks)
     extends ImageServices
@@ -21,39 +19,37 @@ class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageSe
   implicit val implicitConfig: ImageServicesConfig = config
 
   override def saveAppIcon(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ AppPackagePath] =
-    imageServicesTasks.getPathByApp(request.packageName, request.className) map {
-      case -\/(ex) => -\/(NineCardsException(msg = "Not possible get the file", cause = ex.some))
-      case \/-(file) => createIfNotExists(file, request)
-    }
+    for {
+      file <- imageServicesTasks.getPathByApp(request.packageName, request.className) ▹ eitherT
+      appPackagePath <- createIfNotExists(file, request) ▹ eitherT
+    } yield appPackagePath
 
   override def saveAppIcon(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ AppWebsitePath] =
-    imageServicesTasks.getPathByPackageName(request.packageName) map {
-      case -\/(ex) => -\/(NineCardsException(msg = "Not possible get the file", cause = ex.some))
-      case \/-(file) => createIfNotExists(file, request)
-    }
+    for {
+      file <- imageServicesTasks.getPathByPackageName(request.packageName) ▹ eitherT
+      appWebsitePath <- createIfNotExists(file, request) ▹ eitherT
+    } yield appWebsitePath
 
-  private[this] def createIfNotExists(file: File, request: AppPackage)(implicit context: ContextSupport): NineCardsException \/ AppPackagePath =
+  private[this] def createIfNotExists(file: File, request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ AppPackagePath] =
     file.exists match {
       case true =>
-        \/-(toAppPackagePath(request, file.getAbsolutePath))
+        Task { \/-(toAppPackagePath(request, file.getAbsolutePath)) }
       case false =>
-        val result: Task[NineCardsException \/ AppPackagePath] = for {
+        for {
           bitmap <- imageServicesTasks.getBitmapByAppOrName(request.packageName, request.icon, request.name) ▹ eitherT
           _ <- imageServicesTasks.saveBitmap(file, bitmap) ▹ eitherT
         } yield toAppPackagePath(request, file.getAbsolutePath)
-        toEnsureAttemptRun(result)
     }
 
-  private[this] def createIfNotExists(file: File, request: AppWebsite)(implicit context: ContextSupport): NineCardsException \/ AppWebsitePath =
+  private[this] def createIfNotExists(file: File, request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ AppWebsitePath] =
     file.exists match {
       case true =>
-        \/-(toAppWebsitePath(request, file.getAbsolutePath))
+        Task { \/-(toAppWebsitePath(request, file.getAbsolutePath)) }
       case false =>
-        val result: Task[NineCardsException \/ AppWebsitePath] = for {
+        for {
           bitmap <- imageServicesTasks.getBitmapFromURLOrName(request.url, request.name) ▹ eitherT
           _ <- imageServicesTasks.saveBitmap(file, bitmap) ▹ eitherT
         } yield toAppWebsitePath(request, file.getAbsolutePath)
-        toEnsureAttemptRun(result)
     }
 
 }

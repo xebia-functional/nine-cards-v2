@@ -22,6 +22,7 @@ import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Contexts, Tweak, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/-}
@@ -57,19 +58,17 @@ class CollectionsDetailsActivity
 
     systemBarTintManager.setStatusBarTintEnabled(true)
 
-    (Task.fork(di.collectionProcess.getCollections) map {
-      case -\/(ex) => // TODO show error
-      case \/-(collections) =>
+    Task.fork(di.collectionProcess.getCollections).resolveAsyncUi(
+      (collections: Seq[Collection]) => {
         val adapter = CollectionsPagerAdapter(getSupportFragmentManager, collections)
-        runUi(
-          (viewPager <~ vpAdapter(adapter)) ~
-            Ui(adapter.activateFragment(0)) ~
-            (tabs <~
-              stlViewPager(viewPager) <~
-              stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
-            (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop)
-        )
-    }).attemptRun
+        (viewPager <~ vpAdapter(adapter)) ~
+          Ui(adapter.activateFragment(0)) ~
+          (tabs <~
+            stlViewPager(viewPager) <~
+            stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
+          (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop)
+      }
+    )
   }
 
   private def setIconCollection(collection: Collection): Ui[_] = icon <~ ivSrc(iconCollectionDetail(collection.icon))

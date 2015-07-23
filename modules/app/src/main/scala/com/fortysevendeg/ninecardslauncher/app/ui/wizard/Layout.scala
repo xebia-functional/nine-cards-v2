@@ -3,15 +3,14 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 import android.accounts.Account
 import android.os.Build
 import android.widget._
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserSimpleDevice
-import com.fortysevendeg.ninecardslauncher.services.api.models.UserConfigDevice
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ToolbarLayout
-import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ToolbarLayout
+import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserDevice
+import com.fortysevendeg.ninecardslauncher2.R
+import macroid.FullDsl._
 import macroid._
 
 trait Layout
@@ -72,7 +71,7 @@ trait Layout
       Ui { radioViews.headOption foreach (_.setChecked(true)) }
   }
 
-  def addDevicesToRadioGroup(devices: Seq[UserSimpleDevice])(implicit context: ActivityContextWrapper): Ui[_] = {
+  def addDevicesToRadioGroup(devices: Seq[UserDevice])(implicit context: ActivityContextWrapper): Ui[_] = {
     val radioViews = (devices map (account => userRadio(account.deviceName, account.deviceId))) :+
       userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), NewConfigurationKey)
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~

@@ -3,9 +3,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.ActionBarActivity
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.modules.persistent.impl.PersistentServicesComponentImpl
@@ -18,14 +20,14 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{Contexts, Transformer, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scalaz.concurrent.Task
-import scalaz.{-\/, \/-}
 
 class LauncherActivity
-  extends Activity
-  with Contexts[Activity]
+  extends ActionBarActivity
+  with Contexts[ActionBarActivity]
   with ContextSupportProvider
   with PersistentServicesComponentImpl
   with Layout {
@@ -37,35 +39,35 @@ class LauncherActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
-    Task.fork(di.userProcess.register).attemptRun
+    Task.fork(di.userProcess.register).resolveAsync()
     setContentView(content)
-    generateCollections
+    generateCollections()
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
     (requestCode, resultCode) match {
-      case (request, result) if result == Activity.RESULT_OK && request == Wizard =>
-        generateCollections
+      case (request, result) if result == Activity.RESULT_OK && request == wizard =>
+        generateCollections()
       case _ =>
     }
   }
 
-  private def generateCollections = (Task.fork(di.collectionProcess.getCollections) map {
-    case -\/(ex) => goToWizard()
-    case \/-(collections) =>
+  private def generateCollections() = Task.fork(di.collectionProcess.getCollections).resolveAsyncUi(
+    (collections: Seq[Collection]) => {
       // Check if there are collections in DB, if there aren't we go to wizard
       if (collections.isEmpty) {
         goToWizard()
       } else {
-        runUi(
-          (workspaces <~
-            lwsData(collections, selectedPageDefault) <~
-            lwsAddPageChangedObserver(currentPage => runUi(pager <~ reloadPager(currentPage)))) ~
-            (appDrawerBar <~ fillAppDrawer(collections)) ~
-            Ui(createPager(selectedPageDefault)))
+        (workspaces <~
+          lwsData(collections, selectedPageDefault) <~
+          lwsAddPageChangedObserver(currentPage => runUi(pager <~ reloadPager(currentPage)))) ~
+          (appDrawerBar <~ fillAppDrawer(collections)) ~
+          Ui(createPager(selectedPageDefault))
       }
-  }).attemptRun
+    },
+    (ex: Throwable) => goToWizard()
+  )
 
   private def createPager(posActivated: Int) = workspaces map {
     ws =>
@@ -93,9 +95,9 @@ class LauncherActivity
     case i: ImageView => i <~ vActivated(false)
   }
 
-  private[this] def goToWizard() = {
+  private[this] def goToWizard(): Ui[_] = Ui {
     val wizardIntent = new Intent(this, classOf[WizardActivity])
-    startActivityForResult(wizardIntent, Wizard)
+    startActivityForResult(wizardIntent, wizard)
   }
 
 }

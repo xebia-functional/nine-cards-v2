@@ -17,21 +17,23 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity._
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
+import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{Contexts, Transformer, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 
 import scala.util.{Failure, Success, Try}
 import scalaz.concurrent.Task
-import scalaz.{-\/, \/-}
 
 class WizardActivity
   extends ActionBarActivity
   with Contexts[FragmentActivity]
   with ContextSupportProvider
+  with WizardTasks
   with Layout {
 
-  lazy val di = new Injector
+  implicit lazy val di = new Injector
 
   lazy val preferences = getSharedPreferences(googleKeyPreferences, Context.MODE_PRIVATE)
 
@@ -87,13 +89,11 @@ class WizardActivity
       }) ~ showWizard
   }
 
-  private def searchDevices() = (Task.fork(di.userConfigProcess.getUserInfo) map {
-    case -\/(ex) => runUi(uiShortToast(R.string.deviceNotFoundMessage) ~ showUser)
-    case \/-(userInfo) =>
-      runUi(addDevicesToRadioGroup(userInfo.devices) ~
-        showDevices ~
-        (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, userInfo.name))))
-  }).attemptRun
+  // R.string.deviceNotFoundMessage
+
+  private def searchDevices(userInfo: UserInfo) = addDevicesToRadioGroup(userInfo.devices) ~
+    showDevices ~
+    (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, userInfo.name)))
 
   private def showLoading: Ui[_] =
     (loadingRootLayout <~ vVisible) ~
@@ -120,41 +120,38 @@ class WizardActivity
       (wizardRootLayout <~ vGone) ~
       (deviceRootLayout <~ vVisible)
 
-  private[this] def requestToken(username: String) = {
-    for {
-      account <- getAccount(username)
-      androidId <- getAndroidId
-    } yield {
-      setUser(username)
-      invalidateToken()
-      val oauthScopes = resGetString(R.string.oauth_scopes)
-      accountManager.getAuthToken(account, oauthScopes, null, this, new AccountManagerCallback[Bundle] {
-        override def run(future: AccountManagerFuture[Bundle]): Unit = {
-          Try {
-            val authTokenBundle: Bundle = future.getResult
-            val token: String = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN)
-            setToken(token)
-            Device(
-              name = Build.MODEL,
-              deviceId = androidId,
-              secretToken = token,
-              permissions = Seq(oauthScopes)
-            )
-          } match {
-            case Success(device) =>
-              (Task.fork(di.userProcess.signIn(username, device)) map {
-                case -\/(ex) => runUi(uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
-                case \/-(_) => runUi(showLoading ~ Ui(searchDevices()))
-              }).attemptRun
-            case Failure(ex) => ex match {
-              case ex: OperationCanceledException => runUi(uiShortToast(R.string.canceledGooglePermission) ~ showUser)
-              case _ => runUi(uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
-            }
+  private[this] def requestToken(username: String) = (for {
+    account <- getAccount(username)
+    androidId <- getAndroidId
+  } yield {
+    setUser(username)
+    invalidateToken()
+    val oauthScopes = resGetString(R.string.oauth_scopes)
+    accountManager.getAuthToken(account, oauthScopes, null, this, new AccountManagerCallback[Bundle] {
+      override def run(future: AccountManagerFuture[Bundle]): Unit = {
+        Try {
+          val authTokenBundle: Bundle = future.getResult
+          val token: String = authTokenBundle.getString(AccountManager.KEY_AUTHTOKEN)
+          setToken(token)
+          Device(
+            name = Build.MODEL,
+            deviceId = androidId,
+            secretToken = token,
+            permissions = Seq(oauthScopes)
+          )
+        } match {
+          case Success(device) =>
+            Task.fork(signInUser(username, device)).resolveAsyncUi(
+              userInfo => showLoading ~ searchDevices(userInfo),
+              ex => uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
+          case Failure(ex) => ex match {
+            case ex: OperationCanceledException => runUi(uiShortToast(R.string.canceledGooglePermission) ~ showUser)
+            case _ => runUi(uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
           }
         }
-      }, null)
-    }
-  }
+      }
+    }, null)
+  }) getOrElse runUi(uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
 
   private[this] def getAccount(name: String): Option[Account] = {
     val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq

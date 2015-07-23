@@ -12,7 +12,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import macroid.Contexts
 
-import scalaz._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+
 import scalaz.concurrent.Task
 
 class CreateCollectionService
@@ -50,13 +51,13 @@ class CreateCollectionService
         loadConfiguration(deviceId)
     } getOrElse createNewConfiguration
 
-    (Task.fork(task) map {
-      case -\/(ex) =>
+    Task.fork(task).resolveAsync(
+      collections => closeService(),
+      ex => {
         Log.d(tag, ex.getMessage) // TODO We should show the error in UI
         closeService()
-      case \/-(_) => closeService()
-    }).attemptRun
-
+      }
+    )
     super.onStartCommand(intent, flags, startId)
   }
 

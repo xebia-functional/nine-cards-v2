@@ -33,7 +33,7 @@ object ImageResourceNamed {
 
 object ActivityResult {
 
-  val Wizard = 1
+  val wizard = 1
 
 }
 

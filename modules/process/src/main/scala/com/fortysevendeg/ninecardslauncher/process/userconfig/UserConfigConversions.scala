@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.userconfig
 
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollectionItem, UserCollection, UserSimpleDevice, UserInfo}
+import com.fortysevendeg.ninecardslauncher.process.userconfig.models._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfigCollectionItem, UserConfigCollection, UserConfigDevice, UserConfig}
 
 trait UserConfigConversions {
@@ -9,12 +9,13 @@ trait UserConfigConversions {
     email = userConfig.email,
     name = userConfig.plusProfile.displayName,
     imageUrl = userConfig.plusProfile.profileImage.imageUrl,
-    devices = userConfig.devices map toUserSimpleDevice
+    devices = userConfig.devices map toUserDevice
   )
 
-  def toUserSimpleDevice(userConfigDevice: UserConfigDevice) = UserSimpleDevice(
+  def toUserDevice(userConfigDevice: UserConfigDevice) = UserDevice(
     deviceId = userConfigDevice.deviceId,
-    deviceName = userConfigDevice.deviceName
+    deviceName = userConfigDevice.deviceName,
+    collections = userConfigDevice.collections map toUserCollection
   )
 
   def toUserCollection(userConfigCollection: UserConfigCollection) = UserCollection(
