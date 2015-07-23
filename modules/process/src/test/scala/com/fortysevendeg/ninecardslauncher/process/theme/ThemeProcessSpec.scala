@@ -1,23 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.process.theme
 
-import java.io.InputStream
-
-import android.content.res.{AssetManager, Resources}
+import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{SearchPressedColor, SearchBackgroundColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchPressedColor}
 import com.fortysevendeg.ninecardslauncher.process.utils.FileUtils
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import android.graphics.Color
 
-import scala.io.{BufferedSource, Source}
-import scalaz.{-\/, \/-}
 import scalaz.concurrent.Task
+import scalaz.{-\/, \/-}
 
 trait ThemeProcessSpecification
   extends Specification
@@ -91,7 +87,7 @@ class ThemeProcessSpec extends ThemeProcessSpecification {
         val result = themeProcess.getSelectedTheme(mockContextSupport)
 
         result.run must be_\/-[NineCardsTheme].which { theme =>
-          theme.name mustEqual "light"
+          theme.name mustEqual defaultThemeName
           theme.get(SearchBackgroundColor) mustEqual intSampleColorWithoutAlpha
           theme.get(SearchPressedColor) mustEqual intSampleColorWithAlpha
         }

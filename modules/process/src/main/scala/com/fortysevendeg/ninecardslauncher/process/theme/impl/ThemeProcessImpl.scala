@@ -19,13 +19,18 @@ class ThemeProcessImpl extends ThemeProcess {
 
   val fileUtils = new FileUtils()
 
-  override def getSelectedTheme(implicit context: ContextSupport): Task[NineCardsException \/ NineCardsTheme] = {
+  val defaultTheme = "theme_light"
 
-    val selectedTheme = "light"
-
+  override def getSelectedTheme(implicit context: ContextSupport): Task[NineCardsException \/ NineCardsTheme] =
     for {
-      json <- fileUtils.getJsonFromFile(s"theme_$selectedTheme.json") ▹ eitherT
-      theme <- Task(fromTryCatchNineCardsException(Json.parse(json).as[NineCardsTheme])) ▹ eitherT
+      json <- fileUtils.getJsonFromFile(s"$defaultTheme.json") ▹ eitherT
+      theme <- getNineCardsThemeFromJson(json) ▹ eitherT
     } yield theme
-  }
+
+  private[this] def getNineCardsThemeFromJson(json: String) =
+    Task {
+      fromTryCatchNineCardsException {
+        Json.parse(json).as[NineCardsTheme]
+      }
+    }
 }

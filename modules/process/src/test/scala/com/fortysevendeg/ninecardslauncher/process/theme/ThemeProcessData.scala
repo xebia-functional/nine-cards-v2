@@ -5,21 +5,24 @@ import android.graphics.Color
 trait ThemeProcessData {
 
   val nonExistingFileName = "nonExistingFile.json"
-  val intSampleColorWithAlpha = Color.parseColor("#ff59afdd")
-  val intSampleColorWithoutAlpha = Color.parseColor("#ffffff")
+  val defaultThemeName = "light"
+  val sampleColorWithAlpha = "#ff59afdd"
+  val sampleColorWithoutAlpha = "#ffffff"
+  val intSampleColorWithAlpha = Color.parseColor(sampleColorWithAlpha)
+  val intSampleColorWithoutAlpha = Color.parseColor(sampleColorWithoutAlpha)
 
   val validThemeJson =
-    """
+    s"""
       |{
-      |  "name": "light",
+      |  "name": "$defaultThemeName",
       |  "styles": [
       |    {
       |      "styleType": "SearchBackgroundColor",
-      |      "color": "#ffffff"
+      |      "color": $sampleColorWithoutAlpha
       |    },
       |    {
       |      "styleType": "SearchPressedColor",
-      |      "color": "#ff59afdd"
+      |      "color": $sampleColorWithAlpha
       |    },
       |    {
       |      "styleType": "SearchGoogleColor",

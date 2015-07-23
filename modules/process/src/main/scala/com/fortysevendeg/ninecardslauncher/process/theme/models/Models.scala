@@ -7,7 +7,6 @@ case class NineCardsTheme(name: String, styles: Seq[ThemeStyle]) {
   def get(style: ThemeStyleType): Int = styles.find(_.styleType == style) map (_.color) getOrElse Color.TRANSPARENT
 }
 
-
 case class ThemeStyle(styleType: ThemeStyleType, color: Int)
 
 sealed trait ThemeStyleType
