@@ -53,8 +53,9 @@ class LauncherActivity
   )
 
   private[this] def goToWizard(): Ui[_] = Ui {
-    val wizardIntent = new Intent(this, classOf[WizardActivity])
+    val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])
     startActivityForResult(wizardIntent, wizard)
   }
+
 
 }

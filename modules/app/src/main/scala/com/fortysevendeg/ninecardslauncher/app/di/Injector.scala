@@ -73,7 +73,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
 
   private lazy val nameCategories: Map[String, String] = (categories map {
     category =>
-      val identifier = resources.getIdentifier(category, "string", contextWrapper.application.getPackageName)
+      val identifier = resources.getIdentifier(category.toLowerCase, "string", contextWrapper.application.getPackageName)
       (category, if (identifier != 0) resources.getString(identifier) else category)
   }).toMap
 

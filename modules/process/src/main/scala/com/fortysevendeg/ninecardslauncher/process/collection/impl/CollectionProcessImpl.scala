@@ -53,7 +53,7 @@ class CollectionProcessImpl(collectionProcessConfig: CollectionProcessConfig, pe
     val pos = if (index >= numSpaces) index % numSpaces else index
     AddCollectionRequest(
       position = pos,
-      name = collectionProcessConfig.namesCategories.getOrElse(category.toLowerCase, category.toLowerCase),
+      name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
       collectionType = CollectionType.apps,
       icon = category.toLowerCase,
       themedColorIndex = pos,

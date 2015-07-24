@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="WizardRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="WizardLoadingContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="WizardLoadingBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="WizardLoadingMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <style name="WizardContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="WizardTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:text">@string/welcome</item>
+    </style>
+
+    <style name="WizardMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:text">@string/welcomeMessage</item>
+    </style>
+
+    <style name="WizardRadioGroup">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="WizardButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="WizardEndMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:text">@string/welcomeMessage</item>
+    </style>
+
+</resources>
