@@ -1,0 +1,49 @@
+{
+  "name": "light",
+  "styles": [
+    {
+      "styleType": "SearchBackgroundColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "SearchPressedColor",
+      "color": "#ff59afdd"
+    },
+    {
+      "styleType": "SearchGoogleColor",
+      "color": "#a3a3a3"
+    },
+    {
+      "styleType": "SearchIconsColor",
+      "color": "#646464"
+    },
+    {
+      "styleType": "AppDrawerPressedColor",
+      "color": "#ffd5f2fa"
+    },
+    {
+      "styleType": "CollectionDetailBackgroundColor",
+      "color": "#eeeeee"
+    },
+    {
+      "styleType": "CollectionDetailTextCardColor",
+      "color": "#000000"
+    },
+    {
+      "styleType": "CollectionDetailCardBackgroundColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "CollectionDetailCardBackgroundPressedColor",
+      "color": "#000000"
+    },
+    {
+      "styleType": "CollectionDetailTextTabSelectedColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "CollectionDetailTextTabDefaultColor",
+      "color": "#80ffffff"
+    }
+  ]
+}
