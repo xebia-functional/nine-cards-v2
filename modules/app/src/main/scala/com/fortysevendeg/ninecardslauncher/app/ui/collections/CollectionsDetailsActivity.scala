@@ -20,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTwe
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher2.{TypedFindView, R}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Contexts, Tweak, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -30,9 +30,10 @@ import scalaz.{-\/, \/-}
 
 class CollectionsDetailsActivity
   extends ActionBarActivity
-  with Contexts[FragmentActivity]
+  with Contexts[ActionBarActivity]
   with ContextSupportProvider
-  with Layout
+  with CollectionsDetailsComposer
+  with TypedFindView
   with ScrolledListener {
 
   lazy val di = new Injector
@@ -57,14 +58,14 @@ class CollectionsDetailsActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
-    setContentView(layout)
+    setContentView(R.layout.collections_detail_activity)
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
 
     systemBarTintManager.setStatusBarTintEnabled(true)
 
     Task.fork(di.collectionProcess.getCollections).resolveAsyncUi(
-      (collections: Seq[Collection]) => {
+      onResult = (collections: Seq[Collection]) => {
         val adapter = CollectionsPagerAdapter(getSupportFragmentManager, collections)
         (viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(0)) ~
@@ -72,7 +73,8 @@ class CollectionsDetailsActivity
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
           (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop)
-      }
+      },
+      onPreTask = () => initUi
     )
   }
 

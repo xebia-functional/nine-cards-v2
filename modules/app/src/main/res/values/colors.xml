@@ -33,6 +33,8 @@
 
     <!-- Collections detail -->
     <color name="background_icon_collection_detail">#4bffffff</color>
+    <color name="text_tab_color_default">#77ffffff</color>
+    <color name="text_tab_color_selected">#ffffff</color>
 
     <!-- Theme Light -->
     <color name="search_background_tint_light">#ffffff</color>

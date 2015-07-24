@@ -6,7 +6,7 @@ import android.support.v4.view.ViewPager
 import android.util.{AttributeSet, TypedValue}
 import android.view.View.OnClickListener
 import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, View}
+import android.view.{LayoutInflater, Gravity, View}
 import android.widget.{FrameLayout, HorizontalScrollView, TextView}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -19,18 +19,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
 /**
  * Inspired in https://developer.android.com/samples/SlidingTabsBasic/index.html
  */
-class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit  activityContext: ActivityContextWrapper)
+class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends HorizontalScrollView(context, attr, defStyleAttr) {
 
-  self =>
+  def this(context: Context) = this(context, null, 0)
 
-  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, null, 0)
-
-  def this(context: Context, attr: AttributeSet)(implicit activityContext: ActivityContextWrapper) = this(context, attr, 0)
-
-  private val paddingDefault: Int = resGetDimensionPixelSize(R.dimen.padding_default)
-
-  private val paddingLarge: Int = resGetDimensionPixelSize(R.dimen.padding_large)
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   private var viewPager: Option[ViewPager] = None
 
@@ -40,9 +34,9 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(
 
   var lastScrollTo: Int = 0
 
-  var defaultTextColor: Int = ColorsUtils.setAlpha(Color.WHITE, 0.5f)
+  var defaultTextColor: Int = context.getResources.getColor(R.color.text_tab_color_default)
 
-  var selectedTextColor: Int = Color.WHITE
+  var selectedTextColor: Int = context.getResources.getColor(R.color.text_tab_color_selected)
 
   val params = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
   params.gravity = Gravity.BOTTOM
@@ -60,43 +54,32 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(
 
   def setOnPageChangeListener(listener: ViewPager.OnPageChangeListener) = viewPagerPageChangeListener = Some(listener)
 
-  def setViewPager(viewPager: Option[ViewPager]) {
+  def setViewPager(viewPager: ViewPager) = {
     tabStrip.removeAllViews()
-    this.viewPager = viewPager
-    viewPager map {
-      vp =>
-        vp.setOnPageChangeListener(new InternalViewPagerListener())
-        val adapter = vp.getAdapter
-        (0 until adapter.getCount) map {
-          i =>
-            val tabTitleView = createDefaultTabView(i)
-            tabTitleView.setText(adapter.getPageTitle(i))
-            tabTitleView.setOnClickListener(new TabClickListener(i))
-            tabStrip.addView(tabTitleView)
-        }
-        runUi(self <~ upadateTabsColors(vp.getCurrentItem))
+    this.viewPager = Option(viewPager)
+
+    viewPager.setOnPageChangeListener(new InternalViewPagerListener())
+    val adapter = viewPager.getAdapter
+    (0 until adapter.getCount) foreach {
+      i =>
+        val tabTitleView = createDefaultTabView(i)
+        tabTitleView.setText(adapter.getPageTitle(i))
+        tabTitleView.setOnClickListener(new TabClickListener(i))
+        tabStrip.addView(tabTitleView)
     }
+    updateTabsColors(viewPager.getCurrentItem)
   }
 
-  def createDefaultTabView(position: Int): TextView = getUi(
-    w[TextView] <~
-      vTag(position.toString) <~
-      tvColor(defaultTextColor) <~
-      tvGravity(Gravity.CENTER) <~
-      tvSizeResource(R.dimen.text_tabs) <~
-      tvAllCaps <~
-      vPaddings(paddingLeftRight = paddingLarge, paddingTopBottom = paddingDefault) <~
-      Tweak[TextView] {
-        view =>
-          val outValue = new TypedValue()
-          getContext.getTheme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
-          view.setBackgroundResource(outValue.resourceId)
-      }
-  )
+  def createDefaultTabView(position: Int): TextView = {
+    val textView = LayoutInflater.from(context).inflate(R.layout.collections_detail_tab, null).asInstanceOf[TextView]
+    textView.setTextColor(defaultTextColor)
+    textView.setTag(position.toString)
+    textView
+  }
 
   override def onAttachedToWindow() = {
     super.onAttachedToWindow()
-    viewPager map (vp => scrollToTab(vp.getCurrentItem(), 0))
+    viewPager foreach (vp => scrollToTab(vp.getCurrentItem, 0))
   }
 
   private def scrollToTab(tabIndex: Int, positionOffset: Int) = {
@@ -113,9 +96,16 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(
     }
   }
 
-  private def upadateTabsColors(position: Int) = Transformer {
-    case text: TextView if Option(text.getTag()).isDefined && text.getTag().equals(position.toString) => text <~ tvColor(selectedTextColor)
-    case text: TextView => text <~ tvColor(defaultTextColor)
+  private def updateTabsColors(position: Int) = {
+    (0 until tabStrip.getChildCount) foreach {
+      item =>
+        val text = tabStrip.getChildAt(item).asInstanceOf[TextView]
+        if (Option(text.getTag).isDefined && text.getTag.equals(position.toString)) {
+          text.setTextColor(selectedTextColor)
+        } else {
+          text.setTextColor(defaultTextColor)
+        }
+    }
   }
 
   private class InternalViewPagerListener extends ViewPager.OnPageChangeListener {
@@ -132,22 +122,22 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(
         val nextOffset: Int = if (nextTitle == null) 0 else nextTitle.getWidth
         val extraOffset: Int = (0.5F * (positionOffset * (selectedOffset + nextOffset).toFloat)).toInt
         scrollToTab(position, extraOffset)
-        viewPagerPageChangeListener map (_.onPageScrolled(position, positionOffset, positionOffsetPixels))
+        viewPagerPageChangeListener foreach (_.onPageScrolled(position, positionOffset, positionOffsetPixels))
       }
     }
 
-    def onPageScrollStateChanged(state: Int) {
+    def onPageScrollStateChanged(state: Int) = {
       scrollState = state
-      viewPagerPageChangeListener map (_.onPageScrollStateChanged(state))
+      viewPagerPageChangeListener foreach (_.onPageScrollStateChanged(state))
     }
 
-    def onPageSelected(position: Int) {
-      runUi(self <~ upadateTabsColors(position))
+    def onPageSelected(position: Int) = {
+      updateTabsColors(position)
       if (scrollState == ViewPager.SCROLL_STATE_IDLE) {
         tabStrip.onViewPagerPageChanged(position, 0f)
         scrollToTab(position, 0)
       }
-      viewPagerPageChangeListener map (_.onPageSelected(position))
+      viewPagerPageChangeListener foreach (_.onPageSelected(position))
     }
   }
 
@@ -160,7 +150,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)(
 object SlidingTabLayoutTweaks {
   type W = SlidingTabLayout
 
-  def stlViewPager(viewPager: Option[ViewPager]): Tweak[W] = Tweak[W](_.setViewPager(viewPager))
+  def stlViewPager(viewPager: Option[ViewPager]): Tweak[W] = Tweak[W](viewPager foreach _.setViewPager)
 
   def stlDefaultTextColor(color: Int): Tweak[W] = Tweak[W](_.setDefaultTextColor(color))
 

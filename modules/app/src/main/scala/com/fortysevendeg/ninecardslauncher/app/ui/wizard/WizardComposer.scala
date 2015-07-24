@@ -2,24 +2,20 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts._
 import android.os.Build
-import android.support.v7.app.ActionBarActivity
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ToolbarLayout
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserDevice, UserInfo}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
 
-trait WizardComposer
-  extends ToolbarLayout
-  with IdGeneration {
+trait WizardComposer {
 
-  self: ActionBarActivity with TypedFindView =>
+  self: TypedFindView =>
 
   var finished = false
 

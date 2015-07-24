@@ -1,37 +1,31 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.support.v4.view.ViewPager
 import android.support.v7.widget.{CardView, RecyclerView}
-import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ToolbarLayout
-import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayout
+import android.widget.{ImageView, LinearLayout, TextView}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import macroid.ActivityContextWrapper
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, IdGeneration}
 
-trait Layout
-  extends Styles
-  with ToolbarLayout
-  with IdGeneration {
+trait CollectionsDetailsComposer
+  extends Styles {
 
-  var viewPager = slot[ViewPager]
+  self: TypedFindView =>
 
-  var tabs = slot[SlidingTabLayout]
+  lazy val toolbar = Option(findView(TR.collections_toolbar))
 
-  var iconContent = slot[FrameLayout]
+  lazy val root = Option(findView(TR.collections_root))
 
-  var icon = slot[ImageView]
+  lazy val viewPager = Option(findView(TR.collections_view_pager))
 
-  def layout(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
-    l[FrameLayout](
-      darkToolbar <~ toolbarStyle,
-      l[FrameLayout](
-        w[ImageView] <~ iconStyle <~ wire(icon)
-      ) <~ iconContentStyle <~ wire(iconContent),
-      l[ViewPager]() <~ viewPagerStyle <~ wire(viewPager) <~ id(Id.pager), // ViewPager need set resource id
-      l[SlidingTabLayout]() <~ tabsStyle <~ wire(tabs)
-    ) <~ rootStyle
-  )
+  lazy val tabs = Option(findView(TR.collections_tabs))
+
+  lazy val iconContent = Option(findView(TR.collections_icon_content))
+
+  lazy val icon = Option(findView(TR.collections_icon))
+
+  def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+    (root <~ rootStyle) ~ (tabs <~ tabsStyle)
 
 }
 

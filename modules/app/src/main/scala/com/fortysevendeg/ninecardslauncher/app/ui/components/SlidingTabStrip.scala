@@ -12,19 +12,19 @@ import macroid.ContextWrapper
 /**
  * Inspired in https://developer.android.com/samples/SlidingTabsBasic/index.html
  */
-class SlidingTabStrip(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
+class SlidingTabStrip(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attr, defStyleAttr) {
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0)
+  def this(context: Context) = this(context, null, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   private var selectedPosition: Int = 0
   private var selectionOffset: Float = .0f
 
   setWillNotDraw(false)
 
-  val selectedIndicatorThickness = resGetDimensionPixelSize(R.dimen.height_selected_tab)
+  val selectedIndicatorThickness = context.getResources.getDimensionPixelOffset(R.dimen.height_selected_tab)
   val selectedIndicatorPaint = new Paint
   setColor(Color.WHITE)
 
