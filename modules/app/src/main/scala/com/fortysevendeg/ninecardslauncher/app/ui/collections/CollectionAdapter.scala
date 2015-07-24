@@ -11,13 +11,14 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
 import CollectionAdapter._
 
 class CollectionAdapter(collection: Collection, heightCard: Int, listener: CollectionListener)
-    (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
+    (implicit activityContext: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme)
     extends RecyclerView.Adapter[ViewHolderCollectionAdapter] {
 
   override def onCreateViewHolder(parentViewGroup: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {

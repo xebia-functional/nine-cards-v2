@@ -6,25 +6,31 @@ import android.os.Bundle
 import android.support.v7.app.ActionBarActivity
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.modules.persistent.impl.PersistentServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 
+import scalaz.{\/-, -\/}
 import scalaz.concurrent.Task
 
 class LauncherActivity
   extends ActionBarActivity
   with Contexts[ActionBarActivity]
   with ContextSupportProvider
-  with PersistentServicesComponentImpl
   with TypedFindView
   with LauncherComposer {
 
-  lazy val di = new Injector
+  implicit lazy val di: Injector = new Injector
+
+  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run match {
+    case -\/(ex) => getDefaultTheme
+    case \/-(t) => t
+  }
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)

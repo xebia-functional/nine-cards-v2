@@ -12,12 +12,13 @@ import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.modules.persistent.impl.PersistentServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -31,11 +32,15 @@ class CollectionsDetailsActivity
   extends ActionBarActivity
   with Contexts[FragmentActivity]
   with ContextSupportProvider
-  with PersistentServicesComponentImpl
   with Layout
   with ScrolledListener {
 
   lazy val di = new Injector
+
+  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run match {
+    case -\/(ex) => getDefaultTheme
+    case \/-(t) => t
+  }
 
   lazy val systemBarTintManager = new SystemBarTintManager(this)
 
@@ -144,9 +149,8 @@ class OnPageChangeCollectionsListener(
   collections: Seq[Collection],
   updateToolbarColor: Int => Ui[_],
   updateCollection: (Collection, Int, Boolean) => Ui[_]
-  )(implicit context: ContextWrapper)
-  extends OnPageChangeListener
-  with PersistentServicesComponentImpl {
+  )(implicit context: ContextWrapper, theme: NineCardsTheme)
+  extends OnPageChangeListener {
 
   var lastSelected = -1
 
@@ -157,8 +161,8 @@ class OnPageChangeCollectionsListener(
     val nextCollection: Option[Collection] = collections.lift(position + 1)
     nextCollection map {
       next =>
-        val startColor = resGetColor(persistentServices.getIndexColor(selectedCollection.themedColorIndex))
-        val endColor = resGetColor(persistentServices.getIndexColor(next.themedColorIndex))
+        val startColor = resGetColor(getIndexColor(selectedCollection.themedColorIndex))
+        val endColor = resGetColor(getIndexColor(next.themedColorIndex))
         val color = interpolateColors(positionOffset, startColor, endColor)
         runUi(updateToolbarColor(color))
     }

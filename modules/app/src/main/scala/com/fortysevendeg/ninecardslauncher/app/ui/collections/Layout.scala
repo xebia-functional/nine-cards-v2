@@ -3,10 +3,9 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.{CardView, RecyclerView}
 import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
-import com.fortysevendeg.ninecardslauncher.app.modules.persistent.PersistentServicesComponent
-import com.fortysevendeg.ninecardslauncher.app.modules.persistent.impl.PersistentServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ToolbarLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayout
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, IdGeneration}
 
@@ -14,8 +13,6 @@ trait Layout
   extends Styles
   with ToolbarLayout
   with IdGeneration {
-
-  self: PersistentServicesComponent =>
 
   var viewPager = slot[ViewPager]
 
@@ -25,7 +22,7 @@ trait Layout
 
   var icon = slot[ImageView]
 
-  def layout(implicit context: ActivityContextWrapper) = getUi(
+  def layout(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
     l[FrameLayout](
       darkToolbar <~ toolbarStyle,
       l[FrameLayout](
@@ -49,9 +46,8 @@ trait CollectionFragmentLayout
 
 }
 
-class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContextWrapper)
-  extends CollectionAdapterStyles
-  with PersistentServicesComponentImpl {
+class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+  extends CollectionAdapterStyles {
 
   var icon = slot[ImageView]
 
@@ -70,7 +66,7 @@ class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContext
 
 }
 
-class ViewHolderCollectionAdapter(adapter: CollectionLayoutAdapter)(implicit context: ActivityContextWrapper)
+class ViewHolderCollectionAdapter(adapter: CollectionLayoutAdapter)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(adapter.content) {
 
   val content = adapter.content

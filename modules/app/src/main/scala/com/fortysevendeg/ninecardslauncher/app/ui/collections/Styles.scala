@@ -18,24 +18,22 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.modules.persistent.PersistentServicesComponent
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
 
 trait Styles {
 
-  self: PersistentServicesComponent =>
-
-  def rootStyle(implicit context: ContextWrapper): Tweak[FrameLayout] =
+  def rootStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FrameLayout] =
     vMatchParent +
       vFitsSystemWindows(true) +
-      vBackgroundColor(persistentServices.getCollectionDetailBackgroundColor)
+      vBackgroundColor(theme.get(CollectionDetailBackgroundColor))
 
-  def toolbarStyle(implicit context: ContextWrapper): Tweak[Toolbar] =
+  def toolbarStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[Toolbar] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tootlbar_collection_details)) +
       elevation
 
@@ -61,11 +59,11 @@ trait Styles {
       ivScaleType(ScaleType.CENTER_INSIDE)
 
 
-  def tabsStyle(implicit context: ContextWrapper): Tweak[SlidingTabLayout] =
+  def tabsStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[SlidingTabLayout] =
     vContentSizeMatchWidth(resGetDimensionPixelSize(R.dimen.height_tabs_collection_details)) +
       flLayoutMargin(marginTop = resGetDimensionPixelSize(R.dimen.margin_top_tabs_collection_details)) +
-      stlDefaultTextColor(persistentServices.getCollectionDetailTextTabDefaultColor) +
-      stlSelectedTextColor(persistentServices.getCollectionDetailTextTabSelectedColor) +
+      stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
+      stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
       elevation
 
   def viewPagerStyle(implicit context: ContextWrapper): Tweak[ViewPager] =
@@ -95,15 +93,13 @@ trait CollectionFragmentStyles {
 
 trait CollectionAdapterStyles {
 
-  self: PersistentServicesComponent =>
-
-  def rootStyle(heightCard: Int)(implicit context: ContextWrapper): Tweak[CardView] =
+  def rootStyle(heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     vContentSizeMatchWidth(heightCard) +
-      cvCardBackgroundColor(persistentServices.getCollectionDetailCardBackgroundColor) +
+      cvCardBackgroundColor(theme.get(CollectionDetailCardBackgroundColor)) +
       flForeground(createBackground)
 
-  private def createBackground(implicit context: ContextWrapper): Drawable = {
-    val color = persistentServices.getCollectionDetailCardBackgroundPressedColor
+  private def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
+    val color = theme.get(CollectionDetailCardBackgroundPressedColor)
     Lollipop ifSupportedThen {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),
@@ -128,10 +124,10 @@ trait CollectionAdapterStyles {
     lp[ViewGroup](size, size)
   }
 
-  def nameStyle(implicit context: ContextWrapper): Tweak[TextView] =
+  def nameStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
     vMatchWidth +
       vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_default)) +
-      tvColor(persistentServices.getCollectionDetailTextCardColor) +
+      tvColor(theme.get(CollectionDetailTextCardColor)) +
       tvLines(2) +
       tvSizeResource(R.dimen.text_default) +
       tvEllipsize(TruncateAt.END)

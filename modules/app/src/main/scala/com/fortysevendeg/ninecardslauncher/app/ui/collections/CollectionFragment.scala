@@ -9,18 +9,32 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{Contexts, Tweak, Ui}
 import CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
 
+import scalaz.{\/-, -\/}
+
 class CollectionFragment
   extends Fragment
   with Contexts[Fragment]
+  with ContextSupportProvider
   with CollectionFragmentLayout {
+
+  lazy val di = new Injector
+
+  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run match {
+    case -\/(ex) => getDefaultTheme
+    case \/-(t) => t
+  }
 
   implicit lazy val fragment: Fragment = this
 

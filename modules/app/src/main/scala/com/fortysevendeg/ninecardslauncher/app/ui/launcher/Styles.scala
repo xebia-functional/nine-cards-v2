@@ -1,9 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.text.TextUtils.TruncateAt
-import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, ViewGroup}
-import android.widget.ImageView.ScaleType
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
@@ -11,45 +9,42 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.modules.persistent.PersistentServicesComponent
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
 
 trait Styles {
 
-  self: PersistentServicesComponent =>
+  def searchContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =
+    vBackgroundColorFilter(theme.get(SearchBackgroundColor))
 
-  def searchContentStyle(implicit context: ContextWrapper): Tweak[LinearLayout] =
-    vBackgroundColorFilter(persistentServices.getSearchBackgroundColor)
+  def burgerButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+    tivDefaultColor(theme.get(SearchIconsColor)) +
+      tivPressedColor(theme.get(SearchPressedColor))
 
-  def burgerButtonStyle(implicit context: ContextWrapper): Tweak[TintableImageView] =
-    tivDefaultColor(persistentServices.getSearchIconsColor) +
-      tivPressedColor(persistentServices.getSearchPressedColor)
+  def googleButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+    tivDefaultColor(theme.get(SearchGoogleColor)) +
+      tivPressedColor(theme.get(SearchPressedColor))
 
-  def googleButtonStyle(implicit context: ContextWrapper): Tweak[TintableImageView] =
-    tivDefaultColor(persistentServices.getSearchGoogleColor) +
-      tivPressedColor(persistentServices.getSearchPressedColor)
+  def micButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+    tivDefaultColor(theme.get(SearchIconsColor)) +
+      tivPressedColor(theme.get(SearchPressedColor))
 
-  def micButtonStyle(implicit context: ContextWrapper): Tweak[TintableImageView] =
-    tivDefaultColor(persistentServices.getSearchIconsColor) +
-      tivPressedColor(persistentServices.getSearchPressedColor)
-
-  def drawerAppStyle(implicit context: ContextWrapper): Tweak[TintableImageView] = {
+  def drawerAppStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] = {
     val elevation = resGetDimensionPixelSize(R.dimen.elevation_pressed)
     Lollipop ifSupportedThen {
       vStateListAnimator(R.anim.elevation_transition) +
         vPaddings(elevation) +
         vCircleOutlineProvider(elevation)
-    } getOrElse tivPressedColor(persistentServices.getAppDrawerPressedColor)
+    } getOrElse tivPressedColor(theme.get(AppDrawerPressedColor))
   }
 
-  def drawerItemStyle(implicit context: ContextWrapper): Tweak[TintableImageView] =
-    tivPressedColor(persistentServices.getAppDrawerPressedColor) +
+  def drawerItemStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+    tivPressedColor(theme.get(AppDrawerPressedColor)) +
       vTag(R.id.`type`, AppDrawer.app)
 
   def paginationItemStyle(implicit context: ContextWrapper) = {

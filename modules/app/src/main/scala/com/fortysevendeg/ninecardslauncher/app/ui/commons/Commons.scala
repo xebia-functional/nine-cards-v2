@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.graphics.Color
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
@@ -37,18 +38,38 @@ object ActivityResult {
 
 }
 
-object GoogleServicesConstants {
-
-  val AccountType = "com.google"
-
-  val AndroidId = "android_id"
-
-  val ContentGServices = "content://com.google.android.gsf.gservices"
-
-}
-
 object AppUtils {
   def getUniqueId: Int = (System.currentTimeMillis & 0xfffffff).toInt
+
+  def getDefaultTheme = NineCardsTheme(
+    name = "light",
+    styles = Seq(
+      ThemeStyle(SearchBackgroundColor, Color.parseColor("#ffffff")),
+      ThemeStyle(SearchPressedColor, Color.parseColor("#ff59afdd")),
+      ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
+      ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
+      ThemeStyle(AppDrawerPressedColor, Color.parseColor("#ffd5f2fa")),
+      ThemeStyle(CollectionDetailBackgroundColor, Color.parseColor("#eeeeee")),
+      ThemeStyle(CollectionDetailTextCardColor, Color.parseColor("#000000")),
+      ThemeStyle(CollectionDetailCardBackgroundColor, Color.parseColor("#ffffff")),
+      ThemeStyle(CollectionDetailCardBackgroundPressedColor, Color.parseColor("#000000")),
+      ThemeStyle(CollectionDetailTextTabSelectedColor, Color.parseColor("#ffffff")),
+      ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff"))
+    )
+  )
+
+  // TODO We should move this colors to theme
+  def getIndexColor(index: Int): Int = index match {
+    case 0 => R.color.collection_group_1
+    case 1 => R.color.collection_group_2
+    case 2 => R.color.collection_group_3
+    case 3 => R.color.collection_group_4
+    case 4 => R.color.collection_group_5
+    case 5 => R.color.collection_group_6
+    case 6 => R.color.collection_group_7
+    case 7 => R.color.collection_group_8
+    case _ => R.color.collection_group_9
+  }
 }
 
 object ColorsUtils {

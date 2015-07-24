@@ -14,8 +14,8 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.modules.persistent.impl.PersistentServicesComponentImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
@@ -63,8 +63,7 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityCo
 
 class CollectionItem(position: Int)(implicit activityContext: ActivityContextWrapper)
   extends FrameLayout(activityContext.application)
-  with CollectionItemStyle
-  with PersistentServicesComponentImpl {
+  with CollectionItemStyle {
 
   var collection: Option[Collection] = None
 
@@ -106,7 +105,7 @@ class CollectionItem(position: Int)(implicit activityContext: ActivityContextWra
       (name <~ tvText(collection.name))
 
   private def createBackground(indexColor: Int): Drawable = {
-    val color = resGetColor(persistentServices.getIndexColor(indexColor))
+    val color = resGetColor(getIndexColor(indexColor))
 
     Lollipop ifSupportedThen {
       new RippleDrawable(

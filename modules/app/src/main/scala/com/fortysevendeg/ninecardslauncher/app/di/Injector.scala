@@ -1,14 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.app.di
 
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiUserConfigService, ApiGooglePlayService, ApiUserService}
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigProcessImpl
 import com.fortysevendeg.ninecardslauncher.repository.commons.ContentResolverWrapperImpl
-import com.fortysevendeg.ninecardslauncher.repository.repositories.{GeoInfoRepository, CollectionRepository, CardRepository, CacheCategoryRepository}
+import com.fortysevendeg.ninecardslauncher.repository.repositories.{CacheCategoryRepository, CardRepository, CollectionRepository, GeoInfoRepository}
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
@@ -16,8 +17,7 @@ import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
-import macroid.{ContextWrapper, Contexts}
+import macroid.ContextWrapper
 
 class Injector(implicit contextWrapper: ContextWrapper) {
 
@@ -92,5 +92,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     apiServices = apiServices,
     persistenceServices = persistenceServices
   )
+
+  lazy val themeProcess = new ThemeProcessImpl()
 
 }
