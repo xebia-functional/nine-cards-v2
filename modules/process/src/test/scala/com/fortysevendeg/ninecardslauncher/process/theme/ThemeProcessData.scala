@@ -18,11 +18,11 @@ trait ThemeProcessData {
       |  "styles": [
       |    {
       |      "styleType": "SearchBackgroundColor",
-      |      "color": $sampleColorWithoutAlpha
+      |      "color": "$sampleColorWithoutAlpha"
       |    },
       |    {
       |      "styleType": "SearchPressedColor",
-      |      "color": $sampleColorWithAlpha
+      |      "color": "$sampleColorWithAlpha"
       |    },
       |    {
       |      "styleType": "SearchGoogleColor",
