@@ -1,20 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v4.app.Fragment
-import android.support.v7.widget.{CardView, RecyclerView, GridLayoutManager}
-import android.widget.{LinearLayout, TextView, ImageView}
+import android.support.v7.widget.{CardView, GridLayoutManager, RecyclerView}
+import android.widget.{ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RecyclerViewListenerTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardIntent, Collection}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RecyclerViewListenerTweaks._
+import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Tweak, Ui, ActivityContextWrapper, Contexts}
 import macroid.FullDsl._
+import macroid.{ActivityContextWrapper, Contexts, Tweak, Ui}
 
 trait CollectionFragmentComposer
   extends CollectionFragmentStyles {
@@ -66,7 +65,7 @@ trait CollectionFragmentComposer
           if (activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && collection.cards.length > numSpaces) {
             scrolledListener foreach {
               sl =>
-                val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollType.Down) else (spaceMove, ScrollType.Up)
+                val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollType.down) else (spaceMove, ScrollType.up)
                 (scrollY, moveTo, sType) match {
                   case (y, move, st) if y < spaceMove && moveTo != scrollY =>
                     sl.scrollType(sType)
@@ -81,8 +80,8 @@ trait CollectionFragmentComposer
   }
 
   private[this] def startScroll(): Ui[_] = (canScroll, sType) match {
-    case (scroll, s) if scroll => recyclerView <~ vScrollBy(0, if (s == ScrollType.Up) spaceMove else 0)
-    case (_, s) => recyclerView <~ vPadding(padding, if (s == ScrollType.Up) padding else spaceMove, padding, padding)
+    case (scroll, s) if scroll => recyclerView <~ vScrollBy(0, if (s == ScrollType.up) spaceMove else 0)
+    case (_, s) => recyclerView <~ vPadding(padding, if (s == ScrollType.up) padding else spaceMove, padding, padding)
     case _ => Ui.nop
   }
 
@@ -91,10 +90,10 @@ trait CollectionFragmentComposer
       sType = newSType
       recyclerView <~
         vScrollBy(0, -Int.MaxValue) <~
-        (if (sType == ScrollType.Up) vScrollBy(0, spaceMove) else Tweak.blank)
+        (if (sType == ScrollType.up) vScrollBy(0, spaceMove) else Tweak.blank)
     case (_, s) if s != newSType =>
       sType = newSType
-      recyclerView <~ vPadding(padding, if (newSType == ScrollType.Up) padding else spaceMove, padding, padding)
+      recyclerView <~ vPadding(padding, if (newSType == ScrollType.up) padding else spaceMove, padding, padding)
     case _ => Ui.nop
   }
 

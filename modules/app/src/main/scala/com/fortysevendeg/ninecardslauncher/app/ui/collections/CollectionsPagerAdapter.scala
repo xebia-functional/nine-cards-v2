@@ -13,7 +13,7 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections
 
   val fragments : WeakHashMap[Int, CollectionFragment] = WeakHashMap.empty
 
-  var scrollType = ScrollType.Down
+  var scrollType = ScrollType.down
 
   override def getItem(position: Int): Fragment = {
     val fragment = new CollectionFragment()
@@ -51,15 +51,16 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections
   def setScrollType(sType: Int) = scrollType = sType
 
   def notifyChanged(currentPosition: Int): Ui[_] = {
-    var uis: Ui[_] = Ui.nop
-    for (f <- fragments) {
-      if (f._1 == currentPosition) {
-        f._2.activeFragment = true
-      } else {
-        f._2.activeFragment = false
-        uis = uis ~ f._2.scrollType(scrollType)
-      }
+    val uis = fragments map {
+      f =>
+        if (f._1 == currentPosition) {
+          f._2.activeFragment = true
+          Ui.nop
+        } else {
+          f._2.activeFragment = false
+          f._2.scrollType(scrollType)
+        }
     }
-    uis
+    Ui.sequence(uis.toSeq :_*)
   }
 }

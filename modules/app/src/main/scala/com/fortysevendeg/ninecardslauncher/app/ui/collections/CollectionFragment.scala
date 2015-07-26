@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.Contexts
@@ -33,13 +32,16 @@ class CollectionFragment
 
   lazy val position = getArguments.getInt(keyPosition, 0)
 
-  lazy val collection = getArguments.getSerializable(keyCollection).asInstanceOf[Collection]
+  lazy val collection = {
+    val c = getArguments.getSerializable(keyCollection).asInstanceOf[Collection]
+    c.copy(cards = c.cards ++ c.cards)
+  }
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = layout
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    sType = getArguments.getInt(keyScrollType, ScrollType.Down)
-    canScroll = collection.cards.length > numSpaces
+    sType = getArguments.getInt(keyScrollType, ScrollType.down)
+    canScroll = true // collection.cards.length > numSpaces
 
     runUi(initUi(collection))
     super.onViewCreated(view, savedInstanceState)
