@@ -8,17 +8,17 @@ import macroid.ContextWrapper
 
 object Constants {
 
-  val NumSpaces = 9
+  val numSpaces = 9
 
-  val NumInLine = 3
+  val numInLine = 3
 
-  val MinVelocity: Int = 250
+  val minVelocity: Int = 250
 
-  val MaxRatioVelocity: Int = 3000
+  val maxRatioVelocity: Int = 3000
 
-  val MaxVelocity: Int = 700
+  val maxVelocity: Int = 700
 
-  val SpaceVelocity: Int = MaxVelocity - MinVelocity
+  val spaceVelocity: Int = maxVelocity - minVelocity
 
 }
 
@@ -108,7 +108,7 @@ object AnimationsUtils {
     import Constants._
     velocity match {
       case 0 => defaultVelocity
-      case _ => (SpaceVelocity - ((math.min(math.abs(velocity), MaxRatioVelocity) * SpaceVelocity) / MaxRatioVelocity) + MinVelocity).toInt
+      case _ => (spaceVelocity - ((math.min(math.abs(velocity), maxRatioVelocity) * spaceVelocity) / maxRatioVelocity) + minVelocity).toInt
     }
   }
 

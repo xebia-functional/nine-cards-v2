@@ -32,23 +32,23 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityCo
 
   var grid = slot[GridLayout]
 
-  val views = 0 until NumSpaces map (new CollectionItem(_))
+  val views = 0 until numSpaces map (new CollectionItem(_))
 
   addView(getUi(l[GridLayout]() <~ wire(grid) <~ collectionGridStyle))
 
   runUi(grid <~ glAddViews(
     views = views,
-    columns = NumInLine,
-    rows = NumInLine,
-    width = parentDimen.width / NumInLine,
-    height = parentDimen.height / NumInLine))
+    columns = numInLine,
+    rows = numInLine,
+    width = parentDimen.width / numInLine,
+    height = parentDimen.height / numInLine))
 
   def populate(data: LauncherData): Ui[_] = {
     val uiSeq = for {
-      row <- 0 until NumInLine
-      column <- 0 until NumInLine
+      row <- 0 until numInLine
+      column <- 0 until numInLine
     } yield {
-        val position = (row * NumInLine) + column
+        val position = (row * numInLine) + column
         val view = grid map (_.getChildAt(position).asInstanceOf[CollectionItem])
         // TODO we should use a sequance UI
         data.collections.lift(position) map {

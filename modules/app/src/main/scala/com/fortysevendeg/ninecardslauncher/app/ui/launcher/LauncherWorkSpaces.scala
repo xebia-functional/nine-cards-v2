@@ -55,7 +55,7 @@ object LauncherWorkSpacesTweaks {
     collections match {
       case Nil if newLauncherData.collections.nonEmpty => acc :+ newLauncherData
       case Nil => acc
-      case h :: t if newLauncherData.collections.length == Constants.NumSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(false))
+      case h :: t if newLauncherData.collections.length == Constants.numSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(false))
       case h :: t =>
         val g: Seq[Collection] = newLauncherData.collections :+ h
         val n = LauncherData(false, g)

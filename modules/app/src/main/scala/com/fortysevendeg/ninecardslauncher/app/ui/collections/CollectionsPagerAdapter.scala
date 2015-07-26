@@ -18,9 +18,9 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections
   override def getItem(position: Int): Fragment = {
     val fragment = new CollectionFragment()
     val bundle = new Bundle()
-    bundle.putInt(CollectionFragment.KeyPosition, position)
-    bundle.putSerializable(CollectionFragment.KeyCollection, collections(position))
-    bundle.putInt(CollectionFragment.KeyScrollType, scrollType)
+    bundle.putInt(CollectionFragment.keyPosition, position)
+    bundle.putSerializable(CollectionFragment.keyCollection, collections(position))
+    bundle.putInt(CollectionFragment.keyScrollType, scrollType)
     fragment.setArguments(bundle)
     fragment
   }
