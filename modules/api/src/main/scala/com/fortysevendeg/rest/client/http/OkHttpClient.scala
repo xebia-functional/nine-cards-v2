@@ -60,14 +60,14 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
     doMethod(PUT, url, httpHeaders, Some(Json.toJson(body).toString()))
 
 
-  private def doMethod(
+  private[this] def doMethod[T](
     method: Method,
     url: String,
     httpHeaders: Seq[(String, String)],
-    body: Option[String] = None
-    ): Task[NineCardsException \/ HttpClientResponse] =
+    body: Option[String] = None,
+    responseHandler: com.squareup.okhttp.Response => T = defaultResponseHandler _): Task[NineCardsException \/ T] =
     Task {
-      fromTryCatchNineCardsException[HttpClientResponse] {
+      fromTryCatchNineCardsException {
         val builder = createBuilderRequest(url, httpHeaders)
         val request = (method match {
           case GET => builder.get()
@@ -75,22 +75,24 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
           case POST => builder.post(createBody(body))
           case PUT => builder.put(createBody(body))
         }).build()
-        val response = okHttpClient.newCall(request).execute()
-        HttpClientResponse(response.code(), Option(response.body()) map (_.string()))
+        responseHandler(okHttpClient.newCall(request).execute())
       }
     }
 
-  private def createBuilderRequest(url: String, httpHeaders: Seq[(String, String)]): okHttp.Request.Builder =
+  private[this] def defaultResponseHandler(response: com.squareup.okhttp.Response): HttpClientResponse =
+    HttpClientResponse(response.code(), Option(response.body()) map (_.string()))
+
+  private[this] def createBuilderRequest(url: String, httpHeaders: Seq[(String, String)]): okHttp.Request.Builder =
     new okHttp.Request.Builder()
       .url(url)
       .headers(createHeaders(httpHeaders))
 
-  private def createHeaders(httpHeaders: Seq[(String, String)]): Headers = {
+  private[this] def createHeaders(httpHeaders: Seq[(String, String)]): Headers = {
     import scala.collection.JavaConverters._
     okHttp.Headers.of(httpHeaders.map(t => t._1 -> t._2).toMap.asJava)
   }
 
-  private def createBody(body: Option[String]) =
+  private[this] def createBody(body: Option[String]) =
     body match {
       case Some(b) => okHttp.RequestBody.create(jsonMediaType, b)
       case _ => okHttp.RequestBody.create(textPlainMediaType, "")

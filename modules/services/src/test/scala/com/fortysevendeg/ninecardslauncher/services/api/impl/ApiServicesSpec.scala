@@ -5,6 +5,10 @@ import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCar
 import com.fortysevendeg.ninecardslauncher.services.api.{models => serviceModel, _}
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiUserConfigService, ApiGooglePlayService, ApiUserService}
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import com.fortysevendeg.ninecardslauncher.api.reads._
+import UserConfigImplicits._
+import UserImplicits._
+import GooglePlayImplicits._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -18,10 +22,6 @@ trait ApiServicesSpecification
   extends Specification
   with DisjunctionMatchers
   with Mockito {
-
-  import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
 
   implicit val requestConfig = RequestConfig(
     deviceId = Random.nextString(10),
