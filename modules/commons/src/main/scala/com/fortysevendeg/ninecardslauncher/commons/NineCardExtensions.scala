@@ -1,10 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import rapture.core.{Unforeseen, Errata, Answer, Result}
+import rapture.core._
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
+import scala.util.Try
 import scala.util.control.NonFatal
 import scalaz._
 import scalaz.concurrent.Task
@@ -44,4 +45,20 @@ object NineCardExtensions {
 
   implicit def toTaskDisjuntionFromResult[A, E <: Exception : ClassTag](t: Task[Result[A, E]]): Task[E \/ A] =
     t map (r => toDisjunction(r))
+
+  object CatchAll {
+
+    def apply[E <: Exception] = new CatchingAll[E]()
+
+    class CatchingAll[E <: Exception]() {
+      def apply[A](blk: => A)(implicit classTag: ClassTag[E], cv: Throwable => E): Result[A, E] =
+        \/.fromTryCatchNonFatal(blk) match {
+          case \/-(x) => Result.answer[A, E](x)
+          case -\/(e) => Result.errata[A, E](cv(e))
+        }
+    }
+
+  }
+
+
 }

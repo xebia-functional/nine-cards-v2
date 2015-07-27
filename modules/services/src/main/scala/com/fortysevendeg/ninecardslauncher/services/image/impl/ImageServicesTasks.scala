@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import java.io.{File, FileOutputStream, InputStream}
+import java.io._
 import java.net.URL
 
 import android.content.res.Resources
@@ -10,12 +10,13 @@ import android.os.Build
 import android.util.{DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef
+import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationException, ImageServicesConfig}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
+import rapture.core.{Answer, Result}
 
-import scala.util.{Failure, Success, Try}
-import scalaz._
+import scalaz.Scalaz._
 import scalaz.concurrent.Task
 
 trait ImageServicesTasks {
@@ -24,71 +25,81 @@ trait ImageServicesTasks {
 
   val resourceUtils = new ResourceUtils
 
-  def getPathByName(name: String)(implicit context: ContextSupport): Task[NineCardsException \/ File] =
+  implicit def uncaughtConverter = (t : Throwable) => BitmapTransformationException(t.getMessage, t.some)
+
+  def getPathByName(name: String): ServiceDef[ContextSupport, File, IOException] = Service { implicit context: ContextSupport =>
     Task {
-      fromTryCatchNineCardsException[File] {
+      Result.catching[IOException] {
         new File(resourceUtils.getPath(if (name.isEmpty) "_" else name.substring(0, 1).toUpperCase))
       }
     }
+  }
 
-  def getPathByApp(packageName: String, className: String)(implicit context: ContextSupport): Task[NineCardsException \/ File] =
+  def getPathByApp(packageName: String, className: String): ServiceDef[ContextSupport, File, IOException] = Service { implicit context: ContextSupport =>
     Task {
-      fromTryCatchNineCardsException[File] {
+      Result.catching[IOException] {
         new File(resourceUtils.getPathPackage(packageName, className))
       }
     }
+  }
 
-  def getPathByPackageName(packageName: String)(implicit context: ContextSupport): Task[NineCardsException \/ File] =
+  def getPathByPackageName(packageName: String): ServiceDef[ContextSupport, File, IOException] = Service { implicit context: ContextSupport =>
     Task {
-      fromTryCatchNineCardsException[File] {
+      Result.catching[IOException] {
         new File(resourceUtils.getPath(packageName))
       }
     }
+  }
 
-  def getBitmapByApp(packageName: String, icon: Int)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
+  def getBitmapByApp(packageName: String, icon: Int): ServiceDef[ContextSupport, Bitmap, BitmapTransformationException] = Service { context: ContextSupport =>
     Task {
-      fromTryCatchNineCardsException[Bitmap] {
-        val packageManager = context.getPackageManager
-        (Option(packageManager.getResourcesForApplication(packageName)) map {
-          resources =>
-            val density = betterDensityForResource(resources, icon)
-            tryIconByDensity(resources, icon, density) match {
-              case Success(bmp) => bmp
-              case Failure(_) => tryIconByPackageName(packageName) match {
-                case Success(bmp) => bmp
-                case Failure(_) => throw NineCardsException("Icon no created")
-              }
-            }
-        }) getOrElse (throw NineCardsException("Resource not found from packageName"))
+      val packageManager = context.getPackageManager
+      Option(packageManager.getResourcesForApplication(packageName)) match {
+        case Some(resources) =>
+          val density = betterDensityForResource(resources, icon)
+          tryIconByDensity(resources, icon, density) match {
+            case answer@Answer(_) => answer
+            case _ => tryIconByPackageName(packageName)
+          }
+        case _ => Result.errata(BitmapTransformationException("Resource not found from packageName"))
       }
     }
+  }
 
-  def getBitmapFromURL(uri: String)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
+  def getBitmapFromURL(uri: String): ServiceDef[ContextSupport, Bitmap, BitmapTransformationException] = Service { _ =>
     Task {
-      fromTryCatchNineCardsException[Bitmap] {
-        val is = new URL(uri).getContent.asInstanceOf[InputStream]
-        BitmapFactory.decodeStream(is)
+      CatchAll[BitmapTransformationException] {
+        new URL(uri).getContent match {
+          case is: InputStream => BitmapFactory.decodeStream(is)
+          case _ => throw BitmapTransformationException(s"Unexpected error while fetching content from uri: $uri")
+        }
       }
     }
+  }
 
-  def saveBitmap(file: File, bitmap: Bitmap): Task[NineCardsException \/ Unit] =
+  def saveBitmap(file: File, bitmap: Bitmap): ServiceDef[ContextSupport, Unit, IOException] = Service { _ =>
     Task {
-      fromTryCatchNineCardsException[Unit] {
+      Result.catching[IOException] {
         val out: FileOutputStream = new FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, out)
         out.flush()
         out.close()
       }
     }
+  }
 
-  def getBitmapByAppOrName(packageName: String, icon: Int, name: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
-    manageBitmapTask(name)(getBitmapByApp(packageName, icon))
+  def getBitmapByAppOrName(packageName: String, icon: Int, name: String):
+  ServiceDef[ContextSupport, Bitmap, BitmapTransformationException] = Service { context: ContextSupport =>
+    manageBitmapTask(name)(getBitmapByApp(packageName, icon).run(context))
+  }
 
-  def getBitmapFromURLOrName(url: String, name: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
-    manageBitmapTask(name)(getBitmapFromURL(url))
+  def getBitmapFromURLOrName(url: String, name: String):
+  ServiceDef[ContextSupport, Bitmap, BitmapTransformationException] = Service { context: ContextSupport =>
+    manageBitmapTask(name)(getBitmapFromURL(url).run(context))(context, )
+  }
 
-  def getBitmapByName(text: String)(implicit context: ContextSupport, config: ImageServicesConfig): NineCardsException \/ Bitmap =
-    fromTryCatchNineCardsException[Bitmap] {
+  def getBitmapByName(text: String)(implicit context: ContextSupport, config: ImageServicesConfig): Result[Bitmap, BitmapTransformationException] =
+    CatchAll[BitmapTransformationException] {
         val bitmap: Bitmap = Bitmap.createBitmap(defaultSize, defaultSize, Bitmap.Config.RGB_565)
         val bounds: Rect = new Rect
         val paint = defaultPaint
@@ -102,10 +113,11 @@ trait ImageServicesTasks {
         bitmap
       }
 
-  private[this] def manageBitmapTask(name: String)(getBitmap: => Task[NineCardsException \/ Bitmap])(implicit context: ContextSupport, config: ImageServicesConfig) =
+  private[this] def manageBitmapTask(name: String)(getBitmap: => Task[Result[Bitmap, BitmapTransformationException]])
+    (implicit context: ContextSupport, config: ImageServicesConfig) =
     getBitmap map {
-      case -\/(_) => getBitmapByName(name)
-      case \/-(r) => \/-(r)
+      case answer @ Answer(_) => answer
+      case _ => getBitmapByName(name)
     }
 
   private[this] def currentDensity(implicit context: ContextSupport): Int =
@@ -118,8 +130,8 @@ trait ImageServicesTasks {
       List(DisplayMetrics.DENSITY_XXHIGH, DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH)
   }
 
-  private[this] def betterDensityForResource(resources: Resources, id: Int)(implicit context: ContextSupport) =
-    densities.find(density => Try(resources.getValueForDensity(id, density, new TypedValue, true)).isSuccess) getOrElse noDensity
+  private[this] def betterDensityForResource(resources: Resources, id: Int)(implicit context: ContextSupport): Int =
+    densities.find(density => Result(resources.getValueForDensity(id, density, new TypedValue, true)).isAnswer) getOrElse noDensity
 
   private[this] def defaultSize(implicit context: ContextSupport): Int = {
     val metrics: DisplayMetrics = context.getResources.getDisplayMetrics
@@ -146,15 +158,15 @@ trait ImageServicesTasks {
     paint
   }
 
-  private[this] def tryIconByDensity(resources: Resources, icon: Int, density: Int) =
-    Try {
+  private[this] def tryIconByDensity(resources: Resources, icon: Int, density: Int): Result[Bitmap, BitmapTransformationException] =
+    CatchAll[BitmapTransformationException] {
       val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) resources.getDrawableForDensity(icon, density, null)
       else resources.getDrawableForDensity(icon, density)
       d.asInstanceOf[BitmapDrawable].getBitmap
     }
 
-  private[this] def tryIconByPackageName(packageName: String)(implicit context: ContextSupport) =
-    Try {
+  private[this] def tryIconByPackageName(packageName: String)(implicit context: ContextSupport): Result[Bitmap, BitmapTransformationException] =
+    CatchAll[BitmapTransformationException] {
       context.getPackageManager.getApplicationIcon(packageName).asInstanceOf[BitmapDrawable].getBitmap
     }
 
