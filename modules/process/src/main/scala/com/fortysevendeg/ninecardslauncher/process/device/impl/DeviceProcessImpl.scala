@@ -45,7 +45,7 @@ class DeviceProcessImpl(
       _ <- addCacheCategories(toAddCacheCategoryRequestSeq(response.apps.items)) ▹ eitherT
     } yield ()
 
-  override def createBitmapsForNoPackagesInstalled(packages: Seq[String])(implicit context: ContextSupport): Task[NineCardsException \/ Unit] =
+  override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport): Task[NineCardsException \/ Unit] =
     for {
       requestConfig <- apiUtils.getRequestConfig ▹ eitherT
       response <- apiServices.googlePlayPackages(packages)(requestConfig) ▹ eitherT

@@ -10,5 +10,5 @@ import scalaz.concurrent.Task
 trait DeviceProcess {
   def getCategorizedApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppCategorized]]
   def categorizeApps(implicit context: ContextSupport):  Task[NineCardsException \/ Unit]
-  def createBitmapsForNoPackagesInstalled(packages: Seq[String])(implicit context: ContextSupport):  Task[NineCardsException \/ Unit]
+  def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport):  Task[NineCardsException \/ Unit]
 }

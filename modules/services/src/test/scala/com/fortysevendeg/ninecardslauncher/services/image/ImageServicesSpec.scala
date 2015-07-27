@@ -93,7 +93,7 @@ trait ImageServicesSpecification
 
     mockTasks.getBitmapByName(
       appPackage.name)(contextSupport, imageServiceConfig) returns
-      defaultBitmapTask
+      \/-(mock[Bitmap])
 
     mockTasks.getBitmapByApp(
       appPackage.packageName,

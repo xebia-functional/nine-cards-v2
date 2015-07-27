@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCar
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.process.user.{Conversions, SignInResponse, UserProcess}
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
-import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, GoogleDevice}
+import com.fortysevendeg.ninecardslauncher.services.api.models.Installation
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
 
 import scalaz.concurrent.Task
@@ -13,7 +13,6 @@ import scalaz._
 import Scalaz._
 import EitherT._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 
 class UserProcessImpl(
   apiServices: ApiServices,
@@ -34,10 +33,11 @@ class UserProcessImpl(
       _ <- syncInstallation(installation) ▹ eitherT
     } yield SignInResponse(loginResponse.statusCode)
 
-  override def register(implicit context: ContextSupport): Task[NineCardsException \/ Unit] = persistenceServices.getInstallation map {
-    case \/-(r) => \/-(r)
-    case -\/(ex) => toEnsureAttemptRun(persistenceServices.saveInstallation(basicInstallation))
-  }
+  override def register(implicit context: ContextSupport): Task[NineCardsException \/ Unit] =
+    for {
+      exists <- persistenceServices.existsInstallation ▹ eitherT
+      _ <- (if (!exists) persistenceServices.saveInstallation(basicInstallation) else Task{\/-(())}) ▹ eitherT
+    } yield (())
 
   override def unregister(implicit context: ContextSupport): Task[NineCardsException \/ Unit] =
     for {

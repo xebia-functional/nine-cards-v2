@@ -4,11 +4,12 @@ case class UserInfo(
   email: String,
   name: String,
   imageUrl: String,
-  devices: Seq[UserSimpleDevice])
+  devices: Seq[UserDevice])
 
-case class UserSimpleDevice(
+case class UserDevice(
   deviceId: String,
-  deviceName: String)
+  deviceName: String,
+  collections: Seq[UserCollection])
 
 case class UserCollection(
   name: String,

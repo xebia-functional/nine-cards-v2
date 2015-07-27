@@ -52,6 +52,12 @@ object NineCardCategories {
   val gameArcade: String = "GAME_ARCADE"
   val gameSimulation: String = "GAME_SIMULATION"
   val gameWidgets: String = "GAME_WIDGETS"
+
+  val categories = Seq(game, booksAndReference, business, comics, communication, education,
+    entertainment, finance, healthAndFitness, librariesAndDemo, lifestyle, appWallpaper,
+    mediaAndVideo, medical, musicAndAudio, newsAndMagazines, personalization, photography,
+    productivity, shopping, social, sports, tools, transportation, travelAndLocal, weather, appWidgets)
+
 }
 
 object CollectionType {

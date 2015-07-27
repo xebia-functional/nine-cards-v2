@@ -70,6 +70,8 @@ trait PersistenceServices {
 
   def getInstallation(implicit context: ContextSupport): Task[NineCardsException \/ Installation]
 
+  def existsInstallation(implicit context: ContextSupport): Task[NineCardsException \/ Boolean]
+
   def saveInstallation(installation: Installation)(implicit context: ContextSupport): Task[NineCardsException \/ Unit]
 
 }

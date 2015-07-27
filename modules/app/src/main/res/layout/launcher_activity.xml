@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             style="@style/LauncherRoot">
+
+    <ProgressBar
+        style="@style/LauncherLoading"
+        android:id="@+id/launcher_loading"/>
+
+    <LinearLayout
+        style="@style/LauncherRootContent"
+        android:id="@+id/launcher_content">
+
+        <LinearLayout
+            style="@style/LauncherSearchPanel"
+            android:id="@+id/launcher_search_panel">
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+                style="@style/LauncherBurgerButton"
+                android:id="@+id/launcher_burger_icon"/>
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+                style="@style/LauncherGoogleButton"
+                android:id="@+id/launcher_google_icon"/>
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+                style="@style/LauncherMicButton"
+                android:id="@+id/launcher_mic_icon"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            style="@style/LauncherWorkSpacesContent"
+            android:id="@+id/launcher_work_spaces_content"/>
+
+        <LinearLayout
+            style="@style/LauncherPaginationPanel"
+            android:id="@+id/launcher_pagination_panel"/>
+
+        <LinearLayout
+            style="@style/LauncherDrawerPanel"
+            android:id="@+id/launcher_drawer_panel">
+
+            <FrameLayout
+                style="@style/LauncherDrawerContentItem">
+
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+                    style="@style/LauncherDrawerItem"
+                    android:id="@+id/launcher_page_1"/>
+            </FrameLayout>
+
+            <FrameLayout
+                style="@style/LauncherDrawerContentItem">
+
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+                    style="@style/LauncherDrawerItem"
+                    android:id="@+id/launcher_page_2"/>
+            </FrameLayout>
+
+            <FrameLayout
+                style="@style/LauncherDrawerContentItem">
+
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+                    style="@style/LauncherDrawerAppsItem"
+                    android:id="@+id/launcher_app_drawer"/>
+            </FrameLayout>
+
+            <FrameLayout
+                style="@style/LauncherDrawerContentItem">
+
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+                    style="@style/LauncherDrawerItem"
+                    android:id="@+id/launcher_page_3"/>
+            </FrameLayout>
+
+            <FrameLayout
+                style="@style/LauncherDrawerContentItem">
+
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+                    style="@style/LauncherDrawerItem"
+                    android:id="@+id/launcher_page_4"/>
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

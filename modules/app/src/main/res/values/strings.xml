@@ -39,6 +39,8 @@
     <string name="loadUserConfigDeviceReplace">Replace <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g> with a new configuration</string>
     <string name="deviceNotFoundMessage">This device is not associated with your account. Please log in</string>
 
+    <string name="construction">We are working in Wizard. Please, you should wait that the icon disappear in Notification Bar before to press the button</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Any Category</string>
