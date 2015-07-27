@@ -1,1 +1,1 @@
-platformTarget in Android := "android-21"
+platformTarget in Android := "android-22"

@@ -2,8 +2,10 @@ import Libraries.android._
 import Libraries.graphics._
 import Libraries.macroid._
 import Libraries.playServices._
-import Versions._
 import Libraries.net._
+import Libraries.scala._
+import Libraries.json._
+import Libraries.test._
 import android.Keys._
 import sbt.Keys._
 import sbt._
@@ -12,12 +14,18 @@ object Settings {
 
   // App Module
   // For multidex add `multiDex ++` to this settings
-  lazy val appSettings = commonSettings ++
+  lazy val appSettings = basicSettings ++
       Seq(
         run <<= run in Android,
         javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-        transitiveAndroidLibs in Android := false,
-        libraryDependencies ++= commonDependencies,
+        transitiveAndroidLibs in Android := true,
+        libraryDependencies ++= appDependencies,
+        apkbuildExcludes in Android ++= Seq(
+          "META-INF/LICENSE",
+          "META-INF/LICENSE.txt",
+          "META-INF/NOTICE",
+          "META-INF/NOTICE.txt",
+          "reference.conf"),
         dexMaxHeap in Android := "2048m",
         proguardScala in Android := true,
         useProguard in Android := true,
@@ -25,44 +33,75 @@ object Settings {
         proguardCache in Android := Seq.empty)
 
   // Api Module
-
-  lazy val apiSettings = commonSettings ++
-      Seq(
-        exportJars := true,
-        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
-        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-        javacOptions in Compile += "-deprecation",
-        proguardScala in Android := false
-      )
+  lazy val apiSettings = basicSettings ++ librarySettings ++
+    Seq(libraryDependencies ++= apiDependencies)
 
   // Repository Module
+  lazy val repositorySettings = basicSettings ++ librarySettings ++
+    Seq(libraryDependencies ++= repositoryDependencies)
 
-  lazy val repositorySettings = commonSettings ++
-      Seq(
-        exportJars := true,
-        scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
-        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-        javacOptions in Compile += "-deprecation",
-        proguardScala in Android := false
-      )
+  // Services Module
+  lazy val servicesSettings = basicSettings ++ librarySettings ++
+      Seq(libraryDependencies ++= servicesDependencies)
 
-  // Commons
+  // Process Module
+  lazy val processSettings = basicSettings ++ librarySettings ++
+      Seq(libraryDependencies ++= processDependencies)
 
-  lazy val commonSettings = Seq(
+  // Commons Module
+  lazy val commonsSettings = basicSettings ++ librarySettings ++
+      Seq(libraryDependencies ++= commonsDependencies)
+
+  // Basic Setting for all modules
+  lazy val basicSettings = Seq(
     scalaVersion := Versions.scalaV,
-    resolvers ++= commonResolvers)
+    resolvers ++= commonResolvers,
+    libraryDependencies ++= Seq(scalaz, scalazConcurrent)
+  )
 
-  lazy val commonDependencies = Seq(
-//    aar(multiDexLib),
-    aar(androidSupportv4),
+  // Settings associated to library modules
+  lazy val librarySettings = Seq(
+    exportJars := true,
+    scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
+    javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+    javacOptions in Compile += "-deprecation",
+    proguardScala in Android := false)
+
+  lazy val appDependencies = Seq(
     aar(androidAppCompat),
-    aar(macroidRoot),
     aar(macroidExtras),
+    aar(macroidRoot),
+    aar(androidSupportv4),
     aar(androidRecyclerview),
     aar(androidCardView),
     aar(playServicesBase),
     glide,
     okHttp)
+
+  lazy val processDependencies = Seq(
+    androidProvidedLib,
+    specs2,
+    mockito)
+
+  lazy val servicesDependencies = Seq(
+    androidProvidedLib,
+    specs2,
+    mockito)
+
+  lazy val apiDependencies = Seq(
+    androidProvidedLib,
+    playJson,
+    okHttp % "provided",
+    specs2,
+    mockito,
+    mockServer)
+
+  lazy val repositoryDependencies = Seq(
+    androidProvidedLib,
+    specs2,
+    mockito)
+
+  lazy val commonsDependencies = Seq(androidProvidedLib)
 
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,

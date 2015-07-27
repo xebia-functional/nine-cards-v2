@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.repository
 
-import com.fortysevendeg.ninecardslauncher.provider.{CacheCategoryEntity, GeoInfoEntity, CardEntity, CollectionEntity}
 import com.fortysevendeg.ninecardslauncher.repository.model._
+import com.fortysevendeg.ninecardslauncher.repository.provider._
 
 object Conversions {
 
-  def toCacheCategory(cacheCategory: CacheCategoryEntity) = CacheCategory(
+  def toCacheCategory(cacheCategory: CacheCategoryEntity): CacheCategory = CacheCategory(
     id = cacheCategory.id,
     data = CacheCategoryData(
       packageName = cacheCategory.data.packageName,
@@ -15,26 +15,26 @@ object Conversions {
       ratingsCount = cacheCategory.data.ratingsCount,
       commentCount = cacheCategory.data.commentCount))
 
-  def toCard(cardEntity: CardEntity) = Card(
+  def toCard(cardEntity: CardEntity): Card = Card(
     id = cardEntity.id,
     data = CardData(
       position = cardEntity.data.position,
       micros = cardEntity.data.micros,
       term = cardEntity.data.term,
       packageName = Option[String](cardEntity.data.packageName),
-      `type` = cardEntity.data.`type`,
+      cardType = cardEntity.data.`type`,
       intent = cardEntity.data.intent,
       imagePath = cardEntity.data.imagePath,
       starRating = Option[Double](cardEntity.data.starRating),
       numDownloads = Option[String](cardEntity.data.numDownloads),
       notification = Option[String](cardEntity.data.notification)))
 
-  def toCollection(collectionEntity: CollectionEntity) = Collection(
+  def toCollection(collectionEntity: CollectionEntity): Collection = Collection(
     id = collectionEntity.id,
     data = CollectionData(
       position = collectionEntity.data.position,
       name = collectionEntity.data.name,
-      `type` = collectionEntity.data.`type`,
+      collectionType = collectionEntity.data.`type`,
       icon = collectionEntity.data.icon,
       themedColorIndex = collectionEntity.data.themedColorIndex,
       appsCategory = Option[String](collectionEntity.data.appsCategory),
@@ -43,7 +43,7 @@ object Conversions {
       sharedCollectionId = Option[String](collectionEntity.data.sharedCollectionId),
       sharedCollectionSubscribed = Option[Boolean](collectionEntity.data.sharedCollectionSubscribed)))
 
-  def toGeoInfo(geoInfoEntity: GeoInfoEntity) = GeoInfo(
+  def toGeoInfo(geoInfoEntity: GeoInfoEntity): GeoInfo = GeoInfo(
     id = geoInfoEntity.id,
     data = GeoInfoData(
       constrain = geoInfoEntity.data.constrain,

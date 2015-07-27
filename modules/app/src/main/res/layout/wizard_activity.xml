@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/WizardRoot">
+
+    <LinearLayout
+        android:id="@+id/wizard_loading_content"
+        style="@style/WizardLoadingContent">
+
+        <ProgressBar
+            style="@style/WizardLoadingBar"/>
+
+        <TextView
+            style="@style/WizardLoadingMessage"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wizard_user_content"
+        style="@style/WizardContent">
+
+        <TextView
+            android:text="@string/welcome"
+            style="@style/WizardTitle"/>
+
+        <TextView
+            android:text="@string/welcomeMessage"
+            style="@style/WizardMessage"/>
+
+        <RadioGroup
+            android:id="@+id/wizard_user_group"
+            style="@style/WizardRadioGroup" />
+
+        <Button
+            android:id="@+id/wizard_user_action"
+            android:text="@string/buttonContinue"
+            style="@style/WizardButton" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wizard_device_content"
+        style="@style/WizardContent">
+
+        <TextView
+            android:id="@+id/wizard_device_title"
+            style="@style/WizardTitle"/>
+
+        <TextView
+            android:id="@+id/wizard_device_message"
+            style="@style/WizardMessage"/>
+
+        <RadioGroup
+            android:id="@+id/wizard_device_group"
+            style="@style/WizardRadioGroup" />
+
+        <Button
+            android:id="@+id/wizard_device_action"
+            android:text="@string/buttonContinue"
+            style="@style/WizardButton" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wizard_finish_content"
+        style="@style/WizardContent">
+
+        <TextView
+            android:text="@string/construction"
+            style="@style/WizardEndMessage"/>
+
+        <Button
+            android:id="@+id/wizard_finish_action"
+            android:text="@string/goTo9Cards"
+            style="@style/WizardButton" />
+
+    </LinearLayout>
+
+</FrameLayout>

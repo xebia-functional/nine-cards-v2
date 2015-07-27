@@ -9,11 +9,17 @@ import org.specs2.mock.Mockito
 sealed trait CursorDataType
 
 case object ArrayByteDataType extends CursorDataType
+
 case object DoubleDataType extends CursorDataType
+
 case object FloatDataType extends CursorDataType
+
 case object IntDataType extends CursorDataType
+
 case object LongDataType extends CursorDataType
+
 case object ShortDataType extends CursorDataType
+
 case object StringDataType extends CursorDataType
 
 trait MockCursor extends Mockito {
@@ -69,7 +75,7 @@ trait MockCursor extends Mockito {
     mockMoveToNext(size = size)
 
     data foreach {
-      case (column, index, valueSeq, cursorDataType)  if valueSeq.isEmpty =>
+      case (column, index, Nil, cursorDataType) =>
         mockGetColumnIndex(column, index)
       case (column, index, valueSeq, cursorDataType) =>
         mockGetColumnIndex(column, index)

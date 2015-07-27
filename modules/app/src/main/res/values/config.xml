@@ -13,4 +13,7 @@
     <!-- Google Play -->
     <string name="google_play_url">http://play.google.com/store/apps/details?id=%1$s</string>
 
+    <!-- 9Cards -->
+    <string name="icons_apps_folder">icons_apps</string>
+
 </resources>
