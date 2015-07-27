@@ -6,9 +6,9 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collectio
 
 trait CollectionConversions extends CardConversions {
 
-  def toCollectionSeq(collections: Seq[RepoCollection]) = collections map toCollection
+  def toCollectionSeq(collections: Seq[RepoCollection]): Seq[Collection] = collections map toCollection
 
-  def toCollection(collection: RepoCollection) =
+  def toCollection(collection: RepoCollection): Collection =
     Collection(
       id = collection.id,
       position = collection.data.position,
@@ -23,7 +23,7 @@ trait CollectionConversions extends CardConversions {
       sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed getOrElse false
     )
 
-  def toCollection(collection: RepoCollection, cards: Seq[RepoCard]) =
+  def toCollection(collection: RepoCollection, cards: Seq[RepoCard]): Collection =
     Collection(
       id = collection.id,
       position = collection.data.position,
@@ -39,7 +39,7 @@ trait CollectionConversions extends CardConversions {
       cards = cards map toCard
     )
 
-  def toRepositoryCollection(collection: Collection) =
+  def toRepositoryCollection(collection: Collection): RepoCollection =
     RepoCollection(
       id = collection.id,
       data = RepoCollectionData(
@@ -56,7 +56,7 @@ trait CollectionConversions extends CardConversions {
       )
     )
 
-  def toRepositoryCollection(request: UpdateCollectionRequest) =
+  def toRepositoryCollection(request: UpdateCollectionRequest): RepoCollection =
     RepoCollection(
       id = request.id,
       data = RepoCollectionData(
@@ -73,7 +73,7 @@ trait CollectionConversions extends CardConversions {
       )
     )
 
-  def toRepositoryCollectionData(request: AddCollectionRequest) =
+  def toRepositoryCollectionData(request: AddCollectionRequest): RepoCollectionData =
     RepoCollectionData(
       position = request.position,
       name = request.name,

@@ -100,7 +100,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
       }
     }
 
-  private def fetchCollection(
+  private[this] def fetchCollection(
     nineCardsUri: NineCardsUri = CollectionUri,
     projection: Seq[String] = allFields,
     selection: String = "",
@@ -114,7 +114,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) exten
       whereParams = selectionArgs,
       orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
 
-  private def fetchCollections(
+  private[this] def fetchCollections(
     nineCardsUri: NineCardsUri = CollectionUri,
     projection: Seq[String] = allFields,
     selection: String = "",

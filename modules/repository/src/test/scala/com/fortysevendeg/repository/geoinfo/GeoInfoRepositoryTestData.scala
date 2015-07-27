@@ -7,54 +7,56 @@ import scala.util.Random
 
 trait GeoInfoRepositoryTestData {
 
-  val geoInfoId = Random.nextInt(10)
-  val nonExistingGeoInfoId = 15
-  val constrain = Random.nextString(5)
-  val nonExistingConstrain = Random.nextString(5)
-  val occurrence = Random.nextString(5)
-  val wifi = Random.nextString(5)
-  val latitude = Random.nextDouble()
-  val longitude = Random.nextDouble()
-  val system = Random.nextInt(10) < 5
+  val testGeoInfoId = Random.nextInt(10)
+  val testNonExistingGeoInfoId = 15
+  val testConstrain = Random.nextString(5)
+  val testNonExistingConstrain = Random.nextString(5)
+  val testOccurrence = Random.nextString(5)
+  val testWifi = Random.nextString(5)
+  val testLatitude = Random.nextDouble()
+  val testLongitude = Random.nextDouble()
+  val testSystem = Random.nextInt(10) < 5
 
   val geoInfoEntitySeq = createGeoInfoEntitySeq(5)
   val geoInfoEntity = geoInfoEntitySeq.head
   val geoInfoSeq = createGeoInfoSeq(5)
   val geoInfo = geoInfoSeq.head
 
-  def createGeoInfoEntitySeq(num: Int) = (0 until num) map (i => GeoInfoEntity(
-    id = geoInfoId + i,
-    data = GeoInfoEntityData(
-      constrain = constrain,
-      occurrence = occurrence,
-      wifi = wifi,
-      latitude = latitude,
-      longitude = longitude,
-      system = system)))
+  def createGeoInfoEntitySeq(num: Int) = List.tabulate(num)(
+    i => GeoInfoEntity(
+      id = testGeoInfoId + i,
+      data = GeoInfoEntityData(
+        constrain = testConstrain,
+        occurrence = testOccurrence,
+        wifi = testWifi,
+        latitude = testLatitude,
+        longitude = testLongitude,
+        system = testSystem)))
 
-  def createGeoInfoSeq(num: Int) = (0 until num) map (i => GeoInfo(
-    id = geoInfoId + i,
-    data = GeoInfoData(
-      constrain = constrain,
-      occurrence = occurrence,
-      wifi = wifi,
-      latitude = latitude,
-      longitude = longitude,
-      system = system)))
+  def createGeoInfoSeq(num: Int) = List.tabulate(num)(
+    i => GeoInfo(
+      id = testGeoInfoId + i,
+      data = GeoInfoData(
+        constrain = testConstrain,
+        occurrence = testOccurrence,
+        wifi = testWifi,
+        latitude = testLatitude,
+        longitude = testLongitude,
+        system = testSystem)))
 
   def createGeoInfoValues = Map[String, Any](
-    GeoInfoEntity.constrain -> constrain,
-    GeoInfoEntity.occurrence -> occurrence,
-    GeoInfoEntity.wifi -> wifi,
-    GeoInfoEntity.latitude -> latitude,
-    GeoInfoEntity.longitude -> longitude,
-    GeoInfoEntity.system -> system)
+    GeoInfoEntity.constrain -> testConstrain,
+    GeoInfoEntity.occurrence -> testOccurrence,
+    GeoInfoEntity.wifi -> testWifi,
+    GeoInfoEntity.latitude -> testLatitude,
+    GeoInfoEntity.longitude -> testLongitude,
+    GeoInfoEntity.system -> testSystem)
 
   def createGeoInfoData = GeoInfoData(
-    constrain = constrain,
-    occurrence = occurrence,
-    wifi = wifi,
-    latitude = latitude,
-    longitude = longitude,
-    system = system)
+    constrain = testConstrain,
+    occurrence = testOccurrence,
+    wifi = testWifi,
+    latitude = testLatitude,
+    longitude = testLongitude,
+    system = testSystem)
 }

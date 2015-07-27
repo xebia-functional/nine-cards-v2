@@ -3,7 +3,7 @@ package com.fortysevendeg.repository.cachecategory
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
-import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity.cacheCategoryEntityFromCursor
+import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.repository._
@@ -30,47 +30,47 @@ trait CacheCategoryRepositorySpecification
 
     self: CacheCategoryRepositoryScope =>
 
-    contentResolverWrapper.insert(nineCardsUri = CacheCategoryUri, values = createCacheCategoryValues) returns cacheCategoryId
+    contentResolverWrapper.insert(nineCardsUri = CacheCategoryUri, values = createCacheCategoryValues) returns testCacheCategoryId
 
-    contentResolverWrapper.deleteById(nineCardsUri = CacheCategoryUri, id = cacheCategoryId) returns 1
+    contentResolverWrapper.deleteById(nineCardsUri = CacheCategoryUri, id = testCacheCategoryId) returns 1
 
     contentResolverWrapper.delete(
       nineCardsUri = CacheCategoryUri,
-      where = s"${CacheCategoryEntity.packageName} = ?",
-      whereParams = Seq(packageName)) returns 1
+      where = s"$packageName = ?",
+      whereParams = Seq(testPackageName)) returns 1
 
     contentResolverWrapper.findById(
       nineCardsUri = CacheCategoryUri,
-      id = cacheCategoryId,
-      projection = CacheCategoryEntity.allFields)(
+      id = testCacheCategoryId,
+      projection = allFields)(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) returns Some(cacheCategoryEntity)
 
     contentResolverWrapper.findById(
       nineCardsUri = CacheCategoryUri,
-      id = nonExistingCacheCategoryId,
-      projection = CacheCategoryEntity.allFields)(
+      id = testNonExistingCacheCategoryId,
+      projection = allFields)(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
       nineCardsUri = CacheCategoryUri,
-      projection = CacheCategoryEntity.allFields)(
+      projection = allFields)(
         f = getListFromCursor(cacheCategoryEntityFromCursor)) returns cacheCategoryEntitySeq
 
     contentResolverWrapper.fetch(
       nineCardsUri = CacheCategoryUri,
-      projection = CacheCategoryEntity.allFields,
-      where = s"${CacheCategoryEntity.packageName} = ?",
-      whereParams = Seq(packageName))(
+      projection = allFields,
+      where = s"$packageName = ?",
+      whereParams = Seq(testPackageName))(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) returns Some(cacheCategoryEntity)
 
     contentResolverWrapper.fetch(
       nineCardsUri = CacheCategoryUri,
-      projection = CacheCategoryEntity.allFields,
-      where = s"${CacheCategoryEntity.packageName} = ?",
-      whereParams = Seq(nonExistingPackageName))(
+      projection = allFields,
+      where = s"$packageName = ?",
+      whereParams = Seq(testNonExistingPackageName))(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(CacheCategoryUri, cacheCategoryId, createCacheCategoryValues) returns 1
+    contentResolverWrapper.updateById(CacheCategoryUri, testCacheCategoryId, createCacheCategoryValues) returns 1
   }
 
   trait ErrorCacheCategoryRepositoryResponses
@@ -83,33 +83,34 @@ trait CacheCategoryRepositorySpecification
 
     contentResolverWrapper.insert(nineCardsUri = CacheCategoryUri, values = createCacheCategoryValues) throws contentResolverException
 
-    contentResolverWrapper.deleteById(nineCardsUri = CacheCategoryUri, id = cacheCategoryId) throws contentResolverException
+    contentResolverWrapper.deleteById(nineCardsUri = CacheCategoryUri, id = testCacheCategoryId) throws contentResolverException
 
     contentResolverWrapper.delete(
       nineCardsUri = CacheCategoryUri,
-      where = s"${CacheCategoryEntity.packageName} = ?",
-      whereParams = Seq(packageName)) throws contentResolverException
+      where = s"$packageName = ?",
+      whereParams = Seq(testPackageName)) throws contentResolverException
 
     contentResolverWrapper.findById(
       nineCardsUri = CacheCategoryUri,
-      id = cacheCategoryId,
-      projection = CacheCategoryEntity.allFields)(
+      id = testCacheCategoryId,
+      projection = allFields)(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       nineCardsUri = CacheCategoryUri,
-      projection = CacheCategoryEntity.allFields)(
-        f = getListFromCursor(cacheCategoryEntityFromCursor))  throws contentResolverException
+      projection = allFields)(
+        f = getListFromCursor(cacheCategoryEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       nineCardsUri = CacheCategoryUri,
-      projection = CacheCategoryEntity.allFields,
-      where = s"${CacheCategoryEntity.packageName} = ?",
-      whereParams = Seq(packageName))(
-        f = getEntityFromCursor(cacheCategoryEntityFromCursor))  throws contentResolverException
+      projection = allFields,
+      where = s"$packageName = ?",
+      whereParams = Seq(testPackageName))(
+        f = getEntityFromCursor(cacheCategoryEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(CacheCategoryUri, cacheCategoryId, createCacheCategoryValues)  throws contentResolverException
+    contentResolverWrapper.updateById(CacheCategoryUri, testCacheCategoryId, createCacheCategoryValues) throws contentResolverException
   }
+
 }
 
 trait CacheCategoryMockCursor
@@ -119,13 +120,12 @@ trait CacheCategoryMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, cacheCategorySeq map (_.id), IntDataType),
-    (CacheCategoryEntity.packageName, 1, cacheCategorySeq map (_.data.packageName), StringDataType),
-    (CacheCategoryEntity.category, 2, cacheCategorySeq map (_.data.category), StringDataType),
-    (CacheCategoryEntity.starRating, 3, cacheCategorySeq map (_.data.starRating), DoubleDataType),
-    (CacheCategoryEntity.numDownloads, 4, cacheCategorySeq map (_.data.numDownloads), StringDataType),
-    (CacheCategoryEntity.ratingsCount, 5, cacheCategorySeq map (_.data.ratingsCount), IntDataType),
-    (CacheCategoryEntity.commentCount, 6, cacheCategorySeq map (_.data.commentCount), IntDataType)
-  )
+    (packageName, 1, cacheCategorySeq map (_.data.packageName), StringDataType),
+    (category, 2, cacheCategorySeq map (_.data.category), StringDataType),
+    (starRating, 3, cacheCategorySeq map (_.data.starRating), DoubleDataType),
+    (numDownloads, 4, cacheCategorySeq map (_.data.numDownloads), StringDataType),
+    (ratingsCount, 5, cacheCategorySeq map (_.data.ratingsCount), IntDataType),
+    (commentCount, 6, cacheCategorySeq map (_.data.commentCount), IntDataType))
 
   prepareCursor[CacheCategory](cacheCategorySeq.size, cursorData)
 }
@@ -137,13 +137,12 @@ trait EmptyCacheCategoryMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
-    (CacheCategoryEntity.packageName, 1, Seq.empty, StringDataType),
-    (CacheCategoryEntity.category, 2, Seq.empty, StringDataType),
-    (CacheCategoryEntity.starRating, 3, Seq.empty, DoubleDataType),
-    (CacheCategoryEntity.numDownloads, 4, Seq.empty, StringDataType),
-    (CacheCategoryEntity.ratingsCount, 5, Seq.empty, IntDataType),
-    (CacheCategoryEntity.commentCount, 6, Seq.empty, IntDataType)
-  )
+    (packageName, 1, Seq.empty, StringDataType),
+    (category, 2, Seq.empty, StringDataType),
+    (starRating, 3, Seq.empty, DoubleDataType),
+    (numDownloads, 4, Seq.empty, StringDataType),
+    (ratingsCount, 5, Seq.empty, IntDataType),
+    (commentCount, 6, Seq.empty, IntDataType))
 
   prepareCursor[CacheCategory](0, cursorData)
 }
@@ -163,8 +162,8 @@ class CacheCategoryRepositorySpec
 
           result must be_\/-[CacheCategory].which {
             cacheCategory =>
-              cacheCategory.id shouldEqual cacheCategoryId
-              cacheCategory.data.packageName shouldEqual packageName
+              cacheCategory.id shouldEqual testCacheCategoryId
+              cacheCategory.data.packageName shouldEqual testPackageName
           }
         }
 
@@ -208,7 +207,7 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = packageName).run
+          val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = testPackageName).run
 
           result must be_\/-[Int].which {
             deleted =>
@@ -220,7 +219,7 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = packageName).run
+          val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = testPackageName).run
 
           result must be_-\/[NineCardsException]
         }
@@ -256,13 +255,13 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.findCacheCategoryById(id = cacheCategoryId).run
+          val result = cacheCategoryRepository.findCacheCategoryById(id = testCacheCategoryId).run
 
           result must be_\/-[Option[CacheCategory]].which {
             maybeCacheCategory =>
               maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
-                cacheCategory.id shouldEqual cacheCategoryId
-                cacheCategory.data.packageName shouldEqual packageName
+                cacheCategory.id shouldEqual testCacheCategoryId
+                cacheCategory.data.packageName shouldEqual testPackageName
               }
           }
         }
@@ -271,7 +270,7 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.findCacheCategoryById(id = nonExistingCacheCategoryId).run
+          val result = cacheCategoryRepository.findCacheCategoryById(id = testNonExistingCacheCategoryId).run
 
           result must be_\/-[Option[CacheCategory]].which {
             maybeCacheCategory =>
@@ -283,7 +282,7 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.findCacheCategoryById(id = cacheCategoryId).run
+          val result = cacheCategoryRepository.findCacheCategoryById(id = testCacheCategoryId).run
 
           result must be_-\/[NineCardsException]
         }
@@ -294,13 +293,13 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = packageName).run
+          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testPackageName).run
 
           result must be_\/-[Option[CacheCategory]].which {
             maybeCacheCategory =>
               maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
-                cacheCategory.id shouldEqual cacheCategoryId
-                cacheCategory.data.packageName shouldEqual packageName
+                cacheCategory.id shouldEqual testCacheCategoryId
+                cacheCategory.data.packageName shouldEqual testPackageName
               }
           }
         }
@@ -309,7 +308,7 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = nonExistingPackageName).run
+          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testNonExistingPackageName).run
 
           result must be_\/-[Option[CacheCategory]].which {
             maybeCacheCategory =>
@@ -321,7 +320,7 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = packageName).run
+          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testPackageName).run
 
           result must be_-\/[NineCardsException]
         }

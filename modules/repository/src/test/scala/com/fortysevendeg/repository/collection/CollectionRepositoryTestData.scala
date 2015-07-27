@@ -7,80 +7,82 @@ import scala.util.Random
 
 trait CollectionRepositoryTestData {
 
-  val collectionId = Random.nextInt(10)
-  val nonExistingCollectionId = 15
-  val position = Random.nextInt(10)
-  val nonExistingPosition = 15
-  val name = Random.nextString(5)
-  val collectionType = Random.nextString(5)
-  val icon = Random.nextString(5)
-  val themedColorIndex = Random.nextInt(10)
-  val appsCategory = Random.nextString(5)
-  val constrains = Random.nextString(5)
-  val originalSharedCollectionId = Random.nextString(5)
-  val sharedCollectionId = Random.nextString(5)
-  val nonExistingSharedCollectionId = Random.nextString(5)
-  val sharedCollectionSubscribed = Random.nextInt(10) < 5
-  val appsCategoryOption = Option(appsCategory)
-  val constrainsOption = Option(constrains)
-  val originalSharedCollectionIdOption = Option(originalSharedCollectionId)
-  val sharedCollectionIdOption = Option(sharedCollectionId)
-  val sharedCollectionSubscribedOption = Option(sharedCollectionSubscribed)
+  val testCollectionId = Random.nextInt(10)
+  val testNonExistingCollectionId = 15
+  val testPosition = Random.nextInt(10)
+  val testNonExistingPosition = 15
+  val testName = Random.nextString(5)
+  val testCollectionType = Random.nextString(5)
+  val testIcon = Random.nextString(5)
+  val testThemedColorIndex = Random.nextInt(10)
+  val testAppsCategory = Random.nextString(5)
+  val testConstrains = Random.nextString(5)
+  val testOriginalSharedCollectionId = Random.nextString(5)
+  val testSharedCollectionId = Random.nextString(5)
+  val testNonExistingSharedCollectionId = Random.nextString(5)
+  val testSharedCollectionSubscribed = Random.nextInt(10) < 5
+  val testAppsCategoryOption = Option(testAppsCategory)
+  val testConstrainsOption = Option(testConstrains)
+  val testOriginalSharedCollectionIdOption = Option(testOriginalSharedCollectionId)
+  val testSharedCollectionIdOption = Option(testSharedCollectionId)
+  val testSharedCollectionSubscribedOption = Option(testSharedCollectionSubscribed)
 
   val collectionEntitySeq = createCollectionEntitySeq(5)
   val collectionEntity = collectionEntitySeq.head
   val collectionSeq = createCollectionSeq(5)
   val collection = collectionSeq.head
 
-  def createCollectionEntitySeq(num: Int) = (0 until num) map (i => CollectionEntity(
-    id = collectionId + i,
-    data = CollectionEntityData(
-      position = position,
-      name = name,
-      `type` = collectionType,
-      icon = icon,
-      themedColorIndex = themedColorIndex,
-      appsCategory = appsCategory,
-      constrains = constrains,
-      originalSharedCollectionId = originalSharedCollectionId,
-      sharedCollectionId = sharedCollectionId,
-      sharedCollectionSubscribed = sharedCollectionSubscribed)))
+  def createCollectionEntitySeq(num: Int) = List.tabulate(num)(
+    i => CollectionEntity(
+      id = testCollectionId + i,
+      data = CollectionEntityData(
+        position = testPosition,
+        name = testName,
+        `type` = testCollectionType,
+        icon = testIcon,
+        themedColorIndex = testThemedColorIndex,
+        appsCategory = testAppsCategory,
+        constrains = testConstrains,
+        originalSharedCollectionId = testOriginalSharedCollectionId,
+        sharedCollectionId = testSharedCollectionId,
+        sharedCollectionSubscribed = testSharedCollectionSubscribed)))
 
-  def createCollectionSeq(num: Int) = (0 until num) map (i => Collection(
-    id = collectionId + i,
-    data = CollectionData(
-      position = position,
-      name = name,
-      collectionType = collectionType,
-      icon = icon,
-      themedColorIndex = themedColorIndex,
-      appsCategory = appsCategoryOption,
-      constrains = constrainsOption,
-      originalSharedCollectionId = originalSharedCollectionIdOption,
-      sharedCollectionId = sharedCollectionIdOption,
-      sharedCollectionSubscribed = sharedCollectionSubscribedOption)))
+  def createCollectionSeq(num: Int) = List.tabulate(num)(
+    i => Collection(
+      id = testCollectionId + i,
+      data = CollectionData(
+        position = testPosition,
+        name = testName,
+        collectionType = testCollectionType,
+        icon = testIcon,
+        themedColorIndex = testThemedColorIndex,
+        appsCategory = testAppsCategoryOption,
+        constrains = testConstrainsOption,
+        originalSharedCollectionId = testOriginalSharedCollectionIdOption,
+        sharedCollectionId = testSharedCollectionIdOption,
+        sharedCollectionSubscribed = testSharedCollectionSubscribedOption)))
 
   def createCollectionValues = Map[String, Any](
-    CollectionEntity.position -> position,
-    CollectionEntity.name -> name,
-    CollectionEntity.collectionType -> collectionType,
-    CollectionEntity.icon -> icon,
-    CollectionEntity.themedColorIndex -> themedColorIndex,
-    CollectionEntity.appsCategory -> (appsCategoryOption getOrElse ""),
-    CollectionEntity.constrains -> (constrainsOption getOrElse ""),
-    CollectionEntity.originalSharedCollectionId -> (originalSharedCollectionIdOption getOrElse ""),
-    CollectionEntity.sharedCollectionId -> (sharedCollectionIdOption getOrElse ""),
-    CollectionEntity.sharedCollectionSubscribed -> (sharedCollectionSubscribedOption getOrElse false))
+    CollectionEntity.position -> testPosition,
+    CollectionEntity.name -> testName,
+    CollectionEntity.collectionType -> testCollectionType,
+    CollectionEntity.icon -> testIcon,
+    CollectionEntity.themedColorIndex -> testThemedColorIndex,
+    CollectionEntity.appsCategory -> (testAppsCategoryOption getOrElse ""),
+    CollectionEntity.constrains -> (testConstrainsOption getOrElse ""),
+    CollectionEntity.originalSharedCollectionId -> (testOriginalSharedCollectionIdOption getOrElse ""),
+    CollectionEntity.sharedCollectionId -> (testSharedCollectionIdOption getOrElse ""),
+    CollectionEntity.sharedCollectionSubscribed -> (testSharedCollectionSubscribedOption getOrElse false))
 
   def createCollectionData = CollectionData(
-    position = position,
-    name = name,
-    collectionType = collectionType,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = appsCategoryOption,
-    constrains = constrainsOption,
-    originalSharedCollectionId = originalSharedCollectionIdOption,
-    sharedCollectionId = sharedCollectionIdOption,
-    sharedCollectionSubscribed = sharedCollectionSubscribedOption)
+    position = testPosition,
+    name = testName,
+    collectionType = testCollectionType,
+    icon = testIcon,
+    themedColorIndex = testThemedColorIndex,
+    appsCategory = testAppsCategoryOption,
+    constrains = testConstrainsOption,
+    originalSharedCollectionId = testOriginalSharedCollectionIdOption,
+    sharedCollectionId = testSharedCollectionIdOption,
+    sharedCollectionSubscribed = testSharedCollectionSubscribedOption)
 }

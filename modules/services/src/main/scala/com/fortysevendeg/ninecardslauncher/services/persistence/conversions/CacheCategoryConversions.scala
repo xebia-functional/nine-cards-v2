@@ -6,9 +6,9 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCate
 
 trait CacheCategoryConversions {
 
-  def toCacheCategorySeq(cache: Seq[RepoCacheCategory]) = cache map toCacheCategory
+  def toCacheCategorySeq(cache: Seq[RepoCacheCategory]): Seq[CacheCategory] = cache map toCacheCategory
 
-  def toCacheCategory(cacheCategory: RepoCacheCategory) =
+  def toCacheCategory(cacheCategory: RepoCacheCategory): CacheCategory =
     CacheCategory(
       id = cacheCategory.id,
       packageName = cacheCategory.data.packageName,
@@ -18,7 +18,7 @@ trait CacheCategoryConversions {
       ratingsCount = cacheCategory.data.ratingsCount,
       commentCount = cacheCategory.data.commentCount)
 
-  def toRepositoryCacheCategory(cacheCategory: CacheCategory) =
+  def toRepositoryCacheCategory(cacheCategory: CacheCategory): RepoCacheCategory =
     RepoCacheCategory(
       id = cacheCategory.id,
       data = RepoCacheCategoryData(
@@ -31,7 +31,7 @@ trait CacheCategoryConversions {
       )
     )
 
-  def toRepositoryCacheCategory(request: UpdateCacheCategoryRequest) =
+  def toRepositoryCacheCategory(request: UpdateCacheCategoryRequest): RepoCacheCategory =
     RepoCacheCategory(
       id = request.id,
       data = RepoCacheCategoryData(
@@ -44,7 +44,7 @@ trait CacheCategoryConversions {
       )
     )
 
-  def toRepositoryCacheCategoryData(request: AddCacheCategoryRequest) =
+  def toRepositoryCacheCategoryData(request: AddCacheCategoryRequest): RepoCacheCategoryData =
     RepoCacheCategoryData(
       packageName = request.packageName,
       category = request.category,

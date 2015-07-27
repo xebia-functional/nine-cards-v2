@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
 
 trait CardConversions {
 
-  def toCard(card: RepoCard) = {
+  def toCard(card: RepoCard): Card = {
     Card(
       id = card.id,
       position = card.data.position,
@@ -21,7 +21,7 @@ trait CardConversions {
       notification = card.data.notification)
   }
 
-  def toRepositoryCard(card: Card) =
+  def toRepositoryCard(card: Card): RepoCard =
     RepoCard(
       id = card.id,
       data = RepoCardData(
@@ -38,7 +38,7 @@ trait CardConversions {
       )
     )
 
-  def toRepositoryCard(request: UpdateCardRequest) =
+  def toRepositoryCard(request: UpdateCardRequest): RepoCard =
     RepoCard(
       id = request.id,
       data = RepoCardData(
@@ -55,7 +55,7 @@ trait CardConversions {
       )
     )
 
-  def toRepositoryCardData(card: Card) =
+  def toRepositoryCardData(card: Card): RepoCardData =
     RepoCardData(
       position = card.position,
       term = card.term,
@@ -68,7 +68,7 @@ trait CardConversions {
       numDownloads = card.numDownloads,
       notification = card.notification)
 
-  def toRepositoryCardData(request: AddCardRequest) =
+  def toRepositoryCardData(request: AddCardRequest): RepoCardData =
     RepoCardData(
       position = request.position,
       micros = request.micros,

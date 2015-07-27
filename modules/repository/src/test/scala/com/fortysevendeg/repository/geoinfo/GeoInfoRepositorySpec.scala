@@ -3,7 +3,7 @@ package com.fortysevendeg.repository.geoinfo
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapperImpl, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
-import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity.geoInfoEntityFromCursor
+import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.repository._
@@ -30,42 +30,42 @@ trait GeoInfoRepositorySpecification
 
     self: GeoInfoRepositoryScope =>
 
-    contentResolverWrapper.insert(GeoInfoUri, createGeoInfoValues) returns geoInfoId
+    contentResolverWrapper.insert(GeoInfoUri, createGeoInfoValues) returns testGeoInfoId
 
-    contentResolverWrapper.deleteById(GeoInfoUri, geoInfoId) returns 1
+    contentResolverWrapper.deleteById(GeoInfoUri, testGeoInfoId) returns 1
 
     contentResolverWrapper.findById(
       nineCardsUri = GeoInfoUri,
-      id = geoInfoId,
-      projection = GeoInfoEntity.allFields)(
+      id = testGeoInfoId,
+      projection = allFields)(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) returns Some(geoInfoEntity)
 
     contentResolverWrapper.findById(
       nineCardsUri = GeoInfoUri,
-      id = nonExistingGeoInfoId,
-      projection = GeoInfoEntity.allFields)(
+      id = testNonExistingGeoInfoId,
+      projection = allFields)(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
       nineCardsUri = GeoInfoUri,
-      projection = GeoInfoEntity.allFields)(
+      projection = allFields)(
         f = getListFromCursor(geoInfoEntityFromCursor)) returns geoInfoEntitySeq
 
     contentResolverWrapper.fetch(
       nineCardsUri = GeoInfoUri,
-      projection = GeoInfoEntity.allFields,
-      where = s"${GeoInfoEntity.constrain} = ?",
-      whereParams = Seq(constrain))(
+      projection = allFields,
+      where = s"$constrain = ?",
+      whereParams = Seq(testConstrain))(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) returns Some(geoInfoEntity)
 
     contentResolverWrapper.fetch(
       nineCardsUri = GeoInfoUri,
-      projection = GeoInfoEntity.allFields,
-      where = s"${GeoInfoEntity.constrain} = ?",
-      whereParams = Seq(nonExistingConstrain))(
+      projection = allFields,
+      where = s"$constrain = ?",
+      whereParams = Seq(testNonExistingConstrain))(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(GeoInfoUri, geoInfoId, createGeoInfoValues) returns 1
+    contentResolverWrapper.updateById(GeoInfoUri, testGeoInfoId, createGeoInfoValues) returns 1
   }
 
   trait ErrorGeoInfoRepositoryResponses
@@ -78,27 +78,27 @@ trait GeoInfoRepositorySpecification
 
     contentResolverWrapper.insert(GeoInfoUri, createGeoInfoValues) throws contentResolverException
 
-    contentResolverWrapper.deleteById(GeoInfoUri, geoInfoId) throws contentResolverException
+    contentResolverWrapper.deleteById(GeoInfoUri, testGeoInfoId) throws contentResolverException
 
     contentResolverWrapper.findById(
       nineCardsUri = GeoInfoUri,
-      id = geoInfoId,
-      projection = GeoInfoEntity.allFields)(
+      id = testGeoInfoId,
+      projection = allFields)(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       nineCardsUri = GeoInfoUri,
-      projection = GeoInfoEntity.allFields)(
+      projection = allFields)(
         f = getListFromCursor(geoInfoEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       nineCardsUri = GeoInfoUri,
-      projection = GeoInfoEntity.allFields,
-      where = s"${GeoInfoEntity.constrain} = ?",
-      whereParams = Seq(constrain))(
+      projection = allFields,
+      where = s"$constrain = ?",
+      whereParams = Seq(testConstrain))(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(GeoInfoUri, geoInfoId, createGeoInfoValues) throws contentResolverException
+    contentResolverWrapper.updateById(GeoInfoUri, testGeoInfoId, createGeoInfoValues) throws contentResolverException
   }
 
 }
@@ -110,12 +110,12 @@ trait GeoInfoMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, geoInfoSeq map (_.id), IntDataType),
-    (GeoInfoEntity.constrain, 1, geoInfoSeq map (_.data.constrain), StringDataType),
-    (GeoInfoEntity.occurrence, 2, geoInfoSeq map (_.data.occurrence), StringDataType),
-    (GeoInfoEntity.wifi, 3, geoInfoSeq map (_.data.wifi), StringDataType),
-    (GeoInfoEntity.latitude, 4, geoInfoSeq map (_.data.latitude), DoubleDataType),
-    (GeoInfoEntity.longitude, 5, geoInfoSeq map (_.data.longitude), DoubleDataType),
-    (GeoInfoEntity.system, 6, geoInfoSeq map (item => if (item.data.system) 1 else 0), IntDataType)
+    (constrain, 1, geoInfoSeq map (_.data.constrain), StringDataType),
+    (occurrence, 2, geoInfoSeq map (_.data.occurrence), StringDataType),
+    (wifi, 3, geoInfoSeq map (_.data.wifi), StringDataType),
+    (latitude, 4, geoInfoSeq map (_.data.latitude), DoubleDataType),
+    (longitude, 5, geoInfoSeq map (_.data.longitude), DoubleDataType),
+    (system, 6, geoInfoSeq map (item => if (item.data.system) 1 else 0), IntDataType)
   )
 
   prepareCursor[GeoInfo](geoInfoSeq.size, cursorData)
@@ -128,12 +128,12 @@ trait EmptyGeoInfoMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
-    (GeoInfoEntity.constrain, 1, Seq.empty, StringDataType),
-    (GeoInfoEntity.occurrence, 2, Seq.empty, StringDataType),
-    (GeoInfoEntity.wifi, 3, Seq.empty, StringDataType),
-    (GeoInfoEntity.latitude, 4, Seq.empty, DoubleDataType),
-    (GeoInfoEntity.longitude, 5, Seq.empty, DoubleDataType),
-    (GeoInfoEntity.system, 6, Seq.empty, IntDataType)
+    (constrain, 1, Seq.empty, StringDataType),
+    (occurrence, 2, Seq.empty, StringDataType),
+    (wifi, 3, Seq.empty, StringDataType),
+    (latitude, 4, Seq.empty, DoubleDataType),
+    (longitude, 5, Seq.empty, DoubleDataType),
+    (system, 6, Seq.empty, IntDataType)
   )
 
   prepareCursor[GeoInfo](0, cursorData)
@@ -153,8 +153,8 @@ class GeoInfoRepositorySpec
 
           result must be_\/-[GeoInfo].which {
             geoInfo =>
-              geoInfo.id shouldEqual geoInfoId
-              geoInfo.data.constrain shouldEqual constrain
+              geoInfo.id shouldEqual testGeoInfoId
+              geoInfo.data.constrain shouldEqual testConstrain
           }
         }
 
@@ -176,10 +176,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.deleteGeoInfo(geoInfo).run
 
-          result must be_\/-[Int].which {
-            deleted =>
-              deleted shouldEqual 1
-          }
+          result must be_\/-[Int].which(_ shouldEqual 1)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -200,10 +197,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.fetchGeoInfoItems.run
 
-          result must be_\/-[Seq[GeoInfo]].which {
-            geoInfoItems =>
-              geoInfoItems shouldEqual geoInfoSeq
-          }
+          result must be_\/-[Seq[GeoInfo]].which(_ shouldEqual geoInfoSeq)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -222,13 +216,13 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.findGeoInfoById(geoInfoId).run
+          val result = geoInfoRepository.findGeoInfoById(testGeoInfoId).run
 
           result must be_\/-[Option[GeoInfo]].which {
             maybeGeoInfo =>
               maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
-                geoInfo.id shouldEqual geoInfoId
-                geoInfo.data.constrain shouldEqual constrain
+                geoInfo.id shouldEqual testGeoInfoId
+                geoInfo.data.constrain shouldEqual testConstrain
               }
           }
         }
@@ -237,19 +231,16 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.findGeoInfoById(nonExistingGeoInfoId).run
+          val result = geoInfoRepository.findGeoInfoById(testNonExistingGeoInfoId).run
 
-          result must be_\/-[Option[GeoInfo]].which {
-            maybeGeoInfo =>
-              maybeGeoInfo must beNone
-          }
+          result must be_\/-[Option[GeoInfo]].which(_ must beNone)
         }
 
       "return a NineCardsException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.findGeoInfoById(geoInfoId).run
+          val result = geoInfoRepository.findGeoInfoById(testGeoInfoId).run
 
           result must be_-\/[NineCardsException]
         }
@@ -261,13 +252,13 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.fetchGeoInfoByConstrain(constrain).run
+          val result = geoInfoRepository.fetchGeoInfoByConstrain(testConstrain).run
 
           result must be_\/-[Option[GeoInfo]].which {
             maybeGeoInfo =>
               maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
-                geoInfo.id shouldEqual geoInfoId
-                geoInfo.data.constrain shouldEqual constrain
+                geoInfo.id shouldEqual testGeoInfoId
+                geoInfo.data.constrain shouldEqual testConstrain
               }
           }
         }
@@ -276,19 +267,16 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.fetchGeoInfoByConstrain(nonExistingConstrain).run
+          val result = geoInfoRepository.fetchGeoInfoByConstrain(testNonExistingConstrain).run
 
-          result must be_\/-[Option[GeoInfo]].which {
-            maybeGeoInfo =>
-              maybeGeoInfo must beNone
-          }
+          result must be_\/-[Option[GeoInfo]].which(_ must beNone)
         }
 
       "return a NineCardsException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.fetchGeoInfoByConstrain(constrain).run
+          val result = geoInfoRepository.fetchGeoInfoByConstrain(testConstrain).run
 
           result must be_-\/[NineCardsException]
         }
@@ -302,10 +290,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.updateGeoInfo(geoInfo).run
 
-          result must be_\/-[Int].which {
-            updated =>
-              updated shouldEqual 1
-          }
+          result must be_\/-[Int].which(_ shouldEqual 1)
         }
 
       "return a NineCardsException when a exception is thrown" in

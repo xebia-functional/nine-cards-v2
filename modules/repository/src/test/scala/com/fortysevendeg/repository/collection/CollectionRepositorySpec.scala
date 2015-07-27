@@ -3,7 +3,7 @@ package com.fortysevendeg.repository.collection
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CollectionUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.Collection
-import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.collectionEntityFromCursor
+import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.repository._
@@ -30,63 +30,63 @@ trait CollectionRepositorySpecification
 
     self: CollectionRepositoryScope =>
 
-    contentResolverWrapper.insert(CollectionUri, createCollectionValues) returns collectionId
+    contentResolverWrapper.insert(CollectionUri, createCollectionValues) returns testCollectionId
 
-    contentResolverWrapper.deleteById(CollectionUri, collectionId) returns 1
+    contentResolverWrapper.deleteById(CollectionUri, testCollectionId) returns 1
 
     contentResolverWrapper.findById(
       nineCardsUri = CollectionUri,
-      id = collectionId,
-      projection = CollectionEntity.allFields)(
+      id = testCollectionId,
+      projection = allFields)(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
 
     contentResolverWrapper.findById(
       nineCardsUri = CollectionUri,
-      id = nonExistingCollectionId,
-      projection = CollectionEntity.allFields)(
+      id = testNonExistingCollectionId,
+      projection = allFields)(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
       nineCardsUri = CollectionUri,
-      projection = CollectionEntity.allFields,
+      projection = allFields,
       where = "",
       whereParams = Seq.empty,
-      orderBy = s"${CollectionEntity.position} asc")(
+      orderBy = s"$position asc")(
         f = getListFromCursor(collectionEntityFromCursor)) returns collectionEntitySeq
 
     contentResolverWrapper.fetch(
       nineCardsUri = CollectionUri,
-      projection = CollectionEntity.allFields,
-      where = s"${CollectionEntity.position} = ?",
-      whereParams = Seq(position.toString),
+      projection = allFields,
+      where = s"$position = ?",
+      whereParams = Seq(testPosition.toString),
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
 
     contentResolverWrapper.fetch(
       nineCardsUri = CollectionUri,
-      projection = CollectionEntity.allFields,
-      where = s"${CollectionEntity.position} = ?",
-      whereParams = Seq(nonExistingPosition.toString),
+      projection = allFields,
+      where = s"$position = ?",
+      whereParams = Seq(testNonExistingPosition.toString),
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
     contentResolverWrapper.fetch(
       nineCardsUri = CollectionUri,
-      projection = CollectionEntity.allFields,
-      where = s"${CollectionEntity.originalSharedCollectionId} = ?",
-      whereParams = Seq(sharedCollectionId),
+      projection = allFields,
+      where = s"$originalSharedCollectionId = ?",
+      whereParams = Seq(testSharedCollectionId),
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
 
     contentResolverWrapper.fetch(
       nineCardsUri = CollectionUri,
-      projection = CollectionEntity.allFields,
-      where = s"${CollectionEntity.originalSharedCollectionId} = ?",
-      whereParams = Seq(nonExistingSharedCollectionId),
+      projection = allFields,
+      where = s"$originalSharedCollectionId = ?",
+      whereParams = Seq(testNonExistingSharedCollectionId),
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(CollectionUri, collectionId, createCollectionValues) returns 1
+    contentResolverWrapper.updateById(CollectionUri, testCollectionId, createCollectionValues) returns 1
   }
 
   trait ErrorCollectionRepositoryResponses
@@ -99,40 +99,41 @@ trait CollectionRepositorySpecification
 
     contentResolverWrapper.insert(CollectionUri, createCollectionValues) throws contentResolverException
 
-    contentResolverWrapper.deleteById(CollectionUri, collectionId) throws contentResolverException
+    contentResolverWrapper.deleteById(CollectionUri, testCollectionId) throws contentResolverException
 
     contentResolverWrapper.findById(
       nineCardsUri = CollectionUri,
-      id = collectionId,
-      projection = CollectionEntity.allFields)(
+      id = testCollectionId,
+      projection = allFields)(
         f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       nineCardsUri = CollectionUri,
-      projection = CollectionEntity.allFields,
+      projection = allFields,
       where = "",
       whereParams = Seq.empty,
-      orderBy = s"${CollectionEntity.position} asc")(
+      orderBy = s"$position asc")(
         f = getListFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       nineCardsUri = CollectionUri,
-      projection = CollectionEntity.allFields,
-      where = s"${CollectionEntity.position} = ?",
-      whereParams = Seq(position.toString),
+      projection = allFields,
+      where = s"$position = ?",
+      whereParams = Seq(testPosition.toString),
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       nineCardsUri = CollectionUri,
-      projection = CollectionEntity.allFields,
-      where = s"${CollectionEntity.originalSharedCollectionId} = ?",
-      whereParams = Seq(sharedCollectionId),
+      projection = allFields,
+      where = s"$originalSharedCollectionId = ?",
+      whereParams = Seq(testSharedCollectionId),
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(CollectionUri, collectionId, createCollectionValues) throws contentResolverException
+    contentResolverWrapper.updateById(CollectionUri, testCollectionId, createCollectionValues) throws contentResolverException
   }
+
 }
 
 trait CollectionMockCursor
@@ -142,16 +143,16 @@ trait CollectionMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, collectionSeq map (_.id), IntDataType),
-    (CollectionEntity.position, 1, collectionSeq map (_.data.position), IntDataType),
-    (CollectionEntity.name, 2, collectionSeq map (_.data.name), StringDataType),
-    (CollectionEntity.collectionType, 3, collectionSeq map (_.data.collectionType), StringDataType),
-    (CollectionEntity.icon, 4, collectionSeq map (_.data.icon), StringDataType),
-    (CollectionEntity.themedColorIndex, 5, collectionSeq map (_.data.themedColorIndex), IntDataType),
-    (CollectionEntity.appsCategory, 6, collectionSeq map (_.data.appsCategory getOrElse ""), StringDataType),
-    (CollectionEntity.constrains, 7, collectionSeq map (_.data.constrains getOrElse ""), StringDataType),
-    (CollectionEntity.originalSharedCollectionId, 8, collectionSeq map (_.data.originalSharedCollectionId getOrElse ""), StringDataType),
-    (CollectionEntity.sharedCollectionId, 9, collectionSeq map (_.data.sharedCollectionId getOrElse ""), StringDataType),
-    (CollectionEntity.sharedCollectionSubscribed, 10, collectionSeq map (item => if (item.data.sharedCollectionSubscribed getOrElse false) 1 else 0), IntDataType)
+    (position, 1, collectionSeq map (_.data.position), IntDataType),
+    (name, 2, collectionSeq map (_.data.name), StringDataType),
+    (collectionType, 3, collectionSeq map (_.data.collectionType), StringDataType),
+    (icon, 4, collectionSeq map (_.data.icon), StringDataType),
+    (themedColorIndex, 5, collectionSeq map (_.data.themedColorIndex), IntDataType),
+    (appsCategory, 6, collectionSeq map (_.data.appsCategory getOrElse ""), StringDataType),
+    (constrains, 7, collectionSeq map (_.data.constrains getOrElse ""), StringDataType),
+    (originalSharedCollectionId, 8, collectionSeq map (_.data.originalSharedCollectionId getOrElse ""), StringDataType),
+    (sharedCollectionId, 9, collectionSeq map (_.data.sharedCollectionId getOrElse ""), StringDataType),
+    (sharedCollectionSubscribed, 10, collectionSeq map (item => if (item.data.sharedCollectionSubscribed getOrElse false) 1 else 0), IntDataType)
   )
 
   prepareCursor[Collection](collectionSeq.size, cursorData)
@@ -164,16 +165,16 @@ trait EmptyCollectionMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
-    (CollectionEntity.position, 1, Seq.empty, IntDataType),
-    (CollectionEntity.name, 2, Seq.empty, StringDataType),
-    (CollectionEntity.collectionType, 3, Seq.empty, StringDataType),
-    (CollectionEntity.icon, 4, Seq.empty, StringDataType),
-    (CollectionEntity.themedColorIndex, 5, Seq.empty, IntDataType),
-    (CollectionEntity.appsCategory, 6, Seq.empty, StringDataType),
-    (CollectionEntity.constrains, 7, Seq.empty, StringDataType),
-    (CollectionEntity.originalSharedCollectionId, 8, Seq.empty, StringDataType),
-    (CollectionEntity.sharedCollectionId, 9, Seq.empty, StringDataType),
-    (CollectionEntity.sharedCollectionSubscribed, 10, Seq.empty, IntDataType)
+    (position, 1, Seq.empty, IntDataType),
+    (name, 2, Seq.empty, StringDataType),
+    (collectionType, 3, Seq.empty, StringDataType),
+    (icon, 4, Seq.empty, StringDataType),
+    (themedColorIndex, 5, Seq.empty, IntDataType),
+    (appsCategory, 6, Seq.empty, StringDataType),
+    (constrains, 7, Seq.empty, StringDataType),
+    (originalSharedCollectionId, 8, Seq.empty, StringDataType),
+    (sharedCollectionId, 9, Seq.empty, StringDataType),
+    (sharedCollectionSubscribed, 10, Seq.empty, IntDataType)
   )
 
   prepareCursor[Collection](0, cursorData)
@@ -194,8 +195,8 @@ class CollectionRepositorySpec
 
           result must be_\/-[Collection].which {
             collection =>
-              collection.id shouldEqual collectionId
-              collection.data.name shouldEqual name
+              collection.id shouldEqual testCollectionId
+              collection.data.name shouldEqual testName
           }
         }
 
@@ -217,10 +218,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.deleteCollection(collection).run
 
-          result must be_\/-[Int].which {
-            deleted =>
-              deleted shouldEqual 1
-          }
+          result must be_\/-[Int].which(_ shouldEqual 1)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -239,13 +237,13 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.findCollectionById(id = collectionId).run
+          val result = collectionRepository.findCollectionById(id = testCollectionId).run
 
           result must be_\/-[Option[Collection]].which {
             maybeCollection =>
               maybeCollection must beSome[Collection].which { collection =>
-                collection.id shouldEqual collectionId
-                collection.data.name shouldEqual name
+                collection.id shouldEqual testCollectionId
+                collection.data.name shouldEqual testName
               }
           }
         }
@@ -253,19 +251,16 @@ class CollectionRepositorySpec
       "return None when a non-existing id is given" in
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
-          val result = collectionRepository.findCollectionById(id = nonExistingCollectionId).run
+          val result = collectionRepository.findCollectionById(id = testNonExistingCollectionId).run
 
-          result must be_\/-[Option[Collection]].which {
-            maybeCollection =>
-              maybeCollection must beNone
-          }
+          result must be_\/-[Option[Collection]].which(_ must beNone)
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.findCollectionById(id = collectionId).run
+          val result = collectionRepository.findCollectionById(id = testCollectionId).run
 
           result must be_-\/[NineCardsException]
         }
@@ -277,13 +272,13 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = sharedCollectionId).run
+          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run
 
           result must be_\/-[Option[Collection]].which {
             maybeCollection =>
               maybeCollection must beSome[Collection].which { collection =>
-                collection.id shouldEqual collectionId
-                collection.data.name shouldEqual name
+                collection.id shouldEqual testCollectionId
+                collection.data.name shouldEqual testName
               }
           }
         }
@@ -292,19 +287,16 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = nonExistingSharedCollectionId).run
+          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testNonExistingSharedCollectionId).run
 
-          result must be_\/-[Option[Collection]].which {
-            maybeCollection =>
-              maybeCollection must beNone
-          }
+          result must be_\/-[Option[Collection]].which(_ must beNone)
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = sharedCollectionId).run
+          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run
 
           result must be_-\/[NineCardsException]
         }
@@ -316,13 +308,13 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionByPosition(position = position).run
+          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run
 
           result must be_\/-[Option[Collection]].which {
             maybeCollection =>
               maybeCollection must beSome[Collection].which { collection =>
-                collection.id shouldEqual collectionId
-                collection.data.position shouldEqual position
+                collection.id shouldEqual testCollectionId
+                collection.data.position shouldEqual testPosition
               }
           }
         }
@@ -330,19 +322,16 @@ class CollectionRepositorySpec
       "return None when a non-existing position is given" in
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
-          val result = collectionRepository.fetchCollectionByPosition(position = nonExistingPosition).run
+          val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).run
 
-          result must be_\/-[Option[Collection]].which {
-            maybeCollection =>
-              maybeCollection must beNone
-          }
+          result must be_\/-[Option[Collection]].which(_ must beNone)
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionByPosition(position = position).run
+          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run
 
           result must be_-\/[NineCardsException]
         }
@@ -356,10 +345,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.fetchSortedCollections.run
 
-          result must be_\/-[Seq[Collection]].which {
-            collections =>
-              collections shouldEqual collectionSeq
-          }
+          result must be_\/-[Seq[Collection]].which(_ shouldEqual collectionSeq)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -380,10 +366,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.updateCollection(collection = collection).run
 
-          result must be_\/-[Int].which {
-            updated =>
-              updated shouldEqual 1
-          }
+          result must be_\/-[Int].which(_ shouldEqual 1)
         }
 
       "return a NineCardsException when a exception is thrown" in

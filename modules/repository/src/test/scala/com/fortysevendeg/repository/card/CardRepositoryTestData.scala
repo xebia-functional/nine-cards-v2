@@ -7,93 +7,95 @@ import scala.util.Random
 
 trait CardRepositoryTestData {
 
-  val cardId = Random.nextInt(10)
-  val nonExistingCardId = 15
-  val position = Random.nextInt(10)
-  val collectionId = Random.nextInt(10)
-  val nonExistingCollectionId = 15
-  val term = Random.nextString(5)
-  val packageName = Random.nextString(5)
-  val `type` = Random.nextString(5)
-  val intent = Random.nextString(5)
-  val imagePath = Random.nextString(5)
-  val starRating = Random.nextDouble()
-  val micros = Random.nextInt(5)
-  val numDownloads = Random.nextString(10)
-  val notification = Random.nextString(10)
-  val packageNameOption = Option(packageName)
-  val starRatingOption = Option(starRating)
-  val numDownloadsOption = Option(numDownloads)
-  val notificationOption = Option(notification)
+  val testCardId = Random.nextInt(10)
+  val testNonExistingCardId = 15
+  val testPosition = Random.nextInt(10)
+  val testCollectionId = Random.nextInt(10)
+  val testNonExistingCollectionId = 15
+  val testTerm = Random.nextString(5)
+  val testPackageName = Random.nextString(5)
+  val testType = Random.nextString(5)
+  val testIntent = Random.nextString(5)
+  val testImagePath = Random.nextString(5)
+  val testStarRating = Random.nextDouble()
+  val testMicros = Random.nextInt(5)
+  val testNumDownloads = Random.nextString(10)
+  val testNotification = Random.nextString(10)
+  val testPackageNameOption = Option(testPackageName)
+  val testStarRatingOption = Option(testStarRating)
+  val testNumDownloadsOption = Option(testNumDownloads)
+  val testNotificationOption = Option(testNotification)
 
   val cardEntitySeq = createCardEntitySeq(5)
   val cardEntity = cardEntitySeq.head
   val cardSeq = createCardSeq(5)
   val card = cardSeq.head
 
-  def createCardEntitySeq(num: Int) = (0 until num) map (i => CardEntity(
-    id = cardId + i,
-    data = CardEntityData(
-      position = position,
-      collectionId = collectionId,
-      term = term,
-      packageName = packageName,
-      `type` = `type`,
-      intent = intent,
-      imagePath = imagePath,
-      starRating = starRating,
-      micros = micros,
-      numDownloads = numDownloads,
-      notification = notification)))
+  def createCardEntitySeq(num: Int) = List.tabulate(num)(
+    i => CardEntity(
+      id = testCardId + i,
+      data = CardEntityData(
+        position = testPosition,
+        collectionId = testCollectionId,
+        term = testTerm,
+        packageName = testPackageName,
+        `type` = testType,
+        intent = testIntent,
+        imagePath = testImagePath,
+        starRating = testStarRating,
+        micros = testMicros,
+        numDownloads = testNumDownloads,
+        notification = testNotification)))
 
-  def createCardSeq(num: Int) = (0 until num) map (i => Card(
-    id = cardId + i,
-    data = CardData(
-      position = position,
-      term = term,
-      packageName = packageNameOption,
-      cardType = `type`,
-      intent = intent,
-      imagePath = imagePath,
-      starRating = starRatingOption,
-      micros = micros,
-      numDownloads = numDownloadsOption,
-      notification = notificationOption)))
+  def createCardSeq(num: Int) = List.tabulate(num)(
+    i => Card(
+      id = testCardId + i,
+      data = CardData(
+        position = testPosition,
+        term = testTerm,
+        packageName = testPackageNameOption,
+        cardType = testType,
+        intent = testIntent,
+        imagePath = testImagePath,
+        starRating = testStarRatingOption,
+        micros = testMicros,
+        numDownloads = testNumDownloadsOption,
+        notification = testNotificationOption)))
 
   def createInsertCardValues = Map[String, Any](
-    CardEntity.position -> position,
-    CardEntity.collectionId -> collectionId,
-    CardEntity.term -> term,
-    CardEntity.packageName -> (packageNameOption getOrElse ""),
-    CardEntity.cardType -> `type`,
-    CardEntity.intent -> intent,
-    CardEntity.imagePath -> imagePath,
-    CardEntity.starRating -> (starRatingOption getOrElse 0.0d),
-    CardEntity.micros -> micros,
-    CardEntity.numDownloads -> (numDownloadsOption getOrElse ""),
-    CardEntity.notification -> (notificationOption getOrElse ""))
+    CardEntity.position -> testPosition,
+    CardEntity.collectionId -> testCollectionId,
+    CardEntity.term -> testTerm,
+    CardEntity.packageName -> (testPackageNameOption getOrElse ""),
+    CardEntity.cardType -> testType,
+    CardEntity.intent -> testIntent,
+    CardEntity.imagePath -> testImagePath,
+    CardEntity.starRating -> (testStarRatingOption getOrElse 0.0d),
+    CardEntity.micros -> testMicros,
+    CardEntity.numDownloads -> (testNumDownloadsOption getOrElse ""),
+    CardEntity.notification -> (testNotificationOption getOrElse ""))
 
   def createUpdateCardValues = Map[String, Any](
-    CardEntity.position -> position,
-    CardEntity.term -> term,
-    CardEntity.packageName -> (packageNameOption getOrElse ""),
-    CardEntity.cardType -> `type`,
-    CardEntity.intent -> intent,
-    CardEntity.imagePath -> imagePath,
-    CardEntity.starRating -> (starRatingOption getOrElse 0.0d),
-    CardEntity.micros -> micros,
-    CardEntity.numDownloads -> (numDownloadsOption getOrElse ""),
-    CardEntity.notification -> (notificationOption getOrElse ""))
+    CardEntity.position -> testPosition,
+    CardEntity.term -> testTerm,
+    CardEntity.packageName -> (testPackageNameOption getOrElse ""),
+    CardEntity.cardType -> testType,
+    CardEntity.intent -> testIntent,
+    CardEntity.imagePath -> testImagePath,
+    CardEntity.starRating -> (testStarRatingOption getOrElse 0.0d),
+    CardEntity.micros -> testMicros,
+    CardEntity.numDownloads -> (testNumDownloadsOption getOrElse ""),
+    CardEntity.notification -> (testNotificationOption getOrElse ""))
 
   def createCardData = CardData(
-    position = position,
-    term = term,
-    packageName = packageNameOption,
-    cardType = `type`,
-    intent = intent,
-    imagePath = imagePath,
-    starRating = starRatingOption,
-    micros = micros,
-    numDownloads = numDownloadsOption,
-    notification = notificationOption)
+    position = testPosition,
+    term = testTerm,
+    packageName = testPackageNameOption,
+    cardType = testType,
+    intent = testIntent,
+    imagePath = testImagePath,
+    starRating = testStarRatingOption,
+    micros = testMicros,
+    numDownloads = testNumDownloadsOption,
+    notification = testNotificationOption)
 }

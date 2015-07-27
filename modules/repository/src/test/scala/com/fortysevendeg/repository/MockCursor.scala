@@ -75,7 +75,7 @@ trait MockCursor extends Mockito {
     mockMoveToNext(size = size)
 
     data foreach {
-      case (column, index, valueSeq, cursorDataType) if valueSeq.isEmpty =>
+      case (column, index, Nil, cursorDataType) =>
         mockGetColumnIndex(column, index)
       case (column, index, valueSeq, cursorDataType) =>
         mockGetColumnIndex(column, index)

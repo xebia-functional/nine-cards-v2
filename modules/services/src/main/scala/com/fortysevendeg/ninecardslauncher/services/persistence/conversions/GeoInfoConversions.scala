@@ -6,9 +6,9 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo
 
 trait GeoInfoConversions {
 
-  def toGeoInfoSeq(geoInfo: Seq[RepoGeoInfo]) = geoInfo map toGeoInfo
+  def toGeoInfoSeq(geoInfo: Seq[RepoGeoInfo]): Seq[GeoInfo] = geoInfo map toGeoInfo
 
-  def toGeoInfo(geoInfo: RepoGeoInfo) =
+  def toGeoInfo(geoInfo: RepoGeoInfo): GeoInfo =
     GeoInfo(
       id = geoInfo.id,
       constrain = geoInfo.data.constrain,
@@ -18,7 +18,7 @@ trait GeoInfoConversions {
       longitude = geoInfo.data.longitude,
       system = geoInfo.data.system)
 
-  def toRepositoryGeoInfo(geoInfo: GeoInfo) =
+  def toRepositoryGeoInfo(geoInfo: GeoInfo): RepoGeoInfo =
     RepoGeoInfo(
       id = geoInfo.id,
       data = RepoGeoInfoData(
@@ -31,7 +31,7 @@ trait GeoInfoConversions {
       )
     )
 
-  def toRepositoryGeoInfo(request: UpdateGeoInfoRequest) =
+  def toRepositoryGeoInfo(request: UpdateGeoInfoRequest): RepoGeoInfo =
     RepoGeoInfo(
       id = request.id,
       data = RepoGeoInfoData(
@@ -44,7 +44,7 @@ trait GeoInfoConversions {
       )
     )
 
-  def toRepositoryGeoInfoData(request: AddGeoInfoRequest) =
+  def toRepositoryGeoInfoData(request: AddGeoInfoRequest): RepoGeoInfoData =
     RepoGeoInfoData(
       constrain = request.constrain,
       occurrence = request.occurrence,

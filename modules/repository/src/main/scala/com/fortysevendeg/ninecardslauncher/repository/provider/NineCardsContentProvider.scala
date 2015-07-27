@@ -12,7 +12,7 @@ class NineCardsContentProvider extends ContentProvider {
   lazy val nineCardsSqlHelper = new NineCardsSqlHelper(getContext)
   lazy val database: Option[SQLiteDatabase] = Option[SQLiteDatabase](nineCardsSqlHelper.getWritableDatabase)
 
-  private def getUriInfo(uri: Uri): (String, MimeType) = uriMatcher.`match`(uri) match {
+  private[this] def getUriInfo(uri: Uri): (String, MimeType) = uriMatcher.`match`(uri) match {
     case `codeCacheCategoryAllItems` => (CacheCategoryEntity.table, MimeTypeAllItems)
     case `codeCacheCategorySingleItem` => (CacheCategoryEntity.table, MimeTypeSingleItem)
     case `codeCardAllItems` => (CardEntity.table, MimeTypeAllItems)
@@ -110,7 +110,7 @@ class NineCardsContentProvider extends ContentProvider {
     }
   }
 
-  private def getOrOpenDatabase = database match {
+  private[this] def getOrOpenDatabase = database match {
     case Some(databaseObject) if databaseObject.isOpen => databaseObject
     case _ => nineCardsSqlHelper.getWritableDatabase
   }

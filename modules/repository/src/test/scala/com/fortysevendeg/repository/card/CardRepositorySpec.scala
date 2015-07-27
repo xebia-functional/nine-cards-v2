@@ -3,7 +3,7 @@ package com.fortysevendeg.repository.card
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
-import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity.cardEntityFromCursor
+import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.repository._
@@ -30,34 +30,34 @@ trait CardRepositorySpecification
 
     self: CardRepositoryScope =>
 
-    contentResolverWrapper.insert(CardUri, createInsertCardValues) returns cardId
+    contentResolverWrapper.insert(CardUri, createInsertCardValues) returns testCardId
 
-    contentResolverWrapper.deleteById(CardUri, cardId) returns 1
+    contentResolverWrapper.deleteById(CardUri, testCardId) returns 1
 
     contentResolverWrapper.findById(
       nineCardsUri = CardUri,
-      id = cardId,
-      projection = CardEntity.allFields)(
+      id = testCardId,
+      projection = allFields)(
         f = getEntityFromCursor(cardEntityFromCursor)) returns Some(cardEntity)
 
     contentResolverWrapper.findById(
       nineCardsUri = CardUri,
-      id = nonExistingCardId,
-      projection = CardEntity.allFields)(
+      id = testNonExistingCardId,
+      projection = allFields)(
         f = getEntityFromCursor(cardEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
       nineCardsUri = CardUri,
-      projection = CardEntity.allFields,
-      where = s"${CardEntity.collectionId} = ?",
-      whereParams = Seq(collectionId.toString))(
+      projection = allFields,
+      where = s"$collectionId = ?",
+      whereParams = Seq(testCollectionId.toString))(
         f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
 
     contentResolverWrapper.fetchAll(
       nineCardsUri = CardUri,
-      projection = CardEntity.allFields,
-      where = s"${CardEntity.collectionId} = ?",
-      whereParams = Seq(nonExistingCollectionId.toString))(
+      projection = allFields,
+      where = s"$collectionId = ?",
+      whereParams = Seq(testNonExistingCollectionId.toString))(
         f = getListFromCursor(cardEntityFromCursor)) returns Seq.empty
 
     contentResolverWrapper.updateById(nineCardsUri = CardUri, id = card.id, values = createUpdateCardValues) returns 1
@@ -73,23 +73,24 @@ trait CardRepositorySpecification
 
     contentResolverWrapper.insert(CardUri, createInsertCardValues) throws contentResolverException
 
-    contentResolverWrapper.deleteById(CardUri, cardId) throws contentResolverException
+    contentResolverWrapper.deleteById(CardUri, testCardId) throws contentResolverException
 
     contentResolverWrapper.findById(
       nineCardsUri = CardUri,
-      id = cardId,
-      projection = CardEntity.allFields)(
+      id = testCardId,
+      projection = allFields)(
         f = getEntityFromCursor(cardEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       nineCardsUri = CardUri,
-      projection = CardEntity.allFields,
-      where = s"${CardEntity.collectionId} = ?",
-      whereParams = Seq(collectionId.toString))(
+      projection = allFields,
+      where = s"$collectionId = ?",
+      whereParams = Seq(testCollectionId.toString))(
         f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.updateById(nineCardsUri = CardUri, id = card.id, values = createUpdateCardValues) throws contentResolverException
   }
+
 }
 
 trait CardMockCursor
@@ -99,17 +100,17 @@ trait CardMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, cardSeq map (_.id), IntDataType),
-    (CardEntity.position, 1, cardSeq map (_.data.position), IntDataType),
-    (CardEntity.collectionId, 2, cardSeq map (_ => collectionId), IntDataType),
-    (CardEntity.term, 3, cardSeq map (_.data.term), StringDataType),
-    (CardEntity.packageName, 4, cardSeq map (_.data.packageName getOrElse ""), StringDataType),
-    (CardEntity.cardType, 5, cardSeq map (_.data.cardType), StringDataType),
-    (CardEntity.intent, 6, cardSeq map (_.data.intent), StringDataType),
-    (CardEntity.imagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
-    (CardEntity.starRating, 8, cardSeq map (_.data.starRating getOrElse 0.0d), DoubleDataType),
-    (CardEntity.micros, 9, cardSeq map (_.data.micros), IntDataType),
-    (CardEntity.numDownloads, 10, cardSeq map (_.data.numDownloads getOrElse ""), StringDataType),
-    (CardEntity.notification, 11, cardSeq map (_.data.notification getOrElse ""), StringDataType)
+    (position, 1, cardSeq map (_.data.position), IntDataType),
+    (collectionId, 2, cardSeq map (_ => testCollectionId), IntDataType),
+    (term, 3, cardSeq map (_.data.term), StringDataType),
+    (packageName, 4, cardSeq map (_.data.packageName getOrElse ""), StringDataType),
+    (cardType, 5, cardSeq map (_.data.cardType), StringDataType),
+    (intent, 6, cardSeq map (_.data.intent), StringDataType),
+    (imagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
+    (starRating, 8, cardSeq map (_.data.starRating getOrElse 0.0d), DoubleDataType),
+    (micros, 9, cardSeq map (_.data.micros), IntDataType),
+    (numDownloads, 10, cardSeq map (_.data.numDownloads getOrElse ""), StringDataType),
+    (notification, 11, cardSeq map (_.data.notification getOrElse ""), StringDataType)
   )
 
   prepareCursor[Card](cardSeq.size, cursorData)
@@ -122,17 +123,17 @@ trait EmptyCardMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
-    (CardEntity.position, 1, Seq.empty, IntDataType),
-    (CardEntity.collectionId, 2, Seq.empty, IntDataType),
-    (CardEntity.term, 3, Seq.empty, StringDataType),
-    (CardEntity.packageName, 4, Seq.empty, StringDataType),
-    (CardEntity.cardType, 5, Seq.empty, StringDataType),
-    (CardEntity.intent, 6, Seq.empty, StringDataType),
-    (CardEntity.imagePath, 7, Seq.empty, StringDataType),
-    (CardEntity.starRating, 8, Seq.empty, DoubleDataType),
-    (CardEntity.micros, 9, Seq.empty, IntDataType),
-    (CardEntity.numDownloads, 10, Seq.empty, StringDataType),
-    (CardEntity.notification, 11, Seq.empty, StringDataType)
+    (position, 1, Seq.empty, IntDataType),
+    (collectionId, 2, Seq.empty, IntDataType),
+    (term, 3, Seq.empty, StringDataType),
+    (packageName, 4, Seq.empty, StringDataType),
+    (cardType, 5, Seq.empty, StringDataType),
+    (intent, 6, Seq.empty, StringDataType),
+    (imagePath, 7, Seq.empty, StringDataType),
+    (starRating, 8, Seq.empty, DoubleDataType),
+    (micros, 9, Seq.empty, IntDataType),
+    (numDownloads, 10, Seq.empty, StringDataType),
+    (notification, 11, Seq.empty, StringDataType)
   )
 
   prepareCursor[Card](0, cursorData)
@@ -149,12 +150,12 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.addCard(collectionId = collectionId, data = createCardData).run
+          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run
 
           result must be_\/-[Card].which {
             card =>
-              card.id shouldEqual cardId
-              card.data.intent shouldEqual intent
+              card.id shouldEqual testCardId
+              card.data.intent shouldEqual testIntent
           }
         }
 
@@ -162,24 +163,21 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.addCard(collectionId = collectionId, data = createCardData).run
+          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run
 
           result must be_-\/[NineCardsException]
         }
     }
 
     "deleteCard" should {
-      
+
       "return a successful result when a valid cache category id is given" in
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
-          
+
           val result = cardRepository.deleteCard(card = card).run
 
-          result must be_\/-[Int].which {
-            deleted =>
-              deleted shouldEqual 1
-          }
+          result must be_\/-[Int].which(_ shouldEqual 1)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -193,18 +191,18 @@ class CardRepositorySpec
     }
 
     "findCardById" should {
-      
+
       "return a Card object when a existent id is given" in
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
-          
-          val result = cardRepository.findCardById(id = cardId).run
+
+          val result = cardRepository.findCardById(id = testCardId).run
 
           result must be_\/-[Option[Card]].which {
             maybeCard =>
               maybeCard must beSome[Card].which { card =>
-                card.id shouldEqual cardId
-                card.data.intent shouldEqual intent
+                card.id shouldEqual testCardId
+                card.data.intent shouldEqual testIntent
               }
           }
         }
@@ -213,19 +211,16 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.findCardById(id = nonExistingCardId).run
+          val result = cardRepository.findCardById(id = testNonExistingCardId).run
 
-          result must be_\/-[Option[Card]].which {
-            maybeCard =>
-              maybeCard must beNone
-          }
+          result must be_\/-[Option[Card]].which(_ must beNone)
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.findCardById(id = cardId).run
+          val result = cardRepository.findCardById(id = testCardId).run
 
           result must be_-\/[NineCardsException]
         }
@@ -237,19 +232,16 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = collectionId).run
+          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run
 
-          result must be_\/-[Seq[Card]].which {
-            cards =>
-              cards shouldEqual cardSeq
-          }
+          result must be_\/-[Seq[Card]].which(_ shouldEqual cardSeq)
         }
 
       "fetchCardsByCollection should return an empty sequence when a non-existent collection id is given" in
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = nonExistingCollectionId).run
+          val result = cardRepository.fetchCardsByCollection(collectionId = testNonExistingCollectionId).run
 
           result must be_\/-[Seq[Card]].which {
             cards =>
@@ -261,7 +253,7 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = collectionId).run
+          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run
 
           result must be_-\/[NineCardsException]
         }
@@ -275,10 +267,7 @@ class CardRepositorySpec
 
           val result = cardRepository.updateCard(card = card).run
 
-          result must be_\/-[Int].which {
-            updated =>
-              updated shouldEqual 1
-          }
+          result must be_\/-[Int].which(_ shouldEqual 1)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -308,9 +297,10 @@ class CardRepositorySpec
 
           val result = getEntityFromCursor(cardEntityFromCursor)(mockCursor)
 
-          result must beSome[CardEntity].which { card =>
-            card.id shouldEqual cardEntity.id
-            card.data shouldEqual cardEntity.data
+          result must beSome[CardEntity].which {
+            card =>
+              card.id shouldEqual cardEntity.id
+              card.data shouldEqual cardEntity.data
           }
         }
     }
@@ -336,4 +326,5 @@ class CardRepositorySpec
         }
     }
   }
+
 }

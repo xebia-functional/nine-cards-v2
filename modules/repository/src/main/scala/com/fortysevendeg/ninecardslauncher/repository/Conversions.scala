@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider._
 
 object Conversions {
 
-  def toCacheCategory(cacheCategory: CacheCategoryEntity) = CacheCategory(
+  def toCacheCategory(cacheCategory: CacheCategoryEntity): CacheCategory = CacheCategory(
     id = cacheCategory.id,
     data = CacheCategoryData(
       packageName = cacheCategory.data.packageName,
@@ -15,7 +15,7 @@ object Conversions {
       ratingsCount = cacheCategory.data.ratingsCount,
       commentCount = cacheCategory.data.commentCount))
 
-  def toCard(cardEntity: CardEntity) = Card(
+  def toCard(cardEntity: CardEntity): Card = Card(
     id = cardEntity.id,
     data = CardData(
       position = cardEntity.data.position,
@@ -29,7 +29,7 @@ object Conversions {
       numDownloads = Option[String](cardEntity.data.numDownloads),
       notification = Option[String](cardEntity.data.notification)))
 
-  def toCollection(collectionEntity: CollectionEntity) = Collection(
+  def toCollection(collectionEntity: CollectionEntity): Collection = Collection(
     id = collectionEntity.id,
     data = CollectionData(
       position = collectionEntity.data.position,
@@ -43,7 +43,7 @@ object Conversions {
       sharedCollectionId = Option[String](collectionEntity.data.sharedCollectionId),
       sharedCollectionSubscribed = Option[Boolean](collectionEntity.data.sharedCollectionSubscribed)))
 
-  def toGeoInfo(geoInfoEntity: GeoInfoEntity) = GeoInfo(
+  def toGeoInfo(geoInfoEntity: GeoInfoEntity): GeoInfo = GeoInfo(
     id = geoInfoEntity.id,
     data = GeoInfoData(
       constrain = geoInfoEntity.data.constrain,
