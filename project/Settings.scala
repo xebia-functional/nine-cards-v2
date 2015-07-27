@@ -56,7 +56,7 @@ object Settings {
   lazy val basicSettings = Seq(
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
-    libraryDependencies ++= Seq(scalaz, scalazConcurrent)
+    libraryDependencies ++= Seq(scalaz, scalazConcurrent, rapture, raptureScalaz)
   )
 
   // Settings associated to library modules
