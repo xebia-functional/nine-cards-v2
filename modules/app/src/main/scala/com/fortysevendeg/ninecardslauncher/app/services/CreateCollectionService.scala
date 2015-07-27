@@ -46,10 +46,7 @@ class CreateCollectionService
 
     startForeground(notificationId, builder.build)
 
-    val task = loadDeviceId map {
-      deviceId =>
-        loadConfiguration(deviceId)
-    } getOrElse createNewConfiguration
+    val task = loadDeviceId map loadConfiguration getOrElse createNewConfiguration
 
     Task.fork(task).resolveAsync(
       collections => closeService(),
@@ -61,7 +58,7 @@ class CreateCollectionService
     super.onStartCommand(intent, flags, startId)
   }
 
-  // TODO Move synchronizeGeoInfo to UserConfigProcess
+  // TODO 9C-190 - Move synchronizeGeoInfo to UserConfigProcess
 
 //  private def synchronizeGeoInfo(userConfig: UserConfig) = {
 //    userConfig.geoInfo.homeMorning map (addUserConfigUserLocation(_, NineCardsMoments.HomeMorning))
@@ -101,6 +98,5 @@ class CreateCollectionService
 object CreateCollectionService {
   val keyDevice: String = "__key_device__"
   val notificationId: Int = 1101
-  val notificationErrorId: Int = 1111
   val homeMorningKey = "home"
 }

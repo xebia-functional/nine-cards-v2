@@ -24,8 +24,8 @@ import macroid.FullDsl._
 import scala.util.{Failure, Success, Try}
 
 class CollectionAdapter(collection: Collection, heightCard: Int)
-    (implicit activityContext: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme)
-    extends RecyclerView.Adapter[ViewHolderCollectionAdapter] {
+  (implicit activityContext: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme)
+  extends RecyclerView.Adapter[ViewHolderCollectionAdapter] {
 
   override def onCreateViewHolder(parentViewGroup: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
     val adapter = new CollectionLayoutAdapter(heightCard)
@@ -56,18 +56,16 @@ class CollectionAdapter(collection: Collection, heightCard: Int)
     Log.d("9Cards", "action: " + intent.getAction)
     intent.getAction match {
       case `openApp` =>
-        createIntentForApp(intent) map {
-          i =>
-            Try(activityContext.getOriginal.startActivity(i)) match {
-              case Success(e) =>
-              case Failure(ex) => goToGooglePlay(intent)
-            }
-        } getOrElse {
-          tryLaunchPackage(intent)
+        createIntentForApp(intent) match {
+          case Some(i) => Try(activityContext.getOriginal.startActivity(i)) match {
+            case Success(e) =>
+            case Failure(ex) => goToGooglePlay(intent)
+          }
+          case _ => tryLaunchPackage(intent)
         }
       case `openRecommendedApp` | `openSms` | `openPhone` | `openEmail` =>
-        // TODO No implemented yet
-      case _ => fragment.getActivity.startActivity(intent)
+      // TODO No implemented yet
+      case _ => activityContext.getOriginal.startActivity(intent)
     }
   }
 
@@ -83,27 +81,24 @@ class CollectionAdapter(collection: Collection, heightCard: Int)
     }
 
   private[this] def goToGooglePlay(intent: NineCardIntent) =
-    intent.extractPackageName() map {
-      pn =>
+    intent.extractPackageName() match {
+      case Some(pn) =>
         val intent = new Intent(Intent.ACTION_VIEW, Uri.parse(activityContext.application.getString(R.string.google_play_url, pn)))
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
-        Try (activityContext.getOriginal.startActivity(intent)) match {
+        Try(activityContext.getOriginal.startActivity(intent)) match {
           case Success(e) =>
           case Failure(ex) => Toast.makeText(activityContext.application, R.string.contactUsError, Toast.LENGTH_LONG).show()
         }
-    } getOrElse {
-      Toast.makeText(activityContext.application, R.string.contactUsError, Toast.LENGTH_LONG).show()
+      case _ => Toast.makeText(activityContext.application, R.string.contactUsError, Toast.LENGTH_LONG).show()
     }
 
   private[this] def tryLaunchPackage(intent: NineCardIntent) =
-    intent.extractPackageName() map {
-      pn =>
-        Try(activityContext.getOriginal.startActivity(activityContext.application.getPackageManager.getLaunchIntentForPackage(pn))) match {
-          case Success(e) =>
-          case Failure(ex) => goToGooglePlay(intent)
-        }
-    } getOrElse {
-      Toast.makeText(activityContext.application, R.string.contactUsError, Toast.LENGTH_LONG).show()
+    intent.extractPackageName() match {
+      case Some(pn) => Try(activityContext.getOriginal.startActivity(activityContext.application.getPackageManager.getLaunchIntentForPackage(pn))) match {
+        case Success(e) =>
+        case Failure(ex) => goToGooglePlay(intent)
+      }
+      case _ => Toast.makeText(activityContext.application, R.string.contactUsError, Toast.LENGTH_LONG).show()
     }
 }
 
