@@ -185,10 +185,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory).run
 
-          result must be_\/-[Int].which {
-            deleted =>
-              deleted shouldEqual 1
-          }
+          result must be_\/-[Int].which(_ shouldEqual 1)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -209,10 +206,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = testPackageName).run
 
-          result must be_\/-[Int].which {
-            deleted =>
-              deleted shouldEqual 1
-          }
+          result must be_\/-[Int].which(_ shouldEqual 1)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -233,10 +227,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.fetchCacheCategories.run
 
-          result must be_\/-[Seq[CacheCategory]].which {
-            cacheCategories =>
-              cacheCategories shouldEqual cacheCategorySeq
-          }
+          result must be_\/-[Seq[CacheCategory]].which(_ shouldEqual cacheCategorySeq)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -272,10 +263,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.findCacheCategoryById(id = testNonExistingCacheCategoryId).run
 
-          result must be_\/-[Option[CacheCategory]].which {
-            maybeCacheCategory =>
-              maybeCacheCategory must beNone
-          }
+          result must be_\/-[Option[CacheCategory]].which(_ must beNone)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -310,10 +298,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testNonExistingPackageName).run
 
-          result must be_\/-[Option[CacheCategory]].which {
-            maybeCacheCategory =>
-              maybeCacheCategory must beNone
-          }
+          result must be_\/-[Option[CacheCategory]].which(_ must beNone)
         }
 
       "return a NineCardsException when a exception is thrown" in
@@ -334,10 +319,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory).run
 
-          result must be_\/-[Int].which {
-            updated =>
-              updated shouldEqual 1
-          }
+          result must be_\/-[Int].which(_ shouldEqual 1)
         }
 
       "return a NineCardsException when a exception is thrown" in
