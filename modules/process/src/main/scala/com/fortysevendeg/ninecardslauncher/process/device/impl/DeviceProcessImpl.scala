@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
@@ -54,7 +55,7 @@ class DeviceProcessImpl(
 
   private[this] def getApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppCategorized]] =
     for {
-      applications <- appsService.getInstalledApps ▹ eitherT
+      applications <- toTaskDisjuntionF romResult(appsService.getInstalledApps) ▹ eitherT
       paths <- createBitmapsFromAppPackage(toAppPackageSeq(applications)) ▹ eitherT
     } yield {
       applications map {
