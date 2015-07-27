@@ -5,20 +5,20 @@ import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfigCollec
 
 trait UserConfigConversions {
 
-  def toUserInfo(userConfig: UserConfig) = UserInfo(
+  def toUserInfo(userConfig: UserConfig): UserInfo = UserInfo(
     email = userConfig.email,
     name = userConfig.plusProfile.displayName,
     imageUrl = userConfig.plusProfile.profileImage.imageUrl,
     devices = userConfig.devices map toUserDevice
   )
 
-  def toUserDevice(userConfigDevice: UserConfigDevice) = UserDevice(
+  def toUserDevice(userConfigDevice: UserConfigDevice): UserDevice = UserDevice(
     deviceId = userConfigDevice.deviceId,
     deviceName = userConfigDevice.deviceName,
     collections = userConfigDevice.collections map toUserCollection
   )
 
-  def toUserCollection(userConfigCollection: UserConfigCollection) = UserCollection(
+  def toUserCollection(userConfigCollection: UserConfigCollection): UserCollection = UserCollection(
     name = userConfigCollection.name,
     originalSharedCollectionId = userConfigCollection.originalSharedCollectionId,
     sharedCollectionId = userConfigCollection.sharedCollectionId,
@@ -32,7 +32,7 @@ trait UserConfigConversions {
     category = userConfigCollection.category
   )
 
-  def toUserCollectionItem(item: UserConfigCollectionItem) = UserCollectionItem(
+  def toUserCollectionItem(item: UserConfigCollectionItem): UserCollectionItem = UserCollectionItem(
     itemType = item.itemType,
     title = item.title,
     intent = item.metadata.toString(),

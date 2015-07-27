@@ -6,7 +6,7 @@ import scala.util.{Failure, Success, Try}
 
 object NineCardAppUtils {
 
-  val AvgDownloadsDefault = 1.0
+  val avgDownloadsDefault = 1.0
 
   def mfIndex(appItem: UnformedItem): Double = {
     val avgDownloads = Try {
@@ -22,7 +22,7 @@ object NineCardAppUtils {
       }
     } match {
       case Success(nd) => nd
-      case Failure(ex) => AvgDownloadsDefault
+      case Failure(ex) => avgDownloadsDefault
     }
 
     val avgRatingsCount = appItem.ratingsCount match {

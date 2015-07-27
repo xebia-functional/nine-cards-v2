@@ -165,23 +165,14 @@ class ImageServicesSpec
     "returns filename when the file exists" in
       new ImageServicesScope with FilesExistsImageServicesScope {
         val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run
-
-        result must be_\/-.which {
-          app =>
-            app shouldEqual appPackagePath
-        }
+        result must be_\/-.which (_ shouldEqual appPackagePath)
       }
 
     "returns filename and save image when the file not exists" in
       new ImageServicesScope {
         val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run
-
         there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
-
-        result must be_\/-.which {
-          app =>
-            app shouldEqual appPackagePath
-        }
+        result must be_\/-.which (_ shouldEqual appPackagePath)
       }
 
     "returns a NineCardsException if the bitmaps can't be created" in
@@ -198,23 +189,14 @@ class ImageServicesSpec
     "returns filename when the file exists" in
       new ImageServicesScope with FilesExistsImageServicesScope {
         val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run
-
-        result must be_\/-.which {
-          app =>
-            app shouldEqual appWebsitePath
-        }
+        result must be_\/-.which (_ shouldEqual appWebsitePath)
       }
 
     "returns filename and save image when the file not exists" in
       new ImageServicesScope {
         val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run
-
         there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
-
-        result must be_\/-.which {
-          app =>
-            app shouldEqual appWebsitePath
-        }
+        result must be_\/-.which (_ shouldEqual appWebsitePath)
       }
 
     "returns a NineCardsException if the bitmaps can't be created" in

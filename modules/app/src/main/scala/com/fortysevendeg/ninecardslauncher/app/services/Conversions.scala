@@ -7,9 +7,9 @@ import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollec
 
 trait Conversions {
 
-  def toSeqUnformedItem(apps: Seq[AppCategorized]) = apps map toUnformedItem
+  def toSeqUnformedItem(apps: Seq[AppCategorized]): Seq[UnformedItem] = apps map toUnformedItem
 
-  def toUnformedItem(appCategorized: AppCategorized) = UnformedItem(
+  def toUnformedItem(appCategorized: AppCategorized): UnformedItem = UnformedItem(
     name = appCategorized.name,
     packageName = appCategorized.packageName,
     className = appCategorized.className,
@@ -21,9 +21,9 @@ trait Conversions {
     commentCount = appCategorized.commentCount getOrElse 0
   )
 
-  def toSeqFormedCollection(collections: Seq[UserCollection]) = collections map toFormedCollection
+  def toSeqFormedCollection(collections: Seq[UserCollection]): Seq[FormedCollection] = collections map toFormedCollection
 
-  def toFormedCollection(userCollection: UserCollection) = FormedCollection(
+  def toFormedCollection(userCollection: UserCollection): FormedCollection = FormedCollection(
     name = userCollection.name,
     originalSharedCollectionId = userCollection.sharedCollectionId,
     sharedCollectionId = userCollection.sharedCollectionId,
@@ -35,7 +35,7 @@ trait Conversions {
     category = userCollection.category
   )
 
-  def toFormedItem(item: UserCollectionItem) = FormedItem(
+  def toFormedItem(item: UserCollectionItem): FormedItem = FormedItem(
     itemType = item.itemType,
     title = item.title,
     intent = item.intent

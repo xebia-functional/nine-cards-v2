@@ -46,8 +46,7 @@ class CollectionAdapter(collection: Collection, heightCard: Int)
         ivUri(fragment, card.imagePath)
       } else {
         ivSrc(R.drawable.ic_launcher) // TODO Create a new icon when the imagePath don't exist
-      }
-      )) ~
+      })) ~
       (viewHolder.name <~ tvText(card.term)) ~
       (viewHolder.content <~ vTag(position.toString)))
   }

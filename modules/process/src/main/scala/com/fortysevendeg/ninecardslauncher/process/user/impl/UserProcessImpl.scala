@@ -16,14 +16,13 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 
 class UserProcessImpl(
   apiServices: ApiServices,
-  persistenceServices: PersistenceServices
-  )
+  persistenceServices: PersistenceServices)
   extends UserProcess
   with Conversions {
 
-  private val deviceType = "ANDROID"
+  private[this] val deviceType = "ANDROID"
 
-  private val basicInstallation = Installation(id = None, deviceType = Some(deviceType), deviceToken = None, userId = None)
+  private[this] val basicInstallation = Installation(id = None, deviceType = Some(deviceType), deviceToken = None, userId = None)
 
   override def signIn(email: String, device: Device)(implicit context: ContextSupport): Task[NineCardsException \/ SignInResponse] =
     for {

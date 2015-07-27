@@ -25,33 +25,33 @@ class Injector(implicit contextWrapper: ContextWrapper) {
 
   // Services
 
-  private lazy val serviceClient = new ServiceClient(
+  private[this] lazy val serviceClient = new ServiceClient(
     httpClient = new OkHttpClient(),
     baseUrl = resources.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_base_url))
 
-  private lazy val apiServicesConfig = ApiServicesConfig(
+  private[this] lazy val apiServicesConfig = ApiServicesConfig(
     appId = resources.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_app_id),
     appKey = resources.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_app_key),
     localization = resources.getString(com.fortysevendeg.ninecardslauncher2.R.string.api_localization))
 
-  private lazy val apiServices = new ApiServicesImpl(
+  private[this] lazy val apiServices = new ApiServicesImpl(
     apiServicesConfig = apiServicesConfig,
     apiUserService = new ApiUserService(serviceClient),
     googlePlayService = new ApiGooglePlayService(serviceClient),
     userConfigService = new ApiUserConfigService(serviceClient))
 
-  private lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
+  private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
     contextWrapper.application.getContentResolver)
 
-  private lazy val persistenceServices = new PersistenceServicesImpl(
+  private[this] lazy val persistenceServices = new PersistenceServicesImpl(
     cacheCategoryRepository = new CacheCategoryRepository(contentResolverWrapper),
     cardRepository = new CardRepository(contentResolverWrapper),
     collectionRepository = new CollectionRepository(contentResolverWrapper),
     geoInfoRepository = new GeoInfoRepository(contentResolverWrapper))
 
-  private lazy val appsServices = new AppsServicesImpl()
+  private[this] lazy val appsServices = new AppsServicesImpl()
 
-  private lazy val imageServicesConfig = ImageServicesConfig(
+  private[this] lazy val imageServicesConfig = ImageServicesConfig(
     colors = List(
       resources.getColor(com.fortysevendeg.ninecardslauncher2.R.color.background_default_1),
       resources.getColor(com.fortysevendeg.ninecardslauncher2.R.color.background_default_2),
@@ -60,7 +60,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
       resources.getColor(com.fortysevendeg.ninecardslauncher2.R.color.background_default_5)
     ))
 
-  private lazy val imageServices = new ImageServicesImpl(
+  private[this] lazy val imageServices = new ImageServicesImpl(
     config = imageServicesConfig)
 
   // Process
@@ -71,13 +71,13 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     persistenceServices = persistenceServices,
     imageServices = imageServices)
 
-  private lazy val nameCategories: Map[String, String] = (categories map {
+  private[this] lazy val nameCategories: Map[String, String] = (categories map {
     category =>
       val identifier = resources.getIdentifier(category.toLowerCase, "string", contextWrapper.application.getPackageName)
       (category, if (identifier != 0) resources.getString(identifier) else category)
   }).toMap
 
-  private lazy val collectionProcessConfig = CollectionProcessConfig(
+  private[this] lazy val collectionProcessConfig = CollectionProcessConfig(
     namesCategories = nameCategories)
 
   lazy val collectionProcess = new CollectionProcessImpl(
