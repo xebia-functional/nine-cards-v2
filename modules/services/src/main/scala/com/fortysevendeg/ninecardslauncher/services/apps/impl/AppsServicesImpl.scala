@@ -1,21 +1,27 @@
 package com.fortysevendeg.ninecardslauncher.services.apps.impl
 
+import java.io.IOException
+
 import android.content.Intent
 import android.content.pm.ResolveInfo
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.apps._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 
 import scala.collection.JavaConversions._
 import scalaz.concurrent.Task
+import scalaz.Scalaz._
 
 class AppsServicesImpl
   extends AppsServices {
 
-  override def getInstalledApps(implicit context: ContextSupport) =
+  implicit def uncaughtConverter = (t: Throwable) => AppsInstalledException(t.getMessage, t.some)
+
+  override def getInstalledApps(implicit context: ContextSupport) = Service {
     Task {
-      resultCatchingNineCardsException {
+      CatchAll[AppsInstalledException] {
         val mainIntent: Intent = new Intent(Intent.ACTION_MAIN, null)
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
 
@@ -33,5 +39,5 @@ class AppsServicesImpl
         }
       }
     }
-
+  }
 }

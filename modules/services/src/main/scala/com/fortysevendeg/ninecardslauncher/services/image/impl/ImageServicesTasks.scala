@@ -11,7 +11,7 @@ import android.util.{DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationException, ImageServicesConfig}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.{Answer, Result}
@@ -25,9 +25,9 @@ trait ImageServicesTasks {
 
   val resourceUtils = new ResourceUtils
 
-  implicit def uncaughtConverter = (t : Throwable) => BitmapTransformationException(t.getMessage, t.some)
+  implicit def uncaughtConverter = (t: Throwable) => BitmapTransformationException(t.getMessage, t.some)
 
-  def getPathByName(name: String): ServiceDef[ContextSupport, File, IOException] = Service { implicit context: ContextSupport =>
+  def getPathByName(name: String)(implicit context: ContextSupport): ServiceDef2[File, IOException] = Service {
     Task {
       Result.catching[IOException] {
         new File(resourceUtils.getPath(if (name.isEmpty) "_" else name.substring(0, 1).toUpperCase))
@@ -35,7 +35,7 @@ trait ImageServicesTasks {
     }
   }
 
-  def getPathByApp(packageName: String, className: String): ServiceDef[ContextSupport, File, IOException] = Service { implicit context: ContextSupport =>
+  def getPathByApp(packageName: String, className: String)(implicit context: ContextSupport): ServiceDef2[File, IOException] = Service {
     Task {
       Result.catching[IOException] {
         new File(resourceUtils.getPathPackage(packageName, className))
@@ -43,7 +43,7 @@ trait ImageServicesTasks {
     }
   }
 
-  def getPathByPackageName(packageName: String): ServiceDef[ContextSupport, File, IOException] = Service { implicit context: ContextSupport =>
+  def getPathByPackageName(packageName: String)(implicit context: ContextSupport): ServiceDef2[File, IOException] = Service {
     Task {
       Result.catching[IOException] {
         new File(resourceUtils.getPath(packageName))
@@ -51,7 +51,7 @@ trait ImageServicesTasks {
     }
   }
 
-  def getBitmapByApp(packageName: String, icon: Int): ServiceDef[ContextSupport, Bitmap, BitmapTransformationException] = Service { context: ContextSupport =>
+  def getBitmapByApp(packageName: String, icon: Int)(implicit context: ContextSupport): ServiceDef2[Bitmap, BitmapTransformationException] = Service {
     Task {
       val packageManager = context.getPackageManager
       Option(packageManager.getResourcesForApplication(packageName)) match {
@@ -66,7 +66,7 @@ trait ImageServicesTasks {
     }
   }
 
-  def getBitmapFromURL(uri: String): ServiceDef[ContextSupport, Bitmap, BitmapTransformationException] = Service { _ =>
+  def getBitmapFromURL(uri: String): ServiceDef2[Bitmap, BitmapTransformationException] = Service {
     Task {
       CatchAll[BitmapTransformationException] {
         new URL(uri).getContent match {
@@ -77,7 +77,7 @@ trait ImageServicesTasks {
     }
   }
 
-  def saveBitmap(file: File, bitmap: Bitmap): ServiceDef[ContextSupport, Unit, IOException] = Service { _ =>
+  def saveBitmap(file: File, bitmap: Bitmap): ServiceDef2[Unit, IOException] = Service {
     Task {
       Result.catching[IOException] {
         val out: FileOutputStream = new FileOutputStream(file)
@@ -88,33 +88,33 @@ trait ImageServicesTasks {
     }
   }
 
-  def getBitmapByAppOrName(packageName: String, icon: Int, name: String):
-  ServiceDef[ContextSupport, Bitmap, BitmapTransformationException] = Service { context: ContextSupport =>
-    manageBitmapTask(name)(getBitmapByApp(packageName, icon).run(context))
+  def getBitmapByAppOrName(packageName: String, icon: Int, name: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig):
+  ServiceDef2[Bitmap, BitmapTransformationException] = Service {
+    manageBitmapTask(name)(getBitmapByApp(packageName, icon).run)
   }
 
-  def getBitmapFromURLOrName(url: String, name: String):
-  ServiceDef[ContextSupport, Bitmap, BitmapTransformationException] = Service { context: ContextSupport =>
-    manageBitmapTask(name)(getBitmapFromURL(url).run(context))(context, )
+  def getBitmapFromURLOrName(url: String, name: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig):
+  ServiceDef2[Bitmap, BitmapTransformationException] = Service {
+    manageBitmapTask(name)(getBitmapFromURL(url).run)
   }
 
-  def getBitmapByName(text: String)(implicit context: ContextSupport, config: ImageServicesConfig): Result[Bitmap, BitmapTransformationException] =
+  private[this] def getBitmapByName(text: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig): Result[Bitmap, BitmapTransformationException] =
     CatchAll[BitmapTransformationException] {
-        val bitmap: Bitmap = Bitmap.createBitmap(defaultSize, defaultSize, Bitmap.Config.RGB_565)
-        val bounds: Rect = new Rect
-        val paint = defaultPaint
-        paint.getTextBounds(text, 0, text.length, bounds)
-        val x: Int = ((defaultSize / 2) - bounds.exactCenterX).toInt
-        val y: Int = ((defaultSize / 2) - bounds.exactCenterY).toInt
-        val canvas: Canvas = new Canvas(bitmap)
-        val color = config.colors(scala.util.Random.nextInt(config.colors.length))
-        canvas.drawColor(color)
-        canvas.drawText(text, x, y, paint)
-        bitmap
-      }
+      val ds = defaultSize
+      val bitmap: Bitmap = Bitmap.createBitmap(ds, ds, Bitmap.Config.RGB_565)
+      val bounds: Rect = new Rect
+      val paint = defaultPaint
+      paint.getTextBounds(text, 0, text.length, bounds)
+      val x: Int = ((ds / 2) - bounds.exactCenterX).toInt
+      val y: Int = ((ds / 2) - bounds.exactCenterY).toInt
+      val canvas: Canvas = new Canvas(bitmap)
+      val color = imageServicesConfig.colors(scala.util.Random.nextInt(imageServicesConfig.colors.length))
+      canvas.drawColor(color)
+      canvas.drawText(text, x, y, paint)
+      bitmap
+    }
 
-  private[this] def manageBitmapTask(name: String)(getBitmap: => Task[Result[Bitmap, BitmapTransformationException]])
-    (implicit context: ContextSupport, config: ImageServicesConfig) =
+  private[this] def manageBitmapTask(name: String)(getBitmap: => Task[Result[Bitmap, BitmapTransformationException]])(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig) =
     getBitmap map {
       case answer @ Answer(_) => answer
       case _ => getBitmapByName(name)

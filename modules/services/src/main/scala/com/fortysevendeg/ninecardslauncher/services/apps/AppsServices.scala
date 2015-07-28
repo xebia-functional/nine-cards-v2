@@ -1,12 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.services.apps
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import rapture.core.Result
-
-import scalaz.concurrent.Task
 
 trait AppsServices {
-  def getInstalledApps(implicit context: ContextSupport): Task[Result[Seq[Application], NineCardsException]]
+  def getInstalledApps(implicit context: ContextSupport): ServiceDef2[Seq[Application], AppsInstalledException]
 }

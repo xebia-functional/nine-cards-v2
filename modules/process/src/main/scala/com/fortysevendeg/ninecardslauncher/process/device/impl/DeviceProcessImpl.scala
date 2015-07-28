@@ -55,7 +55,7 @@ class DeviceProcessImpl(
 
   private[this] def getApps(implicit context: ContextSupport): Task[NineCardsException \/ Seq[AppCategorized]] =
     for {
-      applications <- toTaskDisjuntionF romResult(appsService.getInstalledApps) ▹ eitherT
+      applications <- appsService.getInstalledApps ▹ eitherT
       paths <- createBitmapsFromAppPackage(toAppPackageSeq(applications)) ▹ eitherT
     } yield {
       applications map {

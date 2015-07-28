@@ -14,8 +14,14 @@ package object services {
 
     type ServiceDef[X, A, E <: Exception] = ResultT[({type λ[α] = ReaderT[Task, X, α]})#λ, A, E]
 
+    type ServiceDef2[A, E <: Exception] = ResultT[Task, A, E]
+
     def apply[X, A, B <: Exception : ClassTag](f: X => Task[Result[A, B]]) : ServiceDef[X, A, B] = {
       ResultT[({type λ[α] = ReaderT[Task, X, α]})#λ, A, B](Kleisli.kleisli(f))
+    }
+
+    def apply[A, B <: Exception : ClassTag](f: Task[Result[A, B]]) : ServiceDef2[A, B] = {
+      ResultT[Task, A, B](f)
     }
 
     @deprecated("migrate to Result type")
