@@ -3,8 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.image
 import java.io.IOException
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.{ServiceDef2, ServiceDef}
-import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesTasks
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 
 trait ImageServices {
 

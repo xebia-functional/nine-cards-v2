@@ -103,7 +103,7 @@ trait ImageServicesTasks
     manageBitmapTask(name)(getBitmapFromURL(url).run)
   }
 
-  private[this] def getBitmapByName(text: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig): Result[Bitmap, BitmapTransformationException] =
+  def getBitmapByName(text: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig): Result[Bitmap, BitmapTransformationException] =
     CatchAll[BitmapTransformationException] {
       val ds = defaultSize
       val bitmap: Bitmap = Bitmap.createBitmap(ds, ds, Bitmap.Config.RGB_565)

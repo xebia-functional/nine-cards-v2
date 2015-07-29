@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.repository.model.{CardData, CollectionData, GeoInfoData, CacheCategoryData}
-import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel, model}
+import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 import scala.util.Random
@@ -272,26 +272,26 @@ trait PersistenceServicesData {
   val seqCacheCategory: Seq[CacheCategory] = createSeqCacheCategory()
   val cacheCategory: CacheCategory = seqCacheCategory.head
   val repoCacheCategoryData: CacheCategoryData = createRepoCacheCategoryData()
-  val seqRepoCacheCategory: Seq[model.CacheCategory] = createSeqRepoCacheCategory(data = repoCacheCategoryData)
-  val repoCacheCategory: model.CacheCategory = seqRepoCacheCategory.head
+  val seqRepoCacheCategory: Seq[repositoryModel.CacheCategory] = createSeqRepoCacheCategory(data = repoCacheCategoryData)
+  val repoCacheCategory: repositoryModel.CacheCategory = seqRepoCacheCategory.head
 
   val seqGeoInfo: Seq[GeoInfo] = createSeqGeoInfo()
   val geoInfo: GeoInfo = seqGeoInfo.head
   val repoGeoInfoData: GeoInfoData = createRepoGeoInfoData()
-  val seqRepoGeoInfo: Seq[model.GeoInfo] = createSeqRepoGeoInfo(data = repoGeoInfoData)
-  val repoGeoInfo: model.GeoInfo = seqRepoGeoInfo.head
+  val seqRepoGeoInfo: Seq[repositoryModel.GeoInfo] = createSeqRepoGeoInfo(data = repoGeoInfoData)
+  val repoGeoInfo: repositoryModel.GeoInfo = seqRepoGeoInfo.head
 
   val seqCard: Seq[Card] = createSeqCard()
   val card: Card = seqCard.head
   val repoCardData: CardData = createRepoCardData()
-  val seqRepoCard: Seq[model.Card] = createSeqRepoCard(data = repoCardData)
-  val repoCard: model.Card = seqRepoCard.head
+  val seqRepoCard: Seq[repositoryModel.Card] = createSeqRepoCard(data = repoCardData)
+  val repoCard: repositoryModel.Card = seqRepoCard.head
 
   val seqCollection: Seq[Collection] = createSeqCollection()
   val collection: Collection = seqCollection.head
   val repoCollectionData: CollectionData = createRepoCollectionData()
-  val seqRepoCollection: Seq[model.Collection] = createSeqRepoCollection(data = repoCollectionData)
-  val repoCollection: model.Collection = seqRepoCollection.head
+  val seqRepoCollection: Seq[repositoryModel.Collection] = createSeqRepoCollection(data = repoCollectionData)
+  val repoCollection: repositoryModel.Collection = seqRepoCollection.head
 
   def createAddCacheCategoryRequest(
     packageName: String = packageName,

@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
-import java.io.IOException
-
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException

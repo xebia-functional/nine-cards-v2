@@ -1,28 +1,26 @@
 package com.fortysevendeg.ninecardslauncher.services.image
 
-import java.io.File
+import java.io.{File, IOException}
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.image.impl.{ImageServicesImpl, ImageServicesTasks}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import org.mockito.Mockito._
-import scalaz.{\/-, -\/, \/}
+import rapture.core.{Answer, Result}
+
 import scalaz.concurrent.Task
-import org.specs2.matcher.DisjunctionMatchers
 
 trait ImageServicesSpecification
   extends Specification
-  with Mockito
-  with DisjunctionMatchers {
+  with Mockito {
 
-  val exception = NineCardsException("")
+  val serviceBitmapException = Service(Task(Result.errata[Bitmap, BitmapTransformationException](BitmapTransformationException(""))))
 
   trait ImageServicesScope
     extends Scope {
@@ -69,31 +67,31 @@ trait ImageServicesSpecification
 
     val imageServiceConfig = ImageServicesConfig(List(1, 2, 3, 4, 5))
 
-    val fileExistsTask = Task {
-      \/.fromTryCatchThrowable[File, NineCardsException] {
+    val fileExistsTask = Service(Task {
+      Result.catching[IOException] {
         val file = mock[File]
         file.exists() returns true
         file.getAbsolutePath returns filePath
         file
       }
-    }
+    })
 
-    val fileNotExistsTask = Task {
-      \/.fromTryCatchThrowable[File, NineCardsException] {
+    val fileNotExistsTask = Service(Task {
+      Result.catching[IOException] {
         val file = mock[File]
         file.exists() returns false
         file.getAbsolutePath returns filePath
         file
       }
-    }
+    })
 
-    val defaultBitmapTask = Task(\/-(mock[Bitmap]))
+    val defaultBitmapTask = Service(Task(Result.catching[BitmapTransformationException](mock[Bitmap])))
 
     val mockTasks = mock[ImageServicesTasks]
 
     mockTasks.getBitmapByName(
       appPackage.name)(contextSupport, imageServiceConfig) returns
-      \/-(mock[Bitmap])
+      Result.answer(mock[Bitmap])
 
     mockTasks.getBitmapByApp(
       appPackage.packageName,
@@ -101,7 +99,7 @@ trait ImageServicesSpecification
       defaultBitmapTask
 
     mockTasks.getBitmapFromURL(
-      appWebsite.url)(contextSupport) returns
+      appWebsite.url) returns
       defaultBitmapTask
 
     mockTasks.getBitmapByAppOrName(
@@ -116,7 +114,7 @@ trait ImageServicesSpecification
       defaultBitmapTask
 
     mockTasks.saveBitmap(any[File], any[Bitmap]) returns
-      Task(\/-(()))
+      Service(Task(Result.catching[IOException](())))
 
     mockTasks.getPathByApp(appPackage.packageName, appPackage.className)(contextSupport) returns
       fileNotExistsTask
@@ -147,12 +145,12 @@ trait ImageServicesSpecification
       appPackage.packageName,
       appPackage.icon,
       appPackage.name)(contextSupport, imageServiceConfig) returns
-      Task(-\/(exception))
+      serviceBitmapException
 
     mockTasks.getBitmapFromURLOrName(
       appWebsite.url,
       appPackage.name)(contextSupport, imageServiceConfig) returns
-      Task(-\/(exception))
+      serviceBitmapException
   }
 
 }
@@ -164,22 +162,22 @@ class ImageServicesSpec
 
     "returns filename when the file exists" in
       new ImageServicesScope with FilesExistsImageServicesScope {
-        val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run
-        result must be_\/-.which (_ shouldEqual appPackagePath)
+        val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run.run
+        result shouldEqual Answer(appPackagePath)
       }
 
     "returns filename and save image when the file not exists" in
       new ImageServicesScope {
-        val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run
+        val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run.run
         there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
-        result must be_\/-.which (_ shouldEqual appPackagePath)
+        result shouldEqual Answer(appPackagePath)
       }
 
     "returns a NineCardsException if the bitmaps can't be created" in
       new ImageServicesScope with BitmapErrorImageServicesScope {
-        val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run
+        val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run.run
         there was exactly(0)(mockTasks).saveBitmap(any[File], any[Bitmap])
-        result must be_-\/[NineCardsException]
+        result.isErrata shouldEqual true
       }
 
   }
@@ -188,22 +186,22 @@ class ImageServicesSpec
 
     "returns filename when the file exists" in
       new ImageServicesScope with FilesExistsImageServicesScope {
-        val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run
-        result must be_\/-.which (_ shouldEqual appWebsitePath)
+        val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run.run
+        result shouldEqual Answer(appWebsitePath)
       }
 
     "returns filename and save image when the file not exists" in
       new ImageServicesScope {
-        val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run
+        val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run.run
         there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
-        result must be_\/-.which (_ shouldEqual appWebsitePath)
+        result shouldEqual Answer(appWebsitePath)
       }
 
     "returns a NineCardsException if the bitmaps can't be created" in
       new ImageServicesScope with BitmapErrorImageServicesScope {
-        val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run
+        val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run.run
         there was exactly(0)(mockTasks).saveBitmap(any[File], any[Bitmap])
-        result must be_-\/[NineCardsException]
+        result.isErrata shouldEqual true
       }
 
   }
