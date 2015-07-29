@@ -5,7 +5,6 @@ import rapture.core._
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
-import scala.util.Try
 import scala.util.control.NonFatal
 import scalaz._
 import scalaz.concurrent.Task
@@ -54,7 +53,7 @@ object NineCardExtensions {
       def apply[A](blk: => A)(implicit classTag: ClassTag[E], cv: Throwable => E): Result[A, E] =
         \/.fromTryCatchNonFatal(blk) match {
           case \/-(x) => Result.answer[A, E](x)
-          case -\/(e) => Result.errata[A, E](cv(e))
+          case -\/(e) => Errata(Seq((implicitly[ClassTag[E]], (e.getMessage, cv(e)))))
         }
     }
 

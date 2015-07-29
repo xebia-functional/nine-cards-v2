@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.services.image.impl
 import java.io.{IOException, File}
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.image._
 import rapture.core.Result
@@ -17,19 +16,15 @@ class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageSe
 
   implicit val implicitConfig: ImageServicesConfig = config
 
-  override def saveAppIcon(request: AppPackage)(implicit contextSupport: ContextSupport) = Service {
-    (for {
-      file <- imageServicesTasks.getPathByApp(request.packageName, request.className)
-      appPackagePath <- createIfNotExists(file, request)
-    } yield appPackagePath).run
-  }
+  override def saveAppIcon(request: AppPackage)(implicit contextSupport: ContextSupport) = for {
+    file <- imageServicesTasks.getPathByApp(request.packageName, request.className)
+    appPackagePath <- createIfNotExists(file, request)
+  } yield appPackagePath
 
-  override def saveAppIcon(request: AppWebsite)(implicit contextSupport: ContextSupport) = Service {
-    (for {
-      file <- imageServicesTasks.getPathByPackageName(request.packageName)
-      appWebsitePath <- createIfNotExists(file, request)
-    } yield appWebsitePath).run
-  }
+  override def saveAppIcon(request: AppWebsite)(implicit contextSupport: ContextSupport) = for {
+    file <- imageServicesTasks.getPathByPackageName(request.packageName)
+    appWebsitePath <- createIfNotExists(file, request)
+  } yield appWebsitePath
 
   private[this] def createIfNotExists(file: File, request: AppPackage)(implicit contextSupport: ContextSupport):
   ServiceDef2[AppPackagePath, BitmapTransformationException with IOException] =

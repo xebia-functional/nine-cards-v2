@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.services.utils.FileUtils
+import rapture.core.Result
 
 import scala.util.{Failure, Success}
 import scalaz._
@@ -29,7 +30,8 @@ class PersistenceServicesImpl(
   geoInfoRepository: GeoInfoRepository)
   extends PersistenceServices
   with Conversions
-  with FileUtils {
+  with FileUtils
+  with ImplicitsPersistenceExceptions {
 
   // TODO These contants don't should be here
 
@@ -57,8 +59,14 @@ class PersistenceServicesImpl(
       _ map toCacheCategory
     }
 
-  override def fetchCacheCategories: Task[NineCardsException \/ Seq[CacheCategory]] =
-    cacheCategoryRepository.fetchCacheCategories ▹ eitherT map toCacheCategorySeq
+  // Simple implementation for proof of concept
+  override def fetchCacheCategories = Service {
+    val s = cacheCategoryRepository.fetchCacheCategories ▹ eitherT map toCacheCategorySeq
+    toDisjunctionTask(s).map {
+      case -\/(ex) => Result.errata(RepositoryException(ex.getMessage, ex.some))
+      case \/-(a) => Result.answer(a)
+    }
+  }
 
   override def findCacheCategoryById(request: FindCacheCategoryByIdRequest): Task[NineCardsException \/ Option[CacheCategory]] =
     cacheCategoryRepository.findCacheCategoryById(request.id) ▹ eitherT map {

@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
@@ -18,7 +19,7 @@ trait PersistenceServices {
 
   def fetchCacheCategoryByPackage(request: FetchCacheCategoryByPackageRequest): Task[NineCardsException \/ Option[CacheCategory]]
 
-  def fetchCacheCategories: Task[NineCardsException \/ Seq[CacheCategory]]
+  def fetchCacheCategories: ServiceDef2[Seq[CacheCategory], RepositoryException]
 
   def findCacheCategoryById(request: FindCacheCategoryByIdRequest): Task[NineCardsException \/ Option[CacheCategory]]
 

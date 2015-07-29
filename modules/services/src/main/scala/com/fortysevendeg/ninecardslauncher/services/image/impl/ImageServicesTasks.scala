@@ -7,25 +7,24 @@ import android.content.res.Resources
 import android.graphics._
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
-import android.util.{DisplayMetrics, TypedValue}
+import android.util.{Log, DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationException, ImageServicesConfig}
+import com.fortysevendeg.ninecardslauncher.services.image.{ImplicitsImageExceptions, BitmapTransformationException, ImageServicesConfig}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.{Answer, Result}
 
 import scalaz.Scalaz._
 import scalaz.concurrent.Task
 
-trait ImageServicesTasks {
+trait ImageServicesTasks
+  extends ImplicitsImageExceptions {
 
   val noDensity = 0
 
   val resourceUtils = new ResourceUtils
-
-  implicit def uncaughtConverter = (t: Throwable) => BitmapTransformationException(t.getMessage, t.some)
 
   def getPathByName(name: String)(implicit context: ContextSupport): ServiceDef2[File, IOException] = Service {
     Task {
@@ -38,7 +37,9 @@ trait ImageServicesTasks {
   def getPathByApp(packageName: String, className: String)(implicit context: ContextSupport): ServiceDef2[File, IOException] = Service {
     Task {
       Result.catching[IOException] {
-        new File(resourceUtils.getPathPackage(packageName, className))
+        val f = new File(resourceUtils.getPathPackage(packageName, className))
+        Log.d("9cards", f.getAbsolutePath)
+        f
       }
     }
   }
@@ -58,8 +59,12 @@ trait ImageServicesTasks {
         case Some(resources) =>
           val density = betterDensityForResource(resources, icon)
           tryIconByDensity(resources, icon, density) match {
-            case answer@Answer(_) => answer
-            case _ => tryIconByPackageName(packageName)
+            case Answer(a) =>
+              Log.d("9cards", packageName + " image created")
+              Result.answer(a)
+            case _ =>
+              Log.d("9cards", packageName + " try with packagename")
+              tryIconByPackageName(packageName)
           }
         case _ => Result.errata(BitmapTransformationException("Resource not found from packageName"))
       }
