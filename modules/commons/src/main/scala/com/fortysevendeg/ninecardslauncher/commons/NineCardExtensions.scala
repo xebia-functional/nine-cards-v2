@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.commons
 
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import rapture.core._
+import rapture.core.scalazInterop.ResultT
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
@@ -55,6 +56,22 @@ object NineCardExtensions {
           case \/-(x) => Result.answer[A, E](x)
           case -\/(e) => Errata(Seq((implicitly[ClassTag[E]], (e.getMessage, cv(e)))))
         }
+    }
+
+  }
+
+  implicit class ResultTExtensions[A, B <: Exception : ClassTag](r : ResultT[Task, A, B]) {
+
+    def resolve[E <: Exception : ClassTag](implicit cv: Exception => E) = {
+      val task: Task[Result[A, B]] = r.run
+      val innerResult: Task[Result[A, E]] = task.map(result => result match {
+        case e @ Errata(_) =>
+          val exs = e.exceptions map (ie => (implicitly[ClassTag[E]], (ie.getMessage, cv(ie))))
+          Errata[A, E](exs)
+        case Unforeseen(e) => Unforeseen[A, E](e)
+        case Answer(s) => Answer[A, E](s)
+      })
+      ResultT(innerResult)
     }
 
   }

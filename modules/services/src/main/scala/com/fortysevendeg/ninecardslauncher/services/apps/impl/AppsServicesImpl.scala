@@ -12,12 +12,10 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 
 import scala.collection.JavaConversions._
 import scalaz.concurrent.Task
-import scalaz.Scalaz._
 
 class AppsServicesImpl
-  extends AppsServices {
-
-  implicit def uncaughtConverter = (t: Throwable) => AppsInstalledException(t.getMessage, t.some)
+  extends AppsServices
+  with ImplicitsAppsExceptions {
 
   override def getInstalledApps(implicit context: ContextSupport) = Service {
     Task {

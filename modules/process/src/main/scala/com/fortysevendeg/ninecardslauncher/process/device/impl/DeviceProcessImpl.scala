@@ -1,9 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
+import java.io.IOException
+
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.process.device.DeviceExceptions.{AppCategorizationException, _}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
@@ -12,12 +16,11 @@ import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
-import rapture.core.{Result, Answer}
-import scalaz.EitherT._
+import rapture.core.{Each => ExHandler, Errata, Answer, Result}
+
 import scalaz.Scalaz._
 import scalaz._
 import scalaz.concurrent.Task
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 
 class DeviceProcessImpl(
   appsService: AppsServices,
@@ -32,22 +35,23 @@ class DeviceProcessImpl(
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  override def getCategorizedApps(implicit context: ContextSupport) =
-    for {
+  override def getCategorizedApps(implicit context: ContextSupport) = {
+    (for {
       cacheCategories <- persistenceServices.fetchCacheCategories
       apps <- getApps
     } yield {
       apps map (app => copyCacheCategory(app, cacheCategories.find(_.packageName == app.packageName)))
-    }
+    }).resolve[AppCategorizationException]
+  }
 
   override def categorizeApps(implicit context: ContextSupport) =
-    for {
+    (for {
       apps <- getCategorizedApps
       packagesWithoutCategory = apps.filter(_.category.isEmpty) map (_.packageName)
       requestConfig <- apiUtils.getRequestConfigServiceF2
       response <- transformCallToGooglePlay(packagesWithoutCategory, requestConfig)
       _ <- addCacheCategories(toAddCacheCategoryRequestSeq(response.apps.items))
-    } yield ()
+    } yield ()).resolve[AppCategorizationException]
 
   // TODO Transform for proof of concept
   private[this] def transformCallToGooglePlay(packagesWithoutCategory: Seq[String], requestConfig: RequestConfig):
@@ -59,11 +63,11 @@ class DeviceProcessImpl(
   }
 
   override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport) =
-    for {
+    (for {
       requestConfig <- apiUtils.getRequestConfigServiceF2
       response <- transformCallToGooglePlayPackages(packages, requestConfig)
       _ <- createBitmapsFromAppWebSite(toAppWebSiteSeq(response.packages))
-    } yield ()
+    } yield ()).resolve[CreateBitmapException]
 
   // TODO Transform for proof of concept
   private[this] def transformCallToGooglePlayPackages(packages: Seq[String], requestConfig: RequestConfig):

@@ -6,6 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCar
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, FormedCollection, NineCardIntent, UnformedItem}
+import com.fortysevendeg.ninecardslauncher.process.device.DeviceExceptions.{AppCategorizationException, CreateBitmapException}
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserCollection
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsInstalledException
@@ -20,14 +21,14 @@ import scalaz._
 trait CreateCollectionsTasks
   extends Conversions {
 
-  def createNewConfiguration(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], AppsInstalledException with BitmapTransformationException with NineCardsException with RepositoryException] =
+  def createNewConfiguration(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], AppCategorizationException with NineCardsException] =
     for {
       _ <- di.deviceProcess.categorizeApps
       appsCategorized <- di.deviceProcess.getCategorizedApps
       collections <- createCollectionsFromUnformedItems(toSeqUnformedItem(appsCategorized))
     } yield collections
 
-  def loadConfiguration(deviceId: String)(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], RepositoryException with AppsInstalledException with BitmapTransformationException with NineCardsException] =
+  def loadConfiguration(deviceId: String)(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], AppCategorizationException with CreateBitmapException with NineCardsException] =
     for {
       _ <- di.deviceProcess.categorizeApps
       userCollections <- getUserCollection(deviceId)
