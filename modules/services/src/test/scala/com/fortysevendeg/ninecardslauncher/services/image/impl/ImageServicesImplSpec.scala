@@ -149,7 +149,7 @@ class ImageServicesImplSpec
         }
       }
 
-    "returns a NineCardsException if the bitmaps can't be created" in
+    "returns a BitmapTransformationException if the bitmaps can't be created" in
       new ImageServicesScope with BitmapErrorImageServicesScope {
         val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run.run
         there was exactly(0)(mockTasks).saveBitmap(any[File], any[Bitmap])
@@ -182,7 +182,7 @@ class ImageServicesImplSpec
         }
       }
 
-    "returns a NineCardsException if the bitmaps can't be created" in
+    "returns a BitmapTransformationException if the bitmaps can't be created" in
       new ImageServicesScope with BitmapErrorImageServicesScope {
         val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run.run
         there was exactly(0)(mockTasks).saveBitmap(any[File], any[Bitmap])
