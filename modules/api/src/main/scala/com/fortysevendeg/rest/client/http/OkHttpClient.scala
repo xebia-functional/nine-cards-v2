@@ -1,17 +1,18 @@
 package com.fortysevendeg.rest.client.http
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.rest.client.http.Methods._
 import com.squareup.okhttp.Headers
 import com.squareup.{okhttp => okHttp}
 import play.api.libs.json.{Json, Writes}
 
-import scalaz.\/
 import scalaz.concurrent.Task
 
 class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
-  extends HttpClient {
+  extends HttpClient
+  with ImplicitsHttpClientExceptions {
 
   val jsonMediaType = okHttp.MediaType.parse("application/json")
 
@@ -20,21 +21,21 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
   override def doGet(
     url: String,
     httpHeaders: Seq[(String, String)]
-    ): Task[NineCardsException \/ HttpClientResponse] =
+    ): ServiceDef2[HttpClientResponse, HttpClientException] =
     doMethod(GET, url, httpHeaders)
 
 
   override def doDelete(
     url: String,
     httpHeaders: Seq[(String, String)]
-    ): Task[NineCardsException \/ HttpClientResponse] =
+    ): ServiceDef2[HttpClientResponse, HttpClientException] =
     doMethod(DELETE, url, httpHeaders)
 
 
   override def doPost(
     url: String,
     httpHeaders: Seq[(String, String)]
-    ): Task[NineCardsException \/ HttpClientResponse] =
+    ): ServiceDef2[HttpClientResponse, HttpClientException] =
     doMethod(POST, url, httpHeaders)
 
 
@@ -42,13 +43,13 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
     url: String,
     httpHeaders: Seq[(String, String)],
     body: Req
-    ): Task[NineCardsException \/ HttpClientResponse] =
+    ): ServiceDef2[HttpClientResponse, HttpClientException] =
     doMethod(POST, url, httpHeaders, Some(Json.toJson(body).toString()))
 
   override def doPut(
     url: String,
     httpHeaders: Seq[(String, String)]
-    ): Task[NineCardsException \/ HttpClientResponse] =
+    ): ServiceDef2[HttpClientResponse, HttpClientException] =
     doMethod(PUT, url, httpHeaders)
 
 
@@ -56,7 +57,7 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
     url: String,
     httpHeaders: Seq[(String, String)],
     body: Req
-    ): Task[NineCardsException \/ HttpClientResponse] =
+    ): ServiceDef2[HttpClientResponse, HttpClientException] =
     doMethod(PUT, url, httpHeaders, Some(Json.toJson(body).toString()))
 
 
@@ -65,9 +66,9 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
     url: String,
     httpHeaders: Seq[(String, String)],
     body: Option[String] = None,
-    responseHandler: com.squareup.okhttp.Response => T = defaultResponseHandler _): Task[NineCardsException \/ T] =
+    responseHandler: com.squareup.okhttp.Response => T = defaultResponseHandler _): ServiceDef2[T, HttpClientException] = Service {
     Task {
-      fromTryCatchNineCardsException {
+      CatchAll[HttpClientException] {
         val builder = createBuilderRequest(url, httpHeaders)
         val request = (method match {
           case GET => builder.get()
@@ -78,6 +79,7 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
         responseHandler(okHttpClient.newCall(request).execute())
       }
     }
+  }
 
   private[this] def defaultResponseHandler(response: com.squareup.okhttp.Response): HttpClientResponse =
     HttpClientResponse(response.code(), Option(response.body()) map (_.string()))
