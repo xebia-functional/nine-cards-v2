@@ -3,9 +3,9 @@ package com.fortysevendeg.ninecardslauncher.api.integration
 import com.fortysevendeg.ninecardslauncher.api.integration.ApiServiceHelper._
 import com.fortysevendeg.ninecardslauncher.api.model._
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiRecommendationService, ApiSharedCollectionsService, ApiUserConfigService}
-import com.fortysevendeg.rest.client.{ServiceClientException, ServiceClient}
 import com.fortysevendeg.rest.client.http.{HttpClientException, OkHttpClient}
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
 import org.specs2.specification._

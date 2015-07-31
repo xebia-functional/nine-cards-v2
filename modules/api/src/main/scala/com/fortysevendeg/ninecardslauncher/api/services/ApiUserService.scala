@@ -2,9 +2,9 @@ package com.fortysevendeg.ninecardslauncher.api.services
 
 import com.fortysevendeg.ninecardslauncher.api.model.{AuthData, Installation, User}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.rest.client.{ServiceClientException, ServiceClient}
 import com.fortysevendeg.rest.client.http.HttpClientException
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
 import play.api.libs.json.{Reads, Writes}
 
 class ApiUserService(serviceClient: ServiceClient) {

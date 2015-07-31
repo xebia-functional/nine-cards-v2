@@ -1,15 +1,14 @@
 package com.fortysevendeg.rest.client
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientException, HttpClientResponse}
-import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientExceptionImpl, HttpClientResponse}
 import org.hamcrest.core.IsEqual
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import play.api.libs.json.Json
-import rapture.core.{Answer, Errata, Result}
+import rapture.core.{Answer, Errata}
 
 import scalaz.concurrent.Task
 
@@ -65,7 +64,7 @@ trait ServiceClientSpecification
 
     self: ServiceClientScope =>
 
-    val exception = HttpClientException("")
+    val exception = HttpClientExceptionImpl("")
 
     httpClient.doGet(any, any) returns Service { Task(Errata(exception)) }
 
@@ -165,7 +164,9 @@ class ServiceClientSpec
         new ServiceClientScope with WithSuccessfullyHttpClientMock {
           val response = serviceClient.get[Test](baseUrl, Seq.empty).run.run
           response must beLike {
-            case Errata(e) => e.headOption must beSome.which(_._2._2 must beAnInstanceOf[ServiceClientException])
+            case Errata(t) => t.headOption must beSome.which {
+              case (_, (_, e)) => e must beAnInstanceOf[ServiceClientException]
+            }
           }
         }
 
@@ -173,7 +174,9 @@ class ServiceClientSpec
         new ServiceClientScope with WithFailedHttpClientMock {
           val response = serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           response must beLike {
-            case Errata(e) => e.headOption must beSome.which(_._2._2 shouldEqual exception)
+            case Errata(t) => t.headOption must beSome.which {
+              case (_, (_, e)) => e shouldEqual exception
+            }
           }
         }
 
@@ -181,7 +184,9 @@ class ServiceClientSpec
         new ServiceClientScope with WithFailedHttpClientMock {
           val response = serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           response must beLike {
-            case Errata(e) => e.headOption must beSome.which(_._2._2 shouldEqual exception)
+            case Errata(t) => t.headOption must beSome.which {
+              case (_, (_, e)) => e shouldEqual exception
+            }
           }
         }
 
@@ -189,7 +194,9 @@ class ServiceClientSpec
         new ServiceClientScope with WithFailedHttpClientMock {
           val response = serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           response must beLike {
-            case Errata(e) => e.headOption must beSome.which(_._2._2 shouldEqual exception)
+            case Errata(t) => t.headOption must beSome.which {
+              case (_, (_, e)) => e shouldEqual exception
+            }
           }
         }
 
@@ -197,7 +204,9 @@ class ServiceClientSpec
         new ServiceClientScope with WithFailedHttpClientMock {
           val response = serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           response must beLike {
-            case Errata(e) => e.headOption must beSome.which(_._2._2 shouldEqual exception)
+            case Errata(t) => t.headOption must beSome.which {
+              case (_, (_, e)) => e shouldEqual exception
+            }
           }
         }
 

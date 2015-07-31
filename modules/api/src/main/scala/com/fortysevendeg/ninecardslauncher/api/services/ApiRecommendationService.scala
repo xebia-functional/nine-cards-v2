@@ -2,10 +2,10 @@ package com.fortysevendeg.ninecardslauncher.api.services
 
 import com.fortysevendeg.ninecardslauncher.api.model._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.rest.client.{ServiceClientException, ServiceClient}
 import com.fortysevendeg.rest.client.http.HttpClientException
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
-import play.api.libs.json.{Writes, Reads}
+import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
+import play.api.libs.json.{Reads, Writes}
 
 class ApiRecommendationService(serviceClient: ServiceClient) {
 

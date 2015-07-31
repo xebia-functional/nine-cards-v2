@@ -6,8 +6,6 @@ object SharedCollectionImplicits {
 
   import play.api.libs.json._
 
-  import UserConfigImplicits._
-
   implicit val sharedCollectionPackageReads = Json.reads[SharedCollectionPackage]
   implicit val assetThumbResponseReads = Json.reads[AssetThumbResponse]
   implicit val assetResponseReads = Json.reads[AssetResponse]

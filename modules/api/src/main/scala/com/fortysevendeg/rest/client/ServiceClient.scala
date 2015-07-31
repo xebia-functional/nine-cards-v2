@@ -91,8 +91,8 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     Task {
       (clientResponse.body, emptyResponse, maybeReads) match {
         case (Some(d), false, Some(r)) => transformResponse[T](d, r)
-        case (None, false, _) => Errata(ServiceClientException("No content"))
-        case (Some(d), false, None) => Errata(ServiceClientException("No transformer found for type"))
+        case (None, false, _) => Errata(ServiceClientExceptionImpl("No content"))
+        case (Some(d), false, None) => Errata(ServiceClientExceptionImpl("No transformer found for type"))
         case _ => Answer(None)
       }
     }
@@ -104,7 +104,7 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     ): Result[Option[T], ServiceClientException] =
     Try(Json.parse(content).as[T](reads)) match {
       case Success(s) => Answer(Some(s))
-      case Failure(e) => Errata(ServiceClientException(message = e.getMessage, cause = Some(e)))
+      case Failure(e) => Errata(ServiceClientExceptionImpl(message = e.getMessage, cause = Some(e)))
     }
 
 }

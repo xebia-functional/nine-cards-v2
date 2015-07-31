@@ -2,16 +2,14 @@ package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
+import rapture.core.{Answer, Errata}
 
 import scalaz.concurrent.Task
-import scalaz._
-import Scalaz._
-import EitherT._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 
 case class ApiServicesConfig(appId: String, appKey: String, localization: String)
 
@@ -19,10 +17,10 @@ class ApiServicesImpl(
   apiServicesConfig: ApiServicesConfig,
   apiUserService: ApiUserService,
   googlePlayService: ApiGooglePlayService,
-  userConfigService: ApiUserConfigService
-  )
+  userConfigService: ApiUserConfigService)
   extends ApiServices
-  with Conversions {
+  with Conversions
+  with ImplicitsApiServiceExceptions {
 
   val headerAppId = "X-Appsly-Application-Id"
 
@@ -47,139 +45,149 @@ class ApiServicesImpl(
 
   val userConfigNotFoundMessage = "User configuration not found"
 
+  import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
 
   override def login(
     email: String,
     device: GoogleDevice
-    ): Task[NineCardsException \/ LoginResponse] =
-    for {
-      response <- apiUserService.login(toUser(email, device), baseHeader) ▹ eitherT
-      user <- readOption(response.data, userNotFoundMessage) ▹ eitherT
-    } yield LoginResponse(response.statusCode, toUser(user))
+    ): ServiceDef2[LoginResponse, ApiServiceException] =
+    (for {
+      response <- apiUserService.login(toUser(email, device), baseHeader)
+      user <- readOption(response.data, userNotFoundMessage)
+    } yield LoginResponse(response.statusCode, toUser(user))).resolve[ApiServiceException]
 
   override def linkGoogleAccount(
     email: String,
     devices: Seq[GoogleDevice]
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ LoginResponse] =
-    for {
-      response <- apiUserService.linkAuthData(toAuthData(email, devices), requestConfig.toHeader) ▹ eitherT
-      user <- readOption(response.data, userNotFoundMessage) ▹ eitherT
-    } yield LoginResponse(response.statusCode, toUser(user))
+    )(implicit requestConfig: RequestConfig): ServiceDef2[LoginResponse, ApiServiceException] =
+    (for {
+      response <- apiUserService.linkAuthData(toAuthData(email, devices), requestConfig.toHeader)
+      user <- readOption(response.data, userNotFoundMessage)
+    } yield LoginResponse(response.statusCode, toUser(user))).resolve[ApiServiceException]
 
   override def createInstallation(
     id: Option[String],
     deviceType: Option[String],
     deviceToken: Option[String],
     userId: Option[String]
-    ): Task[NineCardsException \/ InstallationResponse] =
-    for {
-      response <- apiUserService.createInstallation(toInstallation(id, deviceType, deviceToken, userId), baseHeader) ▹ eitherT
-      installation <- readOption(response.data, installationNotFoundMessage) ▹ eitherT
-    } yield InstallationResponse(response.statusCode, toInstallation(installation))
+    ): ServiceDef2[InstallationResponse, ApiServiceException] =
+    (for {
+      response <- apiUserService.createInstallation(toInstallation(id, deviceType, deviceToken, userId), baseHeader)
+      installation <- readOption(response.data, installationNotFoundMessage)
+    } yield InstallationResponse(response.statusCode, toInstallation(installation))).resolve[ApiServiceException]
 
   override def updateInstallation(
     id: Option[String],
     deviceType: Option[String],
     deviceToken: Option[String],
     userId: Option[String]
-    ): Task[NineCardsException \/ UpdateInstallationResponse] =
-    for {
-      response <- apiUserService.updateInstallation(toInstallation(id, deviceType, deviceToken, userId), baseHeader) ▹ eitherT
-    } yield UpdateInstallationResponse(response.statusCode)
+    ): ServiceDef2[UpdateInstallationResponse, ApiServiceException] =
+    (for {
+      response <- apiUserService.updateInstallation(toInstallation(id, deviceType, deviceToken, userId), baseHeader)
+    } yield UpdateInstallationResponse(response.statusCode)).resolve[ApiServiceException]
 
   override def googlePlayPackage(
     packageName: String
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GooglePlayPackageResponse] =
-    for {
-      response <- googlePlayService.getGooglePlayPackage(packageName, requestConfig.toHeader) ▹ eitherT
-      playApp <- readOption(response.data, playAppNotFoundMessage) ▹ eitherT
-    } yield GooglePlayPackageResponse(response.statusCode, toGooglePlayApp(playApp.docV2))
+    )(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlayPackageResponse, ApiServiceException] =
+    (for {
+      response <- googlePlayService.getGooglePlayPackage(packageName, requestConfig.toHeader)
+      playApp <- readOption(response.data, playAppNotFoundMessage)
+    } yield GooglePlayPackageResponse(response.statusCode, toGooglePlayApp(playApp.docV2))).resolve[ApiServiceException]
 
   override def googlePlayPackages(
     packageNames: Seq[String]
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GooglePlayPackagesResponse] =
-    for {
-      response <- googlePlayService.getGooglePlayPackages(PackagesRequest(packageNames), requestConfig.toHeader) ▹ eitherT
-    } yield GooglePlayPackagesResponse(response.statusCode, response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)
+    )(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlayPackagesResponse, ApiServiceException] =
+    (for {
+      response <- googlePlayService.getGooglePlayPackages(PackagesRequest(packageNames), requestConfig.toHeader)
+    } yield GooglePlayPackagesResponse(
+        statusCode = response.statusCode,
+        packages = response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)).resolve[ApiServiceException]
 
   override def googlePlaySimplePackages(
     items: Seq[String]
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GooglePlaySimplePackagesResponse] =
-    for {
-      response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(items), requestConfig.toHeader) ▹ eitherT
-    } yield GooglePlaySimplePackagesResponse(
-      response.statusCode,
-      response.data.map(playApp => toGooglePlaySimplePackages(playApp)).getOrElse(GooglePlaySimplePackages(Seq.empty, Seq.empty)))
+    )(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlaySimplePackagesResponse, ApiServiceException] =
+    (for {
+      response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(items), requestConfig.toHeader)
+    } yield {
+        val packages = response.data.map(playApp => toGooglePlaySimplePackages(playApp))
+        GooglePlaySimplePackagesResponse(
+          statusCode = response.statusCode,
+          apps = packages getOrElse GooglePlaySimplePackages(Seq.empty, Seq.empty))
+      }).resolve[ApiServiceException]
 
   override def getUserConfig(
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ GetUserConfigResponse] =
-    for {
-      response <- userConfigService.getUserConfig(requestConfig.toHeader) ▹ eitherT
-      userConfig <- readOption(response.data, userConfigNotFoundMessage) ▹ eitherT
-    } yield GetUserConfigResponse(response.statusCode, toUserConfig(userConfig))
+    )(implicit requestConfig: RequestConfig): ServiceDef2[GetUserConfigResponse, ApiServiceException] =
+    (for {
+      response <- userConfigService.getUserConfig(requestConfig.toHeader)
+      userConfig <- readOption(response.data, userConfigNotFoundMessage)
+    } yield GetUserConfigResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def saveDevice(
     userConfigDevice: UserConfigDevice
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ SaveDeviceResponse] =
-    for {
+    )(implicit requestConfig: RequestConfig): ServiceDef2[SaveDeviceResponse, ApiServiceException] =
+    (for {
       response <- userConfigService.saveDevice(
         toConfigDevice(userConfigDevice),
-        requestConfig.toHeader) ▹ eitherT
-      userConfig <- readOption(response.data, userConfigNotFoundMessage) ▹ eitherT
-    } yield SaveDeviceResponse(response.statusCode, toUserConfig(userConfig))
+        requestConfig.toHeader)
+      userConfig <- readOption(response.data, userConfigNotFoundMessage)
+    } yield SaveDeviceResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def saveGeoInfo(
     userConfigGeoInfo: UserConfigGeoInfo
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ SaveGeoInfoResponse] =
-    for {
+    )(implicit requestConfig: RequestConfig): ServiceDef2[SaveGeoInfoResponse, ApiServiceException] =
+    (for {
       response <- userConfigService.saveGeoInfo(
         toUserConfigGeoInfo(userConfigGeoInfo),
-        requestConfig.toHeader) ▹ eitherT
-      userConfig <- readOption(response.data, userConfigNotFoundMessage) ▹ eitherT
-    } yield SaveGeoInfoResponse(response.statusCode, toUserConfig(userConfig))
+        requestConfig.toHeader)
+      userConfig <- readOption(response.data, userConfigNotFoundMessage)
+    } yield SaveGeoInfoResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def checkpointPurchaseProduct(
     productId: String
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ CheckpointPurchaseProductResponse] =
-    for {
+    )(implicit requestConfig: RequestConfig): ServiceDef2[CheckpointPurchaseProductResponse, ApiServiceException] =
+    (for {
       response <- userConfigService.checkpointPurchaseProduct(
-        productId, requestConfig.toHeader) ▹ eitherT
-      userConfig <- readOption(response.data, userConfigNotFoundMessage) ▹ eitherT
-    } yield CheckpointPurchaseProductResponse(response.statusCode, toUserConfig(userConfig))
+        productId, requestConfig.toHeader)
+      userConfig <- readOption(response.data, userConfigNotFoundMessage)
+    } yield CheckpointPurchaseProductResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def checkpointCustomCollection(
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ CheckpointCustomCollectionResponse] =
-    for {
-      response <- userConfigService.checkpointCustomCollection(requestConfig.toHeader) ▹ eitherT
-      userConfig <- readOption(response.data, userConfigNotFoundMessage) ▹ eitherT
-    } yield CheckpointCustomCollectionResponse(response.statusCode, toUserConfig(userConfig))
+    )(implicit requestConfig: RequestConfig): ServiceDef2[CheckpointCustomCollectionResponse, ApiServiceException] =
+    (for {
+      response <- userConfigService.checkpointCustomCollection(requestConfig.toHeader)
+      userConfig <- readOption(response.data, userConfigNotFoundMessage)
+    } yield CheckpointCustomCollectionResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def checkpointJoinedBy(
     otherConfigId: String
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ CheckpointJoinedByResponse] =
-    for {
-      response <- userConfigService.checkpointJoinedBy(otherConfigId, requestConfig.toHeader) ▹ eitherT
-      userConfig <- readOption(response.data, userConfigNotFoundMessage) ▹ eitherT
-    } yield CheckpointJoinedByResponse(response.statusCode, toUserConfig(userConfig))
+    )(implicit requestConfig: RequestConfig): ServiceDef2[CheckpointJoinedByResponse, ApiServiceException] =
+    (for {
+      response <- userConfigService.checkpointJoinedBy(otherConfigId, requestConfig.toHeader)
+      userConfig <- readOption(response.data, userConfigNotFoundMessage)
+    } yield CheckpointJoinedByResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def tester(
     replace: Map[String, String]
-    )(implicit requestConfig: RequestConfig): Task[NineCardsException \/ TesterResponse] =
-      for {
-        response <- userConfigService.tester(replace, requestConfig.toHeader) ▹ eitherT
-        userConfig <- readOption(response.data, userConfigNotFoundMessage) ▹ eitherT
-      } yield TesterResponse(response.statusCode, toUserConfig(userConfig))
+    )(implicit requestConfig: RequestConfig): ServiceDef2[TesterResponse, ApiServiceException] =
+    (for {
+      response <- userConfigService.tester(replace, requestConfig.toHeader)
+      userConfig <- readOption(response.data, userConfigNotFoundMessage)
+    } yield TesterResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   implicit class RequestHeaderHeader(request: RequestConfig) {
     def toHeader: Seq[(String, String)] =
       baseHeader :+(headerDevice, request.deviceId) :+(headerToken, request.token)
   }
 
-  private[this] def readOption[T](maybe: Option[T], msg: String = ""): Task[NineCardsException \/ T] = {
-    Task(fromTryCatchNineCardsException(maybe getOrElse (throw new NineCardsException(msg))))
+  private[this] def readOption[T](maybe: Option[T], msg: String = ""): ServiceDef2[T, ApiServiceException] = Service {
+    Task {
+      maybe match {
+        case Some(v) => Answer(v)
+        case _ => Errata(ApiServiceException(msg))
+      }
+    }
   }
 
 }

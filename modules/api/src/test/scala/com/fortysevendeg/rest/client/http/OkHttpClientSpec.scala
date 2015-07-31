@@ -1,6 +1,5 @@
 package com.fortysevendeg.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.rest.client.SampleRequest
 import com.squareup.{okhttp => okHttp}
 import org.specs2.matcher.DisjunctionMatchers
@@ -8,7 +7,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import play.api.libs.json.Json
-import rapture.core.{Result, Answer}
+import rapture.core.{Answer, Result}
 
 trait OkHttpClientSpecification
   extends Specification

@@ -6,9 +6,6 @@ object RecommendationImplicits {
 
   import play.api.libs.json._
 
-  import GooglePlayImplicits._
-  import UserConfigImplicits._
-
   implicit val appiaAdReads = Json.reads[AppiaAd]
   implicit val playRecommendationItemsReads = Json.reads[GooglePlayRecommendationItems]
   implicit val playRecommendationReads = Json.reads[GooglePlayRecommendation]

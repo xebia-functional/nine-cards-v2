@@ -1,7 +1,7 @@
 package com.fortysevendeg
 
-import org.specs2.execute.{Result, AsResult}
-import org.specs2.specification.{Scope, Around}
+import org.specs2.execute.{AsResult, Result}
+import org.specs2.specification.{Around, Scope}
 
 trait BaseTestSupport extends Around with Scope {
 
