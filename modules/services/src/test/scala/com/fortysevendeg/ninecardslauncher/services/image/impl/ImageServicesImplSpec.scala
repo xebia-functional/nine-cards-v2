@@ -155,7 +155,7 @@ class ImageServicesImplSpec
         there was exactly(0)(mockTasks).saveBitmap(any[File], any[Bitmap])
         result must beLike[Result[AppPackagePath, IOException with BitmapTransformationException]] {
           case Errata(errors) =>
-            errors.length must be_>=(1)
+            errors.length must be_==(1)
         }
       }
 
@@ -188,7 +188,7 @@ class ImageServicesImplSpec
         there was exactly(0)(mockTasks).saveBitmap(any[File], any[Bitmap])
         result must beLike[Result[AppWebsitePath, IOException with BitmapTransformationException]] {
           case Errata(errors) =>
-            errors.length must be_>=(1)
+            errors.length must be_==(1)
         }
       }
 
