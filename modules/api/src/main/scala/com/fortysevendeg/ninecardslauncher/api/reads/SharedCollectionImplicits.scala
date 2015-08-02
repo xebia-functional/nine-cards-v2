@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.api.reads
 
 import com.fortysevendeg.ninecardslauncher.api.model._
+import UserConfigImplicits._
 
 object SharedCollectionImplicits {
 
