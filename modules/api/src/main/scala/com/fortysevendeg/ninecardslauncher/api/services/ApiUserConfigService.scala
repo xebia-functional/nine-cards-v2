@@ -1,14 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.api.services
 
 import com.fortysevendeg.ninecardslauncher.api.model.{UserConfig, UserConfigDevice, UserConfigGeoInfo}
-import com.fortysevendeg.rest.client.ServiceClient
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.rest.client.http.HttpClientException
+import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
 import play.api.libs.json.{Reads, Writes}
 
 class ApiUserConfigService(serviceClient: ServiceClient) {
 
   val prefixPathUserConfig = "/ninecards/userconfig"
 
-  def getUserConfig(headers: Seq[(String, String)])(implicit reads: Reads[UserConfig]) =
+  def getUserConfig(
+    headers: Seq[(String, String)]
+    )(implicit reads: Reads[UserConfig]): ServiceDef2[ServiceClientResponse[UserConfig], HttpClientException with ServiceClientException] =
     serviceClient.get[UserConfig](
       path = prefixPathUserConfig,
       headers = headers,
@@ -17,7 +22,8 @@ class ApiUserConfigService(serviceClient: ServiceClient) {
   def saveDevice(
     device: UserConfigDevice,
     headers: Seq[(String, String)]
-    )(implicit reads: Reads[UserConfig], writes: Writes[UserConfigDevice]) =
+    )(implicit reads: Reads[UserConfig],
+    writes: Writes[UserConfigDevice]): ServiceDef2[ServiceClientResponse[UserConfig], HttpClientException with ServiceClientException] =
     serviceClient.put[UserConfigDevice, UserConfig](
       path = s"$prefixPathUserConfig/device",
       headers = headers,
@@ -27,7 +33,8 @@ class ApiUserConfigService(serviceClient: ServiceClient) {
   def saveGeoInfo(
     geoInfo: UserConfigGeoInfo,
     headers: Seq[(String, String)]
-    )(implicit reads: Reads[UserConfig], writes: Writes[UserConfigGeoInfo]) =
+    )(implicit reads: Reads[UserConfig],
+    writes: Writes[UserConfigGeoInfo]): ServiceDef2[ServiceClientResponse[UserConfig], HttpClientException with ServiceClientException] =
     serviceClient.put[UserConfigGeoInfo, UserConfig](
       path = s"$prefixPathUserConfig/geoInfo",
       headers = headers,
@@ -37,7 +44,7 @@ class ApiUserConfigService(serviceClient: ServiceClient) {
   def checkpointPurchaseProduct(
     product: String,
     headers: Seq[(String, String)]
-    )(implicit reads: Reads[UserConfig]) =
+    )(implicit reads: Reads[UserConfig]): ServiceDef2[ServiceClientResponse[UserConfig], HttpClientException with ServiceClientException] =
     serviceClient.emptyPut[UserConfig](
       path = s"$prefixPathUserConfig/checkpoint/purchase/$product",
       headers = headers,
@@ -45,7 +52,7 @@ class ApiUserConfigService(serviceClient: ServiceClient) {
 
   def checkpointCustomCollection(
     headers: Seq[(String, String)]
-    )(implicit reads: Reads[UserConfig]) =
+    )(implicit reads: Reads[UserConfig]): ServiceDef2[ServiceClientResponse[UserConfig], HttpClientException with ServiceClientException] =
     serviceClient.emptyPut[UserConfig](
       path = s"$prefixPathUserConfig/checkpoint/collection",
       headers = headers,
@@ -54,7 +61,7 @@ class ApiUserConfigService(serviceClient: ServiceClient) {
   def checkpointJoinedBy(
     otherConfigId: String,
     headers: Seq[(String, String)]
-    )(implicit reads: Reads[UserConfig]) =
+    )(implicit reads: Reads[UserConfig]): ServiceDef2[ServiceClientResponse[UserConfig], HttpClientException with ServiceClientException] =
     serviceClient.emptyPut[UserConfig](
       path = s"$prefixPathUserConfig/checkpoint/joined/$otherConfigId",
       headers = headers,
@@ -63,7 +70,7 @@ class ApiUserConfigService(serviceClient: ServiceClient) {
   def tester(
     replace: Map[String, String],
     headers: Seq[(String, String)]
-    )(implicit reads: Reads[UserConfig]) =
+    )(implicit reads: Reads[UserConfig]): ServiceDef2[ServiceClientResponse[UserConfig], HttpClientException with ServiceClientException] =
     serviceClient.put[Map[String, String], UserConfig](
       path = s"$prefixPathUserConfig/tester",
       headers = headers,

@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.api.model._
 
 import scala.util.Random
 
-trait ApiServicesData {
+trait ApiServicesImplData {
 
   def generateUser =
     User(
