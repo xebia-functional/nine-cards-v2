@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository.cachecategory
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
 import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity._
@@ -11,6 +11,7 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import rapture.core.{Answer, Errata, Result}
 
 trait CacheCategoryRepositorySpecification
   extends Specification
@@ -158,22 +159,25 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.addCacheCategory(data = createCacheCategoryData).run
+          val result = cacheCategoryRepository.addCacheCategory(data = createCacheCategoryData).run.run
 
-          result must be_\/-[CacheCategory].which {
-            cacheCategory =>
+          result must beLike[Result[CacheCategory, RepositoryException]] {
+            case Answer(cacheCategory) =>
               cacheCategory.id shouldEqual testCacheCategoryId
               cacheCategory.data.packageName shouldEqual testPackageName
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.addCacheCategory(data = createCacheCategoryData).run
+          val result = cacheCategoryRepository.addCacheCategory(data = createCacheCategoryData).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[CacheCategory, RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -183,18 +187,24 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory).run
+          val result = cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory).run.run
 
-          result must be_\/-[Int].which(_ shouldEqual 1)
+          result must beLike[Result[Int, RepositoryException]] {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory).run
+          val result = cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Int, RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -204,18 +214,24 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = testPackageName).run
+          val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = testPackageName).run.run
 
-          result must be_\/-[Int].which(_ shouldEqual 1)
+          result must beLike[Result[Int, RepositoryException]] {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = testPackageName).run
+          val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = testPackageName).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Int, RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -225,18 +241,24 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.fetchCacheCategories.run
+          val result = cacheCategoryRepository.fetchCacheCategories.run.run
 
-          result must be_\/-[Seq[CacheCategory]].which(_ shouldEqual cacheCategorySeq)
+          result must beLike[Result[Seq[CacheCategory], RepositoryException]] {
+            case Answer(categories) =>
+              categories shouldEqual cacheCategorySeq
+          }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.fetchCacheCategories.run
+          val result = cacheCategoryRepository.fetchCacheCategories.run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Seq[CacheCategory], RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -246,10 +268,10 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.findCacheCategoryById(id = testCacheCategoryId).run
+          val result = cacheCategoryRepository.findCacheCategoryById(id = testCacheCategoryId).run.run
 
-          result must be_\/-[Option[CacheCategory]].which {
-            maybeCacheCategory =>
+          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+            case Answer(maybeCacheCategory) =>
               maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
                 cacheCategory.id shouldEqual testCacheCategoryId
                 cacheCategory.data.packageName shouldEqual testPackageName
@@ -261,18 +283,24 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.findCacheCategoryById(id = testNonExistingCacheCategoryId).run
+          val result = cacheCategoryRepository.findCacheCategoryById(id = testNonExistingCacheCategoryId).run.run
 
-          result must be_\/-[Option[CacheCategory]].which(_ must beNone)
+          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+            case Answer(maybeCacheCategory) =>
+              maybeCacheCategory must beNone
+          }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.findCacheCategoryById(id = testCacheCategoryId).run
+          val result = cacheCategoryRepository.findCacheCategoryById(id = testCacheCategoryId).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -281,10 +309,10 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testPackageName).run
+          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testPackageName).run.run
 
-          result must be_\/-[Option[CacheCategory]].which {
-            maybeCacheCategory =>
+          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+            case Answer(maybeCacheCategory) =>
               maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
                 cacheCategory.id shouldEqual testCacheCategoryId
                 cacheCategory.data.packageName shouldEqual testPackageName
@@ -296,18 +324,24 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testNonExistingPackageName).run
+          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testNonExistingPackageName).run.run
 
-          result must be_\/-[Option[CacheCategory]].which(_ must beNone)
+          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+            case Answer(maybeCacheCategory) =>
+              maybeCacheCategory must beNone
+          }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testPackageName).run
+          val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testPackageName).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -317,18 +351,24 @@ class CacheCategoryRepositorySpec
         new CacheCategoryRepositoryScope
           with ValidCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory).run
+          val result = cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory).run.run
 
-          result must be_\/-[Int].which(_ shouldEqual 1)
+          result must beLike[Result[Int, RepositoryException]] {
+            case Answer(updated) =>
+              updated shouldEqual 1
+          }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CacheCategoryRepositoryScope
           with ErrorCacheCategoryRepositoryResponses {
 
-          val result = cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory).run
+          val result = cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Int, RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -364,7 +404,7 @@ class CacheCategoryRepositorySpec
 
           val result = getListFromCursor(cacheCategoryEntityFromCursor)(mockCursor)
 
-          result shouldEqual Seq.empty
+          result should beEmpty
         }
 
       "return a CacheCategory sequence when a cursor with data is given" in
