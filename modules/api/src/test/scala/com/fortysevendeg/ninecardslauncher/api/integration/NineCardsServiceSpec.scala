@@ -54,18 +54,18 @@ class NineCardsServiceSpec
 
   "User Config Service component with OkHttpClient" should {
 
-    "returns the UserConfig for a getUserConfig get call" in
+    "return the UserConfig for a getUserConfig get call" in
       new NineCardsServiceScope {
 
         val result = apiUserConfigService.getUserConfig(Seq.empty).run.run
 
-        result must beLike[Result[ServiceClientResponse[UserConfig], HttpClientException with ServiceClientException]] {
+        result must beLike {
           case Answer(r) => r.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
       }
 
-    "returns the UserConfig for a saveDevice put call" in
+    "return the UserConfig for a saveDevice put call" in
       new NineCardsServiceScope {
 
         val result =
@@ -76,7 +76,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the UserConfig for a saveGeoInfo put call" in
+    "return the UserConfig for a saveGeoInfo put call" in
       new NineCardsServiceScope {
 
         val result =
@@ -87,7 +87,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the UserConfig for a checkpoint purchase product put call" in
+    "return the UserConfig for a checkpoint purchase product put call" in
       new NineCardsServiceScope {
 
         val result =
@@ -98,7 +98,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the UserConfig for a checkpoint custom collection put call" in
+    "return the UserConfig for a checkpoint custom collection put call" in
       new NineCardsServiceScope {
 
         val result =
@@ -109,7 +109,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the UserConfig for a checkpoint joined by put call" in
+    "return the UserConfig for a checkpoint joined by put call" in
       new NineCardsServiceScope {
 
         val result =
@@ -120,7 +120,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the UserConfig for a tester put call" in
+    "return the UserConfig for a tester put call" in
       new NineCardsServiceScope {
 
         val result =
@@ -135,7 +135,7 @@ class NineCardsServiceSpec
 
   "Shared Collections Service component with OkHttpClient" should {
 
-    "returns the SharedCollection for a getSharedCollection get call" in
+    "return the SharedCollection for a getSharedCollection get call" in
       new NineCardsServiceScope {
 
         val result =
@@ -146,7 +146,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the SharedCollectionList for a getSharedCollectionList get call" in
+    "return the SharedCollectionList for a getSharedCollectionList get call" in
       new NineCardsServiceScope {
 
         val result =
@@ -161,7 +161,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the SharedCollectionList for a getSharedCollectionListByCategory get call" in
+    "return the SharedCollectionList for a getSharedCollectionListByCategory get call" in
       new NineCardsServiceScope {
 
         val result =
@@ -176,7 +176,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the searchSharedCollection for a getSharedCollectionListByCategory get call" in
+    "return the searchSharedCollection for a getSharedCollectionListByCategory get call" in
       new NineCardsServiceScope {
 
         val result =
@@ -191,7 +191,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the SharedCollection for a shareCollection post call" in
+    "return the SharedCollection for a shareCollection post call" in
       new NineCardsServiceScope {
 
         val result =
@@ -202,7 +202,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the SharedCollection for a rateSharedCollection post call" in
+    "return the SharedCollection for a rateSharedCollection post call" in
       new NineCardsServiceScope {
 
         val result =
@@ -213,7 +213,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the SharedCollection for a subscribeSharedCollection put call" in
+    "return the SharedCollection for a subscribeSharedCollection put call" in
       new NineCardsServiceScope {
 
         val result =
@@ -224,7 +224,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the SharedCollection for a unsubscribeSharedCollection delete call" in
+    "return the SharedCollection for a unsubscribeSharedCollection delete call" in
       new NineCardsServiceScope {
 
         val result =
@@ -239,7 +239,7 @@ class NineCardsServiceSpec
 
   "Google Play Service component with OkHttpClient" should {
 
-    "returns the GooglePlayPackage for a getGooglePlayPackage get call" in
+    "return the GooglePlayPackage for a getGooglePlayPackage get call" in
       new NineCardsServiceScope {
 
         val result =
@@ -250,7 +250,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the GooglePlayPackages for a getGooglePlayPackages post call" in
+    "return the GooglePlayPackages for a getGooglePlayPackages post call" in
       new NineCardsServiceScope {
 
         val result =
@@ -265,7 +265,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the GooglePlaySimplePackages for a getGooglePlaySimplePackages post call" in
+    "return the GooglePlaySimplePackages for a getGooglePlaySimplePackages post call" in
       new NineCardsServiceScope {
 
         val result =
@@ -280,7 +280,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the GooglePlaySearch for a search get call" in
+    "return the GooglePlaySearch for a search get call" in
       new NineCardsServiceScope {
 
         val result =
@@ -294,7 +294,7 @@ class NineCardsServiceSpec
 
   "Recommendation Service component with OkHttpClient" should {
 
-    "returns the GooglePlayRecommendation for a getRecommendedApps get call" in
+    "return the GooglePlayRecommendation for a getRecommendedApps get call" in
       new NineCardsServiceScope {
 
         val result =
@@ -305,7 +305,7 @@ class NineCardsServiceSpec
         }
       }
 
-    "returns the CollectionSponsored for a getSponsoredCollections get call" in
+    "return the CollectionSponsored for a getSponsoredCollections get call" in
       new NineCardsServiceScope {
 
         val result =

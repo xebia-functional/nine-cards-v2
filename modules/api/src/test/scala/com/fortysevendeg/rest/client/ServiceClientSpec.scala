@@ -88,7 +88,7 @@ class ServiceClientSpec
 
   "Service Client component" should {
 
-    "returns a valid response for a valid call to get with response" in
+    "return a valid response for a valid call to get with response" in
         new ServiceClientScope with WithSuccessfullyHttpClientMock {
           val response = serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           there was one(httpClient).doGet(any, any)
@@ -98,7 +98,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a valid response for a valid call to get without response" in
+    "return a valid response for a valid call to get without response" in
         new ServiceClientScope with WithSuccessfullyHttpClientMock {
           val response = serviceClient.get(baseUrl, Seq.empty, None, emptyResponse = true).run.run
           there was one(httpClient).doGet(any, any)
@@ -108,7 +108,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a valid response for a valid call to delete with response" in
+    "return a valid response for a valid call to delete with response" in
         new ServiceClientScope with WithSuccessfullyHttpClientMock {
           val response = serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           there was one(httpClient).doDelete(any, any)
@@ -118,7 +118,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a valid response for a valid call to post" in
+    "return a valid response for a valid call to post" in
         new ServiceClientScope with WithSuccessfullyHttpClientMock {
           val response = serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           there was one(httpClient).doPost(any, any)
@@ -128,7 +128,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a valid response for a valid call to post with valid arguments" in
+    "return a valid response for a valid call to post with valid arguments" in
         new ServiceClientScope with WithSuccessfullyHttpClientMock {
           val request = SampleRequest("sample-request")
           val response = serviceClient.post[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)).run.run
@@ -139,7 +139,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a valid response for a valid call to put" in
+    "return a valid response for a valid call to put" in
         new ServiceClientScope with WithSuccessfullyHttpClientMock {
           val response = serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           there was one(httpClient).doPut(any, any)
@@ -149,7 +149,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a valid response for a valid call to put with valid arguments" in
+    "return a valid response for a valid call to put with valid arguments" in
         new ServiceClientScope with WithSuccessfullyHttpClientMock {
           val request = SampleRequest("sample-request")
           val response = serviceClient.put[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)).run.run
@@ -170,7 +170,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a HttpClientException response when the call to get method throw an exception" in
+    "return a HttpClientException response when the call to get method throw an exception" in
         new ServiceClientScope with WithFailedHttpClientMock {
           val response = serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           response must beLike {
@@ -180,7 +180,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a HttpClientException when the call to delete method throw an exception" in
+    "return a HttpClientException when the call to delete method throw an exception" in
         new ServiceClientScope with WithFailedHttpClientMock {
           val response = serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           response must beLike {
@@ -190,7 +190,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a HttpClientException when the call to post method throw an exception" in
+    "return a HttpClientException when the call to post method throw an exception" in
         new ServiceClientScope with WithFailedHttpClientMock {
           val response = serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           response must beLike {
@@ -200,7 +200,7 @@ class ServiceClientSpec
           }
         }
 
-    "returns a HttpClientException when the call to put method throw an exception" in
+    "return a HttpClientException when the call to put method throw an exception" in
         new ServiceClientScope with WithFailedHttpClientMock {
           val response = serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
           response must beLike {
