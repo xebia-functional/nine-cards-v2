@@ -26,27 +26,20 @@ trait AppsServicesImplSpecification
 
     val mockIntent = mock[Intent]
 
-    val sampleResolveInfo1 = mock[ResolveInfo]
-    var mockActivityInfo1 = mock[ActivityInfo]
-    var mockApplicationInfo1 = mock[ApplicationInfo]
-    sampleResolveInfo1.loadLabel(packageManager) returns sampleApp1.name
-    mockApplicationInfo1.packageName = sampleApp1.packageName
-    mockActivityInfo1.applicationInfo = mockApplicationInfo1
-    mockActivityInfo1.name = sampleApp1.className
-    mockActivityInfo1.icon = sampleApp1.icon
-    sampleResolveInfo1.activityInfo = mockActivityInfo1
+    def createMockResolveInfo(sampleApp: Application) : ResolveInfo = {
+      val sampleResolveInfo = mock[ResolveInfo]
+      val mockActivityInfo = mock[ActivityInfo]
+      val mockApplicationInfo = mock[ApplicationInfo]
+      sampleResolveInfo.loadLabel(packageManager) returns sampleApp.name
+      mockApplicationInfo.packageName = sampleApp.packageName
+      mockActivityInfo.applicationInfo = mockApplicationInfo
+      mockActivityInfo.name = sampleApp.className
+      mockActivityInfo.icon = sampleApp.icon
+      sampleResolveInfo.activityInfo = mockActivityInfo
+      sampleResolveInfo
+    }
 
-    val sampleResolveInfo2 = mock[ResolveInfo]
-    var mockActivityInfo2 = mock[ActivityInfo]
-    var mockApplicationInfo2 = mock[ApplicationInfo]
-    sampleResolveInfo2.loadLabel(packageManager) returns sampleApp2.name
-    mockApplicationInfo2.packageName = sampleApp2.packageName
-    mockActivityInfo2.applicationInfo = mockApplicationInfo2
-    mockActivityInfo2.name = sampleApp2.className
-    mockActivityInfo2.icon = sampleApp2.icon
-    sampleResolveInfo2.activityInfo = mockActivityInfo2
-
-    val mockApps = List(sampleResolveInfo1, sampleResolveInfo2)
+    val mockApps = List(createMockResolveInfo(sampleApp1), createMockResolveInfo(sampleApp2))
 
     packageManager.queryIntentActivities(mockIntent, 0) returns mockApps
 
