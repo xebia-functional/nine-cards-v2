@@ -51,7 +51,12 @@ trait AppsServicesImplSpecification
   trait AppsServicesImplErrorScope {
     self : AppsServicesImplScope =>
 
-    packageManager.queryIntentActivities(mockIntent, 0) throws new RuntimeException("")
+    case class CustomException(message: String, cause: Option[Throwable] = None)
+      extends RuntimeException(message)
+
+    val exception = CustomException("")
+
+    packageManager.queryIntentActivities(mockIntent, 0) throws exception
 
   }
 
@@ -65,7 +70,7 @@ class AppsServicesImplSpec
     "returns the list of installed apps when they exist" in
       new AppsServicesImplScope {
         val result = mockAppsServicesImpl.getInstalledApps(contextSupport).run.run
-        result must beLike[Result[Seq[Application], AppsInstalledException]] {
+        result must beLike {
           case Answer(resultApplicationList) => resultApplicationList shouldEqual applicationList
         }
       }
@@ -73,9 +78,12 @@ class AppsServicesImplSpec
     "returns an AppsInstalledException when no apps exist" in
       new AppsServicesImplScope with AppsServicesImplErrorScope {
         val result = mockAppsServicesImpl.getInstalledApps(contextSupport).run.run
-        result must beLike[Result[Seq[Application], AppsInstalledException]] {
-          case Errata(errors) =>
-            errors.length must be_==(1)
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, appsException)) => appsException must beLike {
+              case e: AppsInstalledException => e.cause must beSome.which(_ shouldEqual exception)
+            }
+          }
         }
       }
 
