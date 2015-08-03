@@ -23,8 +23,7 @@ trait Conversions {
         )),
         facebook = None,
         twitter = None,
-        anonymous = None
-      )))
+        anonymous = None)))
 
   def fromGoogleDevice(device: GoogleDevice): apiModel.AuthGoogleDevice =
     apiModel.AuthGoogleDevice(
@@ -89,8 +88,7 @@ trait Conversions {
 
   def toGooglePlayPackage(googlePlayPackage: apiModel.GooglePlayPackage): GooglePlayPackage =
     GooglePlayPackage(
-      app = toGooglePlayApp(googlePlayPackage.docV2)
-    )
+      app = toGooglePlayApp(googlePlayPackage.docV2))
 
   def toGooglePlayApp(googlePlayApp: apiModel.GooglePlayApp): GooglePlayApp =
     GooglePlayApp(
@@ -104,9 +102,8 @@ trait Conversions {
       video = getVideo(googlePlayApp.image),
       details = toGooglePlayDetails(googlePlayApp.details),
       offer = googlePlayApp.offer map toGooglePlayOffer,
-      aggregateRating = toGooglePlayAggregateRating(googlePlayApp.aggregateRating)
-    )
-  
+      aggregateRating = toGooglePlayAggregateRating(googlePlayApp.aggregateRating))
+
   val iconImageType = 4
 
   val iconBackgroundType = 2
