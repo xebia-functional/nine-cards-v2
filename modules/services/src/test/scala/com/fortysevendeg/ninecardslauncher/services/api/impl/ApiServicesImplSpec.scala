@@ -7,7 +7,6 @@ import com.fortysevendeg.ninecardslauncher.services.api.{models => serviceModel,
 import com.fortysevendeg.rest.client.ServiceClientException
 import com.fortysevendeg.rest.client.http.HttpClientException
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
-import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -18,7 +17,6 @@ import scalaz.concurrent.Task
 
 trait ApiServicesSpecification
   extends Specification
-  with DisjunctionMatchers
   with Mockito {
 
   implicit val requestConfig = RequestConfig(

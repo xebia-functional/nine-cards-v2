@@ -4,7 +4,6 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.rest.client.http.Methods._
-import com.squareup.okhttp.Headers
 import com.squareup.{okhttp => okHttp}
 import play.api.libs.json.{Json, Writes}
 
@@ -66,7 +65,7 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
     url: String,
     httpHeaders: Seq[(String, String)],
     body: Option[String] = None,
-    responseHandler: com.squareup.okhttp.Response => T = defaultResponseHandler _): ServiceDef2[T, HttpClientException] = Service {
+    responseHandler: okHttp.Response => T = defaultResponseHandler _): ServiceDef2[T, HttpClientException] = Service {
     Task {
       CatchAll[HttpClientException] {
         val builder = createBuilderRequest(url, httpHeaders)
@@ -81,7 +80,7 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
     }
   }
 
-  private[this] def defaultResponseHandler(response: com.squareup.okhttp.Response): HttpClientResponse =
+  private[this] def defaultResponseHandler(response: okHttp.Response): HttpClientResponse =
     HttpClientResponse(response.code(), Option(response.body()) map (_.string()))
 
   private[this] def createBuilderRequest(url: String, httpHeaders: Seq[(String, String)]): okHttp.Request.Builder =
@@ -89,7 +88,7 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
       .url(url)
       .headers(createHeaders(httpHeaders))
 
-  private[this] def createHeaders(httpHeaders: Seq[(String, String)]): Headers = {
+  private[this] def createHeaders(httpHeaders: Seq[(String, String)]): okHttp.Headers = {
     import scala.collection.JavaConverters._
     okHttp.Headers.of(httpHeaders.map(t => t._1 -> t._2).toMap.asJava)
   }
