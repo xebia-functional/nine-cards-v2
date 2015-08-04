@@ -1,31 +1,40 @@
-package com.fortysevendeg.ninecardslauncher.process.device
+package com.fortysevendeg.ninecardslauncher.process.device.impl
+
+import java.io.IOException
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
-import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesResponse, GooglePlaySimplePackagesResponse, LoginResponse, ApiServices}
-import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
-import com.fortysevendeg.ninecardslauncher.services.image.{AppWebsite, AppPackagePath, AppPackage, ImageServices}
+import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesResponse, GooglePlaySimplePackagesResponse, ApiServices}
+import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
+import com.fortysevendeg.ninecardslauncher.services.image._
+import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceExceptions.PersistenceServiceException
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import rapture.core.Result
 
-import scalaz.{-\/, \/-}
 import scalaz.concurrent.Task
 
 trait DeviceProcessSpecification
   extends Specification
   with Mockito {
 
-  val exception = NineCardsException("")
+  val appInstalledException = AppsInstalledException("")
+
+  val persistenceServiceException = PersistenceServiceException("")
+
+  val bitmapTransformationException = BitmapTransformationException("")
 
   trait DeviceProcessScope
     extends Scope
@@ -41,30 +50,30 @@ trait DeviceProcessSpecification
     val mockAppsServices = mock[AppsServices]
 
     mockAppsServices.getInstalledApps(contextSupport) returns
-      Task(\/-(applications))
+      Service(Task(Result.answer(applications)))
 
     val mockApiServices = mock[ApiServices]
 
     val mockPersistenceServices = mock[PersistenceServices]
 
     mockPersistenceServices.fetchCacheCategories returns
-      Task(\/-(cacheCategories))
+      Service(Task(Result.answer(cacheCategories)))
 
     val mockImageServices = mock[ImageServices]
 
     mockApiServices.googlePlaySimplePackages(any)(any) returns
-      Task(\/-(GooglePlaySimplePackagesResponse(200, GooglePlaySimplePackages(Seq.empty, Seq.empty))))
+      Service(Task(Result.answer(GooglePlaySimplePackagesResponse(200, GooglePlaySimplePackages(Seq.empty, Seq.empty)))))
 
     mockApiServices.googlePlayPackages(any)(any) returns
-      Task(\/-(GooglePlayPackagesResponse(200, Seq.empty)))
+      Service(Task(Result.answer(GooglePlayPackagesResponse(200, Seq.empty))))
 
     mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
-      Task(\/-(appPathResponses.head)),
-      Task(\/-(appPathResponses(1))),
-      Task(\/-(appPathResponses(2))))
+      Service(Task(Result.answer(appPathResponses.head))),
+      Service(Task(Result.answer(appPathResponses(1)))),
+      Service(Task(Result.answer(appPathResponses(2)))))
 
     mockImageServices.saveAppIcon(any[AppWebsite])(any) returns
-      Task(\/-(appWebsitePath))
+      Service(Task(Result.answer(appWebsitePath)))
 
     val deviceProcess = new DeviceProcessImpl(
       mockAppsServices,
@@ -73,7 +82,8 @@ trait DeviceProcessSpecification
       mockImageServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
-      apiUtils.getRequestConfig(contextSupport) returns Task(\/-(requestConfig))
+      apiUtils.getRequestConfig(contextSupport) returns
+        Service(Task(Result.answer(requestConfig)))
 
     }
 
@@ -82,26 +92,44 @@ trait DeviceProcessSpecification
   trait ErrorAppServicesProcessScope {
     self: DeviceProcessScope =>
 
+    val serviceAppInstalledException = Service(
+      Task(
+        Result.errata[Seq[Application], AppsInstalledException](appInstalledException)
+      )
+    )
+
     mockAppsServices.getInstalledApps(contextSupport) returns
-      Task(-\/(exception))
+      serviceAppInstalledException
 
   }
 
   trait ErrorPersistenceServicesProcessScope {
     self: DeviceProcessScope =>
 
+    val serviceAppInstalledException = Service(
+      Task(
+        Result.errata[Seq[CacheCategory], PersistenceServiceException](persistenceServiceException)
+      )
+    )
+
     mockPersistenceServices.fetchCacheCategories returns
-      Task(-\/(exception))
+      serviceAppInstalledException
 
   }
 
   trait ErrorImageServicesProcessScope {
     self: DeviceProcessScope =>
 
+    val serviceBitmapTransformationException = Service(
+      Task(
+        Result.errata[AppPackagePath, BitmapTransformationException with IOException](bitmapTransformationException)
+      )
+    )
+
     mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
-      Task(\/-(appPathResponses.head)),
-      Task(-\/(exception)),
-      Task(\/-(appPathResponses(2))))
+      Service(Task(Result.answer(appPathResponses.head))),
+      serviceBitmapTransformationException,
+      Service(Task(Result.answer(appPathResponses(2)))))
 
   }
 
@@ -109,21 +137,21 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.addCacheCategory(any) returns
-      Task(\/-(newCacheCategory))
+      Service(Task(Result.answer(newCacheCategory)))
 
     mockAppsServices.getInstalledApps(contextSupport) returns
-      Task(\/-(applications :+ applicationNoCached))
+      Service(Task(Result.answer(applications :+ applicationNoCached)))
 
     mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
-      Task(\/-(appPathResponses.head)),
-      Task(\/-(appPathResponses(1))),
-      Task(\/-(appPathResponses(2))),
-      Task(\/-(appPackagePathNoCached)))
+      Service(Task(Result.answer(appPathResponses.head))),
+      Service(Task(Result.answer(appPathResponses(1)))),
+      Service(Task(Result.answer(appPathResponses(2)))),
+      Service(Task(Result.answer(appPackagePathNoCached))))
 
     mockApiServices.googlePlaySimplePackages(any)(any) returns
-      Task(\/-(GooglePlaySimplePackagesResponse(200, GooglePlaySimplePackages(
+      Service(Task(Result.answer(GooglePlaySimplePackagesResponse(200, GooglePlaySimplePackages(
         Seq.empty,
-        Seq(googlePlaySimplePackageNoCached)))))
+        Seq(googlePlaySimplePackageNoCached))))))
 
   }
 
@@ -131,13 +159,13 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockApiServices.googlePlayPackages(any)(any) returns
-      Task(\/-(GooglePlayPackagesResponse(200, Seq(googlePlayPackage))))
+      Service(Task(Result.answer(GooglePlayPackagesResponse(200, Seq(googlePlayPackage)))))
 
   }
 
 }
 
-class DeviceProcessSpec
+class DeviceProcessImplSpec
   extends DeviceProcessSpecification
   with DisjunctionMatchers {
 

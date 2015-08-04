@@ -1,10 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
-import java.io.IOException
-
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.device.DeviceExceptions.{AppCategorizationException, _}
@@ -14,20 +11,18 @@ import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
+import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceExceptions.PersistenceServiceException
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
-import rapture.core.{Each => ExHandler, Errata, Answer, Result}
+import rapture.core.Answer
 
-import scalaz.Scalaz._
-import scalaz._
 import scalaz.concurrent.Task
 
 class DeviceProcessImpl(
   appsService: AppsServices,
   apiServices: ApiServices,
   persistenceServices: PersistenceServices,
-  imageServices: ImageServices
-  )
+  imageServices: ImageServices)
   extends DeviceProcess
   with ImplicitsImageExceptions
   with ImplicitsPersistenceExceptions
@@ -40,43 +35,25 @@ class DeviceProcessImpl(
       cacheCategories <- persistenceServices.fetchCacheCategories
       apps <- getApps
     } yield {
-      apps map (app => copyCacheCategory(app, cacheCategories.find(_.packageName == app.packageName)))
-    }).resolve[AppCategorizationException]
+        apps map (app => copyCacheCategory(app, cacheCategories.find(_.packageName == app.packageName)))
+      }).resolve[AppCategorizationException]
   }
 
   override def categorizeApps(implicit context: ContextSupport) =
     (for {
       apps <- getCategorizedApps
       packagesWithoutCategory = apps.filter(_.category.isEmpty) map (_.packageName)
-      requestConfig <- apiUtils.getRequestConfigServiceF2
-      response <- transformCallToGooglePlay(packagesWithoutCategory, requestConfig)
+      requestConfig <- apiUtils.getRequestConfig
+      response <- apiServices.googlePlaySimplePackages(packagesWithoutCategory)(requestConfig)
       _ <- addCacheCategories(toAddCacheCategoryRequestSeq(response.apps.items))
     } yield ()).resolve[AppCategorizationException]
 
-  // TODO Transform for proof of concept
-  private[this] def transformCallToGooglePlay(packagesWithoutCategory: Seq[String], requestConfig: RequestConfig):
-  ServiceDef2[GooglePlaySimplePackagesResponse, NineCardsException] = Service {
-    apiServices.googlePlaySimplePackages(packagesWithoutCategory)(requestConfig) map {
-      case -\/(ex) => Result.errata(NineCardsException(msg = "Android Id not found", cause = ex.some))
-      case \/-(r) => Result.answer(r)
-    }
-  }
-
   override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport) =
     (for {
-      requestConfig <- apiUtils.getRequestConfigServiceF2
-      response <- transformCallToGooglePlayPackages(packages, requestConfig)
+      requestConfig <- apiUtils.getRequestConfig
+      response <- apiServices.googlePlayPackages(packages)(requestConfig)
       _ <- createBitmapsFromAppWebSite(toAppWebSiteSeq(response.packages))
     } yield ()).resolve[CreateBitmapException]
-
-  // TODO Transform for proof of concept
-  private[this] def transformCallToGooglePlayPackages(packages: Seq[String], requestConfig: RequestConfig):
-  ServiceDef2[GooglePlayPackagesResponse, NineCardsException] = Service {
-    apiServices.googlePlayPackages(packages)(requestConfig) map {
-      case -\/(ex) => Result.errata(NineCardsException(msg = "Android Id not found", cause = ex.some))
-      case \/-(r) => Result.answer(r)
-    }
-  }
 
   private[this] def getApps(implicit context: ContextSupport):
   ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =
@@ -99,18 +76,9 @@ class DeviceProcessImpl(
     }
 
   private[this] def addCacheCategories(items: Seq[AddCacheCategoryRequest]):
-    ServiceDef2[Seq[CacheCategory], RepositoryException] = Service {
-    val tasks = items map (transformCallAddCacheCategory(_).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[RepositoryException](list.collect { case Answer(app) => app }))
-  }
-
-  // TODO Transform for proof of concept
-  private[this] def transformCallAddCacheCategory(addCacheCategoryRequest: AddCacheCategoryRequest):
-  ServiceDef2[CacheCategory, NineCardsException] = Service {
-    persistenceServices.addCacheCategory(addCacheCategoryRequest) map {
-      case -\/(ex) => Result.errata(NineCardsException(msg = "Android Id not found", cause = ex.some))
-      case \/-(r) => Result.answer(r)
-    }
+  ServiceDef2[Seq[CacheCategory], PersistenceServiceException] = Service {
+    val tasks = items map (persistenceServices.addCacheCategory(_).run)
+    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
   }
 
   private[this] def createBitmapsFromAppPackage(apps: Seq[AppPackage])(implicit context: ContextSupport):
