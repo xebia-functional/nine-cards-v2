@@ -23,3 +23,4 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION "project repository" clean coverage test projects
   - sbt ++$TRAVIS_SCALA_VERSION "project services" clean coverage test projects
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
+  - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
