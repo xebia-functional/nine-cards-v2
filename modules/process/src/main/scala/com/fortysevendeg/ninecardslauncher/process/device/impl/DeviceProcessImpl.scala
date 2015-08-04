@@ -4,14 +4,12 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.device.DeviceExceptions.{AppCategorizationException, _}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceExceptions.PersistenceServiceException
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import rapture.core.Answer
@@ -24,8 +22,9 @@ class DeviceProcessImpl(
   persistenceServices: PersistenceServices,
   imageServices: ImageServices)
   extends DeviceProcess
+  with ImplicitsDeviceException
   with ImplicitsImageExceptions
-  with ImplicitsPersistenceExceptions
+  with ImplicitsPersistenceServiceExceptions
   with DeviceConversions {
 
   val apiUtils = new ApiUtils(persistenceServices)

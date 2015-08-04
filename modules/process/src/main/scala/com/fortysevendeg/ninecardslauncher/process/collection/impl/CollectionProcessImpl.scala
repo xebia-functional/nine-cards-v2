@@ -9,8 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.utils.NineCardAppU
 import com.fortysevendeg.ninecardslauncher.process.commons.CollectionType
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceExceptions.PersistenceServiceException
-import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceExceptions, AddCollectionRequest, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, ImplicitsPersistenceServiceExceptions, AddCollectionRequest, PersistenceServices}
 import rapture.core.Answer
 
 import scala.annotation.tailrec
@@ -19,7 +18,7 @@ import scalaz.concurrent.Task
 class CollectionProcessImpl(collectionProcessConfig: CollectionProcessConfig, persistenceServices: PersistenceServices)
   extends CollectionProcess
   with ImplicitsCollectionException
-  with ImplicitsPersistenceExceptions
+  with ImplicitsPersistenceServiceExceptions
   with Conversions {
 
   override def createCollectionsFromUnformedItems(items: Seq[UnformedItem])(implicit context: ContextSupport) = Service {

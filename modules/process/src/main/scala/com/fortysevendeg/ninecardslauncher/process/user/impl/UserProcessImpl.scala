@@ -8,8 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.user._
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.api.models.Installation
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceExceptions.PersistenceServiceException
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
+import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
 import rapture.core.{Answer, Errata, Result}
 
 import scalaz.concurrent.Task

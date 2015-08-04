@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.process.device
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.device.DeviceExceptions.{AppCategorizationException, CreateBitmapException}
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 
 trait DeviceProcess {

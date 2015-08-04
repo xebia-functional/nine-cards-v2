@@ -1,34 +1,33 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
-import java.io.IOException
-
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.process.device.AppCategorizationException
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
-import com.fortysevendeg.ninecardslauncher.services.api.{GooglePlayPackagesResponse, GooglePlaySimplePackagesResponse, ApiServices}
+import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GooglePlayPackagesResponse, GooglePlaySimplePackagesResponse}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceExceptions.PersistenceServiceException
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
+import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.Result
+import rapture.core.{Answer, Errata, Result}
 
 import scalaz.concurrent.Task
 
 trait DeviceProcessSpecification
   extends Specification
   with Mockito {
+
+  val appCategorizationException = AppCategorizationException("")
 
   val appInstalledException = AppsInstalledException("")
 
@@ -120,16 +119,20 @@ trait DeviceProcessSpecification
   trait ErrorImageServicesProcessScope {
     self: DeviceProcessScope =>
 
-    val serviceBitmapTransformationException = Service(
-      Task(
-        Result.errata[AppPackagePath, BitmapTransformationException with IOException](bitmapTransformationException)
-      )
-    )
-
-    mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
-      Service(Task(Result.answer(appPathResponses.head))),
-      serviceBitmapTransformationException,
-      Service(Task(Result.answer(appPathResponses(2)))))
+//    case class CustomException(message: String, cause: Option[Throwable] = None)
+//      extends IOException(message)
+//      with BitmapTransformationException
+//
+//    val serviceBitmapTransformationException = Service(
+//      Task(
+//        Errata(CustomException(""))
+//      )
+//    )
+//
+//    mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
+//      Service(Task(Result.answer(appPathResponses.head))),
+//      serviceBitmapTransformationException,
+//      Service(Task(Result.answer(appPathResponses(2)))))
 
   }
 
@@ -166,16 +169,15 @@ trait DeviceProcessSpecification
 }
 
 class DeviceProcessImplSpec
-  extends DeviceProcessSpecification
-  with DisjunctionMatchers {
+  extends DeviceProcessSpecification {
 
   "Getting apps categorized in DeviceProcess" should {
 
     "returns apps categorized" in
       new DeviceProcessScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run
-        result must be_\/-[Seq[AppCategorized]].which {
-          apps =>
+        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        result must beLike {
+          case Answer(apps) =>
             apps.length shouldEqual appsCategorized.length
             apps.head.packageName shouldEqual appsCategorized.head.packageName
             apps(1).packageName shouldEqual appsCategorized(1).packageName
@@ -185,35 +187,43 @@ class DeviceProcessImplSpec
 
     "returns apps categorized when a installed app isn't cached" in
       new DeviceProcessScope with NoCachedDataScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run
-        result must be_\/-[Seq[AppCategorized]].which {
-          apps =>
-            val apps: Seq[AppCategorized] = appsCategorized :+ appCategorizedNoCached
+        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        result must beLike {
+          case Answer(apps) =>
+            val appsCategorizedAndNoCached: Seq[AppCategorized] = appsCategorized :+ appCategorizedNoCached
             apps.length shouldEqual apps.length
-            apps.head.packageName shouldEqual apps.head.packageName
-            apps(1).packageName shouldEqual apps(1).packageName
-            apps(2).packageName shouldEqual apps(2).packageName
-            apps(3).packageName shouldEqual apps(3).packageName
+            apps.head.packageName shouldEqual appsCategorizedAndNoCached.head.packageName
+            apps(1).packageName shouldEqual appsCategorizedAndNoCached(1).packageName
+            apps(2).packageName shouldEqual appsCategorizedAndNoCached(2).packageName
+            apps(3).packageName shouldEqual appsCategorizedAndNoCached(3).packageName
         }
       }
 
     "returns a NineCardsException if app service fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run
-        result must be_-\/[NineCardsException]
+        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception shouldEqual appInstalledException
+          }
+        }
       }
 
     "returns a NineCardsException if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run
-        result must be_-\/[NineCardsException]
+        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception shouldEqual persistenceServiceException
+          }
+        }
       }
 
     "returns a empty string if image service fails creating a image" in
       new DeviceProcessScope with ErrorImageServicesProcessScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run
-        result must be_\/-[Seq[AppCategorized]].which {
-          apps =>
+        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        result must beLike {
+          case Answer(apps) =>
             apps.length shouldEqual appsCategorized.length
             apps.head.packageName shouldEqual appsCategorized.head.packageName
             apps(1).packageName shouldEqual appsCategorized(1).packageName
@@ -231,26 +241,38 @@ class DeviceProcessImplSpec
 
     "categorize installed apps" in
       new DeviceProcessScope {
-        val result = deviceProcess.categorizeApps(contextSupport).run
-        result must be_\/-[Unit]
+        val result = deviceProcess.categorizeApps(contextSupport).run.run
+        result must beLike {
+          case Answer(r) => r shouldEqual (())
+        }
       }
 
     "categorize installed apps when a installed app isn't cached" in
       new DeviceProcessScope with NoCachedDataScope {
-        val result = deviceProcess.categorizeApps(contextSupport).run
-        result must be_\/-[Unit]
+        val result = deviceProcess.categorizeApps(contextSupport).run.run
+        result must beLike {
+          case Answer(r) => r shouldEqual (())
+        }
       }
 
     "returns a NineCardsException if app service fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
-        val result = deviceProcess.categorizeApps(contextSupport).run
-        result must be_-\/[NineCardsException]
+        val result = deviceProcess.categorizeApps(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception shouldEqual appInstalledException
+          }
+        }
       }
 
     "returns a NineCardsException if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.categorizeApps(contextSupport).run
-        result must be_-\/[NineCardsException]
+        val result = deviceProcess.categorizeApps(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception shouldEqual appCategorizationException
+          }
+        }
       }
 
   }
@@ -259,15 +281,19 @@ class DeviceProcessImplSpec
 
     "when seq is empty" in
       new DeviceProcessScope {
-        val result = deviceProcess.createBitmapsFromPackages(Seq.empty)(contextSupport).run
-        result must be_\/-[Unit]
+        val result = deviceProcess.createBitmapsFromPackages(Seq.empty)(contextSupport).run.run
+        result must beLike {
+          case Answer(r) => r shouldEqual (())
+        }
       }
 
 
     "when seq has packages" in
       new DeviceProcessScope with CreateImagesDataScope {
-        val result = deviceProcess.createBitmapsFromPackages(Seq(packageNameForCreateImage))(contextSupport).run
-        result must be_\/-[Unit]
+        val result = deviceProcess.createBitmapsFromPackages(Seq(packageNameForCreateImage))(contextSupport).run.run
+        result must beLike {
+          case Answer(r) => r shouldEqual (())
+        }
       }
 
   }
