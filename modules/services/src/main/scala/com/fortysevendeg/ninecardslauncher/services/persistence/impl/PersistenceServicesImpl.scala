@@ -43,42 +43,42 @@ class PersistenceServicesImpl(
 
   val FilenameInstallation = "__installation_entity__"
 
-  override def addCacheCategory(request: AddCacheCategoryRequest): ServiceDef2[CacheCategory, PersistenceServiceException] =
+  override def addCacheCategory(request: AddCacheCategoryRequest) =
     (for {
       cacheCategory <- cacheCategoryRepository.addCacheCategory(toRepositoryCacheCategoryData(request))
     } yield toCacheCategory(cacheCategory)).resolve[PersistenceServiceException]
 
-  override def deleteCacheCategory(request: DeleteCacheCategoryRequest): ServiceDef2[Int, PersistenceServiceException] =
+  override def deleteCacheCategory(request: DeleteCacheCategoryRequest) =
     (for {
       deleted <- cacheCategoryRepository.deleteCacheCategory(toRepositoryCacheCategory(request.cacheCategory))
     } yield deleted).resolve[PersistenceServiceException]
 
-  override def deleteCacheCategoryByPackage(request: DeleteCacheCategoryByPackageRequest): ServiceDef2[Int, PersistenceServiceException] =
+  override def deleteCacheCategoryByPackage(request: DeleteCacheCategoryByPackageRequest) =
     (for {
       deleted <- cacheCategoryRepository.deleteCacheCategoryByPackage(request.packageName)
     } yield deleted).resolve[PersistenceServiceException]
 
-  override def fetchCacheCategoryByPackage(request: FetchCacheCategoryByPackageRequest): ServiceDef2[Option[CacheCategory], PersistenceServiceException] =
+  override def fetchCacheCategoryByPackage(request: FetchCacheCategoryByPackageRequest) =
     (for {
       maybeCacheCategory <- cacheCategoryRepository.fetchCacheCategoryByPackage(request.packageName)
     } yield maybeCacheCategory map toCacheCategory).resolve[PersistenceServiceException]
 
-  override def fetchCacheCategories: ServiceDef2[Seq[CacheCategory], PersistenceServiceException] =
+  override def fetchCacheCategories =
     (for {
       cacheCategories <- cacheCategoryRepository.fetchCacheCategories
     } yield cacheCategories map toCacheCategory).resolve[PersistenceServiceException]
 
-  override def findCacheCategoryById(request: FindCacheCategoryByIdRequest): ServiceDef2[Option[CacheCategory], PersistenceServiceException] =
+  override def findCacheCategoryById(request: FindCacheCategoryByIdRequest) =
     (for {
       maybeCacheCategory <- cacheCategoryRepository.findCacheCategoryById(request.id)
     } yield maybeCacheCategory map toCacheCategory).resolve[PersistenceServiceException]
 
-  override def updateCacheCategory(request: UpdateCacheCategoryRequest): ServiceDef2[Int, PersistenceServiceException] =
+  override def updateCacheCategory(request: UpdateCacheCategoryRequest) =
     (for {
       updated <- cacheCategoryRepository.updateCacheCategory(toRepositoryCacheCategory(request))
     } yield updated).resolve[PersistenceServiceException]
 
-  override def addCard(request: AddCardRequest): ServiceDef2[Card, PersistenceServiceException] =
+  override def addCard(request: AddCardRequest) =
     request.collectionId match {
       case Some(collectionId) =>
         (for {
@@ -88,96 +88,95 @@ class PersistenceServicesImpl(
         Service(Task(Result.errata(PersistenceServiceException("CollectionId can't be empty"))))
     }
 
-  override def deleteCard(request: DeleteCardRequest): ServiceDef2[Int, PersistenceServiceException] =
+  override def deleteCard(request: DeleteCardRequest) =
     (for {
       deleted <- cardRepository.deleteCard(toRepositoryCard(request.card))
     } yield deleted).resolve[PersistenceServiceException]
 
-  override def fetchCardsByCollection(request: FetchCardsByCollectionRequest): ServiceDef2[Seq[Card], PersistenceServiceException] =
+  override def fetchCardsByCollection(request: FetchCardsByCollectionRequest) =
     (for {
       cards <- cardRepository.fetchCardsByCollection(request.collectionId)
     } yield cards map toCard).resolve[PersistenceServiceException]
 
-  override def findCardById(request: FindCardByIdRequest): ServiceDef2[Option[Card], PersistenceServiceException] =
+  override def findCardById(request: FindCardByIdRequest) =
     (for {
       maybeCard <- cardRepository.findCardById(request.id)
     } yield maybeCard map toCard).resolve[PersistenceServiceException]
 
-  override def updateCard(request: UpdateCardRequest): ServiceDef2[Int, PersistenceServiceException] =
+  override def updateCard(request: UpdateCardRequest) =
     (for {
       updated <- cardRepository.updateCard(toRepositoryCard(request))
     } yield updated).resolve[PersistenceServiceException]
 
-  override def addCollection(request: AddCollectionRequest): ServiceDef2[Collection, PersistenceServiceException] =
+  override def addCollection(request: AddCollectionRequest) =
     (for {
       collection <- collectionRepository.addCollection(toRepositoryCollectionData(request))
       addedCards <- addCards(request.cards map (_.copy(collectionId = Option(collection.id))))
     } yield toCollection(collection).copy(cards = addedCards)).resolve[PersistenceServiceException]
 
-  override def deleteCollection(request: DeleteCollectionRequest): ServiceDef2[Int, PersistenceServiceException] = {
+  override def deleteCollection(request: DeleteCollectionRequest) = {
     (for {
       deletedCards <- deleteCards(request.collection.cards)
       deletedCollection <- collectionRepository.deleteCollection(toRepositoryCollection(request.collection))
     } yield deletedCollection).resolve[PersistenceServiceException]
   }
 
-  override def fetchCollections: ServiceDef2[Seq[Collection], PersistenceServiceException] =
+  override def fetchCollections =
     (for {
       collectionsWithoutCards <- collectionRepository.fetchSortedCollections
       collectionWithCards <- fetchCards(collectionsWithoutCards)
     } yield collectionWithCards.sortWith(_.position < _.position)).resolve[PersistenceServiceException]
 
-  override def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest): ServiceDef2[Option[Collection], PersistenceServiceException] =
+  override def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest) =
     (for {
       collection <- collectionRepository.fetchCollectionBySharedCollectionId(request.sharedCollectionId)
       cards <- fetchCards(collection)
     } yield collection map (toCollection(_, cards))).resolve[PersistenceServiceException]
 
 
-  override def fetchCollectionByPosition(request: FetchCollectionByPositionRequest): ServiceDef2[Option[Collection], PersistenceServiceException] =
+  override def fetchCollectionByPosition(request: FetchCollectionByPositionRequest) =
     (for {
       collection <- collectionRepository.fetchCollectionByPosition(request.position)
       cards <- fetchCards(collection)
     } yield collection map (toCollection(_, cards))).resolve[PersistenceServiceException]
 
-  override def findCollectionById(request: FindCollectionByIdRequest): ServiceDef2[Option[Collection], PersistenceServiceException] = {
+  override def findCollectionById(request: FindCollectionByIdRequest) =
     (for {
       collection <- collectionRepository.findCollectionById(request.id)
       cards <- fetchCards(collection)
     } yield collection map (toCollection(_, cards))).resolve[PersistenceServiceException]
-  }
 
-  override def updateCollection(request: UpdateCollectionRequest): ServiceDef2[Int, PersistenceServiceException] =
+  override def updateCollection(request: UpdateCollectionRequest) =
     (for {
       updated <- collectionRepository.updateCollection(toRepositoryCollection(request))
     } yield updated).resolve[PersistenceServiceException]
 
-  override def addGeoInfo(request: AddGeoInfoRequest): ServiceDef2[GeoInfo, PersistenceServiceException] =
+  override def addGeoInfo(request: AddGeoInfoRequest) =
     (for {
       geoInfo <- geoInfoRepository.addGeoInfo(toRepositoryGeoInfoData(request))
     } yield toGeoInfo(geoInfo)).resolve[PersistenceServiceException]
 
-  override def deleteGeoInfo(request: DeleteGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException] =
+  override def deleteGeoInfo(request: DeleteGeoInfoRequest) =
     (for {
       deleted <- geoInfoRepository.deleteGeoInfo(toRepositoryGeoInfo(request.geoInfo))
     } yield deleted).resolve[PersistenceServiceException]
 
-  override def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest): ServiceDef2[Option[GeoInfo], PersistenceServiceException] =
+  override def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest) =
     (for {
       maybeGeoInfo <- geoInfoRepository.fetchGeoInfoByConstrain(request.constrain)
     } yield maybeGeoInfo map toGeoInfo).resolve[PersistenceServiceException]
 
-  override def fetchGeoInfoItems: ServiceDef2[Seq[GeoInfo], PersistenceServiceException] =
+  override def fetchGeoInfoItems =
     (for {
       geoInfoItems <- geoInfoRepository.fetchGeoInfoItems
     } yield geoInfoItems map toGeoInfo).resolve[PersistenceServiceException]
 
-  override def findGeoInfoById(request: FindGeoInfoByIdRequest): ServiceDef2[Option[GeoInfo], PersistenceServiceException] =
+  override def findGeoInfoById(request: FindGeoInfoByIdRequest) =
     (for {
       maybeGeoInfo <- geoInfoRepository.findGeoInfoById(request.id)
     } yield maybeGeoInfo map toGeoInfo).resolve[PersistenceServiceException]
 
-  override def updateGeoInfo(request: UpdateGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException] =
+  override def updateGeoInfo(request: UpdateGeoInfoRequest) =
     (for {
       updated <- geoInfoRepository.updateGeoInfo(toRepositoryGeoInfo(request))
     } yield updated).resolve[PersistenceServiceException]
@@ -205,7 +204,7 @@ class PersistenceServicesImpl(
           CatchAll[PersistenceServiceException](list.collect { case Answer(value) => value }.sum)))
   }
 
-  private[this] def fetchCards(maybeCollection: Option[repo.model.Collection]) = {
+  private[this] def fetchCards(maybeCollection: Option[repo.model.Collection]): ServiceDef2[Seq[repo.model.Card], RepositoryException] = {
     maybeCollection match {
       case Some(collection) => cardRepository.fetchCardsByCollection(collection.id)
       case None => Service(Task(Result.answer[Seq[repo.model.Card], RepositoryException](Seq.empty)))
@@ -226,14 +225,14 @@ class PersistenceServicesImpl(
           CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => collection })))
   }
 
-  override def getUser(implicit context: ContextSupport): ServiceDef2[User, PersistenceServiceException] =
+  override def getUser(implicit context: ContextSupport) =
     Service(
       Task(loadFile[User](getFileUser) match {
         case Success(user) => Result.answer(user)
         case Failure(ex) => Result.errata(UserNotFoundException(message = "User not found", cause = ex.some))
       }))
 
-  override def saveUser(user: User)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException] =
+  override def saveUser(user: User)(implicit context: ContextSupport) =
     Service {
       Task {
         writeFile[User](getFileUser, user) match {
@@ -243,7 +242,7 @@ class PersistenceServicesImpl(
       }
     }
 
-  override def resetUser(implicit context: ContextSupport): ServiceDef2[Boolean, PersistenceServiceException] =
+  override def resetUser(implicit context: ContextSupport) =
     Service {
       Task {
         CatchAll[PersistenceServiceException] {
@@ -253,7 +252,7 @@ class PersistenceServicesImpl(
       }
     }
 
-  override def getAndroidId(implicit context: ContextSupport): ServiceDef2[String, AndroidIdNotFoundException] =
+  override def getAndroidId(implicit context: ContextSupport) =
     Service {
       Task {
         val cursor = Option(context.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
@@ -265,7 +264,7 @@ class PersistenceServicesImpl(
       }
     }
 
-  override def getInstallation(implicit context: ContextSupport): ServiceDef2[Installation, InstallationNotFoundException] =
+  override def getInstallation(implicit context: ContextSupport) =
     Service(
       Task(
         loadFile[Installation](getFileInstallation) match {
@@ -273,14 +272,14 @@ class PersistenceServicesImpl(
           case Failure(ex) => Result.errata(InstallationNotFoundException(message = "Installation not found", cause = ex.some))
         }))
 
-  override def existsInstallation(implicit context: ContextSupport): ServiceDef2[Boolean, PersistenceServiceException] =
+  override def existsInstallation(implicit context: ContextSupport) =
     Service {
       Task {
         CatchAll[PersistenceServiceException](getFileInstallation.exists())
       }
     }
 
-  override def saveInstallation(installation: Installation)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException] =
+  override def saveInstallation(installation: Installation)(implicit context: ContextSupport) =
     Service {
       Task {
         writeFile[Installation](getFileInstallation, installation) match {
