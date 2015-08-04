@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.api.reads
 
 import com.fortysevendeg.ninecardslauncher.api.model._
+import GooglePlayImplicits._
+import UserConfigImplicits._
 
 object RecommendationImplicits {
 
   import play.api.libs.json._
-
-  import GooglePlayImplicits._
-  import UserConfigImplicits._
 
   implicit val appiaAdReads = Json.reads[AppiaAd]
   implicit val playRecommendationItemsReads = Json.reads[GooglePlayRecommendationItems]

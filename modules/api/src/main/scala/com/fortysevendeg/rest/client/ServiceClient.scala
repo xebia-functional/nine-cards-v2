@@ -1,15 +1,13 @@
 package com.fortysevendeg.rest.client
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientResponse}
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientException, HttpClientResponse}
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import play.api.libs.json.{Json, Reads, Writes}
+import rapture.core.{Answer, Errata, Result}
 
 import scala.util.{Failure, Success, Try}
-import scalaz.EitherT._
-import scalaz.Scalaz._
-import scalaz._
 import scalaz.concurrent.Task
 
 class ServiceClient(httpClient: HttpClient, baseUrl: String) {
@@ -19,10 +17,10 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): Task[NineCardsException \/ ServiceClientResponse[Res]] =
+    ): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
     for {
-      clientResponse <- httpClient.doGet(baseUrl.concat(path), headers) ▹ eitherT
-      response <- readResponse(clientResponse, reads, emptyResponse) ▹ eitherT
+      clientResponse <- httpClient.doGet(baseUrl.concat(path), headers)
+      response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode.intValue, response)
 
 
@@ -31,10 +29,10 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): Task[NineCardsException \/ ServiceClientResponse[Res]] =
+    ): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
     for {
-      clientResponse <- httpClient.doPost(baseUrl.concat(path), headers) ▹ eitherT
-      response <- readResponse(clientResponse, reads, emptyResponse) ▹ eitherT
+      clientResponse <- httpClient.doPost(baseUrl.concat(path), headers)
+      response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode, response)
 
 
@@ -44,10 +42,10 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     body: Req,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    )(implicit writes: Writes[Req]): Task[NineCardsException \/ ServiceClientResponse[Res]] =
+    )(implicit writes: Writes[Req]): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
     for {
-      clientResponse <- httpClient.doPost[Req](baseUrl.concat(path), headers, body) ▹ eitherT
-      response <- readResponse(clientResponse, reads, emptyResponse) ▹ eitherT
+      clientResponse <- httpClient.doPost[Req](baseUrl.concat(path), headers, body)
+      response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode, response)
 
   def emptyPut[Res](
@@ -55,10 +53,10 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): Task[NineCardsException \/ ServiceClientResponse[Res]] =
+    ): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
     for {
-      clientResponse <- httpClient.doPut(baseUrl.concat(path), headers) ▹ eitherT
-      response <- readResponse(clientResponse, reads, emptyResponse) ▹ eitherT
+      clientResponse <- httpClient.doPut(baseUrl.concat(path), headers)
+      response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode, response)
 
   def put[Req, Res](
@@ -67,10 +65,10 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     body: Req,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    )(implicit writes: Writes[Req]): Task[NineCardsException \/ ServiceClientResponse[Res]] =
+    )(implicit writes: Writes[Req]): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
     for {
-      httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), headers, body) ▹ eitherT
-      response <- readResponse(httpResponse, reads, emptyResponse) ▹ eitherT
+      httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), headers, body)
+      response <- readResponse(httpResponse, reads, emptyResponse)
     } yield ServiceClientResponse(httpResponse.statusCode, response)
 
 
@@ -79,33 +77,34 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): Task[NineCardsException \/ ServiceClientResponse[Res]] =
+    ): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
     for {
-      clientResponse <- httpClient.doDelete(baseUrl.concat(path), headers) ▹ eitherT
-      response <- readResponse(clientResponse, reads, emptyResponse) ▹ eitherT
+      clientResponse <- httpClient.doDelete(baseUrl.concat(path), headers)
+      response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode, response)
 
   private def readResponse[T](
     clientResponse: HttpClientResponse,
     maybeReads: Option[Reads[T]],
     emptyResponse: Boolean
-    ): Task[NineCardsException \/ Option[T]] =
+    ): ServiceDef2[Option[T], ServiceClientException] = Service {
     Task {
       (clientResponse.body, emptyResponse, maybeReads) match {
         case (Some(d), false, Some(r)) => transformResponse[T](d, r)
-        case (None, false, _) => -\/(new NineCardsException("No content")) // TODO - Make ServiceClientException extends NineCardsException
-        case (Some(d), false, None) => -\/(new NineCardsException("No transformer found for type"))
-        case _ => \/-(None)
+        case (None, false, _) => Errata(ServiceClientExceptionImpl("No content"))
+        case (Some(d), false, None) => Errata(ServiceClientExceptionImpl("No transformer found for type"))
+        case _ => Answer(None)
       }
     }
+  }
 
   private def transformResponse[T](
     content: String,
     reads: Reads[T]
-    ): NineCardsException \/ Option[T] =
+    ): Result[Option[T], ServiceClientException] =
     Try(Json.parse(content).as[T](reads)) match {
-      case Success(s) => \/-(Some(s))
-      case Failure(e) => -\/(NineCardsException(msg = e.getMessage, cause = Some(e)))
+      case Success(s) => Answer(Some(s))
+      case Failure(e) => Errata(ServiceClientExceptionImpl(message = e.getMessage, cause = Some(e)))
     }
 
 }

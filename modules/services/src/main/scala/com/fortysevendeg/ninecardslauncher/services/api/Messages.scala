@@ -29,6 +29,7 @@ case class GooglePlaySimplePackagesResponse(
 
 trait UserConfigResponse {
   def statusCode: Int
+
   def userConfig: UserConfig
 }
 
