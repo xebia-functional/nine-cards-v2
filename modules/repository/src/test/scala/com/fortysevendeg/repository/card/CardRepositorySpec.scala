@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository.card
 
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
@@ -11,7 +11,7 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata, Result}
+import rapture.core.{Answer, Errata}
 
 trait CardRepositorySpecification
   extends Specification

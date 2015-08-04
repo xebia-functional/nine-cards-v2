@@ -1,21 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
-import com.fortysevendeg.ninecardslauncher.services.api.ApiServiceException
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceExceptions.PersistenceServiceException
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Errata, Answer, Result}
+import rapture.core.{Answer, Errata, Result}
 
 import scalaz.concurrent.Task
-import scalaz.{-\/, \/-}
 
 trait PersistenceServicesSpecification
   extends Specification

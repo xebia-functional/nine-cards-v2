@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository.collection
 
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CollectionUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.Collection
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity._
@@ -11,7 +11,7 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata, Result}
+import rapture.core.{Answer, Errata}
 
 trait CollectionRepositorySpecification
   extends Specification

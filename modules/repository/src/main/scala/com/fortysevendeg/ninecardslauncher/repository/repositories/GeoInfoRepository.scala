@@ -4,15 +4,17 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapper, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo, GeoInfoData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.{DBUtils, GeoInfoEntity}
+import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scalaz.concurrent.Task
 
-class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper) extends DBUtils {
+class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper)
+  extends DBUtils
+  with ImplicitsRepositoryExceptions {
 
   def addGeoInfo(data: GeoInfoData): ServiceDef2[GeoInfo, RepositoryException] =
     Service {

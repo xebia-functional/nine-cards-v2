@@ -5,13 +5,11 @@ import java.io.File
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceExceptions.{AndroidIdNotFoundException, InstallationNotFoundException, PersistenceServiceException, UserNotFoundException}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -21,7 +19,6 @@ import rapture.core.{Answer, Result}
 
 import scala.util.{Failure, Success}
 import scalaz.Scalaz._
-import scalaz._
 import scalaz.concurrent.Task
 
 class PersistenceServicesImpl(
@@ -31,6 +28,7 @@ class PersistenceServicesImpl(
   geoInfoRepository: GeoInfoRepository)
   extends PersistenceServices
   with Conversions
+  with ImplicitsPersistenceServiceExceptions
   with FileUtils {
 
   // TODO These contants don't should be here
