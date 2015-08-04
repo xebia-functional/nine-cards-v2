@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository.card
 
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
@@ -11,7 +11,7 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata, Result}
+import rapture.core.{Answer, Errata}
 
 trait CardRepositorySpecification
   extends Specification
@@ -153,7 +153,7 @@ class CardRepositorySpec
 
           val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run.run
 
-          result must beLike[Result[Card, RepositoryException]] {
+          result must beLike {
             case Answer(card) =>
               card.id shouldEqual testCardId
               card.data.intent shouldEqual testIntent
@@ -166,9 +166,12 @@ class CardRepositorySpec
 
           val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run.run
 
-          result must beLike[Result[Card, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -181,7 +184,7 @@ class CardRepositorySpec
 
           val result = cardRepository.deleteCard(card = card).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
+          result must beLike {
             case Answer(deleted) =>
               deleted shouldEqual 1
           }
@@ -193,9 +196,12 @@ class CardRepositorySpec
 
           val result = cardRepository.deleteCard(card = card).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -208,7 +214,7 @@ class CardRepositorySpec
 
           val result = cardRepository.findCardById(id = testCardId).run.run
 
-          result must beLike[Result[Option[Card], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCard) =>
               maybeCard must beSome[Card].which { card =>
                 card.id shouldEqual testCardId
@@ -223,7 +229,7 @@ class CardRepositorySpec
 
           val result = cardRepository.findCardById(id = testNonExistingCardId).run.run
 
-          result must beLike[Result[Option[Card], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCard) =>
               maybeCard must beNone
           }
@@ -235,9 +241,12 @@ class CardRepositorySpec
 
           val result = cardRepository.findCardById(id = testCardId).run.run
 
-          result must beLike[Result[Option[Card], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -250,7 +259,7 @@ class CardRepositorySpec
 
           val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run.run
 
-          result must beLike[Result[Seq[Card], RepositoryException]] {
+          result must beLike {
             case Answer(cards) =>
               cards shouldEqual cardSeq
           }
@@ -262,7 +271,7 @@ class CardRepositorySpec
 
           val result = cardRepository.fetchCardsByCollection(collectionId = testNonExistingCollectionId).run.run
 
-          result must beLike[Result[Seq[Card], RepositoryException]] {
+          result must beLike {
             case Answer(cards) =>
               cards should beEmpty
           }
@@ -274,9 +283,12 @@ class CardRepositorySpec
 
           val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run.run
 
-          result must beLike[Result[Seq[Card], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -289,7 +301,7 @@ class CardRepositorySpec
 
           val result = cardRepository.updateCard(card = card).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
+          result must beLike {
             case Answer(updated) =>
               updated shouldEqual 1
           }
@@ -301,9 +313,12 @@ class CardRepositorySpec
 
           val result = cardRepository.updateCard(card = card).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }

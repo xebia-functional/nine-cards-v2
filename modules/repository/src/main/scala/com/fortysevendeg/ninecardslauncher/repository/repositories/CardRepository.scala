@@ -4,15 +4,17 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapper}
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, DBUtils}
+import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scalaz.concurrent.Task
 
-class CardRepository(contentResolverWrapper: ContentResolverWrapper) extends DBUtils {
+class CardRepository(contentResolverWrapper: ContentResolverWrapper)
+  extends DBUtils
+  with ImplicitsRepositoryExceptions {
 
   def addCard(collectionId: Int, data: CardData): ServiceDef2[Card, RepositoryException] =
     Service {
