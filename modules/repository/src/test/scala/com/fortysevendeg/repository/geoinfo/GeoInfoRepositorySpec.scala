@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository.geoinfo
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapperImpl, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
@@ -11,6 +11,7 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import rapture.core.{Answer, Errata, Result}
 
 trait GeoInfoRepositorySpecification
   extends Specification
@@ -149,10 +150,10 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.addGeoInfo(createGeoInfoData).run
+          val result = geoInfoRepository.addGeoInfo(createGeoInfoData).run.run
 
-          result must be_\/-[GeoInfo].which {
-            geoInfo =>
+          result must beLike[Result[GeoInfo, RepositoryException]] {
+            case Answer(geoInfo) =>
               geoInfo.id shouldEqual testGeoInfoId
               geoInfo.data.constrain shouldEqual testConstrain
           }
@@ -162,9 +163,12 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.addGeoInfo(createGeoInfoData).run
+          val result = geoInfoRepository.addGeoInfo(createGeoInfoData).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[GeoInfo, RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -174,18 +178,24 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.deleteGeoInfo(geoInfo).run
+          val result = geoInfoRepository.deleteGeoInfo(geoInfo).run.run
 
-          result must be_\/-[Int].which(_ shouldEqual 1)
+          result must beLike[Result[Int, RepositoryException]] {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.deleteGeoInfo(geoInfo).run
+          val result = geoInfoRepository.deleteGeoInfo(geoInfo).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Int, RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -195,18 +205,24 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.fetchGeoInfoItems.run
+          val result = geoInfoRepository.fetchGeoInfoItems.run.run
 
-          result must be_\/-[Seq[GeoInfo]].which(_ shouldEqual geoInfoSeq)
+          result must beLike[Result[Seq[GeoInfo], RepositoryException]] {
+            case Answer(geoInfoItems) =>
+              geoInfoItems shouldEqual geoInfoSeq
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.fetchGeoInfoItems.run
+          val result = geoInfoRepository.fetchGeoInfoItems.run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Seq[GeoInfo], RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -216,10 +232,10 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.findGeoInfoById(testGeoInfoId).run
+          val result = geoInfoRepository.findGeoInfoById(testGeoInfoId).run.run
 
-          result must be_\/-[Option[GeoInfo]].which {
-            maybeGeoInfo =>
+          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+            case Answer(maybeGeoInfo) =>
               maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
                 geoInfo.id shouldEqual testGeoInfoId
                 geoInfo.data.constrain shouldEqual testConstrain
@@ -231,18 +247,24 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.findGeoInfoById(testNonExistingGeoInfoId).run
+          val result = geoInfoRepository.findGeoInfoById(testNonExistingGeoInfoId).run.run
 
-          result must be_\/-[Option[GeoInfo]].which(_ must beNone)
+          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+            case Answer(maybeGeoInfo) =>
+              maybeGeoInfo must beNone
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.findGeoInfoById(testGeoInfoId).run
+          val result = geoInfoRepository.findGeoInfoById(testGeoInfoId).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -252,10 +274,10 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.fetchGeoInfoByConstrain(testConstrain).run
+          val result = geoInfoRepository.fetchGeoInfoByConstrain(testConstrain).run.run
 
-          result must be_\/-[Option[GeoInfo]].which {
-            maybeGeoInfo =>
+          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+            case Answer(maybeGeoInfo) =>
               maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
                 geoInfo.id shouldEqual testGeoInfoId
                 geoInfo.data.constrain shouldEqual testConstrain
@@ -267,18 +289,24 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.fetchGeoInfoByConstrain(testNonExistingConstrain).run
+          val result = geoInfoRepository.fetchGeoInfoByConstrain(testNonExistingConstrain).run.run
 
-          result must be_\/-[Option[GeoInfo]].which(_ must beNone)
+          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+            case Answer(maybeGeoInfo) =>
+              maybeGeoInfo must beNone
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.fetchGeoInfoByConstrain(testConstrain).run
+          val result = geoInfoRepository.fetchGeoInfoByConstrain(testConstrain).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -288,18 +316,24 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.updateGeoInfo(geoInfo).run
+          val result = geoInfoRepository.updateGeoInfo(geoInfo).run.run
 
-          result must be_\/-[Int].which(_ shouldEqual 1)
+          result must beLike[Result[Int, RepositoryException]] {
+            case Answer(updated) =>
+              updated shouldEqual 1
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.updateGeoInfo(geoInfo).run
+          val result = geoInfoRepository.updateGeoInfo(geoInfo).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike[Result[Int, RepositoryException]] {
+            case Errata(errors) =>
+              errors.length should beGreaterThanOrEqualTo(1)
+          }
         }
     }
 
@@ -335,7 +369,7 @@ class GeoInfoRepositorySpec
 
           val result = getListFromCursor(geoInfoEntityFromCursor)(mockCursor)
 
-          result shouldEqual Seq.empty
+          result should beEmpty
         }
 
       "return a GeoInfo sequence when a cursor with data is given" in
