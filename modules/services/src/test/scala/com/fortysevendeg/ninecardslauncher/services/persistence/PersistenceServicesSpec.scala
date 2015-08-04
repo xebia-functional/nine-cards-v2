@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCar
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import com.fortysevendeg.ninecardslauncher.services.api.ApiServiceException
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceExceptions.PersistenceServiceException
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -192,8 +193,11 @@ class PersistenceServicesSpec
       val result = persistenceServices.addCacheCategory(createAddCacheCategoryRequest()).run.run
 
       result must beLike[Result[CacheCategory, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -213,8 +217,11 @@ class PersistenceServicesSpec
       val result = persistenceServices.deleteCacheCategory(createDeleteCacheCategoryRequest(cacheCategory = cacheCategory)).run.run
 
       result must beLike[Result[Int, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -234,8 +241,11 @@ class PersistenceServicesSpec
       val result = persistenceServices.deleteCacheCategoryByPackage(createDeleteCacheCategoryByPackageRequest(packageName = packageName)).run.run
 
       result must beLike[Result[Int, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -255,8 +265,11 @@ class PersistenceServicesSpec
       val result = persistenceServices.fetchCacheCategories.run.run
 
       result must beLike[Result[Seq[CacheCategory], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -266,7 +279,7 @@ class PersistenceServicesSpec
     "return a CacheCategory for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName)).run.run
 
-      result must beLike[Result[Option[CacheCategory], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCacheCategory) =>
           maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
             cacheCategory.packageName shouldEqual packageName
@@ -277,7 +290,7 @@ class PersistenceServicesSpec
     "return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = nonExistentPackageName)).run.run
 
-      result must beLike[Result[Option[CacheCategory], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCacheCategory) =>
           maybeCacheCategory must beNone
       }
@@ -286,9 +299,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName)).run.run
 
-      result must beLike[Result[Option[CacheCategory], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -298,7 +314,7 @@ class PersistenceServicesSpec
     "return a CacheCategory for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId)).run.run
 
-      result must beLike[Result[Option[CacheCategory], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCacheCategory) =>
           maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
             cacheCategory.id shouldEqual cacheCategoryId
@@ -310,7 +326,7 @@ class PersistenceServicesSpec
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = nonExistentCacheCategoryId)).run.run
 
-      result must beLike[Result[Option[CacheCategory], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCacheCategory) =>
           maybeCacheCategory must beNone
       }
@@ -319,9 +335,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId)).run.run
 
-      result must beLike[Result[Option[CacheCategory], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -331,7 +350,7 @@ class PersistenceServicesSpec
     "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.updateCacheCategory(createUpdateCacheCategoryRequest()).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
+      result must beLike {
         case Answer(updated) =>
           updated shouldEqual 1
       }
@@ -340,9 +359,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCacheCategory(createUpdateCacheCategoryRequest()).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -352,7 +374,7 @@ class PersistenceServicesSpec
     "return a GeoInfo value for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest()).run.run
 
-      result must beLike[Result[GeoInfo, PersistenceServiceException]] {
+      result must beLike {
         case Answer(geoInfo) =>
           geoInfo.id shouldEqual geoInfoId
           geoInfo.constrain shouldEqual constrain
@@ -362,9 +384,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest()).run.run
 
-      result must beLike[Result[GeoInfo, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -374,7 +399,7 @@ class PersistenceServicesSpec
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo)).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
+      result must beLike {
         case Answer(deleted) =>
           deleted shouldEqual 1
       }
@@ -383,9 +408,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo)).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -395,7 +423,7 @@ class PersistenceServicesSpec
     "return a list of GeoInfo elements for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoItems.run.run
 
-      result must beLike[Result[Seq[GeoInfo], PersistenceServiceException]] {
+      result must beLike {
         case Answer(geoInfoItems) =>
           geoInfoItems.size shouldEqual seqGeoInfo.size
       }
@@ -404,9 +432,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoItems.run.run
 
-      result must beLike[Result[Seq[GeoInfo], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -416,7 +447,7 @@ class PersistenceServicesSpec
     "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)).run.run
 
-      result must beLike[Result[Option[GeoInfo], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeGeoInfo) =>
           maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
             geoInfo.constrain shouldEqual constrain
@@ -427,7 +458,7 @@ class PersistenceServicesSpec
     "return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = nonExistentConstrain)).run.run
 
-      result must beLike[Result[Option[GeoInfo], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeGeoInfo) =>
           maybeGeoInfo must beNone
       }
@@ -436,9 +467,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)).run.run
 
-      result must beLike[Result[Option[GeoInfo], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -448,7 +482,7 @@ class PersistenceServicesSpec
     "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)).run.run
 
-      result must beLike[Result[Option[GeoInfo], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeGeoInfo) =>
           maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
             geoInfo.id shouldEqual geoInfoId
@@ -459,7 +493,7 @@ class PersistenceServicesSpec
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = nonExistentGeoInfoId)).run.run
 
-      result must beLike[Result[Option[GeoInfo], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeGeoInfo) =>
           maybeGeoInfo must beNone
       }
@@ -468,9 +502,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)).run.run
 
-      result must beLike[Result[Option[GeoInfo], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -480,7 +517,7 @@ class PersistenceServicesSpec
     "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest()).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
+      result must beLike {
         case Answer(updated) =>
           updated shouldEqual 1
       }
@@ -489,9 +526,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest()).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -501,7 +541,7 @@ class PersistenceServicesSpec
     "return a Card value for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.addCard(createAddCardRequest()).run.run
 
-      result must beLike[Result[Card, PersistenceServiceException]] {
+      result must beLike {
         case Answer(card) =>
           card.id shouldEqual cardId
           card.cardType shouldEqual cardType
@@ -511,9 +551,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addCard(createAddCardRequest()).run.run
 
-      result must beLike[Result[Card, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -523,7 +566,7 @@ class PersistenceServicesSpec
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card)).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
+      result must beLike {
         case Answer(deleted) =>
           deleted shouldEqual 1
       }
@@ -532,9 +575,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card)).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -544,7 +590,7 @@ class PersistenceServicesSpec
     "return a list of Card elements for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId)).run.run
 
-      result must beLike[Result[Seq[Card], PersistenceServiceException]] {
+      result must beLike {
         case Answer(cards) =>
           cards.size shouldEqual seqCard.size
       }
@@ -553,9 +599,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId)).run.run
 
-      result must beLike[Result[Seq[Card], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -565,7 +614,7 @@ class PersistenceServicesSpec
     "return a Card for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId)).run.run
 
-      result must beLike[Result[Option[Card], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCard) =>
           maybeCard must beSome[Card].which { card =>
             card.cardType shouldEqual cardType
@@ -576,7 +625,7 @@ class PersistenceServicesSpec
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCardById(createFindCardByIdRequest(id = nonExistentCardId)).run.run
 
-      result must beLike[Result[Option[Card], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCard) =>
           maybeCard must beNone
       }
@@ -585,9 +634,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId)).run.run
 
-      result must beLike[Result[Option[Card], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -597,7 +649,7 @@ class PersistenceServicesSpec
     "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.updateCard(createUpdateCardRequest()).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
+      result must beLike {
         case Answer(updated) =>
           updated shouldEqual 1
       }
@@ -606,9 +658,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCard(createUpdateCardRequest()).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -618,7 +673,7 @@ class PersistenceServicesSpec
     "return a Collection value for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.addCollection(createAddCollectionRequest()).run.run
 
-      result must beLike[Result[Collection, PersistenceServiceException]] {
+      result must beLike {
         case Answer(collection) =>
           collection.id shouldEqual collectionId
           collection.collectionType shouldEqual collectionType
@@ -628,9 +683,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addCollection(createAddCollectionRequest()).run.run
 
-      result must beLike[Result[Collection, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -640,7 +698,7 @@ class PersistenceServicesSpec
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
+      result must beLike {
         case Answer(deleted) =>
           deleted shouldEqual 1
       }
@@ -649,9 +707,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -661,7 +722,7 @@ class PersistenceServicesSpec
     "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position)).run.run
 
-      result must beLike[Result[Option[Collection], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCollection) =>
           maybeCollection must beSome[Collection].which { collection =>
             collection.id shouldEqual collectionId
@@ -673,7 +734,7 @@ class PersistenceServicesSpec
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(nonExistentPosition)).run.run
 
-      result must beLike[Result[Option[Collection], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCollection) =>
           maybeCollection must beNone
       }
@@ -682,9 +743,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position)).run.run
 
-      result must beLike[Result[Option[Collection], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -694,7 +758,7 @@ class PersistenceServicesSpec
     "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId)).run.run
 
-      result must beLike[Result[Option[Collection], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCollection) =>
           maybeCollection must beSome[Collection].which { collection =>
             collection.id shouldEqual collectionId
@@ -706,7 +770,7 @@ class PersistenceServicesSpec
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(nonExistentSharedCollectionId)).run.run
 
-      result must beLike[Result[Option[Collection], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCollection) =>
           maybeCollection must beNone
       }
@@ -715,9 +779,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId)).run.run
 
-      result must beLike[Result[Option[Collection], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -727,7 +794,7 @@ class PersistenceServicesSpec
     "return a list of Collection elements for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchCollections.run.run
 
-      result must beLike[Result[Seq[Collection], PersistenceServiceException]] {
+      result must beLike {
         case Answer(collections) =>
           collections.size shouldEqual seqCollection.size
       }
@@ -736,9 +803,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCollections.run.run
 
-      result must beLike[Result[Seq[Collection], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -748,7 +818,7 @@ class PersistenceServicesSpec
     "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId)).run.run
 
-      result must beLike[Result[Option[Collection], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCollection) =>
           maybeCollection must beSome[Collection].which { collection =>
             collection.id shouldEqual collectionId
@@ -759,7 +829,7 @@ class PersistenceServicesSpec
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = nonExistentCollectionId)).run.run
 
-      result must beLike[Result[Option[Collection], PersistenceServiceException]] {
+      result must beLike {
         case Answer(maybeCollection) =>
           maybeCollection must beNone
       }
@@ -768,9 +838,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId)).run.run
 
-      result must beLike[Result[Option[Collection], PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }
@@ -780,7 +853,7 @@ class PersistenceServicesSpec
     "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
+      result must beLike {
         case Answer(updated) =>
           updated shouldEqual 1
       }
@@ -789,9 +862,12 @@ class PersistenceServicesSpec
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).run.run
 
-      result must beLike[Result[Int, PersistenceServiceException]] {
-        case Errata(errors) =>
-          errors.length should beGreaterThanOrEqualTo(1)
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
       }
     }
   }

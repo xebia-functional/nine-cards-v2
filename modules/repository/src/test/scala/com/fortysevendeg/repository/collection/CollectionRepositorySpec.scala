@@ -194,7 +194,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.addCollection(data = createCollectionData).run.run
 
-          result must beLike[Result[Collection, RepositoryException]] {
+          result must beLike {
             case Answer(collection) =>
               collection.id shouldEqual testCollectionId
               collection.data.name shouldEqual testName
@@ -207,9 +207,12 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.addCollection(data = createCollectionData).run.run
 
-          result must beLike[Result[Collection, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -222,7 +225,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.deleteCollection(collection).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
+          result must beLike {
             case Answer(deleted) =>
               deleted shouldEqual 1
           }
@@ -234,9 +237,12 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.deleteCollection(collection).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -249,7 +255,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.findCollectionById(id = testCollectionId).run.run
 
-          result must beLike[Result[Option[Collection], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
@@ -263,7 +269,7 @@ class CollectionRepositorySpec
           with ValidCollectionRepositoryResponses {
           val result = collectionRepository.findCollectionById(id = testNonExistingCollectionId).run.run
 
-          result must beLike[Result[Option[Collection], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCollection) =>
               maybeCollection must beNone
           }
@@ -275,9 +281,12 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.findCollectionById(id = testCollectionId).run.run
 
-          result must beLike[Result[Option[Collection], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -290,7 +299,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run.run
 
-          result must beLike[Result[Option[Collection], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
@@ -305,7 +314,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testNonExistingSharedCollectionId).run.run
 
-          result must beLike[Result[Option[Collection], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCollection) =>
               maybeCollection must beNone
           }
@@ -317,9 +326,12 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run.run
 
-          result must beLike[Result[Option[Collection], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -332,7 +344,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run.run
 
-          result must beLike[Result[Option[Collection], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
@@ -346,7 +358,7 @@ class CollectionRepositorySpec
           with ValidCollectionRepositoryResponses {
           val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).run.run
 
-          result must beLike[Result[Option[Collection], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCollection) =>
               maybeCollection must beNone
           }
@@ -358,9 +370,12 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run.run
 
-          result must beLike[Result[Option[Collection], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -373,7 +388,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.fetchSortedCollections.run.run
 
-          result must beLike[Result[Seq[Collection], RepositoryException]] {
+          result must beLike {
             case Answer(collections) =>
               collections shouldEqual collectionSeq
           }
@@ -385,9 +400,12 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.fetchSortedCollections.run.run
 
-          result must beLike[Result[Seq[Collection], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -400,7 +418,7 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.updateCollection(collection = collection).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
+          result must beLike {
             case Answer(updated) =>
               updated shouldEqual 1
           }
@@ -412,9 +430,12 @@ class CollectionRepositorySpec
 
           val result = collectionRepository.updateCollection(collection = collection).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }

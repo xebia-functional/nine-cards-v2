@@ -161,7 +161,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.addCacheCategory(data = createCacheCategoryData).run.run
 
-          result must beLike[Result[CacheCategory, RepositoryException]] {
+          result must beLike {
             case Answer(cacheCategory) =>
               cacheCategory.id shouldEqual testCacheCategoryId
               cacheCategory.data.packageName shouldEqual testPackageName
@@ -174,9 +174,12 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.addCacheCategory(data = createCacheCategoryData).run.run
 
-          result must beLike[Result[CacheCategory, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -189,7 +192,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
+          result must beLike {
             case Answer(deleted) =>
               deleted shouldEqual 1
           }
@@ -201,9 +204,12 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.deleteCacheCategory(cacheCategory = cacheCategory).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -216,7 +222,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = testPackageName).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
+          result must beLike {
             case Answer(deleted) =>
               deleted shouldEqual 1
           }
@@ -228,9 +234,12 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.deleteCacheCategoryByPackage(packageName = testPackageName).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -243,7 +252,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.fetchCacheCategories.run.run
 
-          result must beLike[Result[Seq[CacheCategory], RepositoryException]] {
+          result must beLike {
             case Answer(categories) =>
               categories shouldEqual cacheCategorySeq
           }
@@ -255,9 +264,12 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.fetchCacheCategories.run.run
 
-          result must beLike[Result[Seq[CacheCategory], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -270,7 +282,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.findCacheCategoryById(id = testCacheCategoryId).run.run
 
-          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCacheCategory) =>
               maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
                 cacheCategory.id shouldEqual testCacheCategoryId
@@ -285,7 +297,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.findCacheCategoryById(id = testNonExistingCacheCategoryId).run.run
 
-          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCacheCategory) =>
               maybeCacheCategory must beNone
           }
@@ -297,9 +309,12 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.findCacheCategoryById(id = testCacheCategoryId).run.run
 
-          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -311,7 +326,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testPackageName).run.run
 
-          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCacheCategory) =>
               maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
                 cacheCategory.id shouldEqual testCacheCategoryId
@@ -326,7 +341,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testNonExistingPackageName).run.run
 
-          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
+          result must beLike {
             case Answer(maybeCacheCategory) =>
               maybeCacheCategory must beNone
           }
@@ -338,9 +353,12 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.fetchCacheCategoryByPackage(packageName = testPackageName).run.run
 
-          result must beLike[Result[Option[CacheCategory], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -353,7 +371,7 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
+          result must beLike {
             case Answer(updated) =>
               updated shouldEqual 1
           }
@@ -365,9 +383,12 @@ class CacheCategoryRepositorySpec
 
           val result = cacheCategoryRepository.updateCacheCategory(cacheCategory = cacheCategory).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }

@@ -152,7 +152,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.addGeoInfo(createGeoInfoData).run.run
 
-          result must beLike[Result[GeoInfo, RepositoryException]] {
+          result must beLike {
             case Answer(geoInfo) =>
               geoInfo.id shouldEqual testGeoInfoId
               geoInfo.data.constrain shouldEqual testConstrain
@@ -165,9 +165,12 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.addGeoInfo(createGeoInfoData).run.run
 
-          result must beLike[Result[GeoInfo, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -180,7 +183,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.deleteGeoInfo(geoInfo).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
+          result must beLike {
             case Answer(deleted) =>
               deleted shouldEqual 1
           }
@@ -192,9 +195,12 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.deleteGeoInfo(geoInfo).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -207,7 +213,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.fetchGeoInfoItems.run.run
 
-          result must beLike[Result[Seq[GeoInfo], RepositoryException]] {
+          result must beLike {
             case Answer(geoInfoItems) =>
               geoInfoItems shouldEqual geoInfoSeq
           }
@@ -219,9 +225,12 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.fetchGeoInfoItems.run.run
 
-          result must beLike[Result[Seq[GeoInfo], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -234,7 +243,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.findGeoInfoById(testGeoInfoId).run.run
 
-          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+          result must beLike {
             case Answer(maybeGeoInfo) =>
               maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
                 geoInfo.id shouldEqual testGeoInfoId
@@ -249,7 +258,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.findGeoInfoById(testNonExistingGeoInfoId).run.run
 
-          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+          result must beLike {
             case Answer(maybeGeoInfo) =>
               maybeGeoInfo must beNone
           }
@@ -261,9 +270,12 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.findGeoInfoById(testGeoInfoId).run.run
 
-          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -276,7 +288,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.fetchGeoInfoByConstrain(testConstrain).run.run
 
-          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+          result must beLike {
             case Answer(maybeGeoInfo) =>
               maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
                 geoInfo.id shouldEqual testGeoInfoId
@@ -291,7 +303,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.fetchGeoInfoByConstrain(testNonExistingConstrain).run.run
 
-          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
+          result must beLike {
             case Answer(maybeGeoInfo) =>
               maybeGeoInfo must beNone
           }
@@ -303,9 +315,12 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.fetchGeoInfoByConstrain(testConstrain).run.run
 
-          result must beLike[Result[Option[GeoInfo], RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
@@ -318,7 +333,7 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.updateGeoInfo(geoInfo).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
+          result must beLike {
             case Answer(updated) =>
               updated shouldEqual 1
           }
@@ -330,9 +345,12 @@ class GeoInfoRepositorySpec
 
           val result = geoInfoRepository.updateGeoInfo(geoInfo).run.run
 
-          result must beLike[Result[Int, RepositoryException]] {
-            case Errata(errors) =>
-              errors.length should beGreaterThanOrEqualTo(1)
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
           }
         }
     }
