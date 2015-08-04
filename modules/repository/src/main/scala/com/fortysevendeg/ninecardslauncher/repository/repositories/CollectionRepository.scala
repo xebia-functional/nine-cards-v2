@@ -4,15 +4,17 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CollectionUri, ContentResolverWrapper, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.{allFields, position, _}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CollectionEntity, DBUtils}
+import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scalaz.concurrent.Task
 
-class CollectionRepository(contentResolverWrapper: ContentResolverWrapper) extends DBUtils {
+class CollectionRepository(contentResolverWrapper: ContentResolverWrapper)
+  extends DBUtils
+  with ImplicitsRepositoryExceptions {
 
   def addCollection(data: CollectionData): ServiceDef2[Collection, RepositoryException] =
     Service {

@@ -4,15 +4,17 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCacheCategory
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryExceptions.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapper}
 import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategory, CacheCategoryData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CacheCategoryEntity, DBUtils}
+import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scalaz.concurrent.Task
 
-class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper) extends DBUtils {
+class CacheCategoryRepository(contentResolverWrapper: ContentResolverWrapper)
+  extends DBUtils
+  with ImplicitsRepositoryExceptions {
 
   def addCacheCategory(data: CacheCategoryData): ServiceDef2[CacheCategory, RepositoryException] =
     Service {
