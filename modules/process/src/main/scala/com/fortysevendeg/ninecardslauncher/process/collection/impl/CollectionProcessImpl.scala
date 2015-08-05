@@ -1,38 +1,37 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, Collection, UnformedItem}
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, CollectionProcess, Conversions}
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.process.collection._
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, UnformedItem}
+import com.fortysevendeg.ninecardslauncher.process.collection.utils.NineCardAppUtils._
 import com.fortysevendeg.ninecardslauncher.process.commons.CollectionType
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.collection.utils.NineCardAppUtils._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, ImplicitsPersistenceServiceExceptions, AddCollectionRequest, PersistenceServices}
+import rapture.core.Answer
 
 import scala.annotation.tailrec
-import scalaz.EitherT._
-import scalaz.Scalaz._
-import scalaz._
 import scalaz.concurrent.Task
 
 class CollectionProcessImpl(collectionProcessConfig: CollectionProcessConfig, persistenceServices: PersistenceServices)
   extends CollectionProcess
+  with ImplicitsCollectionException
+  with ImplicitsPersistenceServiceExceptions
   with Conversions {
 
-  override def createCollectionsFromUnformedItems(items: Seq[UnformedItem])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[Collection]] = {
-    val tasks = generateAddCollections(items, categories, Seq.empty) map persistenceServices.addCollection
-    Task.gatherUnordered(tasks) map (_.collect { case \/-(collection) => toCollection(collection) }.right[NineCardsException])
-  }
+  override def createCollectionsFromUnformedItems(items: Seq[UnformedItem])(implicit context: ContextSupport) = Service {
+    val tasks = generateAddCollections(items, categories, Seq.empty) map (persistenceServices.addCollection(_).run)
+    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
+  }.resolve[CollectionException]
 
-  override def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport): Task[NineCardsException \/ Seq[Collection]] = {
-    val tasks = toAddCollectionRequestFromFormedCollections(items) map persistenceServices.addCollection
-    Task.gatherUnordered(tasks) map (_.collect { case \/-(collection) => toCollection(collection) }.right[NineCardsException])
-  }
+  override def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) = Service {
+    val tasks = toAddCollectionRequestFromFormedCollections(items) map (persistenceServices.addCollection(_).run)
+    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
+  }.resolve[CollectionException]
 
-  override def getCollections: Task[NineCardsException \/ Seq[Collection]] =
-    persistenceServices.fetchCollections ▹ eitherT map toCollectionSeq
+  override def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
 
   @tailrec
   private[this] def generateAddCollections(

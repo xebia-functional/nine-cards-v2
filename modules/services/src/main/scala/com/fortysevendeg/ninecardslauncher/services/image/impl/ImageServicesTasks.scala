@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.services.image.{FileException, ImplicitsImageExceptions, BitmapTransformationException, ImageServicesConfig}
+import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.{Answer, Result}
 
@@ -61,7 +61,7 @@ trait ImageServicesTasks
             case _ =>
               tryIconByPackageName(packageName)
           }
-        case _ => Result.errata(BitmapTransformationException("Resource not found from packageName"))
+        case _ => Result.errata(BitmapTransformationExceptionImpl("Resource not found from packageName"))
       }
     }
   }
@@ -71,7 +71,7 @@ trait ImageServicesTasks
       CatchAll[BitmapTransformationException] {
         new URL(uri).getContent match {
           case is: InputStream => BitmapFactory.decodeStream(is)
-          case _ => throw BitmapTransformationException(s"Unexpected error while fetching content from uri: $uri")
+          case _ => throw BitmapTransformationExceptionImpl(s"Unexpected error while fetching content from uri: $uri")
         }
       }
     }
