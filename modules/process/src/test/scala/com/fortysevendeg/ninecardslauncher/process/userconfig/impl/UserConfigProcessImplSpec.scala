@@ -74,6 +74,7 @@ class UserConfigProcessImplSpec
         result must beLike {
           case Answer(userInfo) =>
             userInfo.devices.length shouldEqual userConfig.devices.length
+            userInfo.devices map (_.deviceName) shouldEqual userConfig.devices.map(_.deviceName)
         }
       }
 
