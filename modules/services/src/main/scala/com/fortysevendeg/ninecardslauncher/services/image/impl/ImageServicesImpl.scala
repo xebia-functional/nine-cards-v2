@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import java.io.{IOException, File}
+import java.io.File
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
@@ -27,7 +27,7 @@ class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageSe
   } yield appWebsitePath
 
   private[this] def createIfNotExists(file: File, request: AppPackage)(implicit contextSupport: ContextSupport):
-  ServiceDef2[AppPackagePath, BitmapTransformationException with IOException] =
+  ServiceDef2[AppPackagePath, BitmapTransformationException with FileException] =
     file.exists match {
       case true =>
         ResultT(Task(Result.answer(toAppPackagePath(request, file.getAbsolutePath))))
@@ -40,7 +40,7 @@ class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageSe
 
 
   private[this] def createIfNotExists(file: File, request: AppWebsite)(implicit contextSupport: ContextSupport):
-  ServiceDef2[AppWebsitePath, BitmapTransformationException with IOException] =
+  ServiceDef2[AppWebsitePath, BitmapTransformationException with FileException] =
     file.exists match {
       case true =>
         ResultT(Task(Result.answer(toAppWebsitePath(request, file.getAbsolutePath))))

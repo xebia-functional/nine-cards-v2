@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import java.io.{File, IOException}
+import java.io.File
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -8,7 +8,7 @@ import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.services.image.BitmapTransformationException
+import com.fortysevendeg.ninecardslauncher.services.image.{FileException, BitmapTransformationException}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -40,7 +40,7 @@ trait ImageServicesImplSpecification
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
     val fileExistsTask = Service(Task {
-      Result.catching[IOException] {
+      Result.catching[FileException] {
         val file = mock[File]
         file.exists() returns true
         file.getAbsolutePath returns filePath
@@ -49,7 +49,7 @@ trait ImageServicesImplSpecification
     })
 
     val fileNotExistsTask = Service(Task {
-      Result.catching[IOException] {
+      Result.catching[FileException] {
         val file = mock[File]
         file.exists() returns false
         file.getAbsolutePath returns filePath
@@ -86,7 +86,7 @@ trait ImageServicesImplSpecification
       defaultBitmapTask
 
     mockTasks.saveBitmap(any[File], any[Bitmap]) returns
-      Service(Task(Result.catching[IOException](())))
+      Service(Task(Result.catching[FileException](())))
 
     mockTasks.getPathByApp(appPackage.packageName, appPackage.className)(contextSupport) returns
       fileNotExistsTask
