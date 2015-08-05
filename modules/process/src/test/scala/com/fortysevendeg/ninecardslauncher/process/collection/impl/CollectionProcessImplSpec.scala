@@ -75,7 +75,7 @@ class CollectionProcessImplSpec
         result must beLike {
           case Answer(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual seqServicesCollection.size
-            resultSeqCollection.head.name shouldEqual seqServicesCollection.head.name
+            resultSeqCollection map (_.name) shouldEqual seqServicesCollection.map (_.name)
         }
       }
 
@@ -120,7 +120,7 @@ class CollectionProcessImplSpec
         result must beLike {
           case Answer(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual seqFormedCollection.size
-            resultSeqCollection.head.name shouldEqual seqFormedCollection.head.name
+            resultSeqCollection map (_.name) shouldEqual seqFormedCollection.map (_.name)
         }
       }
 
