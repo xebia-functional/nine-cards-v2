@@ -99,6 +99,7 @@ class UserConfigProcessImplSpec
             val device = userConfig.devices.find(_.deviceId == firstDeviceId)
             val count = device map (_.collections.length) getOrElse -1
             userCollections.length shouldEqual count
+            userCollections map (_.name) shouldEqual device.map(_.collections.map(_.name)).getOrElse("")
         }
       }
 
