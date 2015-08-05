@@ -24,6 +24,7 @@ object Settings {
           "META-INF/LICENSE.txt",
           "META-INF/NOTICE",
           "META-INF/NOTICE.txt",
+          "scalac-plugin.xml",
           "reference.conf"),
         dexMaxHeap in Android := "2048m",
         proguardScala in Android := true,

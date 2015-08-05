@@ -69,7 +69,7 @@ class WizardActivity
             )
           } match {
             case Success(device) =>
-              Task.fork(signInUser(username, device)).resolveAsyncUi(
+              Task.fork(signInUser(username, device).run).resolveAsyncUi(
                 userInfo => showLoading ~ searchDevices(userInfo),
                 ex => uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
             case Failure(ex) => ex match {

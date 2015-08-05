@@ -13,6 +13,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import macroid.Contexts
 import macroid.FullDsl._
+import rapture.core.{Answer, Errata}
 
 import scalaz.{-\/, \/-}
 
@@ -24,9 +25,9 @@ class CollectionFragment
 
   lazy val di = new Injector
 
-  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run match {
-    case -\/(ex) => getDefaultTheme
-    case \/-(t) => t
+  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
+    case Answer(t) => t
+    case Errata(ex) => getDefaultTheme
   }
 
   implicit lazy val fragment: Fragment = this // TODO : javi => We need that, but I don't like. We need a better way
