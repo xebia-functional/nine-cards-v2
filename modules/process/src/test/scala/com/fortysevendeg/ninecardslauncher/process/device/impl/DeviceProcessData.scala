@@ -9,6 +9,8 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCate
 
 trait DeviceProcessData {
 
+  val statusCodeOk = 200
+
   val name1 = "Scala Android"
   val packageName1 = "com.fortysevendeg.scala.android"
   val className1 = "ScalaAndroidActivity"

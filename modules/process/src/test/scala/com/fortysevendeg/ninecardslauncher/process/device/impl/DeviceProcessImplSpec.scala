@@ -56,10 +56,10 @@ trait DeviceProcessSpecification
     val mockImageServices = mock[ImageServices]
 
     mockApiServices.googlePlaySimplePackages(any)(any) returns
-      Service(Task(Result.answer(GooglePlaySimplePackagesResponse(200, GooglePlaySimplePackages(Seq.empty, Seq.empty)))))
+      Service(Task(Result.answer(GooglePlaySimplePackagesResponse(statusCodeOk, GooglePlaySimplePackages(Seq.empty, Seq.empty)))))
 
     mockApiServices.googlePlayPackages(any)(any) returns
-      Service(Task(Result.answer(GooglePlayPackagesResponse(200, Seq.empty))))
+      Service(Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
 
     mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
       Service(Task(Result.answer(appPathResponses.head))),
@@ -135,7 +135,7 @@ trait DeviceProcessSpecification
       Task(
         Result.answer(
           GooglePlaySimplePackagesResponse(
-            200,
+            statusCodeOk,
             GooglePlaySimplePackages(
               Seq.empty,
               Seq(googlePlaySimplePackageNoCached))
@@ -150,7 +150,7 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockApiServices.googlePlayPackages(any)(any) returns Service {
-      Task(Result.answer(GooglePlayPackagesResponse(200, Seq(googlePlayPackage))))
+      Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq(googlePlayPackage))))
     }
 
   }
