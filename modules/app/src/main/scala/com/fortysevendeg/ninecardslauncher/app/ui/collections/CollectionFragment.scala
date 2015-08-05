@@ -27,7 +27,7 @@ class CollectionFragment
 
   implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
     case Answer(t) => t
-    case Errata(ex) => getDefaultTheme
+    case _ => getDefaultTheme
   }
 
   implicit lazy val fragment: Fragment = this // TODO : javi => We need that, but I don't like. We need a better way

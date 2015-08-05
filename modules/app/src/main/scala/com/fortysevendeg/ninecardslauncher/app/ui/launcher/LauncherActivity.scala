@@ -29,7 +29,7 @@ class LauncherActivity
 
   implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
     case Answer(t) => t
-    case Errata(ex) => getDefaultTheme
+    case _ => getDefaultTheme
   }
 
   override def onCreate(bundle: Bundle) = {
