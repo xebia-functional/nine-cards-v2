@@ -1,15 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.process.collection
+package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
+import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel, AddCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
+import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
 import play.api.libs.json.Json
 
-import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import scala.util.Random
 
-trait CollectionProcessData {
+trait CollectionProcessImplData {
 
   val categories = Seq(game, booksAndReference, business, comics, communication, education,
     entertainment, finance, healthAndFitness, librariesAndDemo, lifestyle, appWallpaper,
