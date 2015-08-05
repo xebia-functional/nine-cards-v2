@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.process.userconfig
+package com.fortysevendeg.ninecardslauncher.process.userconfig.impl
 
-import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
-import play.api.libs.json.{JsString}
-
-import scala.collection.immutable.IndexedSeq
+import com.fortysevendeg.ninecardslauncher.services.api.models._
+import play.api.libs.json.JsString
 
 trait UserConfigProcessData {
+
+  val statusCodeOk = 200
 
   val requestConfig = RequestConfig("fake-device-id", "fake-token")
 
