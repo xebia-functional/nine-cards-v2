@@ -48,4 +48,9 @@ object AppBuild extends Build {
 
   lazy val commons = Project(id = "commons", base = file("modules/commons"))
     .settings(commonsSettings: _*)
+
+  lazy val tests = Project(id = "tests", base = file("modules/tests"))
+    .settings(commonsSettings: _*)
+    .aggregate(process, services, api, repository, commons)
+
 }
