@@ -10,12 +10,9 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GooglePlayPackagesResponse, GooglePlaySimplePackagesResponse}
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
-import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -27,13 +24,11 @@ trait DeviceProcessSpecification
   extends Specification
   with Mockito {
 
-  val appCategorizationException = AppCategorizationException("")
-
   val appInstalledException = AppsInstalledException("")
 
   val persistenceServiceException = PersistenceServiceException("")
 
-  val bitmapTransformationException = BitmapTransformationException("")
+  val bitmapTransformationException = BitmapTransformationExceptionImpl("")
 
   trait DeviceProcessScope
     extends Scope
@@ -91,48 +86,33 @@ trait DeviceProcessSpecification
   trait ErrorAppServicesProcessScope {
     self: DeviceProcessScope =>
 
-    val serviceAppInstalledException = Service(
-      Task(
-        Result.errata[Seq[Application], AppsInstalledException](appInstalledException)
-      )
-    )
-
-    mockAppsServices.getInstalledApps(contextSupport) returns
-      serviceAppInstalledException
+    mockAppsServices.getInstalledApps(contextSupport) returns Service {
+      Task(Errata(appInstalledException))
+    }
 
   }
 
   trait ErrorPersistenceServicesProcessScope {
     self: DeviceProcessScope =>
 
-    val serviceAppInstalledException = Service(
-      Task(
-        Result.errata[Seq[CacheCategory], PersistenceServiceException](persistenceServiceException)
-      )
-    )
-
-    mockPersistenceServices.fetchCacheCategories returns
-      serviceAppInstalledException
+    mockPersistenceServices.fetchCacheCategories returns Service {
+      Task(Errata(persistenceServiceException))
+    }
 
   }
 
   trait ErrorImageServicesProcessScope {
     self: DeviceProcessScope =>
 
-//    case class CustomException(message: String, cause: Option[Throwable] = None)
-//      extends IOException(message)
-//      with BitmapTransformationException
-//
-//    val serviceBitmapTransformationException = Service(
-//      Task(
-//        Errata(CustomException(""))
-//      )
-//    )
-//
-//    mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
-//      Service(Task(Result.answer(appPathResponses.head))),
-//      serviceBitmapTransformationException,
-//      Service(Task(Result.answer(appPathResponses(2)))))
+    case class CustomException(message: String, cause: Option[Throwable] = None)
+      extends RuntimeException(message)
+      with FileException
+      with BitmapTransformationException
+
+    mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
+      Service(Task(Result.answer(appPathResponses.head))),
+      Service(Task(Errata(CustomException("")))),
+      Service(Task(Result.answer(appPathResponses(2)))))
 
   }
 
@@ -151,18 +131,27 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(appPathResponses(2)))),
       Service(Task(Result.answer(appPackagePathNoCached))))
 
-    mockApiServices.googlePlaySimplePackages(any)(any) returns
-      Service(Task(Result.answer(GooglePlaySimplePackagesResponse(200, GooglePlaySimplePackages(
-        Seq.empty,
-        Seq(googlePlaySimplePackageNoCached))))))
+    mockApiServices.googlePlaySimplePackages(any)(any) returns Service {
+      Task(
+        Result.answer(
+          GooglePlaySimplePackagesResponse(
+            200,
+            GooglePlaySimplePackages(
+              Seq.empty,
+              Seq(googlePlaySimplePackageNoCached))
+          )
+        )
+      )
+    }
 
   }
 
   trait CreateImagesDataScope {
     self: DeviceProcessScope =>
 
-    mockApiServices.googlePlayPackages(any)(any) returns
-      Service(Task(Result.answer(GooglePlayPackagesResponse(200, Seq(googlePlayPackage)))))
+    mockApiServices.googlePlayPackages(any)(any) returns Service {
+      Task(Result.answer(GooglePlayPackagesResponse(200, Seq(googlePlayPackage))))
+    }
 
   }
 
@@ -199,22 +188,22 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns a NineCardsException if app service fails" in
+    "returns a AppCategorizationException if app service fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
         val result = deviceProcess.getCategorizedApps(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception shouldEqual appInstalledException
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppCategorizationException]
           }
         }
       }
 
-    "returns a NineCardsException if persistence service fails" in
+    "returns a AppCategorizationException if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.getCategorizedApps(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception shouldEqual persistenceServiceException
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppCategorizationException]
           }
         }
       }
@@ -255,22 +244,22 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns a NineCardsException if app service fails" in
+    "returns a AppCategorizationException if app service fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
         val result = deviceProcess.categorizeApps(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception shouldEqual appInstalledException
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppCategorizationException]
           }
         }
       }
 
-    "returns a NineCardsException if persistence service fails" in
+    "returns a AppCategorizationException if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.categorizeApps(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception shouldEqual appCategorizationException
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppCategorizationException]
           }
         }
       }

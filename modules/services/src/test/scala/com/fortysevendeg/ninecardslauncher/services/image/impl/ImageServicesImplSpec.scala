@@ -8,7 +8,7 @@ import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.services.image.{FileException, BitmapTransformationException}
+import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationExceptionImpl, FileException, BitmapTransformationException}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -20,7 +20,7 @@ trait ImageServicesImplSpecification
   extends Specification
   with Mockito {
 
-  val bitmapException = BitmapTransformationException("")
+  val bitmapException = BitmapTransformationExceptionImpl("")
 
   val serviceBitmapException = Service(Task(Result.errata[Bitmap, BitmapTransformationException](bitmapException)))
 

@@ -5,19 +5,13 @@ import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchPressedColor}
 import com.fortysevendeg.ninecardslauncher.process.utils.FileUtils
-import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-import scalaz.concurrent.Task
-import scalaz.{-\/, \/-}
-
 trait ThemeProcessSpecification
   extends Specification
-  with DisjunctionMatchers
   with Mockito {
 
   trait ThemeProcessScope
