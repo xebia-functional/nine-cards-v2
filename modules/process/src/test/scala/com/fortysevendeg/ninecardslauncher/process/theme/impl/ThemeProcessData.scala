@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.theme
+package com.fortysevendeg.ninecardslauncher.process.theme.impl
 
 import android.graphics.Color
 
