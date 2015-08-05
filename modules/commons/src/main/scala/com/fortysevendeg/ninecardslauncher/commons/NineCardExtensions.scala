@@ -1,36 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import rapture.core._
 import rapture.core.scalazInterop.ResultT
 
 import scala.language.implicitConversions
 import scala.reflect.ClassTag
-import scala.util.control.NonFatal
 import scalaz._
 import scalaz.concurrent.Task
 import Scalaz._
 
 object NineCardExtensions {
-
-  def toEnsureAttemptRun[A](f: Task[NineCardsException \/ A]): NineCardsException \/ A = f.attemptRun match {
-    case -\/(ex) => -\/(NineCardsException(msg = ex.getMessage, cause = ex.some))
-    case \/-(d) => d
-  }
-
-  def fromTryCatchNineCardsException[T](a: => T): NineCardsException \/ T = try {
-    \/-(a)
-  } catch {
-    case e: NineCardsException => -\/(e)
-    case NonFatal(t) => -\/(NineCardsException(t.getMessage, Some(t)))
-  }
-
-  def resultCatchingNineCardsException[T](a: => T): Result[T, NineCardsException] = try {
-    Answer[T, NineCardsException](a)
-  } catch {
-    case e: NineCardsException => Result.errata[T, NineCardsException](e)
-    case NonFatal(t) => Result.errata[T, NineCardsException](NineCardsException(t.getMessage, Some(t)))
-  }
 
   implicit def toResult[A, E <: Exception : ClassTag](disj: E \/ A): Result[A, E] = disj match {
     case -\/(e) => Result.errata[A, E](e)

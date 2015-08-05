@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.util.Log
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import macroid.Ui
 import macroid.FullDsl._
 import rapture.core.{Unforeseen, Errata, Answer, Result}
