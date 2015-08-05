@@ -1,22 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import java.io._
+import java.io.{FileOutputStream, InputStream, File}
 import java.net.URL
 
 import android.content.res.Resources
 import android.graphics._
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
-import android.util.{Log, DisplayMetrics, TypedValue}
+import android.util.{DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.services.image.{ImplicitsImageExceptions, BitmapTransformationException, ImageServicesConfig}
+import com.fortysevendeg.ninecardslauncher.services.image.{FileException, ImplicitsImageExceptions, BitmapTransformationException, ImageServicesConfig}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.{Answer, Result}
 
-import scalaz.Scalaz._
 import scalaz.concurrent.Task
 
 trait ImageServicesTasks
@@ -26,27 +25,25 @@ trait ImageServicesTasks
 
   val resourceUtils = new ResourceUtils
 
-  def getPathByName(name: String)(implicit context: ContextSupport): ServiceDef2[File, IOException] = Service {
+  def getPathByName(name: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
     Task {
-      Result.catching[IOException] {
+      CatchAll[FileException] {
         new File(resourceUtils.getPath(if (name.isEmpty) "_" else name.substring(0, 1).toUpperCase))
       }
     }
   }
 
-  def getPathByApp(packageName: String, className: String)(implicit context: ContextSupport): ServiceDef2[File, IOException] = Service {
+  def getPathByApp(packageName: String, className: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
     Task {
-      Result.catching[IOException] {
-        val f = new File(resourceUtils.getPathPackage(packageName, className))
-        Log.d("9cards", f.getAbsolutePath)
-        f
+      CatchAll[FileException] {
+        new File(resourceUtils.getPathPackage(packageName, className))
       }
     }
   }
 
-  def getPathByPackageName(packageName: String)(implicit context: ContextSupport): ServiceDef2[File, IOException] = Service {
+  def getPathByPackageName(packageName: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
     Task {
-      Result.catching[IOException] {
+      CatchAll[FileException] {
         new File(resourceUtils.getPath(packageName))
       }
     }
@@ -60,10 +57,8 @@ trait ImageServicesTasks
           val density = betterDensityForResource(resources, icon)
           tryIconByDensity(resources, icon, density) match {
             case Answer(a) =>
-              Log.d("9cards", packageName + " image created")
               Result.answer(a)
             case _ =>
-              Log.d("9cards", packageName + " try with packagename")
               tryIconByPackageName(packageName)
           }
         case _ => Result.errata(BitmapTransformationException("Resource not found from packageName"))
@@ -82,9 +77,9 @@ trait ImageServicesTasks
     }
   }
 
-  def saveBitmap(file: File, bitmap: Bitmap): ServiceDef2[Unit, IOException] = Service {
+  def saveBitmap(file: File, bitmap: Bitmap): ServiceDef2[Unit, FileException] = Service {
     Task {
-      Result.catching[IOException] {
+      CatchAll[FileException] {
         val out: FileOutputStream = new FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, out)
         out.flush()
