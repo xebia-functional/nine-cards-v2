@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.user
+package com.fortysevendeg.ninecardslauncher.process.user.impl
 
 import java.io.File
 
@@ -6,25 +6,28 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.process.user.UserException
+import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models.GoogleDevice
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, InstallationResponse, LoginResponse, UpdateInstallationResponse}
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
-import org.specs2.matcher.DisjunctionMatchers
+import com.fortysevendeg.ninecardslauncher.services.persistence.{InstallationNotFoundException, PersistenceServiceException, PersistenceServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import rapture.core.{Answer, Errata, Result}
 
 import scalaz.concurrent.Task
-import scalaz.{-\/, \/-}
 
 
 trait UserProcessSpecification
   extends Specification
   with Mockito {
 
-  val exception = NineCardsException("")
+  val apiServiceException = ApiServiceException("")
+
+  val installationNotFoundException = InstallationNotFoundException("")
+
+  val persistenceServiceException = PersistenceServiceException("")
 
   trait UserProcessScope
     extends Scope
@@ -43,41 +46,41 @@ trait UserProcessSpecification
 
     val mockApiServices = mock[ApiServices]
 
-//    mockApiServices.login(
-//      email = email,
-//      device = googleDevice) returns
-//      Task(\/-(LoginResponse(userStatusCode, user)))
-//
-//    mockApiServices.createInstallation(
-//      id = initialInstallation.id,
-//      deviceType = initialInstallation.deviceType,
-//      deviceToken = initialInstallation.deviceToken,
-//      userId = initialInstallation.userId) returns
-//      Task(\/-(InstallationResponse(200, initialInstallation)))
-//
-//    mockApiServices.updateInstallation(
-//      id = installation.id,
-//      deviceType = installation.deviceType,
-//      deviceToken = installation.deviceToken,
-//      userId = installation.userId) returns
-//      Task(\/-(UpdateInstallationResponse(installationStatusCode)))
+    mockApiServices.login(
+      email = email,
+      device = googleDevice) returns
+      Service(Task(Result.answer(LoginResponse(statusCodeUser, user))))
+
+    mockApiServices.createInstallation(
+      id = initialInstallation.id,
+      deviceType = initialInstallation.deviceType,
+      deviceToken = initialInstallation.deviceToken,
+      userId = initialInstallation.userId) returns
+      Service(Task(Result.answer(InstallationResponse(statusCodeOk, initialInstallation))))
+
+    mockApiServices.updateInstallation(
+      id = installation.id,
+      deviceType = installation.deviceType,
+      deviceToken = installation.deviceToken,
+      userId = installation.userId) returns
+      Service(Task(Result.answer(UpdateInstallationResponse(installationStatusCode))))
 
     val mockPersistenceServices = mock[PersistenceServices]
 
-//    mockPersistenceServices.saveUser(user)(contextSupport) returns
-//      Task(\/-(()))
-//
-//    mockPersistenceServices.saveInstallation(initialInstallation)(contextSupport) returns
-//      Task(\/-(()))
-//
-//    mockPersistenceServices.getInstallation(contextSupport) returns
-//      Task(\/-(installation))
-//
-//    mockPersistenceServices.existsInstallation(contextSupport) returns
-//      Task(\/-(true))
-//
-//    mockPersistenceServices.resetUser(contextSupport) returns
-//      Task(\/-(true))
+    mockPersistenceServices.saveUser(user)(contextSupport) returns
+      Service(Task(Result.answer(())))
+
+    mockPersistenceServices.saveInstallation(initialInstallation)(contextSupport) returns
+      Service(Task(Result.answer(())))
+
+    mockPersistenceServices.getInstallation(contextSupport) returns
+      Service(Task(Result.answer(installation)))
+
+    mockPersistenceServices.existsInstallation(contextSupport) returns
+      Service(Task(Result.answer(true)))
+
+    mockPersistenceServices.resetUser(contextSupport) returns
+      Service(Task(Result.answer(true)))
 
     val userProcess = new UserProcessImpl(mockApiServices, mockPersistenceServices)
 
@@ -87,8 +90,8 @@ trait UserProcessSpecification
 
     self: UserProcessScope =>
 
-//    mockPersistenceServices.existsInstallation(contextSupport) returns
-//      Task(\/-(false))
+    mockPersistenceServices.existsInstallation(contextSupport) returns
+      Service(Task(Result.answer(false)))
 
   }
 
@@ -96,12 +99,12 @@ trait UserProcessSpecification
 
     self: UserProcessScope =>
 
-//    mockApiServices.createInstallation(
-//      id = initialInstallation.id,
-//      deviceType = initialInstallation.deviceType,
-//      deviceToken = initialInstallation.deviceToken,
-//      userId = initialInstallation.userId) returns
-//      Task(-\/(exception))
+    mockApiServices.createInstallation(
+      id = initialInstallation.id,
+      deviceType = initialInstallation.deviceType,
+      deviceToken = initialInstallation.deviceToken,
+      userId = initialInstallation.userId) returns
+      Service(Task(Errata(apiServiceException)))
 
   }
 
@@ -109,8 +112,8 @@ trait UserProcessSpecification
 
     self: UserProcessScope =>
 
-//    mockPersistenceServices.getInstallation(contextSupport) returns
-//      Task(-\/(exception))
+    mockPersistenceServices.getInstallation(contextSupport) returns
+      Service(Task(Errata(installationNotFoundException)))
 
   }
 
@@ -118,10 +121,10 @@ trait UserProcessSpecification
 
     self: UserProcessScope =>
 
-//    mockApiServices.login(
-//      email = email,
-//      device = googleDevice) returns
-//      Task(-\/(exception))
+    mockApiServices.login(
+      email = email,
+      device = googleDevice) returns
+      Service(Task(Errata(apiServiceException)))
 
   }
 
@@ -129,72 +132,75 @@ trait UserProcessSpecification
 
     self: UserProcessScope =>
 
-//    mockPersistenceServices.saveUser(user)(contextSupport) returns
-//      Task(-\/(exception))
+    mockPersistenceServices.saveUser(user)(contextSupport) returns
+      Service(Task(Errata(persistenceServiceException)))
 
   }
 
 }
 
-class UserProcessSpec
-  extends UserProcessSpecification
-  with DisjunctionMatchers {
+class UserProcessImplSpec
+  extends UserProcessSpecification {
 
   "Sign In in UserProcess" should {
 
     "returns status code with initial installation calling to create installation in ApiServices" in
       new UserProcessScope with InitialUserProcessScope {
-        val result = userProcess.signIn(email, device)(contextSupport).run
+        val result = userProcess.signIn(email, device)(contextSupport).run.run
 
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
         there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
         there was one(mockPersistenceServices).saveUser(user)(contextSupport)
         there was one(mockPersistenceServices).getInstallation(contextSupport)
 
-        true shouldEqual true
-
-//        result must be_\/-[SignInResponse].which {
-//          signInResponse =>
-//            signInResponse.statusCode shouldEqual userStatusCode
-//        }
+        result must beLike {
+          case Answer(signInResponse) =>
+            signInResponse.statusCode shouldEqual statusCodeUser
+        }
       }
 
     "returns status code with full installation calling to update installation in ApiServices" in
       new UserProcessScope {
-        val result = userProcess.signIn(email, device)(contextSupport).run
+        val result = userProcess.signIn(email, device)(contextSupport).run.run
 
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
         there was one(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
         there was one(mockPersistenceServices).saveUser(user)(contextSupport)
         there was one(mockPersistenceServices).getInstallation(contextSupport)
 
-        true shouldEqual true
-
-//        result must be_\/-[SignInResponse].which {
-//          signInResponse =>
-//            signInResponse.statusCode shouldEqual userStatusCode
-//        }
+        result must beLike {
+          case Answer(signInResponse) =>
+            signInResponse.statusCode shouldEqual statusCodeUser
+        }
       }
 
-    "returns a NineCardsException if login in ApiService returns a exception and shouldn't sync installation" in
+    "returns a UserException if login in ApiService returns a exception and shouldn't sync installation" in
       new UserProcessScope with LoginErrorUserProcessScope {
-        val result = userProcess.signIn(email, device)(contextSupport).run
+        val result = userProcess.signIn(email, device)(contextSupport).run.run
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
         there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
         there was exactly(0)(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
-        true shouldEqual true
-//        result must be_-\/[NineCardsException]
+
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
+          }
+        }
       }
 
-    "returns a NineCardsException if save user fails and shouldn't sync installation" in
+    "returns a UserException if save user fails and shouldn't sync installation" in
       new UserProcessScope with SaveUserErrorUserProcessScope {
-        val result = userProcess.signIn(email, device)(contextSupport).run
+        val result = userProcess.signIn(email, device)(contextSupport).run.run
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
         there was one(mockPersistenceServices).saveUser(user)(contextSupport)
         there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
         there was exactly(0)(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
-        true shouldEqual true
-//        result must be_-\/[NineCardsException]
+
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
+          }
+        }
       }
 
   }
@@ -203,17 +209,21 @@ class UserProcessSpec
 
     "save installation when the installation don't exists in local" in
       new UserProcessScope with InstallationErrorUserProcessScope {
-        val result = userProcess.register(contextSupport).run
+        val result = userProcess.register(contextSupport).run.run
         there was one(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
-        true shouldEqual true
-//        result must be_\/-[Unit]
+
+        result must beLike {
+          case Answer(r) => r shouldEqual (())
+        }
       }
 
     "don't save installation when the installation exists in local" in new UserProcessScope {
-      val result = userProcess.register(contextSupport).run
+      val result = userProcess.register(contextSupport).run.run
       there was exactly(0)(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
-      true shouldEqual true
-//      result must be_\/-[Unit]
+
+      result must beLike {
+        case Answer(r) => r shouldEqual (())
+      }
     }
 
   }
@@ -222,22 +232,28 @@ class UserProcessSpec
 
     "save initial installation and call to create installation in ApiService" in
       new UserProcessScope {
-        val result = userProcess.unregister(contextSupport).run
+        val result = userProcess.unregister(contextSupport).run.run
         there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
         there was one(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
         there was one(mockPersistenceServices).resetUser(contextSupport)
-        true shouldEqual true
-//        result must be_\/-[Unit]
+
+        result must beLike {
+          case Answer(r) => r shouldEqual (())
+        }
       }
 
-    "returns a NineCardsException if sync fails" in
+    "returns a UserException if sync fails" in
       new UserProcessScope with CreateInstallationErrorUserProcessScope {
-        val result = userProcess.unregister(contextSupport).run
+        val result = userProcess.unregister(contextSupport).run.run
         there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
         there was exactly(0)(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
         there was exactly(0)(mockPersistenceServices).resetUser(contextSupport)
-        true shouldEqual true
-//        result must be_-\/[NineCardsException]
+
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
+          }
+        }
       }
 
   }
