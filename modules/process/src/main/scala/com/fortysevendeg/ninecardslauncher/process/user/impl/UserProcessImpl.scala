@@ -53,7 +53,7 @@ class UserProcessImpl(
         }
     } getOrElse {
       for {
-        installationResponse <- apiServices.createInstallation(None, installation.deviceType, installation.deviceToken, installation.userId) ▹ eitherT
+        installationResponse <- apiServices.createInstallation(installation.deviceType, installation.deviceToken, installation.userId) ▹ eitherT
         saved <- persistenceServices.saveInstallation(installationResponse.installation) ▹ eitherT
       } yield installationResponse.statusCode
     }

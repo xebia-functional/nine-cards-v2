@@ -49,7 +49,6 @@ trait UserProcessSpecification
       Task(\/-(LoginResponse(userStatusCode, user)))
 
     mockApiServices.createInstallation(
-      id = initialInstallation.id,
       deviceType = initialInstallation.deviceType,
       deviceToken = initialInstallation.deviceToken,
       userId = initialInstallation.userId) returns
@@ -97,7 +96,6 @@ trait UserProcessSpecification
     self: UserProcessScope =>
 
     mockApiServices.createInstallation(
-      id = initialInstallation.id,
       deviceType = initialInstallation.deviceType,
       deviceToken = initialInstallation.deviceToken,
       userId = initialInstallation.userId) returns
@@ -147,7 +145,7 @@ class UserProcessSpec
         val result = userProcess.signIn(email, device)(contextSupport).run
 
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
-        there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
+        there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
         there was one(mockPersistenceServices).saveUser(user)(contextSupport)
         there was one(mockPersistenceServices).getInstallation(contextSupport)
 
@@ -176,7 +174,7 @@ class UserProcessSpec
       new UserProcessScope with LoginErrorUserProcessScope {
         val result = userProcess.signIn(email, device)(contextSupport).run
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
-        there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
+        there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
         there was exactly(0)(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
         result must be_-\/[NineCardsException]
       }
@@ -186,7 +184,7 @@ class UserProcessSpec
         val result = userProcess.signIn(email, device)(contextSupport).run
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
         there was one(mockPersistenceServices).saveUser(user)(contextSupport)
-        there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
+        there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
         there was exactly(0)(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
         result must be_-\/[NineCardsException]
       }
@@ -215,7 +213,7 @@ class UserProcessSpec
     "save initial installation and call to create installation in ApiService" in
       new UserProcessScope {
         val result = userProcess.unregister(contextSupport).run
-        there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
+        there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
         there was one(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
         there was one(mockPersistenceServices).resetUser(contextSupport)
         result must be_\/-[Unit]
@@ -224,7 +222,7 @@ class UserProcessSpec
     "returns a NineCardsException if sync fails" in
       new UserProcessScope with CreateInstallationErrorUserProcessScope {
         val result = userProcess.unregister(contextSupport).run
-        there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
+        there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
         there was exactly(0)(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
         there was exactly(0)(mockPersistenceServices).resetUser(contextSupport)
         result must be_-\/[NineCardsException]

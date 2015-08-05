@@ -5,16 +5,40 @@ import com.fortysevendeg.ninecardslauncher.services.api.models.{GoogleDevice, Us
 
 trait ApiServices {
 
+  /**
+   * Try to login with the email and the device
+   * @param email user email
+   * @param device user device
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]] with the HTTP Code
+   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.User]]
+   * @throws ApiServiceException if the user is not found or the request throws an Exception
+   */
   def login(
     email: String,
     device: GoogleDevice): ServiceDef2[LoginResponse, ApiServiceException]
 
+  /**
+   * Link the devices with the email
+   * @param email user email
+   * @param devices user devices
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]] with the HTTP Code
+   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.User]]
+   * @throws ApiServiceException if the user is not found or the request throws an Exception
+   */
   def linkGoogleAccount(
     email: String,
     devices: Seq[GoogleDevice])(implicit requestConfig: RequestConfig): ServiceDef2[LoginResponse, ApiServiceException]
 
+  /**
+   * Creates a new User installation based on the provided params
+   * @param deviceType the device type
+   * @param deviceToken the token used by the device
+   * @param userId the user identifier
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]] with the HTTP Code
+   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.Installation]]
+   * @throws ApiServiceException if there was an error in the request
+   */
   def createInstallation(
-    id: Option[String],
     deviceType: Option[String],
     deviceToken: Option[String],
     userId: Option[String]): ServiceDef2[InstallationResponse, ApiServiceException]

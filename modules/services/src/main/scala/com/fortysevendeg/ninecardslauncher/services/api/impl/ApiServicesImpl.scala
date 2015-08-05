@@ -66,12 +66,11 @@ class ApiServicesImpl(
     } yield LoginResponse(response.statusCode, toUser(user))).resolve[ApiServiceException]
 
   override def createInstallation(
-    id: Option[String],
     deviceType: Option[String],
     deviceToken: Option[String],
     userId: Option[String]) =
     (for {
-      response <- apiUserService.createInstallation(toInstallation(id, deviceType, deviceToken, userId), baseHeader)
+      response <- apiUserService.createInstallation(toInstallation(None, deviceType, deviceToken, userId), baseHeader)
       installation <- readOption(response.data, installationNotFoundMessage)
     } yield InstallationResponse(response.statusCode, toInstallation(installation))).resolve[ApiServiceException]
 
@@ -81,7 +80,7 @@ class ApiServicesImpl(
     deviceToken: Option[String],
     userId: Option[String]) =
     (for {
-      response <- apiUserService.updateInstallation(toInstallation(id, deviceType, deviceToken, userId), baseHeader)
+      response <- apiUserService.updateInstallation(toInstallation(None, deviceType, deviceToken, userId), baseHeader)
     } yield UpdateInstallationResponse(response.statusCode)).resolve[ApiServiceException]
 
   override def googlePlayPackage(
