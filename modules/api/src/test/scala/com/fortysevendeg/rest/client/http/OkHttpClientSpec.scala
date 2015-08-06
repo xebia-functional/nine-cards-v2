@@ -1,6 +1,5 @@
 package com.fortysevendeg.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
 import com.fortysevendeg.rest.client.SampleRequest
 import com.squareup.{okhttp => okHttp}
 import org.specs2.matcher.DisjunctionMatchers
@@ -8,6 +7,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import play.api.libs.json.Json
+import rapture.core.{Answer, Errata}
 
 trait OkHttpClientSpecification
   extends Specification
@@ -30,6 +30,8 @@ trait OkHttpClientSpecification
       .url(baseUrl)
       .build()
 
+    val statusCode = 200
+
     val message = "Hello World!"
 
     val json = s"""{ "message" : "$message" }"""
@@ -39,7 +41,7 @@ trait OkHttpClientSpecification
     val okHttpResponse = new okHttp.Response.Builder()
       .protocol(okHttp.Protocol.HTTP_1_1)
       .request(request)
-      .code(200)
+      .code(statusCode)
       .message("Alright")
       .body(okHttp.ResponseBody.create(okHttp.MediaType.parse("application/json"), json))
       .build()
@@ -83,99 +85,103 @@ class OkHttpClientSpec
 
   "OkHttpClient component" should {
 
-    "returns the response for a successfully get request" in new OkHttpClientScope {
+    "return the response for a successfully get request" in new OkHttpClientScope {
 
       override val acceptedMethod = Some(Methods.GET.toString)
 
-      val response = okHttpClient.doGet(baseUrl, Seq.empty).run
+      val response = okHttpClient.doGet(baseUrl, Seq.empty).run.run
 
-      response must be_\/-[HttpClientResponse].which { response =>
-        response.body shouldEqual Some(json)
+      response must beLike {
+        case Answer(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
       }
     }
 
-    "returns the response for a successfully delete request" in new OkHttpClientScope {
+    "return the response for a successfully delete request" in new OkHttpClientScope {
 
       override val acceptedMethod = Some(Methods.DELETE.toString)
 
-      val response = okHttpClient.doDelete(baseUrl, Seq.empty).run
+      val response = okHttpClient.doDelete(baseUrl, Seq.empty).run.run
 
-      response must be_\/-[HttpClientResponse].which { response =>
-        response.body shouldEqual Some(json)
+      response must beLike {
+        case Answer(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
       }
     }
 
-    "returns the response for a successfully empty post request" in new OkHttpClientScope {
+    "return the response for a successfully empty post request" in new OkHttpClientScope {
 
       override val acceptedMethod = Some(Methods.POST.toString)
 
-      val response = okHttpClient.doPost(baseUrl, Seq.empty).run
+      val response = okHttpClient.doPost(baseUrl, Seq.empty).run.run
 
-      response must be_\/-[HttpClientResponse].which { response =>
-        response.body shouldEqual Some(json)
+      response must beLike {
+        case Answer(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
       }
     }
 
-    "returns the response for a successfully post request" in new OkHttpClientScope {
+    "return the response for a successfully post request" in new OkHttpClientScope {
 
       override val acceptedMethod = Some(Methods.POST.toString)
 
       val sampleRequest = SampleRequest("request")
       override val acceptedBody = Some(sampleRequest)
 
-      val response = okHttpClient.doPost[SampleRequest](baseUrl, Seq.empty, sampleRequest).run
+      val response = okHttpClient.doPost[SampleRequest](baseUrl, Seq.empty, sampleRequest).run.run
 
-      response must be_\/-[HttpClientResponse].which { response =>
-        response.body shouldEqual Some(json)
+      response must beLike {
+        case Answer(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
       }
     }
 
-    "returns the response for a successfully empty put request" in new OkHttpClientScope {
+    "return the response for a successfully empty put request" in new OkHttpClientScope {
 
       override val acceptedMethod = Some(Methods.PUT.toString)
 
-      val response = okHttpClient.doPut(baseUrl, Seq.empty).run
+      val response = okHttpClient.doPut(baseUrl, Seq.empty).run.run
 
-      response must be_\/-[HttpClientResponse].which { response =>
-        response.body shouldEqual Some(json)
+      response must beLike {
+        case Answer(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
       }
     }
 
-    "returns the response for a successfully put request" in new OkHttpClientScope {
+    "return the response for a successfully put request" in new OkHttpClientScope {
 
       override val acceptedMethod = Some(Methods.PUT.toString)
 
       val sampleRequest = SampleRequest("request")
       override val acceptedBody = Some(sampleRequest)
 
-      val response = okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, sampleRequest).run
+      val response = okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, sampleRequest).run.run
 
-      response must be_\/-[HttpClientResponse].which { response =>
-        response.body shouldEqual Some(json)
+      response must beLike {
+        case Answer(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
       }
     }
 
-    "returns Exception for an unexpected method" in new OkHttpClientScope {
+    "return an Exception for an unexpected method" in new OkHttpClientScope {
 
       override val acceptedMethod = Some(Methods.GET.toString)
 
-      val response = okHttpClient.doDelete(baseUrl, Seq.empty).run
+      val response = okHttpClient.doDelete(baseUrl, Seq.empty).run.run
 
-      response  must be_-\/[NineCardsException].which { response =>
-        response.cause shouldEqual Some(baseException)
+      response must beLike {
+        case Errata(t) => t.headOption must beSome.which {
+          case (_, (_, e)) => e.getCause shouldEqual baseException
+        }
       }
     }
 
-    "returns Exception for an unexpected request" in new OkHttpClientScope {
+    "return an Exception for an unexpected request" in new OkHttpClientScope {
 
       override val acceptedMethod = Some(Methods.POST.toString)
 
       override val acceptedBody = Some(SampleRequest("request"))
 
-      val response = okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")).run
+      val response = okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")).run.run
 
-      response must be_-\/[NineCardsException].which { response =>
-        response.cause shouldEqual Some(baseException)
+      response must beLike {
+        case Errata(t) => t.headOption must beSome.which {
+          case (_, (_, e)) => e.getCause shouldEqual baseException
+        }
       }
     }
 

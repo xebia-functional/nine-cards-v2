@@ -11,6 +11,8 @@ object Libraries {
     lazy val scalap = "org.scala-lang" % "scalap" % Versions.scalaV
     lazy val scalaz = "org.scalaz" %% "scalaz-core" % "7.1.3"
     lazy val scalazConcurrent = "org.scalaz" %% "scalaz-concurrent" % "7.1.3"
+    lazy val rapture = "com.propensive" %% "rapture-core" % "2.0.+" changing()
+    lazy val raptureScalaz = "com.propensive" %% "rapture-core-scalaz" % "2.0.+" changing()
   }
 
   object android {

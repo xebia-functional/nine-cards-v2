@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import java.io.{File, FileOutputStream, InputStream}
+import java.io.{FileOutputStream, InputStream, File}
 import java.net.URL
 
 import android.content.res.Resources
@@ -10,102 +10,114 @@ import android.os.Build
 import android.util.{DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
-import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
+import rapture.core.{Answer, Result}
 
-import scala.util.{Failure, Success, Try}
-import scalaz._
 import scalaz.concurrent.Task
 
-trait ImageServicesTasks {
+trait ImageServicesTasks
+  extends ImplicitsImageExceptions {
 
   val noDensity = 0
 
   val resourceUtils = new ResourceUtils
 
-  def getPathByName(name: String)(implicit context: ContextSupport): Task[NineCardsException \/ File] =
+  def getPathByName(name: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
     Task {
-      fromTryCatchNineCardsException[File] {
+      CatchAll[FileException] {
         new File(resourceUtils.getPath(if (name.isEmpty) "_" else name.substring(0, 1).toUpperCase))
       }
     }
+  }
 
-  def getPathByApp(packageName: String, className: String)(implicit context: ContextSupport): Task[NineCardsException \/ File] =
+  def getPathByApp(packageName: String, className: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
     Task {
-      fromTryCatchNineCardsException[File] {
+      CatchAll[FileException] {
         new File(resourceUtils.getPathPackage(packageName, className))
       }
     }
+  }
 
-  def getPathByPackageName(packageName: String)(implicit context: ContextSupport): Task[NineCardsException \/ File] =
+  def getPathByPackageName(packageName: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
     Task {
-      fromTryCatchNineCardsException[File] {
+      CatchAll[FileException] {
         new File(resourceUtils.getPath(packageName))
       }
     }
+  }
 
-  def getBitmapByApp(packageName: String, icon: Int)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
+  def getBitmapByApp(packageName: String, icon: Int)(implicit context: ContextSupport): ServiceDef2[Bitmap, BitmapTransformationException] = Service {
     Task {
-      fromTryCatchNineCardsException[Bitmap] {
-        val packageManager = context.getPackageManager
-        (Option(packageManager.getResourcesForApplication(packageName)) map {
-          resources =>
-            val density = betterDensityForResource(resources, icon)
-            tryIconByDensity(resources, icon, density) match {
-              case Success(bmp) => bmp
-              case Failure(_) => tryIconByPackageName(packageName) match {
-                case Success(bmp) => bmp
-                case Failure(_) => throw NineCardsException("Icon no created")
-              }
-            }
-        }) getOrElse (throw NineCardsException("Resource not found from packageName"))
+      val packageManager = context.getPackageManager
+      Option(packageManager.getResourcesForApplication(packageName)) match {
+        case Some(resources) =>
+          val density = betterDensityForResource(resources, icon)
+          tryIconByDensity(resources, icon, density) match {
+            case Answer(a) =>
+              Result.answer(a)
+            case _ =>
+              tryIconByPackageName(packageName)
+          }
+        case _ => Result.errata(BitmapTransformationExceptionImpl("Resource not found from packageName"))
       }
     }
+  }
 
-  def getBitmapFromURL(uri: String)(implicit context: ContextSupport): Task[NineCardsException \/ Bitmap] =
+  def getBitmapFromURL(uri: String): ServiceDef2[Bitmap, BitmapTransformationException] = Service {
     Task {
-      fromTryCatchNineCardsException[Bitmap] {
-        val is = new URL(uri).getContent.asInstanceOf[InputStream]
-        BitmapFactory.decodeStream(is)
+      CatchAll[BitmapTransformationException] {
+        new URL(uri).getContent match {
+          case is: InputStream => BitmapFactory.decodeStream(is)
+          case _ => throw BitmapTransformationExceptionImpl(s"Unexpected error while fetching content from uri: $uri")
+        }
       }
     }
+  }
 
-  def saveBitmap(file: File, bitmap: Bitmap): Task[NineCardsException \/ Unit] =
+  def saveBitmap(file: File, bitmap: Bitmap): ServiceDef2[Unit, FileException] = Service {
     Task {
-      fromTryCatchNineCardsException[Unit] {
+      CatchAll[FileException] {
         val out: FileOutputStream = new FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, out)
         out.flush()
         out.close()
       }
     }
+  }
 
-  def getBitmapByAppOrName(packageName: String, icon: Int, name: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
-    manageBitmapTask(name)(getBitmapByApp(packageName, icon))
+  def getBitmapByAppOrName(packageName: String, icon: Int, name: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig):
+  ServiceDef2[Bitmap, BitmapTransformationException] = Service {
+    manageBitmapTask(name)(getBitmapByApp(packageName, icon).run)
+  }
 
-  def getBitmapFromURLOrName(url: String, name: String)(implicit context: ContextSupport, config: ImageServicesConfig): Task[NineCardsException \/ Bitmap] =
-    manageBitmapTask(name)(getBitmapFromURL(url))
+  def getBitmapFromURLOrName(url: String, name: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig):
+  ServiceDef2[Bitmap, BitmapTransformationException] = Service {
+    manageBitmapTask(name)(getBitmapFromURL(url).run)
+  }
 
-  def getBitmapByName(text: String)(implicit context: ContextSupport, config: ImageServicesConfig): NineCardsException \/ Bitmap =
-    fromTryCatchNineCardsException[Bitmap] {
-        val bitmap: Bitmap = Bitmap.createBitmap(defaultSize, defaultSize, Bitmap.Config.RGB_565)
-        val bounds: Rect = new Rect
-        val paint = defaultPaint
-        paint.getTextBounds(text, 0, text.length, bounds)
-        val x: Int = ((defaultSize / 2) - bounds.exactCenterX).toInt
-        val y: Int = ((defaultSize / 2) - bounds.exactCenterY).toInt
-        val canvas: Canvas = new Canvas(bitmap)
-        val color = config.colors(scala.util.Random.nextInt(config.colors.length))
-        canvas.drawColor(color)
-        canvas.drawText(text, x, y, paint)
-        bitmap
-      }
+  def getBitmapByName(text: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig): Result[Bitmap, BitmapTransformationException] =
+    CatchAll[BitmapTransformationException] {
+      val ds = defaultSize
+      val bitmap: Bitmap = Bitmap.createBitmap(ds, ds, Bitmap.Config.RGB_565)
+      val bounds: Rect = new Rect
+      val paint = defaultPaint
+      paint.getTextBounds(text, 0, text.length, bounds)
+      val x: Int = ((ds / 2) - bounds.exactCenterX).toInt
+      val y: Int = ((ds / 2) - bounds.exactCenterY).toInt
+      val canvas: Canvas = new Canvas(bitmap)
+      val color = imageServicesConfig.colors(scala.util.Random.nextInt(imageServicesConfig.colors.length))
+      canvas.drawColor(color)
+      canvas.drawText(text, x, y, paint)
+      bitmap
+    }
 
-  private[this] def manageBitmapTask(name: String)(getBitmap: => Task[NineCardsException \/ Bitmap])(implicit context: ContextSupport, config: ImageServicesConfig) =
+  private[this] def manageBitmapTask(name: String)(getBitmap: => Task[Result[Bitmap, BitmapTransformationException]])(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig) =
     getBitmap map {
-      case -\/(_) => getBitmapByName(name)
-      case \/-(r) => \/-(r)
+      case answer @ Answer(_) => answer
+      case _ => getBitmapByName(name)
     }
 
   private[this] def currentDensity(implicit context: ContextSupport): Int =
@@ -118,8 +130,8 @@ trait ImageServicesTasks {
       List(DisplayMetrics.DENSITY_XXHIGH, DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH)
   }
 
-  private[this] def betterDensityForResource(resources: Resources, id: Int)(implicit context: ContextSupport) =
-    densities.find(density => Try(resources.getValueForDensity(id, density, new TypedValue, true)).isSuccess) getOrElse noDensity
+  private[this] def betterDensityForResource(resources: Resources, id: Int)(implicit context: ContextSupport): Int =
+    densities.find(density => Result(resources.getValueForDensity(id, density, new TypedValue, true)).isAnswer) getOrElse noDensity
 
   private[this] def defaultSize(implicit context: ContextSupport): Int = {
     val metrics: DisplayMetrics = context.getResources.getDisplayMetrics
@@ -146,15 +158,15 @@ trait ImageServicesTasks {
     paint
   }
 
-  private[this] def tryIconByDensity(resources: Resources, icon: Int, density: Int) =
-    Try {
+  private[this] def tryIconByDensity(resources: Resources, icon: Int, density: Int): Result[Bitmap, BitmapTransformationException] =
+    CatchAll[BitmapTransformationException] {
       val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) resources.getDrawableForDensity(icon, density, null)
       else resources.getDrawableForDensity(icon, density)
       d.asInstanceOf[BitmapDrawable].getBitmap
     }
 
-  private[this] def tryIconByPackageName(packageName: String)(implicit context: ContextSupport) =
-    Try {
+  private[this] def tryIconByPackageName(packageName: String)(implicit context: ContextSupport): Result[Bitmap, BitmapTransformationException] =
+    CatchAll[BitmapTransformationException] {
       context.getPackageManager.getApplicationIcon(packageName).asInstanceOf[BitmapDrawable].getBitmap
     }
 

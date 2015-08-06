@@ -13,8 +13,7 @@ import sbt._
 object Settings {
 
   // App Module
-  // For multidex add `multiDex ++` to this settings
-  lazy val appSettings = basicSettings ++
+  lazy val appSettings = basicSettings ++ multiDex ++
       Seq(
         run <<= run in Android,
         javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
@@ -25,6 +24,7 @@ object Settings {
           "META-INF/LICENSE.txt",
           "META-INF/NOTICE",
           "META-INF/NOTICE.txt",
+          "scalac-plugin.xml",
           "reference.conf"),
         dexMaxHeap in Android := "2048m",
         proguardScala in Android := true,
@@ -56,11 +56,12 @@ object Settings {
   lazy val basicSettings = Seq(
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
-    libraryDependencies ++= Seq(scalaz, scalazConcurrent)
+    libraryDependencies ++= Seq(scalaz, scalazConcurrent, rapture, raptureScalaz)
   )
 
   // Settings associated to library modules
   lazy val librarySettings = Seq(
+    mappings in (Compile, packageBin) ~= { _.filter(!_._1.getName.equals("AndroidManifest.xml")) },
     exportJars := true,
     scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
     javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
@@ -75,6 +76,7 @@ object Settings {
     aar(androidRecyclerview),
     aar(androidCardView),
     aar(playServicesBase),
+    aar(multiDexLib),
     glide,
     okHttp)
 
@@ -138,7 +140,7 @@ object Settings {
   )
 
   lazy val multiDexClasses = Seq(
-    "com/fortysevendeg/ninecardslauncher/NineCardsApplication.class",
+    "com/fortysevendeg/ninecardslauncher/app/NineCardsApplication.class",
     "android/support/multidex/BuildConfig.class",
     "android/support/multidex/MultiDex$V14.class",
     "android/support/multidex/MultiDex$V19.class",

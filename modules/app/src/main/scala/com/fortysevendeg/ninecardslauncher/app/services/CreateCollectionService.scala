@@ -14,6 +14,7 @@ import macroid.Contexts
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 
+import scalaz.{\/-, -\/}
 import scalaz.concurrent.Task
 
 class CreateCollectionService
@@ -22,7 +23,7 @@ class CreateCollectionService
   with ContextSupportProvider
   with CreateCollectionsTasks {
 
-  val tag = "9CARDS"
+  val tag = "9cards"
 
   implicit lazy val di = new Injector
 
@@ -46,14 +47,11 @@ class CreateCollectionService
 
     startForeground(notificationId, builder.build)
 
-    val task = loadDeviceId map loadConfiguration getOrElse createNewConfiguration
+    val service = loadDeviceId map loadConfiguration getOrElse createNewConfiguration
 
-    Task.fork(task).resolveAsync(
-      collections => closeService(),
-      ex => {
-        Log.d(tag, ex.getMessage) // TODO We should show the error in UI
-        closeService()
-      }
+    Task.fork(service.run).resolveAsync(
+      onResult = collections => closeService(),
+      onException = ex => closeService() // TODO We should show the error in UI
     )
     super.onStartCommand(intent, flags, startId)
   }

@@ -1,10 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
-import scala.util.Random
-
-import com.fortysevendeg.ninecardslauncher.repository.model.{CacheCategoryData, CardData, CollectionData, GeoInfoData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{CardData, CollectionData, GeoInfoData, CacheCategoryData}
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
+
+import scala.util.Random
 
 trait PersistenceServicesData {
 

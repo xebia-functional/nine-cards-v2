@@ -14,8 +14,8 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
+import rapture.core.{Answer, Errata}
 
-import scalaz.{\/-, -\/}
 import scalaz.concurrent.Task
 
 class LauncherActivity
@@ -27,14 +27,14 @@ class LauncherActivity
 
   implicit lazy val di: Injector = new Injector
 
-  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run match {
-    case -\/(ex) => getDefaultTheme
-    case \/-(t) => t
+  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
+    case Answer(t) => t
+    case _ => getDefaultTheme
   }
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
-    Task.fork(di.userProcess.register).resolveAsync()
+    Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
     runUi(initUi)
     generateCollections()
@@ -49,7 +49,7 @@ class LauncherActivity
     }
   }
 
-  private def generateCollections() = Task.fork(di.collectionProcess.getCollections).resolveAsyncUi(
+  private def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
     onResult = { // Check if there are collections in DB, if there aren't we go to wizard
       case Nil => goToWizard()
       case collections => createCollections(collections)

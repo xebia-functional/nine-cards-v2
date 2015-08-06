@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -8,9 +9,9 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import rapture.core.{Answer, Errata, Result}
 
 import scalaz.concurrent.Task
-import scalaz.{-\/, \/-}
 
 trait PersistenceServicesSpecification
   extends Specification
@@ -37,134 +38,134 @@ trait PersistenceServicesSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 
-    mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Task(\/-(repoCacheCategory))
+    mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.answer(repoCacheCategory)))
 
-    mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Task(\/-(1))
+    mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Service(Task(Result.answer(1)))
 
-    mockCacheCategoryRepository.deleteCacheCategoryByPackage(packageName) returns Task(\/-(1))
+    mockCacheCategoryRepository.deleteCacheCategoryByPackage(packageName) returns Service(Task(Result.answer(1)))
 
-    mockCacheCategoryRepository.fetchCacheCategories returns Task(\/-(seqRepoCacheCategory))
+    mockCacheCategoryRepository.fetchCacheCategories returns Service(Task(Result.answer(seqRepoCacheCategory)))
 
-    mockCacheCategoryRepository.fetchCacheCategoryByPackage(packageName) returns Task(\/-(Option(repoCacheCategory)))
+    mockCacheCategoryRepository.fetchCacheCategoryByPackage(packageName) returns Service(Task(Result.answer(Option(repoCacheCategory))))
 
-    mockCacheCategoryRepository.fetchCacheCategoryByPackage(nonExistentPackageName) returns Task(\/-(None))
+    mockCacheCategoryRepository.fetchCacheCategoryByPackage(nonExistentPackageName) returns Service(Task(Result.answer(None)))
 
-    mockCacheCategoryRepository.findCacheCategoryById(cacheCategoryId) returns Task(\/-(Option(repoCacheCategory)))
+    mockCacheCategoryRepository.findCacheCategoryById(cacheCategoryId) returns Service(Task(Result.answer(Option(repoCacheCategory))))
 
-    mockCacheCategoryRepository.findCacheCategoryById(nonExistentCacheCategoryId) returns Task(\/-(None))
+    mockCacheCategoryRepository.findCacheCategoryById(nonExistentCacheCategoryId) returns Service(Task(Result.answer(None)))
 
-    mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory) returns Task(\/-(1))
+    mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory) returns Service(Task(Result.answer(1)))
 
-    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Task(\/-(repoGeoInfo))
+    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.answer(repoGeoInfo)))
 
-    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Task(\/-(1))
+    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(1)))
 
-    mockGeoInfoRepository.fetchGeoInfoItems returns Task(\/-(seqRepoGeoInfo))
+    mockGeoInfoRepository.fetchGeoInfoItems returns Service(Task(Result.answer(seqRepoGeoInfo)))
 
-    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Task(\/-(Option(repoGeoInfo)))
+    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Service(Task(Result.answer(Option(repoGeoInfo))))
 
-    mockGeoInfoRepository.fetchGeoInfoByConstrain(nonExistentConstrain) returns Task(\/-(None))
+    mockGeoInfoRepository.fetchGeoInfoByConstrain(nonExistentConstrain) returns Service(Task(Result.answer(None)))
 
-    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Task(\/-(Option(repoGeoInfo)))
+    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Service(Task(Result.answer(Option(repoGeoInfo))))
 
-    mockGeoInfoRepository.findGeoInfoById(nonExistentGeoInfoId) returns Task(\/-(None))
+    mockGeoInfoRepository.findGeoInfoById(nonExistentGeoInfoId) returns Service(Task(Result.answer(None)))
 
-    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Task(\/-(1))
+    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(1)))
 
-    mockCardRepository.addCard(collectionId, repoCardData) returns Task(\/-(repoCard))
+    mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.answer(repoCard)))
 
-    (seqRepoCard) foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns Task(\/-(1))
+    seqRepoCard foreach { repoCard =>
+      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.answer(1)))
     }
 
-    (0 to 5) foreach { index =>
-      mockCardRepository.fetchCardsByCollection(collectionId + index) returns Task(\/-(seqRepoCard))
+    List.tabulate(5) { index =>
+      mockCardRepository.fetchCardsByCollection(collectionId + index) returns Service(Task(Result.answer(seqRepoCard)))
     }
 
-    mockCardRepository.findCardById(cardId) returns Task(\/-(Option(repoCard)))
+    mockCardRepository.findCardById(cardId) returns Service(Task(Result.answer(Option(repoCard))))
 
-    mockCardRepository.findCardById(nonExistentCardId) returns Task(\/-(None))
+    mockCardRepository.findCardById(nonExistentCardId) returns Service(Task(Result.answer(None)))
 
-    mockCardRepository.updateCard(repoCard) returns Task(\/-(1))
+    mockCardRepository.updateCard(repoCard) returns Service(Task(Result.answer(1)))
 
-    mockCollectionRepository.addCollection(repoCollectionData) returns Task(\/-(repoCollection))
+    mockCollectionRepository.addCollection(repoCollectionData) returns Service(Task(Result.answer(repoCollection)))
 
-    mockCollectionRepository.deleteCollection(repoCollection) returns Task(\/-(1))
+    mockCollectionRepository.deleteCollection(repoCollection) returns Service(Task(Result.answer(1)))
 
-    mockCollectionRepository.fetchCollectionByPosition(position) returns Task(\/-(Option(repoCollection)))
+    mockCollectionRepository.fetchCollectionByPosition(position) returns Service(Task(Result.answer(Option(repoCollection))))
 
-    mockCollectionRepository.fetchCollectionByPosition(nonExistentPosition) returns Task(\/-(None))
+    mockCollectionRepository.fetchCollectionByPosition(nonExistentPosition) returns Service(Task(Result.answer(None)))
 
-    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns Task(\/-(Option(repoCollection)))
+    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns Service(Task(Result.answer(Option(repoCollection))))
 
-    mockCollectionRepository.fetchCollectionBySharedCollectionId(nonExistentSharedCollectionId) returns Task(\/-(None))
+    mockCollectionRepository.fetchCollectionBySharedCollectionId(nonExistentSharedCollectionId) returns Service(Task(Result.answer(None)))
 
-    mockCollectionRepository.fetchSortedCollections returns Task(\/-(seqRepoCollection))
+    mockCollectionRepository.fetchSortedCollections returns Service(Task(Result.answer(seqRepoCollection)))
 
-    mockCollectionRepository.findCollectionById(collectionId) returns Task(\/-(Option(repoCollection)))
+    mockCollectionRepository.findCollectionById(collectionId) returns Service(Task(Result.answer(Option(repoCollection))))
 
-    mockCollectionRepository.findCollectionById(nonExistentCollectionId) returns Task(\/-(None))
+    mockCollectionRepository.findCollectionById(nonExistentCollectionId) returns Service(Task(Result.answer(None)))
 
-    mockCollectionRepository.updateCollection(repoCollection) returns Task(\/-(1))
+    mockCollectionRepository.updateCollection(repoCollection) returns Service(Task(Result.answer(1)))
   }
 
   trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 
-    val exception = NineCardsException("Irrelevant message")
+    val exception = RepositoryException("Irrelevant message")
 
-    mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Task(-\/(exception))
+    mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.errata(exception)))
 
-    mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Task(-\/(exception))
+    mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Service(Task(Result.errata(exception)))
 
-    mockCacheCategoryRepository.deleteCacheCategoryByPackage(packageName) returns Task(-\/(exception))
+    mockCacheCategoryRepository.deleteCacheCategoryByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
-    mockCacheCategoryRepository.fetchCacheCategories returns Task(-\/(exception))
+    mockCacheCategoryRepository.fetchCacheCategories returns Service(Task(Result.errata(exception)))
 
-    mockCacheCategoryRepository.fetchCacheCategoryByPackage(packageName) returns Task(-\/(exception))
+    mockCacheCategoryRepository.fetchCacheCategoryByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
-    mockCacheCategoryRepository.findCacheCategoryById(cacheCategoryId) returns Task(-\/(exception))
+    mockCacheCategoryRepository.findCacheCategoryById(cacheCategoryId) returns Service(Task(Result.errata(exception)))
 
-    mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory) returns Task(-\/(exception))
+    mockCacheCategoryRepository.updateCacheCategory(repoCacheCategory) returns Service(Task(Result.errata(exception)))
 
-    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Task(-\/(exception))
+    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.errata(exception)))
 
-    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Task(-\/(exception))
+    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.errata(exception)))
 
-    mockGeoInfoRepository.fetchGeoInfoItems returns Task(-\/(exception))
+    mockGeoInfoRepository.fetchGeoInfoItems returns Service(Task(Result.errata(exception)))
 
-    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Task(-\/(exception))
+    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Service(Task(Result.errata(exception)))
 
-    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Task(-\/(exception))
+    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Service(Task(Result.errata(exception)))
 
-    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Task(-\/(exception))
+    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.errata(exception)))
 
-    mockCardRepository.addCard(collectionId, repoCardData) returns Task(-\/(exception))
+    mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.errata(exception)))
 
-    (seqRepoCard) foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns Task(-\/(exception))
+    seqRepoCard foreach { repoCard =>
+      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.errata(exception)))
     }
 
-    (0 to 5) foreach { index =>
-      mockCardRepository.fetchCardsByCollection(collectionId + index) returns Task(-\/(exception))
+    List.tabulate(5) { index =>
+      mockCardRepository.fetchCardsByCollection(collectionId + index) returns Service(Task(Result.errata(exception)))
     }
 
-    mockCardRepository.findCardById(cardId) returns Task(-\/(exception))
+    mockCardRepository.findCardById(cardId) returns Service(Task(Result.errata(exception)))
 
-    mockCardRepository.updateCard(repoCard) returns Task(-\/(exception))
+    mockCardRepository.updateCard(repoCard) returns Service(Task(Result.errata(exception)))
 
-    mockCollectionRepository.addCollection(repoCollectionData) returns Task(-\/(exception))
+    mockCollectionRepository.addCollection(repoCollectionData) returns Service(Task(Result.errata(exception)))
 
-    mockCollectionRepository.deleteCollection(repoCollection) returns Task(-\/(exception))
+    mockCollectionRepository.deleteCollection(repoCollection) returns Service(Task(Result.errata(exception)))
 
-    mockCollectionRepository.fetchCollectionByPosition(position) returns Task(-\/(exception))
+    mockCollectionRepository.fetchCollectionByPosition(position) returns Service(Task(Result.errata(exception)))
 
-    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns Task(-\/(exception))
+    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns Service(Task(Result.errata(exception)))
 
-    mockCollectionRepository.fetchSortedCollections returns Task(-\/(exception))
+    mockCollectionRepository.fetchSortedCollections returns Service(Task(Result.errata(exception)))
 
-    mockCollectionRepository.findCollectionById(collectionId) returns Task(-\/(exception))
+    mockCollectionRepository.findCollectionById(collectionId) returns Service(Task(Result.errata(exception)))
 
-    mockCollectionRepository.updateCollection(repoCollection) returns Task(-\/(exception))
+    mockCollectionRepository.updateCollection(repoCollection) returns Service(Task(Result.errata(exception)))
   }
 
 }
@@ -175,511 +176,695 @@ class PersistenceServicesSpec
   "addCacheCategory" should {
 
     "return a CacheCategory value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addCacheCategory(createAddCacheCategoryRequest())
+      val result = persistenceServices.addCacheCategory(createAddCacheCategoryRequest()).run.run
 
-      result.run must be_\/-[CacheCategory].which { cacheCategory =>
-        cacheCategory.id shouldEqual cacheCategoryId
-        cacheCategory.packageName shouldEqual packageName
+      result must beLike[Result[CacheCategory, PersistenceServiceException]] {
+        case Answer(cacheCategory) =>
+          cacheCategory.id shouldEqual cacheCategoryId
+          cacheCategory.packageName shouldEqual packageName
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addCacheCategory(createAddCacheCategoryRequest())
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addCacheCategory(createAddCacheCategoryRequest()).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike[Result[CacheCategory, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "deleteCacheCategory" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteCacheCategory(createDeleteCacheCategoryRequest(cacheCategory = cacheCategory))
+      val result = persistenceServices.deleteCacheCategory(createDeleteCacheCategoryRequest(cacheCategory = cacheCategory)).run.run
 
-      result.run must be_\/-[Int].which { deleted =>
-        deleted shouldEqual 1
+      result must beLike[Result[Int, PersistenceServiceException]] {
+        case Answer(deleted) =>
+          deleted shouldEqual 1
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteCacheCategory(createDeleteCacheCategoryRequest(cacheCategory = cacheCategory))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteCacheCategory(createDeleteCacheCategoryRequest(cacheCategory = cacheCategory)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike[Result[Int, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "deleteCacheCategoryByPackage" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteCacheCategoryByPackage(createDeleteCacheCategoryByPackageRequest(packageName = packageName))
+      val result = persistenceServices.deleteCacheCategoryByPackage(createDeleteCacheCategoryByPackageRequest(packageName = packageName)).run.run
 
-      result.run must be_\/-[Int].which { deleted =>
-        deleted shouldEqual 1
+      result must beLike[Result[Int, PersistenceServiceException]] {
+        case Answer(deleted) =>
+          deleted shouldEqual 1
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteCacheCategoryByPackage(createDeleteCacheCategoryByPackageRequest(packageName = packageName))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteCacheCategoryByPackage(createDeleteCacheCategoryByPackageRequest(packageName = packageName)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike[Result[Int, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "fetchCacheCategories" should {
 
     "return a list of CacheCategory elements for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCacheCategories
+      val result = persistenceServices.fetchCacheCategories.run.run
 
-      result.run must be_\/-[Seq[CacheCategory]].which { cacheCategories =>
-        cacheCategories.size shouldEqual seqCacheCategory.size
+      result must beLike[Result[Seq[CacheCategory], PersistenceServiceException]] {
+        case Answer(cacheCategories) =>
+          cacheCategories.size shouldEqual seqCacheCategory.size
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchCacheCategories
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCacheCategories.run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike[Result[Seq[CacheCategory], PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "fetchCacheCategoryByPackage" should {
 
     "return a CacheCategory for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName))
+      val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName)).run.run
 
-      result.run must be_\/-[Option[CacheCategory]].which { maybeCacheCategory =>
-        maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
-          cacheCategory.packageName shouldEqual packageName
-        }
+      result must beLike {
+        case Answer(maybeCacheCategory) =>
+          maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
+            cacheCategory.packageName shouldEqual packageName
+          }
       }
     }
 
     "return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = nonExistentPackageName))
+      val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = nonExistentPackageName)).run.run
 
-      result.run must be_\/-[Option[CacheCategory]].which { maybeCacheCategory =>
-        maybeCacheCategory must beNone
+      result must beLike {
+        case Answer(maybeCacheCategory) =>
+          maybeCacheCategory must beNone
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCacheCategoryByPackage(createFetchCacheCategoryByPackageRequest(packageName = packageName)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "findCacheCategoryById" should {
 
     "return a CacheCategory for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId))
+      val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId)).run.run
 
-      result.run must be_\/-[Option[CacheCategory]].which { maybeCacheCategory =>
-        maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
-          cacheCategory.packageName shouldEqual packageName
-        }
+      result must beLike {
+        case Answer(maybeCacheCategory) =>
+          maybeCacheCategory must beSome[CacheCategory].which { cacheCategory =>
+            cacheCategory.id shouldEqual cacheCategoryId
+            cacheCategory.packageName shouldEqual packageName
+          }
       }
     }
 
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = nonExistentCacheCategoryId))
+      val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = nonExistentCacheCategoryId)).run.run
 
-      result.run must be_\/-[Option[CacheCategory]].which { maybeCacheCategory =>
-        maybeCacheCategory must beNone
+      result must beLike {
+        case Answer(maybeCacheCategory) =>
+          maybeCacheCategory must beNone
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findCacheCategoryById(createFindCacheCategoryByIdRequest(id = cacheCategoryId)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "updateCacheCategory" should {
 
     "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.updateCacheCategory(createUpdateCacheCategoryRequest())
+      val result = persistenceServices.updateCacheCategory(createUpdateCacheCategoryRequest()).run.run
 
-      result.run must be_\/-[Int].which { updated =>
-        updated shouldEqual 1
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual 1
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.updateCacheCategory(createUpdateCacheCategoryRequest())
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateCacheCategory(createUpdateCacheCategoryRequest()).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "addGeoInfo" should {
 
     "return a GeoInfo value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest())
+      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest()).run.run
 
-      result.run must be_\/-[GeoInfo].which { geoInfo =>
-        geoInfo.id shouldEqual geoInfoId
-        geoInfo.constrain shouldEqual constrain
+      result must beLike {
+        case Answer(geoInfo) =>
+          geoInfo.id shouldEqual geoInfoId
+          geoInfo.constrain shouldEqual constrain
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest())
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest()).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "deleteGeoInfo" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo))
+      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo)).run.run
 
-      result.run must be_\/-[Int].which { deleted =>
-        deleted shouldEqual 1
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 1
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "fetchGeoInfoItems" should {
 
     "return a list of GeoInfo elements for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoItems
+      val result = persistenceServices.fetchGeoInfoItems.run.run
 
-      result.run must be_\/-[Seq[GeoInfo]].which { geoInfoItems =>
-        geoInfoItems.size shouldEqual seqGeoInfo.size
+      result must beLike {
+        case Answer(geoInfoItems) =>
+          geoInfoItems.size shouldEqual seqGeoInfo.size
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoItems
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchGeoInfoItems.run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "fetchGeoInfoByConstrain" should {
 
     "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain))
+      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)).run.run
 
-      result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
-        maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
-          geoInfo.constrain shouldEqual constrain
-        }
+      result must beLike {
+        case Answer(maybeGeoInfo) =>
+          maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
+            geoInfo.constrain shouldEqual constrain
+          }
       }
     }
 
     "return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = nonExistentConstrain))
+      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = nonExistentConstrain)).run.run
 
-      result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
-        maybeGeoInfo must beNone
+      result must beLike {
+        case Answer(maybeGeoInfo) =>
+          maybeGeoInfo must beNone
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
-  "fetchGeoInfoByConstrain" should {
+  "findGeoInfoById" should {
 
     "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId))
+      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)).run.run
 
-      result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
-        maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
-          geoInfo.constrain shouldEqual constrain
-        }
+      result must beLike {
+        case Answer(maybeGeoInfo) =>
+          maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
+            geoInfo.id shouldEqual geoInfoId
+          }
       }
     }
 
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = nonExistentGeoInfoId))
+      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = nonExistentGeoInfoId)).run.run
 
-      result.run must be_\/-[Option[GeoInfo]].which { maybeGeoInfo =>
-        maybeGeoInfo must beNone
+      result must beLike {
+        case Answer(maybeGeoInfo) =>
+          maybeGeoInfo must beNone
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "updateGeoInfo" should {
 
     "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest())
+      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest()).run.run
 
-      result.run must be_\/-[Int].which { updated =>
-        updated shouldEqual 1
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual 1
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest())
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest()).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "addCard" should {
 
     "return a Card value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addCard(createAddCardRequest())
+      val result = persistenceServices.addCard(createAddCardRequest()).run.run
 
-      result.run must be_\/-[Card].which { card =>
-        card.id shouldEqual cardId
-        card.cardType shouldEqual cardType
+      result must beLike {
+        case Answer(card) =>
+          card.id shouldEqual cardId
+          card.cardType shouldEqual cardType
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addCard(createAddCardRequest())
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addCard(createAddCardRequest()).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "deleteCard" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card))
+      val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card)).run.run
 
-      result.run must be_\/-[Int].which { deleted =>
-        deleted shouldEqual 1
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 1
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "fetchCardsByCollection" should {
 
     "return a list of Card elements for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId))
+      val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId)).run.run
 
-      result.run must be_\/-[Seq[Card]].which { cards =>
-        cards.size shouldEqual seqCard.size
+      result must beLike {
+        case Answer(cards) =>
+          cards.size shouldEqual seqCard.size
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "findCardById" should {
 
     "return a Card for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId))
+      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId)).run.run
 
-      result.run must be_\/-[Option[Card]].which { maybeCard =>
-        maybeCard must beSome[Card].which { card =>
-          card.cardType shouldEqual cardType
-        }
+      result must beLike {
+        case Answer(maybeCard) =>
+          maybeCard must beSome[Card].which { card =>
+            card.cardType shouldEqual cardType
+          }
       }
     }
 
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = nonExistentCardId))
+      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = nonExistentCardId)).run.run
 
-      result.run must be_\/-[Option[Card]].which { maybeCard =>
-        maybeCard must beNone
+      result must beLike {
+        case Answer(maybeCard) =>
+          maybeCard must beNone
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "updateCard" should {
 
     "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.updateCard(createUpdateCardRequest())
+      val result = persistenceServices.updateCard(createUpdateCardRequest()).run.run
 
-      result.run must be_\/-[Int].which { updated =>
-        updated shouldEqual 1
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual 1
       }
     }
 
-    "return a NineCardException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.updateCard(createUpdateCardRequest())
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateCard(createUpdateCardRequest()).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "addCollection" should {
 
     "return a Collection value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addCollection(createAddCollectionRequest())
+      val result = persistenceServices.addCollection(createAddCollectionRequest()).run.run
 
-      result.run must be_\/-[Collection].which { collection =>
-        collection.id shouldEqual collectionId
-        collection.collectionType shouldEqual collectionType
+      result must beLike {
+        case Answer(collection) =>
+          collection.id shouldEqual collectionId
+          collection.collectionType shouldEqual collectionType
       }
     }
 
-    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addCollection(createAddCollectionRequest())
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addCollection(createAddCollectionRequest()).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "deleteCollection" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection))
+      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).run.run
 
-      result.run must be_\/-[Int].which { deleted =>
-        deleted shouldEqual 1
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 1
       }
     }
 
-    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "fetchCollectionByPosition" should {
 
     "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position))
+      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position)).run.run
 
-      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
-        maybeCollection must beSome[Collection].which { collection =>
-          collection.id shouldEqual collectionId
-          collection.position shouldEqual position
-        }
+      result must beLike {
+        case Answer(maybeCollection) =>
+          maybeCollection must beSome[Collection].which { collection =>
+            collection.id shouldEqual collectionId
+            collection.position shouldEqual position
+          }
       }
     }
 
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(nonExistentPosition))
+      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(nonExistentPosition)).run.run
 
-      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
-        maybeCollection must beNone
+      result must beLike {
+        case Answer(maybeCollection) =>
+          maybeCollection must beNone
       }
     }
 
-    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "fetchCollectionBySharedCollection" should {
 
     "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId))
+      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId)).run.run
 
-      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
-        maybeCollection must beSome[Collection].which { collection =>
-          collection.id shouldEqual collectionId
-          collection.sharedCollectionId shouldEqual Option(sharedCollectionId)
-        }
+      result must beLike {
+        case Answer(maybeCollection) =>
+          maybeCollection must beSome[Collection].which { collection =>
+            collection.id shouldEqual collectionId
+            collection.sharedCollectionId shouldEqual Option(sharedCollectionId)
+          }
       }
     }
 
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(nonExistentSharedCollectionId))
+      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(nonExistentSharedCollectionId)).run.run
 
-      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
-        maybeCollection must beNone
+      result must beLike {
+        case Answer(maybeCollection) =>
+          maybeCollection must beNone
       }
     }
 
-    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "fetchCollections" should {
 
     "return a list of Collection elements for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollections
+      val result = persistenceServices.fetchCollections.run.run
 
-      result.run must be_\/-[Seq[Collection]].which { collections =>
-        collections.size shouldEqual seqCollection.size
+      result must beLike {
+        case Answer(collections) =>
+          collections.size shouldEqual seqCollection.size
       }
     }
 
-    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollections
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollections.run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "findCollectionById" should {
 
     "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId))
+      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId)).run.run
 
-      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
-        maybeCollection must beSome[Collection].which { collection =>
-          collection.collectionType shouldEqual collectionType
-        }
+      result must beLike {
+        case Answer(maybeCollection) =>
+          maybeCollection must beSome[Collection].which { collection =>
+            collection.id shouldEqual collectionId
+          }
       }
     }
 
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = nonExistentCollectionId))
+      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = nonExistentCollectionId)).run.run
 
-      result.run must be_\/-[Option[Collection]].which { maybeCollection =>
-        maybeCollection must beNone
+      result must beLike {
+        case Answer(maybeCollection) =>
+          maybeCollection must beNone
       }
     }
 
-    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId))
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId)).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 
   "updateCollection" should {
 
     "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.updateCollection(createUpdateCollectionRequest())
+      val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).run.run
 
-      result.run must be_\/-[Int].which { updated =>
-        updated shouldEqual 1
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual 1
       }
     }
 
-    "return a NineCollectionException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.updateCollection(createUpdateCollectionRequest())
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).run.run
 
-      result.run must be_-\/[NineCardsException]
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
     }
   }
 }

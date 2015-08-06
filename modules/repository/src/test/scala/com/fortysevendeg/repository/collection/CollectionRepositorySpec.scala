@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository.collection
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CollectionUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.Collection
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity._
@@ -11,6 +11,7 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import rapture.core.{Answer, Errata}
 
 trait CollectionRepositorySpecification
   extends Specification
@@ -191,10 +192,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.addCollection(data = createCollectionData).run
+          val result = collectionRepository.addCollection(data = createCollectionData).run.run
 
-          result must be_\/-[Collection].which {
-            collection =>
+          result must beLike {
+            case Answer(collection) =>
               collection.id shouldEqual testCollectionId
               collection.data.name shouldEqual testName
           }
@@ -204,9 +205,15 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.addCollection(data = createCollectionData).run
+          val result = collectionRepository.addCollection(data = createCollectionData).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -216,18 +223,27 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.deleteCollection(collection).run
+          val result = collectionRepository.deleteCollection(collection).run.run
 
-          result must be_\/-[Int].which(_ shouldEqual 1)
+          result must beLike {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.deleteCollection(collection).run
+          val result = collectionRepository.deleteCollection(collection).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -237,10 +253,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.findCollectionById(id = testCollectionId).run
+          val result = collectionRepository.findCollectionById(id = testCollectionId).run.run
 
-          result must be_\/-[Option[Collection]].which {
-            maybeCollection =>
+          result must beLike {
+            case Answer(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
                 collection.data.name shouldEqual testName
@@ -251,18 +267,27 @@ class CollectionRepositorySpec
       "return None when a non-existing id is given" in
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
-          val result = collectionRepository.findCollectionById(id = testNonExistingCollectionId).run
+          val result = collectionRepository.findCollectionById(id = testNonExistingCollectionId).run.run
 
-          result must be_\/-[Option[Collection]].which(_ must beNone)
+          result must beLike {
+            case Answer(maybeCollection) =>
+              maybeCollection must beNone
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.findCollectionById(id = testCollectionId).run
+          val result = collectionRepository.findCollectionById(id = testCollectionId).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -272,10 +297,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run
+          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run.run
 
-          result must be_\/-[Option[Collection]].which {
-            maybeCollection =>
+          result must beLike {
+            case Answer(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
                 collection.data.name shouldEqual testName
@@ -287,18 +312,27 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testNonExistingSharedCollectionId).run
+          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testNonExistingSharedCollectionId).run.run
 
-          result must be_\/-[Option[Collection]].which(_ must beNone)
+          result must beLike {
+            case Answer(maybeCollection) =>
+              maybeCollection must beNone
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run
+          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -308,10 +342,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run
+          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run.run
 
-          result must be_\/-[Option[Collection]].which {
-            maybeCollection =>
+          result must beLike {
+            case Answer(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
                 collection.data.position shouldEqual testPosition
@@ -322,18 +356,27 @@ class CollectionRepositorySpec
       "return None when a non-existing position is given" in
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
-          val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).run
+          val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).run.run
 
-          result must be_\/-[Option[Collection]].which(_ must beNone)
+          result must beLike {
+            case Answer(maybeCollection) =>
+              maybeCollection must beNone
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run
+          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -343,18 +386,27 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchSortedCollections.run
+          val result = collectionRepository.fetchSortedCollections.run.run
 
-          result must be_\/-[Seq[Collection]].which(_ shouldEqual collectionSeq)
+          result must beLike {
+            case Answer(collections) =>
+              collections shouldEqual collectionSeq
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchSortedCollections.run
+          val result = collectionRepository.fetchSortedCollections.run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -364,18 +416,27 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.updateCollection(collection = collection).run
+          val result = collectionRepository.updateCollection(collection = collection).run.run
 
-          result must be_\/-[Int].which(_ shouldEqual 1)
+          result must beLike {
+            case Answer(updated) =>
+              updated shouldEqual 1
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.updateCollection(collection = collection).run
+          val result = collectionRepository.updateCollection(collection = collection).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -411,7 +472,7 @@ class CollectionRepositorySpec
 
           val result = getListFromCursor(collectionEntityFromCursor)(mockCursor)
 
-          result shouldEqual Seq.empty
+          result should beEmpty
         }
 
       "return a Collection sequence when a cursor with data is given" in

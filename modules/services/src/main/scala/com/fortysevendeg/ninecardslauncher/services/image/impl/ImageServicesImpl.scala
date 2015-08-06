@@ -3,52 +3,51 @@ package com.fortysevendeg.ninecardslauncher.services.image.impl
 import java.io.File
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.image._
+import rapture.core.Result
+import rapture.core.scalazInterop.ResultT
 
-import scalaz._
-import Scalaz._
-import EitherT._
 import scalaz.concurrent.Task
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 
 class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageServicesTasks = ImageServicesTasks)
-    extends ImageServices
-    with Conversions {
+  extends ImageServices
+  with Conversions {
 
   implicit val implicitConfig: ImageServicesConfig = config
 
-  override def saveAppIcon(request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ AppPackagePath] =
-    for {
-      file <- imageServicesTasks.getPathByApp(request.packageName, request.className) ▹ eitherT
-      appPackagePath <- createIfNotExists(file, request) ▹ eitherT
-    } yield appPackagePath
+  override def saveAppIcon(request: AppPackage)(implicit contextSupport: ContextSupport) = for {
+    file <- imageServicesTasks.getPathByApp(request.packageName, request.className)
+    appPackagePath <- createIfNotExists(file, request)
+  } yield appPackagePath
 
-  override def saveAppIcon(request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ AppWebsitePath] =
-    for {
-      file <- imageServicesTasks.getPathByPackageName(request.packageName) ▹ eitherT
-      appWebsitePath <- createIfNotExists(file, request) ▹ eitherT
-    } yield appWebsitePath
+  override def saveAppIcon(request: AppWebsite)(implicit contextSupport: ContextSupport) = for {
+    file <- imageServicesTasks.getPathByPackageName(request.packageName)
+    appWebsitePath <- createIfNotExists(file, request)
+  } yield appWebsitePath
 
-  private[this] def createIfNotExists(file: File, request: AppPackage)(implicit context: ContextSupport): Task[NineCardsException \/ AppPackagePath] =
+  private[this] def createIfNotExists(file: File, request: AppPackage)(implicit contextSupport: ContextSupport):
+  ServiceDef2[AppPackagePath, BitmapTransformationException with FileException] =
     file.exists match {
       case true =>
-        Task { \/-(toAppPackagePath(request, file.getAbsolutePath)) }
+        ResultT(Task(Result.answer(toAppPackagePath(request, file.getAbsolutePath))))
       case false =>
         for {
-          bitmap <- imageServicesTasks.getBitmapByAppOrName(request.packageName, request.icon, request.name) ▹ eitherT
-          _ <- imageServicesTasks.saveBitmap(file, bitmap) ▹ eitherT
+          bitmap <- imageServicesTasks.getBitmapByAppOrName(request.packageName, request.icon, request.name)
+          _ <- imageServicesTasks.saveBitmap(file, bitmap)
         } yield toAppPackagePath(request, file.getAbsolutePath)
     }
 
-  private[this] def createIfNotExists(file: File, request: AppWebsite)(implicit context: ContextSupport): Task[NineCardsException \/ AppWebsitePath] =
+
+  private[this] def createIfNotExists(file: File, request: AppWebsite)(implicit contextSupport: ContextSupport):
+  ServiceDef2[AppWebsitePath, BitmapTransformationException with FileException] =
     file.exists match {
       case true =>
-        Task { \/-(toAppWebsitePath(request, file.getAbsolutePath)) }
+        ResultT(Task(Result.answer(toAppWebsitePath(request, file.getAbsolutePath))))
       case false =>
         for {
-          bitmap <- imageServicesTasks.getBitmapFromURLOrName(request.url, request.name) ▹ eitherT
-          _ <- imageServicesTasks.saveBitmap(file, bitmap) ▹ eitherT
+          bitmap <- imageServicesTasks.getBitmapFromURLOrName(request.url, request.name)
+          _ <- imageServicesTasks.saveBitmap(file, bitmap)
         } yield toAppWebsitePath(request, file.getAbsolutePath)
     }
 
