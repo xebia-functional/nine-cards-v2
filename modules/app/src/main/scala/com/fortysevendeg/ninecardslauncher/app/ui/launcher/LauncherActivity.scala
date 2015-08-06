@@ -3,24 +3,24 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.ActionBarActivity
+import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
-import rapture.core.{Answer, Errata}
+import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
 class LauncherActivity
-  extends ActionBarActivity
-  with Contexts[ActionBarActivity]
+  extends AppCompatActivity
+  with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
   with LauncherComposer {

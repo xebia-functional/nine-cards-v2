@@ -27,6 +27,7 @@ object Libraries {
     lazy val androidAppCompat = androidDep("appcompat-v7")
     lazy val androidRecyclerview = androidDep("recyclerview-v7")
     lazy val androidCardView = androidDep("cardview-v7")
+    lazy val androidDesign = androidDep("design")
   }
 
   object macroid {

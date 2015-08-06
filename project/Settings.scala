@@ -75,6 +75,7 @@ object Settings {
     aar(androidSupportv4),
     aar(androidRecyclerview),
     aar(androidCardView),
+    aar(androidDesign),
     aar(playServicesBase),
     aar(multiDexLib),
     glide,

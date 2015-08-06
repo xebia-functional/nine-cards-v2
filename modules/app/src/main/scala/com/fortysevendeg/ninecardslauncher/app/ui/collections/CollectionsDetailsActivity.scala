@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.os.Bundle
 import android.support.v4.view.ViewPager.OnPageChangeListener
-import android.support.v7.app.ActionBarActivity
+import android.support.v7.app.AppCompatActivity
 import android.view.{Menu, MenuItem}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
@@ -15,14 +15,13 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Contexts, Ui}
-import rapture.core.{Answer, Errata}
+import rapture.core.Answer
 
 import scalaz.concurrent.Task
-import scalaz.{-\/, \/-}
 
 class CollectionsDetailsActivity
-  extends ActionBarActivity
-  with Contexts[ActionBarActivity]
+  extends AppCompatActivity
+  with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with CollectionsDetailsComposer
   with TypedFindView

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v4.app.{Fragment, FragmentManager}
-import android.support.v7.app.ActionBarActivity
+import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -20,7 +20,7 @@ import macroid._
 trait CollectionsDetailsComposer
   extends Styles {
 
-  self: ActionBarActivity with TypedFindView with Contexts[ActionBarActivity] =>
+  self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] =>
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
