@@ -13,22 +13,14 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Contexts, Tweak, Ui}
+import macroid._
 
 trait CollectionFragmentComposer
   extends CollectionFragmentStyles {
 
-  self: Contexts[Fragment] =>
-
   var sType = -1
 
   var canScroll = false
-
-  lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-
-  lazy val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-
-  lazy val layoutManager = new GridLayoutManager(fragmentContextWrapper.application, numInLine)
 
   var activeFragment = false
 
@@ -36,20 +28,23 @@ trait CollectionFragmentComposer
 
   var recyclerView = slot[RecyclerView]
 
-  def layout = getUi(
+  def layout(implicit contextWrapper: ActivityContextWrapper) = getUi(
     w[RecyclerView] <~ wire(recyclerView) <~ recyclerStyle
   )
 
-  def initUi(collection: Collection)(implicit fragment: Fragment, theme: NineCardsTheme) =
+  def initUi(collection: Collection)(implicit contextWrapper: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme) =
     recyclerView <~ vGlobalLayoutListener(view => {
+      val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+      val padding = resGetDimensionPixelSize(R.dimen.padding_small)
       val heightCard = (view.getHeight - (padding + spaceMove)) / numInLine
-      loadCollection(collection, heightCard) ~
-        uiHandler(startScroll())
+      loadCollection(collection, heightCard, padding, spaceMove) ~
+        uiHandler(startScroll(padding, spaceMove))
     })
 
-  def loadCollection(collection: Collection, heightCard: Int)(implicit fragment: Fragment, theme: NineCardsTheme): Ui[_] = {
+  def loadCollection(collection: Collection, heightCard: Int, padding: Int, spaceMove: Int)
+    (implicit contextWrapper: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme): Ui[_] = {
     val adapter = new CollectionAdapter(collection, heightCard)
-    recyclerView <~ rvLayoutManager(layoutManager) <~
+    recyclerView <~ rvLayoutManager(new GridLayoutManager(contextWrapper.application, numInLine)) <~
       rvFixedSize <~
       rvAddItemDecoration(new CollectionItemDecorator) <~
       rvAdapter(adapter) <~
@@ -79,24 +74,28 @@ trait CollectionFragmentComposer
       )
   }
 
-  private[this] def startScroll(): Ui[_] = (canScroll, sType) match {
-    case (scroll, s) if scroll => recyclerView <~ vScrollBy(0, if (s == ScrollType.up) spaceMove else 0)
-    case (_, s) => recyclerView <~ vPadding(padding, if (s == ScrollType.up) padding else spaceMove, padding, padding)
-    case _ => Ui.nop
-  }
+  private[this] def startScroll(padding: Int, spaceMove: Int)(implicit contextWrapper: ContextWrapper): Ui[_] =
+    (canScroll, sType) match {
+      case (scroll, s) if scroll => recyclerView <~ vScrollBy(0, if (s == ScrollType.up) spaceMove else 0)
+      case (_, s) => recyclerView <~ vPadding(padding, if (s == ScrollType.up) padding else spaceMove, padding, padding)
+      case _ => Ui.nop
+    }
 
-  def scrollType(newSType: Int): Ui[_] = (canScroll, sType) match {
-    case (scroll, s) if s != newSType && scroll =>
-      sType = newSType
-      recyclerView <~
-        vScrollBy(0, -Int.MaxValue) <~
-        (if (sType == ScrollType.up) vScrollBy(0, spaceMove) else Tweak.blank)
-    case (_, s) if s != newSType =>
-      sType = newSType
-      recyclerView <~ vPadding(padding, if (newSType == ScrollType.up) padding else spaceMove, padding, padding)
-    case _ => Ui.nop
+  def scrollType(newSType: Int)(implicit contextWrapper: ContextWrapper): Ui[_] = {
+    val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+    (canScroll, sType) match {
+      case (scroll, s) if s != newSType && scroll =>
+        sType = newSType
+        recyclerView <~
+          vScrollBy(0, -Int.MaxValue) <~
+          (if (sType == ScrollType.up) vScrollBy(0, spaceMove) else Tweak.blank)
+      case (_, s) if s != newSType =>
+        sType = newSType
+        recyclerView <~ vPadding(padding, if (newSType == ScrollType.up) padding else spaceMove, padding, padding)
+      case _ => Ui.nop
+    }
   }
-
 }
 
 class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)

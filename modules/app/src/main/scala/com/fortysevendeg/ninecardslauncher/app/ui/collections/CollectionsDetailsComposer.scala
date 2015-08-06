@@ -1,13 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v4.app.{Fragment, FragmentManager}
+import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
@@ -40,18 +44,18 @@ trait CollectionsDetailsComposer
 
   lazy val icon = Option(findView(TR.collections_icon))
 
-  def initUi(implicit theme: NineCardsTheme) =
-    (root <~ rootStyle) ~ (tabs <~ tabsStyle)
+  def initUi(implicit theme: NineCardsTheme) = (root <~ rootStyle) ~ (tabs <~ tabsStyle)
 
-  def fetchCollections(collections: Seq[Collection])
+  def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
     val adapter = CollectionsPagerAdapter(manager.get, collections)
     (viewPager <~ vpAdapter(adapter)) ~
-      Ui(adapter.activateFragment(0)) ~
+      Ui(adapter.activateFragment(position)) ~
       (tabs <~
         stlViewPager(viewPager) <~
         stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
-      (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop)
+      (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop) ~
+      uiHandler(viewPager <~ vpCurrentItem(position))
   }
 
   def translationScrollY(scroll: Int): Ui[_] = {
@@ -102,3 +106,33 @@ trait CollectionsDetailsComposer
 
 }
 
+class OnPageChangeCollectionsListener(
+  collections: Seq[Collection],
+  updateToolbarColor: Int => Ui[_],
+  updateCollection: (Collection, Int, Boolean) => Ui[_]
+  )(implicit context: ContextWrapper, theme: NineCardsTheme)
+  extends OnPageChangeListener {
+
+  var lastSelected = -1
+
+  override def onPageScrollStateChanged(state: Int): Unit = {}
+
+  override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit = {
+    val selectedCollection: Collection = collections(position)
+    val nextCollection: Option[Collection] = collections.lift(position + 1)
+    nextCollection map {
+      next =>
+        val startColor = resGetColor(getIndexColor(selectedCollection.themedColorIndex))
+        val endColor = resGetColor(getIndexColor(next.themedColorIndex))
+        val color = interpolateColors(positionOffset, startColor, endColor)
+        runUi(updateToolbarColor(color))
+    }
+  }
+
+  override def onPageSelected(position: Int): Unit = {
+    val fromLeft = position < lastSelected
+    lastSelected = position
+    runUi(updateCollection(collections(position), position, fromLeft))
+  }
+
+}

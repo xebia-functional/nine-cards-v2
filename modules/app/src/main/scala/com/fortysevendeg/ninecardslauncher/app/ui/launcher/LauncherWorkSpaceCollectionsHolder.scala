@@ -25,6 +25,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 
 class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityContext: ActivityContextWrapper)
   extends LauncherWorkSpaceHolder
@@ -43,15 +44,16 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityCo
     width = parentDimen.width / numInLine,
     height = parentDimen.height / numInLine))
 
-  def populate(data: LauncherData): Ui[_] = {
+  def populate(collections: Seq[Collection]): Ui[_] = {
     val uiSeq = for {
       row <- 0 until numInLine
       column <- 0 until numInLine
     } yield {
         val position = (row * numInLine) + column
-        val view = grid map (_.getChildAt(position).asInstanceOf[CollectionItem])
-        // TODO we should use a sequance UI
-        data.collections.lift(position) map {
+        val view = grid map (_.getChildAt(position) match {
+          case item: CollectionItem => item
+        })
+        collections.lift(position) map {
           collection =>
             view <~ vVisible <~ ciPopulate(collection)
         } getOrElse view <~ vGone
@@ -61,7 +63,7 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityCo
 
 }
 
-class CollectionItem(position: Int)(implicit activityContext: ActivityContextWrapper)
+class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityContextWrapper)
   extends FrameLayout(activityContext.application)
   with CollectionItemStyle {
 
@@ -73,7 +75,7 @@ class CollectionItem(position: Int)(implicit activityContext: ActivityContextWra
 
   var name = slot[TextView]
 
-  setTag(position)
+  setTag(positionInGrid)
 
   addView(
     getUi(
@@ -83,13 +85,9 @@ class CollectionItem(position: Int)(implicit activityContext: ActivityContextWra
       ) <~ collectionItemStyle <~ On.click {
         collection map {
           c =>
-            Ui {
-              activityContext.original.get map {
-                activity =>
-                  val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
-                  activity.startActivity(intent)
-              }
-            }
+            val intent = createIntent[CollectionsDetailsActivity]
+            intent.putExtra(CollectionsDetailsActivity.startPosition, c.position)
+            uiStartIntent(intent)
         } getOrElse Ui.nop
       } <~ vTag(R.id.use_layer_hardware, "")
     )
@@ -97,7 +95,7 @@ class CollectionItem(position: Int)(implicit activityContext: ActivityContextWra
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)
-    runUi( populateIcon(collection, iconCollectionWorkspace(collection.icon)))
+    runUi(populateIcon(collection, iconCollectionWorkspace(collection.icon)))
   }
 
   private def populateIcon(collection: Collection, resIcon: Int): Ui[_] =

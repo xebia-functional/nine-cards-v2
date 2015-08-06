@@ -1,20 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.os.Bundle
-import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.view.{Menu, MenuItem}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import macroid.Contexts
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Contexts, Ui}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -25,7 +23,10 @@ class CollectionsDetailsActivity
   with ContextSupportProvider
   with CollectionsDetailsComposer
   with TypedFindView
+  with UiExtensions
   with ScrolledListener {
+
+  val defaultPosition = 0
 
   lazy val di = new Injector
 
@@ -36,13 +37,19 @@ class CollectionsDetailsActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
+
+    val position = getInt(
+      Seq(getIntent.getExtras, bundle),
+      CollectionsDetailsActivity.startPosition,
+      defaultPosition)
+
     setContentView(R.layout.collections_detail_activity)
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
     systemBarTintManager.setStatusBarTintEnabled(true)
 
     Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
-      onResult = (collections: Seq[Collection]) => fetchCollections(collections),
+      onResult = (collections: Seq[Collection]) => drawCollections(collections, position),
       onPreTask = () => initUi
     )
   }
@@ -74,33 +81,6 @@ object ScrollType {
   val down = 1
 }
 
-class OnPageChangeCollectionsListener(
-  collections: Seq[Collection],
-  updateToolbarColor: Int => Ui[_],
-  updateCollection: (Collection, Int, Boolean) => Ui[_]
-  )(implicit context: ContextWrapper, theme: NineCardsTheme)
-  extends OnPageChangeListener {
-
-  var lastSelected = -1
-
-  override def onPageScrollStateChanged(state: Int): Unit = {}
-
-  override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit = {
-    val selectedCollection: Collection = collections(position)
-    val nextCollection: Option[Collection] = collections.lift(position + 1)
-    nextCollection map {
-      next =>
-        val startColor = resGetColor(getIndexColor(selectedCollection.themedColorIndex))
-        val endColor = resGetColor(getIndexColor(next.themedColorIndex))
-        val color = interpolateColors(positionOffset, startColor, endColor)
-        runUi(updateToolbarColor(color))
-    }
-  }
-
-  override def onPageSelected(position: Int): Unit = {
-    val fromLeft = position < lastSelected
-    lastSelected = position
-    runUi(updateCollection(collections(position), position, fromLeft))
-  }
-
+object CollectionsDetailsActivity {
+  val startPosition = "start_position"
 }
