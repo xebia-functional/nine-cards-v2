@@ -168,9 +168,7 @@ class DeviceProcessImplSpec
         result must beLike {
           case Answer(apps) =>
             apps.length shouldEqual appsCategorized.length
-            apps.head.packageName shouldEqual appsCategorized.head.packageName
-            apps(1).packageName shouldEqual appsCategorized(1).packageName
-            apps(2).packageName shouldEqual appsCategorized(2).packageName
+            apps.map(_.packageName) shouldEqual appsCategorized.map(_.packageName)
         }
       }
 
@@ -181,10 +179,7 @@ class DeviceProcessImplSpec
           case Answer(apps) =>
             val appsCategorizedAndNoCached: Seq[AppCategorized] = appsCategorized :+ appCategorizedNoCached
             apps.length shouldEqual apps.length
-            apps.head.packageName shouldEqual appsCategorizedAndNoCached.head.packageName
-            apps(1).packageName shouldEqual appsCategorizedAndNoCached(1).packageName
-            apps(2).packageName shouldEqual appsCategorizedAndNoCached(2).packageName
-            apps(3).packageName shouldEqual appsCategorizedAndNoCached(3).packageName
+            apps.map(_.packageName) shouldEqual appsCategorizedAndNoCached.map(_.packageName)
         }
       }
 
@@ -214,11 +209,9 @@ class DeviceProcessImplSpec
         result must beLike {
           case Answer(apps) =>
             apps.length shouldEqual appsCategorized.length
-            apps.head.packageName shouldEqual appsCategorized.head.packageName
-            apps(1).packageName shouldEqual appsCategorized(1).packageName
-            apps(2).packageName shouldEqual appsCategorized(2).packageName
+            apps.map(_.packageName) shouldEqual appsCategorized.map(_.packageName)
 
-            apps.head.imagePath shouldEqual appsCategorized.head.imagePath
+            apps(0).imagePath shouldEqual appsCategorized(0).imagePath
             apps(1).imagePath shouldEqual None
             apps(2).imagePath shouldEqual appsCategorized(2).imagePath
         }
