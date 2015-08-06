@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.WorkSpaceType._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
-import macroid.{ContextWrapper, ActivityContextWrapper, Tweak, Ui}
+import macroid.{ActivityContextWrapper, Tweak, Ui}
 
 import scala.annotation.tailrec
 
