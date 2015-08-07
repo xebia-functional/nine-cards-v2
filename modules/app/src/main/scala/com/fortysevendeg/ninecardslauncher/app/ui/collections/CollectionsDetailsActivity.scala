@@ -1,10 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.os.Bundle
+import android.annotation.TargetApi
+import android.os.{Build, Bundle}
+import android.support.v4.app.NavUtils
 import android.support.v7.app.AppCompatActivity
-import android.view.{Menu, MenuItem}
+import android.transition.{Transition, ChangeBounds, Explode, Slide}
+import android.view.ViewTreeObserver.OnPreDrawListener
+import android.view.{ViewTreeObserver, Menu, MenuItem}
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
@@ -40,10 +45,17 @@ class CollectionsDetailsActivity
 
     val position = getInt(
       Seq(getIntent.getExtras, bundle),
-      CollectionsDetailsActivity.startPosition,
+      startPosition,
       defaultPosition)
 
     setContentView(R.layout.collections_detail_activity)
+
+//    icon foreach (_.setTransitionName(getContentTransitionName(position)))
+
+//    runUi(initUi)
+
+    configureEnterTransition(position)
+
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
     systemBarTintManager.setStatusBarTintEnabled(true)
@@ -52,6 +64,41 @@ class CollectionsDetailsActivity
       onResult = (collections: Seq[Collection]) => drawCollections(collections, position),
       onPreTask = () => initUi
     )
+  }
+
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private[this] def configureEnterTransition(position: Int) = {
+
+//    val changeBounds = new ChangeBounds()
+//    changeBounds.addTarget(R.id.collections_icon)
+//
+//    getWindow.setSharedElementEnterTransition(changeBounds)
+
+    postponeEnterTransition()
+
+    icon foreach (_.setTransitionName(getContentTransitionName(position)))
+
+    root.get.getViewTreeObserver.addOnPreDrawListener(new OnPreDrawListener {
+      override def onPreDraw(): Boolean = {
+        root.get.getViewTreeObserver.removeOnPreDrawListener(this)
+        startPostponedEnterTransition()
+        true
+      }
+    })
+
+    getWindow.getSharedElementEnterTransition.addListener(new Transition.TransitionListener {
+      override def onTransitionStart(transition: Transition): Unit = {}
+
+      override def onTransitionCancel(transition: Transition): Unit = {}
+
+      override def onTransitionEnd(transition: Transition): Unit = {
+        runUi(showViews(position))
+      }
+
+      override def onTransitionPause(transition: Transition): Unit = {}
+
+      override def onTransitionResume(transition: Transition): Unit = {}
+    })
   }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
@@ -73,6 +120,7 @@ class CollectionsDetailsActivity
 
 trait ScrolledListener {
   def scrollY(scroll: Int, dy: Int)
+
   def scrollType(sType: Int)
 }
 
@@ -83,4 +131,6 @@ object ScrollType {
 
 object CollectionsDetailsActivity {
   val startPosition = "start_position"
+
+  def getContentTransitionName(position: Int) = s"icon_$position"
 }

@@ -5,6 +5,9 @@ import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.util.Pair
+import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.widget._
@@ -26,6 +29,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import CollectionsDetailsActivity._
 
 class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityContext: ActivityContextWrapper)
   extends LauncherWorkSpaceHolder
@@ -85,9 +89,12 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
       ) <~ collectionItemStyle <~ On.click {
         collection map {
           c =>
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+              activityContext.getOriginal,
+              new Pair[View, String](icon.get, getContentTransitionName(c.position)))
             val intent = createIntent[CollectionsDetailsActivity]
-            intent.putExtra(CollectionsDetailsActivity.startPosition, c.position)
-            uiStartIntent(intent)
+            intent.putExtra(startPosition, c.position)
+            uiStartIntentWithOptions(intent, options)
         } getOrElse Ui.nop
       } <~ vTag(R.id.use_layer_hardware, "")
     )

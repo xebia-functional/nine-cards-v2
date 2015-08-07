@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.ActivityOptionsCompat
 import macroid.{Ui, ActivityContextWrapper}
 
 trait UiExtensions {
@@ -37,6 +38,11 @@ object SafeUi {
   def uiStartIntent(intent: Intent)(implicit c: ActivityContextWrapper): Ui[Unit] =
     Ui {
       c.original.get foreach (_.startActivity(intent))
+    }
+
+  def uiStartIntentWithOptions(intent: Intent, options: ActivityOptionsCompat)(implicit c: ActivityContextWrapper): Ui[Unit] =
+    Ui {
+      c.original.get foreach (_.startActivity(intent, options.toBundle))
     }
 
   def uiStartIntentForResult(intent: Intent, result: Int)(implicit c: ActivityContextWrapper): Ui[Unit] =

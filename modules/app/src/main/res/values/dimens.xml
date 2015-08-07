@@ -36,6 +36,8 @@
     <dimen name="space_moving_collection_details">56dp</dimen>
     <integer name="anim_duration_icon_collection_detail">100</integer>
 
+    <integer name="anim_duration_appear_toolbar">400</integer>
+
     <dimen name="size_icon_card">60dp</dimen>
 
     <dimen name="height_selected_tab">2dp</dimen>
