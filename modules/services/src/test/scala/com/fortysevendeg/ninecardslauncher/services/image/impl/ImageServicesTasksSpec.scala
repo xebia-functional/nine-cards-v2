@@ -103,5 +103,26 @@ class ImageServicesTasksSpec
         }
       }
 
+    "returns a File when the file is created with a valid packageName" in
+      new ImageServicesTasksScope {
+        val result = mockImageServicesTask.getPathByPackageName(packageName)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultFile) =>
+            resultFile.getName shouldEqual packageName
+            resultFile.getPath shouldEqual s"$fileFolder/$packageName"
+        }
+      }
+
+    "returns a FileException when getPath in resourceUtils returns an empty string" in
+      new ImageServicesTasksScope with FileNameErrorImageServicesTasksScope {
+        val result = mockImageServicesTask.getPathByPackageName(packageName)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) =>
+              exception must beAnInstanceOf[FileException]
+          }
+        }
+      }
+
   }
 }
