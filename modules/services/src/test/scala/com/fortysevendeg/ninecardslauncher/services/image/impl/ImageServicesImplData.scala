@@ -21,6 +21,10 @@ trait ImageServicesImplData {
 
   val filePath = s"$fileFolder/$fileName"
 
+  val packageName = appPackage.packageName
+
+  val className = appPackage.className
+
   val appPackagePath = AppPackagePath(
     packageName = appPackage.packageName,
     className = appPackage.className,
