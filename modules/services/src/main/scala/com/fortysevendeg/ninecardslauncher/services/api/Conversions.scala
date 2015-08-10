@@ -79,9 +79,15 @@ trait Conversions {
   def toInstallation(installation: apiModel.Installation): Installation =
     Installation(
       id = installation._id,
-      deviceType = installation.deviceType,
+      deviceType = installation.deviceType flatMap parseDeviceType,
       deviceToken = installation.deviceToken,
       userId = installation.userId)
+
+  def parseDeviceType(deviceType: String): Option[DeviceType] =
+    deviceType match {
+      case AndroidDevice.paramValue => Some(AndroidDevice)
+      case _ => None
+    }
 
   def toGooglePlayPackageSeq(googlePlayPackages: Seq[apiModel.GooglePlayPackage]): Seq[GooglePlayPackage] =
     googlePlayPackages map toGooglePlayPackage

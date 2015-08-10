@@ -75,12 +75,12 @@ class ApiServicesImpl(
     } yield InstallationResponse(response.statusCode, toInstallation(installation))).resolve[ApiServiceException]
 
   override def updateInstallation(
-    id: Option[String],
+    id: String,
     deviceType: Option[String],
     deviceToken: Option[String],
     userId: Option[String]) =
     (for {
-      response <- apiUserService.updateInstallation(toInstallation(None, deviceType, deviceToken, userId), baseHeader)
+      response <- apiUserService.updateInstallation(toInstallation(Some(id), deviceType, deviceToken, userId), baseHeader)
     } yield UpdateInstallationResponse(response.statusCode)).resolve[ApiServiceException]
 
   override def googlePlayPackage(
@@ -99,9 +99,9 @@ class ApiServicesImpl(
         packages = response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)).resolve[ApiServiceException]
 
   override def googlePlaySimplePackages(
-    items: Seq[String])(implicit requestConfig: RequestConfig) =
+    packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
     (for {
-      response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(items), requestConfig.toHeader)
+      response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(packageNames), requestConfig.toHeader)
     } yield {
         val packages = response.data.map(playApp => toGooglePlaySimplePackages(playApp))
         GooglePlaySimplePackagesResponse(

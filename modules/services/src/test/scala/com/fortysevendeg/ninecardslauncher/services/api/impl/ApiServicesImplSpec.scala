@@ -288,7 +288,7 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.updateInstallation(Some(""), Some(""), Some(""), Some("")).run.run
+        val result = apiServices.updateInstallation("", Some(""), Some(""), Some("")).run.run
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
@@ -297,7 +297,7 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.updateInstallation(Some(""), Some(""), Some(""), Some("")).run.run
+        val result = apiServices.updateInstallation("", Some(""), Some(""), Some("")).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
