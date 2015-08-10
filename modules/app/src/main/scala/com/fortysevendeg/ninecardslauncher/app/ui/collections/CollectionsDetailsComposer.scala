@@ -1,11 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.graphics.Point
+import java.util
+
+import android.annotation.TargetApi
+import android.app.SharedElementCallback
+import android.os.Build
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
+import android.transition.{Transition, Fade, TransitionSet, TransitionInflater}
 import android.util.Log
+import android.view.{ViewGroup, Gravity, View}
+import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -23,6 +30,12 @@ import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+
+import scala.collection.JavaConversions._
+
+import CollectionsDetailsActivity._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CollectionsDetailsComposer
   extends Styles {
@@ -47,35 +60,24 @@ trait CollectionsDetailsComposer
 
   lazy val icon = Option(findView(TR.collections_icon))
 
-  def initUi(implicit theme: NineCardsTheme) =
+  def initUi(collection: Collection)(implicit theme: NineCardsTheme) =
     (tabs <~ tabsStyle <~ vInvisible) ~
-      (viewPager <~ vInvisible)
+      (viewPager <~ vInvisible) ~
+      updateToolbarColor(resGetColor(getIndexColor(collection.themedColorIndex))) ~
+      (icon <~ ivSrc(iconCollectionDetail(collection.icon)))
 
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
     val adapter = CollectionsPagerAdapter(manager.get, collections)
-    (viewPager <~ vpAdapter(adapter)) ~
+    (root <~ rootStyle) ~
+      (viewPager <~ vpAdapter(adapter)) ~
       Ui(adapter.activateFragment(position)) ~
       (tabs <~
         stlViewPager(viewPager) <~
         stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
-      (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop) ~
-      uiHandler(viewPager <~ vpCurrentItem(position))
-  }
-
-  def showViews(position: Int)(implicit theme: NineCardsTheme) = {
-    val point = new Point
-    getWindowManager.getDefaultDisplay.getSize(point)
-    val x = point.x / 2
-    val y = (resGetDimensionPixelSize(R.dimen.size_icon_collection_detail) / 2) + resGetDimensionPixelSize(R.dimen.padding_default)
-    (root <~ rootStyle) ~
-      (tabs <~ vVisible) ~
-      (viewPager <~ vVisible) ~
-      (getAdapter map {
-        adapter =>
-          updateToolbarColor(resGetColor(getIndexColor(adapter.collections(position).themedColorIndex)))
-      } getOrElse Ui.nop) ~
-      (toolbar <~ ripple(x, y))
+      uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
+      (tabs <~ vVisible <~~ enterViews) ~
+      (viewPager <~ vVisible <~~ enterViews)
   }
 
   def translationScrollY(scroll: Int): Ui[_] = {
@@ -107,7 +109,99 @@ trait CollectionsDetailsComposer
     }
   }
 
-  private[this] def setIconCollection(collection: Collection): Ui[_] = icon <~ ivSrc(iconCollectionDetail(collection.icon))
+  def configureEnterTransition(
+    position: Int,
+    end: (() => Unit)) = Lollipop.ifSupportedThen(configureEnterTransitionLollipop(position, end))
+
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private[this] def configureEnterTransitionLollipop(
+    position: Int,
+    end: (() => Unit)) = {
+
+    val enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.shared_element_enter)
+    getWindow.setSharedElementEnterTransition(enterTransition)
+
+    getWindow.setSharedElementReturnTransition(new TransitionSet())
+    getWindow.setReturnTransition(new Fade())
+
+    iconContent foreach (_.setTransitionName(getContentTransitionName(position)))
+
+    setEnterSharedElementCallback(new SharedElementCallback {
+
+      var snapshot: Option[View] = None
+
+      override def onSharedElementStart(
+        sharedElementNames: util.List[String],
+        sharedElements: util.List[View],
+        sharedElementSnapshots: util.List[View]): Unit = {
+        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, false)
+        snapshot foreach (_.setVisibility(View.VISIBLE))
+        findViewById(R.id.collections_toolbar).setVisibility(View.INVISIBLE)
+      }
+
+      override def onSharedElementEnd(
+        sharedElementNames: util.List[String],
+        sharedElements: util.List[View],
+        sharedElementSnapshots: util.List[View]): Unit = {
+        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, true)
+        snapshot foreach (_.setVisibility(View.INVISIBLE))
+        findViewById(R.id.collections_toolbar).setVisibility(View.VISIBLE)
+      }
+
+      override def onMapSharedElements(
+        names: util.List[String],
+        sharedElements: util.Map[String, View]): Unit =
+        findViewById(R.id.collections_toolbar).setVisibility(View.INVISIBLE)
+
+      private[this] def addSnapshot(
+        sharedElementNames: util.List[String],
+        sharedElements: util.List[View],
+        sharedElementSnapshots: util.List[View],
+        relayoutContainer: Boolean) = {
+        if (snapshot.isEmpty) {
+          val transitionName = getContentTransitionName(position)
+          sharedElementNames.zipWithIndex foreach {
+            case (name, index) if name.equals(transitionName) =>
+              val element = sharedElements.get(index).asInstanceOf[FrameLayout]
+              val snapshotView = sharedElementSnapshots.get(index)
+              val width = snapshotView.getWidth
+              val height = snapshotView.getHeight
+              val layoutParams = new FrameLayout.LayoutParams(width, height)
+              layoutParams.gravity = Gravity.CENTER
+              val widthSpec = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY)
+              val heightSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+              snapshotView.measure(widthSpec, heightSpec)
+              snapshotView.layout(0, 0, width, height)
+              snapshotView.setTransitionName(snapshotName)
+              if (relayoutContainer) {
+                val container = findViewById(R.id.collections_root).asInstanceOf[ViewGroup]
+                val left = (container.getWidth - width) / 2
+                val top = (container.getHeight - height) / 2
+                element.measure(widthSpec, heightSpec)
+                element.layout(left, top, left + width, top + height)
+              }
+              snapshot = Option(snapshotView)
+              element.addView(snapshotView, layoutParams)
+          }
+        }
+      }
+
+    })
+
+    getWindow.getSharedElementEnterTransition.addListener(new Transition.TransitionListener {
+      override def onTransitionStart(transition: Transition): Unit = {}
+
+      override def onTransitionCancel(transition: Transition): Unit = {}
+
+      override def onTransitionEnd(transition: Transition): Unit = {
+        end()
+      }
+
+      override def onTransitionPause(transition: Transition): Unit = {}
+
+      override def onTransitionResume(transition: Transition): Unit = {}
+    })
+  }
 
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[_] = getAdapter map {
     adapter =>

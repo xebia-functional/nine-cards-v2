@@ -8,6 +8,13 @@
         <item name="colorControlHighlight">@color/color_control_highlight</item>
     </style>
 
+    <style name="AppThemeWizard" parent="AppTheme.Base">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorControlHighlight">@color/color_control_highlight</item>
+    </style>
+
     <style name="AppThemeWallpaper" parent="AppTheme.Base">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>

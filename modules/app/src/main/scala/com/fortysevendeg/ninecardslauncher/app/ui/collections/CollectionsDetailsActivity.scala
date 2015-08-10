@@ -1,17 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.annotation.TargetApi
-import android.os.{Build, Bundle}
-import android.support.v4.app.NavUtils
+import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.transition.{Transition, ChangeBounds, Explode, Slide}
-import android.view.ViewTreeObserver.OnPreDrawListener
-import android.view.{ViewTreeObserver, Menu, MenuItem}
+import android.view._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -19,8 +15,6 @@ import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.Contexts
 import macroid.FullDsl._
 import rapture.core.Answer
-
-import scalaz.concurrent.Task
 
 class CollectionsDetailsActivity
   extends AppCompatActivity
@@ -40,65 +34,34 @@ class CollectionsDetailsActivity
     case _ => getDefaultTheme
   }
 
+  lazy val collections: Seq[Collection] = di.collectionProcess.getCollections.run.run match {
+    case Answer(c) => c
+    case _ => Seq.empty
+  }
+
+  lazy val position = getInt(
+    Seq(getIntent.getExtras),
+    startPosition,
+    defaultPosition)
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
 
-    val position = getInt(
-      Seq(getIntent.getExtras, bundle),
-      startPosition,
-      defaultPosition)
-
     setContentView(R.layout.collections_detail_activity)
 
-//    icon foreach (_.setTransitionName(getContentTransitionName(position)))
+    runUi(initUi(collections(position)))
 
-//    runUi(initUi)
-
-    configureEnterTransition(position)
+    configureEnterTransition(position, () => runUi(drawCollections(collections, position)))
 
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
     systemBarTintManager.setStatusBarTintEnabled(true)
 
-    Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
-      onResult = (collections: Seq[Collection]) => drawCollections(collections, position),
-      onPreTask = () => initUi
-    )
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private[this] def configureEnterTransition(position: Int) = {
-
-//    val changeBounds = new ChangeBounds()
-//    changeBounds.addTarget(R.id.collections_icon)
-//
-//    getWindow.setSharedElementEnterTransition(changeBounds)
-
-    postponeEnterTransition()
-
-    icon foreach (_.setTransitionName(getContentTransitionName(position)))
-
-    root.get.getViewTreeObserver.addOnPreDrawListener(new OnPreDrawListener {
-      override def onPreDraw(): Boolean = {
-        root.get.getViewTreeObserver.removeOnPreDrawListener(this)
-        startPostponedEnterTransition()
-        true
-      }
-    })
-
-    getWindow.getSharedElementEnterTransition.addListener(new Transition.TransitionListener {
-      override def onTransitionStart(transition: Transition): Unit = {}
-
-      override def onTransitionCancel(transition: Transition): Unit = {}
-
-      override def onTransitionEnd(transition: Transition): Unit = {
-        runUi(showViews(position))
-      }
-
-      override def onTransitionPause(transition: Transition): Unit = {}
-
-      override def onTransitionResume(transition: Transition): Unit = {}
-    })
+  override def finishAfterTransition(): Unit = {
+    super.finishAfterTransition()
+    runUi(toolbar <~ vVisible)
   }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
@@ -116,6 +79,8 @@ class CollectionsDetailsActivity
   override def scrollY(scroll: Int, dy: Int): Unit = runUi(translationScrollY(scroll))
 
   override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
+
+  override def onBackPressed(): Unit = finish()
 }
 
 trait ScrolledListener {
@@ -131,6 +96,6 @@ object ScrollType {
 
 object CollectionsDetailsActivity {
   val startPosition = "start_position"
-
+  val snapshotName = "snapshot"
   def getContentTransitionName(position: Int) = s"icon_$position"
 }
