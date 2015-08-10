@@ -27,5 +27,6 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION "project process" clean coverage test
   - sbt ++$TRAVIS_SCALA_VERSION "project repository" clean coverage test
   - sbt ++$TRAVIS_SCALA_VERSION "project services" clean coverage test
+after_success:
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
