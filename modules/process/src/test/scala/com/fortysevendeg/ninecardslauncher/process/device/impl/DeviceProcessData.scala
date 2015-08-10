@@ -1,13 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.process.device
+package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.image.{AppWebsitePath, AppWebsite, AppPackagePath}
+import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 
 trait DeviceProcessData {
+
+  val statusCodeOk = 200
 
   val name1 = "Scala Android"
   val packageName1 = "com.fortysevendeg.scala.android"

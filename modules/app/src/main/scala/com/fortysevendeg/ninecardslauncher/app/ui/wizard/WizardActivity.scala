@@ -4,8 +4,7 @@ import android.accounts._
 import android.app.Activity
 import android.content.Intent
 import android.os.{Build, Bundle}
-import android.support.v4.app.FragmentActivity
-import android.support.v7.app.ActionBarActivity
+import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
@@ -21,8 +20,8 @@ import scala.util.{Failure, Success, Try}
 import scalaz.concurrent.Task
 
 class WizardActivity
-  extends ActionBarActivity
-  with Contexts[FragmentActivity]
+  extends AppCompatActivity
+  with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with WizardTasks
   with WizardPersistence
@@ -69,7 +68,7 @@ class WizardActivity
             )
           } match {
             case Success(device) =>
-              Task.fork(signInUser(username, device)).resolveAsyncUi(
+              Task.fork(signInUser(username, device).run).resolveAsyncUi(
                 userInfo => showLoading ~ searchDevices(userInfo),
                 ex => uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
             case Failure(ex) => ex match {

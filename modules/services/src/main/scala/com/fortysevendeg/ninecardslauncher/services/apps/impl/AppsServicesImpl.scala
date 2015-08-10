@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.apps.impl
 
-import java.io.IOException
-
 import android.content.Intent
 import android.content.pm.ResolveInfo
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
@@ -20,12 +18,9 @@ class AppsServicesImpl
   override def getInstalledApps(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[AppsInstalledException] {
-        val mainIntent: Intent = new Intent(Intent.ACTION_MAIN, null)
-        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-
         val packageManager = context.getPackageManager
 
-        val apps: Seq[ResolveInfo] = packageManager.queryIntentActivities(mainIntent, 0).toSeq
+        val apps: Seq[ResolveInfo] = packageManager.queryIntentActivities(categoryLauncherIntent(), 0).toSeq
 
         apps map {
           resolveInfo =>
@@ -37,5 +32,11 @@ class AppsServicesImpl
         }
       }
     }
+  }
+
+  protected def categoryLauncherIntent(): Intent = {
+    val mainIntent: Intent = new Intent(Intent.ACTION_MAIN, null)
+    mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+    mainIntent
   }
 }

@@ -2,11 +2,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.content.Context
 import android.net.Uri
-import android.support.v7.app.ActionBarActivity
+import android.support.v7.app.AppCompatActivity
 
 trait WizardPersistence {
 
-  self: ActionBarActivity =>
+  self: AppCompatActivity =>
 
   val googleKeyPreferences = "__google_auth__"
   val googleKeyToken = "__google_token__"

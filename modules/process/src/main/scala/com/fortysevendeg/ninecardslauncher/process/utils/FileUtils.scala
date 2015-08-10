@@ -4,21 +4,24 @@ import java.io.{Closeable, InputStream}
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 
 import scala.io.Source
 import scala.util.control.Exception._
-import scalaz.\/
 import scalaz.concurrent.Task
 
-class FileUtils {
+class FileUtils
+  extends ImplicitsUtilsException {
 
-  def getJsonFromFile(filename: String)(implicit context: ContextSupport): Task[NineCardsException \/ String] =
-    Task {
-      fromTryCatchNineCardsException[String] {
-        withResource[InputStream, String](context.getAssets.open(filename)) {
-          stream =>
-            Source.fromInputStream(stream, "UTF-8").mkString
+  def getJsonFromFile(filename: String)(implicit context: ContextSupport): ServiceDef2[String, AssetException] =
+    Service {
+      Task {
+        CatchAll[AssetException] {
+          withResource[InputStream, String](context.getAssets.open(filename)) {
+            stream =>
+              Source.fromInputStream(stream, "UTF-8").mkString
+          }
         }
       }
     }

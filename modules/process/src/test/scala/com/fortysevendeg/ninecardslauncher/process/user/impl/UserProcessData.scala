@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.user
+package com.fortysevendeg.ninecardslauncher.process.user.impl
 
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GoogleDevice, Installation, User}
@@ -9,7 +9,9 @@ trait UserProcessData
   extends Scope
   with Mockito {
 
-  val userStatusCode = 101
+  val statusCodeUser = 101
+
+  val statusCodeOk = 200
 
   val userId = "fake-user-id"
 

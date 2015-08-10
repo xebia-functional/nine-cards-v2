@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import java.io.{File, IOException}
+import java.io.File
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -8,11 +8,11 @@ import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.services.image.{AppWebsitePath, AppPackagePath, BitmapTransformationException}
+import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationExceptionImpl, FileException, BitmapTransformationException}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Errata, Answer, Result}
+import rapture.core.{Answer, Errata, Result}
 
 import scalaz.concurrent.Task
 
@@ -20,7 +20,9 @@ trait ImageServicesImplSpecification
   extends Specification
   with Mockito {
 
-  val serviceBitmapException = Service(Task(Result.errata[Bitmap, BitmapTransformationException](BitmapTransformationException(""))))
+  val bitmapException = BitmapTransformationExceptionImpl("")
+
+  val serviceBitmapException = Service(Task(Result.errata[Bitmap, BitmapTransformationException](bitmapException)))
 
   trait ImageServicesScope
     extends Scope
@@ -38,7 +40,7 @@ trait ImageServicesImplSpecification
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
     val fileExistsTask = Service(Task {
-      Result.catching[IOException] {
+      Result.catching[FileException] {
         val file = mock[File]
         file.exists() returns true
         file.getAbsolutePath returns filePath
@@ -47,7 +49,7 @@ trait ImageServicesImplSpecification
     })
 
     val fileNotExistsTask = Service(Task {
-      Result.catching[IOException] {
+      Result.catching[FileException] {
         val file = mock[File]
         file.exists() returns false
         file.getAbsolutePath returns filePath
@@ -84,7 +86,7 @@ trait ImageServicesImplSpecification
       defaultBitmapTask
 
     mockTasks.saveBitmap(any[File], any[Bitmap]) returns
-      Service(Task(Result.catching[IOException](())))
+      Service(Task(Result.catching[FileException](())))
 
     mockTasks.getPathByApp(appPackage.packageName, appPackage.className)(contextSupport) returns
       fileNotExistsTask
@@ -133,7 +135,7 @@ class ImageServicesImplSpec
     "returns filename when the file exists" in
       new ImageServicesScope with FilesExistsImageServicesScope {
         val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run.run
-        result must beLike[Result[AppPackagePath, IOException with BitmapTransformationException]] {
+        result must beLike {
           case Answer(resultAppPackagePath) =>
             resultAppPackagePath shouldEqual appPackagePath
         }
@@ -143,7 +145,7 @@ class ImageServicesImplSpec
       new ImageServicesScope {
         val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run.run
         there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
-        result must beLike[Result[AppPackagePath, IOException with BitmapTransformationException]] {
+        result must beLike {
           case Answer(resultAppPackagePath) =>
             resultAppPackagePath shouldEqual appPackagePath
         }
@@ -153,9 +155,10 @@ class ImageServicesImplSpec
       new ImageServicesScope with BitmapErrorImageServicesScope {
         val result = mockImageService.saveAppIcon(appPackage)(contextSupport).run.run
         there was exactly(0)(mockTasks).saveBitmap(any[File], any[Bitmap])
-        result must beLike[Result[AppPackagePath, IOException with BitmapTransformationException]] {
-          case Errata(errors) =>
-            errors.length must be_==(1)
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception shouldEqual bitmapException
+          }
         }
       }
 
@@ -166,7 +169,7 @@ class ImageServicesImplSpec
     "returns filename when the file exists" in
       new ImageServicesScope with FilesExistsImageServicesScope {
         val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run.run
-        result must beLike[Result[AppWebsitePath, IOException with BitmapTransformationException]] {
+        result must beLike {
           case Answer(resultAppWebsitePath) =>
             resultAppWebsitePath shouldEqual appWebsitePath
         }
@@ -176,7 +179,7 @@ class ImageServicesImplSpec
       new ImageServicesScope {
         val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run.run
         there was one(mockTasks).saveBitmap(any[File], any[Bitmap])
-        result must beLike[Result[AppWebsitePath, IOException with BitmapTransformationException]] {
+        result must beLike {
           case Answer(resultAppWebsitePath) =>
             resultAppWebsitePath shouldEqual appWebsitePath
         }
@@ -186,9 +189,10 @@ class ImageServicesImplSpec
       new ImageServicesScope with BitmapErrorImageServicesScope {
         val result = mockImageService.saveAppIcon(appWebsite)(contextSupport).run.run
         there was exactly(0)(mockTasks).saveBitmap(any[File], any[Bitmap])
-        result must beLike[Result[AppWebsitePath, IOException with BitmapTransformationException]] {
-          case Errata(errors) =>
-            errors.length must be_==(1)
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception shouldEqual bitmapException
+          }
         }
       }
 

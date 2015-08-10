@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository.card
 
-import com.fortysevendeg.ninecardslauncher.commons.exceptions.Exceptions.NineCardsException
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
@@ -11,6 +11,7 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import rapture.core.{Answer, Errata}
 
 trait CardRepositorySpecification
   extends Specification
@@ -150,10 +151,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run
+          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run.run
 
-          result must be_\/-[Card].which {
-            card =>
+          result must beLike {
+            case Answer(card) =>
               card.id shouldEqual testCardId
               card.data.intent shouldEqual testIntent
           }
@@ -163,9 +164,15 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run
+          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -175,18 +182,27 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.deleteCard(card = card).run
+          val result = cardRepository.deleteCard(card = card).run.run
 
-          result must be_\/-[Int].which(_ shouldEqual 1)
+          result must beLike {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.deleteCard(card = card).run
+          val result = cardRepository.deleteCard(card = card).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -196,10 +212,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.findCardById(id = testCardId).run
+          val result = cardRepository.findCardById(id = testCardId).run.run
 
-          result must be_\/-[Option[Card]].which {
-            maybeCard =>
+          result must beLike {
+            case Answer(maybeCard) =>
               maybeCard must beSome[Card].which { card =>
                 card.id shouldEqual testCardId
                 card.data.intent shouldEqual testIntent
@@ -211,18 +227,27 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.findCardById(id = testNonExistingCardId).run
+          val result = cardRepository.findCardById(id = testNonExistingCardId).run.run
 
-          result must be_\/-[Option[Card]].which(_ must beNone)
+          result must beLike {
+            case Answer(maybeCard) =>
+              maybeCard must beNone
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.findCardById(id = testCardId).run
+          val result = cardRepository.findCardById(id = testCardId).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -232,20 +257,23 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run
+          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run.run
 
-          result must be_\/-[Seq[Card]].which(_ shouldEqual cardSeq)
+          result must beLike {
+            case Answer(cards) =>
+              cards shouldEqual cardSeq
+          }
         }
 
       "fetchCardsByCollection should return an empty sequence when a non-existent collection id is given" in
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = testNonExistingCollectionId).run
+          val result = cardRepository.fetchCardsByCollection(collectionId = testNonExistingCollectionId).run.run
 
-          result must be_\/-[Seq[Card]].which {
-            cards =>
-              cards shouldEqual Seq.empty
+          result must beLike {
+            case Answer(cards) =>
+              cards should beEmpty
           }
         }
 
@@ -253,9 +281,15 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run
+          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -265,18 +299,27 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.updateCard(card = card).run
+          val result = cardRepository.updateCard(card = card).run.run
 
-          result must be_\/-[Int].which(_ shouldEqual 1)
+          result must beLike {
+            case Answer(updated) =>
+              updated shouldEqual 1
+          }
         }
 
       "return a NineCardsException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.updateCard(card = card).run
+          val result = cardRepository.updateCard(card = card).run.run
 
-          result must be_-\/[NineCardsException]
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
         }
     }
 
@@ -313,7 +356,7 @@ class CardRepositorySpec
 
           val result = getListFromCursor(cardEntityFromCursor)(mockCursor)
 
-          result shouldEqual Seq.empty
+          result should beEmpty
         }
 
       "return a Card sequence when a cursor with data is given" in

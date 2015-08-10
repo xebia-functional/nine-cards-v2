@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.os.Bundle
 import android.support.v4.view.ViewPager.OnPageChangeListener
-import android.support.v7.app.ActionBarActivity
+import android.support.v7.app.AppCompatActivity
 import android.view.{Menu, MenuItem}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
@@ -15,13 +15,13 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Contexts, Ui}
+import rapture.core.Answer
 
 import scalaz.concurrent.Task
-import scalaz.{-\/, \/-}
 
 class CollectionsDetailsActivity
-  extends ActionBarActivity
-  with Contexts[ActionBarActivity]
+  extends AppCompatActivity
+  with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with CollectionsDetailsComposer
   with TypedFindView
@@ -29,9 +29,9 @@ class CollectionsDetailsActivity
 
   lazy val di = new Injector
 
-  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run match {
-    case -\/(ex) => getDefaultTheme
-    case \/-(t) => t
+  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
+    case Answer(t) => t
+    case _ => getDefaultTheme
   }
 
   override def onCreate(bundle: Bundle) = {
@@ -41,7 +41,7 @@ class CollectionsDetailsActivity
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
     systemBarTintManager.setStatusBarTintEnabled(true)
 
-    Task.fork(di.collectionProcess.getCollections).resolveAsyncUi(
+    Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
       onResult = (collections: Seq[Collection]) => fetchCollections(collections),
       onPreTask = () => initUi
     )
