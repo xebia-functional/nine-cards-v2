@@ -211,7 +211,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
 
         result must beLike {
-          case Answer(r) => r shouldEqual ()
+          case Answer(r) => r shouldEqual (())
         }
       }
 
@@ -220,7 +220,7 @@ class UserProcessImplSpec
       there was exactly(0)(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
 
       result must beLike {
-        case Answer(r) => r shouldEqual ()
+        case Answer(r) => r shouldEqual (())
       }
     }
 
@@ -236,7 +236,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).resetUser(contextSupport)
 
         result must beLike {
-          case Answer(r) => r shouldEqual ()
+          case Answer(r) => r shouldEqual (())
         }
       }
 
