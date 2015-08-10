@@ -66,7 +66,7 @@ class ApiServicesImpl(
     } yield LoginResponse(response.statusCode, toUser(user))).resolve[ApiServiceException]
 
   override def createInstallation(
-    deviceType: Option[String],
+    deviceType: Option[DeviceType],
     deviceToken: Option[String],
     userId: Option[String]) =
     (for {
@@ -76,7 +76,7 @@ class ApiServicesImpl(
 
   override def updateInstallation(
     id: String,
-    deviceType: Option[String],
+    deviceType: Option[DeviceType],
     deviceToken: Option[String],
     userId: Option[String]) =
     (for {

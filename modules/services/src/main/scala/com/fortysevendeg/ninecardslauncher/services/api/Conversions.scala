@@ -66,13 +66,13 @@ trait Conversions {
 
   def toInstallation(
     id: Option[String],
-    deviceType: Option[String],
+    deviceType: Option[DeviceType],
     deviceToken: Option[String],
     userId: Option[String]
     ): apiModel.Installation =
     apiModel.Installation(
       _id = id,
-      deviceType = deviceType,
+      deviceType = deviceType map (_.paramValue),
       deviceToken = deviceToken,
       userId = userId)
 

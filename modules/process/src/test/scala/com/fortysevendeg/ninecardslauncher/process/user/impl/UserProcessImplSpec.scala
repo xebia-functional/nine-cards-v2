@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.api.models.GoogleDevice
+import com.fortysevendeg.ninecardslauncher.services.api.models.{DeviceType, GoogleDevice}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{InstallationNotFoundException, PersistenceServiceException, PersistenceServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -58,7 +58,7 @@ trait UserProcessSpecification
       Service(Task(Result.answer(InstallationResponse(statusCodeOk, initialInstallation))))
 
     mockApiServices.updateInstallation(
-      id = installation.id,
+      id = installationId,
       deviceType = installation.deviceType,
       deviceToken = installation.deviceToken,
       userId = installation.userId) returns
@@ -147,7 +147,7 @@ class UserProcessImplSpec
         val result = userProcess.signIn(email, device)(contextSupport).run.run
 
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
-        there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
+        there was one(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
         there was one(mockPersistenceServices).saveUser(user)(contextSupport)
         there was one(mockPersistenceServices).getInstallation(contextSupport)
 
@@ -162,7 +162,7 @@ class UserProcessImplSpec
         val result = userProcess.signIn(email, device)(contextSupport).run.run
 
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
-        there was one(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
+        there was one(mockApiServices).updateInstallation(any[String], any[Option[DeviceType]], any[Option[String]], any[Option[String]])
         there was one(mockPersistenceServices).saveUser(user)(contextSupport)
         there was one(mockPersistenceServices).getInstallation(contextSupport)
 
@@ -176,8 +176,8 @@ class UserProcessImplSpec
       new UserProcessScope with LoginErrorUserProcessScope {
         val result = userProcess.signIn(email, device)(contextSupport).run.run
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
-        there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
-        there was exactly(0)(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
+        there was exactly(0)(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
+        there was exactly(0)(mockApiServices).updateInstallation(any[String], any[Option[DeviceType]], any[Option[String]], any[Option[String]])
 
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -191,8 +191,8 @@ class UserProcessImplSpec
         val result = userProcess.signIn(email, device)(contextSupport).run.run
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
         there was one(mockPersistenceServices).saveUser(user)(contextSupport)
-        there was exactly(0)(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
-        there was exactly(0)(mockApiServices).updateInstallation(any[Option[String]], any[Option[String]], any[Option[String]], any[Option[String]])
+        there was exactly(0)(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
+        there was exactly(0)(mockApiServices).updateInstallation(any[String], any[Option[DeviceType]], any[Option[String]], any[Option[String]])
 
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -211,7 +211,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
 
         result must beLike {
-          case Answer(r) => r shouldEqual (())
+          case Answer(r) => r shouldEqual ()
         }
       }
 
@@ -220,7 +220,7 @@ class UserProcessImplSpec
       there was exactly(0)(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
 
       result must beLike {
-        case Answer(r) => r shouldEqual (())
+        case Answer(r) => r shouldEqual ()
       }
     }
 
@@ -231,19 +231,19 @@ class UserProcessImplSpec
     "save initial installation and call to create installation in ApiService" in
       new UserProcessScope {
         val result = userProcess.unregister(contextSupport).run.run
-        there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
+        there was one(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
         there was one(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
         there was one(mockPersistenceServices).resetUser(contextSupport)
 
         result must beLike {
-          case Answer(r) => r shouldEqual (())
+          case Answer(r) => r shouldEqual ()
         }
       }
 
     "returns a UserException if sync fails" in
       new UserProcessScope with CreateInstallationErrorUserProcessScope {
         val result = userProcess.unregister(contextSupport).run.run
-        there was one(mockApiServices).createInstallation(any[Option[String]], any[Option[String]], any[Option[String]])
+        there was one(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
         there was exactly(0)(mockPersistenceServices).saveInstallation(initialInstallation)(contextSupport)
         there was exactly(0)(mockPersistenceServices).resetUser(contextSupport)
 

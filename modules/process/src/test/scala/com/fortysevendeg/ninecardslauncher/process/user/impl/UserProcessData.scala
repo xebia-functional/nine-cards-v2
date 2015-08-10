@@ -41,7 +41,7 @@ trait UserProcessData
 
   val installationId = "fake-installation-id"
   val installationToken = "fake-user-token"
-  val deviceType = Option(AndroidDevice.paramValue)
+  val deviceType = Some(AndroidDevice)
 
   val initialInstallation = Installation(None, deviceType, None, None)
 

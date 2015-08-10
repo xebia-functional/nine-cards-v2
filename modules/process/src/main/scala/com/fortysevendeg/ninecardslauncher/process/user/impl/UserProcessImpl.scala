@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.api.models.{AndroidDevice, Installation}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
-import rapture.core.{Answer, Errata, Result}
+import rapture.core.{Answer, Errata, Result, Unforeseen}
 
 import scalaz.concurrent.Task
 
@@ -23,6 +23,8 @@ class UserProcessImpl(
   private[this] val deviceType = AndroidDevice
 
   private[this] val basicInstallation = Installation(id = None, deviceType = Some(deviceType), deviceToken = None, userId = None)
+
+  private[this] val syncInstallationErrorMessage = "Installation not updated"
 
   override def signIn(email: String, device: Device)(implicit context: ContextSupport) = (for {
     loginResponse <- apiServices.login(email, toGoogleDevice(device))
@@ -50,17 +52,19 @@ class UserProcessImpl(
         Service {
           apiServices.updateInstallation(
             id = id,
-            deviceType = installation.deviceType map (_.paramValue),
+            deviceType = installation.deviceType,
             deviceToken = installation.deviceToken,
             userId = installation.userId).run map {
             case Answer(r) => Result.answer[Int, UserException](r.statusCode)
-            case Errata(ex) => Result.errata[Int, UserException](UserException(message = "Installation not updated"))
+            // TODO - This need to be improved in ticket 9C-214
+            case Errata(_) => Result.errata[Int, UserException](UserException(syncInstallationErrorMessage))
+            case Unforeseen(ex) => Result.errata[Int, UserException](UserException(syncInstallationErrorMessage, Some(ex)))
           }
         }
     } getOrElse {
       (for {
         installationResponse <- apiServices.createInstallation(
-          installation.deviceType map (_.paramValue),
+          installation.deviceType,
           installation.deviceToken,
           installation.userId)
         saved <- persistenceServices.saveInstallation(installationResponse.installation)

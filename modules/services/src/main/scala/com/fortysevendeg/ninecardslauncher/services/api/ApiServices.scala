@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.services.api.models.{GoogleDevice, UserConfigDevice, UserConfigGeoInfo}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{DeviceType, GoogleDevice, UserConfigDevice, UserConfigGeoInfo}
 
 trait ApiServices {
 
@@ -39,7 +39,7 @@ trait ApiServices {
    * @throws ApiServiceException if there was an error in the request
    */
   def createInstallation(
-    deviceType: Option[String],
+    deviceType: Option[DeviceType],
     deviceToken: Option[String],
     userId: Option[String]): ServiceDef2[InstallationResponse, ApiServiceException]
 
@@ -55,7 +55,7 @@ trait ApiServices {
    */
   def updateInstallation(
     id: String,
-    deviceType: Option[String],
+    deviceType: Option[DeviceType],
     deviceToken: Option[String],
     userId: Option[String]): ServiceDef2[UpdateInstallationResponse, ApiServiceException]
 
