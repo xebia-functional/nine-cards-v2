@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import java.util
 
+import android.animation.ValueAnimator
 import android.annotation.TargetApi
 import android.app.SharedElementCallback
 import android.os.Build
@@ -134,7 +135,7 @@ trait CollectionsDetailsComposer
         sharedElementNames: util.List[String],
         sharedElements: util.List[View],
         sharedElementSnapshots: util.List[View]): Unit = {
-        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, false)
+        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, relayoutContainer = false)
         snapshot foreach (_.setVisibility(View.VISIBLE))
         findViewById(R.id.collections_toolbar).setVisibility(View.INVISIBLE)
       }
@@ -143,7 +144,7 @@ trait CollectionsDetailsComposer
         sharedElementNames: util.List[String],
         sharedElements: util.List[View],
         sharedElementSnapshots: util.List[View]): Unit = {
-        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, true)
+        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, relayoutContainer = true)
         snapshot foreach (_.setVisibility(View.INVISIBLE))
         findViewById(R.id.collections_toolbar).setVisibility(View.VISIBLE)
       }
@@ -254,6 +255,17 @@ class OnPageChangeCollectionsListener(
 
   private[this] def getColor(col: Collection): Int = resGetColor(getIndexColor(col.themedColorIndex))
 
+  private[this] def jump(from: Collection, to: Collection) = {
+    val valueAnimator = ValueAnimator.ofInt(0, 100)
+    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      override def onAnimationUpdate(value: ValueAnimator) {
+        val color = interpolateColors(value.getAnimatedFraction, getColor(from), getColor(to))
+        runUi(updateToolbarColor(color))
+      }
+    })
+    valueAnimator.start()
+  }
+
   override def onPageScrollStateChanged(state: Int): Unit = {
     state match {
       case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
@@ -261,16 +273,13 @@ class OnPageChangeCollectionsListener(
     }
   }
 
-  override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit = {
-
+  override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit =
     currentMovement match {
       case Loading => // Nothing
       case Start => // First time, we change automatically the movement
         currentMovement = if (currentPosition > 0) Jump else Idle
       case Jump => // Nothing. The animation was triggered in onPageSelected
-        Log.d("9cards", s"positionOffset: $positionOffset -- lastPosition: $lastPosition -- currentMovement: ${currentMovement.toString} -- currentPosition: $currentPosition")
-      case _ =>
-        Log.d("9cards", s"positionOffset: $positionOffset -- position: $position -- currentMovement: ${currentMovement.toString} -- currentPosition: $currentPosition")
+      case _ => // Scrolling to left or right
         val selectedCollection: Collection = collections(position)
         val nextCollection: Option[Collection] = collections.lift(position + 1)
         nextCollection map {
@@ -280,9 +289,6 @@ class OnPageChangeCollectionsListener(
         }
     }
 
-
-  }
-
   override def onPageSelected(position: Int): Unit = {
     val pageMovement: PageMovement = (position, currentPosition) match {
       case (p, cp) if cp == -1 => Start
@@ -291,10 +297,13 @@ class OnPageChangeCollectionsListener(
       case (p, cp) if p < cp => Left
       case _ => Right
     }
-    Log.d("9cards", s"===>>>>> onPageSelected: $position -- lastSelected: $currentPosition -- pageMovement: ${pageMovement.toString} <<<<<<======")
     lastPosition = currentPosition
     currentPosition = position
     currentMovement = pageMovement
+    pageMovement match {
+      case Jump => jump(collections(lastPosition), collections(currentPosition))
+      case _ =>
+    }
     runUi(updateCollection(collections(position), position, pageMovement))
   }
 

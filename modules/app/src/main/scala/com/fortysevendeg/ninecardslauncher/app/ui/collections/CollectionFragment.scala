@@ -11,8 +11,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import macroid.Contexts
 import macroid.FullDsl._
-import macroid.{Contexts, ActivityContextWrapper, ContextWrapper}
 import rapture.core.Answer
 
 class CollectionFragment
