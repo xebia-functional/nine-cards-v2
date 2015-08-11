@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="AppTheme.Base">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="colorControlHighlight">@color/color_control_highlight</item>
-    </style>
+    <style name="AppTheme.Base" parent="AppTheme.Commons" />
 
-    <style name="AppThemeWallpaper" parent="AppTheme.Base">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="colorControlHighlight">@color/color_control_highlight</item>
+    <style name="AppTheme" parent="AppTheme.Base" />
 
+    <style name="AppThemeWizard.Base" parent="AppTheme.Commons"/>
+
+    <style name="AppThemeWizard" parent="AppTheme.Base"/>
+
+    <style name="AppThemeWallpaper.Base" parent="AppTheme.Commons">
         <!-- Show Wallpaper -->
 
         <item name="android:windowShowWallpaper">true</item>
@@ -23,9 +19,16 @@
 
     </style>
 
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppThemeWallpaper" parent="AppThemeWallpaper.Base"/>
+
+    <style name="AppTheme.Commons" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorControlHighlight">@color/color_control_highlight</item>
     </style>
 
 </resources>

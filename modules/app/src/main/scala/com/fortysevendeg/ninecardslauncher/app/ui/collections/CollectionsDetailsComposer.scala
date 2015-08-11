@@ -1,14 +1,30 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
+import java.util
+
+import android.animation.ValueAnimator
+import android.annotation.TargetApi
+import android.app.SharedElementCallback
+import android.os.Build
 import android.support.v4.app.{Fragment, FragmentManager}
+import android.support.v4.view.ViewPager
+import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
+import android.transition.{Transition, Fade, TransitionSet, TransitionInflater}
+import android.util.Log
+import android.view.{ViewGroup, Gravity, View}
+import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -17,10 +33,24 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
+import scala.collection.JavaConversions._
+
+import CollectionsDetailsActivity._
+
+import scala.concurrent.ExecutionContext.Implicits.global
+
 trait CollectionsDetailsComposer
   extends Styles {
 
   self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] =>
+
+  val resistanceDisplacement = .35f
+
+  val resistanceScale = .15f
+
+  lazy val iconIndicatorDrawable = new PathMorphDrawable(
+    defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
+    padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
@@ -40,18 +70,39 @@ trait CollectionsDetailsComposer
 
   lazy val icon = Option(findView(TR.collections_icon))
 
-  def initUi(implicit theme: NineCardsTheme) =
-    (root <~ rootStyle) ~ (tabs <~ tabsStyle)
+  def initUi(indexColor: Int, iconCollection: String)(implicit theme: NineCardsTheme) =
+    (tabs <~ tabsStyle <~ vInvisible) ~
+      (viewPager <~ vInvisible) ~
+      updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
+      (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
 
-  def fetchCollections(collections: Seq[Collection])
+  def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
     val adapter = CollectionsPagerAdapter(manager.get, collections)
-    (viewPager <~ vpAdapter(adapter)) ~
-      Ui(adapter.activateFragment(0)) ~
+    (root <~ rootStyle) ~
+      (viewPager <~ vpAdapter(adapter)) ~
+      Ui(adapter.activateFragment(position)) ~
       (tabs <~
         stlViewPager(viewPager) <~
         stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
-      (viewPager map (vp => setIconCollection(collections(vp.getCurrentItem))) getOrElse Ui.nop)
+      uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
+      (tabs <~ vVisible <~~ enterViews) ~
+      (viewPager <~ vVisible <~~ enterViews)
+  }
+
+  def pullCloseScrollY(scroll: Int, close: Boolean): Ui[_] = {
+    val displacement = scroll * resistanceDisplacement
+    val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_close)
+    val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
+    (tabs <~ vTranslationY(displacement)) ~
+      (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
+      Ui {
+        val newIcon = if (close) IconTypes.CLOSE else IconTypes.BACK
+        if (iconIndicatorDrawable.currentTypeIcon != newIcon && !iconIndicatorDrawable.isRunning) {
+          iconIndicatorDrawable.setToTypeIcon(newIcon)
+          iconIndicatorDrawable.start()
+        }
+      }
   }
 
   def translationScrollY(scroll: Int): Ui[_] = {
@@ -83,11 +134,108 @@ trait CollectionsDetailsComposer
     }
   }
 
-  private[this] def setIconCollection(collection: Collection): Ui[_] = icon <~ ivSrc(iconCollectionDetail(collection.icon))
+  def configureEnterTransition(
+    position: Int,
+    end: (() => Unit)) = Lollipop.ifSupportedThen(configureEnterTransitionLollipop(position, end))
 
-  private[this] def updateCollection(collection: Collection, position: Int, fromLeft: Boolean): Ui[_] = getAdapter map {
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private[this] def configureEnterTransitionLollipop(
+    position: Int,
+    end: (() => Unit)) = {
+
+    val enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.shared_element_enter_collection_detail)
+    getWindow.setSharedElementEnterTransition(enterTransition)
+
+    getWindow.setSharedElementReturnTransition(new TransitionSet())
+    getWindow.setReturnTransition(new Fade())
+
+    iconContent foreach (_.setTransitionName(getContentTransitionName(position)))
+
+    setEnterSharedElementCallback(new SharedElementCallback {
+
+      var snapshot: Option[View] = None
+
+      override def onSharedElementStart(
+        sharedElementNames: util.List[String],
+        sharedElements: util.List[View],
+        sharedElementSnapshots: util.List[View]): Unit = {
+        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, relayoutContainer = false)
+        snapshot foreach (_.setVisibility(View.VISIBLE))
+        findViewById(R.id.collections_toolbar).setVisibility(View.INVISIBLE)
+      }
+
+      override def onSharedElementEnd(
+        sharedElementNames: util.List[String],
+        sharedElements: util.List[View],
+        sharedElementSnapshots: util.List[View]): Unit = {
+        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, relayoutContainer = true)
+        snapshot foreach (_.setVisibility(View.INVISIBLE))
+        findViewById(R.id.collections_toolbar).setVisibility(View.VISIBLE)
+      }
+
+      override def onMapSharedElements(
+        names: util.List[String],
+        sharedElements: util.Map[String, View]): Unit =
+        findViewById(R.id.collections_toolbar).setVisibility(View.INVISIBLE)
+
+      private[this] def addSnapshot(
+        sharedElementNames: util.List[String],
+        sharedElements: util.List[View],
+        sharedElementSnapshots: util.List[View],
+        relayoutContainer: Boolean) = {
+        if (snapshot.isEmpty) {
+          val transitionName = getContentTransitionName(position)
+          sharedElementNames.zipWithIndex foreach {
+            case (name, index) if name.equals(transitionName) =>
+              val element = sharedElements.get(index).asInstanceOf[FrameLayout]
+              val snapshotView = sharedElementSnapshots.get(index)
+              val width = snapshotView.getWidth
+              val height = snapshotView.getHeight
+              val layoutParams = new FrameLayout.LayoutParams(width, height)
+              layoutParams.gravity = Gravity.CENTER
+              val widthSpec = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY)
+              val heightSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+              snapshotView.measure(widthSpec, heightSpec)
+              snapshotView.layout(0, 0, width, height)
+              snapshotView.setTransitionName(snapshotName)
+              if (relayoutContainer) {
+                val container = findViewById(R.id.collections_root).asInstanceOf[ViewGroup]
+                val left = (container.getWidth - width) / 2
+                val top = (container.getHeight - height) / 2
+                element.measure(widthSpec, heightSpec)
+                element.layout(left, top, left + width, top + height)
+              }
+              snapshot = Option(snapshotView)
+              element.addView(snapshotView, layoutParams)
+          }
+        }
+      }
+
+    })
+
+    getWindow.getSharedElementEnterTransition.addListener(new Transition.TransitionListener {
+      override def onTransitionStart(transition: Transition): Unit = {}
+
+      override def onTransitionCancel(transition: Transition): Unit = {}
+
+      override def onTransitionEnd(transition: Transition): Unit = {
+        end()
+      }
+
+      override def onTransitionPause(transition: Transition): Unit = {}
+
+      override def onTransitionResume(transition: Transition): Unit = {}
+    })
+  }
+
+  private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[_] = getAdapter map {
     adapter =>
-      (icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft)) ~ adapter.notifyChanged(position)
+      (pageMovement match {
+        case Start | Idle => icon <~ ivSrc(iconCollectionDetail(collection.icon))
+        case Left => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = true)
+        case Right | Jump => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = false)
+        case _ => Ui.nop
+      }) ~ adapter.notifyChanged(position)
   } getOrElse Ui.nop
 
   private[this] def updateToolbarColor(color: Int): Ui[_] =
@@ -102,3 +250,85 @@ trait CollectionsDetailsComposer
 
 }
 
+sealed trait PageMovement
+
+case object Loading extends PageMovement
+
+case object Left extends PageMovement
+
+case object Right extends PageMovement
+
+case object Start extends PageMovement
+
+case object Idle extends PageMovement
+
+case object Jump extends PageMovement
+
+class OnPageChangeCollectionsListener(
+  collections: Seq[Collection],
+  updateToolbarColor: (Int) => Ui[_],
+  updateCollection: (Collection, Int, PageMovement) => Ui[_]
+  )(implicit context: ContextWrapper, theme: NineCardsTheme)
+  extends OnPageChangeListener {
+
+  var lastPosition = -1
+
+  var currentPosition = -1
+
+  var currentMovement: PageMovement = Loading
+
+  private[this] def getColor(col: Collection): Int = resGetColor(getIndexColor(col.themedColorIndex))
+
+  private[this] def jump(from: Collection, to: Collection) = {
+    val valueAnimator = ValueAnimator.ofInt(0, 100)
+    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      override def onAnimationUpdate(value: ValueAnimator) {
+        val color = interpolateColors(value.getAnimatedFraction, getColor(from), getColor(to))
+        runUi(updateToolbarColor(color))
+      }
+    })
+    valueAnimator.start()
+  }
+
+  override def onPageScrollStateChanged(state: Int): Unit = {
+    state match {
+      case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
+      case _ =>
+    }
+  }
+
+  override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit =
+    currentMovement match {
+      case Loading => // Nothing
+      case Start => // First time, we change automatically the movement
+        currentMovement = if (currentPosition > 0) Jump else Idle
+      case Jump => // Nothing. The animation was triggered in onPageSelected
+      case _ => // Scrolling to left or right
+        val selectedCollection: Collection = collections(position)
+        val nextCollection: Option[Collection] = collections.lift(position + 1)
+        nextCollection map {
+          next =>
+            val color = interpolateColors(positionOffset, getColor(selectedCollection), getColor(next))
+            runUi(updateToolbarColor(color))
+        }
+    }
+
+  override def onPageSelected(position: Int): Unit = {
+    val pageMovement: PageMovement = (position, currentPosition) match {
+      case (p, cp) if cp == -1 => Start
+      case (p, cp) if p > cp && p - cp > 1 => Jump
+      case (p, cp) if p < cp && cp - p > 1 => Jump
+      case (p, cp) if p < cp => Left
+      case _ => Right
+    }
+    lastPosition = currentPosition
+    currentPosition = position
+    currentMovement = pageMovement
+    pageMovement match {
+      case Jump => jump(collections(lastPosition), collections(currentPosition))
+      case _ =>
+    }
+    runUi(updateCollection(collections(position), position, pageMovement))
+  }
+
+}

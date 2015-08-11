@@ -8,14 +8,12 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import macroid.Contexts
 import macroid.FullDsl._
-import rapture.core.{Answer, Errata}
-
-import scalaz.{-\/, \/-}
+import rapture.core.Answer
 
 class CollectionFragment
   extends Fragment
