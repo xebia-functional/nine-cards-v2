@@ -46,7 +46,7 @@ object Snails {
       view.setTranslationY(resGetDimensionPixelSize(R.dimen.space_enter_views_collection_detail))
       view
         .animate
-        .setDuration(resGetInteger(R.integer.duration_animation_collection_detail))
+        .setDuration(resGetInteger(R.integer.anim_duration_collection_detail))
         .setInterpolator(new AccelerateDecelerateInterpolator())
         .translationY(0)
         .alpha(1f)

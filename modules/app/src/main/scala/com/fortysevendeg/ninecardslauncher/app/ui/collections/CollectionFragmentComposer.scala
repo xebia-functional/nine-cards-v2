@@ -35,12 +35,8 @@ trait CollectionFragmentComposer
     l[PullToCloseView](
       w[RecyclerView] <~ wire(recyclerView) <~ recyclerStyle
     ) <~ pcvListener(PullToCloseListener(
-      scroll = (scroll: Int, close: Boolean) => contextWrapper.original.get match {
-        case Some(activity: ScrolledListener) => activity.pullToClose(scroll, close)
-      },
-      close = () => contextWrapper.original.get match {
-        case Some(activity: ScrolledListener) => activity.close()
-      }
+      scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, close)),
+      close = () => scrolledListener foreach (_.close())
     ))
   )
 

@@ -40,7 +40,7 @@
 
     <dimen name="space_enter_views_collection_detail">128dp</dimen>
 
-    <integer name="duration_animation_collection_detail">200</integer>
+    <integer name="anim_duration_collection_detail">200</integer>
 
     <dimen name="padding_icon_home_indicator">8dp</dimen>
 

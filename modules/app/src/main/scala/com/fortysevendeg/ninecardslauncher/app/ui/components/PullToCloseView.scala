@@ -73,28 +73,9 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
       val x = ev.getX
       val y = ev.getY
       ev.getAction match {
-        case ACTION_UP | ACTION_CANCEL =>
-          release()
-          super.dispatchTouchEvent(ev)
-        case ACTION_DOWN =>
-          indicator.start(x, y)
-          super.dispatchTouchEvent(ev)
-          true
-        case ACTION_MOVE =>
-          val firstTime = !indicator.isSwiping && !canChildScrollUp && indicator.dontStarted
-          if (firstTime) {
-            // User began movement when the child can scroll up and we need start information
-            indicator.start(x, y)
-          }
-          indicator.move(x, y)
-          val moveDown = indicator.offsetY > 0
-
-          (moveDown, !moveDown, indicator.hasLeftStartPosition, canChildScrollUp) match {
-            case (down, _, _, scrollUp) if down && scrollUp => // disable move when user not reach top
-            case (down, up, canUp, _) if (up && canUp) || down => movePos(indicator.offsetY)
-            case _ =>
-          }
-          super.dispatchTouchEvent(ev)
+        case ACTION_UP | ACTION_CANCEL => release(ev)
+        case ACTION_DOWN => actionDown(ev, x, y)
+        case ACTION_MOVE => actionMove(ev, x, y)
         case _ => super.dispatchTouchEvent(ev)
       }
     } else {
@@ -102,7 +83,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     }
   }
 
-  def release() = {
+  private[this] def release(ev: MotionEvent): Boolean = {
     if (indicator.currentPosY > 0) {
       if (indicator.shouldClose()) listeners.close()
       val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
@@ -115,15 +96,39 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
       })
       anim.start()
     }
+    super.dispatchTouchEvent(ev)
   }
 
-  def restart() = {
+  private[this] def actionDown(ev: MotionEvent, x: Float, y: Float): Boolean = {
+    indicator.start(x, y)
+    super.dispatchTouchEvent(ev)
+    true
+  }
+
+  private[this] def actionMove(ev: MotionEvent, x: Float, y: Float): Boolean = {
+    val firstTime = !indicator.isSwiping && !canChildScrollUp && indicator.dontStarted
+    if (firstTime) {
+      // User began movement when the child can scroll up and we need start information
+      indicator.start(x, y)
+    }
+    indicator.move(x, y)
+    val moveDown = indicator.offsetY > 0
+
+    (moveDown, !moveDown, indicator.hasLeftStartPosition, canChildScrollUp) match {
+      case (down, _, _, scrollUp) if down && scrollUp => // disable move when user not reach top
+      case (down, up, canUp, _) if (up && canUp) || down => movePos(indicator.offsetY)
+      case _ =>
+    }
+    super.dispatchTouchEvent(ev)
+  }
+
+  private[this] def restart() = {
     content.offsetTopAndBottom(-indicator.currentPosY)
     invalidate()
     indicator.restart()
   }
 
-  def movePos(deltaY: Float) = {
+  private[this] def movePos(deltaY: Float) = {
     if (deltaY >= 0 || !indicator.isInStartPosition) {
       val to: Int = {
         val to = indicator.currentPosY + deltaY.toInt
@@ -139,14 +144,14 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     }
   }
 
-  def updatePos(change: Int) = {
+  private[this] def updatePos(change: Int) = {
     if (change != 0) {
       content.offsetTopAndBottom(change)
       invalidate()
     }
   }
 
-  def canChildScrollUp: Boolean = content.canScrollVertically(-1)
+  private[this] def canChildScrollUp: Boolean = content.canScrollVertically(-1)
 
 }
 

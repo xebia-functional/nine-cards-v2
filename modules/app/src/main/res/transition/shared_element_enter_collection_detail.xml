@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="@integer/duration_animation_collection_detail">
+    android:duration="@integer/anim_duration_collection_detail">
     <changeBounds>
         <arcMotion
             android:minimumHorizontalAngle="15"
