@@ -69,8 +69,8 @@ trait ImageServicesTasks
   def getBitmapFromURL(uri: String): ServiceDef2[Bitmap, BitmapTransformationException] = Service {
     Task {
       CatchAll[BitmapTransformationException] {
-        new URL(uri).getContent match {
-          case is: InputStream => BitmapFactory.decodeStream(is)
+        createInputStream(uri) match {
+          case is: InputStream => createBitmap(is)
           case _ => throw BitmapTransformationExceptionImpl(s"Unexpected error while fetching content from uri: $uri")
         }
       }
@@ -80,7 +80,7 @@ trait ImageServicesTasks
   def saveBitmap(file: File, bitmap: Bitmap): ServiceDef2[Unit, FileException] = Service {
     Task {
       CatchAll[FileException] {
-        val out: FileOutputStream = new FileOutputStream(file)
+        val out = createFileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, out)
         out.flush()
         out.close()
@@ -169,6 +169,12 @@ trait ImageServicesTasks
     CatchAll[BitmapTransformationException] {
       context.getPackageManager.getApplicationIcon(packageName).asInstanceOf[BitmapDrawable].getBitmap
     }
+
+  protected def createInputStream(uri: String) = new URL(uri).getContent
+
+  protected def createBitmap(is: InputStream) = BitmapFactory.decodeStream(is)
+
+  protected def createFileOutputStream(file: File): FileOutputStream = new FileOutputStream(file)
 
 }
 

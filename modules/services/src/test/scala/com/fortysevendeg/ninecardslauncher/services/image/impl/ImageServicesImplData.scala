@@ -25,6 +25,10 @@ trait ImageServicesImplData {
 
   val className = appPackage.className
 
+  val icon = appPackage.icon
+
+  val uri = appWebsite.url
+
   val appPackagePath = AppPackagePath(
     packageName = appPackage.packageName,
     className = appPackage.className,
