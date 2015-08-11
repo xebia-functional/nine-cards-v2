@@ -12,9 +12,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import macroid.Contexts
+import macroid.{Ui, Contexts}
 import macroid.FullDsl._
 import rapture.core.Answer
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
+
+import scalaz.concurrent.Task
 
 class CollectionsDetailsActivity
   extends AppCompatActivity
@@ -27,6 +31,8 @@ class CollectionsDetailsActivity
 
   val defaultPosition = 0
 
+  val defaultIcon = ""
+
   lazy val di = new Injector
 
   implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
@@ -34,35 +40,52 @@ class CollectionsDetailsActivity
     case _ => getDefaultTheme
   }
 
-  lazy val collections: Seq[Collection] = di.collectionProcess.getCollections.run.run match {
-    case Answer(c) => c
-    case _ => Seq.empty
-  }
-
-  lazy val position = getInt(
-    Seq(getIntent.getExtras),
-    startPosition,
-    defaultPosition)
+  var collections: Seq[Collection] = Seq.empty
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
 
+    val position = getInt(
+      Seq(getIntent.getExtras, bundle),
+      startPosition,
+      defaultPosition)
+
+    val indexColor = getInt(
+      Seq(getIntent.getExtras, bundle),
+      indexColorToolbar,
+      defaultPosition)
+
+    val icon = getString(
+      Seq(getIntent.getExtras, bundle),
+      iconToolbar,
+      defaultIcon)
+
     setContentView(R.layout.collections_detail_activity)
 
-    runUi(initUi(collections(position)))
+    runUi(initUi(indexColor, icon))
 
-    configureEnterTransition(position, () => runUi(drawCollections(collections, position)))
+    configureEnterTransition(position, () => runUi(ensureDrawCollection(position)))
 
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
     getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
     systemBarTintManager.setStatusBarTintEnabled(true)
 
+    Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
+      onResult = (c: Seq[Collection]) => collections = c
+    )
+
   }
 
   override def finishAfterTransition(): Unit = {
     super.finishAfterTransition()
     runUi(toolbar <~ vVisible)
+  }
+
+  def ensureDrawCollection(position: Int): Ui[_] = if (collections.isEmpty) {
+    uiHandlerDelayed(ensureDrawCollection(position), 200)
+  } else {
+    drawCollections(collections, position)
   }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
@@ -105,6 +128,9 @@ object ScrollType {
 
 object CollectionsDetailsActivity {
   val startPosition = "start_position"
+  val indexColorToolbar = "color_toolbar"
+  val iconToolbar = "icon_toolbar"
   val snapshotName = "snapshot"
+
   def getContentTransitionName(position: Int) = s"icon_$position"
 }

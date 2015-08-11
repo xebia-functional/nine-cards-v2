@@ -94,6 +94,8 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
               new Pair[View, String](icon.get, getContentTransitionName(c.position)))
             val intent = createIntent[CollectionsDetailsActivity]
             intent.putExtra(startPosition, c.position)
+            intent.putExtra(indexColorToolbar, c.themedColorIndex)
+            intent.putExtra(iconToolbar, c.icon)
             uiStartIntentWithOptions(intent, options)
         } getOrElse Ui.nop
       } <~ vTag(R.id.use_layer_hardware, "")

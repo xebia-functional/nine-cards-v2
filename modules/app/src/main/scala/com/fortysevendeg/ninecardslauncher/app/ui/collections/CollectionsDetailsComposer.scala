@@ -70,11 +70,11 @@ trait CollectionsDetailsComposer
 
   lazy val icon = Option(findView(TR.collections_icon))
 
-  def initUi(collection: Collection)(implicit theme: NineCardsTheme) =
+  def initUi(indexColor: Int, iconCollection: String)(implicit theme: NineCardsTheme) =
     (tabs <~ tabsStyle <~ vInvisible) ~
       (viewPager <~ vInvisible) ~
-      updateToolbarColor(resGetColor(getIndexColor(collection.themedColorIndex))) ~
-      (icon <~ ivSrc(iconCollectionDetail(collection.icon)))
+      updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
+      (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
 
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {

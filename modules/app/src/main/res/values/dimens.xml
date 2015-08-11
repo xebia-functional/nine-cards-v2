@@ -38,7 +38,7 @@
     <dimen name="space_moving_collection_details">56dp</dimen>
     <integer name="anim_duration_icon_collection_detail">100</integer>
 
-    <dimen name="space_enter_views_collection_detail">64dp</dimen>
+    <dimen name="space_enter_views_collection_detail">128dp</dimen>
 
     <integer name="duration_animation_collection_detail">200</integer>
 
