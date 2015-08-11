@@ -5,16 +5,21 @@ import java.net.URL
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.{BitmapFactory, Canvas, ColorFilter, Bitmap}
+import android.graphics._
 import android.graphics.drawable.{BitmapDrawable, Drawable}
+import android.util
 import android.util.{DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationExceptionImpl, FileException}
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.services.image.{ImageServicesConfig, BitmapTransformationExceptionImpl, FileException}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import rapture.core.{Errata, Answer}
+
+import scalaz.concurrent.Task
 
 trait ImageServicesTasksSpecification
   extends Specification
@@ -31,6 +36,7 @@ trait ImageServicesTasksSpecification
 
     val mockImageServicesTask = new ImageServicesTaskImpl
 
+    val mockResources = mock[Resources]
     val mockFile = mock[File]
     val mockBitmap = mock[Bitmap]
 
@@ -43,8 +49,6 @@ trait ImageServicesTasksSpecification
     with ImageServicesImplData {
 
     self: ImageServicesTasksScope =>
-
-    val mockResources = mock[Resources]
 
     contextSupport.getResources returns mockResources
 
@@ -82,19 +86,56 @@ trait ImageServicesTasksSpecification
 
   }
 
+  trait BitmapAppDensityImageServicesTasksScope
+    extends Scope
+    with ImageServicesImplData {
+
+    self: ImageServicesTasksScope =>
+
+    packageManager.getResourcesForApplication(packageName) returns mockResources
+
+    override val mockImageServicesTask = new ImageServicesTaskImpl {
+      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = 240
+      override def getIconByDensity(drawable: Drawable) = mockBitmap
+    }
+  }
+
+  trait BitmapAppPackageNameImageServicesTasksScope
+    extends Scope
+    with ImageServicesImplData {
+
+    self: ImageServicesTasksScope =>
+
+    packageManager.getResourcesForApplication(packageName) returns mockResources
+
+    override val mockImageServicesTask = new ImageServicesTaskImpl {
+      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = 240
+      override def getIconByPackageName(packageName: String)(implicit context: ContextSupport): Bitmap = mockBitmap
+    }
+  }
+
+  trait ErrorBitmapAppImageServicesTasksScope
+    extends Scope
+    with ImageServicesImplData {
+
+    self: ImageServicesTasksScope =>
+
+    packageManager.getResourcesForApplication(packageName) returns null
+
+  }
+
   trait BitmapUrlImageServicesTasksScope
     extends Scope
     with ImageServicesImplData {
 
     self: ImageServicesTasksScope =>
 
-    val density = DisplayMetrics.DENSITY_HIGH
     val mockInputStream = mock[InputStream]
 
     override val mockImageServicesTask = new ImageServicesTaskImpl {
       override def createInputStream(uri: String) = mockInputStream
 
-      override def createBitmap(is: InputStream) = mockBitmap
+      override def createBitmapByInputStream(is: InputStream) = mockBitmap
     }
 
   }
@@ -118,13 +159,13 @@ trait ImageServicesTasksSpecification
     extends Scope
     with ImageServicesImplData {
 
-      self: ImageServicesTasksScope =>
+    self: ImageServicesTasksScope =>
 
-        val mockFileOutputStream = mock[FileOutputStream]
+    val mockFileOutputStream = mock[FileOutputStream]
 
-        override val mockImageServicesTask = new ImageServicesTaskImpl {
-          override def createFileOutputStream(file: File): FileOutputStream = mockFileOutputStream
-        }
+    override val mockImageServicesTask = new ImageServicesTaskImpl {
+      override def createFileOutputStream(file: File): FileOutputStream = mockFileOutputStream
+    }
   }
 
   trait ErrorSaveBitmapImageServicesTasksScope
@@ -138,6 +179,60 @@ trait ImageServicesTasksSpecification
     override val mockImageServicesTask = new ImageServicesTaskImpl {
       override def createFileOutputStream(file: File): FileOutputStream = null
     }
+  }
+
+  trait BitmapAppImageServicesTasksScope
+    extends Scope
+    with ImageServicesImplData {
+
+    self: ImageServicesTasksScope =>
+
+    val mockImageServicesConfig = mock[ImageServicesConfig]
+
+    packageManager.getResourcesForApplication(packageName) returns mockResources
+
+    override val mockImageServicesTask = new ImageServicesTaskImpl {
+      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = 240
+      override def getIconByDensity(drawable: Drawable) = mockBitmap
+    }
+  }
+
+  trait BitmapNameImageServicesTasksScope
+    extends Scope
+    with ImageServicesImplData {
+
+    self: ImageServicesTasksScope =>
+
+    val mockImageServicesConfig = mock[ImageServicesConfig]
+    val mockRect = mock[Rect]
+    val mockPaint = mock[Paint]
+    val mockCanvas = mock[Canvas]
+
+    packageManager.getResourcesForApplication(packageName) returns mockResources
+    mockPaint.measureText("M") returns 71
+    mockImageServicesConfig.colors returns List(1, 2, 3)
+
+    override val mockImageServicesTask = new ImageServicesTaskImpl {
+      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = 240
+      override def getDisplayMetricsWidthPixels( implicit context: ContextSupport) = 240
+      override def getDisplayMetricsHeightPixels( implicit context: ContextSupport) = 320
+      override def createBitmap(defaultSize: Int) = mockBitmap
+      override def createRect = mockRect
+      override def createPaint = mockPaint
+      override def createCanvas(bitmap: Bitmap) = mockCanvas
+    }
+  }
+
+  trait ErrorBitmapAppNameImageServicesTasksScope
+    extends Scope
+    with ImageServicesImplData {
+
+    self: ImageServicesTasksScope =>
+
+    val mockImageServicesConfig = mock[ImageServicesConfig]
+
+    packageManager.getResourcesForApplication(packageName) returns null
+
   }
 
 }
@@ -211,6 +306,35 @@ class ImageServicesTasksSpec
         }
       }
 
+    "returns a Bitmap when the file is created by density" in
+      new ImageServicesTasksScope with BitmapAppDensityImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultBitmap) =>
+            resultBitmap shouldEqual mockBitmap
+        }
+      }
+
+    "returns a Bitmap when the file is created by packageName" in
+      new ImageServicesTasksScope with BitmapAppPackageNameImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultBitmap) =>
+            resultBitmap shouldEqual mockBitmap
+        }
+      }
+
+    "returns a BitmapTransformationException when no resources can be found" in
+      new ImageServicesTasksScope with ErrorBitmapAppImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) =>
+              exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
+          }
+        }
+      }
+
     "returns a Bitmap when when a valid uri is provided" in
       new ImageServicesTasksScope with BitmapUrlImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapFromURL(uri).run.run
@@ -248,6 +372,38 @@ class ImageServicesTasksSpec
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) =>
               exception must beAnInstanceOf[FileException]
+          }
+        }
+      }
+
+    "returns a Bitmap when when a valid app is provided" in
+      new ImageServicesTasksScope with BitmapAppImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapByAppOrName(
+          packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
+        result must beLike {
+          case Answer(resultBitmap) =>
+            resultBitmap shouldEqual mockBitmap
+        }
+      }
+
+    "returns a Bitmap when when an invalid app and a valid name are provided" in
+      new ImageServicesTasksScope with BitmapNameImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapByAppOrName(
+          packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
+        result must beLike {
+          case Answer(resultBitmap) =>
+            resultBitmap shouldEqual mockBitmap
+        }
+      }
+
+    "returns a BitmapTransformationException when an invalid app and name are provided" in
+      new ImageServicesTasksScope with ErrorBitmapAppNameImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapByAppOrName(
+          packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) =>
+              exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
           }
         }
       }
