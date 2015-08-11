@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
 import android.content.Context
-import android.util.AttributeSet
+import android.util.{Log, AttributeSet}
 import android.view.MotionEvent._
 import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
 import android.view.{MotionEvent, ViewGroup}
@@ -103,16 +103,18 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   }
 
   def release() = {
-    if (indicator.shouldClose()) listeners.close()
-    val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
-    anim.addUpdateListener(new AnimatorUpdateListener {
-      override def onAnimationUpdate(animation: ValueAnimator): Unit =
-        movePos(-indicator.currentPosY * animation.getAnimatedFraction)
-    })
-    anim.addListener(new AnimatorListenerAdapter {
-      override def onAnimationEnd(animation: Animator): Unit = restart()
-    })
-    anim.start()
+    if (indicator.currentPosY > 0) {
+      if (indicator.shouldClose()) listeners.close()
+      val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
+      anim.addUpdateListener(new AnimatorUpdateListener {
+        override def onAnimationUpdate(animation: ValueAnimator): Unit =
+          movePos(-indicator.currentPosY * animation.getAnimatedFraction)
+      })
+      anim.addListener(new AnimatorListenerAdapter {
+        override def onAnimationEnd(animation: Animator): Unit = restart()
+      })
+      anim.start()
+    }
   }
 
   def restart() = {
