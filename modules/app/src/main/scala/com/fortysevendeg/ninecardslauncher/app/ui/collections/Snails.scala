@@ -43,9 +43,10 @@ object Snails {
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
       view.setAlpha(0)
-      view.setTranslationY(100)
+      view.setTranslationY(resGetDimensionPixelSize(R.dimen.space_enter_views_collection_detail))
       view
         .animate
+        .setDuration(resGetInteger(R.integer.duration_animation_collection_detail))
         .setInterpolator(new AccelerateDecelerateInterpolator())
         .translationY(0)
         .alpha(1f)

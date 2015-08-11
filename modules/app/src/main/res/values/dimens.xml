@@ -32,11 +32,17 @@
     <dimen name="margin_top_pagers_collection_details">74dp</dimen>
     <dimen name="margin_top_tabs_collection_details">90dp</dimen>
     <dimen name="height_tabs_collection_details">40dp</dimen>
-    <dimen name="height_tootlbar_collection_details">186dp</dimen>
+    <dimen name="height_toolbar_collection_details">186dp</dimen>
     <dimen name="space_moving_collection_details">56dp</dimen>
     <integer name="anim_duration_icon_collection_detail">100</integer>
 
+    <dimen name="space_enter_views_collection_detail">64dp</dimen>
+
+    <integer name="duration_animation_collection_detail">200</integer>
+
     <integer name="anim_duration_appear_toolbar">400</integer>
+
+    <dimen name="distance_to_valid_close">24dp</dimen>
 
     <dimen name="size_icon_card">60dp</dimen>
 

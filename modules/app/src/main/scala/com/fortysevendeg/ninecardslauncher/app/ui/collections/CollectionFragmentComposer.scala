@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v4.app.Fragment
 import android.support.v7.widget.{CardView, GridLayoutManager, RecyclerView}
+import android.util.Log
 import android.widget.{ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -9,11 +10,13 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RecyclerViewListenerTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{PullToCloseListener, PullToCloseView}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
 
 trait CollectionFragmentComposer
   extends CollectionFragmentStyles {
@@ -29,7 +32,16 @@ trait CollectionFragmentComposer
   var recyclerView = slot[RecyclerView]
 
   def layout(implicit contextWrapper: ActivityContextWrapper) = getUi(
-    w[RecyclerView] <~ wire(recyclerView) <~ recyclerStyle
+    l[PullToCloseView](
+      w[RecyclerView] <~ wire(recyclerView) <~ recyclerStyle
+    ) <~ pcvListener(PullToCloseListener(
+      scroll = (scroll: Int, close: Boolean) => contextWrapper.original.get match {
+        case Some(activity: ScrolledListener) => activity.pullToClose(scroll, close)
+      },
+      close = () => contextWrapper.original.get match {
+        case Some(activity: ScrolledListener) => activity.close()
+      }
+    ))
   )
 
   def initUi(collection: Collection)(implicit contextWrapper: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme) =

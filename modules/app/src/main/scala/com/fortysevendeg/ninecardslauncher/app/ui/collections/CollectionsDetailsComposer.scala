@@ -43,6 +43,10 @@ trait CollectionsDetailsComposer
 
   self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] =>
 
+  val resistenceDisplacement = .35f
+
+  val resistenceScale = .15f
+
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
@@ -79,6 +83,14 @@ trait CollectionsDetailsComposer
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       (tabs <~ vVisible <~~ enterViews) ~
       (viewPager <~ vVisible <~~ enterViews)
+  }
+
+  def pullCloseScrollY(scroll: Int, close: Boolean): Ui[_] = {
+    val displacement = scroll * resistenceDisplacement
+    val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_close)
+    val scale = 1f + ((scroll / distanceToValidClose) * resistenceScale)
+    (tabs <~ vTranslationY(displacement)) ~
+      (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement))
   }
 
   def translationScrollY(scroll: Int): Ui[_] = {

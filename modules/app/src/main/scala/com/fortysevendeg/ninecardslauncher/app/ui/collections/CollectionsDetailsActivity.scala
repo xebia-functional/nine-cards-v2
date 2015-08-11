@@ -81,12 +81,20 @@ class CollectionsDetailsActivity
   override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
 
   override def onBackPressed(): Unit = finish()
+
+  override def pullToClose(scroll: Int, close: Boolean): Unit = runUi(pullCloseScrollY(scroll, close))
+
+  override def close(): Unit = finish()
 }
 
 trait ScrolledListener {
   def scrollY(scroll: Int, dy: Int)
 
   def scrollType(sType: Int)
+
+  def pullToClose(scroll: Int, close: Boolean)
+
+  def close()
 }
 
 object ScrollType {
