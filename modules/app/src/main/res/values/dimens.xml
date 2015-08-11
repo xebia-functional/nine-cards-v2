@@ -18,6 +18,8 @@
     <dimen name="elevation_default">2dp</dimen>
     <dimen name="elevation_pressed">4dp</dimen>
 
+    <dimen name="default_stroke">2dp</dimen>
+
     <dimen name="shadow_displacement_default">1dp</dimen>
     <dimen name="shadow_radius_default">1dp</dimen>
 
@@ -39,6 +41,8 @@
     <dimen name="space_enter_views_collection_detail">64dp</dimen>
 
     <integer name="duration_animation_collection_detail">200</integer>
+
+    <dimen name="padding_icon_home_indicator">8dp</dimen>
 
     <integer name="anim_duration_appear_toolbar">400</integer>
 

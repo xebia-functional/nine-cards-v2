@@ -24,6 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -43,9 +44,13 @@ trait CollectionsDetailsComposer
 
   self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] =>
 
-  val resistenceDisplacement = .35f
+  val resistanceDisplacement = .35f
 
-  val resistenceScale = .15f
+  val resistanceScale = .15f
+
+  lazy val iconIndicatorDrawable = new PathMorphDrawable(
+    defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
+    padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
@@ -86,11 +91,18 @@ trait CollectionsDetailsComposer
   }
 
   def pullCloseScrollY(scroll: Int, close: Boolean): Ui[_] = {
-    val displacement = scroll * resistenceDisplacement
+    val displacement = scroll * resistanceDisplacement
     val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_close)
-    val scale = 1f + ((scroll / distanceToValidClose) * resistenceScale)
+    val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
     (tabs <~ vTranslationY(displacement)) ~
-      (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement))
+      (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
+      Ui {
+        val newIcon = if (close) IconTypes.CLOSE else IconTypes.BACK
+        if (iconIndicatorDrawable.currentTypeIcon != newIcon && !iconIndicatorDrawable.isRunning) {
+          iconIndicatorDrawable.setToTypeIcon(newIcon)
+          iconIndicatorDrawable.start()
+        }
+      }
   }
 
   def translationScrollY(scroll: Int): Ui[_] = {
@@ -131,7 +143,7 @@ trait CollectionsDetailsComposer
     position: Int,
     end: (() => Unit)) = {
 
-    val enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.shared_element_enter)
+    val enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.shared_element_enter_collection_detail)
     getWindow.setSharedElementEnterTransition(enterTransition)
 
     getWindow.setSharedElementReturnTransition(new TransitionSet())

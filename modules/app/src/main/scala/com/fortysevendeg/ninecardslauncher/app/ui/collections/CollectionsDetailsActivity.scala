@@ -55,6 +55,7 @@ class CollectionsDetailsActivity
 
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
+    getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
     systemBarTintManager.setStatusBarTintEnabled(true)
 
   }
