@@ -58,7 +58,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
     tabStrip.removeAllViews()
     this.viewPager = Option(viewPager)
 
-    viewPager.setOnPageChangeListener(new InternalViewPagerListener())
+    viewPager.addOnPageChangeListener(new InternalViewPagerListener())
     val adapter = viewPager.getAdapter
     (0 until adapter.getCount) foreach {
       i =>
@@ -98,13 +98,12 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private def updateTabsColors(position: Int) = {
     (0 until tabStrip.getChildCount) foreach {
-      item =>
-        val text = tabStrip.getChildAt(item).asInstanceOf[TextView]
-        if (Option(text.getTag).isDefined && text.getTag.equals(position.toString)) {
+      tabStrip.getChildAt(_) match {
+        case text: TextView if Option(text.getTag).isDefined && text.getTag.equals(position.toString) =>
           text.setTextColor(selectedTextColor)
-        } else {
-          text.setTextColor(defaultTextColor)
-        }
+        case text: TextView => text.setTextColor(defaultTextColor)
+        case _ =>
+      }
     }
   }
 
@@ -142,7 +141,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   }
 
   private class TabClickListener(position: Int) extends OnClickListener {
-    def onClick(v: View) = viewPager map (_.setCurrentItem(position))
+    def onClick(v: View) = viewPager foreach (_.setCurrentItem(position))
   }
 
 }

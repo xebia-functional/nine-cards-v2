@@ -29,9 +29,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case `collections` => new LauncherWorkSpaceCollectionsHolder(dimen)
   }
 
-  override def populateView(view: Option[LauncherWorkSpaceHolder],  data: LauncherData, viewType: Int, position: Int): Ui[_] =
+  override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
     view match {
-      case Some(v: LauncherWorkSpaceCollectionsHolder) => v.populate(data)
+      case Some(v: LauncherWorkSpaceCollectionsHolder) => v.populate(data.collections)
       case _ => Ui.nop
     }
 }
