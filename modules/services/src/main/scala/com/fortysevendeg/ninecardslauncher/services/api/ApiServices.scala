@@ -18,7 +18,7 @@ trait ApiServices {
     device: GoogleDevice): ServiceDef2[LoginResponse, ApiServiceException]
 
   /**
-   * Links the devics with the email
+   * Links the devices with the email
    * @param email user email
    * @param devices user devices
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]] with the HTTP Code
