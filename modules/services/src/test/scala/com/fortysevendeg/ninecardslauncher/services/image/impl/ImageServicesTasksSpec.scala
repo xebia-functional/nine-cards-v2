@@ -1,25 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
 import java.io.{FileOutputStream, File, InputStream}
-import java.net.URL
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics._
-import android.graphics.drawable.{BitmapDrawable, Drawable}
-import android.util
-import android.util.{DisplayMetrics, TypedValue}
+import android.graphics.drawable.Drawable
+import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.services.image.{ImageServicesConfig, BitmapTransformationExceptionImpl, FileException}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import rapture.core.{Errata, Answer}
-
-import scalaz.concurrent.Task
 
 trait ImageServicesTasksSpecification
   extends Specification
@@ -463,5 +457,26 @@ class ImageServicesTasksSpec
           }
         }
       }
+
+    "return a Bitmap when a valid name is provided" in
+      new ImageServicesTasksScope with BitmapNameImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapByName(name)(contextSupport, mockImageServicesConfig)
+        result must beLike {
+          case Answer(resultBitmap) =>
+            resultBitmap shouldEqual mockBitmap
+        }
+      }
+
+    "return a BitmapTransformationException when an invalid app and name are provided" in
+      new ImageServicesTasksScope with ErrorBitmapAppNameImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapByName(name)(contextSupport, mockImageServicesConfig)
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) =>
+              exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
+          }
+        }
+      }
+
   }
 }
