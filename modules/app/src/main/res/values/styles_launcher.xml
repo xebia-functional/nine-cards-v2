@@ -107,19 +107,20 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:paddingBottom">@dimen/margin_bottom_fab_menu_content_collections</item>
+        <item name="android:cropToPadding">false</item>
     </style>
 
     <style name="LauncherFabMenu">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:gravity">end</item>
         <item name="android:orientation">vertical</item>
     </style>
 
     <style name="LauncherFabMenuItem">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">end</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:orientation">horizontal</item>
     </style>
@@ -127,26 +128,19 @@
     <style name="LauncherFabMenuItemTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:text">Test Item</item>
         <item name="android:background">@color/collection_fab_button_item_title_background</item>
         <item name="android:textColor">@color/collection_fab_button_item_title</item>
         <item name="android:padding">@dimen/padding_small</item>
     </style>
 
     <style name="LauncherFabMenuItemIcon">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">@dimen/size_fab_menu_item</item>
+        <item name="android:layout_height">@dimen/size_fab_menu_item</item>
         <item name="android:layout_marginLeft">@dimen/margin_horizontal_fab_button_item</item>
         <item name="android:layout_marginRight">@dimen/margin_horizontal_fab_button_item</item>
-        <item name="android:layout_marginTop">@dimen/margin_fab_button</item>
-        <item name="android:layout_marginBottom">@dimen/margin_fab_button</item>
-        <item name="android:src">@drawable/fab_menu_icon_create_new_collection</item>
-        <item name="fabSize">mini</item>
-        <item name="borderWidth">0dp</item>
-        <item name="elevation">@dimen/elevation_fab_button</item>
-        <item name="pressedTranslationZ">@dimen/elevation_fab_button_pressed</item>
-        <item name="backgroundTint">@color/collection_fab_button</item>
-        <item name="rippleColor">@color/collection_fab_button_ripple</item>
+        <item name="android:layout_marginTop">@dimen/margin_vertical_fab_button_item</item>
+        <item name="android:layout_marginBottom">@dimen/margin_vertical_fab_button_item</item>
+        <item name="android:scaleType">centerInside</item>
     </style>
 
     <style name="LauncherFabButton">

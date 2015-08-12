@@ -21,6 +21,8 @@
     <dimen name="elevation_fab_button_pressed">12dp</dimen>
     <dimen name="margin_fab_button">0dp</dimen>
     <dimen name="margin_horizontal_fab_button_item">7dp</dimen>
+    <dimen name="margin_vertical_fab_button_item">12dp</dimen>
+    <dimen name="size_fab_menu_item">40dp</dimen>
 
     <dimen name="default_stroke">2dp</dimen>
 

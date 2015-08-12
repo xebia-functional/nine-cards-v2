@@ -2,21 +2,24 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.widget.ImageView
+import android.support.design.widget.FloatingActionButton
+import android.view.{Gravity, ViewGroup}
+import android.view.ViewGroup.LayoutParams._
+import android.widget.{FrameLayout, LinearLayout, ImageView}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{IconTypes, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Transformer, Ui}
+import macroid.{Tweak, ActivityContextWrapper, Transformer, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
@@ -40,6 +43,8 @@ trait LauncherComposer
   lazy val appDrawerPanel = Option(findView(TR.launcher_drawer_panel))
 
   lazy val fabMenuContent = Option(findView(TR.launcher_menu_content))
+
+  lazy val fabMenu = Option(findView(TR.launcher_menu))
 
   lazy val fabButton = Option(findView(TR.launcher_fab_button))
 
@@ -105,6 +110,14 @@ trait LauncherComposer
       }) ~
       (appDrawerMain <~ drawerAppStyle <~ On.click {
         uiShortToast("App Drawer")
+      }) ~
+      (fabMenu <~ Tweak[LinearLayout] {
+        view =>
+          val param = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.END)
+          getItemsForFabMenu foreach {
+            menuItem =>
+              view.addView(menuItem, 0, param)
+          }
       })
   }
 
@@ -115,6 +128,18 @@ trait LauncherComposer
         lwsAddPageChangedObserver(currentPage => runUi(paginationPanel <~ reloadPager(currentPage)))) ~
       (appDrawerPanel <~ fillAppDrawer(collections)) ~
       createPager(selectedPageDefault)
+
+  private[this] def getItemsForFabMenu(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Seq(
+    getUi(w[FabItemMenu] <~ fabButtonCreateCollectionStyle <~ On.click {
+      uiShortToast("Create Collection")
+    }),
+    getUi(w[FabItemMenu] <~ fabButtonMyCollectionsStyle <~ On.click {
+      uiShortToast("My Collections")
+    }),
+    getUi(w[FabItemMenu] <~ fabButtonPublicCollectionStyle <~ On.click {
+      uiShortToast("Public Collections")
+    })
+  )
 
   private[this] def createPager(activatePosition: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = workspaces map {
     ws =>

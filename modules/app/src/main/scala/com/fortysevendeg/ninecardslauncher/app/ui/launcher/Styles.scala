@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
+import android.graphics.Color
+import android.support.design.widget.FloatingActionButton
 import android.text.TextUtils.TruncateAt
 import android.view.{Gravity, ViewGroup}
 import android.widget._
@@ -10,7 +12,8 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable, TintableImageView}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -47,13 +50,30 @@ trait Styles {
     tivPressedColor(theme.get(AppDrawerPressedColor)) +
       vTag(R.id.`type`, AppDrawer.app)
 
-  def paginationItemStyle(implicit context: ContextWrapper) = {
+  def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)
     vWrapContent +
       llLayoutMargin(margin, margin, margin, margin) +
       ivSrc(R.drawable.workspaces_pager)
   }
 
+  def fabButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    vWrapContent +
+      fimBackgroundColor(resGetColor(R.color.collection_fab_button_item_create_new_collection)) +
+      fimTitle(resGetString(R.string.create_new_collection)) +
+      fimSrc(R.drawable.fab_menu_icon_create_new_collection)
+
+  def fabButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    vWrapContent +
+      fimBackgroundColor(resGetColor(R.color.collection_fab_button_item_my_collections)) +
+      fimTitle(resGetString(R.string.my_collections)) +
+      fimSrc(R.drawable.fab_menu_icon_my_collections)
+
+  def fabButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    vWrapContent +
+      fimBackgroundColor(resGetColor(R.color.collection_fab_button_item_public_collection)) +
+      fimTitle(resGetString(R.string.public_collections)) +
+      fimSrc(R.drawable.fab_menu_icon_public_collections)
 }
 
 trait CollectionsGroupStyle {

@@ -37,6 +37,12 @@
     <string name="loadUserConfigDeviceReplace">Reemplazar %1$s con nueva configuración</string>
     <string name="deviceNotFoundMessage">Este dispositivo no está asociado a ninguna cuenta. Por favor, entra de nuevo</string>
 
+    <!-- Collections -->
+
+    <string name="create_new_collection">Crear nueva colección</string>
+    <string name="my_collections">Mis colecciones</string>
+    <string name="public_collections">Colecciones Públicas</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Todas</string>
