@@ -13,5 +13,6 @@ object ContactsContentProvider {
     Contact(
       id = cursor.getLong(cursor.getColumnIndex(Fields.CONTACT_ID)),
       name = cursor.getString(cursor.getColumnIndex(Fields.DISPLAY_NAME)),
-      image = cursor.getLong(cursor.getColumnIndex(Fields.CONTACT_ID)))
+      hasPhone = cursor.getInt(cursor.getColumnIndex(Fields.HAS_PHONE_NUMBER)) > 0,
+      favorite = cursor.getInt(cursor.getColumnIndex(Fields.STARRED)) > 0)
 }

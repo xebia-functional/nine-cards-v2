@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.contacts.models
 case class Contact(
   id: Long,
   name: String,
-  image: Long,
+  hasPhone: Boolean = false,
   favorite: Boolean = false,
   info: Option[ContactInfo] = None)
 
