@@ -235,6 +235,30 @@ trait ImageServicesTasksSpecification
 
   }
 
+  trait BitmapURLNameImageServicesTasksScope
+    extends Scope
+    with ImageServicesImplData
+    with BitmapUrlImageServicesTasksScope {
+
+    self: ImageServicesTasksScope =>
+
+    val mockImageServicesConfig = mock[ImageServicesConfig]
+
+  }
+
+  trait ErrorBitmapURLNameImageServicesTasksScope
+    extends Scope
+    with ImageServicesImplData {
+
+    self: ImageServicesTasksScope =>
+
+    val mockImageServicesConfig = mock[ImageServicesConfig]
+
+    packageManager.getResourcesForApplication(packageName) returns null
+
+  }
+
+
 }
 
 
@@ -243,7 +267,7 @@ class ImageServicesTasksSpec
 
   "Image Services Tasks" should {
 
-    "returns a File when a valid fileName is provided" in
+    "return a File when a valid fileName is provided" in
       new ImageServicesTasksScope with FileNameImageServicesTasksScope{
         val result = mockImageServicesTask.getPathByName(fileName)(contextSupport).run.run
         result must beLike {
@@ -253,7 +277,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a FileException when getPath in resourceUtils returns an empty string" in
+    "return a FileException when getPath in resourceUtils returns an empty string" in
       new ImageServicesTasksScope with ErrorFileNameImageServicesTasksScope {
         val result = mockImageServicesTask.getPathByName(fileName)(contextSupport).run.run
         result must beLike {
@@ -264,7 +288,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a File when the file is created with a valid packageName" in
+    "return a File when the file is created with a valid packageName" in
       new ImageServicesTasksScope with FileNameImageServicesTasksScope {
         val result = mockImageServicesTask.getPathByApp(packageName, className)(contextSupport).run.run
         result must beLike {
@@ -274,7 +298,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a FileException when getPathPackage in resourceUtils returns an empty string" in
+    "return a FileException when getPathPackage in resourceUtils returns an empty string" in
       new ImageServicesTasksScope with ErrorPackageImageServicesTasksScope {
         val result = mockImageServicesTask.getPathByApp(packageName, className)(contextSupport).run.run
         result must beLike {
@@ -285,7 +309,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a File when a valid packageName and a valid className is provided" in
+    "return a File when a valid packageName and a valid className is provided" in
       new ImageServicesTasksScope with FileNameImageServicesTasksScope {
         val result = mockImageServicesTask.getPathByPackageName(packageName)(contextSupport).run.run
         result must beLike {
@@ -295,7 +319,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a FileException when getPath in resourceUtils returns an empty string" in
+    "return a FileException when getPath in resourceUtils returns an empty string" in
       new ImageServicesTasksScope with ErrorFileNameImageServicesTasksScope {
         val result = mockImageServicesTask.getPathByPackageName(packageName)(contextSupport).run.run
         result must beLike {
@@ -306,7 +330,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a Bitmap when the file is created by density" in
+    "return a Bitmap when the file is created by density" in
       new ImageServicesTasksScope with BitmapAppDensityImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
         result must beLike {
@@ -315,7 +339,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a Bitmap when the file is created by packageName" in
+    "return a Bitmap when the file is created by packageName" in
       new ImageServicesTasksScope with BitmapAppPackageNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
         result must beLike {
@@ -324,7 +348,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a BitmapTransformationException when no resources can be found" in
+    "return a BitmapTransformationException when no resources can be found" in
       new ImageServicesTasksScope with ErrorBitmapAppImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
         result must beLike {
@@ -335,7 +359,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a Bitmap when when a valid uri is provided" in
+    "return a Bitmap when when a valid uri is provided" in
       new ImageServicesTasksScope with BitmapUrlImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapFromURL(uri).run.run
         result must beLike {
@@ -344,7 +368,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a BitmapTransformationException with an invalid uri" in
+    "return a BitmapTransformationException with an invalid uri" in
       new ImageServicesTasksScope with ErrorBitmapUrlImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapFromURL(uri).run.run
         result must beLike {
@@ -365,7 +389,7 @@ class ImageServicesTasksSpec
         there was one(mockBitmap).compress(Bitmap.CompressFormat.PNG, 90, mockFileOutputStream)
       }
 
-    "returns a FileException when the bitmap can not be saved" in
+    "return a FileException when the bitmap can not be saved" in
       new ImageServicesTasksScope with ErrorSaveBitmapImageServicesTasksScope{
         val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).run.run
         result must beLike {
@@ -376,7 +400,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a Bitmap when when a valid app is provided" in
+    "return a Bitmap when a valid app is provided" in
       new ImageServicesTasksScope with BitmapAppImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByAppOrName(
           packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
@@ -386,7 +410,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a Bitmap when when an invalid app and a valid name are provided" in
+    "return a Bitmap when an invalid app and a valid name are provided" in
       new ImageServicesTasksScope with BitmapNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByAppOrName(
           packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
@@ -396,7 +420,7 @@ class ImageServicesTasksSpec
         }
       }
 
-    "returns a BitmapTransformationException when an invalid app and name are provided" in
+    "return a BitmapTransformationException when an invalid app and name are provided" in
       new ImageServicesTasksScope with ErrorBitmapAppNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByAppOrName(
           packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
@@ -408,6 +432,36 @@ class ImageServicesTasksSpec
         }
       }
 
+    "return a Bitmap when a valid url is provided" in
+      new ImageServicesTasksScope with BitmapURLNameImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapFromURLOrName(
+          uri, name)(contextSupport, mockImageServicesConfig).run.run
+        result must beLike {
+          case Answer(resultBitmap) =>
+            resultBitmap shouldEqual mockBitmap
+        }
+      }
 
+    "return a Bitmap when an invalid url and a valid name is provided" in
+      new ImageServicesTasksScope with BitmapNameImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapFromURLOrName(
+          uri, name)(contextSupport, mockImageServicesConfig).run.run
+        result must beLike {
+          case Answer(resultBitmap) =>
+            resultBitmap shouldEqual mockBitmap
+        }
+      }
+
+    "return a BitmapTransformationException with an invalid url and an invalid name" in
+      new ImageServicesTasksScope with ErrorBitmapURLNameImageServicesTasksScope {
+        val result = mockImageServicesTask.getBitmapFromURLOrName(
+          uri, name)(contextSupport, mockImageServicesConfig).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) =>
+              exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
+          }
+        }
+      }
   }
 }
