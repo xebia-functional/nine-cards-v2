@@ -3,10 +3,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 import android.content.Intent
 import android.speech.RecognizerIntent
 import android.widget.ImageView
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
@@ -36,6 +39,10 @@ trait LauncherComposer
 
   lazy val appDrawerPanel = Option(findView(TR.launcher_drawer_panel))
 
+  lazy val fabMenuContent = Option(findView(TR.launcher_menu_content))
+
+  lazy val fabButton = Option(findView(TR.launcher_fab_button))
+
   lazy val appDrawer1 = Option(findView(TR.launcher_page_1))
 
   lazy val appDrawer2 = Option(findView(TR.launcher_page_2))
@@ -58,9 +65,13 @@ trait LauncherComposer
 
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
-  def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val iconFabButton = new PathMorphDrawable(
+      defaultIcon = IconTypes.ADD,
+      defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke))
     (workspacesContent <~ vgAddView(getUi(w[LauncherWorkSpaces] <~ wire(workspaces)))) ~
       (searchPanel <~ searchContentStyle) ~
+      (fabButton <~ ivSrc(iconFabButton)) ~
       (burgerIcon <~ burgerButtonStyle <~ On.click(
         uiShortToast("Open Menu")
       )) ~
@@ -95,6 +106,7 @@ trait LauncherComposer
       (appDrawerMain <~ drawerAppStyle <~ On.click {
         uiShortToast("App Drawer")
       })
+  }
 
   def createCollections(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (loading <~ vGone) ~

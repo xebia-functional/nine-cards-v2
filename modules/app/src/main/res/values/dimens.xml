@@ -17,6 +17,10 @@
     <dimen name="elevation_toolbar">4dp</dimen>
     <dimen name="elevation_default">2dp</dimen>
     <dimen name="elevation_pressed">4dp</dimen>
+    <dimen name="elevation_fab_button">6dp</dimen>
+    <dimen name="elevation_fab_button_pressed">12dp</dimen>
+    <dimen name="margin_fab_button">0dp</dimen>
+    <dimen name="margin_horizontal_fab_button_item">7dp</dimen>
 
     <dimen name="default_stroke">2dp</dimen>
 
@@ -27,6 +31,8 @@
     <dimen name="size_group_collection">72dp</dimen>
     <dimen name="margin_pager_collection">2dp</dimen>
     <integer name="anim_duration_pager_appear">175</integer>
+
+    <dimen name="margin_bottom_fab_menu_content_collections">86dp</dimen>
 
     <!-- Collections Details -->
     <dimen name="size_icon_collection_detail">60dp</dimen>
