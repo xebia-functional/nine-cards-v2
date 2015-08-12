@@ -8,6 +8,14 @@ case class User(
 
 case class Installation(
   id: Option[String],
-  deviceType: Option[String],
+  deviceType: Option[DeviceType],
   deviceToken: Option[String],
   userId: Option[String])
+
+sealed trait DeviceType {
+  val paramValue: String
+}
+
+case object AndroidDevice extends DeviceType {
+  override val paramValue: String = "ANDROID"
+}
