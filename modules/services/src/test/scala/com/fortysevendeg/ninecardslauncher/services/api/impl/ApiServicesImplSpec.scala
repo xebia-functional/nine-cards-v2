@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.api.impl
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice
 import com.fortysevendeg.ninecardslauncher.services.api.{models => serviceModel, _}
 import com.fortysevendeg.rest.client.ServiceClientException
 import com.fortysevendeg.rest.client.http.HttpClientException
@@ -262,7 +263,7 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.createInstallation(Some(""), Some(""), Some(""), Some("")).run.run
+        val result = apiServices.createInstallation(Some(AndroidDevice), Some(""), Some("")).run.run
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
@@ -272,7 +273,7 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.createInstallation(Some(""), Some(""), Some(""), Some("")).run.run
+        val result = apiServices.createInstallation(Some(AndroidDevice), Some(""), Some("")).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
@@ -288,7 +289,7 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.updateInstallation(Some(""), Some(""), Some(""), Some("")).run.run
+        val result = apiServices.updateInstallation("", Some(AndroidDevice), Some(""), Some("")).run.run
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
@@ -297,7 +298,7 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.updateInstallation(Some(""), Some(""), Some(""), Some("")).run.run
+        val result = apiServices.updateInstallation("", Some(AndroidDevice), Some(""), Some("")).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {

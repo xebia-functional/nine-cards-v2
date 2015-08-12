@@ -7,9 +7,9 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.user._
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
-import com.fortysevendeg.ninecardslauncher.services.api.models.Installation
+import com.fortysevendeg.ninecardslauncher.services.api.models.{AndroidDevice, Installation}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
-import rapture.core.{Answer, Errata, Result}
+import rapture.core.{Answer, Errata, Result, Unforeseen}
 
 import scalaz.concurrent.Task
 
@@ -20,9 +20,11 @@ class UserProcessImpl(
   with ImplicitsUserException
   with Conversions {
 
-  private[this] val deviceType = "ANDROID"
+  private[this] val deviceType = AndroidDevice
 
   private[this] val basicInstallation = Installation(id = None, deviceType = Some(deviceType), deviceToken = None, userId = None)
+
+  private[this] val syncInstallationErrorMessage = "Installation not updated"
 
   override def signIn(email: String, device: Device)(implicit context: ContextSupport) = (for {
     loginResponse <- apiServices.login(email, toGoogleDevice(device))
@@ -37,25 +39,34 @@ class UserProcessImpl(
     else Service {
       Task(Result.answer[Unit, PersistenceServiceException](()))
     }
-  } yield (())).resolve[UserException]
+  } yield ()).resolve[UserException]
 
   override def unregister(implicit context: ContextSupport) = (for {
     _ <- syncInstallation(basicInstallation)
     _ <- persistenceServices.resetUser
-  } yield (())).resolve[UserException]
+  } yield ()).resolve[UserException]
 
   private[this] def syncInstallation(installation: Installation)(implicit context: ContextSupport): ServiceDef2[Int, UserException] =
     installation.id map {
       id =>
         Service {
-          apiServices.updateInstallation(Option(id), installation.deviceType, installation.deviceToken, installation.userId).run map {
+          apiServices.updateInstallation(
+            id = id,
+            deviceType = installation.deviceType,
+            deviceToken = installation.deviceToken,
+            userId = installation.userId).run map {
             case Answer(r) => Result.answer[Int, UserException](r.statusCode)
-            case Errata(ex) => Result.errata[Int, UserException](UserException(message = "Installation not updated"))
+            // TODO - This need to be improved in ticket 9C-214
+            case Errata(_) => Result.errata[Int, UserException](UserException(syncInstallationErrorMessage))
+            case Unforeseen(ex) => Result.errata[Int, UserException](UserException(syncInstallationErrorMessage, Some(ex)))
           }
         }
     } getOrElse {
       (for {
-        installationResponse <- apiServices.createInstallation(None, installation.deviceType, installation.deviceToken, installation.userId)
+        installationResponse <- apiServices.createInstallation(
+          installation.deviceType,
+          installation.deviceToken,
+          installation.userId)
         saved <- persistenceServices.saveInstallation(installationResponse.installation)
       } yield installationResponse.statusCode).resolve[UserException]
     }
