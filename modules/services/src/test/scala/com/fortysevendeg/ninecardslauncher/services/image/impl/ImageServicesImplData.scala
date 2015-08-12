@@ -21,6 +21,34 @@ trait ImageServicesImplData {
 
   val filePath = s"$fileFolder/$fileName"
 
+  val packageName = appPackage.packageName
+
+  val className = appPackage.className
+
+  val resultFileName = "C"
+
+  val resultFilePath = s"$fileFolder/C"
+
+  val resultFilePathPackage = s"$fileFolder/$packageName"
+
+  val icon = appPackage.icon
+
+  val uri = appWebsite.url
+
+  val name = appWebsite.name
+
+  val textToMeasure = "M"
+
+  val textSize = 71
+
+  val colorsList = List(1, 2, 3)
+
+  val densityDpi = 240
+
+  val widthPixels = 240
+
+  val heightPixels = 320
+
   val appPackagePath = AppPackagePath(
     packageName = appPackage.packageName,
     className = appPackage.className,
