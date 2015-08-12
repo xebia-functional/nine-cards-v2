@@ -89,7 +89,7 @@ trait ImageServicesTasksSpecification
     packageManager.getResourcesForApplication(packageName) returns mockResources
 
     override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = 240
+      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = densityDpi
       override def getIconByDensity(drawable: Drawable) = mockBitmap
     }
   }
@@ -103,7 +103,7 @@ trait ImageServicesTasksSpecification
     packageManager.getResourcesForApplication(packageName) returns mockResources
 
     override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = 240
+      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = densityDpi
       override def getIconByPackageName(packageName: String)(implicit context: ContextSupport): Bitmap = mockBitmap
     }
   }
@@ -128,7 +128,6 @@ trait ImageServicesTasksSpecification
 
     override val mockImageServicesTask = new ImageServicesTaskImpl {
       override def createInputStream(uri: String) = mockInputStream
-
       override def createBitmapByInputStream(is: InputStream) = mockBitmap
     }
 
@@ -186,7 +185,7 @@ trait ImageServicesTasksSpecification
     packageManager.getResourcesForApplication(packageName) returns mockResources
 
     override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = 240
+      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = densityDpi
       override def getIconByDensity(drawable: Drawable) = mockBitmap
     }
   }
@@ -203,13 +202,13 @@ trait ImageServicesTasksSpecification
     val mockCanvas = mock[Canvas]
 
     packageManager.getResourcesForApplication(packageName) returns mockResources
-    mockPaint.measureText("M") returns 71
-    mockImageServicesConfig.colors returns List(1, 2, 3)
+    mockPaint.measureText(textToMeasure) returns textSize
+    mockImageServicesConfig.colors returns colorsList
 
     override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = 240
-      override def getDisplayMetricsWidthPixels( implicit context: ContextSupport) = 240
-      override def getDisplayMetricsHeightPixels( implicit context: ContextSupport) = 320
+      override def getDisplayMetricsDensityDpi( implicit context: ContextSupport) = densityDpi
+      override def getDisplayMetricsWidthPixels( implicit context: ContextSupport) = widthPixels
+      override def getDisplayMetricsHeightPixels( implicit context: ContextSupport) = heightPixels
       override def createBitmap(defaultSize: Int) = mockBitmap
       override def createRect = mockRect
       override def createPaint = mockPaint
@@ -266,8 +265,8 @@ class ImageServicesTasksSpec
         val result = mockImageServicesTask.getPathByName(fileName)(contextSupport).run.run
         result must beLike {
           case Answer(resultFile) =>
-            resultFile.getName shouldEqual "C"
-            resultFile.getPath shouldEqual s"$fileFolder/C"
+            resultFile.getName shouldEqual resultFileName
+            resultFile.getPath shouldEqual resultFilePath
         }
       }
 
@@ -297,8 +296,7 @@ class ImageServicesTasksSpec
         val result = mockImageServicesTask.getPathByApp(packageName, className)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) =>
-              exception must beAnInstanceOf[FileException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[FileException]
           }
         }
       }
@@ -309,7 +307,7 @@ class ImageServicesTasksSpec
         result must beLike {
           case Answer(resultFile) =>
             resultFile.getName shouldEqual packageName
-            resultFile.getPath shouldEqual s"$fileFolder/$packageName"
+            resultFile.getPath shouldEqual resultFilePathPackage
         }
       }
 
@@ -318,8 +316,7 @@ class ImageServicesTasksSpec
         val result = mockImageServicesTask.getPathByPackageName(packageName)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) =>
-              exception must beAnInstanceOf[FileException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[FileException]
           }
         }
       }
@@ -327,19 +324,13 @@ class ImageServicesTasksSpec
     "return a Bitmap when the file is created by density" in
       new ImageServicesTasksScope with BitmapAppDensityImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
-        result must beLike {
-          case Answer(resultBitmap) =>
-            resultBitmap shouldEqual mockBitmap
-        }
+        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
       }
 
     "return a Bitmap when the file is created by packageName" in
       new ImageServicesTasksScope with BitmapAppPackageNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
-        result must beLike {
-          case Answer(resultBitmap) =>
-            resultBitmap shouldEqual mockBitmap
-        }
+        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
       }
 
     "return a BitmapTransformationException when no resources can be found" in
@@ -347,8 +338,7 @@ class ImageServicesTasksSpec
         val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) =>
-              exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
           }
         }
       }
@@ -356,9 +346,7 @@ class ImageServicesTasksSpec
     "return a Bitmap when when a valid uri is provided" in
       new ImageServicesTasksScope with BitmapUrlImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapFromURL(uri).run.run
-        result must beLike {
-          case Answer(resultBitmap) =>
-            resultBitmap shouldEqual mockBitmap
+        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap
         }
       }
 
@@ -367,8 +355,7 @@ class ImageServicesTasksSpec
         val result = mockImageServicesTask.getBitmapFromURL(uri).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) =>
-              exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
           }
         }
       }
@@ -376,10 +363,7 @@ class ImageServicesTasksSpec
     "successfuly saves the bitmap in the file" in
       new ImageServicesTasksScope with SaveBitmapImageServicesTasksScope {
         val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).run.run
-        result must beLike {
-          case Answer(response) =>
-            response shouldEqual((): Unit)
-        }
+        result must beLike {case Answer(response) => response shouldEqual((): Unit)}
         there was one(mockBitmap).compress(Bitmap.CompressFormat.PNG, 90, mockFileOutputStream)
       }
 
@@ -388,8 +372,7 @@ class ImageServicesTasksSpec
         val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) =>
-              exception must beAnInstanceOf[FileException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[FileException]
           }
         }
       }
@@ -398,20 +381,14 @@ class ImageServicesTasksSpec
       new ImageServicesTasksScope with BitmapAppImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByAppOrName(
           packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
-        result must beLike {
-          case Answer(resultBitmap) =>
-            resultBitmap shouldEqual mockBitmap
-        }
+        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
       }
 
     "return a Bitmap when an invalid app and a valid name are provided" in
       new ImageServicesTasksScope with BitmapNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByAppOrName(
           packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
-        result must beLike {
-          case Answer(resultBitmap) =>
-            resultBitmap shouldEqual mockBitmap
-        }
+        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
       }
 
     "return a BitmapTransformationException when an invalid app and name are provided" in
@@ -420,8 +397,7 @@ class ImageServicesTasksSpec
           packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) =>
-              exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
           }
         }
       }
@@ -430,20 +406,14 @@ class ImageServicesTasksSpec
       new ImageServicesTasksScope with BitmapURLNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapFromURLOrName(
           uri, name)(contextSupport, mockImageServicesConfig).run.run
-        result must beLike {
-          case Answer(resultBitmap) =>
-            resultBitmap shouldEqual mockBitmap
-        }
+        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
       }
 
     "return a Bitmap when an invalid url and a valid name is provided" in
       new ImageServicesTasksScope with BitmapNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapFromURLOrName(
           uri, name)(contextSupport, mockImageServicesConfig).run.run
-        result must beLike {
-          case Answer(resultBitmap) =>
-            resultBitmap shouldEqual mockBitmap
-        }
+        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
       }
 
     "return a BitmapTransformationException with an invalid url and an invalid name" in
@@ -452,8 +422,7 @@ class ImageServicesTasksSpec
           uri, name)(contextSupport, mockImageServicesConfig).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) =>
-              exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
           }
         }
       }
@@ -461,10 +430,7 @@ class ImageServicesTasksSpec
     "return a Bitmap when a valid name is provided" in
       new ImageServicesTasksScope with BitmapNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByName(name)(contextSupport, mockImageServicesConfig)
-        result must beLike {
-          case Answer(resultBitmap) =>
-            resultBitmap shouldEqual mockBitmap
-        }
+        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
       }
 
     "return a BitmapTransformationException when an invalid app and name are provided" in
@@ -472,8 +438,7 @@ class ImageServicesTasksSpec
         val result = mockImageServicesTask.getBitmapByName(name)(contextSupport, mockImageServicesConfig)
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) =>
-              exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
           }
         }
       }
