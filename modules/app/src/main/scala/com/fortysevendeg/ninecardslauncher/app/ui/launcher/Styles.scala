@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.support.design.widget.FloatingActionButton
 import android.text.TextUtils.TruncateAt
-import android.view.{Gravity, ViewGroup}
+import android.view.{View, Gravity, ViewGroup}
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
@@ -56,6 +56,8 @@ trait Styles {
       llLayoutMargin(margin, margin, margin, margin) +
       ivSrc(R.drawable.workspaces_pager)
   }
+
+  def fabContentStyle(clickable: Boolean): Tweak[FrameLayout] = Tweak[View]( _.setClickable(clickable))
 
   def fabButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     vWrapContent +

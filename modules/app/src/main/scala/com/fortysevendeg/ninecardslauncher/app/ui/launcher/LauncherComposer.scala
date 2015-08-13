@@ -72,6 +72,9 @@ trait LauncherComposer
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (workspacesContent <~ vgAddView(getUi(w[LauncherWorkSpaces] <~ wire(workspaces)))) ~
       (searchPanel <~ searchContentStyle) ~
+      (fabMenuContent <~ On.click(
+        swapFabButton
+      ) <~ fabContentStyle(false)) ~
       (fabButton <~ fabButtonMenuStyle <~ On.click(
         swapFabButton
       )) ~
@@ -158,7 +161,8 @@ trait LauncherComposer
           pmdAnimIcon(if (opened) IconTypes.ADD else IconTypes.CLOSE)) ~
           (fabMenuContent <~
             animFabButton(opened) <~
-            fadeBackground(!opened))
+            fadeBackground(!opened) <~
+            fabContentStyle(!opened))
     } getOrElse Ui.nop
   }
 
