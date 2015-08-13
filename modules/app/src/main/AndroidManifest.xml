@@ -4,17 +4,17 @@
           android:versionName="1.0">
 
     <uses-sdk
-            android:minSdkVersion="14"
-            android:targetSdkVersion="22"/>
+        android:minSdkVersion="14"
+        android:targetSdkVersion="22"/>
 
     <application
-            android:label="@string/app_name"
-            android:icon="@drawable/ic_launcher"
-            android:name="com.fortysevendeg.ninecardslauncher.app.NineCardsApplication">
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher"
+        android:name="com.fortysevendeg.ninecardslauncher.app.NineCardsApplication">
 
         <activity
-                android:theme="@style/AppThemeWallpaper"
-                android:name="com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity">
+            android:theme="@style/AppThemeWallpaper"
+            android:name="com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -22,22 +22,22 @@
         </activity>
 
         <activity
-                android:theme="@style/AppTheme"
-                android:label=""
-                android:name="com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity" />
+            android:theme="@style/AppTheme"
+            android:label=""
+            android:name="com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity"/>
 
         <activity
-                android:theme="@style/AppTheme"
-                android:label=""
-                android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity" />
+            android:theme="@style/AppThemeWizard"
+            android:label=""
+            android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity"/>
 
         <service
-                android:name="com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService" />
+            android:name="com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService"/>
 
         <provider
-                android:authorities="com.fortysevendeg.ninecardslauncher2"
-                android:name="com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider"
-                android:exported="false" />
+            android:authorities="com.fortysevendeg.ninecardslauncher2"
+            android:name="com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider"
+            android:exported="false"/>
 
     </application>
 

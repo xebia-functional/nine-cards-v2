@@ -18,6 +18,8 @@
     <dimen name="elevation_default">2dp</dimen>
     <dimen name="elevation_pressed">4dp</dimen>
 
+    <dimen name="default_stroke">2dp</dimen>
+
     <dimen name="shadow_displacement_default">1dp</dimen>
     <dimen name="shadow_radius_default">1dp</dimen>
 
@@ -32,9 +34,19 @@
     <dimen name="margin_top_pagers_collection_details">74dp</dimen>
     <dimen name="margin_top_tabs_collection_details">90dp</dimen>
     <dimen name="height_tabs_collection_details">40dp</dimen>
-    <dimen name="height_tootlbar_collection_details">186dp</dimen>
+    <dimen name="height_toolbar_collection_details">186dp</dimen>
     <dimen name="space_moving_collection_details">56dp</dimen>
     <integer name="anim_duration_icon_collection_detail">100</integer>
+
+    <dimen name="space_enter_views_collection_detail">128dp</dimen>
+
+    <integer name="anim_duration_collection_detail">200</integer>
+
+    <dimen name="padding_icon_home_indicator">8dp</dimen>
+
+    <integer name="anim_duration_appear_toolbar">400</integer>
+
+    <dimen name="distance_to_valid_close">24dp</dimen>
 
     <dimen name="size_icon_card">60dp</dimen>
 

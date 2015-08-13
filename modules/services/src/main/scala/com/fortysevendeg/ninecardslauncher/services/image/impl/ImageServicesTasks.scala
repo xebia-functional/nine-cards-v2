@@ -5,7 +5,7 @@ import java.net.URL
 
 import android.content.res.Resources
 import android.graphics._
-import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.{Drawable, BitmapDrawable}
 import android.os.Build
 import android.util.{DisplayMetrics, TypedValue}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
@@ -69,8 +69,8 @@ trait ImageServicesTasks
   def getBitmapFromURL(uri: String): ServiceDef2[Bitmap, BitmapTransformationException] = Service {
     Task {
       CatchAll[BitmapTransformationException] {
-        new URL(uri).getContent match {
-          case is: InputStream => BitmapFactory.decodeStream(is)
+        createInputStream(uri) match {
+          case is: InputStream => createBitmapByInputStream(is)
           case _ => throw BitmapTransformationExceptionImpl(s"Unexpected error while fetching content from uri: $uri")
         }
       }
@@ -80,7 +80,7 @@ trait ImageServicesTasks
   def saveBitmap(file: File, bitmap: Bitmap): ServiceDef2[Unit, FileException] = Service {
     Task {
       CatchAll[FileException] {
-        val out: FileOutputStream = new FileOutputStream(file)
+        val out = createFileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, out)
         out.flush()
         out.close()
@@ -101,13 +101,13 @@ trait ImageServicesTasks
   def getBitmapByName(text: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig): Result[Bitmap, BitmapTransformationException] =
     CatchAll[BitmapTransformationException] {
       val ds = defaultSize
-      val bitmap: Bitmap = Bitmap.createBitmap(ds, ds, Bitmap.Config.RGB_565)
-      val bounds: Rect = new Rect
+      val bitmap: Bitmap = createBitmap(ds)
+      val bounds: Rect = createRect
       val paint = defaultPaint
       paint.getTextBounds(text, 0, text.length, bounds)
       val x: Int = ((ds / 2) - bounds.exactCenterX).toInt
       val y: Int = ((ds / 2) - bounds.exactCenterY).toInt
-      val canvas: Canvas = new Canvas(bitmap)
+      val canvas: Canvas = createCanvas(bitmap)
       val color = imageServicesConfig.colors(scala.util.Random.nextInt(imageServicesConfig.colors.length))
       canvas.drawColor(color)
       canvas.drawText(text, x, y, paint)
@@ -120,8 +120,7 @@ trait ImageServicesTasks
       case _ => getBitmapByName(name)
     }
 
-  private[this] def currentDensity(implicit context: ContextSupport): Int =
-    context.getResources.getDisplayMetrics.densityDpi
+  private[this] def currentDensity(implicit context: ContextSupport): Int = getDisplayMetricsDensityDpi
 
   private[this] def densities(implicit context: ContextSupport): List[Int] = currentDensity match {
     case DisplayMetrics.DENSITY_HIGH =>
@@ -134,23 +133,22 @@ trait ImageServicesTasks
     densities.find(density => Result(resources.getValueForDensity(id, density, new TypedValue, true)).isAnswer) getOrElse noDensity
 
   private[this] def defaultSize(implicit context: ContextSupport): Int = {
-    val metrics: DisplayMetrics = context.getResources.getDisplayMetrics
-    val width: Int = metrics.widthPixels / 3
-    val height: Int = metrics.heightPixels / 3
+    val width: Int = getDisplayMetricsWidthPixels / 3
+    val height: Int = getDisplayMetricsHeightPixels / 3
     if (width > height) width else height
   }
 
   private[this] def defaultPaint(implicit context: ContextSupport): Paint = {
     def determineMaxTextSize(maxWidth: Float): Int = {
       var size: Int = 0
-      val paint: Paint = new Paint
+      val paint: Paint = createPaint
       do {
         size = size + 1
         paint.setTextSize(size)
       } while (paint.measureText("M") < maxWidth)
       size
     }
-    val paint = new Paint
+    val paint = createPaint
     paint.setColor(Color.WHITE)
     paint.setStyle(Paint.Style.FILL)
     paint.setAntiAlias(true)
@@ -162,13 +160,37 @@ trait ImageServicesTasks
     CatchAll[BitmapTransformationException] {
       val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) resources.getDrawableForDensity(icon, density, null)
       else resources.getDrawableForDensity(icon, density)
-      d.asInstanceOf[BitmapDrawable].getBitmap
+      getIconByDensity(d)
     }
 
   private[this] def tryIconByPackageName(packageName: String)(implicit context: ContextSupport): Result[Bitmap, BitmapTransformationException] =
     CatchAll[BitmapTransformationException] {
-      context.getPackageManager.getApplicationIcon(packageName).asInstanceOf[BitmapDrawable].getBitmap
+      getIconByPackageName(packageName)
     }
+
+  protected def getIconByDensity(drawable: Drawable): Bitmap = drawable.asInstanceOf[BitmapDrawable].getBitmap
+
+  protected def getIconByPackageName(packageName: String)(implicit context: ContextSupport): Bitmap = context.getPackageManager.getApplicationIcon(packageName).asInstanceOf[BitmapDrawable].getBitmap
+
+  protected def createInputStream(uri: String) = new URL(uri).getContent
+
+  protected def createBitmapByInputStream(is: InputStream) = BitmapFactory.decodeStream(is)
+
+  protected def createBitmap(defaultSize: Int) = Bitmap.createBitmap(defaultSize, defaultSize, Bitmap.Config.RGB_565)
+
+  protected def createFileOutputStream(file: File): FileOutputStream = new FileOutputStream(file)
+
+  protected def getDisplayMetricsDensityDpi(implicit context: ContextSupport): Int = context.getResources.getDisplayMetrics.densityDpi
+
+  protected def getDisplayMetricsWidthPixels(implicit context: ContextSupport): Int = context.getResources.getDisplayMetrics.widthPixels
+
+  protected def getDisplayMetricsHeightPixels(implicit context: ContextSupport): Int = context.getResources.getDisplayMetrics.heightPixels
+
+  protected def createRect: Rect = new Rect
+
+  protected def createPaint: Paint = new Paint
+
+  protected def createCanvas(bitmap: Bitmap): Canvas = new Canvas(bitmap)
 
 }
 

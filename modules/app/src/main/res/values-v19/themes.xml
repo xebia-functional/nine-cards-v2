@@ -1,26 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="AppTheme.Base">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="colorControlHighlight">@color/color_control_highlight</item>
-    </style>
-
-    <style name="AppThemeWallpaper" parent="AppTheme.Base">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="colorControlHighlight">@color/color_control_highlight</item>
-
-        <!-- Show Wallpaper -->
-
-        <item name="android:windowShowWallpaper">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-
+    <style name="AppThemeWallpaper" parent="AppThemeWallpaper.Base">
         <!-- Specifics for API 19 -->
 
         <item name="android:fitsSystemWindows">true</item>

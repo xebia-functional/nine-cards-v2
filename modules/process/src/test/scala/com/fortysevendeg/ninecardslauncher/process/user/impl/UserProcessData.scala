@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.user.impl
 
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
-import com.fortysevendeg.ninecardslauncher.services.api.models.{GoogleDevice, Installation, User}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{AndroidDevice, GoogleDevice, Installation, User}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
@@ -41,7 +41,7 @@ trait UserProcessData
 
   val installationId = "fake-installation-id"
   val installationToken = "fake-user-token"
-  val deviceType = Option("ANDROID")
+  val deviceType = Some(AndroidDevice)
 
   val initialInstallation = Installation(None, deviceType, None, None)
 

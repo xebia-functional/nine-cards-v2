@@ -44,8 +44,7 @@ class ApiUserService(serviceClient: ServiceClient) {
       _id = installation._id map (t => t),
       deviceType = installation.deviceType map (t => t),
       deviceToken = installation.deviceToken map (t => t),
-      userId = installation.userId map (t => t)
-    )
+      userId = installation.userId map (t => t))
     serviceClient.post[Installation, Installation](
       path = prefixPathInstallation,
       headers = headers,

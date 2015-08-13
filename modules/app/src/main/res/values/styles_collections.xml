@@ -9,7 +9,7 @@
 
     <style name="CollectionsToolbarParent">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/height_tootlbar_collection_details</item>
+        <item name="android:layout_height">@dimen/height_toolbar_collection_details</item>
     </style>
 
     <style name="CollectionsToolbar" parent="CollectionsToolbarParent" />

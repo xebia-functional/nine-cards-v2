@@ -14,7 +14,7 @@ object RecyclerViewListenerTweaks {
     scrolled: (Int, Int, Int) => Int,
     scrollStateChanged: (Int, RecyclerView, Int) => Unit
     )(implicit context: ContextWrapper): Tweak[W] = Tweak[W] {
-    _.setOnScrollListener(new OnScrollListener {
+    _.addOnScrollListener(new OnScrollListener {
       var scrollY = 0
       override def onScrolled(recyclerView: W, dx: Int, dy: Int): Unit = {
         super.onScrolled(recyclerView, dx, dy)

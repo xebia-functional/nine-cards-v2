@@ -24,12 +24,6 @@ package object services {
       ResultT[Task, A, B](f)
     }
 
-    @deprecated("migrate to Result type")
-    implicit def toDisjunctionTask[E <: Throwable, A](f: EitherT[Task, E, A]): Task[E \/ A] = f.run
-
-    @deprecated("migrate to Result type")
-    implicit def toDisjunctionT[E <: Throwable, A](f: Task[E \/ A]): EitherT[Task, E, A] = EitherT.eitherT(f)
-
   }
 
 }
