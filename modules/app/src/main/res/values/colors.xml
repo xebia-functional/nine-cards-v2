@@ -35,7 +35,8 @@
     <color name="collection_fab_button_ripple">#ff4e081f</color>
 
     <color name="collection_fab_button_item_title">#000000</color>
-    <color name="collection_fab_button_item_title_background">#ffffff</color>
+    <color name="collection_fab_button_item_title_background_default">#ffffff</color>
+    <color name="collection_fab_button_item_title_background_pressed">#cccccc</color>
 
     <color name="collection_fab_button_item_create_new_collection">#009688</color>
     <color name="collection_fab_button_item_my_collections">#3F51B5</color>
