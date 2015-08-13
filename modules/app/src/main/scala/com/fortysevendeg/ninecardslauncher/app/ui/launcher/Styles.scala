@@ -57,8 +57,6 @@ trait Styles {
       ivSrc(R.drawable.workspaces_pager)
   }
 
-  def fabContentStyle(clickable: Boolean): Tweak[FrameLayout] = Tweak[View]( _.setClickable(clickable))
-
   def fabButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     vWrapContent +
       fimBackgroundColor(resGetColor(R.color.collection_fab_button_item_create_new_collection)) +
@@ -86,14 +84,6 @@ trait Styles {
       vTag(R.id.`type`, fabButton) +
       vTag(R.id.fab_menu_position, "3")
 
-  def fabButtonMenuStyle(implicit context: ContextWrapper): Tweak[FloatingActionButton] = {
-    val iconFabButton = new PathMorphDrawable(
-      defaultIcon = IconTypes.ADD,
-      defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke))
-    ivSrc(iconFabButton) +
-      vTag(R.id.fab_menu_opened, close) +
-      vGone
-  }
 }
 
 trait CollectionsGroupStyle {
