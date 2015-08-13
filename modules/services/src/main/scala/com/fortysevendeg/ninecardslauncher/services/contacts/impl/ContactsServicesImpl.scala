@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
 import android.database.SQLException
+import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapper
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
@@ -45,36 +46,34 @@ class ContactsServicesImpl(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[ContactsServiceException] {
           contentResolverWrapper.fetch(
-            uri = Fields.PHONE_CONTENT_URI,
-            projection = allPhoneContactFields,
-            where = Fields.PHONE_SELECTION,
-            whereParams = Seq(phoneNumber))(getEntityFromCursor(contactFromPhoneCursor))
+            uri = Uri.withAppendedPath(Fields.PHONE_LOOKUP_URI, Uri.encode(phoneNumber)),
+            projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor))
         }
       }
     }
 
-  override def findContactById(id: Long): ServiceDef2[Contact, ContactNotFoundException] =
+  override def findContactByLookupKey(lookupKey: String): ServiceDef2[Contact, ContactNotFoundException] =
     Service {
       Task {
         CatchAll[ContactNotFoundException] {
           contentResolverWrapper.fetch(
             uri = Fields.CONTENT_URI,
             projection = allFields,
-            where = Fields.ID_SELECTION,
-            whereParams = Seq(id.toString))(getEntityFromCursor(contactFromCursor)) match {
+            where = Fields.LOOKUP_SELECTION,
+            whereParams = Seq(lookupKey))(getEntityFromCursor(contactFromCursor)) match {
             case Some(contact) =>
               val emails = contentResolverWrapper.fetchAll(
                 uri = Fields.EMAIL_CONTENT_URI,
                 projection = allEmailFields,
-                where = Fields.EMAIL_CONTACT_ID_SELECTION,
-                whereParams = Seq(id.toString))(getListFromCursor(emailFromCursor))
+                where = Fields.EMAIL_CONTACT_SELECTION,
+                whereParams = Seq(lookupKey))(getListFromCursor(emailFromCursor))
               val phones = contentResolverWrapper.fetchAll(
                 uri = Fields.PHONE_CONTENT_URI,
                 projection = allPhoneFields,
-                where = Fields.PHONE_CONTACT_ID_SELECTION,
-                whereParams = Seq(id.toString))(getListFromCursor(phoneFromCursor))
+                where = Fields.PHONE_CONTACT_SELECTION,
+                whereParams = Seq(lookupKey))(getListFromCursor(phoneFromCursor))
               contact.copy(info = Some(ContactInfo(emails, phones)))
-            case _ => throw new SQLException(s"Contact with user id=$id not found")
+            case _ => throw new SQLException("Contact not found")
           }
         }
       }
