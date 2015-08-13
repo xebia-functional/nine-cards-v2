@@ -43,6 +43,13 @@
     <string name="my_collections">Mis colecciones</string>
     <string name="public_collections">Colecciones Públicas</string>
 
+    <!-- Collections Detail -->
+
+    <string name="applications">Aplicaciones</string>
+    <string name="recommendations">Recomendaciones</string>
+    <string name="contacts">Contactos</string>
+    <string name="shortcuts">Accesos directos</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Todas</string>

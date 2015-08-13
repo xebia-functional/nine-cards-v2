@@ -1,8 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import android.support.design.widget.FloatingActionButton
 import android.text.TextUtils.TruncateAt
-import android.view.{View, Gravity, ViewGroup}
+import android.view.{Gravity, ViewGroup}
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
@@ -11,14 +10,14 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{IconTypes, PathMorphDrawable, FabItemMenu, TintableImageView}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, TintableImageView}
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
-import LauncherTags._
 
 trait Styles {
 
@@ -63,7 +62,7 @@ trait Styles {
       fimTitle(resGetString(R.string.create_new_collection)) +
       fimSrc(R.drawable.fab_menu_icon_create_new_collection) +
       vGone +
-      vTag(R.id.`type`, fabButton) +
+      vTag(R.id.`type`, fabButtonItem) +
       vTag(R.id.fab_menu_position, "1")
 
   def fabButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
@@ -72,7 +71,7 @@ trait Styles {
       fimTitle(resGetString(R.string.my_collections)) +
       fimSrc(R.drawable.fab_menu_icon_my_collections) +
       vGone +
-      vTag(R.id.`type`, fabButton) +
+      vTag(R.id.`type`, fabButtonItem) +
       vTag(R.id.fab_menu_position, "2")
 
   def fabButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
@@ -81,7 +80,7 @@ trait Styles {
       fimTitle(resGetString(R.string.public_collections)) +
       fimSrc(R.drawable.fab_menu_icon_public_collections) +
       vGone +
-      vTag(R.id.`type`, fabButton) +
+      vTag(R.id.`type`, fabButtonItem) +
       vTag(R.id.fab_menu_position, "3")
 
 }
@@ -124,7 +123,4 @@ trait CollectionItemStyle {
 
 object LauncherTags {
   val app = "app"
-  val fabButton = "fab_button"
-  val open = "open"
-  val close = "close"
 }

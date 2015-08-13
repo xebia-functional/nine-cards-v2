@@ -23,8 +23,9 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{IconTypes, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -40,7 +41,8 @@ import CollectionsDetailsActivity._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CollectionsDetailsComposer
-  extends Styles {
+  extends Styles
+  with FabButtonBehaviour {
 
   self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] =>
 
@@ -72,6 +74,8 @@ trait CollectionsDetailsComposer
 
   def initUi(indexColor: Int, iconCollection: String)(implicit theme: NineCardsTheme) =
     (tabs <~ tabsStyle <~ vInvisible) ~
+      initFabButton ~
+      loadMenuItems(getItemsForFabMenu) ~
       (viewPager <~ vInvisible) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
@@ -84,7 +88,8 @@ trait CollectionsDetailsComposer
       Ui(adapter.activateFragment(position)) ~
       (tabs <~
         stlViewPager(viewPager) <~
-        stlOnPageChangeListener(new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
+        stlOnPageChangeListener(
+          new OnPageChangeCollectionsListener(collections, () => startScroll, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       (tabs <~ vVisible <~~ enterViews) ~
       (viewPager <~ vVisible <~~ enterViews)
@@ -122,6 +127,21 @@ trait CollectionsDetailsComposer
       adapter.setScrollType(sType)
       adapter.notifyChanged(vp.getCurrentItem)
     }) getOrElse Ui.nop
+
+  private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
+    getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ On.click {
+      uiShortToast("Applications")
+    }),
+    getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
+      uiShortToast("Recommendations")
+    }),
+    getUi(w[FabItemMenu] <~ fabButtonContactsStyle <~ On.click {
+      uiShortToast("Contacts")
+    }),
+    getUi(w[FabItemMenu] <~ fabButtonShortcutsStyle <~ On.click {
+      uiShortToast("Shortcuts")
+    })
+  )
 
   private[this] def uiElevation(elevation: Float) = Lollipop.ifSupportedThen {
     vElevation(elevation)
@@ -266,6 +286,7 @@ case object Jump extends PageMovement
 
 class OnPageChangeCollectionsListener(
   collections: Seq[Collection],
+  startScroll: () => Unit,
   updateToolbarColor: (Int) => Ui[_],
   updateCollection: (Collection, Int, PageMovement) => Ui[_]
   )(implicit context: ContextWrapper, theme: NineCardsTheme)
@@ -274,6 +295,8 @@ class OnPageChangeCollectionsListener(
   var lastPosition = -1
 
   var currentPosition = -1
+
+  var lastState = ViewPager.SCROLL_STATE_IDLE
 
   var currentMovement: PageMovement = Loading
 
@@ -291,6 +314,10 @@ class OnPageChangeCollectionsListener(
   }
 
   override def onPageScrollStateChanged(state: Int): Unit = {
+    if (lastState == ViewPager.SCROLL_STATE_IDLE && state == ViewPager.SCROLL_STATE_DRAGGING) {
+      startScroll()
+    }
+    lastState = state
     state match {
       case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
       case _ =>

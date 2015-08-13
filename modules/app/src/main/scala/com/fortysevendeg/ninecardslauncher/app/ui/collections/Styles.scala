@@ -16,10 +16,12 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayout
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
 
@@ -28,10 +30,45 @@ trait Styles {
   def rootStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FrameLayout] =
     vBackgroundColor(theme.get(CollectionDetailBackgroundColor))
 
-
   def tabsStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[SlidingTabLayout] =
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor))
+
+  def fabButtonApplicationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    vWrapContent +
+      fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
+      fimTitle(resGetString(R.string.applications)) +
+      fimSrc(R.drawable.fab_menu_icon_applications) +
+      vGone +
+      vTag(R.id.`type`, fabButtonItem) +
+      vTag(R.id.fab_menu_position, "1")
+
+  def fabButtonRecommendationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    vWrapContent +
+      fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
+      fimTitle(resGetString(R.string.recommendations)) +
+      fimSrc(R.drawable.fab_menu_icon_recommendations) +
+      vGone +
+      vTag(R.id.`type`, fabButtonItem) +
+      vTag(R.id.fab_menu_position, "2")
+
+  def fabButtonContactsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    vWrapContent +
+      fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
+      fimTitle(resGetString(R.string.contacts)) +
+      fimSrc(R.drawable.fab_menu_icon_contact) +
+      vGone +
+      vTag(R.id.`type`, fabButtonItem) +
+      vTag(R.id.fab_menu_position, "3")
+
+  def fabButtonShortcutsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    vWrapContent +
+      fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
+      fimTitle(resGetString(R.string.shortcuts)) +
+      fimSrc(R.drawable.fab_menu_icon_shorcut) +
+      vGone +
+      vTag(R.id.`type`, fabButtonItem) +
+      vTag(R.id.fab_menu_position, "4")
 
 }
 

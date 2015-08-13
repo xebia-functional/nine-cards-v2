@@ -42,6 +42,9 @@
     <color name="collection_fab_button_item_my_collections">#3F51B5</color>
     <color name="collection_fab_button_item_public_collection">#F44336</color>
 
+    <color name="collection_detail_fab_button_item">#3F51B5</color>
+    <color name="collection_detail_fab_button_item_ripple">#ff1a2346</color>
+
     <!-- Collections detail -->
     <color name="background_icon_collection_detail">#4bffffff</color>
     <color name="text_tab_color_default">#77ffffff</color>

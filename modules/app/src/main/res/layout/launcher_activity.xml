@@ -91,7 +91,7 @@
 
         <LinearLayout
             android:id="@+id/launcher_menu"
-            style="@style/LauncherFabMenu">
+            style="@style/FabMenu">
 
             <android.support.design.widget.FloatingActionButton
                 style="@style/LauncherFabButton"

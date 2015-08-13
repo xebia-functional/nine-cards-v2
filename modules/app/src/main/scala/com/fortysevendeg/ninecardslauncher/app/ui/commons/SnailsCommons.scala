@@ -94,6 +94,7 @@ object SnailsCommons {
       val animPromise = Promise[Unit]()
       view.setVisibility(View.VISIBLE)
       view.animate.
+        setStartDelay(0).
         alpha(0).
         setInterpolator(new AccelerateDecelerateInterpolator()).
         translationY(translationY).

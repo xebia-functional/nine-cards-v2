@@ -11,8 +11,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{PathMorphDrawable, FabItemMenu, IconTypes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PathMorphDrawableTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherTags
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherTags._
+import FabButtonTags._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
@@ -70,7 +69,7 @@ trait FabButtonBehaviour
   }
 
   private[this] def animFabButton(open: Boolean)(implicit context: ActivityContextWrapper) = Transformer {
-    case i: FabItemMenu if tagEquals(i, R.id.`type`, LauncherTags.fabButton) =>
+    case i: FabItemMenu if tagEquals(i, R.id.`type`, fabButtonItem) =>
       i <~ (if (open) hideFabMenuItem else showFabMenuItem)
   }
 
@@ -78,7 +77,7 @@ trait FabButtonBehaviour
 
   def isFabMenuVisible = fabButton exists (_.getVisibility == View.VISIBLE)
 
-  def startScroll(implicit context: ActivityContextWrapper) = runUi(
+  def startScroll(implicit context: ActivityContextWrapper): Unit = runUi(
     if (!isFabMenuVisible) {
       postDelayedHideFabButton ~ (fabButton <~ showFabMenu)
     } else {
@@ -106,9 +105,7 @@ trait FabButtonBehaviour
     Option(view.getTag(id)) map (_.toString) getOrElse ""
 
   class RunnableWrapper(implicit context: ActivityContextWrapper) extends Runnable {
-    override def run(): Unit = runUi(
-      fabButton <~ hideFabMenu
-    )
+    override def run(): Unit = runUi(fabButton <~ hideFabMenu)
   }
 
 }
@@ -126,4 +123,10 @@ trait FabButtonStyle {
       vGone
   }
 
+}
+
+object FabButtonTags {
+  val fabButtonItem = "fab_button"
+  val open = "open"
+  val close = "close"
 }

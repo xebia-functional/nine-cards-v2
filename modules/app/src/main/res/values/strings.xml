@@ -47,6 +47,13 @@
     <string name="my_collections">My collections</string>
     <string name="public_collections">Public collections</string>
 
+    <!-- Collections Detail -->
+
+    <string name="applications">Applications</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="contacts">Contacts</string>
+    <string name="shortcuts">Shortcuts</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Any Category</string>

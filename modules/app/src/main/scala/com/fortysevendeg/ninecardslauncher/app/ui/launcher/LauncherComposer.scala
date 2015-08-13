@@ -10,7 +10,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTwea
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenu
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
@@ -30,8 +29,6 @@ trait LauncherComposer
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
-
-  // Witgets
 
   var workspaces: Option[LauncherWorkSpaces] = None
 
@@ -72,6 +69,7 @@ trait LauncherComposer
         Tweak[LauncherWorkSpaces](_.startScroll = () => startScroll)))) ~
       (searchPanel <~ searchContentStyle) ~
       initFabButton ~
+      loadMenuItems(getItemsForFabMenu) ~
       (burgerIcon <~ burgerButtonStyle <~ On.click(
         uiShortToast("Open Menu")
       )) ~
@@ -105,8 +103,7 @@ trait LauncherComposer
       }) ~
       (appDrawerMain <~ drawerAppStyle <~ On.click {
         uiShortToast("App Drawer")
-      }) ~
-      loadMenuItems(getItemsForFabMenu)
+      })
 
   def createCollections(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (loading <~ vGone) ~
@@ -162,9 +159,7 @@ trait LauncherComposer
   )
 
   class RunnableWrapper(implicit context: ActivityContextWrapper) extends Runnable {
-    override def run(): Unit = runUi(
-      fabButton <~ hideFabMenu
-    )
+    override def run(): Unit = runUi(fabButton <~ hideFabMenu)
   }
 
 }
