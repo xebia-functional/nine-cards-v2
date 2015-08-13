@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.content.Intent
+import android.os.Handler
 import android.speech.RecognizerIntent
 import android.view.{View, Gravity}
 import android.view.ViewGroup.LayoutParams._
@@ -30,6 +31,16 @@ trait LauncherComposer
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
+
+  // Show/Hide FabButton Manager
+
+  var runnableHideFabButton: Option[RunnableWrapper] = None
+
+  val handler = new Handler()
+
+  val timeDelayFabButton = 3000
+
+  // Witgets
 
   var workspaces: Option[LauncherWorkSpaces] = None
 
@@ -70,7 +81,10 @@ trait LauncherComposer
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-    (workspacesContent <~ vgAddView(getUi(w[LauncherWorkSpaces] <~ wire(workspaces)))) ~
+    (workspacesContent <~
+      vgAddView(getUi(w[LauncherWorkSpaces] <~
+        wire(workspaces) <~
+        Tweak[LauncherWorkSpaces](_.startScroll = () => startScroll)))) ~
       (searchPanel <~ searchContentStyle) ~
       (fabMenuContent <~ On.click(
         swapFabButton
@@ -141,16 +155,17 @@ trait LauncherComposer
     })
   )
 
-  private[this] def createPager(activatePosition: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = workspaces map {
-    ws =>
-      val pagerViews = 0 until ws.getWorksSpacesCount map {
-        position =>
-          val view = pagination(position)
-          view.setActivated(activatePosition == position)
-          view
-      }
-      paginationPanel <~ vgAddViews(pagerViews)
-  } getOrElse Ui.nop
+  private[this] def createPager(activatePosition: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+    workspaces map {
+      ws =>
+        val pagerViews = 0 until ws.getWorksSpacesCount map {
+          position =>
+            val view = pagination(position)
+            view.setActivated(activatePosition == position)
+            view
+        }
+        paginationPanel <~ vgAddViews(pagerViews)
+    } getOrElse Ui.nop
 
   def swapFabButton(implicit context: ActivityContextWrapper) = {
     val isOpen = fabButton map (tagEquals(_, R.id.fab_menu_opened, open))
@@ -162,7 +177,8 @@ trait LauncherComposer
           (fabMenuContent <~
             animFabButton(opened) <~
             fadeBackground(!opened) <~
-            fabContentStyle(!opened))
+            fabContentStyle(!opened)) ~
+            (if (opened) postDelayedHideFabButton else removeDelayedHideFabButton)
     } getOrElse Ui.nop
   }
 
@@ -172,6 +188,29 @@ trait LauncherComposer
   }
 
   def fabMenuOpened = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))
+
+  def isFabMenuVisible = fabButton exists (_.getVisibility == View.VISIBLE)
+
+  def startScroll(implicit context: ActivityContextWrapper) = runUi(
+    if (!isFabMenuVisible) {
+      postDelayedHideFabButton ~ (fabButton <~ showFabMenu)
+    } else {
+      resetDelayedHide
+    }
+  )
+
+  private[this] def postDelayedHideFabButton(implicit context: ActivityContextWrapper) = Ui {
+    val runnable = new RunnableWrapper()
+    handler.postDelayed(runnable, timeDelayFabButton)
+    runnableHideFabButton = Option(runnable)
+  }
+
+  private[this] def removeDelayedHideFabButton(implicit context: ActivityContextWrapper) = Ui {
+    runnableHideFabButton foreach handler.removeCallbacks
+  }
+
+  private[this] def resetDelayedHide(implicit context: ActivityContextWrapper) =
+    removeDelayedHideFabButton ~ postDelayedHideFabButton
 
   // TODO We add app randomly, in the future we should get the app from repository
   private[this] def fillAppDrawer(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {
@@ -197,5 +236,11 @@ trait LauncherComposer
   private[this] def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
     w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
+
+  class RunnableWrapper(implicit context: ActivityContextWrapper) extends Runnable {
+    override def run(): Unit = runUi(
+      fabButton <~ hideFabMenu
+    )
+  }
 
 }

@@ -91,7 +91,8 @@ trait Styles {
       defaultIcon = IconTypes.ADD,
       defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke))
     ivSrc(iconFabButton) +
-      vTag(R.id.fab_menu_opened, close)
+      vTag(R.id.fab_menu_opened, close) +
+      vGone
   }
 }
 

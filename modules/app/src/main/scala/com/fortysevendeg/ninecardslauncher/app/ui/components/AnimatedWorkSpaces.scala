@@ -29,6 +29,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   def this(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper) = this(context, attr, defStyleAttr, 0)
 
+  var startScroll: () => Unit = () => {}
+
   val dimen: Dimen = Dimen()
 
   var data: Seq[Data] = Seq.empty
@@ -424,6 +426,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
         case _ => false
       }
       if (isScrolling) {
+        startScroll()
         touchState = scrolling
         runUi(self <~ layerHardware(true))
       }
