@@ -10,6 +10,7 @@ public interface Fields {
 
     // -- Base Contact -- //
     Uri CONTENT_URI = ContactsContract.Contacts.CONTENT_URI;
+    Uri PHOTO_URI = ContactsContract.Contacts.CONTENT_LOOKUP_URI;
     String LOOKUP_KEY = ContactsContract.Contacts.LOOKUP_KEY;
     String DISPLAY_NAME = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY;
     String HAS_PHONE_NUMBER = ContactsContract.Contacts.HAS_PHONE_NUMBER;

@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts
 
 import android.database.Cursor
+import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 
 object ContactsContentProvider {
@@ -12,11 +13,12 @@ object ContactsContentProvider {
     Fields.STARRED)
 
   def contactFromCursor(cursor: Cursor) =
-    Contact(
-      lookupKey = cursor.getString(cursor.getColumnIndex(Fields.LOOKUP_KEY)),
-      name = cursor.getString(cursor.getColumnIndex(Fields.DISPLAY_NAME)),
-      hasPhone = cursor.getInt(cursor.getColumnIndex(Fields.HAS_PHONE_NUMBER)) > 0,
-      favorite = cursor.getInt(cursor.getColumnIndex(Fields.STARRED)) > 0)
+    readContact(
+      cursor = cursor,
+      lookupKeyColumn = Fields.LOOKUP_KEY,
+      nameColumn = Fields.DISPLAY_NAME,
+      hasPhoneColumn = Fields.HAS_PHONE_NUMBER,
+      starredColumn = Fields.STARRED)
 
   val allEmailContactFields = Seq(
     Fields.EMAIL_LOOKUP_KEY,
@@ -29,11 +31,12 @@ object ContactsContentProvider {
     Fields.EMAIL_ADDRESS)
 
   def contactFromEmailCursor(cursor: Cursor) =
-    Contact(
-      lookupKey = cursor.getString(cursor.getColumnIndex(Fields.EMAIL_LOOKUP_KEY)),
-      name = cursor.getString(cursor.getColumnIndex(Fields.EMAIL_DISPLAY_NAME)),
-      hasPhone = cursor.getInt(cursor.getColumnIndex(Fields.EMAIL_HAS_PHONE_NUMBER)) > 0,
-      favorite = cursor.getInt(cursor.getColumnIndex(Fields.EMAIL_STARRED)) > 0)
+    readContact(
+      cursor = cursor,
+      lookupKeyColumn = Fields.EMAIL_LOOKUP_KEY,
+      nameColumn = Fields.EMAIL_DISPLAY_NAME,
+      hasPhoneColumn = Fields.EMAIL_HAS_PHONE_NUMBER,
+      starredColumn = Fields.EMAIL_STARRED)
 
   def emailFromCursor(cursor: Cursor) =
     ContactEmail(
@@ -58,17 +61,18 @@ object ContactsContentProvider {
     Fields.PHONE_NUMBER)
 
   def contactFromPhoneCursor(cursor: Cursor) =
-    Contact(
-      lookupKey = cursor.getString(cursor.getColumnIndex(Fields.PHONE_LOOKUP_KEY)),
-      name = cursor.getString(cursor.getColumnIndex(Fields.PHONE_DISPLAY_NAME)),
-      hasPhone = cursor.getInt(cursor.getColumnIndex(Fields.PHONE_HAS_PHONE_NUMBER)) > 0,
-      favorite = cursor.getInt(cursor.getColumnIndex(Fields.PHONE_STARRED)) > 0)
+    readContact(
+      cursor = cursor,
+      lookupKeyColumn = Fields.PHONE_LOOKUP_KEY,
+      nameColumn = Fields.PHONE_DISPLAY_NAME,
+      hasPhoneColumn = Fields.PHONE_HAS_PHONE_NUMBER,
+      starredColumn = Fields.PHONE_STARRED)
 
   def phoneFromCursor(cursor: Cursor) =
     ContactPhone(
       number = cursor.getString(cursor.getColumnIndex(Fields.PHONE_NUMBER)),
       category = parsePhoneType(cursor.getInt(cursor.getColumnIndex(Fields.PHONE_TYPE))))
-  
+
   def parsePhoneType(phoneType: Int): PhoneCategory =
     phoneType match {
       case Fields.PHONE_TYPE_HOME => PhoneHome
@@ -76,4 +80,19 @@ object ContactsContentProvider {
       case Fields.PHONE_TYPE_MOBILE => PhoneMobile
       case _ => PhoneOther
     }
+
+  private[this] def readContact(
+    cursor: Cursor,
+    lookupKeyColumn: String,
+    nameColumn: String,
+    hasPhoneColumn: String,
+    starredColumn: String) = {
+    val lookupKey = cursor.getString(cursor.getColumnIndex(lookupKeyColumn))
+    Contact(
+      lookupKey = lookupKey,
+      photoUri = Uri.withAppendedPath(Fields.PHOTO_URI, lookupKey).toString,
+      name = cursor.getString(cursor.getColumnIndex(nameColumn)),
+      hasPhone = cursor.getInt(cursor.getColumnIndex(hasPhoneColumn)) > 0,
+      favorite = cursor.getInt(cursor.getColumnIndex(starredColumn)) > 0)
+  }
 }
