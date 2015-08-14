@@ -34,19 +34,17 @@ trait ApiUtilsSpecification
 
   }
 
-  trait ErrorUserApiUtilsScope
-    extends Scope
-    with ApiUtilsScope
-    with UtilsData {
+  trait ErrorUserApiUtilsScope{
+
+    self: ApiUtilsScope =>
 
     mockPersistenceServices.getUser(contextSupport) returns Service(Task(Errata(PersistenceServiceException(""))))
 
   }
 
-  trait ErrorAndroidIdApiUtilsScope
-    extends Scope
-    with ApiUtilsScope
-    with UtilsData {
+  trait ErrorAndroidIdApiUtilsScope{
+
+    self: ApiUtilsScope =>
 
     mockPersistenceServices.getUser(contextSupport) returns Service(Task(Answer(User(None, Some(token), None, Seq()))))
     mockPersistenceServices.getAndroidId(contextSupport) returns Service(Task(Errata(AndroidIdNotFoundException(""))))
@@ -72,7 +70,7 @@ class ApiUtilsSpec
       }
 
     "returns an ApiServiceException when the session token doesn't exists" in
-      new ErrorUserApiUtilsScope {
+      new ApiUtilsScope with ErrorUserApiUtilsScope {
         val result = mockApiUtils.getRequestConfig(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -82,7 +80,7 @@ class ApiUtilsSpec
       }
 
     "returns an ApiServiceException when the android id can't be found" in
-      new ErrorAndroidIdApiUtilsScope {
+      new ApiUtilsScope with ErrorAndroidIdApiUtilsScope {
         val result = mockApiUtils.getRequestConfig(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {

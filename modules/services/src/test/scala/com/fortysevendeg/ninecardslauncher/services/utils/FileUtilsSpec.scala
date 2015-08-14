@@ -17,8 +17,6 @@ trait FileUtilsSpecification
 
     class FileUtilsImpl extends FileUtils
 
-    val mockFileUtils = new FileUtilsImpl
-
     val mockFile = mock[File]
     val mockFileInputStream = mock[FileInputStream]
     val mockFileOutputStream = mock[FileOutputStream]
@@ -30,136 +28,165 @@ trait FileUtilsSpecification
 
   }
 
-  trait LoadFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
+  trait LoadFileUtilsScope {
 
-    override val mockFileUtils = new FileUtilsImpl {
+    self: FileUtilsScope =>
+
+    val mockStreamWrapper = new StreamWrapperImpl {
       override def createFileInputStream(file: File) = mockFileInputStream
       override def createGZIPInputStream(fileInputStream: FileInputStream) = mockGZIPInputStream
       override def createObjectInputStream(gzipInputStream: GZIPInputStream) = mockObjectInputStream
       override def readObjectAsInstance[User](objectInputStream: ObjectInputStream) = mockUser.asInstanceOf[User]
     }
 
-  }
-
-  trait ErrorFileInputStreamLoadFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
-
-    override val mockFileUtils = new FileUtilsImpl {
-      override def createFileInputStream(file: File) = {
-        throw new FileNotFoundException
-      }
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
     }
 
   }
 
-  trait ErrorGZIPInputStreamLoadFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
+  trait ErrorFileInputStreamLoadFileUtilsScope {
 
-    override val mockFileUtils = new FileUtilsImpl {
-      override def createFileInputStream(file: File) = mockFileInputStream
-      override def createGZIPInputStream(fileInputStream: FileInputStream) = {
-        throw new StreamCorruptedException
-      }
-    }
+    self: FileUtilsScope =>
 
-  }
-
-  trait ErrorObjectInputStreamLoadFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
-
-    override val mockFileUtils = new FileUtilsImpl {
-      override def createFileInputStream(file: File) = mockFileInputStream
-      override def createGZIPInputStream(fileInputStream: FileInputStream) = mockGZIPInputStream
-      override def createObjectInputStream(gzipInputStream: GZIPInputStream) = {
-        throw new StreamCorruptedException
-      }
-    }
-
-  }
-
-  trait ErrorObjectInputStreamReadLoadFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
-
-    override val mockFileUtils = new FileUtilsImpl {
-      override def createFileInputStream(file: File) = mockFileInputStream
+    val mockStreamWrapper = new StreamWrapperImpl {
+      override def createFileInputStream(file: File) = throw new FileNotFoundException
       override def createGZIPInputStream(fileInputStream: FileInputStream) = mockGZIPInputStream
       override def createObjectInputStream(gzipInputStream: GZIPInputStream) = mockObjectInputStream
-      override def readObjectAsInstance[User](objectInputStream: ObjectInputStream) = {
-        throw new ClassNotFoundException
-      }
+      override def readObjectAsInstance[User](objectInputStream: ObjectInputStream) = mockUser.asInstanceOf[User]
+    }
+
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
+    }
+  }
+
+  trait ErrorGZIPInputStreamLoadFileUtilsScope {
+
+    self: FileUtilsScope =>
+
+    val mockStreamWrapper = new StreamWrapperImpl {
+      override def createFileInputStream(file: File) = mockFileInputStream
+      override def createGZIPInputStream(fileInputStream: FileInputStream) = throw new StreamCorruptedException
+      override def createObjectInputStream(gzipInputStream: GZIPInputStream) = mockObjectInputStream
+      override def readObjectAsInstance[User](objectInputStream: ObjectInputStream) = mockUser.asInstanceOf[User]
+    }
+
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
     }
 
   }
 
-  trait WriteFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
+  trait ErrorObjectInputStreamLoadFileUtilsScope {
 
-    override val mockFileUtils = new FileUtilsImpl {
+    self: FileUtilsScope =>
+
+    val mockStreamWrapper = new StreamWrapperImpl {
+      override def createFileInputStream(file: File) = mockFileInputStream
+      override def createGZIPInputStream(fileInputStream: FileInputStream) = mockGZIPInputStream
+      override def createObjectInputStream(gzipInputStream: GZIPInputStream) = throw new StreamCorruptedException
+      override def readObjectAsInstance[User](objectInputStream: ObjectInputStream) = mockUser.asInstanceOf[User]
+    }
+
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
+    }
+  }
+
+  trait ErrorObjectInputStreamReadLoadFileUtilsScope {
+
+    self: FileUtilsScope =>
+
+    val mockStreamWrapper = new StreamWrapperImpl {
+      override def createFileInputStream(file: File) = throw new FileNotFoundException
+      override def createGZIPInputStream(fileInputStream: FileInputStream) = mockGZIPInputStream
+      override def createObjectInputStream(gzipInputStream: GZIPInputStream) = mockObjectInputStream
+      override def readObjectAsInstance[User](objectInputStream: ObjectInputStream) = throw new ClassNotFoundException
+    }
+
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
+    }
+  }
+
+  trait WriteFileUtilsScope {
+
+    self: FileUtilsScope =>
+
+    val mockStreamWrapper = new StreamWrapperImpl {
       override def createFileOutputStream(file: File) = mockFileOutputStream
       override def createGZIPOutputStream(fileOutputStream: FileOutputStream) = mockGZIPOutputStream
       override def createObjectOutputStream(gzipOutputStream: GZIPOutputStream) = mockObjectOutputStream
-      override def writeObject[User](out: ObjectOutputStream, obj: User): Unit = ()
-     }
-
-  }
-
-  trait ErrorFileOutputStreamLoadFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
-
-    override val mockFileUtils = new FileUtilsImpl {
-      override def createFileOutputStream(file: File) = {
-        throw new FileNotFoundException
-      }
+      override def writeObject[User](objectOutputStream: ObjectOutputStream,  obj: User): Unit = ()
     }
 
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
+    }
   }
 
-  trait ErrorGZIPOutputStreamLoadFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
+  trait ErrorFileOutputStreamLoadFileUtilsScope {
 
-    override val mockFileUtils = new FileUtilsImpl {
+    self: FileUtilsScope =>
+
+    val mockStreamWrapper = new StreamWrapperImpl {
+      override def createFileOutputStream(file: File) = throw new FileNotFoundException
+      override def createGZIPOutputStream(fileOutputStream: FileOutputStream) = mockGZIPOutputStream
+      override def createObjectOutputStream(gzipOutputStream: GZIPOutputStream) = mockObjectOutputStream
+      override def writeObject[User](objectOutputStream: ObjectOutputStream,  obj: User): Unit = ()
+    }
+
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
+    }
+  }
+
+  trait ErrorGZIPOutputStreamLoadFileUtilsScope {
+
+    self: FileUtilsScope =>
+
+    val mockStreamWrapper = new StreamWrapperImpl {
       override def createFileOutputStream(file: File) = mockFileOutputStream
-      override def createGZIPOutputStream(fileOutputStream: FileOutputStream) =  {
-        throw new IOException
-      }
+      override def createGZIPOutputStream(fileOutputStream: FileOutputStream) = throw new IOException
+      override def createObjectOutputStream(gzipOutputStream: GZIPOutputStream) = mockObjectOutputStream
+      override def writeObject[User](objectOutputStream: ObjectOutputStream,  obj: User): Unit = ()
     }
 
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
+    }
   }
 
-  trait ErrorObjectOutputStreamLoadFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
+  trait ErrorObjectOutputStreamLoadFileUtilsScope {
 
-    override val mockFileUtils = new FileUtilsImpl {
+    self: FileUtilsScope =>
+
+    val mockStreamWrapper = new StreamWrapperImpl {
       override def createFileOutputStream(file: File) = mockFileOutputStream
       override def createGZIPOutputStream(fileOutputStream: FileOutputStream) = mockGZIPOutputStream
-      override def createObjectOutputStream(gzipOutputStream: GZIPOutputStream) = {
-        throw new IOException
-      }
+      override def createObjectOutputStream(gzipOutputStream: GZIPOutputStream) = throw new IOException
+      override def writeObject[User](objectOutputStream: ObjectOutputStream,  obj: User): Unit = ()
     }
 
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
+    }
   }
 
-  trait ErrorObjectOutputStreamWriteLoadFileUtilsScope
-    extends Scope
-    with FileUtilsScope {
+  trait ErrorObjectOutputStreamWriteLoadFileUtilsScope {
 
-    override val mockFileUtils = new FileUtilsImpl {
+    self: FileUtilsScope =>
+
+    val mockStreamWrapper = new StreamWrapperImpl {
       override def createFileOutputStream(file: File) = mockFileOutputStream
       override def createGZIPOutputStream(fileOutputStream: FileOutputStream) = mockGZIPOutputStream
       override def createObjectOutputStream(gzipOutputStream: GZIPOutputStream) = mockObjectOutputStream
-      override def writeObject[User](out: ObjectOutputStream, obj: User): Unit = {
-        throw new IOException
-      }
+      override def writeObject[User](objectOutputStream: ObjectOutputStream,  obj: User): Unit = throw new IOException
+    }
+
+    val mockFileUtils = new FileUtils {
+      override val streamWrapper = mockStreamWrapper
     }
   }
 
@@ -171,61 +198,61 @@ class FileUtilsSpec
   "File Utils" should {
 
     "successfully load a file" in
-      new LoadFileUtilsScope {
+      new FileUtilsScope with LoadFileUtilsScope {
         val result = mockFileUtils.loadFile[User](mockFile)
         result must beSuccessfulTry
       }
 
     "fails loading a file when FileInputStream throws an FileNotFoundException" in
-      new ErrorFileInputStreamLoadFileUtilsScope {
+      new FileUtilsScope with ErrorFileInputStreamLoadFileUtilsScope {
         val result = mockFileUtils.loadFile[User](mockFile)
         result must beFailedTry
       }
 
     "fails loading a file when GZIPInputStream throws an StreamCorruptedException" in
-      new ErrorGZIPInputStreamLoadFileUtilsScope {
+      new FileUtilsScope with ErrorGZIPInputStreamLoadFileUtilsScope {
         val result = mockFileUtils.loadFile[User](mockFile)
         result must beFailedTry
       }
 
     "fails loading a file when ObjectInputStream throws an StreamCorruptedException" in
-      new ErrorObjectInputStreamLoadFileUtilsScope {
+      new FileUtilsScope with ErrorObjectInputStreamLoadFileUtilsScope {
         val result = mockFileUtils.loadFile[User](mockFile)
         result must beFailedTry
       }
 
     "fails loading a file when ObjectInputStream.readObject throws an ClassNotFoundException" in
-      new ErrorObjectInputStreamReadLoadFileUtilsScope {
+      new FileUtilsScope with ErrorObjectInputStreamReadLoadFileUtilsScope {
         val result = mockFileUtils.loadFile[User](mockFile)
         result must beFailedTry
       }
 
     "successfully writes a file" in
-      new WriteFileUtilsScope {
+      new FileUtilsScope with WriteFileUtilsScope {
         val result = mockFileUtils.writeFile[User](mockFile, mockUser)
         result must beSuccessfulTry
       }
 
     "fails writing a file when FileOutputStream throws an FileNotFoundException" in
-      new ErrorFileOutputStreamLoadFileUtilsScope {
+      new FileUtilsScope with ErrorFileOutputStreamLoadFileUtilsScope {
         val result = mockFileUtils.writeFile[User](mockFile, mockUser)
         result must beFailedTry
       }
 
     "fails writing a file when GZIPOutputStream throws an IOException" in
-      new ErrorGZIPOutputStreamLoadFileUtilsScope {
+      new FileUtilsScope with ErrorGZIPOutputStreamLoadFileUtilsScope {
         val result = mockFileUtils.writeFile[User](mockFile, mockUser)
         result must beFailedTry
       }
 
     "fails writing a file when ObjectOutputStream throws an IOException" in
-      new ErrorObjectOutputStreamLoadFileUtilsScope {
+      new FileUtilsScope with ErrorObjectOutputStreamLoadFileUtilsScope {
         val result = mockFileUtils.writeFile[User](mockFile, mockUser)
         result must beFailedTry
       }
 
     "fails writing a file when ObjectOutputStream.writeObject throws an IOException" in
-      new ErrorObjectOutputStreamWriteLoadFileUtilsScope {
+      new FileUtilsScope with ErrorObjectOutputStreamWriteLoadFileUtilsScope {
         val result = mockFileUtils.writeFile[User](mockFile, mockUser)
         result must beFailedTry
       }
