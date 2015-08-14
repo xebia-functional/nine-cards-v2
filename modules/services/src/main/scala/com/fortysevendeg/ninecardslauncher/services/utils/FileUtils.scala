@@ -10,11 +10,11 @@ trait FileUtils {
 
   def loadFile[T](file: File): Try[T] =
     Try {
-      withResource[FileInputStream, T](new FileInputStream(file)) {
+      withResource[FileInputStream, T](createFileInputStream(file)) {
         fileStream =>
-          val gzip = new GZIPInputStream(fileStream)
-          val in = new ObjectInputStream(gzip)
-          val obj: T = in.readObject.asInstanceOf[T]
+          val gzip = createGZIPInputStream(fileStream)
+          val in = createObjectInputStream(gzip)
+          val obj: T = readObjectAsInstance[T](in)
           in.close()
           gzip.close()
           obj
@@ -25,11 +25,11 @@ trait FileUtils {
     Try {
       file.delete
       file.createNewFile
-      withResource[FileOutputStream, Unit](new FileOutputStream(file)) {
+      withResource[FileOutputStream, Unit](createFileOutputStream(file)) {
         outputStream =>
-          val gzos = new GZIPOutputStream(outputStream)
-          val out = new ObjectOutputStream(gzos)
-          out.writeObject(obj)
+          val gzos = createGZIPOutputStream(outputStream)
+          val out = createObjectOutputStream(gzos)
+          writeObject[T](out, obj)
           out.flush()
           out.close()
           gzos.flush()
@@ -37,8 +37,20 @@ trait FileUtils {
       }
     }
 
-  def withResource[C <: Closeable, R](closeable: C)(f: C => R) = {
+  private[this] def withResource[C <: Closeable, R](closeable: C)(f: C => R) = {
     allCatch.andFinally(closeable.close())(f(closeable))
   }
+
+  protected def createFileInputStream(file: File) = new FileInputStream(file)
+  protected def createFileOutputStream(file: File) = new FileOutputStream(file)
+
+  protected def createGZIPInputStream(fileInputStream: FileInputStream) = new GZIPInputStream(fileInputStream)
+  protected def createGZIPOutputStream(fileOutputStream: FileOutputStream) = new GZIPOutputStream(fileOutputStream)
+
+  protected def createObjectInputStream(gzipInputStream: GZIPInputStream) = new ObjectInputStream(gzipInputStream)
+  protected def createObjectOutputStream(gzipOutputStream: GZIPOutputStream) = new ObjectOutputStream(gzipOutputStream)
+
+  protected def readObjectAsInstance[T](objectInputStream: ObjectInputStream): T = objectInputStream.readObject.asInstanceOf[T]
+  protected def writeObject[T](out: ObjectOutputStream, obj: T): Unit = out.writeObject(obj)
 
 }
