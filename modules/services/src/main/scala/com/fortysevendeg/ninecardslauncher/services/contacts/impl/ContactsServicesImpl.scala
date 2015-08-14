@@ -9,11 +9,13 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactInfo, Contact}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactInfo}
 
 import scalaz.concurrent.Task
 
-class ContactsServicesImpl(contentResolverWrapper: ContentResolverWrapper)
+class ContactsServicesImpl(
+  contentResolverWrapper: ContentResolverWrapper,
+  uriCreator: UriCreator = new UriCreator)
   extends ContactsServices
   with ImplicitsContactsServiceExceptions {
 
@@ -46,16 +48,16 @@ class ContactsServicesImpl(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[ContactsServiceException] {
           contentResolverWrapper.fetch(
-            uri = Uri.withAppendedPath(Fields.PHONE_LOOKUP_URI, Uri.encode(phoneNumber)),
+            uri = uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, phoneNumber),
             projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor))
         }
       }
     }
 
-  override def findContactByLookupKey(lookupKey: String): ServiceDef2[Contact, ContactNotFoundException] =
+  override def findContactByLookupKey(lookupKey: String): ServiceDef2[Contact, ContactsServiceException] =
     Service {
       Task {
-        CatchAll[ContactNotFoundException] {
+        CatchAll[ContactsServiceException] {
           contentResolverWrapper.fetch(
             uri = Fields.CONTENT_URI,
             projection = allFields,
@@ -72,8 +74,12 @@ class ContactsServicesImpl(contentResolverWrapper: ContentResolverWrapper)
                 projection = allPhoneFields,
                 where = Fields.PHONE_CONTACT_SELECTION,
                 whereParams = Seq(lookupKey))(getListFromCursor(phoneFromCursor))
-              contact.copy(info = Some(ContactInfo(emails, phones)))
-            case _ => throw new SQLException("Contact not found")
+              val contactInfo = (emails, phones) match {
+                case (Nil, Nil) => None
+                case _ => Some(ContactInfo(emails, phones))
+              }
+              contact.copy(info = contactInfo)
+            case _ => throw ContactNotFoundException(s"Contact with lookupKey=$lookupKey not found")
           }
         }
       }
@@ -90,4 +96,10 @@ class ContactsServicesImpl(contentResolverWrapper: ContentResolverWrapper)
         }
       }
     }
+}
+
+class UriCreator {
+
+  def withAppendedPath(uri: Uri, path: String) = Uri.withAppendedPath(uri, Uri.encode(path))
+
 }

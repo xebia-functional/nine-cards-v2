@@ -58,7 +58,8 @@ object ContactsContentProvider {
 
   val allPhoneFields = Seq(
     Fields.PHONE_TYPE,
-    Fields.PHONE_NUMBER)
+    Fields.PHONE_NUMBER,
+    Fields.PHONE_CUSTOM_RINGTONE)
 
   def contactFromPhoneCursor(cursor: Cursor) =
     readContact(

@@ -11,7 +11,7 @@ trait ContactsServices {
 
   def fetchContactByPhoneNumber(phoneNumber: String): ServiceDef2[Option[Contact], ContactsServiceException]
 
-  def findContactByLookupKey(lookupKey: String): ServiceDef2[Contact, ContactNotFoundException]
+  def findContactByLookupKey(lookupKey: String): ServiceDef2[Contact, ContactsServiceException]
 
   def getFavoriteContacts: ServiceDef2[Seq[Contact], ContactsServiceException]
 }

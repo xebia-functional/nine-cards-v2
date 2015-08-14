@@ -25,7 +25,7 @@ public interface Fields {
     String EMAIL_DISPLAY_NAME = ContactsContract.CommonDataKinds.Email.DISPLAY_NAME_PRIMARY;
     String EMAIL_HAS_PHONE_NUMBER = ContactsContract.CommonDataKinds.Email.HAS_PHONE_NUMBER;
     String EMAIL_STARRED = ContactsContract.CommonDataKinds.Email.STARRED;
-    String EMAIL_ADDRESS = ContactsContract.CommonDataKinds.Email.DATA;
+    String EMAIL_ADDRESS = ContactsContract.CommonDataKinds.Email.ADDRESS;
     String EMAIL_TYPE = ContactsContract.CommonDataKinds.Email.TYPE;
 
     int EMAIL_TYPE_HOME = ContactsContract.CommonDataKinds.Email.TYPE_HOME;
@@ -44,6 +44,7 @@ public interface Fields {
     String PHONE_STARRED = ContactsContract.PhoneLookup.STARRED;
     String PHONE_NUMBER = ContactsContract.CommonDataKinds.Phone.NUMBER;
     String PHONE_TYPE = ContactsContract.CommonDataKinds.Phone.TYPE;
+    String PHONE_CUSTOM_RINGTONE = ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE;
 
     int PHONE_TYPE_HOME = ContactsContract.CommonDataKinds.Phone.TYPE_HOME;
     int PHONE_TYPE_WORK = ContactsContract.CommonDataKinds.Phone.TYPE_WORK;
