@@ -18,9 +18,9 @@ class FileUtils
     Service {
       Task {
         CatchAll[AssetException] {
-          withResource[InputStream, String](context.getAssets.open(filename)) {
+          withResource[InputStream, String](openFile(filename)) {
             stream =>
-              Source.fromInputStream(stream, "UTF-8").mkString
+              makeStringFromInputStream(stream)
           }
         }
       }
@@ -29,4 +29,8 @@ class FileUtils
   private[this] def withResource[C <: Closeable, R](closeable: C)(f: C => R) = {
     allCatch.andFinally(closeable.close())(f(closeable))
   }
+
+  protected def openFile(filename: String)(implicit context: ContextSupport): InputStream = context.getAssets.open(filename)
+
+  protected def makeStringFromInputStream(stream: InputStream): String = Source.fromInputStream(stream, "UTF-8").mkString
 }
