@@ -3,13 +3,14 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
 import android.content.Context
-import android.util.{Log, AttributeSet}
+import android.support.v4.view.ViewConfigurationCompat
+import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
-import android.view.{MotionEvent, ViewGroup}
+import android.view.{MotionEvent, ViewConfiguration, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Tweak, ContextWrapper}
+import macroid.{ContextWrapper, Tweak}
 
 class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(implicit contextWrapper: ContextWrapper)
   extends ViewGroup(context, attrs, defStyle) {
@@ -23,6 +24,15 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   val indicator = PullToCloseIndicator()
 
   val listeners = PullToCloseListener()
+
+  val touchSlop = {
+    val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
+    ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
+  }
+
+  def isPulling: Boolean = indicator.isPulling
+
+  def currentPosY: Int = indicator.currentPosY
 
   override def checkLayoutParams(p: ViewGroup.LayoutParams): Boolean = p.isInstanceOf[MarginLayoutParams]
 
@@ -67,23 +77,27 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
       case _ =>
     }
 
-
   override def dispatchTouchEvent(ev: MotionEvent): Boolean = {
-    if (isEnabled && (indicator.isSwiping || !canChildScrollUp)) {
-      val x = ev.getX
-      val y = ev.getY
-      ev.getAction match {
-        case ACTION_UP | ACTION_CANCEL => release(ev)
-        case ACTION_DOWN => actionDown(ev, x, y)
-        case ACTION_MOVE => actionMove(ev, x, y)
-        case _ => super.dispatchTouchEvent(ev)
-      }
-    } else {
-      super.dispatchTouchEvent(ev)
+    val x = ev.getX
+    val y = ev.getY
+    (indicator.isPulling, childInTop, ev.getAction) match {
+      case (pulling, _, action) if pulling && (action == ACTION_UP || action == ACTION_CANCEL) =>
+        release(ev)
+      case (pulling, _, action) if pulling && action == ACTION_DOWN =>
+        actionDown(ev, x, y)
+      case (pulling, _, action) if pulling && action == ACTION_MOVE =>
+        actionMove(ev, x, y)
+      case (pulling, inTop, action) if !pulling && inTop && action == ACTION_DOWN =>
+        actionDown(ev, x, y)
+      case (pulling, inTop, action) if !pulling && inTop && action == ACTION_MOVE =>
+        actionMoveIdle(ev, x, y)
+      case _ => super.dispatchTouchEvent(ev)
     }
   }
 
   private[this] def release(ev: MotionEvent): Boolean = {
+    listeners.endPulling()
+    indicator.isPulling = false
     if (indicator.currentPosY > 0) {
       if (indicator.shouldClose()) listeners.close()
       val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
@@ -106,7 +120,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   }
 
   private[this] def actionMove(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    val firstTime = !indicator.isSwiping && !canChildScrollUp && indicator.dontStarted
+    val firstTime = !indicator.isPulling && childInTop && indicator.dontStarted
     if (firstTime) {
       // User began movement when the child can scroll up and we need start information
       indicator.start(x, y)
@@ -114,10 +128,19 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     indicator.move(x, y)
     val moveDown = indicator.offsetY > 0
 
-    (moveDown, !moveDown, indicator.hasLeftStartPosition, canChildScrollUp) match {
-      case (down, _, _, scrollUp) if down && scrollUp => // disable move when user not reach top
+    (moveDown, !moveDown, indicator.hasLeftStartPosition, childInTop) match {
+      case (down, _, _, inTop) if down && !inTop => // disable move when user not reach top
       case (down, up, canUp, _) if (up && canUp) || down => movePos(indicator.offsetY)
       case _ =>
+    }
+    super.dispatchTouchEvent(ev)
+  }
+
+  private[this] def actionMoveIdle(ev: MotionEvent, x: Float, y: Float): Boolean = {
+    if (y - indicator.startY > touchSlop) {
+      indicator.isPulling = true
+      indicator.start(x, y)
+      listeners.startPulling()
     }
     super.dispatchTouchEvent(ev)
   }
@@ -151,16 +174,18 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     }
   }
 
-  private[this] def canChildScrollUp: Boolean = content.canScrollVertically(-1)
+  private[this] def childInTop: Boolean = !content.canScrollVertically(-1)
 
 }
 
 case class PullToCloseListener(
+  var startPulling: () => Unit = () => (),
+  var endPulling: () => Unit = () => (),
   var scroll: (Int, Boolean) => Unit = (i: Int, b: Boolean) => (),
   var close: () => Unit = () => ())
 
 case class PullToCloseIndicator(
-  resistance: Float = 5f,
+  resistance: Float = 3f,
   var lastPosY: Int = 0,
   var currentPosY: Int = 0,
   var startX: Float = 0,
@@ -169,14 +194,14 @@ case class PullToCloseIndicator(
   var lastMoveY: Float = 0,
   var offsetX: Float = 0,
   var offsetY: Float = 0,
-  var isSwiping: Boolean = false)(implicit contextWrapper: ContextWrapper) {
+  var isPulling: Boolean = false)(implicit contextWrapper: ContextWrapper) {
 
   val distanceToValidClose = resGetDimensionPixelSize(R.dimen.distance_to_valid_close)
 
   val posStart = 0
 
   def restart() = {
-    isSwiping = false
+    isPulling = false
     lastPosY = 0
     currentPosY = 0
     startX = 0
@@ -201,7 +226,7 @@ case class PullToCloseIndicator(
     processMove(x - lastMoveX, y - lastMoveY)
     lastMoveX = x
     lastMoveY = y
-    isSwiping = true
+    isPulling = true
   }
 
   def offsets(x: Float, y: Float) = {
@@ -230,6 +255,8 @@ object PullToCloseViewTweaks {
 
   def pcvListener(pullToCloseListener: PullToCloseListener) = Tweak[PullToCloseView] {
     view =>
+      view.listeners.startPulling = pullToCloseListener.startPulling
+      view.listeners.endPulling = pullToCloseListener.endPulling
       view.listeners.scroll = pullToCloseListener.scroll
       view.listeners.close = pullToCloseListener.close
   }

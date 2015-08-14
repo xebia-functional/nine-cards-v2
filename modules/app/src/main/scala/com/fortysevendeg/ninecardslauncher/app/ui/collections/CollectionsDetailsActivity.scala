@@ -104,14 +104,22 @@ class CollectionsDetailsActivity
 
   override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
 
-  override def onBackPressed(): Unit = finish()
+  override def onBackPressed(): Unit = if (fabMenuOpened) {
+    runUi(swapFabButton)
+  } else {
+    finish()
+  }
 
   override def pullToClose(scroll: Int, close: Boolean): Unit = runUi(pullCloseScrollY(scroll, close))
 
   override def close(): Unit = finish()
+
+  override def startScroll(): Unit = showFabButton
 }
 
 trait ScrolledListener {
+  def startScroll()
+
   def scrollY(scroll: Int, dy: Int)
 
   def scrollType(sType: Int)

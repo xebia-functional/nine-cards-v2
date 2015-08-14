@@ -11,7 +11,6 @@ import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.transition.{Transition, Fade, TransitionSet, TransitionInflater}
-import android.util.Log
 import android.view.{ViewGroup, Gravity, View}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -89,7 +88,7 @@ trait CollectionsDetailsComposer
       (tabs <~
         stlViewPager(viewPager) <~
         stlOnPageChangeListener(
-          new OnPageChangeCollectionsListener(collections, () => startScroll, updateToolbarColor, updateCollection))) ~
+          new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       (tabs <~ vVisible <~~ enterViews) ~
       (viewPager <~ vVisible <~~ enterViews)
@@ -255,7 +254,7 @@ trait CollectionsDetailsComposer
         case Left => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = true)
         case Right | Jump => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = false)
         case _ => Ui.nop
-      }) ~ adapter.notifyChanged(position)
+      }) ~ adapter.notifyChanged(position) ~ hideFabButton
   } getOrElse Ui.nop
 
   private[this] def updateToolbarColor(color: Int): Ui[_] =
@@ -286,17 +285,14 @@ case object Jump extends PageMovement
 
 class OnPageChangeCollectionsListener(
   collections: Seq[Collection],
-  startScroll: () => Unit,
   updateToolbarColor: (Int) => Ui[_],
-  updateCollection: (Collection, Int, PageMovement) => Ui[_]
-  )(implicit context: ContextWrapper, theme: NineCardsTheme)
+  updateCollection: (Collection, Int, PageMovement) => Ui[_])
+  (implicit context: ContextWrapper, theme: NineCardsTheme)
   extends OnPageChangeListener {
 
   var lastPosition = -1
 
   var currentPosition = -1
-
-  var lastState = ViewPager.SCROLL_STATE_IDLE
 
   var currentMovement: PageMovement = Loading
 
@@ -313,15 +309,9 @@ class OnPageChangeCollectionsListener(
     valueAnimator.start()
   }
 
-  override def onPageScrollStateChanged(state: Int): Unit = {
-    if (lastState == ViewPager.SCROLL_STATE_IDLE && state == ViewPager.SCROLL_STATE_DRAGGING) {
-      startScroll()
-    }
-    lastState = state
-    state match {
-      case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
-      case _ =>
-    }
+  override def onPageScrollStateChanged(state: Int): Unit = state match {
+    case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
+    case _ =>
   }
 
   override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit =

@@ -77,13 +77,17 @@ trait FabButtonBehaviour
 
   def isFabMenuVisible = fabButton exists (_.getVisibility == View.VISIBLE)
 
-  def startScroll(implicit context: ActivityContextWrapper): Unit = runUi(
+  def showFabButton(implicit context: ActivityContextWrapper): Unit = runUi(
     if (!isFabMenuVisible) {
       postDelayedHideFabButton ~ (fabButton <~ showFabMenu)
     } else {
       resetDelayedHide
     }
   )
+
+  def hideFabButton(implicit context: ActivityContextWrapper): Ui[_] =
+    removeDelayedHideFabButton ~
+      (fabButton <~ hideFabMenu)
 
   private[this] def postDelayedHideFabButton(implicit context: ActivityContextWrapper) = Ui {
     val runnable = new RunnableWrapper()

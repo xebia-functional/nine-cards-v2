@@ -66,7 +66,7 @@ trait LauncherComposer
     (workspacesContent <~
       vgAddView(getUi(w[LauncherWorkSpaces] <~
         wire(workspaces) <~
-        Tweak[LauncherWorkSpaces](_.startScroll = () => startScroll)))) ~
+        Tweak[LauncherWorkSpaces](_.startScroll = () => showFabButton)))) ~
       (searchPanel <~ searchContentStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
