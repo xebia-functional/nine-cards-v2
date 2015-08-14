@@ -45,7 +45,7 @@ case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
     Option(intentExtras.class_name.getOrElse(getStringExtra(nineCardExtraClassName)))
 
   def extraLookup(): Option[String] =
-    Option(intentExtras.tel.getOrElse(getStringExtra(nineCardExtraLookup)))
+    Option(intentExtras.contact_lookup_key.getOrElse(getStringExtra(nineCardExtraLookup)))
 
   def extractPhone(): Option[String] =
     Option(intentExtras.tel.getOrElse(getStringExtra(nineCardExtraPhone)))
