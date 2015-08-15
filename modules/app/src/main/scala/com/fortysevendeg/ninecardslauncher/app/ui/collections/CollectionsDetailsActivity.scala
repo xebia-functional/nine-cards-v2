@@ -110,7 +110,8 @@ class CollectionsDetailsActivity
     finish()
   }
 
-  override def pullToClose(scroll: Int, close: Boolean): Unit = runUi(pullCloseScrollY(scroll, close))
+  override def pullToClose(scroll: Int, scrollType: Int, close: Boolean): Unit =
+    runUi(pullCloseScrollY(scroll, scrollType, close))
 
   override def close(): Unit = finish()
 
@@ -124,7 +125,7 @@ trait ScrolledListener {
 
   def scrollType(sType: Int)
 
-  def pullToClose(scroll: Int, close: Boolean)
+  def pullToClose(scroll: Int, scrollType: Int, close: Boolean)
 
   def close()
 }

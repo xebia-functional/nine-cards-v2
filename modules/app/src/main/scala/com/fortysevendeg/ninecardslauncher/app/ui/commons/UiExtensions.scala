@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.support.v4.app.ActivityOptionsCompat
 import macroid.{Ui, ActivityContextWrapper}
 
+import scala.util.Try
+
 trait UiExtensions {
 
   private[this] def getData[T](bundles: Seq[Bundle], conversor: (Bundle, String) => T, key: String, default: T): T = {
@@ -37,17 +39,23 @@ object SafeUi {
 
   def uiStartIntent(intent: Intent)(implicit c: ActivityContextWrapper): Ui[Unit] =
     Ui {
-      c.original.get foreach (_.startActivity(intent))
+      Try {
+        c.original.get foreach (_.startActivity(intent))
+      }
     }
 
   def uiStartIntentWithOptions(intent: Intent, options: ActivityOptionsCompat)(implicit c: ActivityContextWrapper): Ui[Unit] =
     Ui {
-      c.original.get foreach (_.startActivity(intent, options.toBundle))
+      Try {
+        c.original.get foreach (_.startActivity(intent, options.toBundle))
+      }
     }
 
   def uiStartIntentForResult(intent: Intent, result: Int)(implicit c: ActivityContextWrapper): Ui[Unit] =
     Ui {
-      c.original.get foreach (_.startActivityForResult(intent, result))
+      Try {
+        c.original.get foreach (_.startActivityForResult(intent, result))
+      }
     }
 
 }

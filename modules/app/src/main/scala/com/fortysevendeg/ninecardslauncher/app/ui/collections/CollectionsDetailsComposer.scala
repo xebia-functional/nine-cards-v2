@@ -94,11 +94,14 @@ trait CollectionsDetailsComposer
       (viewPager <~ vVisible <~~ enterViews)
   }
 
-  def pullCloseScrollY(scroll: Int, close: Boolean): Ui[_] = {
+  def pullCloseScrollY(scroll: Int, scrollType: Int, close: Boolean): Ui[_] = {
     val displacement = scroll * resistanceDisplacement
     val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_close)
     val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
-    (tabs <~ vTranslationY(displacement)) ~
+    (tabs <~ (scrollType match {
+      case ScrollType.down => vTranslationY(displacement)
+      case _ => Tweak.blank
+    })) ~
       (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
       Ui {
         val newIcon = if (close) IconTypes.CLOSE else IconTypes.BACK

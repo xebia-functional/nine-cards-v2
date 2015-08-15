@@ -39,7 +39,7 @@ trait CollectionFragmentComposer
     ) <~ wire(pullToCloseView) <~ pcvListener(PullToCloseListener(
       startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
       endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),
-      scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, close)),
+      scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, sType, close)),
       close = () => scrolledListener foreach (_.close())
     ))
   )

@@ -56,7 +56,7 @@
 
     <integer name="anim_duration_appear_toolbar">400</integer>
 
-    <dimen name="distance_to_valid_close">24dp</dimen>
+    <dimen name="distance_to_valid_close">32dp</dimen>
 
     <dimen name="size_icon_card">60dp</dimen>
 

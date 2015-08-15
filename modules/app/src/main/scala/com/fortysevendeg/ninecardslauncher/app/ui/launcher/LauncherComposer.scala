@@ -20,6 +20,7 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 
 trait LauncherComposer
   extends Styles
@@ -74,20 +75,10 @@ trait LauncherComposer
         uiShortToast("Open Menu")
       )) ~
       (googleIcon <~ googleButtonStyle <~ On.click(
-        Ui {
-          Try {
-            val intent = new Intent(Intent.ACTION_WEB_SEARCH)
-            context.getOriginal.startActivity(intent)
-          }
-        }
+        uiStartIntent(new Intent(Intent.ACTION_WEB_SEARCH))
       )) ~
       (micIcon <~ micButtonStyle <~ On.click(
-        Ui {
-          Try {
-            val intent = new Intent(RecognizerIntent.ACTION_WEB_SEARCH)
-            context.getOriginal.startActivity(intent)
-          }
-        }
+        uiStartIntent(new Intent(RecognizerIntent.ACTION_WEB_SEARCH))
       )) ~
       (appDrawer1 <~ drawerItemStyle <~ On.click {
         uiShortToast("App 1")
@@ -109,7 +100,14 @@ trait LauncherComposer
     (loading <~ vGone) ~
       (workspaces <~
         lwsData(collections, selectedPageDefault) <~
-        lwsAddPageChangedObserver(currentPage => runUi(paginationPanel <~ reloadPager(currentPage)))) ~
+        lwsAddPageChangedObserver(currentPage => {
+          val hasWidgets = workspaces exists (_.data(currentPage).widgets)
+          runUi(
+            (paginationPanel <~ reloadPager(currentPage)) ~
+              (if (hasWidgets) { hideFabButton } else { Ui.nop })
+          )
+        }
+        )) ~
       (appDrawerPanel <~ fillAppDrawer(collections)) ~
       createPager(selectedPageDefault)
 
@@ -136,7 +134,6 @@ trait LauncherComposer
         }
         paginationPanel <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
-
 
 
   // TODO We add app randomly, in the future we should get the app from repository
