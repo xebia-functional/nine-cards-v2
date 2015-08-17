@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 
 trait Styles {
 
@@ -57,31 +58,31 @@ trait Styles {
   }
 
   def fabButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    vWrapContent +
-      fimBackgroundColor(resGetColor(R.color.collection_fab_button_item_create_new_collection)) +
-      fimTitle(resGetString(R.string.create_new_collection)) +
-      fimSrc(R.drawable.fab_menu_icon_create_new_collection) +
-      vGone +
-      vTag(R.id.`type`, fabButtonItem) +
-      vTag(R.id.fab_menu_position, "1")
+    fabButton(R.string.create_new_collection,
+      R.drawable.fab_menu_icon_create_new_collection,
+      R.color.collection_fab_button_item_create_new_collection,
+      1)
 
   def fabButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    vWrapContent +
-      fimBackgroundColor(resGetColor(R.color.collection_fab_button_item_my_collections)) +
-      fimTitle(resGetString(R.string.my_collections)) +
-      fimSrc(R.drawable.fab_menu_icon_my_collections) +
-      vGone +
-      vTag(R.id.`type`, fabButtonItem) +
-      vTag(R.id.fab_menu_position, "2")
+    fabButton(R.string.my_collections,
+      R.drawable.fab_menu_icon_my_collections,
+      R.color.collection_fab_button_item_my_collections,
+      2)
 
   def fabButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    fabButton(R.string.public_collections,
+      R.drawable.fab_menu_icon_public_collections,
+      R.color.collection_fab_button_item_public_collection,
+      3)
+
+  private[this] def fabButton(title: Int, icon: Int, color: Int, tag: Int)(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     vWrapContent +
-      fimBackgroundColor(resGetColor(R.color.collection_fab_button_item_public_collection)) +
-      fimTitle(resGetString(R.string.public_collections)) +
-      fimSrc(R.drawable.fab_menu_icon_public_collections) +
+      fimBackgroundColor(resGetColor(color)) +
+      fimTitle(resGetString(title)) +
+      fimSrc(icon) +
       vGone +
       vTag(R.id.`type`, fabButtonItem) +
-      vTag(R.id.fab_menu_position, "3")
+      vIntTag(R.id.fab_menu_position, 1)
 
 }
 

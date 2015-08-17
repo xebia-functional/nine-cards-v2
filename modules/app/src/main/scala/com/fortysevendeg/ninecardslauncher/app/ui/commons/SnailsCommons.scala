@@ -143,7 +143,7 @@ object SnailsCommons {
   }
 
   private[this] def extractDelay(view: View): Int = Option(view.getTag(R.id.fab_menu_position)) match {
-    case Some(position) => Try(defaultDelay * position.toString.toInt) match {
+    case Some(position) => Try(defaultDelay * Int.unbox(position)) match {
       case Success(delay) => delay
       case Failure(_) => noDelay
     }

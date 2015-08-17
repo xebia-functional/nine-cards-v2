@@ -39,32 +39,25 @@ trait FabButtonBehaviour
     (fabMenuContent <~ On.click(
       swapFabButton
     ) <~ fabContentStyle(false)) ~
-      (fabButton <~ fabButtonMenuStyle <~ On.click(
-        swapFabButton
-      ))
+      (fabButton <~ fabButtonMenuStyle <~ On.click(swapFabButton))
 
   def loadMenuItems(items: Seq[FabItemMenu]): Ui[_] =
-    fabMenu <~ Tweak[LinearLayout] {
-      view =>
+    fabMenu <~ Tweak[LinearLayout] { view =>
         val param = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.END)
-        items foreach {
-          menuItem =>
-            view.addView(menuItem, 0, param)
-        }
+        items foreach (view.addView(_, 0, param))
     }
 
   def swapFabButton(implicit context: ActivityContextWrapper) = {
     val isOpen = fabButton map (tagEquals(_, R.id.fab_menu_opened, open))
-    isOpen map {
-      opened =>
-        (fabButton <~
-          vTag(R.id.fab_menu_opened, if (opened) close else open) <~
-          pmdAnimIcon(if (opened) IconTypes.ADD else IconTypes.CLOSE)) ~
-          (fabMenuContent <~
-            animFabButton(opened) <~
-            fadeBackground(!opened) <~
-            fabContentStyle(!opened)) ~
-          (if (opened) postDelayedHideFabButton else removeDelayedHideFabButton)
+    isOpen map { opened =>
+      (fabButton <~
+        vTag(R.id.fab_menu_opened, if (opened) close else open) <~
+        pmdAnimIcon(if (opened) IconTypes.ADD else IconTypes.CLOSE)) ~
+        (fabMenuContent <~
+          animFabButton(opened) <~
+          fadeBackground(!opened) <~
+          fabContentStyle(!opened)) ~
+        (if (opened) postDelayedHideFabButton else removeDelayedHideFabButton)
     } getOrElse Ui.nop
   }
 

@@ -24,6 +24,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 
 trait Styles {
 
@@ -35,40 +36,25 @@ trait Styles {
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor))
 
   def fabButtonApplicationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    vWrapContent +
-      fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
-      fimTitle(resGetString(R.string.applications)) +
-      fimSrc(R.drawable.fab_menu_icon_applications) +
-      vGone +
-      vTag(R.id.`type`, fabButtonItem) +
-      vTag(R.id.fab_menu_position, "1")
+    fabButton(R.string.applications, R.drawable.fab_menu_icon_applications, 1)
 
   def fabButtonRecommendationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    vWrapContent +
-      fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
-      fimTitle(resGetString(R.string.recommendations)) +
-      fimSrc(R.drawable.fab_menu_icon_recommendations) +
-      vGone +
-      vTag(R.id.`type`, fabButtonItem) +
-      vTag(R.id.fab_menu_position, "2")
+    fabButton(R.string.recommendations, R.drawable.fab_menu_icon_recommendations, 2)
 
   def fabButtonContactsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    vWrapContent +
-      fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
-      fimTitle(resGetString(R.string.contacts)) +
-      fimSrc(R.drawable.fab_menu_icon_contact) +
-      vGone +
-      vTag(R.id.`type`, fabButtonItem) +
-      vTag(R.id.fab_menu_position, "3")
+    fabButton(R.string.contacts, R.drawable.fab_menu_icon_contact, 3)
 
   def fabButtonShortcutsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    fabButton(R.string.shortcuts, R.drawable.fab_menu_icon_shorcut, 4)
+
+  private[this] def fabButton(title: Int, icon: Int, tag: Int)(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     vWrapContent +
       fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
-      fimTitle(resGetString(R.string.shortcuts)) +
-      fimSrc(R.drawable.fab_menu_icon_shorcut) +
+      fimTitle(resGetString(title)) +
+      fimSrc(icon) +
       vGone +
       vTag(R.id.`type`, fabButtonItem) +
-      vTag(R.id.fab_menu_position, "4")
+      vIntTag(R.id.fab_menu_position, tag)
 
 }
 

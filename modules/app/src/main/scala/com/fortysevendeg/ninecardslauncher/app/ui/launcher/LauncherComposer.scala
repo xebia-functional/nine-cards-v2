@@ -104,7 +104,11 @@ trait LauncherComposer
           val hasWidgets = workspaces exists (_.data(currentPage).widgets)
           runUi(
             (paginationPanel <~ reloadPager(currentPage)) ~
-              (if (hasWidgets) { hideFabButton } else { Ui.nop })
+              (if (hasWidgets) {
+                hideFabButton
+              } else {
+                Ui.nop
+              })
           )
         }
         )) ~
@@ -126,11 +130,10 @@ trait LauncherComposer
   private[this] def createPager(activatePosition: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
     workspaces map {
       ws =>
-        val pagerViews = 0 until ws.getWorksSpacesCount map {
-          position =>
-            val view = pagination(position)
-            view.setActivated(activatePosition == position)
-            view
+        val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
+          val view = pagination(position)
+          view.setActivated(activatePosition == position)
+          view
         }
         paginationPanel <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop

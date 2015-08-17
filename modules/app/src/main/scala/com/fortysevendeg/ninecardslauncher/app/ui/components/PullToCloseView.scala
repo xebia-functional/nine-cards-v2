@@ -81,16 +81,11 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     val x = ev.getX
     val y = ev.getY
     (indicator.isPulling, childInTop, ev.getAction) match {
-      case (pulling, _, action) if pulling && (action == ACTION_UP || action == ACTION_CANCEL) =>
-        release(ev)
-      case (pulling, _, action) if pulling && action == ACTION_DOWN =>
-        actionDown(ev, x, y)
-      case (pulling, _, action) if pulling && action == ACTION_MOVE =>
-        actionMove(ev, x, y)
-      case (pulling, inTop, action) if !pulling && inTop && action == ACTION_DOWN =>
-        actionDown(ev, x, y)
-      case (pulling, inTop, action) if !pulling && inTop && action == ACTION_MOVE =>
-        actionMoveIdle(ev, x, y)
+      case (true, _, ACTION_UP | ACTION_CANCEL) => release(ev)
+      case (true, _, ACTION_DOWN) => actionDown(ev, x, y)
+      case (true, _, ACTION_MOVE) => actionMove(ev, x, y)
+      case (false, true, ACTION_DOWN) => actionDown(ev, x, y)
+      case (false, true, ACTION_MOVE) => actionMoveIdle(ev, x, y)
       case _ => super.dispatchTouchEvent(ev)
     }
   }
