@@ -2,12 +2,12 @@ package com.fortysevendeg.ninecardslauncher.services.utils
 
 import java.io._
 
+import com.fortysevendeg.ninecardslauncher.services.utils.impl.StreamWrapper
+
 import scala.util.Try
 import scala.util.control.Exception._
 
-trait FileUtils {
-
-  val streamWrapper = new StreamWrapperImpl
+class FileUtils(streamWrapper: StreamWrapper = new StreamWrapperImpl) {
 
   def loadFile[T](file: File): Try[T] =
     Try {

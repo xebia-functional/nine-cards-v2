@@ -1,9 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.utils
 
-import java.io.{IOException, InputStream}
+import java.io.InputStream
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.utils.impl.StreamWrapperImpl
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -18,36 +17,26 @@ trait FileUtilsSpecification
     with UtilsData {
 
     val contextSupport = mock[ContextSupport]
+    val mockStreamWrapper = mock[StreamWrapper]
     val mockInputStream = mock[InputStream]
+
+    val fileUtils = new FileUtils(mockStreamWrapper)
 
   }
 
   trait ValidUtilsScope {
     self: FileUtilsScope =>
 
-    val mockStreamWrapper = new StreamWrapperImpl {
-      override def openFile(filename: String)(implicit context: ContextSupport) = mockInputStream
-      override def makeStringFromInputStream(stream: InputStream) = fileJson
-    }
-
-
-    val mockFileUtils = new FileUtils {
-      override val streamWrapper = mockStreamWrapper
-    }
+    mockStreamWrapper.openFile(fileName)(contextSupport) returns mockInputStream
+    mockStreamWrapper.makeStringFromInputStream(mockInputStream) returns fileJson
 
   }
 
   trait ErrorUtilsScope {
     self: FileUtilsScope =>
 
-    val mockStreamWrapper = new StreamWrapperImpl {
-      override def openFile(filename: String)(implicit context: ContextSupport) = throw new IOException
-      override def makeStringFromInputStream(stream: InputStream) = fileJson
-    }
-
-    val mockFileUtils = new FileUtils {
-      override val streamWrapper = mockStreamWrapper
-    }
+    mockStreamWrapper.openFile(fileName)(contextSupport) throws new RuntimeException("")
+    mockStreamWrapper.makeStringFromInputStream(mockInputStream) returns fileJson
 
   }
 
@@ -60,7 +49,7 @@ class FileUtilsSpec
 
     "returns a json string when a valid fileName is provided" in
       new FileUtilsScope with ValidUtilsScope {
-        val result = mockFileUtils.getJsonFromFile(fileName)(contextSupport).run.run
+        val result = fileUtils.getJsonFromFile(fileName)(contextSupport).run.run
         result must beLike {
           case Answer(resultJson) =>
             resultJson shouldEqual fileJson
@@ -69,7 +58,7 @@ class FileUtilsSpec
 
     "returns an AssetException when the file can't be opened" in
       new FileUtilsScope with ErrorUtilsScope {
-        val result = mockFileUtils.getJsonFromFile(fileName)(contextSupport).run.run
+        val result = fileUtils.getJsonFromFile(fileName)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AssetException]

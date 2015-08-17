@@ -17,7 +17,7 @@ trait ResourceUtilsSpecification
 
     val contextSupport = mock[ContextSupport]
 
-    val mockResourceUtils = new ResourceUtils
+    val resourceUtils = new ResourceUtils
 
     val mockFile = mock[File]
 
@@ -35,13 +35,13 @@ class ResourceUtilsSpec
 
     "return the file path when a valid file name is provided" in
       new ResourceUtilsScope {
-        val result = mockResourceUtils.getPath(fileName)(contextSupport)
+        val result = resourceUtils.getPath(fileName)(contextSupport)
         result shouldEqual resultFilePath
       }
 
     "return a package path when a valid packageName and a valid className are provided" in
       new ResourceUtilsScope {
-        val result = mockResourceUtils.getPathPackage(packageName, className)(contextSupport)
+        val result = resourceUtils.getPathPackage(packageName, className)(contextSupport)
         result shouldEqual resultFilePath
       }
 

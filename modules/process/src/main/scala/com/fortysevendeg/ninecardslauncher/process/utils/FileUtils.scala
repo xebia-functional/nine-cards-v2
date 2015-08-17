@@ -11,10 +11,8 @@ import com.fortysevendeg.ninecardslauncher.process.utils.impl.StreamWrapperImpl
 import scala.util.control.Exception._
 import scalaz.concurrent.Task
 
-class FileUtils
+class FileUtils(streamWrapper: StreamWrapper = new StreamWrapperImpl)
   extends ImplicitsUtilsException {
-
-  val streamWrapper = new StreamWrapperImpl
 
   def getJsonFromFile(filename: String)(implicit context: ContextSupport): ServiceDef2[String, AssetException] =
     Service {
@@ -24,7 +22,6 @@ class FileUtils
             stream => {
               streamWrapper.makeStringFromInputStream(stream)
             }
-
           }
         }
       }

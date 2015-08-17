@@ -22,7 +22,7 @@ trait ApiUtilsSpecification
 
     val contextSupport = mock[ContextSupport]
     val mockPersistenceServices = mock[PersistenceServices]
-    val mockApiUtils = new ApiUtils(mockPersistenceServices)
+    val apiUtils = new ApiUtils(mockPersistenceServices)
     val mockRequestConfig = mock[RequestConfig]
     val mockUser = mock[User]
 
@@ -60,10 +60,9 @@ class ApiUtilsSpec
 
     "returns a request config with a correct deviceId and token" in
       new ApiUtilsScope {
-        val result = mockApiUtils.getRequestConfig(contextSupport).run.run
+        val result = apiUtils.getRequestConfig(contextSupport).run.run
         result must beLike {
           case Answer(resultRequestConfig) =>
-            resultRequestConfig must beAnInstanceOf[RequestConfig]
             resultRequestConfig.deviceId shouldEqual mockRequestConfig.deviceId
             resultRequestConfig.token shouldEqual mockRequestConfig.token
         }
@@ -71,7 +70,7 @@ class ApiUtilsSpec
 
     "returns an ApiServiceException when the session token doesn't exists" in
       new ApiUtilsScope with ErrorUserApiUtilsScope {
-        val result = mockApiUtils.getRequestConfig(contextSupport).run.run
+        val result = apiUtils.getRequestConfig(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
@@ -81,7 +80,7 @@ class ApiUtilsSpec
 
     "returns an ApiServiceException when the android id can't be found" in
       new ApiUtilsScope with ErrorAndroidIdApiUtilsScope {
-        val result = mockApiUtils.getRequestConfig(contextSupport).run.run
+        val result = apiUtils.getRequestConfig(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]

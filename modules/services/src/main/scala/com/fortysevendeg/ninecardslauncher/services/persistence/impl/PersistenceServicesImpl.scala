@@ -28,8 +28,9 @@ class PersistenceServicesImpl(
   geoInfoRepository: GeoInfoRepository)
   extends PersistenceServices
   with Conversions
-  with ImplicitsPersistenceServiceExceptions
-  with FileUtils {
+  with ImplicitsPersistenceServiceExceptions {
+
+  val fileUtils = new FileUtils()
 
   // TODO These contants don't should be here
 
@@ -227,7 +228,7 @@ class PersistenceServicesImpl(
 
   override def getUser(implicit context: ContextSupport) =
     Service(
-      Task(loadFile[User](getFileUser) match {
+      Task(fileUtils.loadFile[User](getFileUser) match {
         case Success(user) => Result.answer(user)
         case Failure(ex) => Result.errata(UserNotFoundException(message = "User not found", cause = ex.some))
       }))
@@ -235,7 +236,7 @@ class PersistenceServicesImpl(
   override def saveUser(user: User)(implicit context: ContextSupport) =
     Service {
       Task {
-        writeFile[User](getFileUser, user) match {
+        fileUtils.writeFile[User](getFileUser, user) match {
           case Success(result) => Result.answer(result)
           case Failure(ex) => Result.errata(PersistenceServiceException(message = "User not saved", cause = ex.some))
         }
@@ -267,7 +268,7 @@ class PersistenceServicesImpl(
   override def getInstallation(implicit context: ContextSupport) =
     Service(
       Task(
-        loadFile[Installation](getFileInstallation) match {
+        fileUtils.loadFile[Installation](getFileInstallation) match {
           case Success(installation) => Result.answer(installation)
           case Failure(ex) => Result.errata(InstallationNotFoundException(message = "Installation not found", cause = ex.some))
         }))
@@ -282,7 +283,7 @@ class PersistenceServicesImpl(
   override def saveInstallation(installation: Installation)(implicit context: ContextSupport) =
     Service {
       Task {
-        writeFile[Installation](getFileInstallation, installation) match {
+        fileUtils.writeFile[Installation](getFileInstallation, installation) match {
           case Success(result) => Result.answer(result)
           case Failure(ex) => Result.errata(PersistenceServiceException(message = "Installation not saved", cause = ex.some))
         }
