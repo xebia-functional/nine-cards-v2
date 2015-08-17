@@ -3,21 +3,21 @@ package com.fortysevendeg.ninecardslauncher.services.shortcuts.impl
 import android.content.Intent
 import android.content.pm.{ApplicationInfo, ActivityInfo, ResolveInfo, PackageManager}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortCutServicesException
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.ShortCut
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutServicesException
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import rapture.core.{Errata, Answer}
 import scala.collection.JavaConversions._
 
-trait ShortCutsImplSpecification
+trait ShortcutsImplSpecification
   extends Specification
   with Mockito {
 
-  trait ShortCutsImplScope
+  trait ShortcutsImplScope
     extends Scope
-    with ShortCutsServicesImplData {
+    with ShortcutsServicesImplData {
 
     val packageManager = mock[PackageManager]
     val contextSupport = mock[ContextSupport]
@@ -25,7 +25,7 @@ trait ShortCutsImplSpecification
 
     val mockIntent = mock[Intent]
 
-    def createMockResolveInfo(sampleShortCut: ShortCut) : ResolveInfo = {
+    def createMockResolveInfo(sampleShortCut: Shortcut) : ResolveInfo = {
       val sampleResolveInfo = mock[ResolveInfo]
       val mockActivityInfo = mock[ActivityInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
@@ -38,17 +38,17 @@ trait ShortCutsImplSpecification
       sampleResolveInfo
     }
 
-    val mockShortCuts = List(createMockResolveInfo(sampleShortCut1), createMockResolveInfo(sampleShortCut2))
+    val mockShortCuts = List(createMockResolveInfo(sampleShortcut1), createMockResolveInfo(sampleShortcut2))
 
     packageManager.queryIntentActivities(mockIntent, 0) returns mockShortCuts
 
-    val shortcutsServicesImpl = new ShortCutsServicesImpl {
-      override protected def shortCutsIntent(): Intent = mockIntent
+    val shortcutsServicesImpl = new ShortcutsServicesImpl {
+      override protected def shortcutsIntent(): Intent = mockIntent
     }
   }
 
   trait ShortCutsErrorScope {
-    self : ShortCutsImplScope =>
+    self : ShortcutsImplScope =>
 
     case class CustomException(message: String, cause: Option[Throwable] = None)
       extends RuntimeException(message)
@@ -61,24 +61,24 @@ trait ShortCutsImplSpecification
 
 }
 
-class ShortCutsServicesImplSpec
-  extends  ShortCutsImplSpecification {
+class ShortcutsServicesImplSpec
+  extends  ShortcutsImplSpecification {
 
   "returns the ordered list of shortcuts when they exist" in
-    new ShortCutsImplScope {
-      val result = shortcutsServicesImpl.getShortCuts(contextSupport).run.run
+    new ShortcutsImplScope {
+      val result = shortcutsServicesImpl.getShortcuts(contextSupport).run.run
       result must beLike {
-        case Answer(resultShortCutList) => resultShortCutList shouldEqual shotCutsList.sortBy(_.title)
+        case Answer(resultShortCutList) => resultShortCutList shouldEqual shotcutsList.sortBy(_.title)
       }
     }
 
-  "returns an ShortCutException when no shortcuts exist" in
-    new ShortCutsImplScope with ShortCutsErrorScope {
-      val result = shortcutsServicesImpl.getShortCuts(contextSupport).run.run
+  "returns an ShortcutException when no shortcuts exist" in
+    new ShortcutsImplScope with ShortCutsErrorScope {
+      val result = shortcutsServicesImpl.getShortcuts(contextSupport).run.run
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
           case (_, (_, shortcutsException)) => shortcutsException must beLike {
-            case e: ShortCutServicesException => e.cause must beSome.which(_ shouldEqual exception)
+            case e: ShortcutServicesException => e.cause must beSome.which(_ shouldEqual exception)
           }
         }
       }
