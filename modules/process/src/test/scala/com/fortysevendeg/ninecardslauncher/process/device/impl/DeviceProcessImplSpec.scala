@@ -1,11 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
+import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.device.AppCategorizationException
+import com.fortysevendeg.ninecardslauncher.process.device.{ShortCutException, AppCategorizationException}
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
@@ -13,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GooglePlay
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortCutServicesException, ShortCutsServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -30,6 +32,8 @@ trait DeviceProcessSpecification
 
   val bitmapTransformationException = BitmapTransformationExceptionImpl("")
 
+  val shortCutServicesException = ShortCutServicesException("")
+
   trait DeviceProcessScope
     extends Scope
     with DeviceProcessData {
@@ -37,8 +41,11 @@ trait DeviceProcessSpecification
     val resources = mock[Resources]
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
+    val mockPackageManager = mock[PackageManager]
+    mockPackageManager.getActivityIcon(any[ComponentName]) returns null
+
     val contextSupport = mock[ContextSupport]
-    contextSupport.getPackageManager returns mock[PackageManager]
+    contextSupport.getPackageManager returns mockPackageManager
     contextSupport.getResources returns resources
 
     val mockAppsServices = mock[AppsServices]
@@ -47,6 +54,11 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(applications)))
 
     val mockApiServices = mock[ApiServices]
+
+    val mockShortCutsServices = mock[ShortCutsServices]
+
+    mockShortCutsServices.getShortCuts(contextSupport) returns
+      Service(Task(Result.answer(shortCuts)))
 
     val mockPersistenceServices = mock[PersistenceServices]
 
@@ -73,6 +85,7 @@ trait DeviceProcessSpecification
       mockAppsServices,
       mockApiServices,
       mockPersistenceServices,
+      mockShortCutsServices,
       mockImageServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
@@ -151,6 +164,15 @@ trait DeviceProcessSpecification
 
     mockApiServices.googlePlayPackages(any)(any) returns Service {
       Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq(googlePlayPackage))))
+    }
+
+  }
+
+  trait ShortCutsErrorScope {
+    self: DeviceProcessScope =>
+
+    mockShortCutsServices.getShortCuts(contextSupport) returns Service {
+      Task(Errata(shortCutServicesException))
     }
 
   }
@@ -275,6 +297,28 @@ class DeviceProcessImplSpec
         val result = deviceProcess.createBitmapsFromPackages(Seq(packageNameForCreateImage))(contextSupport).run.run
         result must beLike {
           case Answer(r) => r shouldEqual (())
+        }
+      }
+
+  }
+
+  "Get Shortcuts" should {
+
+    "get available ShortCuts" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getAvailableShortCuts(contextSupport).run.run
+        result must beLike {
+          case Answer(r) => r.map(_.title) shouldEqual shortCuts.map(_.title)
+        }
+      }
+
+    "returns ShortCutException when ShortCutsServices fails" in
+      new DeviceProcessScope with ShortCutsErrorScope {
+        val result = deviceProcess.getAvailableShortCuts(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[ShortCutException]
+          }
         }
       }
 

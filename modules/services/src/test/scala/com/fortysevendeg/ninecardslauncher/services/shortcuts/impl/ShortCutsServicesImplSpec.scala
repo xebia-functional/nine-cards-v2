@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.shortcuts.impl
 import android.content.Intent
 import android.content.pm.{ApplicationInfo, ActivityInfo, ResolveInfo, PackageManager}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortCutException
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortCutServicesException
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.ShortCut
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -31,6 +31,7 @@ trait ShortCutsImplSpecification
       val mockApplicationInfo = mock[ApplicationInfo]
       sampleResolveInfo.loadLabel(packageManager) returns sampleShortCut.title
       mockApplicationInfo.packageName = sampleShortCut.packageName
+      mockApplicationInfo.className = sampleShortCut.className
       mockActivityInfo.applicationInfo = mockApplicationInfo
       mockActivityInfo.name = sampleShortCut.name
       mockActivityInfo.icon = sampleShortCut.icon
@@ -78,7 +79,7 @@ class ShortCutsServicesImplSpec
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
           case (_, (_, shortcutsException)) => shortcutsException must beLike {
-            case e: ShortCutException => e.cause must beSome.which(_ shouldEqual exception)
+            case e: ShortCutServicesException => e.cause must beSome.which(_ shouldEqual exception)
           }
         }
       }

@@ -1,5 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.device.models
 
+import android.content.Intent
+import android.graphics.drawable.Drawable
+
 case class AppCategorized(
   name: String,
   packageName: String,
@@ -10,3 +13,8 @@ case class AppCategorized(
   numDownloads: Option[String] = None,
   ratingsCount: Option[Int] = None,
   commentCount: Option[Int] = None)
+
+case class ShortCut (
+  title: String,
+  icon: Drawable,
+  intent: Intent)

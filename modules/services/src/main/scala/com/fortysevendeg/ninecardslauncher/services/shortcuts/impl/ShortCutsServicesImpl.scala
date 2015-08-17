@@ -4,9 +4,8 @@ import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.ShortCut
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ImplicitsShortCutsExceptions, ShortCutException, ShortCutsServices}
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ImplicitsShortCutsExceptions, ShortCutServicesException, ShortCutsServices}
 
 import scala.collection.JavaConversions._
 import scalaz.concurrent.Task
@@ -15,9 +14,9 @@ class ShortCutsServicesImpl
   extends ShortCutsServices
   with ImplicitsShortCutsExceptions {
 
-  override def getShortCuts(implicit context: ContextSupport): ServiceDef2[Seq[ShortCut], ShortCutException] = Service {
+  override def getShortCuts(implicit context: ContextSupport) = Service {
     Task {
-      CatchAll[ShortCutException] {
+      CatchAll[ShortCutServicesException] {
         val packageManager = context.getPackageManager
 
         val shortcuts = packageManager.queryIntentActivities(shortCutsIntent(), 0).toSeq
@@ -28,7 +27,8 @@ class ShortCutsServicesImpl
             title = resolveInfo.loadLabel(packageManager).toString,
             icon = activityInfo.icon,
             name = activityInfo.name,
-            packageName = activityInfo.applicationInfo.packageName
+            packageName = activityInfo.applicationInfo.packageName,
+            className = activityInfo.applicationInfo.className
           )
         } sortBy(_.title)
 

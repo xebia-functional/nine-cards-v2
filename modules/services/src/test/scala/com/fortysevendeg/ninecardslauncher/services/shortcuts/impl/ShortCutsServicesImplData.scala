@@ -8,13 +8,15 @@ trait ShortCutsServicesImplData {
     title = "B - Sample Name 1",
     icon = 0,
     name = "Name 1",
-    packageName = "com.fortysevendeg.ninecardslauncher.test.sampleapp1")
+    packageName = "com.fortysevendeg.ninecardslauncher.test.sampleapp1",
+    className = "Class1")
 
   val sampleShortCut2 =  ShortCut(
     title = "A - Sample Name 2",
     icon = 0,
     name = "Name 2",
-    packageName = "com.fortysevendeg.ninecardslauncher.test.sampleapp2")
+    packageName = "com.fortysevendeg.ninecardslauncher.test.sampleapp2",
+    className = "Class2")
 
   val shotCutsList = Seq(sampleShortCut1, sampleShortCut2)
 
