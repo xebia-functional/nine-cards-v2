@@ -5,13 +5,13 @@ import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.ShortCut
 trait ShortCutsServicesImplData {
 
   val sampleShortCut1 =  ShortCut(
-    title = "Sample Name 1",
+    title = "B - Sample Name 1",
     icon = 0,
     name = "Name 1",
     packageName = "com.fortysevendeg.ninecardslauncher.test.sampleapp1")
 
   val sampleShortCut2 =  ShortCut(
-    title = "Sample Name 2",
+    title = "A - Sample Name 2",
     icon = 0,
     name = "Name 2",
     packageName = "com.fortysevendeg.ninecardslauncher.test.sampleapp2")

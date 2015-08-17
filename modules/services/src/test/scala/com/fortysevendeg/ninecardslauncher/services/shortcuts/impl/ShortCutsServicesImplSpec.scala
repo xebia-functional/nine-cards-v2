@@ -64,11 +64,11 @@ trait ShortCutsImplSpecification
 class ShortCutsServicesImplSpec
   extends  ShortCutsImplSpecification {
 
-  "returns the list of shortcuts when they exist" in
+  "returns the ordered list of shortcuts when they exist" in
     new ShortCutsImplScope {
       val result = shortcutsServicesImpl.getShortCuts(contextSupport).run.run
       result must beLike {
-        case Answer(resultShortCutList) => resultShortCutList shouldEqual shotCutsList
+        case Answer(resultShortCutList) => resultShortCutList shouldEqual shotCutsList.sortBy(_.title)
       }
     }
 

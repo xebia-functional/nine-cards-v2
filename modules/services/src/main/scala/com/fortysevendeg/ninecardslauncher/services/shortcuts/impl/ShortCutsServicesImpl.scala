@@ -30,7 +30,7 @@ class ShortCutsServicesImpl
             name = activityInfo.name,
             packageName = activityInfo.applicationInfo.packageName
           )
-        } sortBy(_.name)
+        } sortBy(_.title)
 
       }
     }
