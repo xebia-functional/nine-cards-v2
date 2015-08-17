@@ -14,7 +14,7 @@ case class AppCategorized(
   ratingsCount: Option[Int] = None,
   commentCount: Option[Int] = None)
 
-case class ShortCut (
+case class Shortcut (
   title: String,
-  icon: Drawable,
+  icon: Option[Drawable],
   intent: Intent)

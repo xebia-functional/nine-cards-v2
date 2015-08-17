@@ -9,8 +9,8 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence.AddCacheCategoryRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{ShortCut => ShortCutServices}
-import com.fortysevendeg.ninecardslauncher.process.device.models.ShortCut
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
+import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 
 import scala.util.{Failure, Success, Try}
 
@@ -54,20 +54,15 @@ trait DeviceConversions {
       )
   }
 
-  def toShortCutSeq(items: Seq[ShortCutServices])(implicit context: ContextSupport): Seq[ShortCut] = items map toShortCut
+  def toShortcutSeq(items: Seq[ShortcutServices])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
 
-  def toShortCut(item: ShortCutServices)(implicit context: ContextSupport): ShortCut = {
+  def toShortcut(item: ShortcutServices)(implicit context: ContextSupport): Shortcut = {
     val componentName = new ComponentName(item.packageName, item.name)
-    val drawable = Try {
-      context.getPackageManager.getActivityIcon(componentName)
-    } match {
-      case Success(d) => d
-      case Failure(ex) => null
-    }
+    val drawable = Try(context.getPackageManager.getActivityIcon(componentName)).toOption
     val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
     intent.addCategory(Intent.CATEGORY_DEFAULT)
     intent.setComponent(componentName)
-    ShortCut(
+    Shortcut(
       title = item.title,
       icon = drawable,
       intent = intent

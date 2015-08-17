@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.device
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{ShortCut, AppCategorized}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Shortcut, AppCategorized}
 
 trait DeviceProcess {
   def getCategorizedApps(implicit context: ContextSupport): ServiceDef2[Seq[AppCategorized], AppCategorizationException]
@@ -13,7 +13,7 @@ trait DeviceProcess {
    * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.ShortCut] contains
    *         information about shortcut with the Intents and Drawables for UI actions
-   * @throws ShortCutException if exist some problem to get the shortcuts in the cell phone
+   * @throws ShortcutException if exist some problem to get the shortcuts in the cell phone
    */
-  def getAvailableShortCuts(implicit context: ContextSupport): ServiceDef2[Seq[ShortCut], ShortCutException]
+  def getAvailableShortCuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException]
 }

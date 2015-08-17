@@ -6,7 +6,7 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.device.{ShortCutException, AppCategorizationException}
+import com.fortysevendeg.ninecardslauncher.process.device.{ShortcutException, AppCategorizationException}
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GooglePlay
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortCutServicesException, ShortCutsServices}
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -32,7 +32,7 @@ trait DeviceProcessSpecification
 
   val bitmapTransformationException = BitmapTransformationExceptionImpl("")
 
-  val shortCutServicesException = ShortCutServicesException("")
+  val shortCutServicesException = ShortcutServicesException("")
 
   trait DeviceProcessScope
     extends Scope
@@ -55,9 +55,9 @@ trait DeviceProcessSpecification
 
     val mockApiServices = mock[ApiServices]
 
-    val mockShortCutsServices = mock[ShortCutsServices]
+    val mockShortCutsServices = mock[ShortcutsServices]
 
-    mockShortCutsServices.getShortCuts(contextSupport) returns
+    mockShortCutsServices.getShortcuts(contextSupport) returns
       Service(Task(Result.answer(shortCuts)))
 
     val mockPersistenceServices = mock[PersistenceServices]
@@ -171,7 +171,7 @@ trait DeviceProcessSpecification
   trait ShortCutsErrorScope {
     self: DeviceProcessScope =>
 
-    mockShortCutsServices.getShortCuts(contextSupport) returns Service {
+    mockShortCutsServices.getShortcuts(contextSupport) returns Service {
       Task(Errata(shortCutServicesException))
     }
 
@@ -304,7 +304,7 @@ class DeviceProcessImplSpec
 
   "Get Shortcuts" should {
 
-    "get available ShortCuts" in
+    "get available Shortcuts" in
       new DeviceProcessScope {
         val result = deviceProcess.getAvailableShortCuts(contextSupport).run.run
         result must beLike {
@@ -312,12 +312,12 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns ShortCutException when ShortCutsServices fails" in
+    "returns ShortcutException when ShortcutsServices fails" in
       new DeviceProcessScope with ShortCutsErrorScope {
         val result = deviceProcess.getAvailableShortCuts(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ShortCutException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[ShortcutException]
           }
         }
       }

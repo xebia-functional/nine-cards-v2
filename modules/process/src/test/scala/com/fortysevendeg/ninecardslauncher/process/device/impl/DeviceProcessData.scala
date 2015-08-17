@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.ShortCut
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 
 trait DeviceProcessData {
 
@@ -208,20 +208,20 @@ trait DeviceProcessData {
     )
   )
 
-  val shortCuts: Seq[ShortCut] = Seq(
-    ShortCut(
+  val shortCuts: Seq[Shortcut] = Seq(
+    Shortcut(
       title = "ShortCut 1",
       icon = 0,
       name = "ShortCut 1",
       packageName = "com.example.shortcut1"
     ),
-    ShortCut(
+    Shortcut(
       title = "ShortCut 2",
       icon = 0,
       name = "ShortCut 2",
       packageName = "com.example.shortcut2"
     ),
-    ShortCut(
+    Shortcut(
       title = "ShortCut 3",
       icon = 0,
       name = "ShortCut 3",
