@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.utils
 
 import com.fortysevendeg.ninecardslauncher.services.image._
 
-trait UtilsData {
+trait ResourceUtilsData {
 
   val appPackage = AppPackage(
     "com.fortysevendeg.ninecardslauncher.test",

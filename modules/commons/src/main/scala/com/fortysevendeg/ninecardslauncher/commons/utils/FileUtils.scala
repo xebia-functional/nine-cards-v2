@@ -1,13 +1,24 @@
-package com.fortysevendeg.ninecardslauncher.services.utils
+package com.fortysevendeg.ninecardslauncher.commons.utils
 
 import java.io._
 
-import com.fortysevendeg.ninecardslauncher.services.utils.impl.StreamWrapper
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.utils.impl.StreamWrapperImpl
 
 import scala.util.Try
 import scala.util.control.Exception._
 
-class FileUtils(streamWrapper: StreamWrapper = new StreamWrapperImpl) {
+class FileUtils(streamWrapper: StreamWrapper = new StreamWrapperImpl)
+  extends ImplicitsAssetException {
+
+  def getJsonFromFile(filename: String)(implicit context: ContextSupport): Try[String] =
+    Try {
+      withResource[InputStream, String](streamWrapper.openAssetsFile(filename)) {
+        stream => {
+          streamWrapper.makeStringFromInputStream(stream)
+        }
+      }
+    }
 
   def loadFile[T](file: File): Try[T] =
     Try {

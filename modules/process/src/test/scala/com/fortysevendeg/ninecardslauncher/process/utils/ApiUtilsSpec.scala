@@ -18,7 +18,7 @@ trait ApiUtilsSpecification
 
   trait ApiUtilsScope
     extends Scope
-    with UtilsData {
+    with ApiUtilsData {
 
     val contextSupport = mock[ContextSupport]
     val mockPersistenceServices = mock[PersistenceServices]

@@ -1,22 +1,50 @@
-package com.fortysevendeg.ninecardslauncher.services.utils
+package com.fortysevendeg.ninecardslauncher.commons.utils
 
 import java.io._
 import java.util.zip.{GZIPOutputStream, GZIPInputStream}
 
-import com.fortysevendeg.ninecardslauncher.services.api.models.User
-import com.fortysevendeg.ninecardslauncher.services.utils.impl.StreamWrapper
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+
+import scala.util.Success
 
 trait FileUtilsSpecification
   extends Specification
   with Mockito {
 
   trait FileUtilsScope
-    extends Scope {
+    extends Scope
+    with FileUtilsData {
 
+    val contextSupport = mock[ContextSupport]
     val mockStreamWrapper = mock[StreamWrapper]
+    val mockInputStream = mock[InputStream]
+
+    val fileUtils = new FileUtils(mockStreamWrapper)
+
+  }
+
+  trait ValidUtilsScope {
+    self: FileUtilsScope =>
+
+    mockStreamWrapper.openAssetsFile(fileName)(contextSupport) returns mockInputStream
+    mockStreamWrapper.makeStringFromInputStream(mockInputStream) returns fileJson
+
+  }
+
+  trait ErrorUtilsScope {
+    self: FileUtilsScope =>
+
+    mockStreamWrapper.openAssetsFile(fileName)(contextSupport) throws new RuntimeException("")
+    mockStreamWrapper.makeStringFromInputStream(mockInputStream) returns fileJson
+
+  }
+
+  trait StreamFileUtilsScope
+    extends FileUtilsScope {
+
     val mockFile = mock[File]
     val mockFileInputStream = mock[FileInputStream]
     val mockFileOutputStream = mock[FileOutputStream]
@@ -24,70 +52,68 @@ trait FileUtilsSpecification
     val mockGZIPOutputStream = mock[GZIPOutputStream]
     val mockObjectInputStream = mock[ObjectInputStream]
     val mockObjectOutputStream = mock[ObjectOutputStream]
-    val mockUser = mock[User]
-
-    val fileUtils = new FileUtils(mockStreamWrapper)
+    val mockAny = mock[Any]
 
   }
 
   trait LoadFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileInputStream(mockFile) returns mockFileInputStream
     mockStreamWrapper.createGZIPInputStream(mockFileInputStream) returns mockGZIPInputStream
     mockStreamWrapper.createObjectInputStream(mockGZIPInputStream) returns mockObjectInputStream
-    mockStreamWrapper.readObjectAsInstance[User](mockObjectInputStream) returns mockUser.asInstanceOf[User]
+    mockStreamWrapper.readObjectAsInstance[Any](mockObjectInputStream) returns mockAny.asInstanceOf[Any]
 
   }
 
   trait ErrorFileInputStreamLoadFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileInputStream(mockFile) throws new RuntimeException("")
     mockStreamWrapper.createGZIPInputStream(mockFileInputStream) returns mockGZIPInputStream
     mockStreamWrapper.createObjectInputStream(mockGZIPInputStream) returns mockObjectInputStream
-    mockStreamWrapper.readObjectAsInstance[User](mockObjectInputStream) returns mockUser.asInstanceOf[User]
+    mockStreamWrapper.readObjectAsInstance[Any](mockObjectInputStream) returns mockAny.asInstanceOf[Any]
 
   }
 
   trait ErrorGZIPInputStreamLoadFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileInputStream(mockFile) returns mockFileInputStream
     mockStreamWrapper.createGZIPInputStream(mockFileInputStream) throws new RuntimeException("")
     mockStreamWrapper.createObjectInputStream(mockGZIPInputStream) returns mockObjectInputStream
-    mockStreamWrapper.readObjectAsInstance[User](mockObjectInputStream) returns mockUser.asInstanceOf[User]
+    mockStreamWrapper.readObjectAsInstance[Any](mockObjectInputStream) returns mockAny.asInstanceOf[Any]
 
   }
 
   trait ErrorObjectInputStreamLoadFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileInputStream(mockFile) returns mockFileInputStream
     mockStreamWrapper.createGZIPInputStream(mockFileInputStream) returns mockGZIPInputStream
     mockStreamWrapper.createObjectInputStream(mockGZIPInputStream) throws new RuntimeException("")
-    mockStreamWrapper.readObjectAsInstance[User](mockObjectInputStream) returns mockUser.asInstanceOf[User]
+    mockStreamWrapper.readObjectAsInstance[Any](mockObjectInputStream) returns mockAny.asInstanceOf[Any]
 
   }
 
   trait ErrorObjectInputStreamReadLoadFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileInputStream(mockFile) returns mockFileInputStream
     mockStreamWrapper.createGZIPInputStream(mockFileInputStream) returns mockGZIPInputStream
     mockStreamWrapper.createObjectInputStream(mockGZIPInputStream) returns mockObjectInputStream
-    mockStreamWrapper.readObjectAsInstance[User](mockObjectInputStream) throws new RuntimeException("")
+    mockStreamWrapper.readObjectAsInstance[Any](mockObjectInputStream) throws new RuntimeException("")
 
   }
 
   trait WriteFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileOutputStream(mockFile) returns mockFileOutputStream
     mockStreamWrapper.createGZIPOutputStream(mockFileOutputStream) returns mockGZIPOutputStream
@@ -97,7 +123,7 @@ trait FileUtilsSpecification
 
   trait ErrorFileOutputStreamLoadFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileOutputStream(mockFile) throws new RuntimeException("")
     mockStreamWrapper.createGZIPOutputStream(mockFileOutputStream) returns mockGZIPOutputStream
@@ -107,7 +133,7 @@ trait FileUtilsSpecification
 
   trait ErrorGZIPOutputStreamLoadFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileOutputStream(mockFile) returns mockFileOutputStream
     mockStreamWrapper.createGZIPOutputStream(mockFileOutputStream) throws new RuntimeException("")
@@ -117,7 +143,7 @@ trait FileUtilsSpecification
 
   trait ErrorObjectOutputStreamLoadFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileOutputStream(mockFile) returns mockFileOutputStream
     mockStreamWrapper.createGZIPOutputStream(mockFileOutputStream) returns mockGZIPOutputStream
@@ -127,7 +153,7 @@ trait FileUtilsSpecification
 
   trait ErrorObjectOutputStreamWriteLoadFileUtilsScope {
 
-    self: FileUtilsScope =>
+    self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileOutputStream(mockFile) returns mockFileOutputStream
     mockStreamWrapper.createGZIPOutputStream(mockFileOutputStream) returns mockGZIPOutputStream
@@ -143,63 +169,75 @@ class FileUtilsSpec
 
   "File Utils" should {
 
+    "returns a json string when a valid fileName is provided" in
+      new FileUtilsScope with ValidUtilsScope {
+        val result = fileUtils.getJsonFromFile(fileName)(contextSupport)
+        result shouldEqual Success(fileJson)
+      }
+
+    "returns an Exception when the file can't be opened" in
+      new FileUtilsScope with ErrorUtilsScope {
+        val result = fileUtils.getJsonFromFile(fileName)(contextSupport)
+        result must beFailedTry
+      }
+
     "successfully load a file" in
-      new FileUtilsScope with LoadFileUtilsScope {
-        val result = fileUtils.loadFile[User](mockFile)
+      new StreamFileUtilsScope with LoadFileUtilsScope {
+        val result = fileUtils.loadFile[Any](mockFile)
         result must beSuccessfulTry
       }
 
-    "fails loading a file when FileInputStream throws an FileNotFoundException" in
-      new FileUtilsScope with ErrorFileInputStreamLoadFileUtilsScope {
-        val result = fileUtils.loadFile[User](mockFile)
+    "fails loading a file when FileInputStream throws a RuntimeException" in
+      new StreamFileUtilsScope with ErrorFileInputStreamLoadFileUtilsScope {
+        val result = fileUtils.loadFile[Any](mockFile)
         result must beFailedTry
       }
 
-    "fails loading a file when GZIPInputStream throws an StreamCorruptedException" in
-      new FileUtilsScope with ErrorGZIPInputStreamLoadFileUtilsScope {
-        val result = fileUtils.loadFile[User](mockFile)
+    "fails loading a file when GZIPInputStream throws a RuntimeException" in
+      new StreamFileUtilsScope with ErrorGZIPInputStreamLoadFileUtilsScope {
+        val result = fileUtils.loadFile[Any](mockFile)
         result must beFailedTry
       }
 
-    "fails loading a file when ObjectInputStream throws an StreamCorruptedException" in
-      new FileUtilsScope with ErrorObjectInputStreamLoadFileUtilsScope {
-        val result = fileUtils.loadFile[User](mockFile)
+    "fails loading a file when ObjectInputStream throws a RuntimeException" in
+      new StreamFileUtilsScope with ErrorObjectInputStreamLoadFileUtilsScope {
+        val result = fileUtils.loadFile[Any](mockFile)
         result must beFailedTry
       }
 
-    "fails loading a file when ObjectInputStream.readObject throws an ClassNotFoundException" in
-      new FileUtilsScope with ErrorObjectInputStreamReadLoadFileUtilsScope {
-        val result = fileUtils.loadFile[User](mockFile)
+    "fails loading a file when ObjectInputStream.readObject throws a RuntimeException" in
+      new StreamFileUtilsScope with ErrorObjectInputStreamReadLoadFileUtilsScope {
+        val result = fileUtils.loadFile[Any](mockFile)
         result must beFailedTry
       }
 
     "successfully writes a file" in
-      new FileUtilsScope with WriteFileUtilsScope {
-        val result = fileUtils.writeFile[User](mockFile, mockUser)
+      new StreamFileUtilsScope with WriteFileUtilsScope {
+        val result = fileUtils.writeFile[Any](mockFile, mockAny)
         result must beSuccessfulTry
       }
 
-    "fails writing a file when FileOutputStream throws an FileNotFoundException" in
-      new FileUtilsScope with ErrorFileOutputStreamLoadFileUtilsScope {
-        val result = fileUtils.writeFile[User](mockFile, mockUser)
+    "fails writing a file when FileOutputStream throws a RuntimeException" in
+      new StreamFileUtilsScope with ErrorFileOutputStreamLoadFileUtilsScope {
+        val result = fileUtils.writeFile[Any](mockFile, mockAny)
         result must beFailedTry
       }
 
-    "fails writing a file when GZIPOutputStream throws an IOException" in
-      new FileUtilsScope with ErrorGZIPOutputStreamLoadFileUtilsScope {
-        val result = fileUtils.writeFile[User](mockFile, mockUser)
+    "fails writing a file when GZIPOutputStream throws a RuntimeException" in
+      new StreamFileUtilsScope with ErrorGZIPOutputStreamLoadFileUtilsScope {
+        val result = fileUtils.writeFile[Any](mockFile, mockAny)
         result must beFailedTry
       }
 
-    "fails writing a file when ObjectOutputStream throws an IOException" in
-      new FileUtilsScope with ErrorObjectOutputStreamLoadFileUtilsScope {
-        val result = fileUtils.writeFile[User](mockFile, mockUser)
+    "fails writing a file when ObjectOutputStream throws a RuntimeException" in
+      new StreamFileUtilsScope with ErrorObjectOutputStreamLoadFileUtilsScope {
+        val result = fileUtils.writeFile[Any](mockFile, mockAny)
         result must beFailedTry
       }
 
-    "fails writing a file when ObjectOutputStream.writeObject throws an IOException" in
-      new FileUtilsScope with ErrorObjectOutputStreamWriteLoadFileUtilsScope {
-        val result = fileUtils.writeFile[User](mockFile, mockUser)
+    "fails writing a file when ObjectOutputStream.writeObject throws a RuntimeException" in
+      new StreamFileUtilsScope with ErrorObjectOutputStreamWriteLoadFileUtilsScope {
+        val result = fileUtils.writeFile[Any](mockFile, mockAny)
         result must beFailedTry
       }
 

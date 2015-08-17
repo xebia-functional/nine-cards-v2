@@ -13,7 +13,7 @@ trait ResourceUtilsSpecification
 
   trait ResourceUtilsScope
     extends Scope
-    with UtilsData {
+    with ResourceUtilsData {
 
     val contextSupport = mock[ContextSupport]
 
