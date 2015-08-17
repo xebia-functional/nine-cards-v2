@@ -4,5 +4,4 @@ case class ShortCut (
   title: String,
   icon: Int,
   name: String,
-  packageName: String,
-  className: String)
+  packageName: String)

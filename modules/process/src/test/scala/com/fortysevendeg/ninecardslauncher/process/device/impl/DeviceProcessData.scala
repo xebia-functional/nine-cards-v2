@@ -213,22 +213,19 @@ trait DeviceProcessData {
       title = "ShortCut 1",
       icon = 0,
       name = "ShortCut 1",
-      packageName = "com.example.shortcut1",
-      className = "ClassName1"
+      packageName = "com.example.shortcut1"
     ),
     ShortCut(
       title = "ShortCut 2",
       icon = 0,
       name = "ShortCut 2",
-      packageName = "com.example.shortcut2",
-      className = "ClassName2"
+      packageName = "com.example.shortcut2"
     ),
     ShortCut(
       title = "ShortCut 3",
       icon = 0,
       name = "ShortCut 3",
-      packageName = "com.example.shortcut3",
-      className = "ClassName3"
+      packageName = "com.example.shortcut3"
     )
   )
 

@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device
 
 import android.content.{Intent, ComponentName}
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlaySimplePackage, GooglePlayPackage, GooglePlayApp}
@@ -10,6 +11,8 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.AddCacheCategory
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{ShortCut => ShortCutServices}
 import com.fortysevendeg.ninecardslauncher.process.device.models.ShortCut
+
+import scala.util.{Failure, Success, Try}
 
 trait DeviceConversions {
 
@@ -54,11 +57,16 @@ trait DeviceConversions {
   def toShortCutSeq(items: Seq[ShortCutServices])(implicit context: ContextSupport): Seq[ShortCut] = items map toShortCut
 
   def toShortCut(item: ShortCutServices)(implicit context: ContextSupport): ShortCut = {
-    val drawable = context.getPackageManager.getActivityIcon(new ComponentName(item.packageName, item.className))
-    val name = new ComponentName(item.packageName, item.name)
+    val componentName = new ComponentName(item.packageName, item.name)
+    val drawable = Try {
+      context.getPackageManager.getActivityIcon(componentName)
+    } match {
+      case Success(d) => d
+      case Failure(ex) => null
+    }
     val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
     intent.addCategory(Intent.CATEGORY_DEFAULT)
-    intent.setComponent(name)
+    intent.setComponent(componentName)
     ShortCut(
       title = item.title,
       icon = drawable,

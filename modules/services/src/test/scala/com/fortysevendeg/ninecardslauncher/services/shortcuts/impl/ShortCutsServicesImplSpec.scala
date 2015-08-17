@@ -31,7 +31,6 @@ trait ShortCutsImplSpecification
       val mockApplicationInfo = mock[ApplicationInfo]
       sampleResolveInfo.loadLabel(packageManager) returns sampleShortCut.title
       mockApplicationInfo.packageName = sampleShortCut.packageName
-      mockApplicationInfo.className = sampleShortCut.className
       mockActivityInfo.applicationInfo = mockApplicationInfo
       mockActivityInfo.name = sampleShortCut.name
       mockActivityInfo.icon = sampleShortCut.icon

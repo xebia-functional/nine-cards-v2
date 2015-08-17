@@ -27,9 +27,7 @@ class ShortCutsServicesImpl
             title = resolveInfo.loadLabel(packageManager).toString,
             icon = activityInfo.icon,
             name = activityInfo.name,
-            packageName = activityInfo.applicationInfo.packageName,
-            className = activityInfo.applicationInfo.className
-          )
+            packageName = activityInfo.applicationInfo.packageName)
         } sortBy(_.title)
 
       }
