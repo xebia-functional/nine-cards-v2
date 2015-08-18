@@ -38,7 +38,6 @@ trait FileUtilsSpecification
     self: FileUtilsScope =>
 
     mockStreamWrapper.openAssetsFile(fileName)(mockContextSupport) throws new RuntimeException("")
-    mockStreamWrapper.makeStringFromInputStream(mockInputStream) returns fileJson
 
   }
 
@@ -72,9 +71,6 @@ trait FileUtilsSpecification
     self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileInputStream(mockFile) throws new RuntimeException("")
-    mockStreamWrapper.createGZIPInputStream(mockFileInputStream) returns mockGZIPInputStream
-    mockStreamWrapper.createObjectInputStream(mockGZIPInputStream) returns mockObjectInputStream
-    mockStreamWrapper.readObjectAsInstance[Any](mockObjectInputStream) returns mockAny.asInstanceOf[Any]
 
   }
 
@@ -82,10 +78,7 @@ trait FileUtilsSpecification
 
     self: StreamFileUtilsScope =>
 
-    mockStreamWrapper.createFileInputStream(mockFile) returns mockFileInputStream
     mockStreamWrapper.createGZIPInputStream(mockFileInputStream) throws new RuntimeException("")
-    mockStreamWrapper.createObjectInputStream(mockGZIPInputStream) returns mockObjectInputStream
-    mockStreamWrapper.readObjectAsInstance[Any](mockObjectInputStream) returns mockAny.asInstanceOf[Any]
 
   }
 
@@ -93,10 +86,7 @@ trait FileUtilsSpecification
 
     self: StreamFileUtilsScope =>
 
-    mockStreamWrapper.createFileInputStream(mockFile) returns mockFileInputStream
-    mockStreamWrapper.createGZIPInputStream(mockFileInputStream) returns mockGZIPInputStream
     mockStreamWrapper.createObjectInputStream(mockGZIPInputStream) throws new RuntimeException("")
-    mockStreamWrapper.readObjectAsInstance[Any](mockObjectInputStream) returns mockAny.asInstanceOf[Any]
 
   }
 
@@ -104,9 +94,6 @@ trait FileUtilsSpecification
 
     self: StreamFileUtilsScope =>
 
-    mockStreamWrapper.createFileInputStream(mockFile) returns mockFileInputStream
-    mockStreamWrapper.createGZIPInputStream(mockFileInputStream) returns mockGZIPInputStream
-    mockStreamWrapper.createObjectInputStream(mockGZIPInputStream) returns mockObjectInputStream
     mockStreamWrapper.readObjectAsInstance[Any](mockObjectInputStream) throws new RuntimeException("")
 
   }
@@ -126,8 +113,6 @@ trait FileUtilsSpecification
     self: StreamFileUtilsScope =>
 
     mockStreamWrapper.createFileOutputStream(mockFile) throws new RuntimeException("")
-    mockStreamWrapper.createGZIPOutputStream(mockFileOutputStream) returns mockGZIPOutputStream
-    mockStreamWrapper.createObjectOutputStream(mockGZIPOutputStream) returns mockObjectOutputStream
 
   }
 
@@ -135,9 +120,7 @@ trait FileUtilsSpecification
 
     self: StreamFileUtilsScope =>
 
-    mockStreamWrapper.createFileOutputStream(mockFile) returns mockFileOutputStream
     mockStreamWrapper.createGZIPOutputStream(mockFileOutputStream) throws new RuntimeException("")
-    mockStreamWrapper.createObjectOutputStream(mockGZIPOutputStream) returns mockObjectOutputStream
 
   }
 
@@ -145,8 +128,6 @@ trait FileUtilsSpecification
 
     self: StreamFileUtilsScope =>
 
-    mockStreamWrapper.createFileOutputStream(mockFile) returns mockFileOutputStream
-    mockStreamWrapper.createGZIPOutputStream(mockFileOutputStream) returns mockGZIPOutputStream
     mockStreamWrapper.createObjectOutputStream(mockGZIPOutputStream) throws new RuntimeException("")
 
   }
@@ -155,9 +136,6 @@ trait FileUtilsSpecification
 
     self: StreamFileUtilsScope =>
 
-    mockStreamWrapper.createFileOutputStream(mockFile) returns mockFileOutputStream
-    mockStreamWrapper.createGZIPOutputStream(mockFileOutputStream) returns mockGZIPOutputStream
-    mockStreamWrapper.createObjectOutputStream(mockGZIPOutputStream) returns mockObjectOutputStream
     mockStreamWrapper.writeObject(any, any) throws new RuntimeException("")
 
   }
@@ -171,13 +149,13 @@ class FileUtilsSpec
 
     "returns a json string when a valid fileName is provided" in
       new FileUtilsScope with ValidUtilsScope {
-        val result = fileUtils.getJsonFromFile(fileName)(mockContextSupport)
+        val result = fileUtils.readFile(fileName)(mockContextSupport)
         result mustEqual Success(fileJson)
       }
 
     "returns an Exception when the file can't be opened" in
       new FileUtilsScope with ErrorUtilsScope {
-        val result = fileUtils.getJsonFromFile(fileName)(mockContextSupport)
+        val result = fileUtils.readFile(fileName)(mockContextSupport)
         result must beFailedTry
       }
 

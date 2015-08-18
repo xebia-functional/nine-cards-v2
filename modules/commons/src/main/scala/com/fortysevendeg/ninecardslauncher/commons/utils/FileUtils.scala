@@ -11,7 +11,7 @@ import scala.util.control.Exception._
 class FileUtils(streamWrapper: StreamWrapper = new StreamWrapperImpl)
   extends ImplicitsAssetException {
 
-  def getJsonFromFile(filename: String)(implicit context: ContextSupport): Try[String] =
+  def readFile(filename: String)(implicit context: ContextSupport): Try[String] =
     Try {
       withResource[InputStream, String](streamWrapper.openAssetsFile(filename)) {
         stream => {

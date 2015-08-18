@@ -39,7 +39,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) returns Success(validThemeJson)
+    mockFileUtils.readFile(any)(any) returns Success(validThemeJson)
   }
 
   trait WrongJsonFileUtilsResponses
@@ -47,7 +47,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) returns Success(wrongThemeJson)
+    mockFileUtils.readFile(any)(any) returns Success(wrongThemeJson)
   }
 
   trait WrongThemeStyleTypeFileUtilsResponses
@@ -55,7 +55,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) returns Success(wrongThemeStyleTypeJson)
+    mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleTypeJson)
   }
 
   trait WrongThemeStyleColorFileUtilsResponses
@@ -63,7 +63,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) returns Success(wrongThemeStyleColorJson)
+    mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleColorJson)
   }
 
   trait ErrorFileUtilsResponses
@@ -71,7 +71,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) throws assetException
+    mockFileUtils.readFile(any)(any) throws assetException
   }
 
 }

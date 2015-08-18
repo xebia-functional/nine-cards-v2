@@ -29,7 +29,7 @@ class ThemeProcessImpl
   private[this] def getJsonFromThemeFile(defaultTheme: String)(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[AssetException] {
-        fileUtils.getJsonFromFile(s"$defaultTheme.json") match {
+        fileUtils.readFile(s"$defaultTheme.json") match {
           case Success(json) => json
           case Failure(ex) => throw ex
         }
