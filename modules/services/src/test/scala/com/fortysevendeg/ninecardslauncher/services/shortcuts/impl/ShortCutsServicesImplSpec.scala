@@ -25,29 +25,29 @@ trait ShortcutsImplSpecification
 
     val mockIntent = mock[Intent]
 
-    def createMockResolveInfo(sampleShortCut: Shortcut) : ResolveInfo = {
+    def createMockResolveInfo(sampleShortcut: Shortcut) : ResolveInfo = {
       val sampleResolveInfo = mock[ResolveInfo]
       val mockActivityInfo = mock[ActivityInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
-      sampleResolveInfo.loadLabel(packageManager) returns sampleShortCut.title
-      mockApplicationInfo.packageName = sampleShortCut.packageName
+      sampleResolveInfo.loadLabel(packageManager) returns sampleShortcut.title
+      mockApplicationInfo.packageName = sampleShortcut.packageName
       mockActivityInfo.applicationInfo = mockApplicationInfo
-      mockActivityInfo.name = sampleShortCut.name
-      mockActivityInfo.icon = sampleShortCut.icon
+      mockActivityInfo.name = sampleShortcut.name
+      mockActivityInfo.icon = sampleShortcut.icon
       sampleResolveInfo.activityInfo = mockActivityInfo
       sampleResolveInfo
     }
 
-    val mockShortCuts = List(createMockResolveInfo(sampleShortcut1), createMockResolveInfo(sampleShortcut2))
+    val mockShortcuts = List(createMockResolveInfo(sampleShortcut1), createMockResolveInfo(sampleShortcut2))
 
-    packageManager.queryIntentActivities(mockIntent, 0) returns mockShortCuts
+    packageManager.queryIntentActivities(mockIntent, 0) returns mockShortcuts
 
     val shortcutsServicesImpl = new ShortcutsServicesImpl {
       override protected def shortcutsIntent(): Intent = mockIntent
     }
   }
 
-  trait ShortCutsErrorScope {
+  trait ShortcutsErrorScope {
     self : ShortcutsImplScope =>
 
     case class CustomException(message: String, cause: Option[Throwable] = None)
@@ -73,7 +73,7 @@ class ShortcutsServicesImplSpec
     }
 
   "returns an ShortcutException when no shortcuts exist" in
-    new ShortcutsImplScope with ShortCutsErrorScope {
+    new ShortcutsImplScope with ShortcutsErrorScope {
       val result = shortcutsServicesImpl.getShortcuts(contextSupport).run.run
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {

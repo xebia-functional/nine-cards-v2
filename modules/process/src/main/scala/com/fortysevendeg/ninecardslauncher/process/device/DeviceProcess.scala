@@ -11,7 +11,7 @@ trait DeviceProcess {
 
   /**
    * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.ShortCut] contains
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut] contains
    *         information about shortcut with the Intents and Drawables for UI actions
    * @throws ShortcutException if exist some problem to get the shortcuts in the cell phone
    */

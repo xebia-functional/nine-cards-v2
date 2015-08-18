@@ -58,8 +58,8 @@ class DeviceProcessImpl(
 
   override def getAvailableShortcuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException] =
     (for {
-      shortCuts <- shortcutsServices.getShortcuts
-    } yield toShortcutSeq(shortCuts)).resolve[ShortcutException]
+      shortcuts <- shortcutsServices.getShortcuts
+    } yield toShortcutSeq(shortcuts)).resolve[ShortcutException]
 
   private[this] def getApps(implicit context: ContextSupport):
   ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =

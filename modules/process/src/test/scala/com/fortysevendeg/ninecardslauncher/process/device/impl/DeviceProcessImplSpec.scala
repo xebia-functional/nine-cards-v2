@@ -55,9 +55,9 @@ trait DeviceProcessSpecification
 
     val mockApiServices = mock[ApiServices]
 
-    val mockShortCutsServices = mock[ShortcutsServices]
+    val mockShortcutsServices = mock[ShortcutsServices]
 
-    mockShortCutsServices.getShortcuts(contextSupport) returns
+    mockShortcutsServices.getShortcuts(contextSupport) returns
       Service(Task(Result.answer(shortcuts)))
 
     val mockPersistenceServices = mock[PersistenceServices]
@@ -85,7 +85,7 @@ trait DeviceProcessSpecification
       mockAppsServices,
       mockApiServices,
       mockPersistenceServices,
-      mockShortCutsServices,
+      mockShortcutsServices,
       mockImageServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
@@ -168,10 +168,10 @@ trait DeviceProcessSpecification
 
   }
 
-  trait ShortCutsErrorScope {
+  trait ShortcutsErrorScope {
     self: DeviceProcessScope =>
 
-    mockShortCutsServices.getShortcuts(contextSupport) returns Service {
+    mockShortcutsServices.getShortcuts(contextSupport) returns Service {
       Task(Errata(shortcutServicesException))
     }
 
@@ -313,7 +313,7 @@ class DeviceProcessImplSpec
       }
 
     "returns ShortcutException when ShortcutsServices fails" in
-      new DeviceProcessScope with ShortCutsErrorScope {
+      new DeviceProcessScope with ShortcutsErrorScope {
         val result = deviceProcess.getAvailableShortcuts(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
