@@ -17,7 +17,7 @@ trait StreamWrapperSpecification
     extends Scope
     with FileUtilsData {
 
-    val contextSupport = mock[ContextSupport]
+    val mockContextSupport = mock[ContextSupport]
     val streamWrapper: StreamWrapper = new StreamWrapperImpl
     val mockInputStream = mock[InputStream]
 
@@ -29,7 +29,7 @@ trait StreamWrapperSpecification
 
     val mockAssetManager = mock[AssetManager]
 
-    contextSupport.getAssets returns mockAssetManager
+    mockContextSupport.getAssets returns mockAssetManager
     mockAssetManager.open(fileName) returns mockInputStream
 
   }
@@ -50,7 +50,7 @@ class StreamWrapperImplSpec
 
     "return an InputStream when a filename is provided" in {
       new StreamWrapperScope with OpenAssetsScope {
-        val result = streamWrapper.openAssetsFile(fileName)(contextSupport)
+        val result = streamWrapper.openAssetsFile(fileName)(mockContextSupport)
         result mustEqual mockInputStream
       }
     }
@@ -63,5 +63,4 @@ class StreamWrapperImplSpec
     }
 
   }
-
 }
