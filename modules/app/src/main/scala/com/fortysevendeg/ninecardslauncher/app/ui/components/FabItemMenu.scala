@@ -13,15 +13,13 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
 
-class FabItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int, defStyleRes: Int)(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(context, attr, defStyleAttr, defStyleRes)
+class FabItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
+  extends FrameLayout(context, attr, defStyleAttr)
   with FabItemMenuStyles {
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0, 0)
+  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0, 0)
-
-  def this(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper) = this(context, attr, defStyleAttr, 0)
+  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
   val content = LayoutInflater.from(context).inflate(R.layout.fab_item, null)
 

@@ -7,16 +7,14 @@ import android.support.v4.view.MotionEventCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.ImageView
-import macroid.{Tweak, ActivityContextWrapper, ContextWrapper}
+import macroid.{Tweak, ContextWrapper}
 
-class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int, defStyleRes: Int)
-  extends ImageView(context, attr, defStyleAttr, defStyleRes) {
+class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int)
+  extends ImageView(context, attr, defStyleAttr) {
 
-  def this(context: Context) = this(context, null, 0, 0)
+  def this(context: Context) = this(context, null, 0)
 
-  def this(context: Context, attr: AttributeSet) = this(context, attr, 0, 0)
-
-  def this(context: Context, attr: AttributeSet, defStyleAttr: Int) = this(context, attr, defStyleAttr, 0)
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   var defaultColor = Color.WHITE
 
