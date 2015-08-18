@@ -10,9 +10,15 @@ case class CreateBitmapException(message: String, cause: Option[Throwable] = Non
   cause map initCause
 }
 
+case class ShortcutException(message: String, cause: Option[Throwable] = None) extends RuntimeException(message) {
+  cause map initCause
+}
+
 trait ImplicitsDeviceException {
   implicit def appCategorizationException = (t: Throwable) => AppCategorizationException(t.getMessage, t.some)
 
   implicit def createBitmapException = (t: Throwable) => CreateBitmapException(t.getMessage, t.some)
+
+  implicit def shortcutExceptionException = (t: Throwable) => ShortcutException(t.getMessage, t.some)
 
 }
