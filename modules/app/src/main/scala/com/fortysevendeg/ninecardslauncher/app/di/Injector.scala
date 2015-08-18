@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import macroid.ContextWrapper
@@ -51,6 +52,8 @@ class Injector(implicit contextWrapper: ContextWrapper) {
 
   private[this] lazy val appsServices = new AppsServicesImpl()
 
+  private[this] lazy val shortcutsServices = new ShortcutsServicesImpl()
+
   private[this] lazy val imageServicesConfig = ImageServicesConfig(
     colors = List(
       resources.getColor(com.fortysevendeg.ninecardslauncher2.R.color.background_default_1),
@@ -69,6 +72,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     appsService = appsServices,
     apiServices = apiServices,
     persistenceServices = persistenceServices,
+    shortcutsServices = shortcutsServices,
     imageServices = imageServices)
 
   private[this] lazy val nameCategories: Map[String, String] = (categories map {

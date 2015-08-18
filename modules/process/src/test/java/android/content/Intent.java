@@ -20,11 +20,11 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
         public  int hashCode() { throw new RuntimeException("<Stub>!"); }
     }
     public  Intent() {  }
-    public  Intent(android.content.Intent o) { throw new RuntimeException("<Stub>!"); }
-    public  Intent(java.lang.String action) { throw new RuntimeException("<Stub>!"); }
-    public  Intent(java.lang.String action, android.net.Uri uri) { throw new RuntimeException("<Stub>!"); }
-    public  Intent(android.content.Context packageContext, java.lang.Class<?> cls) { throw new RuntimeException("<Stub>!"); }
-    public  Intent(java.lang.String action, android.net.Uri uri, android.content.Context packageContext, java.lang.Class<?> cls) { throw new RuntimeException("<Stub>!"); }
+    public  Intent(android.content.Intent o) { }
+    public  Intent(java.lang.String action) { }
+    public  Intent(java.lang.String action, android.net.Uri uri) { }
+    public  Intent(android.content.Context packageContext, java.lang.Class<?> cls) { }
+    public  Intent(java.lang.String action, android.net.Uri uri, android.content.Context packageContext, java.lang.Class<?> cls) { }
     public static  android.content.Intent createChooser(android.content.Intent target, java.lang.CharSequence title) { throw new RuntimeException("<Stub>!"); }
     public  java.lang.Object clone() { throw new RuntimeException("<Stub>!"); }
     public  android.content.Intent cloneFilter() { throw new RuntimeException("<Stub>!"); }
@@ -132,7 +132,7 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
     public  android.content.Intent setFlags(int flags) { return this; }
     public  android.content.Intent addFlags(int flags) { throw new RuntimeException("<Stub>!"); }
     public  android.content.Intent setPackage(java.lang.String packageName) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent setComponent(android.content.ComponentName component) { throw new RuntimeException("<Stub>!"); }
+    public  android.content.Intent setComponent(android.content.ComponentName component) { return this; }
     public  android.content.Intent setClassName(android.content.Context packageContext, java.lang.String className) { throw new RuntimeException("<Stub>!"); }
     public  android.content.Intent setClassName(java.lang.String packageName, java.lang.String className) { return this; }
     public  android.content.Intent setClass(android.content.Context packageContext, java.lang.Class<?> cls) { throw new RuntimeException("<Stub>!"); }
