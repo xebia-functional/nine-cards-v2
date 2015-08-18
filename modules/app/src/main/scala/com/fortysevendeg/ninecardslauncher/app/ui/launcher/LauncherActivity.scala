@@ -49,8 +49,14 @@ class LauncherActivity
     }
   }
 
+  override def onBackPressed(): Unit = unrevealDrawer() match {
+    case Some(ui) => runUi(ui)
+    case _ => super.onBackPressed()
+  }
+
   private def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
-    onResult = { // Check if there are collections in DB, if there aren't we go to wizard
+    onResult = {
+      // Check if there are collections in DB, if there aren't we go to wizard
       case Nil => goToWizard()
       case collections => createCollections(collections)
     },

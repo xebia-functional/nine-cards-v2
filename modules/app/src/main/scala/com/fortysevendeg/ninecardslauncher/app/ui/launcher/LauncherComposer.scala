@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.content.Intent
 import android.speech.RecognizerIntent
+import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -45,6 +46,8 @@ trait LauncherComposer
   lazy val appDrawer4 = Option(findView(TR.launcher_page_4))
 
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
+
+  lazy val drawerContent = Option(findView(TR.launcher_drawer_content))
 
   lazy val paginationPanel = Option(findView(TR.launcher_pagination_panel))
 
@@ -93,7 +96,7 @@ trait LauncherComposer
         uiShortToast("App 4")
       }) ~
       (appDrawerMain <~ drawerAppStyle <~ On.click {
-        uiShortToast("App Drawer")
+        revealDrawer()
       })
 
   def createCollections(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
@@ -133,5 +136,12 @@ trait LauncherComposer
   private[this] def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
     w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
+
+  def revealDrawer(): Ui[_] = drawerContent <~ vVisible
+
+  def unrevealDrawer(): Option[Ui[_]] = drawerContent map (_.getVisibility) match {
+    case Some(View.VISIBLE) => Some(drawerContent <~ vInvisible)
+    case _ => None
+  }
 
 }

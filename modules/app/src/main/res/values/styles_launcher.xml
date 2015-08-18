@@ -101,4 +101,11 @@
         <item name="android:orientation">horizontal</item>
     </style>
 
+    <style name="LauncherDrawerContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">#ffffff</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
 </resources>

@@ -85,4 +85,8 @@
 
     </LinearLayout>
 
+    <FrameLayout
+        style="@style/LauncherDrawerContent"
+        android:id="@+id/launcher_drawer_content"/>
+
 </FrameLayout>
