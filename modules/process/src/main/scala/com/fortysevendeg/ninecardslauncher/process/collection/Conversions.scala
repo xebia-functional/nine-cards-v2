@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.process.collection
 
 import java.io.File
 
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
@@ -90,7 +89,7 @@ trait Conversions {
         } yield {
           val pathWithClassName = resourceUtils.getPathPackage(packageName, className)
           // If the path using ClassName don't exist, we use a path using only packagename
-          if (new File(pathWithClassName).exists) pathWithClassName else  resourceUtils.getPath(packageName)
+          if (new File(pathWithClassName).exists) pathWithClassName else resourceUtils.getPath(packageName)
         }
       case _ => None
     }) getOrElse "" // TODO We should use a default image
