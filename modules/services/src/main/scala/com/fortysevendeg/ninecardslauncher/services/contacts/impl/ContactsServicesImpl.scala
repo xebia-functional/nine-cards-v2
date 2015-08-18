@@ -1,0 +1,105 @@
+package com.fortysevendeg.ninecardslauncher.services.contacts.impl
+
+import android.database.SQLException
+import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapper
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
+import com.fortysevendeg.ninecardslauncher.services.contacts._
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactInfo}
+
+import scalaz.concurrent.Task
+
+class ContactsServicesImpl(
+  contentResolverWrapper: ContentResolverWrapper,
+  uriCreator: UriCreator = new UriCreator)
+  extends ContactsServices
+  with ImplicitsContactsServiceExceptions {
+
+  override def getContacts: ServiceDef2[Seq[Contact], ContactsServiceException] =
+    Service {
+      Task {
+        CatchAll[ContactsServiceException] {
+          contentResolverWrapper.fetchAll(
+            uri = Fields.CONTENT_URI,
+            projection = allFields)(getListFromCursor(contactFromCursor))
+        }
+      }
+    }
+
+  override def fetchContactByEmail(email: String): ServiceDef2[Option[Contact], ContactsServiceException] =
+    Service {
+      Task {
+        CatchAll[ContactsServiceException] {
+          contentResolverWrapper.fetch(
+            uri = Fields.EMAIL_CONTENT_URI,
+            projection = allEmailContactFields,
+            where = Fields.EMAIL_SELECTION,
+            whereParams = Seq(email))(getEntityFromCursor(contactFromEmailCursor))
+        }
+      }
+    }
+
+  override def fetchContactByPhoneNumber(phoneNumber: String): ServiceDef2[Option[Contact], ContactsServiceException] =
+    Service {
+      Task {
+        CatchAll[ContactsServiceException] {
+          contentResolverWrapper.fetch(
+            uri = uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, phoneNumber),
+            projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor))
+        }
+      }
+    }
+
+  override def findContactByLookupKey(lookupKey: String): ServiceDef2[Contact, ContactsServiceException] =
+    Service {
+      Task {
+        CatchAll[ContactsServiceException] {
+          contentResolverWrapper.fetch(
+            uri = Fields.CONTENT_URI,
+            projection = allFields,
+            where = Fields.LOOKUP_SELECTION,
+            whereParams = Seq(lookupKey))(getEntityFromCursor(contactFromCursor)) match {
+            case Some(contact) =>
+              val emails = contentResolverWrapper.fetchAll(
+                uri = Fields.EMAIL_CONTENT_URI,
+                projection = allEmailFields,
+                where = Fields.EMAIL_CONTACT_SELECTION,
+                whereParams = Seq(lookupKey))(getListFromCursor(emailFromCursor))
+              val phones = contentResolverWrapper.fetchAll(
+                uri = Fields.PHONE_CONTENT_URI,
+                projection = allPhoneFields,
+                where = Fields.PHONE_CONTACT_SELECTION,
+                whereParams = Seq(lookupKey))(getListFromCursor(phoneFromCursor))
+              val contactInfo = (emails, phones) match {
+                case (Nil, Nil) => None
+                case _ => Some(ContactInfo(emails, phones))
+              }
+              contact.copy(info = contactInfo)
+            case _ => throw ContactNotFoundException(s"Contact with lookupKey=$lookupKey not found")
+          }
+        }
+      }
+    }
+
+  override def getFavoriteContacts: ServiceDef2[Seq[Contact], ContactsServiceException] =
+    Service {
+      Task {
+        CatchAll[ContactsServiceException] {
+          contentResolverWrapper.fetchAll(
+            uri = Fields.CONTENT_URI,
+            projection = allFields,
+            where = Fields.STARRED_SELECTION)(getListFromCursor(contactFromCursor))
+        }
+      }
+    }
+}
+
+class UriCreator {
+
+  def withAppendedPath(uri: Uri, path: String) = Uri.withAppendedPath(uri, Uri.encode(path))
+
+}
