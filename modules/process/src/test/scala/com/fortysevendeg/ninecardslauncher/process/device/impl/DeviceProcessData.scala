@@ -210,21 +210,21 @@ trait DeviceProcessData {
 
   val shortcuts: Seq[Shortcut] = Seq(
     Shortcut(
-      title = "ShortCut 1",
+      title = "ShortcCt 1",
       icon = 0,
-      name = "ShortCut 1",
+      name = "Shortcut 1",
       packageName = "com.example.shortcut1"
     ),
     Shortcut(
-      title = "ShortCut 2",
+      title = "Shortcut 2",
       icon = 0,
-      name = "ShortCut 2",
+      name = "Shortcut 2",
       packageName = "com.example.shortcut2"
     ),
     Shortcut(
-      title = "ShortCut 3",
+      title = "Shortcut 3",
       icon = 0,
-      name = "ShortCut 3",
+      name = "Shortcut 3",
       packageName = "com.example.shortcut3"
     )
   )
