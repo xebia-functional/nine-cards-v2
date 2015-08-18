@@ -6,6 +6,7 @@ import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 
 trait DeviceProcessData {
 
@@ -204,6 +205,27 @@ trait DeviceProcessData {
       details = GooglePlayDetails(GooglePlayAppDetails(Seq("SOCIAL"), "", None, None, None, 1, Option("1"), None, Seq.empty)),
       offer = Seq.empty,
       aggregateRating = GooglePlayAggregateRating(0, None, 0, 0, 0, 0, 0, 0)
+    )
+  )
+
+  val shortcuts: Seq[Shortcut] = Seq(
+    Shortcut(
+      title = "Shortcut 1",
+      icon = 0,
+      name = "Shortcut 1",
+      packageName = "com.example.shortcut1"
+    ),
+    Shortcut(
+      title = "Shortcut 2",
+      icon = 0,
+      name = "Shortcut 2",
+      packageName = "com.example.shortcut2"
+    ),
+    Shortcut(
+      title = "Shortcut 3",
+      icon = 0,
+      name = "Shortcut 3",
+      packageName = "com.example.shortcut3"
     )
   )
 
