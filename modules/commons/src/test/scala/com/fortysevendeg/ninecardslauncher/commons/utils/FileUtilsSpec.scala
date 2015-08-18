@@ -172,7 +172,7 @@ class FileUtilsSpec
     "returns a json string when a valid fileName is provided" in
       new FileUtilsScope with ValidUtilsScope {
         val result = fileUtils.getJsonFromFile(fileName)(contextSupport)
-        result shouldEqual Success(fileJson)
+        result mustEqual Success(fileJson)
       }
 
     "returns an Exception when the file can't be opened" in

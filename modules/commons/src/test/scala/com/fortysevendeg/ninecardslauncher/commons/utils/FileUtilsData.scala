@@ -18,4 +18,5 @@ trait FileUtilsData {
                       "name": "Sample Name"
                      }"""
 
+  val sourceString = "Source String"
 }
