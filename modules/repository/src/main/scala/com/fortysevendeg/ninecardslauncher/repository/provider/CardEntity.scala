@@ -16,8 +16,7 @@ case class CardEntityData(
   starRating: Double,
   micros: Int,
   numDownloads: String,
-  notification: String
-  )
+  notification: String)
 
 object CardEntity {
   val table = "Card"
