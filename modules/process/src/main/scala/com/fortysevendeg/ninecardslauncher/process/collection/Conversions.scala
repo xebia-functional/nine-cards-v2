@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection
 
 import java.io.File
 
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
@@ -82,7 +83,7 @@ trait Conversions {
   def toAddCardRequest(item: FormedItem, position: Int)(implicit context: ContextSupport): AddCardRequest = {
     val nineCardIntent = jsonToNineCardIntent(item.intent)
     val path = (item.itemType match {
-      case `app` =>
+      case `app` | `recommendedApp` =>
         for {
           packageName <- nineCardIntent.extractPackageName()
           className <- nineCardIntent.extractClassName()
