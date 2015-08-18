@@ -52,7 +52,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
 
   private[this] lazy val appsServices = new AppsServicesImpl()
 
-  private[this] lazy val shortCutsServices = new ShortcutsServicesImpl()
+  private[this] lazy val shortcutsServices = new ShortcutsServicesImpl()
 
   private[this] lazy val imageServicesConfig = ImageServicesConfig(
     colors = List(
@@ -72,8 +72,8 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     appsService = appsServices,
     apiServices = apiServices,
     persistenceServices = persistenceServices,
-    imageServices = imageServices,
-    shortcutsServices = shortCutsServices)
+    shortcutsServices = shortcutsServices,
+    imageServices = imageServices)
 
   private[this] lazy val nameCategories: Map[String, String] = (categories map {
     category =>

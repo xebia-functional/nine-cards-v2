@@ -56,7 +56,7 @@ class DeviceProcessImpl(
       _ <- createBitmapsFromAppWebSite(toAppWebSiteSeq(response.packages))
     } yield ()).resolve[CreateBitmapException]
 
-  override def getAvailableShortCuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException] =
+  override def getAvailableShortcuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException] =
     (for {
       shortCuts <- shortcutsServices.getShortcuts
     } yield toShortcutSeq(shortCuts)).resolve[ShortcutException]

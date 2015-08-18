@@ -208,7 +208,7 @@ trait DeviceProcessData {
     )
   )
 
-  val shortCuts: Seq[Shortcut] = Seq(
+  val shortcuts: Seq[Shortcut] = Seq(
     Shortcut(
       title = "ShortCut 1",
       icon = 0,

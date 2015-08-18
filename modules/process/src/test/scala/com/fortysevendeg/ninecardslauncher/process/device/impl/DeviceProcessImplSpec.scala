@@ -32,7 +32,7 @@ trait DeviceProcessSpecification
 
   val bitmapTransformationException = BitmapTransformationExceptionImpl("")
 
-  val shortCutServicesException = ShortcutServicesException("")
+  val shortcutServicesException = ShortcutServicesException("")
 
   trait DeviceProcessScope
     extends Scope
@@ -58,7 +58,7 @@ trait DeviceProcessSpecification
     val mockShortCutsServices = mock[ShortcutsServices]
 
     mockShortCutsServices.getShortcuts(contextSupport) returns
-      Service(Task(Result.answer(shortCuts)))
+      Service(Task(Result.answer(shortcuts)))
 
     val mockPersistenceServices = mock[PersistenceServices]
 
@@ -172,7 +172,7 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockShortCutsServices.getShortcuts(contextSupport) returns Service {
-      Task(Errata(shortCutServicesException))
+      Task(Errata(shortcutServicesException))
     }
 
   }
@@ -306,15 +306,15 @@ class DeviceProcessImplSpec
 
     "get available Shortcuts" in
       new DeviceProcessScope {
-        val result = deviceProcess.getAvailableShortCuts(contextSupport).run.run
+        val result = deviceProcess.getAvailableShortcuts(contextSupport).run.run
         result must beLike {
-          case Answer(r) => r.map(_.title) shouldEqual shortCuts.map(_.title)
+          case Answer(r) => r.map(_.title) shouldEqual shortcuts.map(_.title)
         }
       }
 
     "returns ShortcutException when ShortcutsServices fails" in
       new DeviceProcessScope with ShortCutsErrorScope {
-        val result = deviceProcess.getAvailableShortCuts(contextSupport).run.run
+        val result = deviceProcess.getAvailableShortcuts(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ShortcutException]

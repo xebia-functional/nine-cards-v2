@@ -15,5 +15,5 @@ trait DeviceProcess {
    *         information about shortcut with the Intents and Drawables for UI actions
    * @throws ShortcutException if exist some problem to get the shortcuts in the cell phone
    */
-  def getAvailableShortCuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException]
+  def getAvailableShortcuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException]
 }
