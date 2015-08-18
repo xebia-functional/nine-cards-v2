@@ -91,8 +91,6 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   }
 
   private[this] def release(ev: MotionEvent): Boolean = {
-    listeners.endPulling()
-    indicator.isPulling = false
     if (indicator.currentPosY > 0) {
       if (indicator.shouldClose()) listeners.close()
       val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
@@ -101,9 +99,16 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
           movePos(-indicator.currentPosY * animation.getAnimatedFraction)
       })
       anim.addListener(new AnimatorListenerAdapter {
-        override def onAnimationEnd(animation: Animator): Unit = restart()
+        override def onAnimationEnd(animation: Animator): Unit = {
+          listeners.endPulling()
+          indicator.isPulling = false
+          restart()
+        }
       })
       anim.start()
+    } else {
+      listeners.endPulling()
+      indicator.isPulling = false
     }
     super.dispatchTouchEvent(ev)
   }

@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.MotionEvent
 import macroid.{Tweak, ContextWrapper}
-import MotionEvent._
 
 class NineRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends RecyclerView(context, attr, defStyleAttr) {
@@ -16,13 +15,10 @@ class NineRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(
 
   var disableScroll = false
 
-  override def dispatchTouchEvent(ev: MotionEvent): Boolean = {
-    val action = ev.getAction
-    if(disableScroll && (action == ACTION_DOWN || action == ACTION_MOVE)) {
-      true
-    } else {
-      super.dispatchTouchEvent(ev)
-    }
+  override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(disableScroll) {
+    true
+  } else {
+    super.dispatchTouchEvent(ev)
   }
 }
 
