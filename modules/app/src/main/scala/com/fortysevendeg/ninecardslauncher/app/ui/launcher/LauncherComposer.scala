@@ -106,8 +106,7 @@ trait LauncherComposer
         lwsAddPageChangedObserver(currentPage => {
           val widgetScreen = workspaces exists (_.isWidgetScreen(currentPage))
           runUi((paginationPanel <~ reloadPager(currentPage)) ~
-             (if (widgetScreen) { hideFabButton } else { Ui.nop })
-          )
+             (if (widgetScreen) { hideFabButton } else { Ui.nop }))
         }
         )) ~
       (appDrawerPanel <~ fillAppDrawer(collections)) ~
