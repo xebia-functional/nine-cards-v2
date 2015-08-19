@@ -49,7 +49,7 @@ class LauncherActivity
     }
   }
 
-  override def onBackPressed(): Unit = unrevealDrawer() match {
+  override def onBackPressed(): Unit = unrevealDrawer match {
     case Some(ui) => runUi(ui)
     case _ => super.onBackPressed()
   }
