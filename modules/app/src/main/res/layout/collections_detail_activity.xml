@@ -28,4 +28,20 @@
         android:id="@+id/collections_tabs"
         style="@style/CollectionsTabs"/>
 
+    <FrameLayout
+        android:id="@+id/launcher_menu_content"
+        style="@style/CollectionsFabMenuContent">
+
+        <LinearLayout
+            android:id="@+id/launcher_menu"
+            style="@style/FabMenu">
+
+            <android.support.design.widget.FloatingActionButton
+                style="@style/CollectionsFabButton"
+                android:id="@+id/launcher_fab_button"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
 </FrameLayout>

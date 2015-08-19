@@ -49,6 +49,12 @@ class LauncherActivity
     }
   }
 
+  override def onBackPressed(): Unit = if (fabMenuOpened) {
+    runUi(swapFabButton)
+  } else {
+    super.onBackPressed()
+  }
+
   private def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
     onResult = { // Check if there are collections in DB, if there aren't we go to wizard
       case Nil => goToWizard()

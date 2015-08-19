@@ -16,22 +16,45 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayout
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 
 trait Styles {
 
   def rootStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FrameLayout] =
     vBackgroundColor(theme.get(CollectionDetailBackgroundColor))
 
-
   def tabsStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[SlidingTabLayout] =
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor))
+
+  def fabButtonApplicationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    fabButton(R.string.applications, R.drawable.fab_menu_icon_applications, 1)
+
+  def fabButtonRecommendationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    fabButton(R.string.recommendations, R.drawable.fab_menu_icon_recommendations, 2)
+
+  def fabButtonContactsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    fabButton(R.string.contacts, R.drawable.fab_menu_icon_contact, 3)
+
+  def fabButtonShortcutsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    fabButton(R.string.shortcuts, R.drawable.fab_menu_icon_shorcut, 4)
+
+  private[this] def fabButton(title: Int, icon: Int, tag: Int)(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    vWrapContent +
+      fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
+      fimTitle(resGetString(title)) +
+      fimSrc(icon) +
+      vGone +
+      vTag(R.id.`type`, fabButtonItem) +
+      vIntTag(R.id.fab_menu_position, tag)
 
 }
 

@@ -11,18 +11,30 @@ import macroid.{ActivityContextWrapper, Tweak, Ui}
 
 import scala.annotation.tailrec
 
-class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int, defStyleRes: Int)(implicit activityContext: ActivityContextWrapper)
-  extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr, defStyleRes) {
+class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit activityContext: ActivityContextWrapper)
+  extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
 
-  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, null, 0, 0)
+  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, null, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit activityContext: ActivityContextWrapper) = this(context, attr, 0, 0)
-
-  def this(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit activityContext: ActivityContextWrapper) = this(context, attr, defStyleAttr, 0)
+  def this(context: Context, attr: AttributeSet)(implicit activityContext: ActivityContextWrapper) = this(context, attr, 0)
 
   override def getItemViewTypeCount: Int = 2
 
   override def getItemViewType(data: LauncherData, position: Int): Int = if (data.widgets) widgets else collections
+
+  def isWidgetScreen = data(currentItem).widgets
+
+  def isWidgetScreen(page: Int) = data(page).widgets
+
+  def isCollectionScreen = !isWidgetScreen
+
+  def isCollectionScreen(page: Int) = !isWidgetScreen(page)
+
+  def goToWizardScreen(toRight: Boolean): Boolean = data.lift(if (toRight) {
+    currentItem - 1
+  } else {
+    currentItem + 1
+  }) exists (_.widgets)
 
   override def createView(viewType: Int): LauncherWorkSpaceHolder = viewType match {
     case `widgets` => new LauncherWorkSpaceWidgetsHolder

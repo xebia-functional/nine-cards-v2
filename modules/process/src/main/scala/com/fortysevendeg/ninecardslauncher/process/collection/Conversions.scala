@@ -82,14 +82,14 @@ trait Conversions {
   def toAddCardRequest(item: FormedItem, position: Int)(implicit context: ContextSupport): AddCardRequest = {
     val nineCardIntent = jsonToNineCardIntent(item.intent)
     val path = (item.itemType match {
-      case `app` =>
+      case `app` | `recommendedApp` =>
         for {
           packageName <- nineCardIntent.extractPackageName()
           className <- nineCardIntent.extractClassName()
         } yield {
           val pathWithClassName = resourceUtils.getPathPackage(packageName, className)
           // If the path using ClassName don't exist, we use a path using only packagename
-          if (new File(pathWithClassName).exists) pathWithClassName else  resourceUtils.getPath(packageName)
+          if (new File(pathWithClassName).exists) pathWithClassName else resourceUtils.getPath(packageName)
         }
       case _ => None
     }) getOrElse "" // TODO We should use a default image

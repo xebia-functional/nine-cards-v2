@@ -10,12 +10,15 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, TintableImageView}
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 
 trait Styles {
 
@@ -45,14 +48,41 @@ trait Styles {
 
   def drawerItemStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
     tivPressedColor(theme.get(AppDrawerPressedColor)) +
-      vTag(R.id.`type`, AppDrawer.app)
+      vTag(R.id.`type`, LauncherTags.app)
 
-  def paginationItemStyle(implicit context: ContextWrapper) = {
+  def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)
     vWrapContent +
       llLayoutMargin(margin, margin, margin, margin) +
       ivSrc(R.drawable.workspaces_pager)
   }
+
+  def fabButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    fabButton(R.string.create_new_collection,
+      R.drawable.fab_menu_icon_create_new_collection,
+      R.color.collection_fab_button_item_create_new_collection,
+      1)
+
+  def fabButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    fabButton(R.string.my_collections,
+      R.drawable.fab_menu_icon_my_collections,
+      R.color.collection_fab_button_item_my_collections,
+      2)
+
+  def fabButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    fabButton(R.string.public_collections,
+      R.drawable.fab_menu_icon_public_collections,
+      R.color.collection_fab_button_item_public_collection,
+      3)
+
+  private[this] def fabButton(title: Int, icon: Int, color: Int, tag: Int)(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+    vWrapContent +
+      fimBackgroundColor(resGetColor(color)) +
+      fimTitle(resGetString(title)) +
+      fimSrc(icon) +
+      vGone +
+      vTag(R.id.`type`, fabButtonItem) +
+      vIntTag(R.id.fab_menu_position, 1)
 
 }
 
@@ -92,6 +122,6 @@ trait CollectionItemStyle {
 
 }
 
-object AppDrawer {
+object LauncherTags {
   val app = "app"
 }

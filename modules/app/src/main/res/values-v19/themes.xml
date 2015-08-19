@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppThemeWallpaper" parent="AppThemeWallpaper.Base">
+    <style name="AppThemeWallpaper" parent="AppThemeWallpaperBase">
         <!-- Specifics for API 19 -->
 
         <item name="android:fitsSystemWindows">true</item>

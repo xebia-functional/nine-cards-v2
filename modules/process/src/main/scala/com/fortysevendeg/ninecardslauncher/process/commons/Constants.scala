@@ -72,6 +72,7 @@ object CollectionType {
 
 object CardType {
   val app = "APP"
+  val recommendedApp = "RECOMMENDED_APP" // Deprecated Type. We only use this type for compatibility with old version
   val phone = "PHONE"
   val email = "EMAIL"
   val sms = "SMS"
