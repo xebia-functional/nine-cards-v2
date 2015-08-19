@@ -67,7 +67,10 @@ trait LauncherComposer
     (workspacesContent <~
       vgAddView(getUi(w[LauncherWorkSpaces] <~
         wire(workspaces) <~
-        Tweak[LauncherWorkSpaces](_.startScroll = () => showFabButton)))) ~
+        Tweak[LauncherWorkSpaces](_.startScroll = () => {
+          val collectionScreen = workspaces exists (_.isCollectionScreen)
+          if (collectionScreen) showFabButton
+        })))) ~
       (searchPanel <~ searchContentStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
@@ -101,14 +104,9 @@ trait LauncherComposer
       (workspaces <~
         lwsData(collections, selectedPageDefault) <~
         lwsAddPageChangedObserver(currentPage => {
-          val hasWidgets = workspaces exists (_.data(currentPage).widgets)
-          runUi(
-            (paginationPanel <~ reloadPager(currentPage)) ~
-              (if (hasWidgets) {
-                hideFabButton
-              } else {
-                Ui.nop
-              })
+          val widgetScreen = workspaces exists (_.isWidgetScreen(currentPage))
+          runUi((paginationPanel <~ reloadPager(currentPage)) ~
+             (if (widgetScreen) { hideFabButton } else { Ui.nop })
           )
         }
         )) ~

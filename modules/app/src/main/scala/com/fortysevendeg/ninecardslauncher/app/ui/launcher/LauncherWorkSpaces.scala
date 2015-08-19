@@ -22,6 +22,14 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def getItemViewType(data: LauncherData, position: Int): Int = if (data.widgets) widgets else collections
 
+  def isWidgetScreen = data(currentItem).widgets
+
+  def isWidgetScreen(page: Int) = data(page).widgets
+
+  def isCollectionScreen = !isWidgetScreen
+
+  def isCollectionScreen(page: Int) = !isWidgetScreen(page)
+
   override def createView(viewType: Int): LauncherWorkSpaceHolder = viewType match {
     case `widgets` => new LauncherWorkSpaceWidgetsHolder
     case `collections` => new LauncherWorkSpaceCollectionsHolder(dimen)
