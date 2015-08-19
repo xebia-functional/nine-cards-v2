@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme.Base" parent="AppTheme.Commons" />
+    <style name="AppThemeBase" parent="AppThemeCommons" />
 
-    <style name="AppTheme" parent="AppTheme.Base" />
+    <style name="AppTheme" parent="AppThemeBase" />
 
-    <style name="AppThemeWizard.Base" parent="AppTheme.Commons"/>
+    <style name="AppThemeWizardBase" parent="AppThemeCommons"/>
 
-    <style name="AppThemeWizard" parent="AppTheme.Base"/>
+    <style name="AppThemeWizard" parent="AppThemeBase"/>
 
-    <style name="AppThemeWallpaper.Base" parent="AppTheme.Commons">
+    <style name="AppThemeWallpaperBase" parent="AppThemeCommons">
         <!-- Show Wallpaper -->
 
         <item name="android:windowShowWallpaper">true</item>
@@ -19,9 +19,9 @@
 
     </style>
 
-    <style name="AppThemeWallpaper" parent="AppThemeWallpaper.Base"/>
+    <style name="AppThemeWallpaper" parent="AppThemeWallpaperBase"/>
 
-    <style name="AppTheme.Commons" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppThemeCommons" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
 
