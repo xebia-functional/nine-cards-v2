@@ -9,17 +9,24 @@ import com.fortysevendeg.ninecardslauncher.process.collection.utils.NineCardAppU
 import com.fortysevendeg.ninecardslauncher.process.commons.CollectionType
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
+import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, ImplicitsPersistenceServiceExceptions, AddCollectionRequest, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
 
 import scala.annotation.tailrec
 import scalaz.concurrent.Task
 
-class CollectionProcessImpl(collectionProcessConfig: CollectionProcessConfig, persistenceServices: PersistenceServices)
+class CollectionProcessImpl(
+  collectionProcessConfig: CollectionProcessConfig,
+  persistenceServices: PersistenceServices,
+  contactsServices: ContactsServices)
   extends CollectionProcess
   with ImplicitsCollectionException
   with ImplicitsPersistenceServiceExceptions
   with Conversions {
+
+  val formedCollectionConversions = new FormedCollectionConversions(new ResourceUtils, contactsServices)
 
   override def createCollectionsFromUnformedItems(items: Seq[UnformedItem])(implicit context: ContextSupport) = Service {
     val tasks = generateAddCollections(items, categories, Seq.empty) map (persistenceServices.addCollection(_).run)
@@ -27,7 +34,7 @@ class CollectionProcessImpl(collectionProcessConfig: CollectionProcessConfig, pe
   }.resolve[CollectionException]
 
   override def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) = Service {
-    val tasks = toAddCollectionRequestFromFormedCollections(items) map (persistenceServices.addCollection(_).run)
+    val tasks = formedCollectionConversions.toAddCollectionRequest(items) map (persistenceServices.addCollection(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
   }.resolve[CollectionException]
 

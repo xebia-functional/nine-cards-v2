@@ -1,21 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
-import java.io.File
-
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
+import com.fortysevendeg.ninecardslauncher.services.persistence.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
-import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import play.api.libs.json.Json
-import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 
 trait Conversions {
-
-  val resourceUtils = new ResourceUtils
 
   def toCollectionSeq(servicesCollectionSeq: Seq[ServicesCollection]) = servicesCollectionSeq map toCollection
 
@@ -58,50 +51,6 @@ trait Conversions {
     intent = nineCardIntentToJson(toNineCardIntent(item)),
     imagePath = item.imagePath
   )
-
-  def toAddCollectionRequestFromFormedCollections(formedCollections: Seq[FormedCollection])(implicit context: ContextSupport): Seq[AddCollectionRequest] =
-    formedCollections.zipWithIndex.map(zipped => toAddCollectionRequest(zipped._1, zipped._2))
-
-  def toAddCollectionRequest(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport) = AddCollectionRequest(
-    position = position,
-    name = formedCollection.name,
-    collectionType = formedCollection.collectionType,
-    icon = formedCollection.icon,
-    themedColorIndex = position % numSpaces,
-    appsCategory = formedCollection.category,
-    constrains = None,
-    originalSharedCollectionId = formedCollection.sharedCollectionId,
-    sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
-    sharedCollectionId = formedCollection.sharedCollectionId,
-    cards = toAddCardRequestFromFormedItems(formedCollection.items)
-  )
-
-  def toAddCardRequestFromFormedItems(items: Seq[FormedItem])(implicit context: ContextSupport) =
-    items.zipWithIndex.map(zipped => toAddCardRequest(zipped._1, zipped._2))
-
-  def toAddCardRequest(item: FormedItem, position: Int)(implicit context: ContextSupport): AddCardRequest = {
-    val nineCardIntent = jsonToNineCardIntent(item.intent)
-    val path = (item.itemType match {
-      case `app` =>
-        for {
-          packageName <- nineCardIntent.extractPackageName()
-          className <- nineCardIntent.extractClassName()
-        } yield {
-          val pathWithClassName = resourceUtils.getPathPackage(packageName, className)
-          // If the path using ClassName don't exist, we use a path using only packagename
-          if (new File(pathWithClassName).exists) pathWithClassName else  resourceUtils.getPath(packageName)
-        }
-      case _ => None
-    }) getOrElse "" // TODO We should use a default image
-    AddCardRequest(
-      position = position,
-      term = item.title,
-      packageName = nineCardIntent.extractPackageName(),
-      cardType = item.itemType,
-      intent = item.intent,
-      imagePath = path
-    )
-  }
 
   def toNineCardIntent(item: UnformedItem) = {
     val intent = NineCardIntent(NineCardIntentExtras(
