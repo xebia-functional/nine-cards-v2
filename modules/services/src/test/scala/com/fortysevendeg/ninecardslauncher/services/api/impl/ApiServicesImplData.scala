@@ -129,7 +129,7 @@ trait ApiServicesImplData {
     UserConfigProfileImage(
       imageType = Random.nextInt(10),
       imageUrl = Random.nextString(10),
-      secureUrl = Random.nextString(10))
+      secureUrl = Option(Random.nextString(10)))
 
   def generateUserConfigDeviceSeq(num: Int = 10) =
     1 to num map { _ =>

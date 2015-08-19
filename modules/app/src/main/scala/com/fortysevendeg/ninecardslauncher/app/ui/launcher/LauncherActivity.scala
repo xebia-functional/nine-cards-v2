@@ -49,9 +49,13 @@ class LauncherActivity
     }
   }
 
-  override def onBackPressed(): Unit = unrevealDrawer match {
-    case Some(ui) => runUi(ui)
-    case _ => super.onBackPressed()
+  override def onBackPressed(): Unit = if (fabMenuOpened) {
+    runUi(swapFabButton)
+  } else {
+    unrevealDrawer match {
+      case Some(ui) => runUi(ui)
+      case _ => super.onBackPressed()
+    }
   }
 
   private def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(

@@ -39,7 +39,6 @@ class CollectionFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     sType = getArguments.getInt(keyScrollType, ScrollType.down)
     canScroll = collection.cards.length > numSpaces
-
     runUi(initUi(collection))
     super.onViewCreated(view, savedInstanceState)
   }

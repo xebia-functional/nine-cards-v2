@@ -41,6 +41,19 @@
 
     <string name="construction">We are working in Wizard. Please, you should wait that the icon disappear in Notification Bar before to press the button</string>
 
+    <!-- Collections -->
+
+    <string name="create_new_collection">Create new collection</string>
+    <string name="my_collections">My collections</string>
+    <string name="public_collections">Public collections</string>
+
+    <!-- Collections Detail -->
+
+    <string name="applications">Applications</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="contacts">Contacts</string>
+    <string name="shortcuts">Shortcuts</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Any Category</string>

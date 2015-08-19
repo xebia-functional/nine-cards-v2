@@ -84,8 +84,7 @@ trait UserConfigProcessData {
       displayName = name,
       profileImage = UserConfigProfileImage(
         imageType = 0,
-        imageUrl = imageUrl,
-        secureUrl = ""
+        imageUrl = imageUrl
       )
     ),
     devices = createUserConfigDevice(),

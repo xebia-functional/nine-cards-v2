@@ -201,8 +201,7 @@ trait Conversions {
   def toUserConfigProfileImage(apiProfileImage: apiModel.UserConfigProfileImage): UserConfigProfileImage =
     UserConfigProfileImage(
       imageType = apiProfileImage.imageType,
-      imageUrl = apiProfileImage.imageUrl,
-      secureUrl = apiProfileImage.secureUrl)
+      imageUrl = apiProfileImage.imageUrl)
 
   def toUserConfigDevice(apiDevice: apiModel.UserConfigDevice): UserConfigDevice =
     UserConfigDevice(

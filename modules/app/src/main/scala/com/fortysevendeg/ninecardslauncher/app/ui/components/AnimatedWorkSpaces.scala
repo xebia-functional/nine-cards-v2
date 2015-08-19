@@ -18,16 +18,16 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Transformer, Ui}
 
-abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int, defStyleRes: Int)(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(context, attr, defStyleAttr, defStyleRes) { self =>
+abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
+  extends FrameLayout(context, attr, defStyleAttr) { self =>
 
   type PageChangedObserver = (Int => Unit)
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0, 0)
+  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0, 0)
+  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  def this(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper) = this(context, attr, defStyleAttr, 0)
+  var startScroll: (Boolean) => Unit = (b: Boolean) => {}
 
   val dimen: Dimen = Dimen()
 
@@ -154,7 +154,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   }
 
   def notifyPageChangedObservers() = {
-    onPageChangedObservers map (observer => observer(goToItem()))
+    onPageChangedObservers foreach (observer => observer(goToItem()))
   }
 
   def addPageChangedObservers(f: PageChangedObserver) = {
@@ -329,7 +329,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
     mainAnimator.cancel()
 
-    frontParentView map {
+    frontParentView foreach {
       front =>
         mainAnimator.setTarget(front)
         mainAnimator.setFloatValues(0, 0)
@@ -361,7 +361,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       return true
     }
     if (velocityTracker.isEmpty) velocityTracker = Some(VelocityTracker.obtain())
-    velocityTracker map (_.addMovement(event))
+    velocityTracker foreach (_.addMovement(event))
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
     action match {
@@ -411,19 +411,20 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     if (xMoved || yMoved) {
       val penultimate = data.length - 2
       val isScrolling = (infinite, horizontalGallery, xDiff > yDiff, mainAnimator.isRunning) match {
-        case (i, h, xMove, running) if i && h && xMove => true
-        case (i, h, xMove, running) if i && !h && !xMove => true
-        case (i, h, xMove, running) if running && !i && h && xMove && x - lastMotionX > 0 && isPosition(1) => false
-        case (i, h, xMove, running) if running && !i && h && xMove && x - lastMotionX < 0 && isPosition(penultimate) => false
-        case (i, h, xMove, running) if running && !i && !h && !xMove && y - lastMotionY > 0 && isPosition(1) => false
-        case (i, h, xMove, running) if running && !i && !h && !xMove && y - lastMotionY < 0 && isPosition(penultimate) => false
-        case (i, h, xMove, running) if !i && h && xMove && x - lastMotionX > 0 && !isFirst => true
-        case (i, h, xMove, running) if !i && h && xMove && x - lastMotionX < 0 && !isLast => true
-        case (i, h, xMove, running) if !i && !h && !xMove && y - lastMotionY > 0 && !isFirst => true
-        case (i, h, xMove, running) if !i && !h && !xMove && y - lastMotionY < 0 && !isLast => true
+        case (true, true, true, _) => true
+        case (true, false, false, _) => true
+        case (false, true, true, true) if x - lastMotionX > 0 && isPosition(1) => false
+        case (false, true, true, true) if x - lastMotionX < 0 && isPosition(penultimate) => false
+        case (false, false, false, true) if y - lastMotionY > 0 && isPosition(1) => false
+        case (false, false, false, true) if y - lastMotionY < 0 && isPosition(penultimate) => false
+        case (false, true, true, _) if x - lastMotionX > 0 && !isFirst => true
+        case (false, true, true, _) if x - lastMotionX < 0 && !isLast => true
+        case (false, false, false, _) if y - lastMotionY > 0 && !isFirst => true
+        case (false, false, false, _) if y - lastMotionY < 0 && !isLast => true
         case _ => false
       }
       if (isScrolling) {
+        startScroll(x - lastMotionX > 0)
         touchState = scrolling
         runUi(self <~ layerHardware(true))
       }
@@ -432,7 +433,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     }
   }
 
-  private def computeFling() = velocityTracker map {
+  private def computeFling() = velocityTracker foreach {
     tracker =>
       tracker.computeCurrentVelocity(1000, maximumVelocity)
       val velocity = if (horizontalGallery) tracker.getXVelocity else tracker.getYVelocity

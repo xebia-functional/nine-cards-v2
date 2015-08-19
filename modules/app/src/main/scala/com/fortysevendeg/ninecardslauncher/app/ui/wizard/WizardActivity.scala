@@ -85,7 +85,7 @@ class WizardActivity
     finish()
   }
 
-  private[this] def invalidateToken() {
+  private[this] def invalidateToken() = {
     getToken foreach (accountManager.invalidateAuthToken(accountType, _))
     setToken(null)
   }

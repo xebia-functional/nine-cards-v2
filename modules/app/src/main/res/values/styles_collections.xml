@@ -60,4 +60,25 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
+    <!-- FAB Menu -->
+
+    <style name="CollectionsFabMenuContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:cropToPadding">false</item>
+        <item name="android:elevation">@dimen/elevation_fab_button</item>
+    </style>
+
+    <style name="CollectionsFabButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/margin_fab_button</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="borderWidth">0dp</item>
+        <item name="elevation">@dimen/elevation_fab_button</item>
+        <item name="pressedTranslationZ">@dimen/elevation_fab_button_pressed</item>
+        <item name="backgroundTint">@color/collection_detail_fab_button_item</item>
+        <item name="rippleColor">@color/collection_detail_fab_button_item_ripple</item>
+    </style>
+
 </resources>

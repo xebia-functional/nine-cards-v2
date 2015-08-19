@@ -39,7 +39,7 @@ case class UserConfigStatusInfo(
 case class UserConfigProfileImage(
   imageType: Int,
   imageUrl: String,
-  secureUrl: String)
+  secureUrl: Option[String])
 
 case class UserConfigCollection(
   name: String,

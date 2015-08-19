@@ -86,6 +86,22 @@
     </LinearLayout>
 
     <FrameLayout
+        android:id="@+id/launcher_menu_content"
+        style="@style/LauncherFabMenuContent">
+
+        <LinearLayout
+            android:id="@+id/launcher_menu"
+            style="@style/FabMenu">
+
+            <android.support.design.widget.FloatingActionButton
+                style="@style/LauncherFabButton"
+                android:id="@+id/launcher_fab_button"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
         style="@style/LauncherDrawerContent"
         android:id="@+id/launcher_drawer_content"/>
 

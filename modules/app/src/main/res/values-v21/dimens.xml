@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_fab_button">16dp</dimen>
+    <dimen name="margin_horizontal_fab_button_item">23dp</dimen>
+</resources>
