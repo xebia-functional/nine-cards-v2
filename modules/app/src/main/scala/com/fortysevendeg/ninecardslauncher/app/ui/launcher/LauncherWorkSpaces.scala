@@ -30,6 +30,12 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def isCollectionScreen(page: Int) = !isWidgetScreen(page)
 
+  def goToWizardScreen(toRight: Boolean): Boolean = data.lift(if (toRight) {
+    currentItem - 1
+  } else {
+    currentItem + 1
+  }) exists (_.widgets)
+
   override def createView(viewType: Int): LauncherWorkSpaceHolder = viewType match {
     case `widgets` => new LauncherWorkSpaceWidgetsHolder
     case `collections` => new LauncherWorkSpaceCollectionsHolder(dimen)

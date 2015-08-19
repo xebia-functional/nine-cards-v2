@@ -67,9 +67,10 @@ trait LauncherComposer
     (workspacesContent <~
       vgAddView(getUi(w[LauncherWorkSpaces] <~
         wire(workspaces) <~
-        Tweak[LauncherWorkSpaces](_.startScroll = () => {
+        Tweak[LauncherWorkSpaces](_.startScroll = (toRight: Boolean) => {
+          val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
           val collectionScreen = workspaces exists (_.isCollectionScreen)
-          if (collectionScreen) showFabButton
+          if (collectionScreen && !goToWizardScreen) showFabButton
         })))) ~
       (searchPanel <~ searchContentStyle) ~
       initFabButton ~
