@@ -75,8 +75,11 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
   }
 
   private[this] def positionByChar(): Int = {
-    val abc = "abcdefghijklmnñopqrstvwxyz"
-    abc.indexOf(char.toLowerCase) / colors.length
+    val abc = "abcdefghijklmnñopqrstvwxyz0123456789"
+    abc.indexOf(char.toLowerCase) match {
+      case i if i < 0 => 0
+      case i => i % colors.length
+    }
   }
 
 }

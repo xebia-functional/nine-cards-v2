@@ -2,11 +2,13 @@ package com.fortysevendeg.ninecardslauncher.process.collection
 
 import java.io.File
 
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardIntent, FormedItem, FormedCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
+import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
@@ -40,6 +42,25 @@ class FormedCollectionConversions(
     items.zipWithIndex.map(zipped => toAddCardRequest(zipped._1, zipped._2))
 
   def toAddCardRequest(item: FormedItem, position: Int)(implicit context: ContextSupport): AddCardRequest = {
+
+    def fetchPhotoUri(
+      extract: => Option[String],
+      service: String => ServiceDef2[Option[Contact], ContactsServiceException]): Option[String] = {
+      val maybeContact = extract flatMap { value =>
+        val task = (for {
+          s <- service(value)
+        } yield s).run
+        (task map {
+          case Answer(r) => r
+          case _ => None
+        }).attemptRun match {
+          case -\/(f) => None
+          case \/-(f) => f
+        }
+      }
+      maybeContact map (_.photoUri)
+    }
+
     val nineCardIntent = jsonToNineCardIntent(item.intent)
     val path = (item.itemType match {
       case `app` =>
@@ -52,35 +73,9 @@ class FormedCollectionConversions(
           if (new File(pathWithClassName).exists) pathWithClassName else  resourceUtils.getPath(packageName)
         }
       case `phone` | `sms` =>
-        val maybeContact = nineCardIntent.extractPhone() flatMap {
-          phoneNumber =>
-            val task = (for {
-              s <- contactsServices.fetchContactByPhoneNumber(phoneNumber)
-            } yield s).run
-            (task map {
-              case Answer(r) => r
-              case _ => None
-            }).attemptRun match {
-              case -\/(_) => None
-              case \/-(r) => r
-            }
-        }
-        maybeContact map (_.photoUri)
+        fetchPhotoUri(nineCardIntent.extractPhone(), contactsServices.fetchContactByPhoneNumber)
       case `email` =>
-        val maybeContact = nineCardIntent.extractEmail() flatMap {
-          userEmail =>
-            val task = (for {
-              s <- contactsServices.fetchContactByEmail(userEmail)
-            } yield s).run
-            (task map {
-              case Answer(r) => r
-              case _ => None
-            }).attemptRun match {
-              case -\/(f) => None
-              case \/-(f) => f
-            }
-        }
-        maybeContact map (_.photoUri)
+        fetchPhotoUri(nineCardIntent.extractEmail(), contactsServices.fetchContactByEmail)
       case _ => None
     }) getOrElse "" // UI will create the default image
     AddCardRequest(

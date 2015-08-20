@@ -80,6 +80,10 @@ trait CollectionFragmentStyles {
 
 trait CollectionAdapterStyles {
 
+  val iconContentHeightRatio = .6f
+
+  val alphaDefault = .1f
+
   def rootStyle(heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     vContentSizeMatchWidth(heightCard) +
       cvCardBackgroundColor(theme.get(CollectionDetailCardBackgroundColor)) +
@@ -91,17 +95,17 @@ trait CollectionAdapterStyles {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),
         null,
-        new ColorDrawable(setAlpha(Color.BLACK, 0.1f)))
+        new ColorDrawable(setAlpha(Color.BLACK, alphaDefault)))
     } getOrElse {
       val states = new StateListDrawable()
-      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(setAlpha(color, 0.1f)))
+      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(setAlpha(color, alphaDefault)))
       states.addState(Array.emptyIntArray, new ColorDrawable(Color.TRANSPARENT))
       states
     }
   }
 
   def iconContentStyle(heightCard: Int)(implicit context: ContextWrapper): Tweak[FrameLayout] =
-    lp[ViewGroup](MATCH_PARENT, (heightCard * .6f).toInt)
+    lp[ViewGroup](MATCH_PARENT, (heightCard * iconContentHeightRatio).toInt)
 
   def contentStyle(implicit context: ContextWrapper): Tweak[LinearLayout] =
     vMatchParent +

@@ -66,6 +66,10 @@ trait LauncherExecutor {
     (implicit activityContext: ActivityContextWrapper)=
     if (Try(activity.startActivity(newIntent)).isFailure) showError
 
+  private[this] def tryOrGooglePlay(activity: Activity, newIntent: Intent, nineIntent: NineCardIntent)
+    (implicit activityContext: ActivityContextWrapper)=
+    if (Try(activity.startActivity(newIntent)).isFailure) goToGooglePlay(nineIntent)
+
   private[this] def createIntentForApp(intent: NineCardIntent): Option[Intent] = for {
     packageName <- intent.extractPackageName()
     className <- intent.extractClassName()
@@ -78,30 +82,24 @@ trait LauncherExecutor {
     }
 
   private[this] def tryLaunchPackage(intent: NineCardIntent)(implicit activityContext: ActivityContextWrapper) =
-    intent.extractPackageName() match {
-      case Some(pn) =>
-        Try {
-          val newIntent = activityContext.application.getPackageManager.getLaunchIntentForPackage(pn)
-          activityContext.getOriginal.startActivity(newIntent)
-        } match {
-          case Success(_) =>
-          case Failure(ex) => goToGooglePlay(intent)
-        }
-      case _ => showError
-    }
+    (for {
+      packageName <- intent.extractPackageName()
+      activity <- activityContext.original.get
+    } yield {
+        val newIntent = activityContext.application.getPackageManager.getLaunchIntentForPackage(packageName)
+        tryOrGooglePlay(activity, newIntent, intent)
+      }) getOrElse showError
 
   private[this] def goToGooglePlay(intent: NineCardIntent)(implicit activityContext: ActivityContextWrapper) =
-    intent.extractPackageName() match {
-      case Some(pn) =>
-        val newIntent = new Intent(Intent.ACTION_VIEW,
-          Uri.parse(activityContext.application.getString(R.string.google_play_url, pn)))
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
-        Try(activityContext.getOriginal.startActivity(newIntent)) match {
-          case Success(_) =>
-          case Failure(ex) => showError
-        }
-      case _ => showError
-    }
+    (for {
+      packageName <- intent.extractPackageName()
+      activity <- activityContext.original.get
+    } yield {
+      val newIntent = new Intent(Intent.ACTION_VIEW,
+        Uri.parse(activityContext.application.getString(R.string.google_play_url, packageName)))
+      newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+      tryOrError(activity, newIntent)
+    }) getOrElse showError
 
   private[this] def showError(implicit activityContext: ActivityContextWrapper) =
     Toast.makeText(activityContext.application, R.string.contactUsError, Toast.LENGTH_SHORT).show()

@@ -62,22 +62,22 @@ trait CollectionProcessImplData {
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    cards: Seq[Card] = seqCard
-    ) = (0 until 5) map (
-    item =>
-      Collection(
-        id = id + item,
-        position = position,
-        name = name,
-        collectionType = collectionType,
-        icon = icon,
-        themedColorIndex = themedColorIndex,
-        appsCategory = Option(appsCategory),
-        constrains = Option(constrains),
-        originalSharedCollectionId = Option(originalSharedCollectionId),
-        sharedCollectionId = Option(sharedCollectionId),
-        sharedCollectionSubscribed = sharedCollectionSubscribed,
-        cards = cards))
+    cards: Seq[Card] = seqCard) =
+    (0 until 5) map (
+      item =>
+        Collection(
+          id = id + item,
+          position = position,
+          name = name,
+          collectionType = collectionType,
+          icon = icon,
+          themedColorIndex = themedColorIndex,
+          appsCategory = Option(appsCategory),
+          constrains = Option(constrains),
+          originalSharedCollectionId = Option(originalSharedCollectionId),
+          sharedCollectionId = Option(sharedCollectionId),
+          sharedCollectionSubscribed = sharedCollectionSubscribed,
+          cards = cards))
 
   def createSeqServicesCollection(
     num: Int = 5,
@@ -91,9 +91,8 @@ trait CollectionProcessImplData {
     constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed
-    ) = (0 until 5) map (
-    item =>
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
+    (0 until 5) map (item =>
       servicesModel.Collection(
         id = id + item,
         position = position,
@@ -119,9 +118,8 @@ trait CollectionProcessImplData {
     imagePath: String = imagePath,
     starRating: Double = starRating,
     numDownloads: String = numDownloads,
-    notification: String = notification
-    ) = (0 until 5) map (
-    item =>
+    notification: String = notification) =
+    (0 until 5) map (item =>
       Card(
         id = id + item,
         position = position,
@@ -147,9 +145,8 @@ trait CollectionProcessImplData {
     imagePath: String = imagePath,
     starRating: Double = starRating,
     numDownloads: String = numDownloads,
-    notification: String = notification
-    ) = (0 until 5) map (
-    item =>
+    notification: String = notification) =
+    (0 until 5) map (item =>
       servicesModel.Card(
         id = id + item,
         position = position,
@@ -163,22 +160,19 @@ trait CollectionProcessImplData {
         numDownloads = Option(numDownloads),
         notification = Option(notification)))
 
-  def createSeqUnformedItem(
-    num: Int = 150
-    ) =
-    (0 until num) map {
-      item =>
-        UnformedItem(
-          name = name,
-          packageName = packageName,
-          className = className,
-          imagePath = imagePath,
-          category = categories(Random.nextInt(categories.length)),
-          starRating = starRating,
-          numDownloads = numDownloads,
-          ratingsCount = ratingsCount,
-          commentCount = commentCount
-        )
+  def createSeqUnformedItem(num: Int = 150) =
+    (0 until num) map { item =>
+      UnformedItem(
+        name = name,
+        packageName = packageName,
+        className = className,
+        imagePath = imagePath,
+        category = categories(Random.nextInt(categories.length)),
+        starRating = starRating,
+        numDownloads = numDownloads,
+        ratingsCount = ratingsCount,
+        commentCount = commentCount
+      )
     }
 
   val seqCard = createSeqCard()
@@ -193,10 +187,9 @@ trait CollectionProcessImplData {
 
   val unformedItems = createSeqUnformedItem()
 
-  val categoriesUnformedItems: Seq[String] = categories flatMap {
-    category =>
-      val count = unformedItems.count(_.category == category)
-      if (count >= minAppsToAdd) Option(category) else None
+  val categoriesUnformedItems: Seq[String] = categories flatMap { category =>
+    val count = unformedItems.count(_.category == category)
+    if (count >= minAppsToAdd) Option(category) else None
   }
 
   val collectionForUnformedItem = servicesModel.Collection(
@@ -213,38 +206,32 @@ trait CollectionProcessImplData {
     sharedCollectionSubscribed = sharedCollectionSubscribed
   )
 
-  def createSeqFormedCollection(
-    num: Int = 150
-    ) =
-    (0 until num) map {
-      item =>
-        FormedCollection(
-          name = name,
-          originalSharedCollectionId = Option(originalSharedCollectionId),
-          sharedCollectionId = Option(sharedCollectionId),
-          sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
-          items = Seq.empty,
-          collectionType = collectionType,
-          constrains = Seq(constrains),
-          icon = icon,
-          category = Option(categories(Random.nextInt(categories.length)))
-        )
+  def createSeqFormedCollection(num: Int = 150) =
+    (0 until num) map { item =>
+      FormedCollection(
+        name = name,
+        originalSharedCollectionId = Option(originalSharedCollectionId),
+        sharedCollectionId = Option(sharedCollectionId),
+        sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
+        items = Seq.empty,
+        collectionType = collectionType,
+        constrains = Seq(constrains),
+        icon = icon,
+        category = Option(categories(Random.nextInt(categories.length)))
+      )
     }
 
 
   val seqFormedCollection = createSeqFormedCollection()
 
-  def createSeqServiceContact(
-    num: Int = 10
-  ) =
-    (0 until num) map {
-      item =>
-        ServiceContact(
-          name = name,
-          lookupKey = lookupKey,
-          photoUri = photoUri,
-          favorite = true
-        )
+  def createSeqServiceContact(num: Int = 10) =
+    (0 until num) map { item =>
+      ServiceContact(
+        name = name,
+        lookupKey = lookupKey,
+        photoUri = photoUri,
+        favorite = true
+      )
     }
 
   val seqContacts: Seq[ServiceContact] = createSeqServiceContact()
