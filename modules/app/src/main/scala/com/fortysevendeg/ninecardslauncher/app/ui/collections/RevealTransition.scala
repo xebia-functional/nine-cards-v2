@@ -7,9 +7,16 @@ import android.transition.{TransitionValues, Visibility}
 import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.{View, ViewAnimationUtils, ViewGroup}
+import com.fortysevendeg.ninecardslauncher2.R
 
 class RevealTransition(context: Context, attrs: AttributeSet)
   extends Visibility(context, attrs) {
+
+  val sizeIcon = context.getResources.getDimensionPixelOffset(R.dimen.size_icon_collection_detail)
+
+  val paddingDefault = context.getResources.getDimensionPixelOffset(R.dimen.padding_default)
+
+  val positionStartRevealYAxis = paddingDefault + (sizeIcon / 2)
 
   override def onAppear(
     sceneRoot: ViewGroup,
@@ -34,14 +41,16 @@ class RevealTransition(context: Context, attrs: AttributeSet)
     endValues: TransitionValues): Animator = createAnimatorDisappear(view, calculateMaxRadius(view), 0)
 
   private[this] def calculateMaxRadius(view: View): Float = {
-    val widthSquared = view.getWidth * view.getWidth
-    val heightSquared = view.getHeight * view.getHeight
-    (math.sqrt(widthSquared + heightSquared) / 2).toFloat
+    val cat1 = view.getWidth / 2
+    val cat2 = view.getHeight - positionStartRevealYAxis
+    val widthSquared = cat1 * cat1
+    val heightSquared = cat2 * cat2
+    math.sqrt(widthSquared + heightSquared).toFloat
   }
 
   private[this] def createAnimatorAppear(view: View, startRadius: Float, endRadius: Float) = {
     val centerX = view.getWidth / 2
-    val centerY = view.getHeight / 4 // TODO We need a better way to look for the center of icon
+    val centerY = positionStartRevealYAxis
     val reveal = ViewAnimationUtils.createCircularReveal(view, centerX, centerY, startRadius, endRadius)
     reveal.setInterpolator(new AccelerateDecelerateInterpolator())
     new WrapperAnimator(reveal)

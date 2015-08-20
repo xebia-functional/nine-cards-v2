@@ -54,15 +54,15 @@ class CollectionProcessImpl(
     }
   }
 
-  private[this] def generateAddCollection(items: Seq[UnformedItem], category: String, index: Int): AddCollectionRequest = {
+  private[this] def generateAddCollection(items: Seq[UnformedItem], category: String, position: Int): AddCollectionRequest = {
     val appsCategory = items.filter(_.category.contains(category)).sortWith(mfIndex(_) < mfIndex(_)).take(numSpaces)
-    val pos = if (index >= numSpaces) index % numSpaces else index
+    val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
-      position = pos,
+      position = position,
       name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
       collectionType = CollectionType.apps,
       icon = category.toLowerCase,
-      themedColorIndex = pos,
+      themedColorIndex = themeIndex,
       appsCategory = Some(category),
       sharedCollectionSubscribed = Option(false),
       cards = toAddCardRequestSeq(appsCategory)

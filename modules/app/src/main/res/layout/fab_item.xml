@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/FabMenuItem">
+
+    <TextView
+        android:id="@+id/fab_title"
+        style="@style/FabMenuItemTitle"/>
+
+    <ImageView
+        android:id="@+id/fab_icon"
+        style="@style/FabMenuItemIcon"/>
+
+</LinearLayout>
