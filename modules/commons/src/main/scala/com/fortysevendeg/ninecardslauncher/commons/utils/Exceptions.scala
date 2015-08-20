@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.utils
+package com.fortysevendeg.ninecardslauncher.commons.utils
 
 import scalaz.Scalaz._
 
@@ -6,6 +6,6 @@ case class AssetException(message: String, cause: Option[Throwable] = None) exte
   cause map initCause
 }
 
-trait ImplicitsUtilsException {
+trait ImplicitsAssetException {
   implicit def assetException = (t: Throwable) => AssetException(t.getMessage, t.some)
 }
