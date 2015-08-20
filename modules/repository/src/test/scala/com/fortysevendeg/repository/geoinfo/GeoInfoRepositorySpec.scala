@@ -1,7 +1,9 @@
 package com.fortysevendeg.repository.geoinfo
 
+import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapperImpl, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
@@ -22,91 +24,97 @@ trait GeoInfoRepositorySpecification
     extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
-    lazy val geoInfoRepository = new GeoInfoRepository(contentResolverWrapper)
+
+    lazy val uriCreator = mock[UriCreator]
+
+    lazy val geoInfoRepository = new GeoInfoRepository(contentResolverWrapper, uriCreator)
+
+    lazy val mockUri = mock[Uri]
   }
 
   trait ValidGeoInfoRepositoryResponses
-    extends DBUtils
-    with GeoInfoRepositoryTestData {
+    extends GeoInfoRepositoryTestData {
 
     self: GeoInfoRepositoryScope =>
 
-    contentResolverWrapper.insert(GeoInfoUri, createGeoInfoValues) returns testGeoInfoId
+    uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.deleteById(GeoInfoUri, testGeoInfoId) returns 1
+    contentResolverWrapper.insert(mockUri, createGeoInfoValues) returns testGeoInfoId
+
+    contentResolverWrapper.deleteById(mockUri, testGeoInfoId) returns 1
 
     contentResolverWrapper.findById(
-      nineCardsUri = GeoInfoUri,
+      uri = mockUri,
       id = testGeoInfoId,
       projection = allFields)(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) returns Some(geoInfoEntity)
 
     contentResolverWrapper.findById(
-      nineCardsUri = GeoInfoUri,
+      uri = mockUri,
       id = testNonExistingGeoInfoId,
       projection = allFields)(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
-      nineCardsUri = GeoInfoUri,
+      uri = mockUri,
       projection = allFields)(
         f = getListFromCursor(geoInfoEntityFromCursor)) returns geoInfoEntitySeq
 
     contentResolverWrapper.fetch(
-      nineCardsUri = GeoInfoUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$constrain = ?",
       whereParams = Seq(testConstrain))(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) returns Some(geoInfoEntity)
 
     contentResolverWrapper.fetch(
-      nineCardsUri = GeoInfoUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$constrain = ?",
       whereParams = Seq(testNonExistingConstrain))(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(GeoInfoUri, testGeoInfoId, createGeoInfoValues) returns 1
+    contentResolverWrapper.updateById(mockUri, testGeoInfoId, createGeoInfoValues) returns 1
   }
 
   trait ErrorGeoInfoRepositoryResponses
-    extends DBUtils
-    with GeoInfoRepositoryTestData {
+    extends GeoInfoRepositoryTestData {
 
     self: GeoInfoRepositoryScope =>
 
     val contentResolverException = new RuntimeException("Irrelevant message")
 
-    contentResolverWrapper.insert(GeoInfoUri, createGeoInfoValues) throws contentResolverException
+    uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.deleteById(GeoInfoUri, testGeoInfoId) throws contentResolverException
+    contentResolverWrapper.insert(mockUri, createGeoInfoValues) throws contentResolverException
+
+    contentResolverWrapper.deleteById(mockUri, testGeoInfoId) throws contentResolverException
 
     contentResolverWrapper.findById(
-      nineCardsUri = GeoInfoUri,
+      uri = mockUri,
       id = testGeoInfoId,
       projection = allFields)(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
-      nineCardsUri = GeoInfoUri,
+      uri = mockUri,
       projection = allFields)(
         f = getListFromCursor(geoInfoEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
-      nineCardsUri = GeoInfoUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$constrain = ?",
       whereParams = Seq(testConstrain))(
         f = getEntityFromCursor(geoInfoEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(GeoInfoUri, testGeoInfoId, createGeoInfoValues) throws contentResolverException
+    contentResolverWrapper.updateById(mockUri, testGeoInfoId, createGeoInfoValues) throws contentResolverException
   }
 
 }
 
 trait GeoInfoMockCursor
   extends MockCursor
-  with DBUtils
   with GeoInfoRepositoryTestData {
 
   val cursorData = Seq(
@@ -124,7 +132,6 @@ trait GeoInfoMockCursor
 
 trait EmptyGeoInfoMockCursor
   extends MockCursor
-  with DBUtils
   with GeoInfoRepositoryTestData {
 
   val cursorData = Seq(

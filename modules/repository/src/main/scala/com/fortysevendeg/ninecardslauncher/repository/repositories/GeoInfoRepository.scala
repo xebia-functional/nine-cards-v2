@@ -1,20 +1,25 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
-import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapper, GeoInfoUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo, GeoInfoData}
+import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider.{DBUtils, GeoInfoEntity}
+import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scalaz.concurrent.Task
 
-class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper)
-  extends DBUtils
-  with ImplicitsRepositoryExceptions {
+class GeoInfoRepository(
+  contentResolverWrapper: ContentResolverWrapper,
+  uriCreator: UriCreator)
+  extends ImplicitsRepositoryExceptions {
+
+  val geoInfoUri = uriCreator.parse(geoInfoUriString)
 
   def addGeoInfo(data: GeoInfoData): ServiceDef2[GeoInfo, RepositoryException] =
     Service {
@@ -29,7 +34,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper)
             system -> data.system)
 
           val id = contentResolverWrapper.insert(
-            nineCardsUri = GeoInfoUri,
+            uri = geoInfoUri,
             values = values)
 
           GeoInfo(id = id, data = data)
@@ -42,7 +47,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
-            nineCardsUri = GeoInfoUri,
+            uri = geoInfoUri,
             id = geoInfo.id)
         }
       }
@@ -53,7 +58,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
-            nineCardsUri = GeoInfoUri,
+            uri = geoInfoUri,
             projection = allFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
         }
       }
@@ -64,7 +69,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.findById(
-            nineCardsUri = GeoInfoUri,
+            uri = geoInfoUri,
             id = id,
             projection = allFields)(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
         }
@@ -77,7 +82,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.fetch(
-            nineCardsUri = GeoInfoUri,
+            uri = geoInfoUri,
             projection = allFields,
             where = s"${GeoInfoEntity.constrain} = ?",
             whereParams = Array(constrain))(getEntityFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
@@ -98,7 +103,7 @@ class GeoInfoRepository(contentResolverWrapper: ContentResolverWrapper)
             system -> geoInfo.data.system)
 
           contentResolverWrapper.updateById(
-            nineCardsUri = GeoInfoUri,
+            uri = geoInfoUri,
             id = geoInfo.id,
             values = values)
         }
