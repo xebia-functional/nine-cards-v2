@@ -6,15 +6,19 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
+import com.fortysevendeg.ninecardslauncher.process.commons.CollectionType
+import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import rapture.core.{Errata, Answer, Result}
 
+import scala.collection.immutable.IndexedSeq
 import scalaz.concurrent.Task
 
 trait CollectionProcessImplSpecification
@@ -40,6 +44,7 @@ trait CollectionProcessImplSpecification
     val mockNineCardIntent = mock[NineCardIntent]
 
     val mockContactsServices = mock[ContactsServices]
+    mockContactsServices.getFavoriteContacts returns Service(Task(Result.answer(Seq.empty)))
 
     val collectionProcess = new CollectionProcessImpl(
       collectionProcessConfig = collectionProcessConfig,
@@ -65,6 +70,18 @@ trait CollectionProcessImplSpecification
       Service(Task(Errata(persistenceServiceException)))
     mockPersistenceServices.addCollection(any) returns
       Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait WithContactsResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockContactsServices.getFavoriteContacts returns Service(Task(Result.answer(seqContacts)))
+
+    val tasks = seqContactsWithPhones map (contact => Service(Task(Result.answer[Contact, ContactsServiceException](contact))))
+    mockContactsServices.findContactByLookupKey(anyString) returns (tasks.head, tasks.tail :_*)
 
   }
 
@@ -113,6 +130,15 @@ class CollectionProcessImplSpec
         result must beLike {
           case Answer(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual 0
+        }
+      }
+
+    "the size of collections should be equal to size of categories with contact collection" in
+      new CollectionProcessScope with ValidPersistenceServicesResponses with WithContactsResponses {
+        val result = collectionProcess.createCollectionsFromUnformedItems(unformedItems)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultSeqCollection) =>
+            resultSeqCollection.size shouldEqual categoriesUnformedItems.size + 1
         }
       }
 

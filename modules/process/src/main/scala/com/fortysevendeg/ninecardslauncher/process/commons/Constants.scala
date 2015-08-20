@@ -53,10 +53,12 @@ object NineCardCategories {
   val gameSimulation: String = "GAME_SIMULATION"
   val gameWidgets: String = "GAME_WIDGETS"
 
+  val contacts: String = "CONTACTS"
+
   val categories = Seq(game, booksAndReference, business, comics, communication, education,
     entertainment, finance, healthAndFitness, librariesAndDemo, lifestyle, appWallpaper,
     mediaAndVideo, medical, musicAndAudio, newsAndMagazines, personalization, photography,
-    productivity, shopping, social, sports, tools, transportation, travelAndLocal, weather, appWidgets)
+    productivity, shopping, social, sports, tools, transportation, travelAndLocal, weather, appWidgets, contacts)
 
 }
 

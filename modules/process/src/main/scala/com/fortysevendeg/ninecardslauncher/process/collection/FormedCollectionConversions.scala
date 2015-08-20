@@ -61,8 +61,8 @@ class FormedCollectionConversions(
               case Answer(r) => r
               case _ => None
             }).attemptRun match {
-              case -\/(f) => None
-              case \/-(f) => f
+              case -\/(_) => None
+              case \/-(r) => r
             }
         }
         maybeContact map (_.photoUri)

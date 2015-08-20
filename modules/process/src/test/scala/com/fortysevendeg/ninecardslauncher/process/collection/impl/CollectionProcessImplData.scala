@@ -5,6 +5,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, PhoneHome, ContactPhone, ContactInfo}
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -43,6 +44,10 @@ trait CollectionProcessImplData {
   val commentCount = Random.nextInt()
   val notification: String = Random.nextString(5)
   val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+
+  val lookupKey: String = Random.nextString(5)
+  val photoUri: String = Random.nextString(10)
+  val phoneNumber: String = Random.nextString(5)
 
   def createSeqCollection(
     num: Int = 5,
@@ -228,5 +233,24 @@ trait CollectionProcessImplData {
 
 
   val seqFormedCollection = createSeqFormedCollection()
+
+  def createSeqServiceContact(
+    num: Int = 10
+  ) =
+    (0 until num) map {
+      item =>
+        ServiceContact(
+          name = name,
+          lookupKey = lookupKey,
+          photoUri = photoUri,
+          favorite = true
+        )
+    }
+
+  val seqContacts: Seq[ServiceContact] = createSeqServiceContact()
+
+  val seqContactsWithPhones: Seq[ServiceContact] = seqContacts map {
+    _.copy(info = Option(ContactInfo(Seq.empty, Seq(ContactPhone(phoneNumber, PhoneHome)))))
+  }
 
 }
