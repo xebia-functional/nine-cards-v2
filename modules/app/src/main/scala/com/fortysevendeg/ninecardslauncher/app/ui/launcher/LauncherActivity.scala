@@ -37,6 +37,10 @@ class LauncherActivity
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
     runUi(initUi)
+
+    systemBarTintManager.setStatusBarTintEnabled(true)
+    systemBarTintManager.setNavigationBarTintEnabled(true)
+
     generateCollections()
   }
 
@@ -51,11 +55,10 @@ class LauncherActivity
 
   override def onBackPressed(): Unit = if (fabMenuOpened) {
     runUi(swapFabButton)
+  } else if (isDrawerVisible()) {
+    runUi(unrevealDrawer)
   } else {
-    unrevealDrawer match {
-      case Some(ui) => runUi(ui)
-      case _ => super.onBackPressed()
-    }
+    super.onBackPressed()
   }
 
   private def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(

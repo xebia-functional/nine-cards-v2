@@ -50,6 +50,10 @@
     <color name="text_tab_color_default">#77ffffff</color>
     <color name="text_tab_color_selected">#ffffff</color>
 
+    <color name="drawer_toolbar">#ff303aa6</color>
+    <color name="drawer_fab_button">#ff303aa6</color>
+    <color name="drawer_fab_button_ripple">#ff0e1550</color>
+
     <!-- Theme Light -->
     <color name="search_background_tint_light">#ffffff</color>
     <color name="search_icons_tint_light">#646464</color>

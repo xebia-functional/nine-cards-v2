@@ -110,7 +110,6 @@
         <item name="android:cropToPadding">false</item>
     </style>
 
-
     <style name="LauncherFabButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -127,6 +126,36 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">#ffffff</item>
+    </style>
+
+    <style name="LauncherDrawerLayoutContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="LauncherDrawerToolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_toolbar_app_drawer</item>
+        <item name="android:background">@color/drawer_toolbar</item>
+    </style>
+
+    <style name="LauncherDrawerInnerContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="LauncherDrawerFabButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/margin_app_drawer_fab_button</item>
+        <item name="layout_anchor">@id/launcher_drawer_toolbar</item>
+        <item name="layout_anchorGravity">bottom|right|end</item>
+        <item name="borderWidth">0dp</item>
+        <item name="elevation">@dimen/elevation_fab_button</item>
+        <item name="pressedTranslationZ">@dimen/elevation_fab_button_pressed</item>
+        <item name="backgroundTint">@color/drawer_fab_button</item>
+        <item name="rippleColor">@color/drawer_fab_button_ripple</item>
     </style>
 
 </resources>

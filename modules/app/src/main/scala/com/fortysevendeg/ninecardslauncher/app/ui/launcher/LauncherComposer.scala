@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.content.Intent
 import android.speech.RecognizerIntent
+import android.support.v7.app.AppCompatActivity
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
 import android.widget.ImageView
@@ -12,6 +13,7 @@ import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
@@ -21,6 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTwe
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -31,7 +34,7 @@ trait LauncherComposer
   extends Styles
   with FabButtonBehaviour {
 
-  self: TypedFindView =>
+  self: AppCompatActivity with TypedFindView =>
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
@@ -68,6 +71,8 @@ trait LauncherComposer
 
   lazy val micIcon = Option(findView(TR.launcher_mic_icon))
 
+  lazy val systemBarTintManager = new SystemBarTintManager(this)
+
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
@@ -79,6 +84,7 @@ trait LauncherComposer
           val collectionScreen = workspaces exists (_.isCollectionScreen)
           if (collectionScreen && !goToWizardScreen) showFabButton
         })))) ~
+      updateToolbarColor(resGetColor(android.R.color.transparent)) ~
       (searchPanel <~ searchContentStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
@@ -168,9 +174,27 @@ trait LauncherComposer
     override def run(): Unit = runUi(fabButton <~ hideFabMenu)
   }
 
-  def revealDrawer(implicit context: ActivityContextWrapper): Ui[_] = Lollipop.ifSupportedThen {
-    revealDrawerLollipop
-  } getOrElse revealDrawerPreLollipop()
+  private[this] def updateToolbarColor(color: Int): Ui[_] =
+//    (toolbar <~ vBackgroundColor(color)) ~
+      Ui {
+        Lollipop ifSupportedThen {
+          getWindow.setStatusBarColor(color)
+          getWindow.setNavigationBarColor(color)
+        } getOrElse {
+          systemBarTintManager.setStatusBarTintColor(color)
+          systemBarTintManager.setNavigationBarTintColor(color)
+        }
+      }
+
+  def isDrawerVisible = drawerContent map (_.getVisibility) match {
+    case Some(View.VISIBLE) => true
+    case _ => false
+  }
+
+  def revealDrawer(implicit context: ActivityContextWrapper): Ui[_] = {
+    updateToolbarColor(resGetColor(R.color.drawer_toolbar)) ~
+      (Lollipop.ifSupportedThen(revealDrawerLollipop) getOrElse revealDrawerPreLollipop())
+  }
 
   private[this] def revealDrawerLollipop(implicit context: ActivityContextWrapper): Ui[_] = Ui {
     drawerContent foreach { view =>
@@ -194,37 +218,30 @@ trait LauncherComposer
   private[this] def revealDrawerPreLollipop(): Ui[_] =
     drawerContent <~ fadeIn(300)
 
-  def unrevealDrawer(implicit context: ActivityContextWrapper): Option[Ui[_]] = Lollipop.ifSupportedThen {
-    unrevealDrawerLollipop
-  } getOrElse unrevealDrawerPreLollipop()
+  def unrevealDrawer(implicit context: ActivityContextWrapper): Ui[_] =
+      updateToolbarColor(resGetColor(android.R.color.transparent)) ~
+      (Lollipop.ifSupportedThen(unrevealDrawerLollipop) getOrElse unrevealDrawerPreLollipop())
 
-  def unrevealDrawerLollipop(implicit context: ActivityContextWrapper): Option[Ui[_]] = drawerContent map (_.getVisibility) match {
-    case Some(View.VISIBLE) => Some(
-      Ui {
-        drawerContent foreach { view =>
-          val sb = resGetDimensionPixelSize("status_bar_height") getOrElse 25 dp
-          val (cx, cy) = appDrawerMain map { v =>
-            val location = new Array[Int](2)
-            v.getLocationOnScreen(location)
-            (location(0) + v.getWidth / 2, location(1) + v.getHeight / 2 - sb)
-          } getOrElse(0, 0)
-          val drawerButtonSize = resGetDimensionPixelSize(R.dimen.size_icon_app_drawer)
-          val startRadius = SnailsUtils.calculateRadius(width = cx, height = cy)
-          val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx, cy, startRadius, drawerButtonSize / 2)
-          reveal.addListener(new AnimatorListenerAdapter {
-            override def onAnimationEnd(animation: Animator): Unit = view.setVisibility(View.GONE)
-          })
-          reveal.setInterpolator(new DecelerateInterpolator(2f))
-          reveal.start()
-        }
+  def unrevealDrawerLollipop(implicit context: ActivityContextWrapper): Ui[_] =
+    Ui {
+      drawerContent foreach { view =>
+        val sb = resGetDimensionPixelSize("status_bar_height") getOrElse 25 dp
+        val (cx, cy) = appDrawerMain map { v =>
+          val location = new Array[Int](2)
+          v.getLocationOnScreen(location)
+          (location(0) + v.getWidth / 2, location(1) + v.getHeight / 2 - sb)
+        } getOrElse(0, 0)
+        val drawerButtonSize = resGetDimensionPixelSize(R.dimen.size_icon_app_drawer)
+        val startRadius = SnailsUtils.calculateRadius(width = cx, height = cy)
+        val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx, cy, startRadius, drawerButtonSize / 2)
+        reveal.addListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator): Unit = view.setVisibility(View.GONE)
+        })
+        reveal.setInterpolator(new DecelerateInterpolator(2f))
+        reveal.start()
       }
-    )
-    case _ => None
-  }
+    }
 
-  def unrevealDrawerPreLollipop(): Option[Ui[_]] = drawerContent map (_.getVisibility) match {
-    case Some(View.VISIBLE) => Some(drawerContent <~ fadeOut(300))
-    case _ => None
-  }
+  def unrevealDrawerPreLollipop(): Ui[_] = drawerContent <~ fadeOut(300)
 
 }
