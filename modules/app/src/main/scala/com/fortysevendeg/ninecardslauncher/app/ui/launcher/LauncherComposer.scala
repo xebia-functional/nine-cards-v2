@@ -19,7 +19,6 @@ import macroid.FullDsl._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Try
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 
 trait LauncherComposer

@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -38,7 +39,12 @@ trait CollectionProcessImplSpecification
     val mockIntent = mock[Intent]
     val mockNineCardIntent = mock[NineCardIntent]
 
-    val collectionProcess = new CollectionProcessImpl(collectionProcessConfig, mockPersistenceServices)
+    val mockContactsServices = mock[ContactsServices]
+
+    val collectionProcess = new CollectionProcessImpl(
+      collectionProcessConfig = collectionProcessConfig,
+      persistenceServices = mockPersistenceServices,
+      contactsServices = mockContactsServices)
   }
 
   trait ValidPersistenceServicesResponses
