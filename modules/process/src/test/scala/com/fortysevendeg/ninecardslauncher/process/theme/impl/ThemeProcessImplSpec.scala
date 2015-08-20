@@ -3,16 +3,16 @@ package com.fortysevendeg.ninecardslauncher.process.theme.impl
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.process.theme.ThemeException
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
-import com.fortysevendeg.ninecardslauncher.process.utils.{AssetException, FileUtils}
+import com.fortysevendeg.ninecardslauncher.commons.utils.AssetException
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata, Result}
+import rapture.core.{Answer, Errata}
 
-import scalaz.concurrent.Task
+import scala.util.Success
 
 trait ThemeProcessSpecification
   extends Specification
@@ -39,8 +39,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) returns
-      Service(Task(Result.answer(validThemeJson)))
+    mockFileUtils.readFile(any)(any) returns Success(validThemeJson)
   }
 
   trait WrongJsonFileUtilsResponses
@@ -48,8 +47,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) returns
-      Service(Task(Result.answer(wrongThemeJson)))
+    mockFileUtils.readFile(any)(any) returns Success(wrongThemeJson)
   }
 
   trait WrongThemeStyleTypeFileUtilsResponses
@@ -57,8 +55,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) returns
-      Service(Task(Result.answer(wrongThemeStyleTypeJson)))
+    mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleTypeJson)
   }
 
   trait WrongThemeStyleColorFileUtilsResponses
@@ -66,8 +63,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) returns
-      Service(Task(Result.answer(wrongThemeStyleColorJson)))
+    mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleColorJson)
   }
 
   trait ErrorFileUtilsResponses
@@ -75,8 +71,7 @@ trait ThemeProcessSpecification
 
     self: ThemeProcessScope =>
 
-    mockFileUtils.getJsonFromFile(any)(any) returns
-      Service(Task(Errata(assetException)))
+    mockFileUtils.readFile(any)(any) throws assetException
   }
 
 }
