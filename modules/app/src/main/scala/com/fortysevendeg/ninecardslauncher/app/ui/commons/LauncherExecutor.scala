@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
+import android.app.Activity
 import android.content.{ComponentName, Intent}
 import android.net.Uri
 import android.widget.Toast
@@ -23,7 +24,7 @@ trait LauncherExecutor {
           newIntent <- createIntentForApp(intent)
           activity <- activityContext.original.get
         } yield {
-            activity.startActivity(newIntent)
+            tryOrNineIntent(activity, newIntent, intent)
           }) getOrElse tryLaunchPackage(intent)
       case `openRecommendedApp` => goToGooglePlay(intent)
       case `openSms` =>
@@ -32,17 +33,17 @@ trait LauncherExecutor {
           activity <- activityContext.original.get
         } yield {
             val newIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, null))
-            activity.startActivity(newIntent)
+            tryOrError(activity, newIntent)
           }) getOrElse showError
       case `openPhone` =>
         (for {
           phone <- intent.extractPhone()
           activity <- activityContext.original.get
         } yield {
-          val newIntent = new Intent(Intent.ACTION_CALL) // TODO Preference for select dial new Intent(Intent.ACTION_DIAL)
-          newIntent.setData(Uri.parse(s"tel:$phone"))
-          activity.startActivity(newIntent)
-        }) getOrElse showError
+            val newIntent = new Intent(Intent.ACTION_CALL) // TODO Preference for select dial new Intent(Intent.ACTION_DIAL)
+            newIntent.setData(Uri.parse(s"tel:$phone"))
+            tryOrError(activity, newIntent)
+          }) getOrElse showError
       case `openEmail` =>
         (for {
           email <- intent.extractEmail()
@@ -51,11 +52,19 @@ trait LauncherExecutor {
             val newIntent = new Intent(Intent.ACTION_SEND)
             newIntent.setType(typeEmail)
             newIntent.putExtra(Intent.EXTRA_EMAIL, email)
-            activity.startActivity(Intent.createChooser(newIntent, titleDialogEmail))
+            tryOrError(activity, Intent.createChooser(newIntent, titleDialogEmail))
           }) getOrElse showError
       case _ => activityContext.getOriginal.startActivity(intent)
     }
   }
+
+  private[this] def tryOrNineIntent(activity: Activity, newIntent: Intent, nineIntent: NineCardIntent)
+    (implicit activityContext: ActivityContextWrapper) =
+    if (Try(activity.startActivity(newIntent)).isFailure) tryLaunchPackage(nineIntent)
+
+  private[this] def tryOrError(activity: Activity, newIntent: Intent)
+    (implicit activityContext: ActivityContextWrapper)=
+    if (Try(activity.startActivity(newIntent)).isFailure) showError
 
   private[this] def createIntentForApp(intent: NineCardIntent): Option[Intent] = for {
     packageName <- intent.extractPackageName()
