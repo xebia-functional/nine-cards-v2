@@ -66,7 +66,7 @@ class RevealTransition(context: Context, attrs: AttributeSet)
 
 }
 
-class WrapperAnimator(wrappedAnimator:  Animator) extends Animator {
+class WrapperAnimator(wrappedAnimator: Animator) extends Animator {
   override def getStartDelay: Long = wrappedAnimator.getStartDelay
 
   override def setStartDelay(startDelay: Long): Unit = wrappedAnimator.setStartDelay(startDelay)
