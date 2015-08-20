@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
-import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
-import com.fortysevendeg.ninecardslauncher.process.commons.{CardType, NineCardCategories, CollectionType}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest, AddCardRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import play.api.libs.json.Json
 
