@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
-import android.database.SQLException
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapper
