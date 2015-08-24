@@ -21,7 +21,8 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.{BaseActionFragment, AppsFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour

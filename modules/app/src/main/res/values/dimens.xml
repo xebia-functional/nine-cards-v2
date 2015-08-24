@@ -66,4 +66,7 @@
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
 
+    <!-- Dialog Actions -->
+    <dimen name="size_icon_app">52dp</dimen>
+
 </resources>

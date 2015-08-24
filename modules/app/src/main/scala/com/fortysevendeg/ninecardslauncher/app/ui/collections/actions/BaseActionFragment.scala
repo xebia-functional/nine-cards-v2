@@ -44,6 +44,19 @@ class BaseActionFragment
 
   def unreveal(): Ui[_] = onStartFinishAction ~ (rootView <~~ revealOut(width, height)) ~~ onEndFinishAction
 
+  def createBaseView(view: View): View = {
+    rootView = Option(view)
+    view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+      override def onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int): Unit = {
+        v.removeOnLayoutChangeListener(this)
+        width = right - left
+        height = bottom - top
+        runUi(reveal)
+      }
+    })
+    view
+  }
+
   override def onAttach(activity: Activity): Unit = {
     super.onAttach(activity)
     activity match {
