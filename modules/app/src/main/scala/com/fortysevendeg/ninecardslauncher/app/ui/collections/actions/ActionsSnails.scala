@@ -24,8 +24,9 @@ object ActionsSnails {
       val duration = resGetInteger(R.integer.anim_duration_collection_detail)
 
       Lollipop ifSupportedThen {
-        val radius = SnailsUtils.calculateRadius(x, y, w, h)
-        val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, x, y, 0, radius)
+        val startRadius = resGetDimensionPixelSize(R.dimen.size_fab_menu_item) / 2
+        val endRadius = SnailsUtils.calculateRadius(x, y, w, h)
+        val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, x, y, startRadius, endRadius)
         reveal.setInterpolator(new DecelerateInterpolator())
         reveal.setDuration(duration)
         reveal.addListener(new AnimatorListenerAdapter {
@@ -41,7 +42,7 @@ object ActionsSnails {
         view
           .animate
           .setDuration(duration)
-          .setInterpolator(new AccelerateDecelerateInterpolator())
+          .setInterpolator(new DecelerateInterpolator())
           .alpha(1f)
           .setListener(new AnimatorListenerAdapter {
             override def onAnimationEnd(animation: Animator) {
@@ -55,7 +56,7 @@ object ActionsSnails {
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  def revealOut(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def revealOut(w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
@@ -63,9 +64,11 @@ object ActionsSnails {
       val duration = resGetInteger(R.integer.anim_duration_collection_detail)
 
       Lollipop ifSupportedThen {
+        val x = w / 2
+        val y = (resGetDimensionPixelSize(R.dimen.size_icon_collection_detail) / 2 ) + (resGetDimensionPixelSize(R.dimen.padding_default) / 2)
         val radius = SnailsUtils.calculateRadius(x, y, w, h)
         val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, x, y, radius, 0)
-        reveal.setInterpolator(new AccelerateDecelerateInterpolator())
+        reveal.setInterpolator(new DecelerateInterpolator())
         reveal.setDuration(duration)
         reveal.addListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator): Unit = {

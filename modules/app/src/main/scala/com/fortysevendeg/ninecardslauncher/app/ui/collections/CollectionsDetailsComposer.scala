@@ -34,6 +34,8 @@ import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 
 import scala.collection.JavaConversions._
 
@@ -66,6 +68,8 @@ trait CollectionsDetailsComposer
   lazy val toolbar = Option(findView(TR.collections_toolbar))
 
   lazy val root = Option(findView(TR.collections_root))
+
+  lazy val fragmentContent = Option(findView(TR.collections_fragment_content))
 
   lazy val viewPager = Option(findView(TR.collections_view_pager))
 
@@ -135,8 +139,9 @@ trait CollectionsDetailsComposer
     }) getOrElse Ui.nop
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
-    getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ On.click {
-      showAction()
+    getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
+      (view: View) =>
+        showAction(view)
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
       uiShortToast("Recommendations")
@@ -274,14 +279,18 @@ trait CollectionsDetailsComposer
         }
       }
 
-  private[this] def showAction(): Ui[_] = {
-    val (x: Int, y: Int) = (0, 0)
+  private[this] def showAction(view: View): Ui[_] = {
+    val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
+    val (x: Int, y: Int) = calculateAnchorViewPosition(view.findViewById(R.id.fab_icon))
     val args = new Bundle()
-    args.putInt(BaseActionFragment.posX, x)
-    args.putInt(BaseActionFragment.posY, y)
+    args.putInt(BaseActionFragment.posX, x + (sizeIconFabMenuItem / 2))
+    args.putInt(BaseActionFragment.posY, y + (sizeIconFabMenuItem / 2))
     swapFabButton ~
+      (fragmentContent <~ fadeBackground(in = true)) ~
       addFragment(f[AppsFragment].pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
   }
+
+  def turnOffFragmentContent: Ui[_] = fragmentContent <~ fadeBackground(in = false)
 
   def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
 

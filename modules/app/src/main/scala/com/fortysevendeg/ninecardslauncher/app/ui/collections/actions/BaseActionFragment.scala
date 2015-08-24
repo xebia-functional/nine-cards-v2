@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
 import com.fortysevendeg.ninecardslauncher2.TypedFindView
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -20,6 +21,8 @@ class BaseActionFragment
   with UiExtensions
   with Contexts[Fragment] {
 
+  val defaultPosition = 0
+
   var actionsScreenListener: Option[ActionsScreenListener] = None
 
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
@@ -28,15 +31,18 @@ class BaseActionFragment
 
   protected var height: Int = 0
 
-  protected lazy val revealPosX = getInt(Seq(getArguments), BaseActionFragment.posX, 0)
+  protected lazy val originalPosX = getInt(Seq(getArguments), BaseActionFragment.posX, defaultPosition)
 
-  protected lazy val revealPosY = getInt(Seq(getArguments), BaseActionFragment.posY, 0)
+  protected lazy val originalPosY = getInt(Seq(getArguments), BaseActionFragment.posY, defaultPosition)
 
   protected var rootView: Option[View] = None
 
-  def reveal: Ui[_] = rootView <~ revealIn(revealPosX, revealPosY, width, height)
+  def reveal: Ui[_] = {
+    val projection = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultPosition, defaultPosition)
+    rootView <~ revealIn(projection._1, projection._2, width, height)
+  }
 
-  def unreveal(): Ui[_] = (rootView <~~ revealOut(revealPosX, revealPosY, width, height)) ~~ finishAction
+  def unreveal(): Ui[_] = onStartFinishAction ~ (rootView <~~ revealOut(width, height)) ~~ onEndFinishAction
 
   override def onAttach(activity: Activity): Unit = {
     super.onAttach(activity)
@@ -51,8 +57,12 @@ class BaseActionFragment
     actionsScreenListener = None
   }
 
-  private[this] def finishAction() = Ui {
-    actionsScreenListener foreach (_.finishAction())
+  private[this] def onStartFinishAction() = Ui {
+    actionsScreenListener foreach (_.onStartFinishAction())
+  }
+
+  private[this] def onEndFinishAction() = Ui {
+    actionsScreenListener foreach (_.onEndFinishAction())
   }
 
 }

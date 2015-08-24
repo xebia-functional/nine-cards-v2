@@ -118,7 +118,9 @@ class CollectionsDetailsActivity
 
   override def startScroll(): Unit = showFabButton
 
-  override def finishAction(): Unit = removeActionFragment()
+  override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
+
+  override def onEndFinishAction(): Unit = removeActionFragment()
 }
 
 trait ScrolledListener {
@@ -134,7 +136,8 @@ trait ScrolledListener {
 }
 
 trait ActionsScreenListener {
-  def finishAction()
+  def onStartFinishAction()
+  def onEndFinishAction()
 }
 
 object ScrollType {
