@@ -4,12 +4,13 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.collection._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{AddNewCollectionRequest, FormedCollection, UnformedItem}
+import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
+import rapture.core.scalazInterop.ResultT
 
 import scalaz.concurrent.Task
 
@@ -36,10 +37,18 @@ class CollectionProcessImpl(
 
   override def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
 
-  override def addCollection(addCollectionRequest: AddNewCollectionRequest) =
+  override def addCollection(addCollectionRequest: AddCollectionRequest) =
     (for {
       existingCollections <- persistenceServices.fetchCollections
       collection <- persistenceServices.addCollection(toAddCollectionRequest(addCollectionRequest, existingCollections.size))
     } yield toCollection(collection)).resolve[CollectionException]
+
+  override def deleteCollection(deleteCollectionRequest: DeleteCollectionRequest) =
+    (for {
+      Some(collection) <- persistenceServices.findCollectionById(toFindCollectionByIdRequest(deleteCollectionRequest.id))
+      _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
+      collectionList <- getCollections
+      reorderedCollectionList = collectionList map(c => if (c.position > collection.position) movedCollectionPosition(c, -1) else c)
+    } yield reorderedCollectionList).resolve[CollectionException]
 
 }

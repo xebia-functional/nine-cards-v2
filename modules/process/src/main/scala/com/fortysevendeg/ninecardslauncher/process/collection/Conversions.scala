@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FetchCacheCategoryByPackageRequest, AddCollectionRequest, AddCardRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{FindCollectionByIdRequest, FetchCacheCategoryByPackageRequest, AddCollectionRequest => ServicesAddCollectionRequest, AddCardRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import play.api.libs.json.Json
 
@@ -29,7 +29,7 @@ trait Conversions {
     cards = servicesCollection.cards map toCard
   )
 
-  def toAddCollectionRequest(addCollectionRequest: AddNewCollectionRequest, position: Int) = AddCollectionRequest(
+  def toAddCollectionRequest(addCollectionRequest: AddCollectionRequest, position: Int) = ServicesAddCollectionRequest(
     position = position,
     name = addCollectionRequest.name,
     collectionType = addCollectionRequest.collectionType,
@@ -41,6 +41,25 @@ trait Conversions {
     sharedCollectionId = None,
     sharedCollectionSubscribed = None,
     cards = Seq()
+  )
+
+  def toFindCollectionByIdRequest(collectionId: Int) = FindCollectionByIdRequest(
+    id = collectionId
+  )
+
+  def movedCollectionPosition(collection: Collection, value: Int): Collection =  Collection(
+    id = collection.id,
+    position = collection.position - value,
+    name = collection.name,
+    collectionType = collection.collectionType,
+    icon = collection.icon,
+    themedColorIndex = collection.themedColorIndex,
+    appsCategory = collection.appsCategory,
+    constrains = collection.constrains,
+    originalSharedCollectionId = collection.originalSharedCollectionId,
+    sharedCollectionId = collection.originalSharedCollectionId,
+    sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
+    cards = collection.cards
   )
 
   def toFetchCacheCategoryByPackageRequest(appsCategory: String) = FetchCacheCategoryByPackageRequest(
