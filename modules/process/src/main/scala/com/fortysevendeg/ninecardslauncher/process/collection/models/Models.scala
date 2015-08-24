@@ -25,8 +25,13 @@ case class DeleteCollectionRequest(
    id: Int)
 
 case class ReorderCollectionRequest(
-  id: Int,
+  position: Int,
   newPosition: Int)
+
+case class EditCollectionRequest(
+  id: Int,
+  name: String,
+  appsCategory: Option[String] = None)
 
 case class Card(
   id: Int,

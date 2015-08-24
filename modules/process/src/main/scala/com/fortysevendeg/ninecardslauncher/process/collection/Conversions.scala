@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindCollectionByIdRequest, FetchCacheCategoryByPackageRequest, AddCollectionRequest => ServicesAddCollectionRequest, AddCardRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest => ServicesAddCollectionRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, FetchCollectionByPositionRequest, FindCollectionByIdRequest, FetchCacheCategoryByPackageRequest, AddCardRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import play.api.libs.json.Json
 
@@ -47,6 +47,21 @@ trait Conversions {
     id = collectionId
   )
 
+  def toServicesUpdateCollectionRequest(collection: Collection) = ServicesUpdateCollectionRequest(
+    id = collection.id,
+    position = collection.position,
+    name = collection.name,
+    collectionType = collection.collectionType,
+    icon = collection.icon,
+    themedColorIndex = collection.themedColorIndex,
+    appsCategory = collection.appsCategory,
+    constrains = collection.constrains,
+    originalSharedCollectionId = collection.originalSharedCollectionId,
+    sharedCollectionId = collection.originalSharedCollectionId,
+    sharedCollectionSubscribed = Option(collection.sharedCollectionSubscribed),
+    cards = collection.cards map toServicesCard
+  )
+
   def toNewPositionCollection(collection: Collection, newPosition: Int): Collection =  Collection(
     id = collection.id,
     position = newPosition,
@@ -60,6 +75,25 @@ trait Conversions {
     sharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
     cards = collection.cards
+  )
+
+  def toEditedCollection(collection: Collection, name: String, appsCategory: Option[String]): Collection =  Collection(
+    id = collection.id,
+    position = collection.position,
+    name = name,
+    collectionType = collection.collectionType,
+    icon = collection.icon,
+    themedColorIndex = collection.themedColorIndex,
+    appsCategory = appsCategory,
+    constrains = collection.constrains,
+    originalSharedCollectionId = collection.originalSharedCollectionId,
+    sharedCollectionId = collection.originalSharedCollectionId,
+    sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
+    cards = collection.cards
+  )
+
+  def toFetchCollectionByPositionRequest(pos: Int) = FetchCollectionByPositionRequest(
+    position = pos
   )
 
   def toFetchCacheCategoryByPackageRequest(appsCategory: String) = FetchCacheCategoryByPackageRequest(
@@ -78,6 +112,19 @@ trait Conversions {
     starRating = servicesCard.starRating,
     numDownloads = servicesCard.numDownloads,
     notification = servicesCard.notification)
+
+  def toServicesCard(card: Card) = ServicesCard(
+    id = card.id,
+    position = card.position,
+    micros = card.micros,
+    term = card.term,
+    packageName = card.packageName,
+    cardType = card.cardType,
+    intent = card.intent.toString,
+    imagePath = card.imagePath,
+    starRating = card.starRating,
+    numDownloads = card.numDownloads,
+    notification = card.notification)
 
   def toAddCardRequestSeq(items: Seq[UnformedItem]): Seq[AddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestFromUnformedItems(zipped._1, zipped._2))

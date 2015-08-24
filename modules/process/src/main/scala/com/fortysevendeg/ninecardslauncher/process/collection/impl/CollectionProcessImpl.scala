@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
@@ -10,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
+import rapture.core.scalazInterop.ResultT
 
 import scalaz.concurrent.Task
 
@@ -47,25 +49,51 @@ class CollectionProcessImpl(
       Some(collection) <- findCollectionById(deleteCollectionRequest.id)
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
       collectionList <- getCollections
-      reorderedCollectionList = collectionList map(c => if (c.position > collection.position) toNewPositionCollection(c, c.position - 1) else c)
-    } yield reorderedCollectionList).resolve[CollectionException]
+      _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
+    } yield ()).resolve[CollectionException]
 
-  def reorderCollection(reorderCollectionRequest: ReorderCollectionRequest) =
+  override def reorderCollection(reorderCollectionRequest: ReorderCollectionRequest) =
     (for {
-      Some(collection) <- findCollectionById(reorderCollectionRequest.id)
+      Some(collection) <- persistenceServices.fetchCollectionByPosition(toFetchCollectionByPositionRequest(reorderCollectionRequest.position))
       collectionList <- getCollections
-      reorderedCollectionList = collectionList map(c =>
-        if (reorderCollectionRequest.newPosition < collection.position)
-          if (c.position > reorderCollectionRequest.newPosition && c.position < collection.position) toNewPositionCollection(c, c.position + 1) else c
-        else if (reorderCollectionRequest.newPosition > collection.position)
-          if (c.position < reorderCollectionRequest.newPosition && c.position > collection.position) toNewPositionCollection(c, c.position - 1) else c
-        else toNewPositionCollection(toCollection(collection), reorderCollectionRequest.newPosition)
-        )
-    } yield reorderedCollectionList).resolve[CollectionException]
+      _ <- updateCollectionList(reorderCollectionList(collectionList, reorderCollectionRequest.newPosition, reorderCollectionRequest.position))
+    } yield ()).resolve[CollectionException]
 
-  private def findCollectionById(id: Int) =
+  override def editCollection(editCollectionRequest: EditCollectionRequest) =
+    (for {
+      Some(collection) <- findCollectionById(editCollectionRequest.id)
+      updatedCollection = toEditedCollection(toCollection(collection), editCollectionRequest.name, editCollectionRequest.appsCategory)
+      _ <- updateCollection(updatedCollection)
+    } yield updatedCollection).resolve[CollectionException]
+
+  private[this] def moveCollectionList(collectionList: Seq[Collection], position: Int) =
+    collectionList map { collection =>
+      if (collection.position > position) toNewPositionCollection(collection, position - 1) else collection
+    }
+
+  private[this] def reorderCollectionList(collectionList: Seq[Collection], newPosition: Int, oldPosition: Int): Seq[Collection] =
+    collectionList map { collection =>
+      val position = collection.position
+      if (newPosition < oldPosition)
+        if (position > newPosition && position < oldPosition) toNewPositionCollection(collection, position + 1) else collection
+      else if (newPosition > position)
+        if (position < newPosition && position > oldPosition) toNewPositionCollection(collection, position - 1) else collection
+      else toNewPositionCollection(collection, newPosition)
+    }
+
+  private[this] def findCollectionById(id: Int) =
     (for {
       collection <- persistenceServices.findCollectionById(toFindCollectionByIdRequest(id))
     } yield collection).resolve[CollectionException]
+
+  private[this] def updateCollection(collection: Collection): ResultT[Task, Unit, CollectionException] =
+    (for {
+      _ <- persistenceServices.updateCollection(toServicesUpdateCollectionRequest(collection))
+    } yield ()).resolve[CollectionException]
+
+  private[this] def updateCollectionList(collectionList: Seq[Collection]): ServiceDef2[List[Unit], CollectionException] = Service {
+    val tasks = collectionList map (collection => updateCollection(collection).run)
+    Task.gatherUnordered(tasks) map (c => CatchAll[CollectionException](c.collect { case Answer(r) => r}))
+  }
 
 }
