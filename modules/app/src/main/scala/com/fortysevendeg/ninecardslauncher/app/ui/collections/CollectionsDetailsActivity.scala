@@ -27,7 +27,8 @@ class CollectionsDetailsActivity
   with CollectionsDetailsComposer
   with TypedFindView
   with UiExtensions
-  with ScrolledListener {
+  with ScrolledListener
+  with ActionsScreenListener {
 
   val defaultPosition = 0
 
@@ -104,10 +105,10 @@ class CollectionsDetailsActivity
 
   override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
 
-  override def onBackPressed(): Unit = if (fabMenuOpened) {
-    runUi(swapFabButton)
-  } else {
-    finish()
+  override def onBackPressed(): Unit = (fabMenuOpened, isActionShowed) match {
+    case (true, _) => runUi(swapFabButton)
+    case (_, true) => runUi(unrevealActionFragment())
+    case _ => finish()
   }
 
   override def pullToClose(scroll: Int, scrollType: Int, close: Boolean): Unit =
@@ -116,6 +117,8 @@ class CollectionsDetailsActivity
   override def close(): Unit = finish()
 
   override def startScroll(): Unit = showFabButton
+
+  override def finishAction(): Unit = removeActionFragment()
 }
 
 trait ScrolledListener {
@@ -128,6 +131,10 @@ trait ScrolledListener {
   def pullToClose(scroll: Int, scrollType: Int, close: Boolean)
 
   def close()
+}
+
+trait ActionsScreenListener {
+  def finishAction()
 }
 
 object ScrollType {

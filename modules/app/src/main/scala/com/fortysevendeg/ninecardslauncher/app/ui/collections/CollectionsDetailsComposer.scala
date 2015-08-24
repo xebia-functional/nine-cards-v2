@@ -5,7 +5,7 @@ import java.util
 import android.animation.ValueAnimator
 import android.annotation.TargetApi
 import android.app.SharedElementCallback
-import android.os.Build
+import android.os.{Bundle, Build}
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
@@ -14,12 +14,14 @@ import android.transition.{Transition, Fade, TransitionSet, TransitionInflater}
 import android.view.{ViewGroup, Gravity, View}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.{BaseActionFragment, AppsFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
@@ -44,6 +46,8 @@ trait CollectionsDetailsComposer
   with FabButtonBehaviour {
 
   self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] =>
+
+  val nameActionFragment = "action-fragment"
 
   val resistanceDisplacement = .35f
 
@@ -132,7 +136,7 @@ trait CollectionsDetailsComposer
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ On.click {
-      uiShortToast("Applications")
+      showAction()
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
       uiShortToast("Recommendations")
@@ -269,6 +273,22 @@ trait CollectionsDetailsComposer
           systemBarTintManager.setStatusBarTintColor(color)
         }
       }
+
+  private[this] def showAction(): Ui[_] = {
+    val (x: Int, y: Int) = (0, 0)
+    val args = new Bundle()
+    args.putInt(BaseActionFragment.posX, x)
+    args.putInt(BaseActionFragment.posY, y)
+    swapFabButton ~
+      addFragment(f[AppsFragment].pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
+  }
+
+  def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
+
+  def isActionShowed: Boolean = findFragmentByTag(nameActionFragment).isDefined
+
+  def unrevealActionFragment(): Ui[_] =
+    findFragmentByTag[BaseActionFragment](nameActionFragment) map (_.unreveal()) getOrElse Ui.nop
 
 }
 

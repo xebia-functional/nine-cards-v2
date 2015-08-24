@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ActionsToolbar" parent="ActionsToolbarParent">
+        <item name="android:elevation">@dimen/elevation_toolbar</item>
+    </style>
+</resources>
