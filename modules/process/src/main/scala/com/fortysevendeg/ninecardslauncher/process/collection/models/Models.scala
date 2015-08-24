@@ -24,6 +24,10 @@ case class AddCollectionRequest(
 case class DeleteCollectionRequest(
    id: Int)
 
+case class ReorderCollectionRequest(
+  id: Int,
+  newPosition: Int)
+
 case class Card(
   id: Int,
   position: Int,

@@ -10,7 +10,6 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
-import rapture.core.scalazInterop.ResultT
 
 import scalaz.concurrent.Task
 
@@ -45,10 +44,28 @@ class CollectionProcessImpl(
 
   override def deleteCollection(deleteCollectionRequest: DeleteCollectionRequest) =
     (for {
-      Some(collection) <- persistenceServices.findCollectionById(toFindCollectionByIdRequest(deleteCollectionRequest.id))
+      Some(collection) <- findCollectionById(deleteCollectionRequest.id)
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
       collectionList <- getCollections
-      reorderedCollectionList = collectionList map(c => if (c.position > collection.position) movedCollectionPosition(c, -1) else c)
+      reorderedCollectionList = collectionList map(c => if (c.position > collection.position) toNewPositionCollection(c, c.position - 1) else c)
     } yield reorderedCollectionList).resolve[CollectionException]
+
+  def reorderCollection(reorderCollectionRequest: ReorderCollectionRequest) =
+    (for {
+      Some(collection) <- findCollectionById(reorderCollectionRequest.id)
+      collectionList <- getCollections
+      reorderedCollectionList = collectionList map(c =>
+        if (reorderCollectionRequest.newPosition < collection.position)
+          if (c.position > reorderCollectionRequest.newPosition && c.position < collection.position) toNewPositionCollection(c, c.position + 1) else c
+        else if (reorderCollectionRequest.newPosition > collection.position)
+          if (c.position < reorderCollectionRequest.newPosition && c.position > collection.position) toNewPositionCollection(c, c.position - 1) else c
+        else toNewPositionCollection(toCollection(collection), reorderCollectionRequest.newPosition)
+        )
+    } yield reorderedCollectionList).resolve[CollectionException]
+
+  private def findCollectionById(id: Int) =
+    (for {
+      collection <- persistenceServices.findCollectionById(toFindCollectionByIdRequest(id))
+    } yield collection).resolve[CollectionException]
 
 }

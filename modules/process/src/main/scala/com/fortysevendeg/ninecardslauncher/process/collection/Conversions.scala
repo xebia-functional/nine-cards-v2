@@ -47,9 +47,9 @@ trait Conversions {
     id = collectionId
   )
 
-  def movedCollectionPosition(collection: Collection, value: Int): Collection =  Collection(
+  def toNewPositionCollection(collection: Collection, newPosition: Int): Collection =  Collection(
     id = collection.id,
-    position = collection.position - value,
+    position = newPosition,
     name = collection.name,
     collectionType = collection.collectionType,
     icon = collection.icon,

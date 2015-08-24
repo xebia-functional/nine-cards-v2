@@ -12,4 +12,6 @@ trait CollectionProcess {
   def addCollection(addCollectionRequest: AddCollectionRequest): ServiceDef2[Collection, CollectionException]
 
   def deleteCollection(deleteCollectionRequest: DeleteCollectionRequest): ServiceDef2[Seq[Collection], CollectionException]
+
+  def reorderCollection(reorderCollectionRequest: ReorderCollectionRequest): ServiceDef2[Seq[Collection], CollectionException]
 }
