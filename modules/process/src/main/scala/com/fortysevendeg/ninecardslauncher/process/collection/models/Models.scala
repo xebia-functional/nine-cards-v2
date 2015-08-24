@@ -14,6 +14,13 @@ case class Collection(
   sharedCollectionSubscribed: Boolean,
   cards: Seq[Card] = Seq.empty) extends Serializable
 
+case class AddNewCollectionRequest(
+   name: String,
+   collectionType: String,
+   icon: String,
+   themedColorIndex: Int,
+   appsCategory: Option[String] = None) extends Serializable
+
 case class Card(
   id: Int,
   position: Int,

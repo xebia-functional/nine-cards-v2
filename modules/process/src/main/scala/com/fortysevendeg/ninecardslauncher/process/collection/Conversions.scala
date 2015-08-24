@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.persistence.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.services.persistence.{FetchCacheCategoryByPackageRequest, AddCollectionRequest, AddCardRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import play.api.libs.json.Json
 
@@ -27,6 +27,24 @@ trait Conversions {
     sharedCollectionId = servicesCollection.originalSharedCollectionId,
     sharedCollectionSubscribed = servicesCollection.sharedCollectionSubscribed,
     cards = servicesCollection.cards map toCard
+  )
+
+  def toAddCollectionRequest(addCollectionRequest: AddNewCollectionRequest, position: Int) = AddCollectionRequest(
+    position = position,
+    name = addCollectionRequest.name,
+    collectionType = addCollectionRequest.collectionType,
+    icon = addCollectionRequest.icon,
+    themedColorIndex = addCollectionRequest.themedColorIndex,
+    appsCategory = addCollectionRequest.appsCategory,
+    constrains = None,
+    originalSharedCollectionId = None,
+    sharedCollectionId = None,
+    sharedCollectionSubscribed = None,
+    cards = Seq()
+  )
+
+  def toFetchCacheCategoryByPackageRequest(appsCategory: String) = FetchCacheCategoryByPackageRequest(
+    packageName = appsCategory
   )
 
   def toCard(servicesCard: ServicesCard) = Card(

@@ -4,9 +4,9 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.collection._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, UnformedItem}
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{AddNewCollectionRequest, FormedCollection, UnformedItem}
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServices, ImplicitsContactsServiceExceptions}
+import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
@@ -35,5 +35,11 @@ class CollectionProcessImpl(
   }.resolve[CollectionException]
 
   override def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
+
+  override def addCollection(addCollectionRequest: AddNewCollectionRequest) =
+    (for {
+      existingCollections <- persistenceServices.fetchCollections
+      collection <- persistenceServices.addCollection(toAddCollectionRequest(addCollectionRequest, existingCollections.size))
+    } yield toCollection(collection)).resolve[CollectionException]
 
 }
