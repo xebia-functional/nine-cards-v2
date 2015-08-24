@@ -2,11 +2,9 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
-import android.view.{ViewGroup, View}
-import android.widget.{ImageView, LinearLayout, TextView}
+import android.view.{View, ViewGroup}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -31,7 +29,7 @@ trait AppsComposer
       (recycler <~ recyclerStyle)
 
   def addApps(apps: Seq[AppCategorized])(implicit fragment: Fragment) = {
-    val adapter = new AppsAdapter(apps)
+    val adapter = new AppsAdapter(apps.sortBy(_.name))
     recycler <~
       rvAdapter(adapter)
   }
@@ -49,7 +47,7 @@ case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: Acti
   def bind(app: AppCategorized, position: Int)(implicit fragment: Fragment): Ui[_] =
     (icon <~ ivUri(fragment, app.imagePath.get, app.name)) ~
       (name <~ tvText(app.name)) ~
-      (content <~ vTag(position.toString))
+      (content <~ vIntTag(position))
 
   override def findViewById(id: Int): View = content.findViewById(id)
 

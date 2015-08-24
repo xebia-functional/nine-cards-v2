@@ -26,7 +26,7 @@ class AppsFragment
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
     Task.fork(di.deviceProcess.getCategorizedApps.run).resolveAsyncUi(
-      onResult = (apps: Seq[AppCategorized]) => addApps(apps.sortBy(_.name))
+      onResult = (apps: Seq[AppCategorized]) => addApps(apps)
     )
   }
 }

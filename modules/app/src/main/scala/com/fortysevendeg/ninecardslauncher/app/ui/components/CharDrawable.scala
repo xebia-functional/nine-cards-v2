@@ -14,8 +14,7 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
     resGetColor(R.color.background_default_2),
     resGetColor(R.color.background_default_3),
     resGetColor(R.color.background_default_4),
-    resGetColor(R.color.background_default_5)
-  )
+    resGetColor(R.color.background_default_5))
 
   val backgroundColor = colors(positionByChar())
 
