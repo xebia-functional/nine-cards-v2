@@ -13,6 +13,8 @@ import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
 
+import scala.annotation.tailrec
+
 trait AppsComposer
   extends Styles {
 
@@ -29,10 +31,37 @@ trait AppsComposer
       (recycler <~ recyclerStyle)
 
   def addApps(apps: Seq[AppCategorized])(implicit fragment: Fragment) = {
-    val adapter = new AppsAdapter(apps.sortBy(_.name))
+    val adapter = new AppsAdapter(generateAppsForList(apps.sortBy(_.name).toList, Seq.empty))
     recycler <~
+      rvLayoutManager(adapter.getLayoutManager()) <~
       rvAdapter(adapter)
   }
+
+  @tailrec
+  private[this] def generateAppsForList(apps: List[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
+    case Nil => acc
+    case h :: t =>
+      val currentChar = h.name.substring(0, 1)
+      val lastChar = acc.lastOption flatMap (_.app map (_.name.substring(0, 1)))
+      val skipChar = lastChar exists (_ equals currentChar)
+      if (skipChar) {
+        generateAppsForList(t, acc :+ AppHeadered(app = Option(h)))
+      } else {
+        generateAppsForList(t, acc ++ Seq(AppHeadered(header = Option(currentChar)), AppHeadered(app = Option(h))))
+      }
+  }
+
+}
+
+case class ViewHolderCategoryLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper)
+  extends RecyclerView.ViewHolder(content)
+  with TypedFindView {
+
+  lazy val name = Option(findView(TR.simple_category_name))
+
+  def bind(category: String)(implicit fragment: Fragment): Ui[_] = name <~ tvText(category)
+
+  override def findViewById(id: Int): View = content.findViewById(id)
 
 }
 

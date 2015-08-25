@@ -4,7 +4,7 @@
     <!-- Main colors -->
     <color name="primary">#3F51B5</color>
     <color name="primary_dark">#ff344285</color>
-    <color name="color_control_highlight">#ff344285</color>
+    <color name="color_control_highlight">#cccccc</color>
     <color name="accent">#3F51B5</color>
     <color name="toolbar_title">#ffffff</color>
 
