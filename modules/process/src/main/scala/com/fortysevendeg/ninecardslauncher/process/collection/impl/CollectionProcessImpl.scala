@@ -86,10 +86,17 @@ class CollectionProcessImpl(
 
   override def reorderCard(reorderCardRequest: ReorderCardRequest) =
     (for {
-      Some(card) <-persistenceServices.findCardById(toFindCardByIdRequest(reorderCardRequest.cardId))
+      Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(reorderCardRequest.cardId))
       cardList <- getCardsByCollectionId(reorderCardRequest.collectionId)
       _ <- updateCardList(reorderCardList(cardList, reorderCardRequest.newPosition, card.position))
     } yield ()).resolve[CardException]
+
+  override def editCard(editCardRequest: EditCardRequest) =
+    (for {
+      Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(editCardRequest.cardId))
+      updatedCard = toUpdatedCard(toCard(card), editCardRequest.name)
+      _ <- updateCard(updatedCard)
+    } yield updatedCard).resolve[CardException]
 
   private[this] def moveCollectionList(collectionList: Seq[Collection], position: Int) =
     collectionList map { collection =>

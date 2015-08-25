@@ -61,3 +61,8 @@ case class ReorderCardRequest(
   collectionId: Int,
   cardId: Int,
   newPosition: Int)
+
+case class EditCardRequest(
+  collectionId: Int,
+  cardId: Int,
+  name: String)

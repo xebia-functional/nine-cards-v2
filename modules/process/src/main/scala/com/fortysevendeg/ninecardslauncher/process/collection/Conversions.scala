@@ -172,7 +172,7 @@ trait Conversions {
     numDownloads = card.numDownloads,
     notification = card.notification)
 
-  def toNewPositionCard(card: Card, newPosition: Int) =  Card(
+  def toNewPositionCard(card: Card, newPosition: Int) = Card(
     id = card.id,
     position = card.position,
     micros = card.micros,
@@ -184,7 +184,20 @@ trait Conversions {
     starRating = card.starRating,
     numDownloads = card.numDownloads,
     notification = card.notification)
-  )
+
+  def toUpdatedCard(card: Card, name: String) = Card(
+    id = card.id,
+    position = card.position,
+    micros = card.micros,
+    term = name,
+    packageName = card.packageName,
+    cardType = card.cardType,
+    intent = card.intent,
+    imagePath = card.imagePath,
+    starRating = card.starRating,
+    numDownloads = card.numDownloads,
+    notification = card.notification)
+
 
   def toNineCardIntent(item: UnformedItem) = {
     val intent = NineCardIntent(NineCardIntentExtras(
