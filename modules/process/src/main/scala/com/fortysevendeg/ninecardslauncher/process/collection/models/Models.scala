@@ -56,3 +56,8 @@ case class AddCardRequest(
 case class DeleteCardRequest(
   collectionId: Int,
   cardId: Int)
+
+case class ReorderCardRequest(
+  collectionId: Int,
+  cardId: Int,
+  newPosition: Int)
