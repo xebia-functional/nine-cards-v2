@@ -17,5 +17,9 @@ trait CollectionProcess {
 
   def editCollection(editCollectionRequest: EditCollectionRequest): ServiceDef2[Collection, CollectionException]
 
+  def getCardsByCollectionId(collectionId: Int) : ServiceDef2[Seq[Card], CardException]
+
   def addCard(addCardRequest: AddCardRequest): ServiceDef2[Card, CardException]
+
+  def deleteCard(deleteCardRequest: DeleteCardRequest): ServiceDef2[Unit, CardException]
 }

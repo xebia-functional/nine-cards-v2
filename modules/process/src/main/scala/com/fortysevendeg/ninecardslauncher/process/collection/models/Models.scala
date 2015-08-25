@@ -52,3 +52,7 @@ case class AddCardRequest(
   packageName: Option[String],
   intent: NineCardIntent,
   imagePath: String)
+
+case class DeleteCardRequest(
+  collectionId: Int,
+  cardId: Int)

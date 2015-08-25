@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest => ServicesAddCollectionRequest,
-  UpdateCollectionRequest => ServicesUpdateCollectionRequest, AddCardRequest => ServicesAddCardRequest, _}
+  UpdateCollectionRequest => ServicesUpdateCollectionRequest, AddCardRequest => ServicesAddCardRequest, UpdateCardRequest => ServicesUpdateCardRequest, _}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import play.api.libs.json.Json
 
@@ -63,7 +63,7 @@ trait Conversions {
     cards = collection.cards map toServicesCard
   )
 
-  def toNewPositionCollection(collection: Collection, newPosition: Int): Collection =  Collection(
+  def toNewPositionCollection(collection: Collection, newPosition: Int) =  Collection(
     id = collection.id,
     position = newPosition,
     name = collection.name,
@@ -78,7 +78,7 @@ trait Conversions {
     cards = collection.cards
   )
 
-  def toUpdatedCollection(collection: Collection, name: String, appsCategory: Option[String]): Collection =  Collection(
+  def toUpdatedCollection(collection: Collection, name: String, appsCategory: Option[String]) =  Collection(
     id = collection.id,
     position = collection.position,
     name = name,
@@ -100,6 +100,8 @@ trait Conversions {
   def toFetchCacheCategoryByPackageRequest(appsCategory: String) = FetchCacheCategoryByPackageRequest(
     packageName = appsCategory
   )
+
+  def toCardSeq(servicesCardSeq: Seq[ServicesCard]) = servicesCardSeq map toCard
 
   def toCard(servicesCard: ServicesCard) = Card(
     id = servicesCard.id,
@@ -151,6 +153,37 @@ trait Conversions {
     cardType = app,
     intent = nineCardIntentToJson(addCardRequest.intent),
     imagePath = addCardRequest.imagePath
+  )
+
+  def toFindCardByIdRequest(cardId: Int) = FindCardByIdRequest(
+    id = cardId
+  )
+
+  def toServicesUpdateCardRequest(card: Card) = ServicesUpdateCardRequest(
+    id = card.id,
+    position = card.position,
+    micros = card.micros,
+    term = card.term,
+    packageName = card.packageName,
+    cardType = card.cardType,
+    intent = card.intent.toString,
+    imagePath = card.imagePath,
+    starRating = card.starRating,
+    numDownloads = card.numDownloads,
+    notification = card.notification)
+
+  def toNewPositionCard(card: Card, newPosition: Int) =  Card(
+    id = card.id,
+    position = card.position,
+    micros = card.micros,
+    term = card.term,
+    packageName = card.packageName,
+    cardType = card.cardType,
+    intent = card.intent,
+    imagePath = card.imagePath,
+    starRating = card.starRating,
+    numDownloads = card.numDownloads,
+    notification = card.notification)
   )
 
   def toNineCardIntent(item: UnformedItem) = {
