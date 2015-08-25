@@ -16,4 +16,6 @@ trait CollectionProcess {
   def reorderCollection(reorderCollectionRequest: ReorderCollectionRequest): ServiceDef2[Unit, CollectionException]
 
   def editCollection(editCollectionRequest: EditCollectionRequest): ServiceDef2[Collection, CollectionException]
+
+  def addCard(addCardRequest: AddCardRequest): ServiceDef2[Card, CardException]
 }

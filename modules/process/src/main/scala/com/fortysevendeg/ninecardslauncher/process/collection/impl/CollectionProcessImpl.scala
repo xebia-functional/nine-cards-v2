@@ -62,7 +62,7 @@ class CollectionProcessImpl(
   override def editCollection(editCollectionRequest: EditCollectionRequest) =
     (for {
       Some(collection) <- findCollectionById(editCollectionRequest.id)
-      updatedCollection = toEditedCollection(toCollection(collection), editCollectionRequest.name, editCollectionRequest.appsCategory)
+      updatedCollection = toUpdatedCollection(toCollection(collection), editCollectionRequest.name, editCollectionRequest.appsCategory)
       _ <- updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
@@ -80,6 +80,12 @@ class CollectionProcessImpl(
         if (position < newPosition && position > oldPosition) toNewPositionCollection(collection, position - 1) else collection
       else toNewPositionCollection(collection, newPosition)
     }
+
+  def addCard(addCardRequest: AddCardRequest) =
+    (for {
+      existingCards <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(addCardRequest.collectionId))
+      card <- persistenceServices.addCard(toAddCardRequest(addCardRequest, existingCards.size))
+    } yield toCard(card)).resolve[CardException]
 
   private[this] def findCollectionById(id: Int) =
     (for {

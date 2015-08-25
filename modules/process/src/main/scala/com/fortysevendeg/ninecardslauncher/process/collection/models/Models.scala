@@ -45,3 +45,10 @@ case class Card(
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
   notification: Option[String] = None) extends Serializable
+
+case class AddCardRequest(
+  collectionId: Int,
+  term: String,
+  packageName: Option[String],
+  intent: NineCardIntent,
+  imagePath: String)

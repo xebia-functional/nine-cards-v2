@@ -6,7 +6,8 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest => ServicesAddCollectionRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, FetchCollectionByPositionRequest, FindCollectionByIdRequest, FetchCacheCategoryByPackageRequest, AddCardRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest => ServicesAddCollectionRequest,
+  UpdateCollectionRequest => ServicesUpdateCollectionRequest, AddCardRequest => ServicesAddCardRequest, _}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import play.api.libs.json.Json
 
@@ -77,7 +78,7 @@ trait Conversions {
     cards = collection.cards
   )
 
-  def toEditedCollection(collection: Collection, name: String, appsCategory: Option[String]): Collection =  Collection(
+  def toUpdatedCollection(collection: Collection, name: String, appsCategory: Option[String]): Collection =  Collection(
     id = collection.id,
     position = collection.position,
     name = name,
@@ -126,16 +127,30 @@ trait Conversions {
     numDownloads = card.numDownloads,
     notification = card.notification)
 
-  def toAddCardRequestSeq(items: Seq[UnformedItem]): Seq[AddCardRequest] =
+  def toAddCardRequestSeq(items: Seq[UnformedItem]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestFromUnformedItems(zipped._1, zipped._2))
 
-  def toAddCardRequestFromUnformedItems(item: UnformedItem, position: Int) = AddCardRequest(
+  def toAddCardRequestFromUnformedItems(item: UnformedItem, position: Int) = ServicesAddCardRequest(
     position = position,
     term = item.name,
     packageName = Option(item.packageName),
     cardType = app,
     intent = nineCardIntentToJson(toNineCardIntent(item)),
     imagePath = item.imagePath
+  )
+
+  def toFetchCardsByCollectionRequest(collectionRequestId: Int) = FetchCardsByCollectionRequest(
+    collectionId = collectionRequestId
+  )
+
+  def toAddCardRequest(addCardRequest: AddCardRequest, position: Int) = ServicesAddCardRequest (
+    collectionId = Option(addCardRequest.collectionId),
+    position = position,
+    term = addCardRequest.term,
+    packageName = addCardRequest.packageName,
+    cardType = app,
+    intent = nineCardIntentToJson(addCardRequest.intent),
+    imagePath = addCardRequest.imagePath
   )
 
   def toNineCardIntent(item: UnformedItem) = {
@@ -147,12 +162,12 @@ trait Conversions {
     intent
   }
 
-  def toAddCardRequestByContacts(items: Seq[Contact]): Seq[AddCardRequest] =
+  def toAddCardRequestByContacts(items: Seq[Contact]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestByContact(zipped._1, zipped._2))
 
   def toAddCardRequestByContact(item: Contact, position: Int) = {
     val (intent: NineCardIntent, cardType: String) = toNineCardIntent(item)
-    AddCardRequest(
+    ServicesAddCardRequest(
       position = position,
       term = item.name,
       packageName = None,
