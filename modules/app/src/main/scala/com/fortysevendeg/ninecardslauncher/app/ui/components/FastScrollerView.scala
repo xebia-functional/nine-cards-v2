@@ -5,14 +5,47 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.util.AttributeSet
 import android.view.MotionEvent._
-import android.view.{LayoutInflater, MotionEvent, View}
-import android.widget.LinearLayout
+import android.view.ViewGroup.LayoutParams._
+import android.view.{Gravity, LayoutInflater, MotionEvent, View}
+import android.widget.FrameLayout.LayoutParams
+import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, Ui}
 
-class FastScroller(context: Context, attr: AttributeSet, defStyleAttr: Int)
+class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
+  extends FrameLayout(context, attr, defStyleAttr) {
+
+  def this(context: Context) = this(context, null, 0)
+
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
+
+  val fastScroller = Option(new FastScrollerView(context))
+
+  override def onFinishInflate(): Unit = {
+    if (getChildCount != 1 && getChildAt(0).isInstanceOf[RecyclerView]) {
+      throw new IllegalStateException("FastScrollerLayout has contain a RecyclerView")
+    }
+    fastScroller map {
+      fs =>
+        val ll = new LayoutParams(WRAP_CONTENT, MATCH_PARENT)
+        ll.gravity = Gravity.RIGHT
+        runUi(this <~ vgAddView(fs, ll))
+    }
+    super.onFinishInflate()
+  }
+
+  def linkRecycler() = Option(getChildAt(0)) match {
+    case Some(rv: RecyclerView) => runUi(fastScroller <~ fsRecyclerView(rv))
+  }
+
+  def fsRecyclerView(rv: RecyclerView) = Tweak[FastScrollerView](view => view.setRecyclerView(rv))
+
+}
+
+class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attr, defStyleAttr)
   with TypedFindView {
 
@@ -138,7 +171,8 @@ trait FastScrollerListener {
 
 }
 
-object FastScrollerTweak {
-  def fsRecyclerView(rv: Option[RecyclerView]) = Tweak[FastScroller](view => rv foreach view.setRecyclerView)
+object FastScrollerLayoutTweak {
+  // We should launch this tweak when the adapter has been added
+  def fslLinkRecycler = Tweak[FastScrollerLayout](_.linkRecycler())
 }
 

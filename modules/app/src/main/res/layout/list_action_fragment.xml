@@ -12,19 +12,15 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             style="@style/ActionsToolbar"/>
 
-        <FrameLayout
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
+            android:id="@+id/action_scroller_layout"
             style="@style/ActionsListContent">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/actions_recycler"
                 style="@style/ActionsRecycler"/>
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScroller
-                android:id="@+id/actions_fastscroller"
-                style="@style/ActionsFastScroll"/>
-
-        </FrameLayout>
-
+        </com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout>
 
     </LinearLayout>
 
