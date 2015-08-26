@@ -3,20 +3,18 @@
        android:layout_width="wrap_content"
        android:layout_height="match_parent">
 
-    <ImageButton
-        android:id="@+id/fastscroller_handle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/fastscroller_handle"
-        android:elevation="4dp"
-        android:visibility="invisible" />
+    <FrameLayout
+        android:id="@+id/fastscroller_signal"
+        style="@style/FastScrollerSignal">
+
+        <TextView
+            android:text="R"
+            style="@style/FastScrollerText"/>
+
+    </FrameLayout>
 
     <ImageView
-        android:id="@+id/fastscroller_bubble"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/fastscroller_bubble"
-        android:layout_marginStart="@dimen/padding_small"
-        android:layout_marginEnd="@dimen/padding_small" />
+        android:id="@+id/fastscroller_bar"
+        style="@style/FastScrollerBar" />
 
 </merge>

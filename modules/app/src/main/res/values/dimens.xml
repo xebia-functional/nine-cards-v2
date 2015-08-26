@@ -71,9 +71,12 @@
     <dimen name="height_simple_app">112dp</dimen>
 
     <dimen name="size_icon_app">52dp</dimen>
-    <dimen name="fastscroller_handle_size">72dp</dimen>
-    <dimen name="fastscroller_reack_corner">3dp</dimen>
-    <dimen name="fastscroller_track_height">30dp</dimen>
-    <dimen name="fastscroller_track_width">6dp</dimen>
+
+    <!-- Fast Scroller -->
+    <dimen name="fastscroller_text_size">36sp</dimen>
+    <dimen name="fastscroller_signal_size">72dp</dimen>
+    <dimen name="fastscroller_bar_corner">3dp</dimen>
+    <dimen name="fastscroller_bar_height">30dp</dimen>
+    <dimen name="fastscroller_bar_width">6dp</dimen>
 
 </resources>

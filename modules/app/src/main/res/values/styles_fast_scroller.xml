@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="FastScrollerSignalParent">
+        <item name="android:layout_width">@dimen/fastscroller_signal_size</item>
+        <item name="android:layout_height">@dimen/fastscroller_signal_size</item>
+        <item name="android:background">@drawable/fastscroller_signal</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="FastScrollerSignal" parent="FastScrollerSignalParent" />
+
+    <style name="FastScrollerText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/fastscroller_text_size</item>
+        <item name="android:textColor">@color/fastscroller_text</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="FastScrollerBar">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/fastscroller_bar_off</item>
+        <item name="android:layout_marginStart">@dimen/padding_small</item>
+        <item name="android:layout_marginEnd">@dimen/padding_small</item>
+    </style>
+
+</resources>

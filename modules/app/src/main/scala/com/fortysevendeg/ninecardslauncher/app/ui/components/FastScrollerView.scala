@@ -11,6 +11,7 @@ import android.widget.FrameLayout.LayoutParams
 import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, Ui}
@@ -65,9 +66,9 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   LayoutInflater.from(context).inflate(R.layout.fastscroller, this)
 
-  val bubble = Option(findView(TR.fastscroller_bubble))
+  val bar = Option(findView(TR.fastscroller_bar))
 
-  val handle = Option(findView(TR.fastscroller_handle))
+  val signal = Option(findView(TR.fastscroller_signal))
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
@@ -79,17 +80,21 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       indicator.startScroll()
       val y = event.getY
       runUi(changePosition(y) ~
-        (handle <~ vVisible) ~
+        showSignal ~
         (recyclerView <~ rvScrollToPosition(y)))
       true
     case ACTION_UP | ACTION_CANCEL =>
       indicator.resetScroll()
-      runUi(handle <~ vGone)
+      runUi(hideSignal)
       // Update scroll position in ScrollListener
       scrollListener foreach (_.y = indicator.projectToRecycler(event.getY))
       true
     case _ => super.onTouchEvent(event)
   }
+
+  def showSignal: Ui[_] = (signal <~ vVisible) ~ (bar <~ ivSrc(R.drawable.fastscroller_bar_on))
+
+  def hideSignal: Ui[_] = (signal <~ vGone) ~ (bar <~ ivSrc(R.drawable.fastscroller_bar_off))
 
   def setRecyclerView(rv: RecyclerView) = {
     indicator.setTotalHeight(rv)
@@ -101,7 +106,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] def changePosition(y: Float): Ui[_] = {
     val position = y / indicator.height
-    (bubble <~ vChangeY(position)) ~ (handle <~ vChangeY(position))
+    (bar <~ vChangeY(position)) ~ (signal <~ vChangeY(position))
   }
 
   private[this] def vChangeY(position: Float) = Tweak[View]{ view =>
