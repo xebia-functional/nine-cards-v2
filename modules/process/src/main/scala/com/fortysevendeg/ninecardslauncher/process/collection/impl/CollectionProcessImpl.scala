@@ -78,8 +78,8 @@ class CollectionProcessImpl(
 
   override def deleteCard(deleteCardRequest: DeleteCardRequest) =
     (for {
-      cardList <- getCardsByCollectionId(deleteCardRequest.collectionId)
       Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(deleteCardRequest.cardId))
+      cardList <- getCardsByCollectionId(deleteCardRequest.collectionId)
       _ <- persistenceServices.deleteCard(ServicesDeleteCardRequest(card))
       _ <- updateCardList(moveCardList(cardList, card.position))
     } yield ()).resolve[CardException]
