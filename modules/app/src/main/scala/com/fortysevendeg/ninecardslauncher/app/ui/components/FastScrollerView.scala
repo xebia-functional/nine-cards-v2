@@ -104,11 +104,6 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     (bubble <~ vChangeY(position)) ~ (handle <~ vChangeY(position))
   }
 
-  private[this] def getValueInRange(min: Int, max: Int, value: Int): Int = {
-    val minimum = math.max(min, value)
-    math.min(minimum, max)
-  }
-
   private[this] def vChangeY(position: Float) = Tweak[View]{ view =>
     val viewHeight = view.getHeight
     val value = ((indicator.height - viewHeight) * position).toInt
