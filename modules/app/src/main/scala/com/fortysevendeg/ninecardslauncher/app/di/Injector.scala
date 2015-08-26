@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.di
 
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
@@ -8,8 +9,6 @@ import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigProcessImpl
-import com.fortysevendeg.ninecardslauncher.repository.commons.{ContentResolverWrapperImpl => RepositoryContentResolverWrapper}
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl => CommonsContentResolverWrapper}
 import com.fortysevendeg.ninecardslauncher.repository.repositories.{CacheCategoryRepository, CardRepository, CollectionRepository, GeoInfoRepository}
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
@@ -44,23 +43,22 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     googlePlayService = new ApiGooglePlayService(serviceClient),
     userConfigService = new ApiUserConfigService(serviceClient))
 
-  private[this] lazy val repositoryContentResolverWrapper = new RepositoryContentResolverWrapper(
+  private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
     contextWrapper.application.getContentResolver)
 
+  private[this] lazy val uriCreator = new UriCreator
+
   private[this] lazy val persistenceServices = new PersistenceServicesImpl(
-    cacheCategoryRepository = new CacheCategoryRepository(repositoryContentResolverWrapper),
-    cardRepository = new CardRepository(repositoryContentResolverWrapper),
-    collectionRepository = new CollectionRepository(repositoryContentResolverWrapper),
-    geoInfoRepository = new GeoInfoRepository(repositoryContentResolverWrapper))
+    cacheCategoryRepository = new CacheCategoryRepository(contentResolverWrapper, uriCreator),
+    cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
+    collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
+    geoInfoRepository = new GeoInfoRepository(contentResolverWrapper, uriCreator))
 
   private[this] lazy val appsServices = new AppsServicesImpl()
 
   private[this] lazy val shortcutsServices = new ShortcutsServicesImpl()
 
-  private[this] lazy val commonsContentResolverWrapper = new CommonsContentResolverWrapper(
-    contextWrapper.application.getContentResolver)
-
-  private[this] lazy val contactsServices = new ContactsServicesImpl(commonsContentResolverWrapper)
+  private[this] lazy val contactsServices = new ContactsServicesImpl(contentResolverWrapper)
 
   private[this] lazy val imageServicesConfig = ImageServicesConfig(
     colors = List(

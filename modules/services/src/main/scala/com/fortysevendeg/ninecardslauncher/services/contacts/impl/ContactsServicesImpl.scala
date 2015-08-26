@@ -1,9 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
-import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapper
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
@@ -95,10 +94,4 @@ class ContactsServicesImpl(
         }
       }
     }
-}
-
-class UriCreator {
-
-  def withAppendedPath(uri: Uri, path: String) = Uri.withAppendedPath(uri, Uri.encode(path))
-
 }
