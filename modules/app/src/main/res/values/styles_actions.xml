@@ -23,9 +23,20 @@
 
     <style name="ActionsToolbar" parent="ActionsToolbarParent" />
 
+    <style name="ActionsListContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
     <style name="ActionsRecycler">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="ActionsFastScroll">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">right</item>
     </style>
 
 </resources>

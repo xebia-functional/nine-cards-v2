@@ -67,6 +67,13 @@
     <dimen name="size_icon_app_drawer">52dp</dimen>
 
     <!-- Dialog Actions -->
+    <dimen name="height_simple_category">28dp</dimen>
+    <dimen name="height_simple_app">112dp</dimen>
+
     <dimen name="size_icon_app">52dp</dimen>
+    <dimen name="fastscroller_handle_size">72dp</dimen>
+    <dimen name="fastscroller_reack_corner">3dp</dimen>
+    <dimen name="fastscroller_track_height">30dp</dimen>
+    <dimen name="fastscroller_track_width">6dp</dimen>
 
 </resources>

@@ -247,15 +247,9 @@ trait CollectionsDetailsComposer
 
     getWindow.getSharedElementEnterTransition.addListener(new Transition.TransitionListener {
       override def onTransitionStart(transition: Transition): Unit = {}
-
       override def onTransitionCancel(transition: Transition): Unit = {}
-
-      override def onTransitionEnd(transition: Transition): Unit = {
-        end()
-      }
-
+      override def onTransitionEnd(transition: Transition): Unit = end()
       override def onTransitionPause(transition: Transition): Unit = {}
-
       override def onTransitionResume(transition: Transition): Unit = {}
     })
   }
@@ -287,11 +281,11 @@ trait CollectionsDetailsComposer
     args.putInt(BaseActionFragment.posX, x + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.posY, y + (sizeIconFabMenuItem / 2))
     swapFabButton ~
-      (fragmentContent <~ fadeBackground(in = true)) ~
+      (fragmentContent <~ fadeBackground(in = true) <~ fragmentContentStyle(true)) ~
       addFragment(f[AppsFragment].pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
   }
 
-  def turnOffFragmentContent: Ui[_] = fragmentContent <~ fadeBackground(in = false)
+  def turnOffFragmentContent: Ui[_] = fragmentContent <~ fadeBackground(in = false) <~ fragmentContentStyle(false)
 
   def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
 

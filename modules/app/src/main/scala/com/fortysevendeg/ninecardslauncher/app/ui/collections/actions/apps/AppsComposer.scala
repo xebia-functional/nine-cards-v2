@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerTweak._
 
 import scala.annotation.tailrec
 
@@ -24,6 +25,8 @@ trait AppsComposer
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
+  lazy val fastScroller = Option(findView(TR.actions_fastscroller))
+
   def initUi: Ui[_] =
     (toolbar <~
       toolbarStyle <~
@@ -32,9 +35,10 @@ trait AppsComposer
 
   def addApps(apps: Seq[AppCategorized])(implicit fragment: Fragment) = {
     val adapter = new AppsAdapter(generateAppsForList(apps.sortBy(_.name).toList, Seq.empty))
-    recycler <~
-      rvLayoutManager(adapter.getLayoutManager()) <~
-      rvAdapter(adapter)
+    (recycler <~
+      rvLayoutManager(adapter.getLayoutManager) <~
+      rvAdapter(adapter)) ~
+      (fastScroller <~ fsRecyclerView(recycler))
   }
 
   @tailrec

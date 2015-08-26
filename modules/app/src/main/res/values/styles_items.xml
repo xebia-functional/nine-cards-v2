@@ -5,7 +5,7 @@
 
     <style name="SimpleCategoryRoot">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">@dimen/height_simple_category</item>
     </style>
 
     <style name="SimpleCategoryName">
@@ -21,7 +21,7 @@
 
     <style name="SimpleItemRoot">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">@dimen/height_simple_app</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center</item>
