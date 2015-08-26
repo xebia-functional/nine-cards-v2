@@ -3,9 +3,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable._
+import android.support.v4.app.Fragment
 import android.support.v7.widget.{CardView, RecyclerView}
 import android.text.TextUtils.TruncateAt
+import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View, ViewGroup}
+import android.widget.ImageView.ScaleType
 import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
@@ -15,15 +18,19 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak}
+import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 
 trait Styles {
@@ -73,6 +80,10 @@ trait CollectionFragmentStyles {
 
 trait CollectionAdapterStyles {
 
+  val iconContentHeightRatio = .6f
+
+  val alphaDefault = .1f
+
   def rootStyle(heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     vContentSizeMatchWidth(heightCard) +
       cvCardBackgroundColor(theme.get(CollectionDetailCardBackgroundColor)) +
@@ -84,32 +95,62 @@ trait CollectionAdapterStyles {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),
         null,
-        new ColorDrawable(setAlpha(Color.BLACK, 0.1f)))
+        new ColorDrawable(setAlpha(Color.BLACK, alphaDefault)))
     } getOrElse {
       val states = new StateListDrawable()
-      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(setAlpha(color, 0.1f)))
+      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(setAlpha(color, alphaDefault)))
       states.addState(Array.emptyIntArray, new ColorDrawable(Color.TRANSPARENT))
       states
     }
   }
 
+  def iconContentStyle(heightCard: Int)(implicit context: ContextWrapper): Tweak[FrameLayout] =
+    lp[ViewGroup](MATCH_PARENT, (heightCard * iconContentHeightRatio).toInt)
+
   def contentStyle(implicit context: ContextWrapper): Tweak[LinearLayout] =
     vMatchParent +
-      llVertical +
-      llGravity(Gravity.CENTER) +
-      vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
+      llVertical
 
   def iconStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val size = resGetDimensionPixelSize(R.dimen.size_icon_card)
-    lp[ViewGroup](size, size)
+    lp[ViewGroup](size, size) +
+      flLayoutGravity(Gravity.CENTER)
   }
 
   def nameStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
     vMatchWidth +
-      vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_default)) +
+      vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
       tvColor(theme.get(CollectionDetailTextCardColor)) +
       tvLines(2) +
       tvSizeResource(R.dimen.text_default) +
       tvEllipsize(TruncateAt.END)
+
+  def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, fragment: Fragment) = card.cardType match {
+    case `phone` | `sms` | `email` =>
+      ivUriContact(fragment, card.imagePath, card.term) +
+        expandLayout +
+        ivScaleType(ScaleType.CENTER_CROP)
+    case _ =>
+      ivUri(fragment, card.imagePath, card.term) +
+        reduceLayout +
+        ivScaleType(ScaleType.FIT_CENTER)
+  }
+
+  def expandLayout(implicit context: ContextWrapper): Tweak[View] = Tweak[View] {
+    view =>
+      val params = view.getLayoutParams
+      params.height = MATCH_PARENT
+      params.width = MATCH_PARENT
+      view.requestLayout()
+  }
+
+  def reduceLayout(implicit context: ContextWrapper): Tweak[View] = Tweak[View] {
+    view =>
+      val size = resGetDimensionPixelSize(R.dimen.size_icon_card)
+      val params = view.getLayoutParams
+      params.height = size
+      params.width = size
+      view.requestLayout()
+  }
 
 }

@@ -1,21 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
-import java.io.File
-
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
+import com.fortysevendeg.ninecardslauncher.services.persistence.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
-import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import play.api.libs.json.Json
-import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 
 trait Conversions {
-
-  val resourceUtils = new ResourceUtils
 
   def toCollectionSeq(servicesCollectionSeq: Seq[ServicesCollection]) = servicesCollectionSeq map toCollection
 
@@ -59,50 +54,6 @@ trait Conversions {
     imagePath = item.imagePath
   )
 
-  def toAddCollectionRequestFromFormedCollections(formedCollections: Seq[FormedCollection])(implicit context: ContextSupport): Seq[AddCollectionRequest] =
-    formedCollections.zipWithIndex.map(zipped => toAddCollectionRequest(zipped._1, zipped._2))
-
-  def toAddCollectionRequest(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport) = AddCollectionRequest(
-    position = position,
-    name = formedCollection.name,
-    collectionType = formedCollection.collectionType,
-    icon = formedCollection.icon,
-    themedColorIndex = position % numSpaces,
-    appsCategory = formedCollection.category,
-    constrains = None,
-    originalSharedCollectionId = formedCollection.sharedCollectionId,
-    sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
-    sharedCollectionId = formedCollection.sharedCollectionId,
-    cards = toAddCardRequestFromFormedItems(formedCollection.items)
-  )
-
-  def toAddCardRequestFromFormedItems(items: Seq[FormedItem])(implicit context: ContextSupport) =
-    items.zipWithIndex.map(zipped => toAddCardRequest(zipped._1, zipped._2))
-
-  def toAddCardRequest(item: FormedItem, position: Int)(implicit context: ContextSupport): AddCardRequest = {
-    val nineCardIntent = jsonToNineCardIntent(item.intent)
-    val path = (item.itemType match {
-      case `app` | `recommendedApp` =>
-        for {
-          packageName <- nineCardIntent.extractPackageName()
-          className <- nineCardIntent.extractClassName()
-        } yield {
-          val pathWithClassName = resourceUtils.getPathPackage(packageName, className)
-          // If the path using ClassName don't exist, we use a path using only packagename
-          if (new File(pathWithClassName).exists) pathWithClassName else resourceUtils.getPath(packageName)
-        }
-      case _ => None
-    }) getOrElse "" // TODO We should use a default image
-    AddCardRequest(
-      position = position,
-      term = item.title,
-      packageName = nineCardIntent.extractPackageName(),
-      cardType = item.itemType,
-      intent = item.intent,
-      imagePath = path
-    )
-  }
-
   def toNineCardIntent(item: UnformedItem) = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(item.packageName),
@@ -110,6 +61,37 @@ trait Conversions {
     intent.setAction(openApp)
     intent.setClassName(item.packageName, item.className)
     intent
+  }
+
+  def toAddCardRequestByContacts(items: Seq[Contact]): Seq[AddCardRequest] =
+    items.zipWithIndex map (zipped => toAddCardRequestByContact(zipped._1, zipped._2))
+
+  def toAddCardRequestByContact(item: Contact, position: Int) = {
+    val (intent: NineCardIntent, cardType: String) = toNineCardIntent(item)
+    AddCardRequest(
+      position = position,
+      term = item.name,
+      packageName = None,
+      cardType = cardType,
+      intent = nineCardIntentToJson(intent),
+      imagePath = item.photoUri
+    )
+  }
+
+  def toNineCardIntent(item: Contact): (NineCardIntent, String) = item match {
+    case Contact(_, _, _, _, _, Some(info)) if info.phones.nonEmpty =>
+      val phone = info.phones.headOption map (_.number)
+      val intent = NineCardIntent(NineCardIntentExtras(tel = phone))
+      intent.setAction(openPhone)
+      (intent, CardType.phone)
+    case Contact(_, _, _, _, _, Some(info)) if info.emails.nonEmpty =>
+      val address = info.emails.headOption map (_.address)
+      val intent = NineCardIntent(NineCardIntentExtras(email = address))
+      intent.setAction(openEmail)
+      (intent, CardType.email)
+    case _ => // TODO 9C-234 - We should create a new action for open contact and use it here
+      val intent = NineCardIntent(NineCardIntentExtras())
+      (intent, CardType.app)
   }
 
   private[this] def jsonToNineCardIntent(json: String) = Json.parse(json).as[NineCardIntent]
