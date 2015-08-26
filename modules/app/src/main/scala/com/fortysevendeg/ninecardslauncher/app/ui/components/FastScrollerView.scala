@@ -12,6 +12,7 @@ import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, Ui}
@@ -70,6 +71,8 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val signal = Option(findView(TR.fastscroller_signal))
 
+  val text = Option(findView(TR.fastscroller_signal_text))
+
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
     indicator.height = h
@@ -123,6 +126,11 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     if (position != indicator.lastScrollToPosition) {
       indicator.lastScrollToPosition = position
       view.scrollToPosition(position)
+      val element = Option(view.getAdapter) match {
+        case Some(listener: FastScrollerListener) => listener.getElement(position)
+        case _ => ""
+      }
+      runUi(text <~ tvText(element))
     }
   }
 
@@ -147,7 +155,7 @@ case class FastScrollerIndicator(
 
   def setTotalHeight(recyclerView: RecyclerView) = {
     totalHeight = Option(recyclerView.getAdapter) match {
-      case Some(adapter: FastScrollerListener) => adapter.getHeight
+      case Some(listener: FastScrollerListener) => listener.getHeight
       case _ => 0
     }
   }
@@ -167,6 +175,8 @@ case class FastScrollerIndicator(
 trait FastScrollerListener {
 
   def getHeight: Int
+
+  def getElement(position: Int): String
 
 }
 

@@ -8,7 +8,7 @@
         style="@style/FastScrollerSignal">
 
         <TextView
-            android:text="R"
+            android:id="@+id/fastscroller_signal_text"
             style="@style/FastScrollerText"/>
 
     </FrameLayout>
