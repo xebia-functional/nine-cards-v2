@@ -22,7 +22,7 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  val fastScroller = Option(new FastScrollerView(context))
+  lazy val fastScroller = Option(new FastScrollerView(context))
 
   override def onFinishInflate(): Unit = {
     if (getChildCount != 1 && getChildAt(0).isInstanceOf[RecyclerView]) {
@@ -109,31 +109,30 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     math.min(minimum, max)
   }
 
-  private[this] def vChangeY(position: Float) = Tweak[View]{
-    view =>
-      val viewHeight = view.getHeight
-      view.setY(getValueInRange(0, indicator.height - viewHeight, ((indicator.height - viewHeight) * position).toInt))
+  private[this] def vChangeY(position: Float) = Tweak[View]{ view =>
+    val viewHeight = view.getHeight
+    val value = ((indicator.height - viewHeight) * position).toInt
+    val max = indicator.height - viewHeight
+    val minimum = math.max(0, value)
+    view.setY(math.min(minimum, max))
   }
 
-  private[this] def rvScrollToPosition(y: Float) = Tweak[RecyclerView]{
-    view =>
-      val itemCount = view.getAdapter.getItemCount
-      val position = ((y * itemCount) / indicator.height).toInt
-      if (position != indicator.lastScrollToPosition) {
-        indicator.lastScrollToPosition = position
-        view.scrollToPosition(position)
-      }
+  private[this] def rvScrollToPosition(y: Float) = Tweak[RecyclerView]{ view =>
+    val itemCount = view.getAdapter.getItemCount
+    val position = ((y * itemCount) / indicator.height).toInt
+    if (position != indicator.lastScrollToPosition) {
+      indicator.lastScrollToPosition = position
+      view.scrollToPosition(position)
+    }
   }
 
   class ScrollListener
     extends OnScrollListener {
     var y = 0f
 
-    override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = {
-      if (!indicator.moving) {
-        y = y + dy
-        runUi(changePosition(indicator.projectToBar(y)))
-      }
+    override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = if (!indicator.moving) {
+      y = y + dy
+      runUi(changePosition(indicator.projectToBar(y)))
     }
 
   }
