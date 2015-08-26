@@ -37,8 +37,9 @@ trait AppsComposer
       (loading <~ vVisible) ~
       (recycler <~ recyclerStyle)
 
-  def addApps(apps: Seq[AppCategorized])(implicit fragment: Fragment) = {
-    val adapter = new AppsAdapter(generateAppsForList(apps.sortBy(_.name).toList, Seq.empty))
+  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
+    val appsHeadered = generateAppsForList(apps.sortBy(_.name).toList, Seq.empty)
+    val adapter = new AppsAdapter(appsHeadered, clickListener)
     (recycler <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~

@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.{Ui, Contexts}
@@ -121,6 +121,8 @@ class CollectionsDetailsActivity
   override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
 
   override def onEndFinishAction(): Unit = removeActionFragment()
+
+  override def addCard(card: Card): Unit = runUi(uiShortToast(card.term))
 }
 
 trait ScrolledListener {
@@ -138,6 +140,7 @@ trait ScrolledListener {
 trait ActionsScreenListener {
   def onStartFinishAction()
   def onEndFinishAction()
+  def addCard(card: Card)
 }
 
 object ScrollType {

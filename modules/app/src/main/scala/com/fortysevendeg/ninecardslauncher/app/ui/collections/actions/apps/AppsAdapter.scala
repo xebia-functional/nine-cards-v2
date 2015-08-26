@@ -8,12 +8,13 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 import AppsAdapter._
 
-case class AppsAdapter(apps: Seq[AppHeadered])
+case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) => Unit)
   (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
   extends RecyclerView.Adapter[RecyclerView.ViewHolder]
   with FastScrollerListener {
@@ -30,7 +31,7 @@ case class AppsAdapter(apps: Seq[AppHeadered])
       val view = LayoutInflater.from(parent.getContext).inflate(R.layout.simple_item, parent, false).asInstanceOf[ViewGroup]
       view.setOnClickListener(new OnClickListener {
         override def onClick(v: View): Unit = {
-          Option(v.getTag) foreach (tag => tag)
+          Option(v.getTag) foreach (tag => apps(Int.unbox(tag)).app foreach clickListener)
         }
       })
       new ViewHolderAppLayoutAdapter(view)
