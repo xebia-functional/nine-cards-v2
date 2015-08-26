@@ -6,6 +6,7 @@
         <item name="android:layout_height">@dimen/fastscroller_signal_size</item>
         <item name="android:background">@drawable/fastscroller_signal</item>
         <item name="android:visibility">invisible</item>
+        <item name="android:layout_marginRight">@dimen/fastscroller_signal_margin_right</item>
     </style>
 
     <style name="FastScrollerSignal" parent="FastScrollerSignalParent" />

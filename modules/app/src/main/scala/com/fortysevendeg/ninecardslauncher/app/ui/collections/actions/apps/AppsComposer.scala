@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -23,6 +24,8 @@ trait AppsComposer
 
   lazy val toolbar = Option(findView(TR.actions_toolbar))
 
+  lazy val loading = Option(findView(TR.action_loading))
+
   lazy val recycler = Option(findView(TR.actions_recycler))
 
   lazy val scrollerLayout = findView(TR.action_scroller_layout)
@@ -31,6 +34,7 @@ trait AppsComposer
     (toolbar <~
       toolbarStyle <~
       tbNavigationOnClickListener((_) => unreveal())) ~
+      (loading <~ vVisible) ~
       (recycler <~ recyclerStyle)
 
   def addApps(apps: Seq[AppCategorized])(implicit fragment: Fragment) = {
@@ -38,6 +42,7 @@ trait AppsComposer
     (recycler <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
+      (loading <~ vGone) ~
       (scrollerLayout <~ fslLinkRecycler)
   }
 

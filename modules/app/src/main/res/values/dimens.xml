@@ -73,10 +73,11 @@
     <dimen name="size_icon_app">52dp</dimen>
 
     <!-- Fast Scroller -->
-    <dimen name="fastscroller_text_size">36sp</dimen>
-    <dimen name="fastscroller_signal_size">72dp</dimen>
+    <dimen name="fastscroller_text_size">40sp</dimen>
+    <dimen name="fastscroller_signal_size">84dp</dimen>
     <dimen name="fastscroller_bar_corner">3dp</dimen>
     <dimen name="fastscroller_bar_height">30dp</dimen>
     <dimen name="fastscroller_bar_width">6dp</dimen>
+    <dimen name="fastscroller_signal_margin_right">32dp</dimen>
 
 </resources>
