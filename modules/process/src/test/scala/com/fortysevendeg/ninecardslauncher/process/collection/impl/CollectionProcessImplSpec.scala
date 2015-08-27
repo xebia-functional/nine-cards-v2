@@ -50,37 +50,16 @@ trait CollectionProcessImplSpecification
       collectionProcessConfig = collectionProcessConfig,
       persistenceServices = mockPersistenceServices,
       contactsServices = mockContactsServices)
+
   }
 
-  trait ValidCreatePersistenceServicesResponses
+  trait ValidCreateCollectionPersistenceServicesResponses
     extends CollectionProcessImplData {
 
     self: CollectionProcessScope =>
 
     mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
     mockPersistenceServices.addCollection(any) returns Service(Task(Result.answer(collectionForUnformedItem)))
-
-  }
-
-  trait ValidPersistenceServicesResponses
-    extends CollectionProcessImplData {
-
-    self: CollectionProcessScope =>
-
-    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
-    mockPersistenceServices.addCollection(any) returns Service(Task(Result.answer(servicesCollectionAdded)))
-
-  }
-
-  trait ErrorPersistenceServicesResponses
-    extends CollectionProcessImplData {
-
-    self: CollectionProcessScope =>
-
-    mockPersistenceServices.fetchCollections returns
-      Service(Task(Errata(persistenceServiceException)))
-    mockPersistenceServices.addCollection(any) returns
-      Service(Task(Errata(persistenceServiceException)))
 
   }
 
@@ -96,6 +75,100 @@ trait CollectionProcessImplSpecification
 
   }
 
+  trait ErrorCreateCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.fetchCollections returns Service(Task(Errata(persistenceServiceException)))
+    mockPersistenceServices.addCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ValidAddCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
+    mockPersistenceServices.addCollection(any) returns Service(Task(Result.answer(servicesCollectionAdded)))
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(seqServicesCollection.headOption)))
+
+  }
+
+  trait ErrorFetchCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.fetchCollections returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ErrorAddCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
+    mockPersistenceServices.addCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ValidDeleteCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(seqServicesCollection.headOption)))
+    mockPersistenceServices.deleteCollection(any) returns Service(Task(Result.answer(seqServicesCollection.head.id)))
+    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
+    mockPersistenceServices.updateCollection(any) returns Service(Task(Result.answer(seqServicesCollection.head.id)))
+
+  }
+
+  trait ErrorFindCollectionByIdPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ErrorDeleteCollectionByIdPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(seqServicesCollection.headOption)))
+    mockPersistenceServices.deleteCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ErrorDeleteFetchCollectionByIdPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(seqServicesCollection.headOption)))
+    mockPersistenceServices.deleteCollection(any) returns Service(Task(Result.answer(seqServicesCollection.head.id)))
+    mockPersistenceServices.fetchCollections returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ErrorDeleteUpdateCollectionByIdPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(seqServicesCollection.headOption)))
+    mockPersistenceServices.deleteCollection(any) returns Service(Task(Result.answer(seqServicesCollection.head.id)))
+    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
+    mockPersistenceServices.updateCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
 }
 
 class CollectionProcessImplSpec
@@ -103,8 +176,8 @@ class CollectionProcessImplSpec
 
   "getCollections" should {
 
-    "return a sequence of collections for a valid request" in
-      new CollectionProcessScope with ValidCreatePersistenceServicesResponses {
+    "returns a sequence of collections for a valid request" in
+      new CollectionProcessScope with ValidCreateCollectionPersistenceServicesResponses {
         val result = collectionProcess.getCollections.run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
@@ -113,8 +186,8 @@ class CollectionProcessImplSpec
         }
       }
 
-    "return a CollectionException if the service throws a exception" in
-      new CollectionProcessScope with ErrorPersistenceServicesResponses {
+    "returns a CollectionException if the service throws a exception" in
+      new CollectionProcessScope with ErrorCreateCollectionPersistenceServicesResponses {
         val result = collectionProcess.getCollections.run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -127,7 +200,7 @@ class CollectionProcessImplSpec
   "createCollectionsFromUnformedItems" should {
 
     "the size of collections should be equal to size of categories" in
-      new CollectionProcessScope with ValidCreatePersistenceServicesResponses {
+      new CollectionProcessScope with ValidCreateCollectionPersistenceServicesResponses {
         val result = collectionProcess.createCollectionsFromUnformedItems(unformedItems)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
@@ -135,8 +208,8 @@ class CollectionProcessImplSpec
         }
       }
 
-    "return empty collections when persistence services fails" in
-      new CollectionProcessScope with ErrorPersistenceServicesResponses {
+    "returns empty collections when persistence services fails" in
+      new CollectionProcessScope with ErrorCreateCollectionPersistenceServicesResponses {
         val result = collectionProcess.createCollectionsFromUnformedItems(unformedItems)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
@@ -145,7 +218,7 @@ class CollectionProcessImplSpec
       }
 
     "the size of collections should be equal to size of categories with contact collection" in
-      new CollectionProcessScope with ValidCreatePersistenceServicesResponses with WithContactsResponses {
+      new CollectionProcessScope with ValidCreateCollectionPersistenceServicesResponses with WithContactsResponses {
         val result = collectionProcess.createCollectionsFromUnformedItems(unformedItems)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
@@ -158,7 +231,7 @@ class CollectionProcessImplSpec
   "createCollectionsFromFormedCollections" should {
 
     "the size of collections should be equal to size of collections pass by parameter" in
-      new CollectionProcessScope with ValidCreatePersistenceServicesResponses {
+      new CollectionProcessScope with ValidCreateCollectionPersistenceServicesResponses {
         val result = collectionProcess.createCollectionsFromFormedCollections(seqFormedCollection)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
@@ -167,8 +240,8 @@ class CollectionProcessImplSpec
         }
       }
 
-    "return empty collections when persistence services fails" in
-      new CollectionProcessScope with ErrorPersistenceServicesResponses {
+    "returns empty collections when persistence services fails" in
+      new CollectionProcessScope with ErrorCreateCollectionPersistenceServicesResponses {
         val result = collectionProcess.createCollectionsFromFormedCollections(seqFormedCollection)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
@@ -180,8 +253,8 @@ class CollectionProcessImplSpec
 
   "addCollection" should {
 
-    "return a collections for a valid request" in
-      new CollectionProcessScope with ValidPersistenceServicesResponses {
+    "returns a collections for a valid request" in
+      new CollectionProcessScope with ValidAddCollectionPersistenceServicesResponses {
         val result = collectionProcess.addCollection(addCollectionRequest).run.run
         result must beLike {
           case Answer(resultCollection) =>
@@ -189,8 +262,8 @@ class CollectionProcessImplSpec
         }
       }
 
-    "return a CollectionException if the service throws a exception" in
-      new CollectionProcessScope with ErrorPersistenceServicesResponses {
+    "returns a CollectionException if service throws a exception fetching the collections" in
+      new CollectionProcessScope with ErrorFetchCollectionPersistenceServicesResponses {
         val result = collectionProcess.addCollection(addCollectionRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -198,6 +271,67 @@ class CollectionProcessImplSpec
           }
         }
       }
+
+    "returns a CollectionException if the service throws a exception adding the new collection" in
+      new CollectionProcessScope with ErrorAddCollectionPersistenceServicesResponses {
+        val result = collectionProcess.addCollection(addCollectionRequest).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+          }
+        }
+      }
+  }
+
+    "deleteCollection" should {
+
+      "returns a collections for a valid request" in
+        new CollectionProcessScope with ValidDeleteCollectionPersistenceServicesResponses {
+          val result = collectionProcess.deleteCollection(seqServicesCollection.head.id).run.run
+          result must beLike {
+            case Answer(resultCollection) =>
+              resultCollection shouldEqual ((): Unit)
+          }
+        }
+
+      "returns a CollectionException if the service throws a exception finding the collection by Id" in
+        new CollectionProcessScope with ErrorFindCollectionByIdPersistenceServicesResponses {
+          val result = collectionProcess.deleteCollection(seqServicesCollection.head.id).run.run
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            }
+          }
+        }
+
+      "returns a CollectionException if the service throws a exception deleting the collection" in
+        new CollectionProcessScope with ErrorDeleteCollectionByIdPersistenceServicesResponses {
+          val result = collectionProcess.deleteCollection(seqServicesCollection.head.id).run.run
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            }
+          }
+        }
+
+      "returns a CollectionException if the service throws a exception fetching the collections" in
+        new CollectionProcessScope with ErrorDeleteFetchCollectionByIdPersistenceServicesResponses {
+          val result = collectionProcess.deleteCollection(seqServicesCollection.head.id).run.run
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            }
+          }
+        }
+
+      "returns an empty Sequence if the service throws a exception updating the collections" in
+        new CollectionProcessScope with ErrorDeleteUpdateCollectionByIdPersistenceServicesResponses {
+          val result = collectionProcess.deleteCollection(seqServicesCollection.head.id).run.run
+          result must beLike {
+            case Answer(resultCollection) =>
+              resultCollection shouldEqual ((): Unit)
+          }
+        }
   }
 
 }

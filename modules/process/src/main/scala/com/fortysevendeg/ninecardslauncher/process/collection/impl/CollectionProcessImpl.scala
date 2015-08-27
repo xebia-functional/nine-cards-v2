@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions,
   PersistenceServiceException, PersistenceServices, DeleteCollectionRequest => ServicesDeleteCollectionRequest, DeleteCardRequest => ServicesDeleteCardRequest}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
-import rapture.core.Answer
+import rapture.core.{Errata, Answer}
 import rapture.core.scalazInterop.ResultT
 
 import scalaz.concurrent.Task
