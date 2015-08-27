@@ -39,25 +39,28 @@ trait CollectionProcess {
 
   /**
    * Deletes a Collection and updates the position of the other Collections
-   * @param deleteCollectionRequest includes the Id of the Collection
+   * @param collectionId the Id of the Collection
    * @throws CollectionException if there was an error finding the collection, getting the existing collections, deleting the collection or updating the rest of them
    */
-  def deleteCollection(deleteCollectionRequest: DeleteCollectionRequest): ServiceDef2[Unit, CollectionException]
+  def deleteCollection(collectionId: Int): ServiceDef2[Unit, CollectionException]
 
   /**
    * Moves a Collection to another position and updates the position of the other Collections
-   * @param reorderCollectionRequest includes the position of the collection to move and the new position
+   * @param position the position of the Collection to move
+   * @param newPosition the new position of the Collection
    * @throws CollectionException if there was an error finding the collection, getting the existing collections or updating the position of all the collections
    */
-  def reorderCollection(reorderCollectionRequest: ReorderCollectionRequest): ServiceDef2[Unit, CollectionException]
+  def reorderCollection(position: Int, newPosition: Int): ServiceDef2[Unit, CollectionException]
 
   /**
    * Edits a Collection and allows to change the name and the appsCategory of the Collection
-   * @param editCollectionRequest includes the Id, the new name and the new appsCategory
+   * @param collectionId the Id of the Collection
+   * @param name the new name of the Collection
+   * @param appsCategory the new appsCategory
    * @return the [[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]]
    * @throws CollectionException if there was an error finding the collection or updating it
    */
-  def editCollection(editCollectionRequest: EditCollectionRequest): ServiceDef2[Collection, CollectionException]
+  def editCollection(collectionId: Int, name: String, appsCategory: Option[String] = None): ServiceDef2[Collection, CollectionException]
 
   /**
    * Gets the Cards included in a given Collection
@@ -68,32 +71,38 @@ trait CollectionProcess {
   def getCardsByCollectionId(collectionId: Int) : ServiceDef2[Seq[Card], CardException]
 
   /**
-   * Adds a new Card after the last existing one in a given Collection
-   * @param addCardRequest includes the necessary data to create a new Card (collectionId, term, packageName, intent and imagePath)
-   * @return the [[com.fortysevendeg.ninecardslauncher.process.collection.models.Card]]
+   * Adds some new Cards after the last existing one in a given Collection
+   * @param collectionId the Id of the Collection
+   * @param addCardListRequest the Seq[com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest] includes the necessary data to create a new Card (term, packageName, intent and imagePath)
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Card] of the new cards
    * @throws CardException if there was an error getting the existing cards or adding the new one
    */
-  def addCard(addCardRequest: AddCardRequest): ServiceDef2[Card, CardException]
+  def addCardList(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): ServiceDef2[Seq[Card], CardException]
 
   /**
    * Deletes a Card and updates the position of the other Cards in the Collection
-   * @param deleteCardRequest includes the Id of the Collection and the Id of the Card delete
+   * @param collectionId the Id of the Collection
+   * @param cardId the Id of the Card to delete
    * @throws CardException if there was an error finding the card, getting the existing collection's cards, deleting the card or updating the rest of them
    */
-  def deleteCard(deleteCardRequest: DeleteCardRequest): ServiceDef2[Unit, CardException]
+  def deleteCard(collectionId: Int, cardId: Int): ServiceDef2[Unit, CardException]
 
   /**
    * Moves a Card to another position and updates the position of the other Cards in the Collection
-   * @param reorderCardRequest includes the Id of the Collection and the Id of the Card to move and the new position of the Card
+   * @param collectionId the Id of the Collection
+   * @param cardId the Id of the Card to delete
+   * @param newPosition the new position of the Card
    * @throws CardException if there was an error finding the card, getting the existing cards or updating the position of all the cards
    */
-  def reorderCard(reorderCardRequest: ReorderCardRequest): ServiceDef2[Unit, CardException]
+  def reorderCard(collectionId: Int, cardId: Int, newPosition: Int): ServiceDef2[Unit, CardException]
 
   /**
    * Edits a Card and allows to change its name
-   * @param editCardRequest includes the Id of the Collection, the Id of the Card to edit and the new name
+   * @param collectionId the Id of the Collection
+   * @param cardId the Id of the Card to delete
+   * @param name the new name of the Card
    * @return the [[com.fortysevendeg.ninecardslauncher.process.collection.models.Card]]
    * @throws CardException if there was an error finding the card or updating it
    */
-  def editCard(editCardRequest: EditCardRequest): ServiceDef2[Card, CardException]
+  def editCard(collectionId: Int, cardId: Int, name: String): ServiceDef2[Card, CardException]
 }

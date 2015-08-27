@@ -14,25 +14,6 @@ case class Collection(
   sharedCollectionSubscribed: Boolean,
   cards: Seq[Card] = Seq.empty) extends Serializable
 
-case class AddCollectionRequest(
-   name: String,
-   collectionType: String,
-   icon: String,
-   themedColorIndex: Int,
-   appsCategory: Option[String] = None) extends Serializable
-
-case class DeleteCollectionRequest(
-   id: Int)
-
-case class ReorderCollectionRequest(
-  position: Int,
-  newPosition: Int)
-
-case class EditCollectionRequest(
-  id: Int,
-  name: String,
-  appsCategory: Option[String] = None)
-
 case class Card(
   id: Int,
   position: Int,
@@ -46,23 +27,3 @@ case class Card(
   numDownloads: Option[String] = None,
   notification: Option[String] = None) extends Serializable
 
-case class AddCardRequest(
-  collectionId: Int,
-  term: String,
-  packageName: Option[String],
-  intent: NineCardIntent,
-  imagePath: String)
-
-case class DeleteCardRequest(
-  collectionId: Int,
-  cardId: Int)
-
-case class ReorderCardRequest(
-  collectionId: Int,
-  cardId: Int,
-  newPosition: Int)
-
-case class EditCardRequest(
-  collectionId: Int,
-  cardId: Int,
-  name: String)

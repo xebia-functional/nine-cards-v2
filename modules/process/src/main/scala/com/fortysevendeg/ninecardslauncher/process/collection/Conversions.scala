@@ -145,8 +145,8 @@ trait Conversions {
     collectionId = collectionRequestId
   )
 
-  def toAddCardRequest(addCardRequest: AddCardRequest, position: Int) = ServicesAddCardRequest (
-    collectionId = Option(addCardRequest.collectionId),
+  def toAddCardRequest(collectionId: Int, addCardRequest: AddCardRequest, position: Int) = ServicesAddCardRequest (
+    collectionId = Option(collectionId),
     position = position,
     term = addCardRequest.term,
     packageName = addCardRequest.packageName,
