@@ -159,11 +159,9 @@ trait CollectionsDetailsComposer
     vElevation(elevation)
   }.getOrElse(Tweak.blank)
 
-  def getAdapter: Option[CollectionsPagerAdapter] = {
-    viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
-      case adapter: CollectionsPagerAdapter => Some(adapter)
-      case _ => None
-    }
+  def getAdapter: Option[CollectionsPagerAdapter] = viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
+    case adapter: CollectionsPagerAdapter => Some(adapter)
+    case _ => None
   }
 
   def configureEnterTransition(

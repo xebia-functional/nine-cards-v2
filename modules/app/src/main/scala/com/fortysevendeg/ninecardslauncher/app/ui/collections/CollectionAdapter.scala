@@ -5,12 +5,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.View.OnClickListener
 import android.view.{View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 
-class CollectionAdapter(collection: Collection, heightCard: Int)
+case class CollectionAdapter(var collection: Collection, heightCard: Int)
   (implicit activityContext: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with LauncherExecutor {
@@ -30,6 +30,11 @@ class CollectionAdapter(collection: Collection, heightCard: Int)
   override def onBindViewHolder(viewHolder: ViewHolderCollectionAdapter, position: Int): Unit = {
     val card = collection.cards(position)
     runUi(viewHolder.bind(card, position))
+  }
+
+  def addCard(card: Card) = {
+    collection = collection.copy(cards = collection.cards :+ card)
+    notifyItemInserted(collection.cards.length - 1)
   }
 
 }

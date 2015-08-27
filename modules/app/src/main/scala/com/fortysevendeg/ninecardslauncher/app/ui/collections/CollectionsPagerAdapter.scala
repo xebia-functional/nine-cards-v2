@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import macroid.{ContextWrapper, Ui}
 
-import scala.collection.mutable.WeakHashMap
+import scala.collection.mutable
 
 case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections: Seq[Collection])(implicit context: ContextWrapper)
   extends FragmentStatePagerAdapter(fragmentManager) {
 
-  val fragments : WeakHashMap[Int, CollectionFragment] = WeakHashMap.empty
+  val fragments: mutable.WeakHashMap[Int, CollectionFragment] = mutable.WeakHashMap.empty
 
   var scrollType = ScrollType.down
 
@@ -40,27 +40,23 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections
     super.destroyItem(container, position, `object`)
   }
 
-  def activateFragment(pos: Int) = {
-    for (f <- fragments) {
-      if (f._1 == pos) {
-        f._2.activeFragment = true
-      }
-    }
-  }
+  def getActiveFragment: Option[CollectionFragment] = fragments find (f => f._2.activeFragment) map (_._2)
 
-  def setScrollType(sType: Int) = scrollType = sType
+  def activateFragment(pos: Int): Unit = fragments foreach (f => if (f._1 == pos) f._2.activeFragment = true)
+
+  def setScrollType(sType: Int): Unit = scrollType = sType
 
   def notifyChanged(currentPosition: Int): Ui[_] = {
-    val uis = fragments map {
-      f =>
-        if (f._1 == currentPosition) {
+    val uis = fragments map { f =>
+      f._1 match {
+        case `currentPosition` =>
           f._2.activeFragment = true
           Ui.nop
-        } else {
+        case _ =>
           f._2.activeFragment = false
           f._2.scrollType(scrollType)
-        }
+      }
     }
-    Ui.sequence(uis.toSeq :_*)
+    Ui.sequence(uis.toSeq: _*)
   }
 }

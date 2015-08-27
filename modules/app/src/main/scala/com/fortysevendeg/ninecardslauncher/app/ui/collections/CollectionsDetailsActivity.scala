@@ -122,7 +122,11 @@ class CollectionsDetailsActivity
 
   override def onEndFinishAction(): Unit = removeActionFragment()
 
-  override def addCard(card: Card): Unit = runUi(uiShortToast(card.term))
+  override def addCard(card: Card): Unit = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+  } yield fragment.addCard(card)
+
 }
 
 trait ScrolledListener {
