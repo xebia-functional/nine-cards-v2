@@ -4,95 +4,95 @@ import android.content.{ContentProvider, ContentUris, ContentValues, UriMatcher}
 import android.database.Cursor
 import android.database.sqlite.{SQLiteDatabase, SQLiteQueryBuilder}
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.repository.commons._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider._
+import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 
 class NineCardsContentProvider extends ContentProvider {
 
   lazy val nineCardsSqlHelper = new NineCardsSqlHelper(getContext)
+
   lazy val database: Option[SQLiteDatabase] = Option[SQLiteDatabase](nineCardsSqlHelper.getWritableDatabase)
 
-  private[this] def getUriInfo(uri: Uri): (String, MimeType) = uriMatcher.`match`(uri) match {
-    case `codeCacheCategoryAllItems` => (CacheCategoryEntity.table, MimeTypeAllItems)
-    case `codeCacheCategorySingleItem` => (CacheCategoryEntity.table, MimeTypeSingleItem)
-    case `codeCardAllItems` => (CardEntity.table, MimeTypeAllItems)
-    case `codeCardSingleItem` => (CardEntity.table, MimeTypeSingleItem)
-    case `codeCollectionAllItems` => (CollectionEntity.table, MimeTypeAllItems)
-    case `codeCollectionSingleItem` => (CollectionEntity.table, MimeTypeSingleItem)
-    case `codeGeoInfoAllItems` => (GeoInfoEntity.table, MimeTypeAllItems)
-    case `codeGeoInfoSingleItem` => (GeoInfoEntity.table, MimeTypeSingleItem)
-    case _ => throw new IllegalArgumentException(invalidUri + uri)
-  }
+  private[this] def getUriInfo(uri: Uri): (String, MimeType) =
+    uriMatcher.`match`(uri) match {
+      case `codeCacheCategoryAllItems` => (CacheCategoryEntity.table, MimeTypeAllItems)
+      case `codeCacheCategorySingleItem` => (CacheCategoryEntity.table, MimeTypeSingleItem)
+      case `codeCardAllItems` => (CardEntity.table, MimeTypeAllItems)
+      case `codeCardSingleItem` => (CardEntity.table, MimeTypeSingleItem)
+      case `codeCollectionAllItems` => (CollectionEntity.table, MimeTypeAllItems)
+      case `codeCollectionSingleItem` => (CollectionEntity.table, MimeTypeSingleItem)
+      case `codeGeoInfoAllItems` => (GeoInfoEntity.table, MimeTypeAllItems)
+      case `codeGeoInfoSingleItem` => (GeoInfoEntity.table, MimeTypeSingleItem)
+      case _ => throw new IllegalArgumentException(invalidUri + uri)
+    }
 
-  override def onCreate(): Boolean = database match {
-    case Some(databaseObject) if databaseObject.isOpen => true
-    case _ => false
-  }
+  override def onCreate(): Boolean =
+    database match {
+      case Some(databaseObject) if databaseObject.isOpen => true
+      case _ => false
+    }
 
-  override def onLowMemory() {
+  override def onLowMemory() = {
     super.onLowMemory()
     nineCardsSqlHelper.close()
   }
 
-  override def getType(uri: Uri): String = {
+  override def getType(uri: Uri): String =
     getUriInfo(uri) match {
       case (_, MimeTypeAllItems) => mimeTypeAllItemsValue
       case (_, MimeTypeSingleItem) => mimeTypeSingleItemValue
     }
-  }
 
-  override def update(uri: Uri, values: ContentValues, selection: String, selectionArgs: Array[String]): Int = {
-    val (tableName, mimeType) = getUriInfo(uri)
-
-    mimeType match {
-      case MimeTypeSingleItem =>
+  override def update(
+    uri: Uri,
+    values: ContentValues,
+    selection: String,
+    selectionArgs: Array[String]): Int =
+    getUriInfo(uri) match {
+      case (tableName, MimeTypeSingleItem) =>
         getOrOpenDatabase.update(
           tableName,
           values,
           s"${NineCardsSqlHelper.id} = ?",
           Seq(uri.getPathSegments.get(1)).toArray)
-      case MimeTypeAllItems =>
+      case (tableName, MimeTypeAllItems) =>
         getOrOpenDatabase.update(tableName, values, selection, selectionArgs)
     }
-  }
 
-  override def insert(uri: Uri, values: ContentValues): Uri = {
-    val (tableName, mimeType) = getUriInfo(uri)
-
-    mimeType match {
-      case MimeTypeAllItems =>
+  override def insert(
+    uri: Uri,
+    values: ContentValues): Uri =
+    getUriInfo(uri) match {
+      case (tableName, MimeTypeAllItems) =>
         ContentUris.withAppendedId(
-          getUri(CacheCategoryUri),
+          uri,
           getOrOpenDatabase.insert(tableName, NineCardsSqlHelper.databaseName, values))
-      case _ => throw new IllegalArgumentException(invalidUri + uri)
+      case _ =>
+        throw new IllegalArgumentException(invalidUri + uri)
     }
-  }
 
-  override def delete(uri: Uri, selection: String, selectionArgs: Array[String]): Int = {
-    val (tableName, mimeType) = getUriInfo(uri)
-
-    mimeType match {
-      case MimeTypeSingleItem =>
+  override def delete(
+    uri: Uri,
+    selection: String,
+    selectionArgs: Array[String]): Int =
+    getUriInfo(uri) match {
+      case (tableName, MimeTypeSingleItem) =>
         getOrOpenDatabase.delete(
           tableName,
           s"${NineCardsSqlHelper.id} = ?",
           Seq(uri.getPathSegments.get(1)).toArray)
-      case MimeTypeAllItems =>
+      case (tableName, MimeTypeAllItems) =>
         getOrOpenDatabase.delete(tableName, selection, selectionArgs)
     }
-  }
 
   override def query(
     uri: Uri,
     projection: Array[String],
     selection: String,
     selectionArgs: Array[String],
-    sortOrder: String
-    ): Cursor = {
-    val (tableName, mimeType) = getUriInfo(uri)
-
-    mimeType match {
-      case MimeTypeSingleItem =>
+    sortOrder: String): Cursor =
+    getUriInfo(uri) match {
+      case (tableName, MimeTypeSingleItem) =>
         val queryBuilder = new SQLiteQueryBuilder()
         queryBuilder.setTables(tableName)
         queryBuilder.query(
@@ -103,12 +103,11 @@ class NineCardsContentProvider extends ContentProvider {
           null,
           null,
           sortOrder)
-      case MimeTypeAllItems =>
+      case (tableName, MimeTypeAllItems) =>
         val queryBuilder = new SQLiteQueryBuilder()
         queryBuilder.setTables(tableName)
         queryBuilder.query(getOrOpenDatabase, projection, selection, selectionArgs, null, null, sortOrder)
     }
-  }
 
   private[this] def getOrOpenDatabase = database match {
     case Some(databaseObject) if databaseObject.isOpen => databaseObject
@@ -117,9 +116,8 @@ class NineCardsContentProvider extends ContentProvider {
 }
 
 object NineCardsContentProvider {
+
   val invalidUri = "Invalid uri: "
-  val authorityPart = "com.fortysevendeg.ninecardslauncher2"
-  val contentPrefix = "content://"
   val codeCacheCategoryAllItems = 1
   val codeCacheCategorySingleItem = 2
   val codeCardAllItems = 3
@@ -141,12 +139,6 @@ object NineCardsContentProvider {
   uriMatcher.addURI(authorityPart, GeoInfoEntity.table, codeGeoInfoAllItems)
   uriMatcher.addURI(authorityPart, s"${GeoInfoEntity.table}/#", codeGeoInfoSingleItem)
 
-  def getUri(nineCardsUri: NineCardsUri): Uri = nineCardsUri match {
-    case CacheCategoryUri => Uri.parse(s"$contentPrefix$authorityPart/${CacheCategoryEntity.table}")
-    case CardUri => Uri.parse(s"$contentPrefix$authorityPart/${CardEntity.table}")
-    case CollectionUri => Uri.parse(s"$contentPrefix$authorityPart/${CollectionEntity.table}")
-    case GeoInfoUri => Uri.parse(s"$contentPrefix$authorityPart/${GeoInfoEntity.table}")
-  }
 }
 
 sealed trait MimeType

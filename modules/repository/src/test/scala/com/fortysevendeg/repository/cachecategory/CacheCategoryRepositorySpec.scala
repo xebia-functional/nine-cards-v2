@@ -1,7 +1,9 @@
 package com.fortysevendeg.repository.cachecategory
 
+import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.commons.{CacheCategoryUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.CacheCategory
 import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
@@ -22,101 +24,107 @@ trait CacheCategoryRepositorySpecification
     extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
-    lazy val cacheCategoryRepository = new CacheCategoryRepository(contentResolverWrapper)
+
+    lazy val uriCreator = mock[UriCreator]
+    
+    lazy val cacheCategoryRepository = new CacheCategoryRepository(contentResolverWrapper, uriCreator)
+
+    lazy val mockUri = mock[Uri]
   }
 
   trait ValidCacheCategoryRepositoryResponses
-    extends DBUtils
-    with CacheCategoryRepositoryTestData {
+    extends CacheCategoryRepositoryTestData {
 
     self: CacheCategoryRepositoryScope =>
 
-    contentResolverWrapper.insert(nineCardsUri = CacheCategoryUri, values = createCacheCategoryValues) returns testCacheCategoryId
+    uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.deleteById(nineCardsUri = CacheCategoryUri, id = testCacheCategoryId) returns 1
+    contentResolverWrapper.insert(uri = mockUri, values = createCacheCategoryValues) returns testCacheCategoryId
+
+    contentResolverWrapper.deleteById(uri = mockUri, id = testCacheCategoryId) returns 1
 
     contentResolverWrapper.delete(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       where = s"$packageName = ?",
       whereParams = Seq(testPackageName)) returns 1
 
     contentResolverWrapper.findById(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       id = testCacheCategoryId,
       projection = allFields)(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) returns Some(cacheCategoryEntity)
 
     contentResolverWrapper.findById(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       id = testNonExistingCacheCategoryId,
       projection = allFields)(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       projection = allFields)(
         f = getListFromCursor(cacheCategoryEntityFromCursor)) returns cacheCategoryEntitySeq
 
     contentResolverWrapper.fetch(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$packageName = ?",
       whereParams = Seq(testPackageName))(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) returns Some(cacheCategoryEntity)
 
     contentResolverWrapper.fetch(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$packageName = ?",
       whereParams = Seq(testNonExistingPackageName))(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(CacheCategoryUri, testCacheCategoryId, createCacheCategoryValues) returns 1
+    contentResolverWrapper.updateById(mockUri, testCacheCategoryId, createCacheCategoryValues) returns 1
   }
 
   trait ErrorCacheCategoryRepositoryResponses
-    extends DBUtils
-    with CacheCategoryRepositoryTestData {
+    extends CacheCategoryRepositoryTestData {
 
     self: CacheCategoryRepositoryScope =>
 
     val contentResolverException = new RuntimeException("Irrelevant message")
 
-    contentResolverWrapper.insert(nineCardsUri = CacheCategoryUri, values = createCacheCategoryValues) throws contentResolverException
+    uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.deleteById(nineCardsUri = CacheCategoryUri, id = testCacheCategoryId) throws contentResolverException
+    contentResolverWrapper.insert(uri = mockUri, values = createCacheCategoryValues) throws contentResolverException
+
+    contentResolverWrapper.deleteById(uri = mockUri, id = testCacheCategoryId) throws contentResolverException
 
     contentResolverWrapper.delete(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       where = s"$packageName = ?",
       whereParams = Seq(testPackageName)) throws contentResolverException
 
     contentResolverWrapper.findById(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       id = testCacheCategoryId,
       projection = allFields)(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       projection = allFields)(
         f = getListFromCursor(cacheCategoryEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
-      nineCardsUri = CacheCategoryUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$packageName = ?",
       whereParams = Seq(testPackageName))(
         f = getEntityFromCursor(cacheCategoryEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(CacheCategoryUri, testCacheCategoryId, createCacheCategoryValues) throws contentResolverException
+    contentResolverWrapper.updateById(mockUri, testCacheCategoryId, createCacheCategoryValues) throws contentResolverException
   }
 
 }
 
 trait CacheCategoryMockCursor
   extends MockCursor
-  with DBUtils
   with CacheCategoryRepositoryTestData {
 
   val cursorData = Seq(
@@ -133,7 +141,6 @@ trait CacheCategoryMockCursor
 
 trait EmptyCacheCategoryMockCursor
   extends MockCursor
-  with DBUtils
   with CacheCategoryRepositoryTestData {
 
   val cursorData = Seq(

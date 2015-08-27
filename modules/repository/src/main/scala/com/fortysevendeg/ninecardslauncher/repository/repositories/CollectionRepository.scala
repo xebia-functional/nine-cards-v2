@@ -1,20 +1,26 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
+import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
-import com.fortysevendeg.ninecardslauncher.repository.commons.{CollectionUri, ContentResolverWrapper, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
+import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.{allFields, position, _}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{CollectionEntity, DBUtils}
+import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scalaz.concurrent.Task
 
-class CollectionRepository(contentResolverWrapper: ContentResolverWrapper)
-  extends DBUtils
-  with ImplicitsRepositoryExceptions {
+class CollectionRepository(
+  contentResolverWrapper: ContentResolverWrapper,
+  uriCreator: UriCreator)
+  extends ImplicitsRepositoryExceptions {
+
+  val collectionUri = uriCreator.parse(collectionUriString)
 
   def addCollection(data: CollectionData): ServiceDef2[Collection, RepositoryException] =
     Service {
@@ -33,7 +39,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper)
             sharedCollectionSubscribed -> (data.sharedCollectionSubscribed getOrElse false))
 
           val id = contentResolverWrapper.insert(
-            nineCardsUri = CollectionUri,
+            uri = collectionUri,
             values = values)
 
           Collection(id = id, data = data)
@@ -46,7 +52,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
-            nineCardsUri = CollectionUri,
+            uri = collectionUri,
             id = collection.id)
         }
       }
@@ -57,7 +63,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.findById(
-            nineCardsUri = CollectionUri,
+            uri = collectionUri,
             id = id,
             projection = allFields)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
         }
@@ -110,7 +116,7 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper)
             sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed getOrElse false))
 
           contentResolverWrapper.updateById(
-            nineCardsUri = CollectionUri,
+            uri = collectionUri,
             id = collection.id,
             values = values)
         }
@@ -118,26 +124,26 @@ class CollectionRepository(contentResolverWrapper: ContentResolverWrapper)
     }
 
   private[this] def fetchCollection(
-    nineCardsUri: NineCardsUri = CollectionUri,
+    uri: Uri = collectionUri,
     projection: Seq[String] = allFields,
     selection: String = "",
     selectionArgs: Seq[String] = Seq.empty[String],
     sortOrder: String = "") =
     contentResolverWrapper.fetch(
-      nineCardsUri = nineCardsUri,
+      uri = uri,
       projection = projection,
       where = selection,
       whereParams = selectionArgs,
       orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
 
   private[this] def fetchCollections(
-    nineCardsUri: NineCardsUri = CollectionUri,
+    uri: Uri = collectionUri,
     projection: Seq[String] = allFields,
     selection: String = "",
     selectionArgs: Seq[String] = Seq.empty[String],
     sortOrder: String = "") =
     contentResolverWrapper.fetchAll(
-      nineCardsUri = nineCardsUri,
+      uri = uri,
       projection = projection,
       where = selection,
       whereParams = selectionArgs,
