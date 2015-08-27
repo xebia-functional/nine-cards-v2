@@ -126,6 +126,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">#ffffff</item>
+        <item name="android:clickable">true</item>
     </style>
 
     <style name="LauncherDrawerLayoutContent">
@@ -136,8 +137,30 @@
 
     <style name="LauncherDrawerToolbar">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/height_toolbar_app_drawer</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
         <item name="android:background">@color/drawer_toolbar</item>
+    </style>
+
+    <style name="LauncherDrawerTab">
+        <item name="android:layout_width">@dimen/min_size_app_drawer_tab</item>
+        <item name="android:layout_height">@dimen/height_toolbar_app_drawer</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/drawer_tab_color_default</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:drawablePadding">@dimen/padding_default</item>
+    </style>
+
+    <style name="LauncherDrawerTabApp" parent="LauncherDrawerTab">
+        <item name="android:drawableLeft">@drawable/app_drawer_icon_list_app</item>
+        <item name="android:text">@string/apps</item>
+    </style>
+
+    <style name="LauncherDrawerTabContact" parent="LauncherDrawerTab">
+        <item name="android:drawableLeft">@drawable/app_drawer_icon_list_contact</item>
+        <item name="android:text">@string/contacts</item>
     </style>
 
     <style name="LauncherDrawerInnerContent">
@@ -148,9 +171,12 @@
     <style name="LauncherDrawerFabButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/margin_app_drawer_fab_button</item>
-        <item name="layout_anchor">@id/launcher_drawer_toolbar</item>
-        <item name="layout_anchorGravity">bottom|right|end</item>
+        <item name="android:layout_marginBottom">@dimen/margin_app_drawer_fab_button</item>
+        <item name="android:layout_marginLeft">@dimen/margin_app_drawer_fab_button</item>
+        <item name="android:layout_marginRight">@dimen/margin_app_drawer_fab_button</item>
+        <item name="android:layout_marginTop">@dimen/margin_top_app_drawer_fab_button</item>
+        <item name="android:src">@drawable/app_drawer_icon_google_play</item>
+        <item name="android:layout_gravity">right</item>
         <item name="borderWidth">0dp</item>
         <item name="elevation">@dimen/elevation_fab_button</item>
         <item name="pressedTranslationZ">@dimen/elevation_fab_button_pressed</item>

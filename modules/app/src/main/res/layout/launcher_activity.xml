@@ -110,9 +110,19 @@
         <LinearLayout
             style="@style/LauncherDrawerLayoutContent">
 
-            <FrameLayout
+            <LinearLayout
                 android:id="@+id/launcher_drawer_toolbar"
-                style="@style/LauncherDrawerToolbar"/>
+                style="@style/LauncherDrawerToolbar">
+                
+                <TextView
+                    android:id="@+id/launcher_drawer_tab_app"
+                    style="@style/LauncherDrawerTabApp"/>
+
+                <TextView
+                    android:id="@+id/launcher_drawer_tab_contact"
+                    style="@style/LauncherDrawerTabContact"/>
+                
+            </LinearLayout>
 
             <FrameLayout
                 android:id="@+id/launcher_drawer_inner_content"
