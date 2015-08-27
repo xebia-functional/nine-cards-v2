@@ -70,10 +70,10 @@ class CollectionProcessImpl(
   override def getCardsByCollectionId(collectionId: Int) = (
     persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]
 
-  override def addCardList(collectionId: Int, addCardListRequest: Seq[AddCardRequest]) =
+  override def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]) =
     (for {
       cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId))
-      addedCardList <- addCardListService(collectionId, addCardListRequest)
+      addedCardList <- addCardList(collectionId, addCardListRequest)
     } yield toCardSeq(addedCardList)).resolve[CardException]
 
   override def deleteCard(collectionId: Int, cardId: Int) =
@@ -129,7 +129,7 @@ class CollectionProcessImpl(
     Task.gatherUnordered(tasks) map (c => CatchAll[CollectionException](c.collect { case Answer(r) => r}))
   }
 
-  private[this] def addCardListService(collectionId: Int, cardList: Seq[AddCardRequest]) = Service {
+  private[this] def addCardList(collectionId: Int, cardList: Seq[AddCardRequest]) = Service {
     val tasks = cardList map (card => persistenceServices.addCard(toAddCardRequest(collectionId, card, cardList.size)).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
   }

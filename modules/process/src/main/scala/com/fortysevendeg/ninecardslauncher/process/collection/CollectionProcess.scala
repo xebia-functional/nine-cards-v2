@@ -77,7 +77,7 @@ trait CollectionProcess {
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Card] of the new cards
    * @throws CardException if there was an error getting the existing cards or adding the new one
    */
-  def addCardList(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): ServiceDef2[Seq[Card], CardException]
+  def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): ServiceDef2[Seq[Card], CardException]
 
   /**
    * Deletes a Card and updates the position of the other Cards in the Collection

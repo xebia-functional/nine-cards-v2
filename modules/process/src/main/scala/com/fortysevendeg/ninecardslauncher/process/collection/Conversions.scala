@@ -25,7 +25,7 @@ trait Conversions {
     appsCategory = servicesCollection.appsCategory,
     constrains = servicesCollection.constrains,
     originalSharedCollectionId = servicesCollection.originalSharedCollectionId,
-    sharedCollectionId = servicesCollection.originalSharedCollectionId,
+    sharedCollectionId = servicesCollection.sharedCollectionId,
     sharedCollectionSubscribed = servicesCollection.sharedCollectionSubscribed,
     cards = servicesCollection.cards map toCard
   )

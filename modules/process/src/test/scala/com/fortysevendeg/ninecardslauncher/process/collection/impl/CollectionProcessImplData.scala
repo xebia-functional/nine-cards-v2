@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
@@ -221,7 +222,6 @@ trait CollectionProcessImplData {
       )
     }
 
-
   val seqFormedCollection = createSeqFormedCollection()
 
   def createSeqServiceContact(num: Int = 10) =
@@ -240,4 +240,38 @@ trait CollectionProcessImplData {
     _.copy(info = Option(ContactInfo(Seq.empty, Seq(ContactPhone(phoneNumber, PhoneHome)))))
   }
 
+  val addCollectionRequest = AddCollectionRequest(
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory))
+
+  val servicesCollectionAdded = servicesModel.Collection(
+    id = seqServicesCollection.size,
+    position = seqServicesCollection.size,
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    constrains = Option(constrains),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = sharedCollectionSubscribed
+  )
+
+  val collectionAdded = Collection(
+    id = seqServicesCollection.size,
+    position = seqServicesCollection.size,
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    constrains = Option(constrains),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = sharedCollectionSubscribed
+  )
 }
