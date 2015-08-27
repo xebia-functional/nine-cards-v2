@@ -276,4 +276,18 @@ trait CollectionProcessImplData {
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed
   )
+
+  val updatedCollection = Collection(
+    id = seqServicesCollection.head.id,
+    position = seqServicesCollection.head.position,
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    constrains = Option(constrains),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = sharedCollectionSubscribed
+  )
 }

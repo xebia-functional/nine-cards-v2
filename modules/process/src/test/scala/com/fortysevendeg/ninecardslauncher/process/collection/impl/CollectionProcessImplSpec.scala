@@ -210,6 +210,26 @@ trait CollectionProcessImplSpecification
 
   }
 
+  trait ValidEditCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(seqServicesCollection.headOption)))
+    mockPersistenceServices.updateCollection(any) returns Service(Task(Result.answer(seqServicesCollection.head.id)))
+
+  }
+
+  trait ErrorEditCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(seqServicesCollection.headOption)))
+    mockPersistenceServices.updateCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
 }
 
 class CollectionProcessImplSpec
@@ -406,12 +426,44 @@ class CollectionProcessImplSpec
         }
       }
 
-    "returns an empty Sequence if the service throws a exception updating the collections" in
+    "returns an empty Sequence if the service throws a exception updating the collection" in
       new CollectionProcessScope with ErrorReorderUpdateCollectionsPersistenceServicesResponses {
         val result = collectionProcess.reorderCollection(0, newPosition).run.run
         result must beLike {
           case Answer(resultCollection) =>
             resultCollection shouldEqual ((): Unit)
+        }
+      }
+  }
+
+  "editCollection" should {
+
+    "returns a collections for a valid request" in
+      new CollectionProcessScope with ValidEditCollectionPersistenceServicesResponses {
+        val result = collectionProcess.editCollection(collection.id, name, Some(appsCategory)).run.run
+        result must beLike {
+          case Answer(resultCollection) =>
+            resultCollection shouldEqual updatedCollection
+        }
+      }
+
+    "returns a CollectionException if the service throws a exception finding the collection by Id" in
+      new CollectionProcessScope with ErrorFindCollectionByIdPersistenceServicesResponses {
+        val result = collectionProcess.editCollection(collection.id, name, Some(appsCategory)).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+          }
+        }
+      }
+
+    "returns a CollectionException if the service throws a exception updating the collections" in
+      new CollectionProcessScope with ErrorEditCollectionPersistenceServicesResponses {
+        val result = collectionProcess.editCollection(collection.id, name, Some(appsCategory)).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+          }
         }
       }
   }

@@ -58,7 +58,7 @@ trait Conversions {
     appsCategory = collection.appsCategory,
     constrains = collection.constrains,
     originalSharedCollectionId = collection.originalSharedCollectionId,
-    sharedCollectionId = collection.originalSharedCollectionId,
+    sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = Option(collection.sharedCollectionSubscribed),
     cards = collection.cards map toServicesCard
   )
@@ -73,7 +73,7 @@ trait Conversions {
     appsCategory = collection.appsCategory,
     constrains = collection.constrains,
     originalSharedCollectionId = collection.originalSharedCollectionId,
-    sharedCollectionId = collection.originalSharedCollectionId,
+    sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
     cards = collection.cards
   )
@@ -88,7 +88,7 @@ trait Conversions {
     appsCategory = appsCategory,
     constrains = collection.constrains,
     originalSharedCollectionId = collection.originalSharedCollectionId,
-    sharedCollectionId = collection.originalSharedCollectionId,
+    sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
     cards = collection.cards
   )
