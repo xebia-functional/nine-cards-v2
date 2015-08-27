@@ -55,8 +55,8 @@ class LauncherActivity
 
   override def onBackPressed(): Unit = if (fabMenuOpened) {
     runUi(swapFabButton)
-  } else if (isDrawerVisible()) {
-    runUi(unrevealDrawer)
+  } else if (isDrawerVisible) {
+    runUi(revealOutDrawer)
   } else {
     super.onBackPressed()
   }

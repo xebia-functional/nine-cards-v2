@@ -1,23 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import android.animation.{Animator, AnimatorListenerAdapter}
 import android.content.Intent
 import android.speech.RecognizerIntent
 import android.support.v7.app.AppCompatActivity
-import android.view.animation.DecelerateInterpolator
-import android.view.{View, ViewAnimationUtils}
+import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
@@ -29,7 +26,6 @@ import macroid.FullDsl._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 
 trait LauncherComposer
   extends Styles
@@ -85,7 +81,6 @@ trait LauncherComposer
           val collectionScreen = workspaces exists (_.isCollectionScreen)
           if (collectionScreen && !goToWizardScreen) showFabButton
         })))) ~
-      updateToolbarColor(resGetColor(android.R.color.transparent)) ~
       (searchPanel <~ searchContentStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
@@ -111,7 +106,7 @@ trait LauncherComposer
         uiShortToast("App 4")
       }) ~
       (appDrawerMain <~ drawerAppStyle <~ On.click {
-        revealDrawer
+        revealInDrawer
       }) ~
       (drawerContent <~ vGone)
 
@@ -122,7 +117,11 @@ trait LauncherComposer
         lwsAddPageChangedObserver(currentPage => {
           val widgetScreen = workspaces exists (_.isWidgetScreen(currentPage))
           runUi((paginationPanel <~ reloadPager(currentPage)) ~
-             (if (widgetScreen) { hideFabButton } else { Ui.nop }))
+            (if (widgetScreen) {
+              hideFabButton
+            } else {
+              Ui.nop
+            }))
         }
         )) ~
       (appDrawerPanel <~ fillAppDrawer(collections)) ~
@@ -175,74 +174,37 @@ trait LauncherComposer
     override def run(): Unit = runUi(fabButton <~ hideFabMenu)
   }
 
-  private[this] def updateToolbarColor(color: Int): Ui[_] =
-//    (toolbar <~ vBackgroundColor(color)) ~
-      Ui {
-        Lollipop ifSupportedThen {
-          getWindow.setStatusBarColor(color)
-          getWindow.setNavigationBarColor(color)
-        } getOrElse {
-          systemBarTintManager.setStatusBarTintColor(color)
-          systemBarTintManager.setNavigationBarTintColor(color)
-        }
+  private[this] def updateStatusColor(color: Int): Ui[_] =
+    Ui {
+      Lollipop ifSupportedThen {
+        getWindow.setStatusBarColor(color)
+      } getOrElse {
+        systemBarTintManager.setStatusBarTintColor(color)
       }
+    }
+
+  private[this] def updateNavigationColor(color: Int): Ui[_] =
+    Ui {
+      Lollipop ifSupportedThen {
+        getWindow.setNavigationBarColor(color)
+      } getOrElse {
+        systemBarTintManager.setNavigationBarTintColor(color)
+      }
+    }
 
   def isDrawerVisible = drawerContent map (_.getVisibility) match {
     case Some(View.VISIBLE) => true
     case _ => false
   }
 
-  def revealDrawer(implicit context: ActivityContextWrapper): Ui[_] = {
-    updateToolbarColor(resGetColor(R.color.drawer_toolbar)) ~
-      (Lollipop.ifSupportedThen(revealDrawerLollipop) getOrElse revealDrawerPreLollipop())
-  }
+  def revealInDrawer(implicit context: ActivityContextWrapper): Ui[_] =
+    updateNavigationColor(resGetColor(android.R.color.black)) ~
+      (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source))) ~~
+      updateStatusColor(resGetColor(R.color.drawer_toolbar))
 
-  private[this] def revealDrawerLollipop(implicit context: ActivityContextWrapper): Ui[_] = Ui {
-    drawerContent foreach { view =>
-      val sb = resGetDimensionPixelSize("status_bar_height") getOrElse 25 dp
-      val (cx, cy) = appDrawerMain map { v =>
-        val location = new Array[Int](2)
-        v.getLocationOnScreen(location)
-        (location(0) + v.getWidth / 2, location(1) + v.getHeight / 2 - sb)
-      } getOrElse(0, 0)
-      val drawerButtonSize = resGetDimensionPixelSize(R.dimen.size_icon_app_drawer)
-      val endRadius = SnailsUtils.calculateRadius(width = cx, height = cy)
-      val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx, cy, drawerButtonSize / 2, endRadius)
-      reveal.addListener(new AnimatorListenerAdapter {
-        override def onAnimationStart(animation: Animator): Unit = view.setVisibility(View.VISIBLE)
-      })
-      reveal.setInterpolator(new DecelerateInterpolator(2f))
-      reveal.start()
-    }
-  }
-
-  private[this] def revealDrawerPreLollipop(): Ui[_] =
-    drawerContent <~ fadeIn(300)
-
-  def unrevealDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-      updateToolbarColor(resGetColor(android.R.color.transparent)) ~
-      (Lollipop.ifSupportedThen(unrevealDrawerLollipop) getOrElse unrevealDrawerPreLollipop())
-
-  def unrevealDrawerLollipop(implicit context: ActivityContextWrapper): Ui[_] =
-    Ui {
-      drawerContent foreach { view =>
-        val sb = resGetDimensionPixelSize("status_bar_height") getOrElse 25 dp
-        val (cx, cy) = appDrawerMain map { v =>
-          val location = new Array[Int](2)
-          v.getLocationOnScreen(location)
-          (location(0) + v.getWidth / 2, location(1) + v.getHeight / 2 - sb)
-        } getOrElse(0, 0)
-        val drawerButtonSize = resGetDimensionPixelSize(R.dimen.size_icon_app_drawer)
-        val startRadius = SnailsUtils.calculateRadius(width = cx, height = cy)
-        val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx, cy, startRadius, drawerButtonSize / 2)
-        reveal.addListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator): Unit = view.setVisibility(View.GONE)
-        })
-        reveal.setInterpolator(new DecelerateInterpolator(2f))
-        reveal.start()
-      }
-    }
-
-  def unrevealDrawerPreLollipop(): Ui[_] = drawerContent <~ fadeOut(300)
+  def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
+    updateStatusColor(resGetColor(android.R.color.transparent)) ~
+      updateNavigationColor(resGetColor(android.R.color.transparent)) ~
+      (appDrawerMain mapUi (source => drawerContent <~ revealOutAppDrawer(source)))
 
 }
