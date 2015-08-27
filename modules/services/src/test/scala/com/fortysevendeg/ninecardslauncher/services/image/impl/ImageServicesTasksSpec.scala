@@ -251,7 +251,6 @@ trait ImageServicesTasksSpecification
 
   }
 
-
 }
 
 

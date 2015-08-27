@@ -2,21 +2,22 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v4.app.Fragment
 import android.support.v7.widget.{CardView, GridLayoutManager, RecyclerView}
-import android.widget.{ImageView, LinearLayout, TextView}
+import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RecyclerViewListenerTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{NineRecyclerView, PullToCloseListener, PullToCloseView}
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, _}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
 import macroid.FullDsl._
 import macroid._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
 
 trait CollectionFragmentComposer
   extends CollectionFragmentStyles {
@@ -118,6 +119,8 @@ trait CollectionFragmentComposer
 class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
   extends CollectionAdapterStyles {
 
+  var iconContent = slot[FrameLayout]
+
   var icon = slot[ImageView]
 
   var name = slot[TextView]
@@ -127,7 +130,9 @@ class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContext
   private def layout(implicit context: ActivityContextWrapper) = getUi(
     l[CardView](
       l[LinearLayout](
-        w[ImageView] <~ wire(icon) <~ iconStyle,
+        l[FrameLayout](
+          w[ImageView] <~ wire(icon) <~ iconStyle
+        ) <~ wire(iconContent) <~ iconContentStyle(heightCard),
         w[TextView] <~ wire(name) <~ nameStyle
       ) <~ contentStyle
     ) <~ rootStyle(heightCard)
@@ -136,12 +141,20 @@ class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContext
 }
 
 class ViewHolderCollectionAdapter(adapter: CollectionLayoutAdapter)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(adapter.content) {
+  extends RecyclerView.ViewHolder(adapter.content)
+  with CollectionAdapterStyles {
 
   val content = adapter.content
+
+  val iconContent = adapter.iconContent
 
   val icon = adapter.icon
 
   val name = adapter.name
+
+  def bind(card: Card, position: Int)(implicit fragment: Fragment): Ui[_] =
+    (icon <~ iconCardTransform(card)) ~
+      (name <~ tvText(card.term)) ~
+      (content <~ vTag(position.toString))
 
 }

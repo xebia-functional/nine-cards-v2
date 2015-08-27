@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapperImpl
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider._
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactNotFoundException, ContactsServiceException, Fields}
 import org.specs2.mock.Mockito

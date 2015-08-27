@@ -67,17 +67,17 @@ object LauncherWorkSpacesTweaks {
     collections match {
       case Nil if newLauncherData.collections.nonEmpty => acc :+ newLauncherData
       case Nil => acc
-      case h :: t if newLauncherData.collections.length == Constants.numSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(false))
+      case h :: t if newLauncherData.collections.length == Constants.numSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(widgets = false, Seq(h)))
       case h :: t =>
         val g: Seq[Collection] = newLauncherData.collections :+ h
-        val n = LauncherData(false, g)
+        val n = LauncherData(widgets = false, g)
         getCollectionsItems(t, acc, n)
     }
   }
 
   def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] {
     workspaces =>
-      workspaces.data = LauncherData(true) +: getCollectionsItems(collections, Seq.empty, LauncherData(false))
+      workspaces.data = LauncherData(widgets = true) +: getCollectionsItems(collections, Seq.empty, LauncherData(widgets = false))
       workspaces.init(pageSelected)
   }
 

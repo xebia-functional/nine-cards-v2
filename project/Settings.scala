@@ -113,7 +113,10 @@ object Settings {
     specs2,
     mockito)
 
-  lazy val commonsDependencies = Seq(androidProvidedLib)
+  lazy val commonsDependencies = Seq(
+    androidProvidedLib,
+    specs2,
+    mockito)
 
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,

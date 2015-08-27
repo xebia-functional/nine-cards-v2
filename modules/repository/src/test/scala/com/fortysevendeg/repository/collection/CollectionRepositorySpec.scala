@@ -1,7 +1,9 @@
 package com.fortysevendeg.repository.collection
 
+import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.commons.{CollectionUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.Collection
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
@@ -22,33 +24,39 @@ trait CollectionRepositorySpecification
     extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
-    lazy val collectionRepository = new CollectionRepository(contentResolverWrapper)
+
+    lazy val uriCreator = mock[UriCreator]
+
+    lazy val collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator)
+
+    lazy val mockUri = mock[Uri]
   }
 
   trait ValidCollectionRepositoryResponses
-    extends DBUtils
-    with CollectionRepositoryTestData {
+    extends CollectionRepositoryTestData {
 
     self: CollectionRepositoryScope =>
 
-    contentResolverWrapper.insert(CollectionUri, createCollectionValues) returns testCollectionId
+    uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.deleteById(CollectionUri, testCollectionId) returns 1
+    contentResolverWrapper.insert(mockUri, createCollectionValues) returns testCollectionId
+
+    contentResolverWrapper.deleteById(mockUri, testCollectionId) returns 1
 
     contentResolverWrapper.findById(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       id = testCollectionId,
       projection = allFields)(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
 
     contentResolverWrapper.findById(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       id = testNonExistingCollectionId,
       projection = allFields)(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       projection = allFields,
       where = "",
       whereParams = Seq.empty,
@@ -56,7 +64,7 @@ trait CollectionRepositorySpecification
         f = getListFromCursor(collectionEntityFromCursor)) returns collectionEntitySeq
 
     contentResolverWrapper.fetch(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$position = ?",
       whereParams = Seq(testPosition.toString),
@@ -64,7 +72,7 @@ trait CollectionRepositorySpecification
         f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
 
     contentResolverWrapper.fetch(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$position = ?",
       whereParams = Seq(testNonExistingPosition.toString),
@@ -72,7 +80,7 @@ trait CollectionRepositorySpecification
         f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
     contentResolverWrapper.fetch(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$originalSharedCollectionId = ?",
       whereParams = Seq(testSharedCollectionId),
@@ -80,36 +88,37 @@ trait CollectionRepositorySpecification
         f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
 
     contentResolverWrapper.fetch(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$originalSharedCollectionId = ?",
       whereParams = Seq(testNonExistingSharedCollectionId),
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(CollectionUri, testCollectionId, createCollectionValues) returns 1
+    contentResolverWrapper.updateById(mockUri, testCollectionId, createCollectionValues) returns 1
   }
 
   trait ErrorCollectionRepositoryResponses
-    extends DBUtils
-    with CollectionRepositoryTestData {
+    extends CollectionRepositoryTestData {
 
     self: CollectionRepositoryScope =>
 
     val contentResolverException = new RuntimeException("Irrelevant message")
 
-    contentResolverWrapper.insert(CollectionUri, createCollectionValues) throws contentResolverException
+    uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.deleteById(CollectionUri, testCollectionId) throws contentResolverException
+    contentResolverWrapper.insert(mockUri, createCollectionValues) throws contentResolverException
+
+    contentResolverWrapper.deleteById(mockUri, testCollectionId) throws contentResolverException
 
     contentResolverWrapper.findById(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       id = testCollectionId,
       projection = allFields)(
         f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       projection = allFields,
       where = "",
       whereParams = Seq.empty,
@@ -117,7 +126,7 @@ trait CollectionRepositorySpecification
         f = getListFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$position = ?",
       whereParams = Seq(testPosition.toString),
@@ -125,21 +134,20 @@ trait CollectionRepositorySpecification
         f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
-      nineCardsUri = CollectionUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$originalSharedCollectionId = ?",
       whereParams = Seq(testSharedCollectionId),
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(CollectionUri, testCollectionId, createCollectionValues) throws contentResolverException
+    contentResolverWrapper.updateById(mockUri, testCollectionId, createCollectionValues) throws contentResolverException
   }
 
 }
 
 trait CollectionMockCursor
   extends MockCursor
-  with DBUtils
   with CollectionRepositoryTestData {
 
   val cursorData = Seq(
@@ -161,7 +169,6 @@ trait CollectionMockCursor
 
 trait EmptyCollectionMockCursor
   extends MockCursor
-  with DBUtils
   with CollectionRepositoryTestData {
 
   val cursorData = Seq(

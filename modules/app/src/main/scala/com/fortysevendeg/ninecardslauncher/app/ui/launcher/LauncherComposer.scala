@@ -29,6 +29,7 @@ import macroid.FullDsl._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 
 trait LauncherComposer
   extends Styles
