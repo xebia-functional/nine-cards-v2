@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.process.collection.{EditCollectionRequest, AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
@@ -174,8 +174,7 @@ trait CollectionProcessImplData {
         starRating = starRating,
         numDownloads = numDownloads,
         ratingsCount = ratingsCount,
-        commentCount = commentCount
-      )
+        commentCount = commentCount)
     }
 
   val seqCard = createSeqCard()
@@ -206,8 +205,7 @@ trait CollectionProcessImplData {
     constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
-    sharedCollectionSubscribed = sharedCollectionSubscribed
-  )
+    sharedCollectionSubscribed = sharedCollectionSubscribed)
 
   def createSeqFormedCollection(num: Int = 150) =
     (0 until num) map { item =>
@@ -220,8 +218,7 @@ trait CollectionProcessImplData {
         collectionType = collectionType,
         constrains = Seq(constrains),
         icon = icon,
-        category = Option(categories(Random.nextInt(categories.length)))
-      )
+        category = Option(categories(Random.nextInt(categories.length))))
     }
 
   val seqFormedCollection = createSeqFormedCollection()
@@ -232,8 +229,7 @@ trait CollectionProcessImplData {
         name = name,
         lookupKey = lookupKey,
         photoUri = photoUri,
-        favorite = true
-      )
+        favorite = true)
     }
 
   val seqContacts: Seq[ServiceContact] = createSeqServiceContact()
@@ -260,8 +256,7 @@ trait CollectionProcessImplData {
     constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
-    sharedCollectionSubscribed = sharedCollectionSubscribed
-  )
+    sharedCollectionSubscribed = sharedCollectionSubscribed)
 
   val collectionAdded = Collection(
     id = seqServicesCollection.size,
@@ -274,8 +269,13 @@ trait CollectionProcessImplData {
     constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
-    sharedCollectionSubscribed = sharedCollectionSubscribed
-  )
+    sharedCollectionSubscribed = sharedCollectionSubscribed)
+
+  val editCollectionRequest = EditCollectionRequest(
+    name = name,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory))
 
   val updatedCollection = Collection(
     id = seqServicesCollection.head.id,
@@ -288,8 +288,7 @@ trait CollectionProcessImplData {
     constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
-    sharedCollectionSubscribed = sharedCollectionSubscribed
-  )
+    sharedCollectionSubscribed = sharedCollectionSubscribed)
 
   val seqAddCardRequest = createSeqAddCardRequest()
   val addCardRequest = seqAddCardRequest.head
@@ -332,16 +331,15 @@ trait CollectionProcessImplData {
         notification = Option(notification)))
 
   def updatedCard = Card(
-      id = cardId,
-      position = position,
-      micros = micros,
-      term = name,
-      packageName = Option(packageName),
-      cardType = cardType,
-      intent = Json.parse(intent).as[NineCardIntent],
-      imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
-      notification = Option(notification)
-  )
+    id = cardId,
+    position = position,
+    micros = micros,
+    term = name,
+    packageName = Option(packageName),
+    cardType = cardType,
+    intent = Json.parse(intent).as[NineCardIntent],
+    imagePath = imagePath,
+    starRating = Option(starRating),
+    numDownloads = Option(numDownloads),
+    notification = Option(notification))
 }

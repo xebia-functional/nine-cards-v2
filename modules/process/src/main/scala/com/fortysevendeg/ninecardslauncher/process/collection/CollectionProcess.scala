@@ -55,12 +55,11 @@ trait CollectionProcess {
   /**
    * Edits a Collection and allows to change the name and the appsCategory of the Collection
    * @param collectionId the Id of the Collection
-   * @param name the new name of the Collection
-   * @param appsCategory the new appsCategory
+   * @param editCollectionRequest includes the data that can be edit in a collection (name, icon, themedColorIndex and appsCategory)
    * @return the [[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]]
    * @throws CollectionException if there was an error finding the collection or updating it
    */
-  def editCollection(collectionId: Int, name: String, appsCategory: Option[String] = None): ServiceDef2[Collection, CollectionException]
+  def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest): ServiceDef2[Collection, CollectionException]
 
   /**
    * Adds some new Cards after the last existing one in a given Collection

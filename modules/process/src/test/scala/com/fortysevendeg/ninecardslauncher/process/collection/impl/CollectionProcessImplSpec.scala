@@ -594,7 +594,7 @@ class CollectionProcessImplSpec
 
     "returns a the updated collection for a valid request" in
       new CollectionProcessScope with ValidEditCollectionPersistenceServicesResponses {
-        val result = collectionProcess.editCollection(collectionId, name, Some(appsCategory)).run.run
+        val result = collectionProcess.editCollection(collectionId, editCollectionRequest).run.run
         result must beLike {
           case Answer(resultCollection) =>
             resultCollection shouldEqual updatedCollection
@@ -603,7 +603,7 @@ class CollectionProcessImplSpec
 
     "returns a CollectionException if the service throws a exception finding the collection by Id" in
       new CollectionProcessScope with ErrorFindCollectionPersistenceServicesResponses {
-        val result = collectionProcess.editCollection(collectionId, name, Some(appsCategory)).run.run
+        val result = collectionProcess.editCollection(collectionId, editCollectionRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
@@ -613,7 +613,7 @@ class CollectionProcessImplSpec
 
     "returns a CollectionException if the service throws a exception updating the collection" in
       new CollectionProcessScope with ErrorEditCollectionPersistenceServicesResponses {
-        val result = collectionProcess.editCollection(collectionId, name, Some(appsCategory)).run.run
+        val result = collectionProcess.editCollection(collectionId, editCollectionRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]

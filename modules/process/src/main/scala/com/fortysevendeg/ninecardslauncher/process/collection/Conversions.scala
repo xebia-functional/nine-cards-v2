@@ -27,8 +27,7 @@ trait Conversions {
     originalSharedCollectionId = servicesCollection.originalSharedCollectionId,
     sharedCollectionId = servicesCollection.sharedCollectionId,
     sharedCollectionSubscribed = servicesCollection.sharedCollectionSubscribed,
-    cards = servicesCollection.cards map toCard
-  )
+    cards = servicesCollection.cards map toCard)
 
   def toAddCollectionRequest(addCollectionRequest: AddCollectionRequest, position: Int) = ServicesAddCollectionRequest(
     position = position,
@@ -41,12 +40,10 @@ trait Conversions {
     originalSharedCollectionId = None,
     sharedCollectionId = None,
     sharedCollectionSubscribed = None,
-    cards = Seq()
-  )
+    cards = Seq())
 
   def toFindCollectionByIdRequest(collectionId: Int) = FindCollectionByIdRequest(
-    id = collectionId
-  )
+    id = collectionId)
 
   def toServicesUpdateCollectionRequest(collection: Collection) = ServicesUpdateCollectionRequest(
     id = collection.id,
@@ -60,8 +57,7 @@ trait Conversions {
     originalSharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = Option(collection.sharedCollectionSubscribed),
-    cards = collection.cards map toServicesCard
-  )
+    cards = collection.cards map toServicesCard)
 
   def toNewPositionCollection(collection: Collection, newPosition: Int) =  Collection(
     id = collection.id,
@@ -75,31 +71,27 @@ trait Conversions {
     originalSharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-    cards = collection.cards
-  )
+    cards = collection.cards)
 
-  def toUpdatedCollection(collection: Collection, name: String, appsCategory: Option[String]) =  Collection(
+  def toUpdatedCollection(collection: Collection, editCollectionRequest: EditCollectionRequest) =  Collection(
     id = collection.id,
     position = collection.position,
-    name = name,
+    name = editCollectionRequest.name,
     collectionType = collection.collectionType,
-    icon = collection.icon,
-    themedColorIndex = collection.themedColorIndex,
-    appsCategory = appsCategory,
+    icon = editCollectionRequest.icon,
+    themedColorIndex = editCollectionRequest.themedColorIndex,
+    appsCategory = editCollectionRequest.appsCategory,
     constrains = collection.constrains,
     originalSharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-    cards = collection.cards
-  )
+    cards = collection.cards)
 
   def toFetchCollectionByPositionRequest(pos: Int) = FetchCollectionByPositionRequest(
-    position = pos
-  )
+    position = pos)
 
   def toFetchCacheCategoryByPackageRequest(appsCategory: String) = FetchCacheCategoryByPackageRequest(
-    packageName = appsCategory
-  )
+    packageName = appsCategory)
 
   def toCardSeq(servicesCardSeq: Seq[ServicesCard]) = servicesCardSeq map toCard
 
@@ -138,12 +130,10 @@ trait Conversions {
     packageName = Option(item.packageName),
     cardType = app,
     intent = nineCardIntentToJson(toNineCardIntent(item)),
-    imagePath = item.imagePath
-  )
+    imagePath = item.imagePath)
 
   def toFetchCardsByCollectionRequest(collectionRequestId: Int) = FetchCardsByCollectionRequest(
-    collectionId = collectionRequestId
-  )
+    collectionId = collectionRequestId)
 
   def toAddCardRequest(collectionId: Int, addCardRequest: AddCardRequest, position: Int) = ServicesAddCardRequest (
     collectionId = Option(collectionId),
@@ -152,12 +142,10 @@ trait Conversions {
     packageName = addCardRequest.packageName,
     cardType = app,
     intent = nineCardIntentToJson(addCardRequest.intent),
-    imagePath = addCardRequest.imagePath
-  )
+    imagePath = addCardRequest.imagePath)
 
   def toFindCardByIdRequest(cardId: Int) = FindCardByIdRequest(
-    id = cardId
-  )
+    id = cardId)
 
   def toServicesUpdateCardRequest(card: Card) = ServicesUpdateCardRequest(
     id = card.id,
@@ -219,8 +207,7 @@ trait Conversions {
       packageName = None,
       cardType = cardType,
       intent = nineCardIntentToJson(intent),
-      imagePath = item.photoUri
-    )
+      imagePath = item.photoUri)
   }
 
   def toNineCardIntent(item: Contact): (NineCardIntent, String) = item match {

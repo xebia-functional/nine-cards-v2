@@ -59,10 +59,10 @@ class CollectionProcessImpl(
       _ <- updateCollectionList(reorderCollectionList(collectionList, newPosition, position))
     } yield ()).resolve[CollectionException]
 
-  override def editCollection(collectionId: Int, name: String, appsCategory: Option[String] = None) =
+  override def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest) =
     (for {
       Some(collection) <- findCollectionById(collectionId)
-      updatedCollection = toUpdatedCollection(toCollection(collection), name, appsCategory)
+      updatedCollection = toUpdatedCollection(toCollection(collection), editCollectionRequest)
       _ <- updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
