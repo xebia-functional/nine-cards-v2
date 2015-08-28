@@ -26,31 +26,9 @@ object ActionsSnails {
       Lollipop ifSupportedThen {
         val startRadius = resGetDimensionPixelSize(R.dimen.size_fab_menu_item) / 2
         val endRadius = SnailsUtils.calculateRadius(x, y, w, h)
-        val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, x, y, startRadius, endRadius)
-        reveal.setInterpolator(new DecelerateInterpolator())
-        reveal.setDuration(duration)
-        reveal.addListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator): Unit = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, null)
-            animPromise.success()
-          }
-        })
-        reveal.start()
+        circularReveal(view, x, y, w, h, duration, startRadius, endRadius, animPromise.success())
       } getOrElse {
-        view.setAlpha(0)
-        view
-          .animate
-          .setDuration(duration)
-          .setInterpolator(new DecelerateInterpolator())
-          .alpha(1f)
-          .setListener(new AnimatorListenerAdapter {
-            override def onAnimationEnd(animation: Animator) {
-              super.onAnimationEnd(animation)
-              view.setLayerType(View.LAYER_TYPE_NONE, null)
-              animPromise.success()
-            }
-          }).start()
+        fadeIn(view, duration, animPromise.success())
       }
       animPromise.future
   }
@@ -66,35 +44,70 @@ object ActionsSnails {
       Lollipop ifSupportedThen {
         val x = w / 2
         val y = (resGetDimensionPixelSize(R.dimen.size_icon_collection_detail) / 2 ) + (resGetDimensionPixelSize(R.dimen.padding_default) / 2)
-        val radius = SnailsUtils.calculateRadius(x, y, w, h)
-        val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, x, y, radius, 0)
-        reveal.setInterpolator(new DecelerateInterpolator())
-        reveal.setDuration(duration)
-        reveal.addListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator): Unit = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, null)
-            view.setVisibility(View.GONE)
-            animPromise.success()
-          }
+        val startRadius = SnailsUtils.calculateRadius(x, y, w, h)
+        circularReveal(view, x, y, w, h, duration, startRadius, 0, {
+          view.setVisibility(View.GONE)
+          animPromise.success()
         })
-        reveal.start()
       } getOrElse {
-        view
-          .animate
-          .setDuration(duration)
-          .setInterpolator(new AccelerateDecelerateInterpolator())
-          .alpha(0f)
-          .setListener(new AnimatorListenerAdapter {
-            override def onAnimationEnd(animation: Animator) {
-              super.onAnimationEnd(animation)
-              view.setLayerType(View.LAYER_TYPE_NONE, null)
-              animPromise.success()
-            }
-          }).start()
+        fadeOut(view, duration, animPromise.success())
       }
 
       animPromise.future
+  }
+
+  private[this] def circularReveal(
+    view: View,
+    x: Int,
+    y: Int,
+    w: Int,
+    h: Int,
+    duration: Int,
+    startRadius: Int,
+    endRadius: Int,
+    animationEnd: => Unit) = {
+    val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, x, y, startRadius, endRadius)
+    reveal.setInterpolator(new DecelerateInterpolator())
+    reveal.setDuration(duration)
+    reveal.addListener(new AnimatorListenerAdapter {
+      override def onAnimationEnd(animation: Animator): Unit = {
+        super.onAnimationEnd(animation)
+        view.setLayerType(View.LAYER_TYPE_NONE, null)
+        animationEnd
+      }
+    })
+    reveal.start()
+  }
+
+  private[this] def fadeIn(view: View, duration: Int, animationEnd: => Unit) = {
+    view.setAlpha(0)
+    view
+      .animate
+      .setDuration(duration)
+      .setInterpolator(new DecelerateInterpolator())
+      .alpha(1f)
+      .setListener(new AnimatorListenerAdapter {
+        override def onAnimationEnd(animation: Animator) {
+          super.onAnimationEnd(animation)
+          view.setLayerType(View.LAYER_TYPE_NONE, null)
+          animationEnd
+        }
+      }).start()
+  }
+
+  private[this] def fadeOut(view: View, duration: Int, animationEnd: => Unit) = {
+    view
+      .animate
+      .setDuration(duration)
+      .setInterpolator(new AccelerateDecelerateInterpolator())
+      .alpha(0f)
+      .setListener(new AnimatorListenerAdapter {
+        override def onAnimationEnd(animation: Animator) {
+          super.onAnimationEnd(animation)
+          view.setLayerType(View.LAYER_TYPE_NONE, null)
+          animationEnd
+        }
+      }).start()
   }
 
 }

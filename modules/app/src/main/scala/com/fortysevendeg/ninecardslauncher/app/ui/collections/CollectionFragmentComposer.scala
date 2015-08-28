@@ -122,16 +122,12 @@ trait CollectionFragmentComposer
     }
   }
 
-  def getAdapter: Option[CollectionAdapter] = (for {
-    rv <- recyclerView
-    adapter <- Option(rv.getAdapter)
-  } yield {
-      adapter match {
-        case adapter: CollectionAdapter => Some(adapter)
-        case _ => None
-      }
-    }).flatten
-
+  def getAdapter: Option[CollectionAdapter] = recyclerView flatMap { rv =>
+    Option(rv.getAdapter) match {
+      case Some(a: CollectionAdapter) => Some(a)
+      case _ => None
+    }
+  }
 
 }
 
