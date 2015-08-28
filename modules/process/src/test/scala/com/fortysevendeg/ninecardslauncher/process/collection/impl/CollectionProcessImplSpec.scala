@@ -7,7 +7,7 @@ import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionProcessConfig}
+import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.CollectionType
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
@@ -229,6 +229,36 @@ trait CollectionProcessImplSpecification
     mockPersistenceServices.updateCollection(any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
+
+  trait ValidAddCardPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
+    mockPersistenceServices.addCard(any) returns Service(Task(Result.answer(servicesCard)))
+
+  }
+
+  trait ErrorFetchCardsPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ErrorAddCardPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
+    mockPersistenceServices.addCard(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
 
 }
 
@@ -457,13 +487,44 @@ class CollectionProcessImplSpec
         }
       }
 
-    "returns a CollectionException if the service throws a exception updating the collections" in
+    "returns a CollectionException if the service throws a exception updating the collection" in
       new CollectionProcessScope with ErrorEditCollectionPersistenceServicesResponses {
         val result = collectionProcess.editCollection(collection.id, name, Some(appsCategory)).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
           }
+        }
+      }
+  }
+
+  "addCard" should {
+
+    "returns a sequence of cards for a valid request" in
+      new CollectionProcessScope with ValidAddCardPersistenceServicesResponses {
+        val result = collectionProcess.addCards(collection.id, seqAddCardRequest).run.run
+        result must beLike {
+          case Answer(resultCards) =>
+            resultCards shouldEqual seqAddCardResponse
+        }
+      }
+
+    "returns a CardException if service throws a exception fetching the cards" in
+      new CollectionProcessScope with ErrorFetchCardsPersistenceServicesResponses {
+        val result = collectionProcess.addCards(collection.id, seqAddCardRequest).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CardException]
+          }
+        }
+      }
+
+    "returns an empty Sequence if the service throws a exception adding the new card" in
+      new CollectionProcessScope with ErrorAddCardPersistenceServicesResponses {
+        val result = collectionProcess.addCards(collection.id, seqAddCardRequest).run.run
+        result must beLike {
+          case Answer(resultCollection) =>
+            resultCollection shouldEqual Seq()
         }
       }
   }

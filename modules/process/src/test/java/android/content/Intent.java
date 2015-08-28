@@ -140,7 +140,9 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
     public  int fillIn(android.content.Intent other, int flags) { throw new RuntimeException("<Stub>!"); }
     public  boolean filterEquals(android.content.Intent other) { throw new RuntimeException("<Stub>!"); }
     public  int filterHashCode() { throw new RuntimeException("<Stub>!"); }
-    public  java.lang.String toString() { throw new RuntimeException("<Stub>!"); }
+    public  java.lang.String toString() {
+     return "intent";
+    }
     @java.lang.Deprecated()
     public  java.lang.String toURI() { throw new RuntimeException("<Stub>!"); }
     public  java.lang.String toUri(int flags) { throw new RuntimeException("<Stub>!"); }

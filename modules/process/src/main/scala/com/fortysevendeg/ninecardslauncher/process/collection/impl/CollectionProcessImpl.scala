@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.process.collection.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
@@ -11,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions,
   PersistenceServiceException, PersistenceServices, DeleteCollectionRequest => ServicesDeleteCollectionRequest, DeleteCardRequest => ServicesDeleteCardRequest}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
-import rapture.core.{Errata, Answer}
+import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT
 
 import scalaz.concurrent.Task
@@ -67,13 +66,10 @@ class CollectionProcessImpl(
       _ <- updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
-  override def getCardsByCollectionId(collectionId: Int) = (
-    persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]
-
-  override def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]) =
+  override def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): ResultT[Task, Seq[Card], CardException] =
     (for {
       cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId))
-      addedCardList <- addCardList(collectionId, addCardListRequest)
+      addedCardList <- addCardList(collectionId, addCardListRequest, cardList.size)
     } yield toCardSeq(addedCardList)).resolve[CardException]
 
   override def deleteCard(collectionId: Int, cardId: Int) =
@@ -97,6 +93,9 @@ class CollectionProcessImpl(
       updatedCard = toUpdatedCard(toCard(card), name)
       _ <- updateCard(updatedCard)
     } yield updatedCard).resolve[CardException]
+
+  private[this] def getCardsByCollectionId(collectionId: Int) = (
+    persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]
 
   private[this] def moveCollectionList(collectionList: Seq[Collection], position: Int) =
     collectionList map { collection =>
@@ -129,8 +128,8 @@ class CollectionProcessImpl(
     Task.gatherUnordered(tasks) map (c => CatchAll[CollectionException](c.collect { case Answer(r) => r}))
   }
 
-  private[this] def addCardList(collectionId: Int, cardList: Seq[AddCardRequest]) = Service {
-    val tasks = cardList map (card => persistenceServices.addCard(toAddCardRequest(collectionId, card, cardList.size)).run)
+  private[this] def addCardList(collectionId: Int, cardList: Seq[AddCardRequest], position: Int) = Service {
+    val tasks = cardList.indices map (item => persistenceServices.addCard(toAddCardRequest(collectionId, cardList(item), position + item)).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
   }
 

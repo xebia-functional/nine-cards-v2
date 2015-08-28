@@ -63,14 +63,6 @@ trait CollectionProcess {
   def editCollection(collectionId: Int, name: String, appsCategory: Option[String] = None): ServiceDef2[Collection, CollectionException]
 
   /**
-   * Gets the Cards included in a given Collection
-   * @param collectionId the Id of the Collection
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Card]
-   * @throws CardException if there was an error getting the cards
-   */
-  def getCardsByCollectionId(collectionId: Int) : ServiceDef2[Seq[Card], CardException]
-
-  /**
    * Adds some new Cards after the last existing one in a given Collection
    * @param collectionId the Id of the Collection
    * @param addCardListRequest the Seq[com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest] includes the necessary data to create a new Card (term, packageName, intent and imagePath)

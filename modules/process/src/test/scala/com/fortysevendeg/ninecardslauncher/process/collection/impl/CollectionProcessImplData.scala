@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel, AddCardRequest => ServicesAddCardRequest}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, PhoneHome, ContactPhone, ContactInfo}
 import play.api.libs.json.Json
 
@@ -290,4 +290,44 @@ trait CollectionProcessImplData {
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed
   )
+
+  val seqAddCardRequest = createSeqAddCardRequest()
+  val addCardRequest = seqAddCardRequest.head
+  val seqAddCardResponse = createSeqCardResponse()
+
+  def createSeqAddCardRequest(num: Int = 3) =
+    (0 until num) map { item =>
+      AddCardRequest(
+        term = term,
+        packageName = Option(packageName),
+        intent = Json.parse(intent).as[NineCardIntent],
+        imagePath = imagePath)
+    }
+
+  def createSeqCardResponse(
+    num: Int = 3,
+    id: Int = cardId,
+    position: Int = position,
+    micros: Int = micros,
+    term: String = term,
+    packageName: String = packageName,
+    cardType: String = cardType,
+    intent: String = intent,
+    imagePath: String = imagePath,
+    starRating: Double = starRating,
+    numDownloads: String = numDownloads,
+    notification: String = notification) =
+    (0 until 3) map (item =>
+      Card(
+        id = id,
+        position = position,
+        micros = micros,
+        term = term,
+        packageName = Option(packageName),
+        cardType = cardType,
+        intent = Json.parse(intent).as[NineCardIntent],
+        imagePath = imagePath,
+        starRating = Option(starRating),
+        numDownloads = Option(numDownloads),
+        notification = Option(notification)))
 }
