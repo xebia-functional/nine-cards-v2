@@ -330,4 +330,18 @@ trait CollectionProcessImplData {
         starRating = Option(starRating),
         numDownloads = Option(numDownloads),
         notification = Option(notification)))
+
+  def updatedCard = Card(
+      id = cardId,
+      position = position,
+      micros = micros,
+      term = name,
+      packageName = Option(packageName),
+      cardType = cardType,
+      intent = Json.parse(intent).as[NineCardIntent],
+      imagePath = imagePath,
+      starRating = Option(starRating),
+      numDownloads = Option(numDownloads),
+      notification = Option(notification)
+  )
 }

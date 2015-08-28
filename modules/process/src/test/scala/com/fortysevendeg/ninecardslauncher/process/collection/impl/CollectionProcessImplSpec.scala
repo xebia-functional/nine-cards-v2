@@ -353,6 +353,37 @@ trait CollectionProcessImplSpecification
     mockPersistenceServices.updateCard(any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
+
+  trait ValidEditCardPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
+    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(servicesCard.id)))
+
+  }
+
+  trait ErrorEditFindCardPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCardById(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+
+  trait ErrorEditUpdateCardPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
+    mockPersistenceServices.updateCard(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
 }
 
 class CollectionProcessImplSpec
@@ -711,6 +742,38 @@ class CollectionProcessImplSpec
         result must beLike {
           case Answer(resultCollection) =>
             resultCollection shouldEqual ((): Unit)
+        }
+      }
+  }
+
+  "editCard" should {
+
+    "returns a the updated card for a valid request" in
+      new CollectionProcessScope with ValidEditCardPersistenceServicesResponses {
+        val result = collectionProcess.editCard(collectionId, cardId, name).run.run
+        result must beLike {
+          case Answer(resultCollection) =>
+            resultCollection shouldEqual updatedCard
+        }
+      }
+
+    "returns a CardException if the service throws a exception finding the collection by Id" in
+      new CollectionProcessScope with ErrorEditFindCardPersistenceServicesResponses {
+        val result = collectionProcess.editCard(collectionId, cardId, name).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CardException]
+          }
+        }
+      }
+
+    "returns a CardException if the service throws a exception updating the collection" in
+      new CollectionProcessScope with ErrorEditUpdateCardPersistenceServicesResponses {
+        val result = collectionProcess.editCard(collectionId, cardId, name).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CardException]
+          }
         }
       }
   }
