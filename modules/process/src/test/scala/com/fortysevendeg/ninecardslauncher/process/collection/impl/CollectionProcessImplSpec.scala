@@ -313,6 +313,46 @@ trait CollectionProcessImplSpecification
 
   }
 
+  trait ValidReorderCardPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
+    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(servicesCard.id)))
+
+  }
+
+  trait ErrorReorderFindCardPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCardById(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ErrorReorderFetchCardPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ErrorReorderUpdateCardPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
+    mockPersistenceServices.updateCard(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
 }
 
 class CollectionProcessImplSpec
@@ -632,6 +672,47 @@ class CollectionProcessImplSpec
         }
       }
 
+  }
+
+  "reorderCard" should {
+
+    "returns a empty answer for a valid request" in
+      new CollectionProcessScope with ValidReorderCardPersistenceServicesResponses {
+        val result = collectionProcess.reorderCard(collectionId, cardId, newPosition).run.run
+        result must beLike {
+          case Answer(resultCollection) =>
+            resultCollection shouldEqual ((): Unit)
+        }
+      }
+
+    "returns a CardException if the service throws a exception finding the card by Id" in
+      new CollectionProcessScope with ErrorReorderFindCardPersistenceServicesResponses {
+        val result = collectionProcess.reorderCard(collectionId, cardId, newPosition).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CardException]
+          }
+        }
+      }
+
+    "returns a CardException if the service throws a exception fetching the cards" in
+      new CollectionProcessScope with ErrorReorderFetchCardPersistenceServicesResponses {
+        val result = collectionProcess.reorderCard(collectionId, cardId, newPosition).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CardException]
+          }
+        }
+      }
+
+    "returns a successful answer if the service throws a exception updating the cards" in
+      new CollectionProcessScope with ErrorReorderUpdateCardPersistenceServicesResponses {
+        val result = collectionProcess.reorderCard(collectionId, cardId, newPosition).run.run
+        result must beLike {
+          case Answer(resultCollection) =>
+            resultCollection shouldEqual ((): Unit)
+        }
+      }
   }
 
 }
