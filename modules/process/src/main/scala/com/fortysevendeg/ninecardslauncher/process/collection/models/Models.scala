@@ -26,3 +26,4 @@ case class Card(
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
   notification: Option[String] = None) extends Serializable
+
