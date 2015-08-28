@@ -1,20 +1,25 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
-import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapper}
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData}
+import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, DBUtils}
+import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scalaz.concurrent.Task
 
-class CardRepository(contentResolverWrapper: ContentResolverWrapper)
-  extends DBUtils
-  with ImplicitsRepositoryExceptions {
+class CardRepository(
+  contentResolverWrapper: ContentResolverWrapper,
+  uriCreator: UriCreator)
+  extends ImplicitsRepositoryExceptions {
+
+  val cardUri = uriCreator.parse(cardUriString)
 
   def addCard(collectionId: Int, data: CardData): ServiceDef2[Card, RepositoryException] =
     Service {
@@ -34,7 +39,7 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper)
             notification -> (data.notification getOrElse ""))
 
           val id = contentResolverWrapper.insert(
-            nineCardsUri = CardUri,
+            uri = cardUri,
             values = values)
 
           Card(id = id, data = data)
@@ -46,7 +51,7 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper)
     Service {
       Task {
         CatchAll[RepositoryException] {
-          contentResolverWrapper.deleteById(nineCardsUri = CardUri, id = card.id)
+          contentResolverWrapper.deleteById(uri = cardUri, id = card.id)
         }
       }
     }
@@ -56,7 +61,7 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.findById(
-            nineCardsUri = CardUri,
+            uri = cardUri,
             id = id,
             projection = allFields)(getEntityFromCursor(cardEntityFromCursor)) map toCard
         }
@@ -68,7 +73,7 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper)
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
-            nineCardsUri = CardUri,
+            uri = cardUri,
             projection = allFields,
             where = s"${CardEntity.collectionId} = ?",
             whereParams = Seq(collectionId.toString))(getListFromCursor(cardEntityFromCursor)) map toCard
@@ -93,7 +98,7 @@ class CardRepository(contentResolverWrapper: ContentResolverWrapper)
             notification -> (card.data.notification getOrElse ""))
 
           contentResolverWrapper.updateById(
-            nineCardsUri = CardUri,
+            uri = cardUri,
             id = card.id,
             values = values)
         }

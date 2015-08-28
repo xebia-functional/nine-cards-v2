@@ -1,9 +1,12 @@
 package com.fortysevendeg.repository.card
 
+import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.commons.{CardUri, ContentResolverWrapperImpl}
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
+import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.repository._
@@ -22,81 +25,87 @@ trait CardRepositorySpecification
     extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
-    lazy val cardRepository = new CardRepository(contentResolverWrapper)
+
+    lazy val uriCreator = mock[UriCreator]
+    
+    lazy val cardRepository = new CardRepository(contentResolverWrapper, uriCreator)
+
+    lazy val mockUri = mock[Uri]
   }
 
   trait ValidCardRepositoryResponses
-    extends DBUtils
-    with CardRepositoryTestData {
+    extends CardRepositoryTestData {
 
     self: CardRepositoryScope =>
 
-    contentResolverWrapper.insert(CardUri, createInsertCardValues) returns testCardId
+    uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.deleteById(CardUri, testCardId) returns 1
+    contentResolverWrapper.insert(mockUri, createInsertCardValues) returns testCardId
+
+    contentResolverWrapper.deleteById(mockUri, testCardId) returns 1
 
     contentResolverWrapper.findById(
-      nineCardsUri = CardUri,
+      uri = mockUri,
       id = testCardId,
       projection = allFields)(
         f = getEntityFromCursor(cardEntityFromCursor)) returns Some(cardEntity)
 
     contentResolverWrapper.findById(
-      nineCardsUri = CardUri,
+      uri = mockUri,
       id = testNonExistingCardId,
       projection = allFields)(
         f = getEntityFromCursor(cardEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
-      nineCardsUri = CardUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$collectionId = ?",
       whereParams = Seq(testCollectionId.toString))(
         f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
 
     contentResolverWrapper.fetchAll(
-      nineCardsUri = CardUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$collectionId = ?",
       whereParams = Seq(testNonExistingCollectionId.toString))(
         f = getListFromCursor(cardEntityFromCursor)) returns Seq.empty
 
-    contentResolverWrapper.updateById(nineCardsUri = CardUri, id = card.id, values = createUpdateCardValues) returns 1
+    contentResolverWrapper.updateById(uri = mockUri, id = card.id, values = createUpdateCardValues) returns 1
   }
 
   trait ErrorCardRepositoryResponses
-    extends DBUtils
-    with CardRepositoryTestData {
+    extends CardRepositoryTestData {
 
     self: CardRepositoryScope =>
 
     val contentResolverException = new RuntimeException("Irrelevant message")
 
-    contentResolverWrapper.insert(CardUri, createInsertCardValues) throws contentResolverException
+    uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.deleteById(CardUri, testCardId) throws contentResolverException
+    contentResolverWrapper.insert(mockUri, createInsertCardValues) throws contentResolverException
+
+    contentResolverWrapper.deleteById(mockUri, testCardId) throws contentResolverException
 
     contentResolverWrapper.findById(
-      nineCardsUri = CardUri,
+      uri = mockUri,
       id = testCardId,
       projection = allFields)(
         f = getEntityFromCursor(cardEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
-      nineCardsUri = CardUri,
+      uri = mockUri,
       projection = allFields,
       where = s"$collectionId = ?",
       whereParams = Seq(testCollectionId.toString))(
         f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(nineCardsUri = CardUri, id = card.id, values = createUpdateCardValues) throws contentResolverException
+    contentResolverWrapper.updateById(uri = mockUri, id = card.id, values = createUpdateCardValues) throws contentResolverException
   }
 
 }
 
 trait CardMockCursor
   extends MockCursor
-  with DBUtils
   with CardRepositoryTestData {
 
   val cursorData = Seq(
@@ -119,7 +128,6 @@ trait CardMockCursor
 
 trait EmptyCardMockCursor
   extends MockCursor
-  with DBUtils
   with CardRepositoryTestData {
 
   val cursorData = Seq(
