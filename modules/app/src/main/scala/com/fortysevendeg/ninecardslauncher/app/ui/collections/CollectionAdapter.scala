@@ -32,9 +32,10 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     runUi(viewHolder.bind(card, position))
   }
 
-  def addCard(card: Card) = {
-    collection = collection.copy(cards = collection.cards :+ card)
-    notifyItemInserted(collection.cards.length - 1)
+  def addCards(cards: Seq[Card]) = {
+    collection = collection.copy(cards = collection.cards ++ cards)
+    val count = cards.length
+    notifyItemRangeInserted(collection.cards.length - count, count)
   }
 
 }

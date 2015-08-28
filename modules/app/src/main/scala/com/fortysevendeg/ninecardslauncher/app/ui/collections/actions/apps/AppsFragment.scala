@@ -6,6 +6,7 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardIntentExtras, NineCardIntent, Card}
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
@@ -31,17 +32,14 @@ class AppsFragment
     runUi(initUi)
     Task.fork(di.deviceProcess.getCategorizedApps.run).resolveAsyncUi(
       onResult = (apps: Seq[AppCategorized]) => addApps(apps, (app: AppCategorized) => {
-        // TODO We should use AddCardRequest message that we are going to create in ticket 9C-217
-        val card = Card(
-          id = 1,
-          position = 1,
+        val card = AddCardRequest(
           term = app.name,
           packageName = Option(app.packageName),
           cardType = CardType.app,
           intent = toNineCardIntent(app),
           imagePath = app.imagePath getOrElse ""
         )
-        actionsScreenListener foreach (_.addCard(card))
+        actionsScreenListener foreach (_.addCards(Seq(card)))
         runUi(unreveal())
       })
     )

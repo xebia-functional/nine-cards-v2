@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
+import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, AddCardRequest}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
@@ -122,10 +123,18 @@ class CollectionsDetailsActivity
 
   override def onEndFinishAction(): Unit = removeActionFragment()
 
-  override def addCard(card: Card): Unit = for {
+  override def addCards(cards: Seq[AddCardRequest]): Unit = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
-  } yield fragment.addCard(card)
+    currentPosition <- adapter.getCurrentFragmentPosition
+  } yield {
+      Task.fork(di.collectionProcess.addCards(collections(currentPosition).id, cards).run).resolveAsync(
+        onResult = (c: Seq[Card]) => {
+          adapter.addCardsToCollection(currentPosition, c)
+          fragment.addCards(c)
+        }
+      )
+    }
 
 }
 
@@ -144,7 +153,7 @@ trait ScrolledListener {
 trait ActionsScreenListener {
   def onStartFinishAction()
   def onEndFinishAction()
-  def addCard(card: Card)
+  def addCards(cards: Seq[AddCardRequest])
 }
 
 object ScrollType {

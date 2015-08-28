@@ -3,12 +3,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdapter}
 import android.view.ViewGroup
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import macroid.{ContextWrapper, Ui}
 
 import scala.collection.mutable
 
-case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections: Seq[Collection])(implicit context: ContextWrapper)
+case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collections: Seq[Collection])(implicit context: ContextWrapper)
   extends FragmentStatePagerAdapter(fragmentManager) {
 
   val fragments: mutable.WeakHashMap[Int, CollectionFragment] = mutable.WeakHashMap.empty
@@ -39,6 +39,14 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections
     fragments.remove(position)
     super.destroyItem(container, position, `object`)
   }
+
+  def addCardsToCollection(positionCollection: Int, cards: Seq[Card]) = {
+    val currentCollection = collections(positionCollection)
+    val newCollection = currentCollection.copy(cards = currentCollection.cards ++ cards)
+    collections = collections.patch(positionCollection, Seq(newCollection), 1)
+  }
+
+  def getCurrentFragmentPosition: Option[Int] = fragments find (f => f._2.activeFragment) map (_._1)
 
   def getActiveFragment: Option[CollectionFragment] = fragments find (f => f._2.activeFragment) map (_._2)
 

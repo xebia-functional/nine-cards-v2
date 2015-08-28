@@ -57,8 +57,8 @@ class CollectionFragment
     scrolledListener = None
   }
 
-  def addCard(card: Card) = getAdapter foreach { adapter =>
-    adapter.addCard(card)
+  def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
+    adapter.addCards(cards)
     val cardCount = adapter.collection.cards.length
     canScroll = cardCount > numSpaces
     runUi(resetScroll(adapter.collection, cardCount - 1))
