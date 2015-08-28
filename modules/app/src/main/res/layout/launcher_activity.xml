@@ -114,13 +114,13 @@
                 android:id="@+id/launcher_drawer_toolbar"
                 style="@style/LauncherDrawerToolbar">
                 
-                <TextView
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
                     android:id="@+id/launcher_drawer_tab_app"
-                    style="@style/LauncherDrawerTabApp"/>
+                    style="@style/LauncherDrawerTextTabApp"/>
 
-                <TextView
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
                     android:id="@+id/launcher_drawer_tab_contact"
-                    style="@style/LauncherDrawerTabContact"/>
+                    style="@style/LauncherDrawerTextTabContact"/>
                 
             </LinearLayout>
 
