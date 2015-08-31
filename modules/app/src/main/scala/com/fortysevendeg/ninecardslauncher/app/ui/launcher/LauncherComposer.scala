@@ -22,6 +22,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab._
 import macroid.FullDsl._
 import macroid._
 
@@ -57,6 +58,10 @@ trait LauncherComposer
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
   lazy val drawerContent = Option(findView(TR.launcher_drawer_content))
+
+  lazy val drawerTabApp = Option(findView(TR.launcher_drawer_tab_app))
+
+  lazy val drawerTabContacts = Option(findView(TR.launcher_drawer_tab_contact))
 
   lazy val paginationPanel = Option(findView(TR.launcher_pagination_panel))
 
@@ -108,7 +113,19 @@ trait LauncherComposer
       (appDrawerMain <~ drawerAppStyle <~ On.click {
         revealInDrawer
       }) ~
-      (drawerContent <~ vGone)
+      (drawerContent <~ vGone) ~
+      (drawerTabApp <~
+        ttInitTab(R.string.apps, R.drawable.app_drawer_icon_list_app) <~
+        ttSelect <~
+        On.click {
+          uiShortToast("App") ~ (drawerTabApp <~ ttSelect) ~ (drawerTabContacts <~ ttUnselect)
+        }) ~
+      (drawerTabContacts <~
+        ttInitTab(R.string.contacts, R.drawable.app_drawer_icon_list_contact) <~
+        ttUnselect <~
+        On.click {
+          uiShortToast("Contacts") ~ (drawerTabContacts <~ ttSelect) ~ (drawerTabApp <~ ttUnselect)
+        })
 
   def createCollections(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (loading <~ vGone) ~

@@ -135,47 +135,54 @@
         <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="LauncherDrawerToolbar">
+    <style name="LauncherDrawerToolbarParent">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">@dimen/height_toolbar_app_drawer</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:background">@color/drawer_toolbar</item>
     </style>
 
+    <style name="LauncherDrawerToolbar" parent="LauncherDrawerToolbarParent"/>
+
     <style name="LauncherDrawerTab">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">@dimen/height_toolbar_app_drawer</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:maxWidth">@dimen/size_app_drawer_tab</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="LauncherDrawerTabTextLayout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:orientation">horizontal</item>
-    </style>
-
-    <style name="LauncherDrawerTextTabApp" parent="LauncherDrawerTab">
-        <item name="android:src">@drawable/app_drawer_icon_list_app</item>
-        <item name="android:text">@string/apps</item>
-    </style>
-
-    <style name="LauncherDrawerTextTabContact" parent="LauncherDrawerTab">
-        <item name="android:src">@drawable/app_drawer_icon_list_contact</item>
-        <item name="android:text">@string/contacts</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
     <style name="LauncherDrawerTabText">
-        <item name="android:layout_width">@dimen/size_app_drawer_tab</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:gravity">center</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/drawer_tab_color_default</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
-        <item name="android:drawablePadding">@dimen/padding_default</item>
+        <item name="android:drawablePadding">@dimen/padding_small</item>
     </style>
 
     <style name="LauncherDrawerTabArrow">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingLeft">@dimen/padding_default</item>
-        <item name="android:paddingRight">@dimen/padding_default</item>
+        <item name="android:padding">@dimen/padding_default</item>
         <item name="android:src">@drawable/app_drawer_arrow</item>
+    </style>
+
+    <style name="LauncherDrawerTabBottom">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_app_drawer_tab_bottom</item>
+        <item name="android:background">@color/drawer_tab_bottom</item>
     </style>
 
     <style name="LauncherDrawerInnerContent">

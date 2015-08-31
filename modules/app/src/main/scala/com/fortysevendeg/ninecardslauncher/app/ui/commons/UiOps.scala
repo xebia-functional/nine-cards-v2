@@ -7,11 +7,11 @@ import scala.concurrent.Future
 
 object UiOps {
 
-  implicit class OptionViewOp(maybeView: Option[View]) {
+  implicit class OptionViewOp[T <: View](maybeView: Option[T]) {
 
-    def mapUi(f: (View) => Ui[_]): Ui[_] = maybeView map f getOrElse Ui.nop
+    def mapUi(f: (T) => Ui[_]): Ui[_] = maybeView map f getOrElse Ui.nop
 
-    def mapUiF(f: (View) => Ui[Future[_]]): Ui[Future[_]] = maybeView map f getOrElse Ui(Future.successful())
+    def mapUiF(f: (T) => Ui[Future[_]]): Ui[Future[_]] = maybeView map f getOrElse Ui(Future.successful())
 
   }
 

@@ -2,12 +2,21 @@
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/launcher_drawer_tab_text"
-        style="@style/LauncherDrawerTextTab"/>
+    <LinearLayout
+        style="@style/LauncherDrawerTabTextLayout">
 
-    <ImageView
-        android:id="@+id/launcher_drawer_tab_arrow"
-        style="@style/LauncherDrawerTabArrow"/>
+        <TextView
+            android:id="@+id/launcher_drawer_tab_text"
+            style="@style/LauncherDrawerTabText"/>
+
+        <ImageView
+            android:id="@+id/launcher_drawer_tab_arrow"
+            style="@style/LauncherDrawerTabArrow"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/launcher_drawer_tab_bottom"
+        style="@style/LauncherDrawerTabBottom"/>
 
 </merge>

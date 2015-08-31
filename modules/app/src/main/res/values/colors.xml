@@ -55,6 +55,7 @@
     <color name="drawer_fab_button">#ff303aa6</color>
     <color name="drawer_fab_button_ripple">#ff0e1550</color>
     <color name="drawer_tab_color_default">#ffffff</color>
+    <color name="drawer_tab_bottom">#ffffff</color>
 
     <!-- Theme Light -->
     <color name="search_background_tint_light">#ffffff</color>
