@@ -1,10 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.graphics.drawable.Drawable
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.View.OnClickListener
-import macroid.{Ui, Tweak}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.{ContextWrapper, Ui, Tweak}
 import macroid.FullDsl._
 
 /**
@@ -31,5 +33,10 @@ object ExtraTweaks {
   def tbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[Toolbar](_.setNavigationOnClickListener(new OnClickListener {
     override def onClick(v: View): Unit = runUi(click(v))
   }))
+
+  def fbaColor(id: Int)(implicit contextWrapper: ContextWrapper) = Tweak[FloatingActionButton] { view =>
+    view.setBackgroundTintList(contextWrapper.application.getResources.getColorStateList(id))
+    view.setRippleColor(ColorsUtils.getColorDark(resGetColor(id)))
+  }
 
 }

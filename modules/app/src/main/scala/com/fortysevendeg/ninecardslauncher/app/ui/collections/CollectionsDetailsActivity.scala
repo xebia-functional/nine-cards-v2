@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
@@ -117,7 +118,10 @@ class CollectionsDetailsActivity
 
   override def close(): Unit = finish()
 
-  override def startScroll(): Unit = showFabButton
+  override def startScroll(): Unit = getAdapter flatMap (_.getCurrentFragmentPosition) map { position =>
+    val color = getIndexColor(collections(position).themedColorIndex)
+    runUi(showFabButton(color))
+  }
 
   override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
 
@@ -152,7 +156,9 @@ trait ScrolledListener {
 
 trait ActionsScreenListener {
   def onStartFinishAction()
+
   def onEndFinishAction()
+
   def addCards(cards: Seq[AddCardRequest])
 }
 

@@ -76,7 +76,7 @@ object AppUtils {
 object ColorsUtils {
 
   def getColorDark(color: Int, ratio: Float = 0.1f) = {
-    var colorHsv = Array(0f, 0f, 0f)
+    val colorHsv = Array(0f, 0f, 0f)
     Color.colorToHSV(color, colorHsv)
     colorHsv.update(2, math.max(colorHsv(2) - ratio, 0))
     Color.HSVToColor(colorHsv)
@@ -100,6 +100,8 @@ object ColorsUtils {
       (startG + (fraction * (endG - startG)).toInt) << 8 |
       (startB + (fraction * (endB - startB)).toInt)
   }
+
+  def colorToString(color: Int): String = s"#${0xFFFFFF & color}"
 
 }
 

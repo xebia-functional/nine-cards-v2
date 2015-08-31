@@ -9,12 +9,14 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{PathMorphDrawable, FabItemMenu, IconTypes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PathMorphDrawableTweaks._
 import FabButtonTags._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 
 trait FabButtonBehaviour
   extends FabButtonStyle {
@@ -66,21 +68,25 @@ trait FabButtonBehaviour
       i <~ (if (open) hideFabMenuItem else showFabMenuItem)
   }
 
-  def fabMenuOpened = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))
+  def fabMenuOpened: Boolean = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))
 
-  def isFabMenuVisible = fabButton exists (_.getVisibility == View.VISIBLE)
+  def isFabMenuVisible: Boolean = fabButton exists (_.getVisibility == View.VISIBLE)
 
-  def showFabButton(implicit context: ActivityContextWrapper): Unit = runUi(
-    if (!isFabMenuVisible) {
-      postDelayedHideFabButton ~ (fabButton <~ showFabMenu)
-    } else {
-      resetDelayedHide
-    }
-  )
+  def showFabButton(color: Int = 0)(implicit context: ActivityContextWrapper): Ui[_] = if (!isFabMenuVisible) {
+    postDelayedHideFabButton ~
+      (fabButton <~ (if (color != 0) fbaColor(color) else Tweak.blank) <~ showFabMenu) ~
+      (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)
+  } else {
+    resetDelayedHide
+  }
 
   def hideFabButton(implicit context: ActivityContextWrapper): Ui[_] =
     removeDelayedHideFabButton ~
       (fabButton <~ hideFabMenu)
+
+  def changeItemsColor(color: Int)(implicit context: ActivityContextWrapper) = Transformer {
+    case item: FabItemMenu => item <~ fimBackgroundColor(resGetColor(color))
+  }
 
   private[this] def postDelayedHideFabButton(implicit context: ActivityContextWrapper) = Ui {
     val runnable = new RunnableWrapper()
