@@ -9,8 +9,9 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenu
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -66,11 +67,20 @@ trait LauncherComposer
     (workspacesContent <~
       vgAddView(getUi(w[LauncherWorkSpaces] <~
         wire(workspaces) <~
-        Tweak[LauncherWorkSpaces](_.startScroll = (toRight: Boolean) => {
-          val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
-          val collectionScreen = workspaces exists (_.isCollectionScreen)
-          if (collectionScreen && !goToWizardScreen) runUi(showFabButton())
-        })))) ~
+        awsListener(AnimatedWorkSpacesListener(
+          startScroll = (toRight: Boolean) => {
+            val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
+            val collectionScreen = workspaces exists (_.isCollectionScreen)
+            (goToWizardScreen, collectionScreen) match {
+              case (false, true) => runUi(showFabButton())
+              case _ =>
+            }
+          },
+          endScroll = () => {
+            val collectionScreen = workspaces exists (_.isCollectionScreen)
+            if (collectionScreen) runUi(showFabButton())
+          }
+        ))))) ~
       (searchPanel <~ searchContentStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
