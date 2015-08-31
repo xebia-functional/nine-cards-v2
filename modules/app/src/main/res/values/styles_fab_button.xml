@@ -2,7 +2,8 @@
 <resources>
     <style name="FabMenu">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">wrapThe animation for appear and disappear have to be faster
+            - The text into the Fab button have to be bold_content</item>
         <item name="android:layout_gravity">bottom|end</item>
         <item name="android:gravity">end</item>
         <item name="android:orientation">vertical</item>
@@ -18,6 +19,7 @@
     <style name="FabMenuItemTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:background">@drawable/background_title_fab_menu_item</item>
         <item name="android:textColor">@color/collection_fab_button_item_title</item>
         <item name="android:padding">@dimen/padding_small</item>

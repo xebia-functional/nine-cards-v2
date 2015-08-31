@@ -21,7 +21,7 @@ object ActionsSnails {
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
-      val duration = resGetInteger(R.integer.anim_duration_collection_detail)
+      val duration = resGetInteger(R.integer.anim_duration_normal)
 
       Lollipop ifSupportedThen {
         val startRadius = resGetDimensionPixelSize(R.dimen.size_fab_menu_item) / 2
@@ -39,7 +39,7 @@ object ActionsSnails {
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
-      val duration = resGetInteger(R.integer.anim_duration_collection_detail)
+      val duration = resGetInteger(R.integer.anim_duration_normal)
 
       Lollipop ifSupportedThen {
         val x = w / 2
