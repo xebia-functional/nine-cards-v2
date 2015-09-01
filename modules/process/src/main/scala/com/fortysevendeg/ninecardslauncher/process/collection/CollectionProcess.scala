@@ -12,7 +12,7 @@ trait CollectionProcess {
    * @return the List[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
    * @throws CollectionException if there was an error creating the existing collections
    */
-  def createCollectionsFromUnformedItems(apps: Seq[UnformedItem])(implicit context: ContextSupport): ServiceDef2[List[Collection], CollectionException]
+  def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport): ServiceDef2[List[Collection], CollectionException]
 
   /**
    * Creates Collections from some already formed and given Collections

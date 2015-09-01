@@ -26,8 +26,8 @@ class CollectionProcessImpl(
 
   override val resourceUtils: ResourceUtils = new ResourceUtils
 
-  override def createCollectionsFromUnformedItems(items: Seq[UnformedItem])(implicit context: ContextSupport) = Service {
-    val tasks = createCollections(items, categories) map (persistenceServices.addCollection(_).run)
+  override def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = Service {
+    val tasks = createCollections(apps, contacts, categories) map (persistenceServices.addCollection(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
   }.resolve[CollectionException]
 

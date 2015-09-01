@@ -165,7 +165,7 @@ trait CollectionProcessImplData {
 
   def createSeqUnformedItem(num: Int = 150) =
     (0 until num) map { item =>
-      UnformedItem(
+      UnformedApp(
         name = name,
         packageName = packageName,
         className = className,

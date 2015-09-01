@@ -79,6 +79,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     apiServices = apiServices,
     persistenceServices = persistenceServices,
     shortcutsServices = shortcutsServices,
+    contactsServices = contactsServices,
     imageServices = imageServices)
 
   private[this] lazy val nameCategories: Map[String, String] = (categories map {

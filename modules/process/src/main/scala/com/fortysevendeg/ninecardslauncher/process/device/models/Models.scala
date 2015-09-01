@@ -18,3 +18,12 @@ case class Shortcut (
   title: String,
   icon: Option[Drawable],
   intent: Intent)
+
+case class Contact(
+  name: String,
+  photoUri: String,
+  info: Option[ContactInfo] = None)
+
+case class ContactInfo(
+  emails: Seq[String],
+  phones: Seq[String])

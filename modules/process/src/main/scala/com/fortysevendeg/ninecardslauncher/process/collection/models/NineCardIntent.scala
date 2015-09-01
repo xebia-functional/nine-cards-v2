@@ -7,7 +7,7 @@ import play.api.libs.json._
 
 import scala.collection.JavaConversions._
 
-case class UnformedItem(
+case class UnformedApp(
   name: String,
   packageName: String,
   className: String,
@@ -17,6 +17,15 @@ case class UnformedItem(
   numDownloads: String,
   ratingsCount: Int,
   commentCount: Int)
+
+case class UnformedContact(
+  name: String,
+  photoUri: String,
+  info: Option[ContactInfo] = None)
+
+case class ContactInfo(
+  emails: Seq[String],
+  phones: Seq[String])
 
 case class FormedCollection(
   name: String,
