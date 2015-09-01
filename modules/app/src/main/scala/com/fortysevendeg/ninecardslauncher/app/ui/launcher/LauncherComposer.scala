@@ -209,10 +209,7 @@ trait LauncherComposer
       }
     }
 
-  def isDrawerVisible = drawerContent map (_.getVisibility) match {
-    case Some(View.VISIBLE) => true
-    case _ => false
-  }
+  def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
   def revealInDrawer(implicit context: ActivityContextWrapper): Ui[_] =
     updateNavigationColor(resGetColor(android.R.color.black)) ~

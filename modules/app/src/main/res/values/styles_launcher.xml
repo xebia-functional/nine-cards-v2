@@ -125,7 +125,7 @@
     <style name="LauncherDrawerContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">#ffffff</item>
+        <item name="android:background">@color/drawer_content</item>
         <item name="android:clickable">true</item>
     </style>
 
