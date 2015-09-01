@@ -30,7 +30,8 @@ class CollectionsDetailsActivity
   with TypedFindView
   with UiExtensions
   with ScrolledListener
-  with ActionsScreenListener {
+  with ActionsScreenListener
+  with CollectionsDetailDependencies {
 
   val defaultPosition = 0
 
@@ -42,8 +43,6 @@ class CollectionsDetailsActivity
     case Answer(t) => t
     case _ => getDefaultTheme
   }
-
-  var collections: Seq[Collection] = Seq.empty
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)

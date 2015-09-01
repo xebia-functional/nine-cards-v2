@@ -44,11 +44,15 @@ import CollectionsDetailsActivity._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+trait CollectionsDetailDependencies {
+  var collections: Seq[Collection] = Seq.empty
+}
+
 trait CollectionsDetailsComposer
   extends Styles
   with FabButtonBehaviour {
 
-  self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] =>
+  self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] with CollectionsDetailDependencies =>
 
   val nameActionFragment = "action-fragment"
 
@@ -141,8 +145,7 @@ trait CollectionsDetailsComposer
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
-      (view: View) =>
-        showAction(view)
+      (view: View) => showAction(view)
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
       uiShortToast("Recommendations")
@@ -278,6 +281,9 @@ trait CollectionsDetailsComposer
     val args = new Bundle()
     args.putInt(BaseActionFragment.posX, x + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.posY, y + (sizeIconFabMenuItem / 2))
+    val maybeCollection = getAdapter flatMap (_.getCurrentFragmentPosition) flatMap collections.lift
+    maybeCollection foreach (c =>
+      args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton ~
       (fragmentContent <~ fadeBackground(in = true) <~ fragmentContentStyle(true)) ~
       addFragment(f[AppsFragment].pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))

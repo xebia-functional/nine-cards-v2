@@ -1,13 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions
 
 import android.app.Activity
+import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.ActionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
-import com.fortysevendeg.ninecardslauncher2.TypedFindView
+import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
@@ -23,6 +24,8 @@ class BaseActionFragment
 
   val defaultPosition = 0
 
+  private[this] lazy val defaultColor = fragmentContextWrapper.application.getResources.getColor(R.color.primary)
+
   var actionsScreenListener: Option[ActionsScreenListener] = None
 
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
@@ -34,6 +37,8 @@ class BaseActionFragment
   protected lazy val originalPosX = getInt(Seq(getArguments), BaseActionFragment.posX, defaultPosition)
 
   protected lazy val originalPosY = getInt(Seq(getArguments), BaseActionFragment.posY, defaultPosition)
+
+  protected lazy val colorPrimary = getInt(Seq(getArguments), BaseActionFragment.colorPrimary, defaultColor)
 
   protected var rootView: Option[View] = None
 
@@ -84,5 +89,6 @@ object BaseActionFragment {
 
   val posX = "pos_x"
   val posY = "pos_y"
+  val colorPrimary = "color_primary"
 
 }

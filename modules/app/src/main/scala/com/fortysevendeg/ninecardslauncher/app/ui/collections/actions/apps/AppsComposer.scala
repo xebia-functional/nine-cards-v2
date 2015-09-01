@@ -32,10 +32,11 @@ trait AppsComposer
 
   def initUi: Ui[_] =
     (toolbar <~
-      toolbarStyle <~
+      toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
       (loading <~ vVisible) ~
-      (recycler <~ recyclerStyle)
+      (recycler <~ recyclerStyle) ~
+      (scrollerLayout <~ fslColor(colorPrimary))
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
     val appsHeadered = generateAppsForList(apps.sortBy(_.name).toList, Seq.empty)

@@ -13,13 +13,14 @@ import macroid.{ContextWrapper, Tweak}
 
 trait Styles {
 
-  def toolbarStyle(implicit contextWrapper: ContextWrapper) = {
+  def toolbarStyle(color: Int)(implicit contextWrapper: ContextWrapper) = {
     val closeDrawable = new PathMorphDrawable(
       defaultIcon = IconTypes.CLOSE,
       defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
       padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
     tbTitle(R.string.applications) +
-      tbNavigationIcon(closeDrawable)
+      tbNavigationIcon(closeDrawable) +
+      tbBackgroundColor(color)
   }
 
   def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = {

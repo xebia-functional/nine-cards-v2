@@ -18,6 +18,8 @@ object ExtraTweaks {
 
   def vIntTag(id: Int, tag: Int) = Tweak[View](_.setTag(id, tag))
 
+  def tbBackgroundColor(color: Int) = Tweak[Toolbar](_.setBackgroundColor(color))
+
   def tbTitle(res: Int) = Tweak[Toolbar](_.setTitle(res))
 
   def tbTitle(title: String) = Tweak[Toolbar](_.setTitle(title))
