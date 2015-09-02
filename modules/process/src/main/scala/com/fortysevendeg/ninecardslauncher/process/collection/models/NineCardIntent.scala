@@ -50,7 +50,8 @@ case class FormedCollection(
 case class FormedItem(
   itemType: String,
   title: String,
-  intent: String)
+  intent: String,
+  uriImage: Option[String] = None)
 
 case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
 

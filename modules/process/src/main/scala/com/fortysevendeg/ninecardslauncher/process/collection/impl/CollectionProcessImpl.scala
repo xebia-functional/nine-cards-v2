@@ -32,7 +32,7 @@ class CollectionProcessImpl(
   }.resolve[CollectionException]
 
   override def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) = Service {
-    val tasks = toAddCollectionRequestByFormedCollection(items) map (persistenceServices.addCollection(_).run)
+    val tasks = toAddCollectionRequestByFormedCollection(fillImageUri(items)) map (persistenceServices.addCollection(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
   }.resolve[CollectionException]
 
