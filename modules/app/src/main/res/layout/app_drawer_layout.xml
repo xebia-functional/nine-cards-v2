@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LauncherDrawerContent"
+    android:id="@+id/launcher_drawer_content">
+
+    <LinearLayout
+        style="@style/LauncherDrawerLayoutContent">
+
+        <LinearLayout
+            android:id="@+id/launcher_drawer_toolbar"
+            style="@style/LauncherDrawerToolbar">
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
+                android:id="@+id/launcher_drawer_tab_app"
+                style="@style/LauncherDrawerTab"/>
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
+                android:id="@+id/launcher_drawer_tab_contact"
+                style="@style/LauncherDrawerTab"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/launcher_drawer_inner_content"
+            style="@style/LauncherDrawerInnerContent"/>
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/launcher_drawer_button"
+        style="@style/LauncherDrawerFabButton"/>
+
+</FrameLayout>
