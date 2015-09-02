@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             style="@style/LauncherRoot">
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/LauncherRoot">
 
     <ProgressBar
         style="@style/LauncherLoading"
@@ -100,5 +102,7 @@
         </LinearLayout>
 
     </FrameLayout>
+
+    <include layout="@layout/app_drawer_layout"/>
 
 </FrameLayout>

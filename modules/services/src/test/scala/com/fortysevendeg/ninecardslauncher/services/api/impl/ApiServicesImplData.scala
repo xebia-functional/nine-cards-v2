@@ -76,7 +76,7 @@ trait ApiServicesImplData {
       developerEmail = Some(Random.nextString(10)),
       developerName = Some(Random.nextString(10)),
       developerWebsite = Some(Random.nextString(10)),
-      versionCode = Random.nextInt(10),
+      versionCode = Some(Random.nextInt(10)),
       versionString = Some(Random.nextString(10)),
       appType = Some(Random.nextString(10)),
       permission = generatePermissions())

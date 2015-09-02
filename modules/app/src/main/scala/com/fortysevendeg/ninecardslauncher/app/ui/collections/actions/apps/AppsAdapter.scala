@@ -78,12 +78,14 @@ case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) =
     heightHeaders + heightApps
   }
 
-  override def getElement(position: Int): String = apps.foldLeft(Tuple2("", false))((info, app) =>
+  val defaultElement: Option[String] = None
+
+  override def getElement(position: Int): Option[String] = apps.foldLeft(Tuple2(defaultElement, false))((info, app) =>
     if (app == apps(position)) {
       Tuple2(info._1, true)
     } else {
       (info._1, info._2) match {
-        case (element, false) => app.header map (header => Tuple2(header, info._2)) getOrElse info
+        case (_, false) => app.header map (header => Tuple2(Option(header), info._2)) getOrElse info
         case _ => info
       }
     }

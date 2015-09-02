@@ -44,7 +44,6 @@ class FileUtils(streamWrapper: StreamWrapper = new StreamWrapperImpl)
           streamWrapper.writeObject[T](out, obj)
           out.flush()
           out.close()
-          gzos.flush()
           gzos.close()
       }
     }
