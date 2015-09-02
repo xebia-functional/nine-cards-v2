@@ -5,7 +5,6 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIn
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest => ServicesAddCollectionRequest,
   UpdateCollectionRequest => ServicesUpdateCollectionRequest, AddCardRequest => ServicesAddCardRequest, UpdateCardRequest => ServicesUpdateCardRequest, _}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
@@ -211,13 +210,13 @@ trait Conversions {
   }
 
   def toNineCardIntent(item: UnformedContact): (NineCardIntent, String) = item match {
-    case UnformedContact(_, _, Some(info)) if info.phones.nonEmpty =>
-      val phone = info.phones.headOption
+    case UnformedContact(_, _, _, Some(info)) if info.phones.nonEmpty =>
+      val phone = info.phones.headOption map (_.number)
       val intent = NineCardIntent(NineCardIntentExtras(tel = phone))
       intent.setAction(openPhone)
       (intent, CardType.phone)
-    case UnformedContact(_, _, Some(info)) if info.emails.nonEmpty =>
-      val address = info.emails.headOption
+    case UnformedContact(_, _, _, Some(info)) if info.emails.nonEmpty =>
+      val address = info.emails.headOption map (_.address)
       val intent = NineCardIntent(NineCardIntentExtras(email = address))
       intent.setAction(openEmail)
       (intent, CardType.email)

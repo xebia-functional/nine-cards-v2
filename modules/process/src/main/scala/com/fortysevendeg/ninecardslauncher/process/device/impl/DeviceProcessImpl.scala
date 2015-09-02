@@ -4,20 +4,19 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, Shortcut, AppCategorized}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
+import com.fortysevendeg.ninecardslauncher.services.contacts.{ImplicitsContactsServiceExceptions, ContactsServiceException, ContactsServices}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
 
-import scalaz.{-\/, \/-}
 import scalaz.concurrent.Task
 
 class DeviceProcessImpl(
@@ -31,6 +30,7 @@ class DeviceProcessImpl(
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
   with ImplicitsPersistenceServiceExceptions
+  with ImplicitsContactsServiceExceptions
   with DeviceConversions {
 
   val apiUtils = new ApiUtils(persistenceServices)
@@ -68,7 +68,8 @@ class DeviceProcessImpl(
   override def getFavoriteContacts(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException] =
     (for {
       favoriteContacts <- contactsServices.getFavoriteContacts
-    } yield toContactSeq(favoriteContacts)).resolve[ContactException]
+      filledFavoriteContacts <- fillContacts(favoriteContacts)
+    } yield toContactSeq(filledFavoriteContacts)).resolve[ContactException]
 
   private[this] def getApps(implicit context: ContextSupport):
   ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =
@@ -107,5 +108,11 @@ class DeviceProcessImpl(
     val tasks = apps map imageServices.saveAppIcon map (_.run)
     Task.gatherUnordered(tasks) map (list => CatchAll[BitmapTransformationException](list.collect { case Answer(app) => app }))
   }
+
+  // TODO Change when ticket is finished (9C-235 - Fetch contacts from several lookup keys)
+  private[this] def fillContacts(contacts: Seq[ServicesContact]) = Service {
+    val tasks = contacts map (c => contactsServices.findContactByLookupKey(c.lookupKey).run)
+    Task.gatherUnordered(tasks) map (list => CatchAll[ContactsServiceException](list.collect { case Answer(contact) => contact }))
+  }.resolve[ContactException]
 
 }

@@ -20,12 +20,21 @@ case class UnformedApp(
 
 case class UnformedContact(
   name: String,
+  lookupKey: String,
   photoUri: String,
   info: Option[ContactInfo] = None)
 
 case class ContactInfo(
-  emails: Seq[String],
-  phones: Seq[String])
+  emails: Seq[ContactEmail],
+  phones: Seq[ContactPhone])
+
+case class ContactEmail(
+  address: String,
+  category: String)
+
+case class ContactPhone(
+  number: String,
+  category: String)
 
 case class FormedCollection(
   name: String,

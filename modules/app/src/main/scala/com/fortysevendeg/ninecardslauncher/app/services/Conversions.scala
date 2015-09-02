@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{AppCategorized, Contact, ContactInfo => DeviceContactInfo}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{AppCategorized, Contact, ContactInfo => DeviceContactInfo,
+  ContactEmail => DeviceContactEmail, ContactPhone => DeviceContactPhone}
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollectionItem, UserCollection}
 
@@ -24,12 +25,21 @@ trait Conversions {
 
   def toUnformedContact(contact: Contact): UnformedContact = UnformedContact(
     name = contact.name,
+    lookupKey = contact.lookupKey,
     photoUri = contact.photoUri,
     info = contact.info map toContactInfo)
 
-  def toContactInfo(info: DeviceContactInfo) = ContactInfo(
-    emails = info.emails,
-    phones = info.phones)
+  def toContactInfo(item: DeviceContactInfo): ContactInfo = ContactInfo(
+    emails = item.emails map toContactEmail,
+    phones = item.phones map toContactPhone)
+
+  def toContactEmail(item: DeviceContactEmail): ContactEmail = ContactEmail(
+    address = item.address,
+    category = item.category.toString)
+
+  def toContactPhone(item: DeviceContactPhone): ContactPhone = ContactPhone(
+    number = item.number,
+    category = item.category.toString)
 
   def toSeqFormedCollection(collections: Seq[UserCollection]): Seq[FormedCollection] = collections map toFormedCollection
 
