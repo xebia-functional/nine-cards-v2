@@ -15,6 +15,8 @@ import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 
+import math.Ordering.Implicits._
+
 import scala.annotation.tailrec
 
 trait AppsComposer
@@ -38,7 +40,8 @@ trait AppsComposer
       (recycler <~ recyclerStyle)
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
-    val appsHeadered = generateAppsForList(apps.sortBy(_.name).toList, Seq.empty)
+    val sortedApps = apps.sortBy(_.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A'))))
+    val appsHeadered = generateAppsForList(sortedApps.toList, Seq.empty)
     val adapter = new AppsAdapter(appsHeadered, clickListener)
     (recycler <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -51,8 +54,8 @@ trait AppsComposer
   private[this] def generateAppsForList(apps: List[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
     case Nil => acc
     case h :: t =>
-      val currentChar = h.name.substring(0, 1)
-      val lastChar = acc.lastOption flatMap (_.app map (_.name.substring(0, 1)))
+      val currentChar = h.name.substring(0, 1).toUpperCase
+      val lastChar = acc.lastOption flatMap (_.app map (_.name.substring(0, 1).toUpperCase))
       val skipChar = lastChar exists (_ equals currentChar)
       if (skipChar) {
         generateAppsForList(t, acc :+ AppHeadered(app = Option(h)))
