@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, AddCardRequest}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -31,7 +31,8 @@ class CollectionsDetailsActivity
   with UiExtensions
   with ScrolledListener
   with ActionsScreenListener
-  with CollectionsDetailDependencies {
+  with CollectionsDetailDependencies
+  with SystemBarsTint {
 
   val defaultPosition = 0
 
@@ -71,7 +72,8 @@ class CollectionsDetailsActivity
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
     getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
-    systemBarTintManager.setStatusBarTintEnabled(true)
+
+    initSystemStatusBarTint
 
     Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
       onResult = (c: Seq[Collection]) => collections = c
@@ -107,7 +109,7 @@ class CollectionsDetailsActivity
   override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
 
   override def onBackPressed(): Unit = (fabMenuOpened, isActionShowed) match {
-    case (true, _) => runUi(swapFabButton)
+    case (true, _) => runUi(swapFabButton())
     case (_, true) => runUi(unrevealActionFragment())
     case _ => finish()
   }

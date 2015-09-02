@@ -25,13 +25,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseAction
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, FabButtonBehaviour}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -52,7 +51,7 @@ trait CollectionsDetailsComposer
   extends Styles
   with FabButtonBehaviour {
 
-  self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] with CollectionsDetailDependencies =>
+  self: AppCompatActivity with SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] with CollectionsDetailDependencies =>
 
   val nameActionFragment = "action-fragment"
 
@@ -68,8 +67,6 @@ trait CollectionsDetailsComposer
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
 
-  lazy val systemBarTintManager = new SystemBarTintManager(this)
-
   lazy val toolbar = Option(findView(TR.collections_toolbar))
 
   lazy val root = Option(findView(TR.collections_root))
@@ -83,6 +80,11 @@ trait CollectionsDetailsComposer
   lazy val iconContent = Option(findView(TR.collections_icon_content))
 
   lazy val icon = Option(findView(TR.collections_icon))
+
+  def updateBarsInFabMenuShow: Ui[_] = updateStatusToBlack
+
+  def updateBarsInFabMenuHide: Ui[_] =
+    getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   def initUi(indexColor: Int, iconCollection: String)(implicit theme: NineCardsTheme) =
     (tabs <~ tabsStyle <~ vInvisible) ~
@@ -166,6 +168,8 @@ trait CollectionsDetailsComposer
     case adapter: CollectionsPagerAdapter => Some(adapter)
     case _ => None
   }
+
+  def getCurrentCollection: Option[Collection] = getAdapter flatMap (_.getCurrentFragmentPosition) flatMap collections.lift
 
   def configureEnterTransition(
     position: Int,
@@ -269,13 +273,7 @@ trait CollectionsDetailsComposer
 
   private[this] def updateToolbarColor(color: Int): Ui[_] =
     (toolbar <~ vBackgroundColor(color)) ~
-      Ui {
-        Lollipop ifSupportedThen {
-          getWindow.setStatusBarColor(color)
-        } getOrElse {
-          systemBarTintManager.setStatusBarTintColor(color)
-        }
-      }
+      updateStatusColor(color)
 
   private[this] def showAction(view: View): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
@@ -287,15 +285,17 @@ trait CollectionsDetailsComposer
     args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
     args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
-    val maybeCollection = getAdapter flatMap (_.getCurrentFragmentPosition) flatMap collections.lift
-    maybeCollection foreach (c =>
+    getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
-    swapFabButton ~
+    swapFabButton(doUpdateBars = false) ~
       (fragmentContent <~ fadeBackground(in = true) <~ fragmentContentStyle(true)) ~
       addFragment(f[AppsFragment].pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
   }
 
-  def turnOffFragmentContent: Ui[_] = fragmentContent <~ fadeBackground(in = false) <~ fragmentContentStyle(false)
+  def turnOffFragmentContent: Ui[_] =
+    (fragmentContent <~
+      fadeBackground(in = false) <~
+      fragmentContentStyle(false)) ~ updateBarsInFabMenuHide
 
   def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
 

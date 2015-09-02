@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -23,7 +24,8 @@ class LauncherActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
-  with LauncherComposer {
+  with LauncherComposer
+  with SystemBarsTint {
 
   implicit lazy val di: Injector = new Injector
 
@@ -37,10 +39,7 @@ class LauncherActivity
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
     runUi(initUi)
-
-    systemBarTintManager.setStatusBarTintEnabled(true)
-    systemBarTintManager.setNavigationBarTintEnabled(true)
-
+    initAllSystemBarsTint
     generateCollections()
   }
 
@@ -54,7 +53,7 @@ class LauncherActivity
   }
 
   override def onBackPressed(): Unit = if (fabMenuOpened) {
-    runUi(swapFabButton)
+    runUi(swapFabButton())
   } else if (isDrawerVisible) {
     runUi(revealOutDrawer)
   } else {

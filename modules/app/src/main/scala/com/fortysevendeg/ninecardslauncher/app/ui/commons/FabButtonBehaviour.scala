@@ -37,11 +37,15 @@ trait FabButtonBehaviour
 
   val timeDelayFabButton = 3000
 
+  def updateBarsInFabMenuShow: Ui[_]
+
+  def updateBarsInFabMenuHide: Ui[_]
+
   def initFabButton(implicit context: ActivityContextWrapper): Ui[_] =
     (fabMenuContent <~ On.click(
-      swapFabButton
+      swapFabButton()
     ) <~ fabContentStyle(false)) ~
-      (fabButton <~ fabButtonMenuStyle <~ On.click(swapFabButton))
+      (fabButton <~ fabButtonMenuStyle <~ On.click(swapFabButton()))
 
   def loadMenuItems(items: Seq[FabItemMenu]): Ui[_] =
     fabMenu <~ Tweak[LinearLayout] { view =>
@@ -49,10 +53,10 @@ trait FabButtonBehaviour
         items foreach (view.addView(_, 0, param))
     }
 
-  def swapFabButton(implicit context: ActivityContextWrapper) = {
+  def swapFabButton(doUpdateBars: Boolean = true)(implicit context: ActivityContextWrapper) = {
     val isOpen = fabButton map (tagEquals(_, R.id.fab_menu_opened, open))
     isOpen map { opened =>
-      (fabButton <~
+      val ui = (fabButton <~
         vTag(R.id.fab_menu_opened, if (opened) close else open) <~
         pmdAnimIcon(if (opened) IconTypes.ADD else IconTypes.CLOSE)) ~
         (fabMenuContent <~
@@ -60,7 +64,14 @@ trait FabButtonBehaviour
           fadeBackground(!opened) <~
           fabContentStyle(!opened)) ~
         (if (opened) postDelayedHideFabButton else removeDelayedHideFabButton)
+      ui ~ (if (doUpdateBars) updateBars(opened) else Ui.nop)
     } getOrElse Ui.nop
+  }
+
+  private[this] def updateBars(opened: Boolean): Ui[_] = if (opened) {
+    updateBarsInFabMenuHide
+  } else {
+    updateBarsInFabMenuShow
   }
 
   private[this] def animFabButton(open: Boolean)(implicit context: ActivityContextWrapper) = Transformer {
