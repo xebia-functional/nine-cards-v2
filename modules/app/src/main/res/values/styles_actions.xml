@@ -1,34 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Content -->
+    <!-- Base -->
 
-    <style name="ActionsRoot">
+    <style name="BaseActionsRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/background_actions</item>
     </style>
 
-    <style name="ActionsLoading">
+    <style name="BaseActionsTransitionView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="BaseActionsLoading">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:visibility">gone</item>
     </style>
 
-
-    <style name="ActionsContent">
+    <style name="BaseActionsContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="ActionsToolbarParent">
+    <style name="BaseActionsToolbarParent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
     </style>
 
-    <style name="ActionsToolbar" parent="ActionsToolbarParent" />
+    <style name="BaseActionsToolbar" parent="BaseActionsToolbarParent" />
+
+    <style name="BaseActionsRootContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0px</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <!-- Content -->
 
     <style name="ActionsListContent">
         <item name="android:layout_width">match_parent</item>
@@ -44,6 +57,11 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">right</item>
+    </style>
+
+    <style name="ActionsViewTransition">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
 </resources>

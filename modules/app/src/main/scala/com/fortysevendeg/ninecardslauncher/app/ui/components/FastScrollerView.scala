@@ -1,8 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components
 
 import android.content.Context
-import android.graphics.drawable.{GradientDrawable, Drawable, ShapeDrawable}
-import android.os.Build
+import android.graphics.drawable.{Drawable, GradientDrawable}
+import android.os.Build.VERSION._
+import android.os.Build.VERSION_CODES._
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.util.AttributeSet
@@ -11,15 +12,13 @@ import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, LayoutInflater, MotionEvent, View}
 import android.widget.FrameLayout.LayoutParams
 import android.widget.{FrameLayout, LinearLayout}
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, Ui}
-import Build.VERSION._
-import Build.VERSION_CODES._
 
 class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr) {
@@ -54,9 +53,7 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def fsColor(color: Int) = Tweak[FastScrollerView] { view =>
     view.barOn = changeColor(R.drawable.fastscroller_bar_on, color)
     runUi(
-      view.signal <~ Tweak[FrameLayout] { view =>
-        view.setBackground(changeColor(R.drawable.fastscroller_signal, color))
-      })
+      view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color))))
   }
 
   private[this] def changeColor(res: Int, color: Int): Drawable = {

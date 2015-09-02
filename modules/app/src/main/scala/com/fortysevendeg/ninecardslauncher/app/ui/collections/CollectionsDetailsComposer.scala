@@ -332,7 +332,7 @@ class OnPageChangeCollectionsListener(
   private[this] def jump(from: Collection, to: Collection) = {
     val valueAnimator = ValueAnimator.ofInt(0, 100)
     valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      override def onAnimationUpdate(value: ValueAnimator) {
+      override def onAnimationUpdate(value: ValueAnimator): Unit = {
         val color = interpolateColors(value.getAnimatedFraction, getColor(from), getColor(to))
         runUi(updateToolbarColor(color))
       }
@@ -347,6 +347,9 @@ class OnPageChangeCollectionsListener(
 
   override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit =
     currentMovement match {
+      case Loading if position == 0 => // Nothing
+        currentMovement = Left
+        currentPosition = 0
       case Loading => // Nothing
       case Start => // First time, we change automatically the movement
         currentMovement = if (currentPosition > 0) Jump else Idle
@@ -354,10 +357,9 @@ class OnPageChangeCollectionsListener(
       case _ => // Scrolling to left or right
         val selectedCollection: Collection = collections(position)
         val nextCollection: Option[Collection] = collections.lift(position + 1)
-        nextCollection map {
-          next =>
-            val color = interpolateColors(positionOffset, getColor(selectedCollection), getColor(next))
-            runUi(updateToolbarColor(color))
+        nextCollection map { next =>
+          val color = interpolateColors(positionOffset, getColor(selectedCollection), getColor(next))
+          runUi(updateToolbarColor(color))
         }
     }
 

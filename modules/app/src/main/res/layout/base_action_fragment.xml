@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             style="@style/BaseActionsRoot">
+
+    <FrameLayout
+        android:id="@+id/actions_transition"
+        style="@style/BaseActionsTransitionView" />
+
+    <ProgressBar
+        style="@style/BaseActionsLoading"
+        android:id="@+id/action_loading"/>
+
+    <LinearLayout
+        android:id="@+id/action_content_root"
+        style="@style/BaseActionsContent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/actions_toolbar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            style="@style/BaseActionsToolbar"/>
+
+        <FrameLayout
+            android:id="@+id/action_content_layout"
+            style="@style/BaseActionsRootContent" />
+
+    </LinearLayout>
+
+</FrameLayout>
