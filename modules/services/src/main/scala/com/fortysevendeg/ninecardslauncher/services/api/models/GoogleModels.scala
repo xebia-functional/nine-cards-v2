@@ -35,7 +35,7 @@ case class GooglePlayAppDetails(
   developerEmail: Option[String],
   developerName: Option[String],
   developerWebsite: Option[String],
-  versionCode: Int,
+  versionCode: Option[Int],
   versionString: Option[String],
   appType: Option[String],
   permission: Seq[String])

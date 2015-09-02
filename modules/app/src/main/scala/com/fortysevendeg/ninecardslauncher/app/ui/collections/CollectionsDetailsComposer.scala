@@ -166,7 +166,9 @@ trait CollectionsDetailsComposer
 
   def configureEnterTransition(
     position: Int,
-    end: (() => Unit)) = Lollipop.ifSupportedThen(configureEnterTransitionLollipop(position, end))
+    end: (() => Unit)) = Lollipop.ifSupportedThen {
+    configureEnterTransitionLollipop(position, end)
+  } getOrElse end()
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private[this] def configureEnterTransitionLollipop(
