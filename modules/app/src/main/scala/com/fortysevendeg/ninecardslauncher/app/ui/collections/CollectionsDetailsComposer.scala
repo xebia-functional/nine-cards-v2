@@ -276,10 +276,14 @@ trait CollectionsDetailsComposer
 
   private[this] def showAction(view: View): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
-    val (x: Int, y: Int) = calculateAnchorViewPosition(view.findViewById(R.id.fab_icon))
+    val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
+    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse (0, 0)
+    val (endX: Int, endY: Int) = fabButton map calculateAnchorViewPosition getOrElse (0, 0)
     val args = new Bundle()
-    args.putInt(BaseActionFragment.posX, x + (sizeIconFabMenuItem / 2))
-    args.putInt(BaseActionFragment.posY, y + (sizeIconFabMenuItem / 2))
+    args.putInt(BaseActionFragment.startRevealPosX, startX + (sizeIconFabMenuItem / 2))
+    args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
+    args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
+    args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
     swapFabButton ~
       (fragmentContent <~ fadeBackground(in = true) <~ fragmentContentStyle(true)) ~
       addFragment(f[AppsFragment].pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))

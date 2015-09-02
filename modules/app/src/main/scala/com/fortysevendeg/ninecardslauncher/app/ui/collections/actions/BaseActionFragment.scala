@@ -31,17 +31,25 @@ class BaseActionFragment
 
   protected var height: Int = 0
 
-  protected lazy val originalPosX = getInt(Seq(getArguments), BaseActionFragment.posX, defaultPosition)
+  protected lazy val originalPosX = getInt(Seq(getArguments), BaseActionFragment.startRevealPosX, defaultPosition)
 
-  protected lazy val originalPosY = getInt(Seq(getArguments), BaseActionFragment.posY, defaultPosition)
+  protected lazy val originalPosY = getInt(Seq(getArguments), BaseActionFragment.startRevealPosY, defaultPosition)
 
-  protected lazy val projection = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultPosition, defaultPosition)
+  protected lazy val endPosX = getInt(Seq(getArguments), BaseActionFragment.endRevealPosX, defaultPosition)
+
+  protected lazy val endPosY = getInt(Seq(getArguments), BaseActionFragment.endRevealPosY, defaultPosition)
 
   protected var rootView: Option[View] = None
 
-  def reveal: Ui[_] = rootView <~ revealIn(projection._1, projection._2, width, height)
+  def reveal: Ui[_] = {
+    val projection = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultPosition, defaultPosition)
+    rootView <~ revealIn(projection._1, projection._2, width, height)
+  }
 
-  def unreveal(): Ui[_] = onStartFinishAction ~ (rootView <~~ revealOut(projection._1, projection._2, width, height)) ~~ onEndFinishAction
+  def unreveal(): Ui[_] = {
+    val projection = rootView map (projectionScreenPositionInView(_, endPosX, endPosY)) getOrElse(defaultPosition, defaultPosition)
+    onStartFinishAction ~ (rootView <~~ revealOut(projection._1, projection._2, width, height)) ~~ onEndFinishAction
+  }
 
   def createBaseView(view: View): View = {
     rootView = Option(view)
@@ -80,8 +88,8 @@ class BaseActionFragment
 }
 
 object BaseActionFragment {
-
-  val posX = "pos_x"
-  val posY = "pos_y"
-
+  val startRevealPosX = "start_reveal_pos_x"
+  val startRevealPosY = "start_reveal_pos_y"
+  val endRevealPosX = "end_reveal_pos_x"
+  val endRevealPosY = "end_reveal_pos_y"
 }
