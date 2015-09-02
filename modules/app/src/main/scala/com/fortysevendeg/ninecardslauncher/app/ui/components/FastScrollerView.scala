@@ -128,9 +128,10 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       view.scrollToPosition(position)
       val element = Option(view.getAdapter) match {
         case Some(listener: FastScrollerListener) => listener.getElement(position)
-        case _ => ""
+        case _ => None
       }
-      runUi(text <~ tvText(element))
+      val ui = element map (e => (text <~ tvText(e)) ~ (signal <~ vVisible)) getOrElse signal <~ vGone
+      runUi(ui)
     }
   }
 
@@ -176,7 +177,7 @@ trait FastScrollerListener {
 
   def getHeight: Int
 
-  def getElement(position: Int): String
+  def getElement(position: Int): Option[String]
 
 }
 
