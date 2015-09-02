@@ -32,7 +32,6 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
     paint.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL))
     paint.setAntiAlias(true)
     paint.setColor(Color.WHITE)
-    paint.setElegantTextHeight(true)
     paint
   }
 
