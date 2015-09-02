@@ -2,30 +2,37 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.content.Intent
 import android.speech.RecognizerIntent
+import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.ImageView
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab._
 import macroid.FullDsl._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 
 trait LauncherComposer
   extends Styles
   with FabButtonBehaviour {
 
-  self: TypedFindView =>
+  self: AppCompatActivity with TypedFindView =>
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
@@ -50,6 +57,12 @@ trait LauncherComposer
 
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
+  lazy val drawerContent = Option(findView(TR.launcher_drawer_content))
+
+  lazy val drawerTabApp = Option(findView(TR.launcher_drawer_tab_app))
+
+  lazy val drawerTabContacts = Option(findView(TR.launcher_drawer_tab_contact))
+
   lazy val paginationPanel = Option(findView(TR.launcher_pagination_panel))
 
   lazy val searchPanel = Option(findView(TR.launcher_search_panel))
@@ -59,6 +72,8 @@ trait LauncherComposer
   lazy val googleIcon = Option(findView(TR.launcher_google_icon))
 
   lazy val micIcon = Option(findView(TR.launcher_mic_icon))
+
+  lazy val systemBarTintManager = new SystemBarTintManager(this)
 
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
@@ -96,8 +111,21 @@ trait LauncherComposer
         uiShortToast("App 4")
       }) ~
       (appDrawerMain <~ drawerAppStyle <~ On.click {
-        uiShortToast("App Drawer")
-      })
+        revealInDrawer
+      }) ~
+      (drawerContent <~ vGone) ~
+      (drawerTabApp <~
+        ttInitTab(R.string.apps, R.drawable.app_drawer_icon_list_app) <~
+        ttSelect <~
+        On.click {
+          uiShortToast("App") ~ (drawerTabApp <~ ttSelect) ~ (drawerTabContacts <~ ttUnselect)
+        }) ~
+      (drawerTabContacts <~
+        ttInitTab(R.string.contacts, R.drawable.app_drawer_icon_list_contact) <~
+        ttUnselect <~
+        On.click {
+          uiShortToast("Contacts") ~ (drawerTabContacts <~ ttSelect) ~ (drawerTabApp <~ ttUnselect)
+        })
 
   def createCollections(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (loading <~ vGone) ~
@@ -106,7 +134,11 @@ trait LauncherComposer
         lwsAddPageChangedObserver(currentPage => {
           val widgetScreen = workspaces exists (_.isWidgetScreen(currentPage))
           runUi((paginationPanel <~ reloadPager(currentPage)) ~
-             (if (widgetScreen) { hideFabButton } else { Ui.nop }))
+            (if (widgetScreen) {
+              hideFabButton
+            } else {
+              Ui.nop
+            }))
         }
         )) ~
       (appDrawerPanel <~ fillAppDrawer(collections)) ~
@@ -158,5 +190,35 @@ trait LauncherComposer
   class RunnableWrapper(implicit context: ActivityContextWrapper) extends Runnable {
     override def run(): Unit = runUi(fabButton <~ hideFabMenu)
   }
+
+  private[this] def updateStatusColor(color: Int): Ui[_] =
+    Ui {
+      Lollipop ifSupportedThen {
+        getWindow.setStatusBarColor(color)
+      } getOrElse {
+        systemBarTintManager.setStatusBarTintColor(color)
+      }
+    }
+
+  private[this] def updateNavigationColor(color: Int): Ui[_] =
+    Ui {
+      Lollipop ifSupportedThen {
+        getWindow.setNavigationBarColor(color)
+      } getOrElse {
+        systemBarTintManager.setNavigationBarTintColor(color)
+      }
+    }
+
+  def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
+
+  def revealInDrawer(implicit context: ActivityContextWrapper): Ui[_] =
+    updateNavigationColor(resGetColor(android.R.color.black)) ~
+      (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source))) ~~
+      updateStatusColor(resGetColor(R.color.drawer_toolbar))
+
+  def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
+    updateStatusColor(resGetColor(android.R.color.transparent)) ~
+      updateNavigationColor(resGetColor(android.R.color.transparent)) ~
+      (appDrawerMain mapUi (source => drawerContent <~ revealOutAppDrawer(source)))
 
 }

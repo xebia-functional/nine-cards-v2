@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        style="@style/LauncherDrawerTabTextLayout">
+
+        <TextView
+            android:id="@+id/launcher_drawer_tab_text"
+            style="@style/LauncherDrawerTabText"/>
+
+        <ImageView
+            android:id="@+id/launcher_drawer_tab_arrow"
+            style="@style/LauncherDrawerTabArrow"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/launcher_drawer_tab_bottom"
+        style="@style/LauncherDrawerTabBottom"/>
+
+</merge>
