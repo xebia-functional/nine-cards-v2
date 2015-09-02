@@ -35,14 +35,13 @@ class BaseActionFragment
 
   protected lazy val originalPosY = getInt(Seq(getArguments), BaseActionFragment.posY, defaultPosition)
 
+  protected lazy val projection = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultPosition, defaultPosition)
+
   protected var rootView: Option[View] = None
 
-  def reveal: Ui[_] = {
-    val projection = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultPosition, defaultPosition)
-    rootView <~ revealIn(projection._1, projection._2, width, height)
-  }
+  def reveal: Ui[_] = rootView <~ revealIn(projection._1, projection._2, width, height)
 
-  def unreveal(): Ui[_] = onStartFinishAction ~ (rootView <~~ revealOut(width, height)) ~~ onEndFinishAction
+  def unreveal(): Ui[_] = onStartFinishAction ~ (rootView <~~ revealOut(projection._1, projection._2, width, height)) ~~ onEndFinishAction
 
   def createBaseView(view: View): View = {
     rootView = Option(view)

@@ -34,7 +34,7 @@ object ActionsSnails {
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  def revealOut(w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def revealOut(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
@@ -42,8 +42,6 @@ object ActionsSnails {
       val duration = resGetInteger(R.integer.anim_duration_collection_detail)
 
       Lollipop ifSupportedThen {
-        val x = w / 2
-        val y = (resGetDimensionPixelSize(R.dimen.size_icon_collection_detail) / 2 ) + (resGetDimensionPixelSize(R.dimen.padding_default) / 2)
         val startRadius = SnailsUtils.calculateRadius(x, y, w, h)
         circularReveal(view, x, y, w, h, duration, startRadius, 0, {
           view.setVisibility(View.GONE)
