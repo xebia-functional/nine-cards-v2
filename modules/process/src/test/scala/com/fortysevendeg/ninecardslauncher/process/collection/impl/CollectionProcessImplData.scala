@@ -299,6 +299,7 @@ trait CollectionProcessImplData {
       AddCardRequest(
         term = term,
         packageName = Option(packageName),
+        cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
         imagePath = imagePath)
     }

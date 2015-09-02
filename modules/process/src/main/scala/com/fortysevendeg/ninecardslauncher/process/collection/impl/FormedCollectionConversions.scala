@@ -140,7 +140,7 @@ trait FormedCollectionConversions
   }
 
   private[this] def generateAddCollection(items: Seq[UnformedItem], category: String, position: Int): AddCollectionRequest = {
-    val appsCategory = items.filter(_.category.contains(category)).sortWith(mfIndex(_) < mfIndex(_)).take(numSpaces)
+    val appsCategory = items.filter(_.category.contains(category)).sortWith(mfIndex(_) > mfIndex(_)).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,

@@ -110,7 +110,7 @@ object SnailsCommons {
   }
 
   def fadeBackground(in: Boolean)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view ⇒
+    view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()

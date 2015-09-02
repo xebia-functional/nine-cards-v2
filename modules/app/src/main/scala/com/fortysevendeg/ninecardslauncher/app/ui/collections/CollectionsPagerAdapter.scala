@@ -3,15 +3,15 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdapter}
 import android.view.ViewGroup
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import macroid.{ContextWrapper, Ui}
 
-import scala.collection.mutable.WeakHashMap
+import scala.collection.mutable
 
-case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections: Seq[Collection])(implicit context: ContextWrapper)
+case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collections: Seq[Collection])(implicit context: ContextWrapper)
   extends FragmentStatePagerAdapter(fragmentManager) {
 
-  val fragments : WeakHashMap[Int, CollectionFragment] = WeakHashMap.empty
+  val fragments: mutable.WeakHashMap[Int, CollectionFragment] = mutable.WeakHashMap.empty
 
   var scrollType = ScrollType.down
 
@@ -40,27 +40,31 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, collections
     super.destroyItem(container, position, `object`)
   }
 
-  def activateFragment(pos: Int) = {
-    for (f <- fragments) {
-      if (f._1 == pos) {
-        f._2.activeFragment = true
-      }
-    }
+  def addCardsToCollection(positionCollection: Int, cards: Seq[Card]) = {
+    val currentCollection = collections(positionCollection)
+    val newCollection = currentCollection.copy(cards = currentCollection.cards ++ cards)
+    collections = collections.patch(positionCollection, Seq(newCollection), 1)
   }
 
-  def setScrollType(sType: Int) = scrollType = sType
+  def getCurrentFragmentPosition: Option[Int] = fragments find (f => f._2.activeFragment) map (_._1)
+
+  def getActiveFragment: Option[CollectionFragment] = fragments find (f => f._2.activeFragment) map (_._2)
+
+  def activateFragment(pos: Int): Unit = fragments foreach (f => if (f._1 == pos) f._2.activeFragment = true)
+
+  def setScrollType(sType: Int): Unit = scrollType = sType
 
   def notifyChanged(currentPosition: Int): Ui[_] = {
-    val uis = fragments map {
-      f =>
-        if (f._1 == currentPosition) {
+    val uis = fragments map { f =>
+      f._1 match {
+        case `currentPosition` =>
           f._2.activeFragment = true
           Ui.nop
-        } else {
+        case _ =>
           f._2.activeFragment = false
           f._2.scrollType(scrollType)
-        }
+      }
     }
-    Ui.sequence(uis.toSeq :_*)
+    Ui.sequence(uis.toSeq: _*)
   }
 }

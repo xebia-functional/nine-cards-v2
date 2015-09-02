@@ -2,10 +2,10 @@
 <resources>
 
     <!-- Main colors -->
-    <color name="primary">#364550</color>
-    <color name="primary_dark">#2F3C46</color>
-    <color name="color_control_highlight">#2F3C46</color>
-    <color name="accent">#E05F5E</color>
+    <color name="primary">#3F51B5</color>
+    <color name="primary_dark">#ff344285</color>
+    <color name="color_control_highlight">#cccccc</color>
+    <color name="accent">#3F51B5</color>
     <color name="toolbar_title">#ffffff</color>
 
     <color name="background_default_1">#FF9800</color>
@@ -49,6 +49,14 @@
     <color name="background_icon_collection_detail">#4bffffff</color>
     <color name="text_tab_color_default">#77ffffff</color>
     <color name="text_tab_color_selected">#ffffff</color>
+
+    <!-- Windows actions -->
+    <color name="background_actions">#FAFAFA</color>
+
+    <!-- Fast Scroller -->
+    <color name="fastscroller_text">#ffffff</color>
+    <color name="fastscroller_bar_off">#999999</color>
+    <color name="fastscroller_bar_on">#3F51B5</color>
 
     <!-- Drawer -->
     <color name="drawer_toolbar">#ff303aa6</color>

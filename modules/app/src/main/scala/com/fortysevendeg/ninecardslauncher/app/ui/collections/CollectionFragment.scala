@@ -4,12 +4,13 @@ import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.{LayoutInflater, View, ViewGroup}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.Contexts
 import macroid.FullDsl._
@@ -54,6 +55,13 @@ class CollectionFragment
   override def onDetach(): Unit = {
     super.onDetach()
     scrolledListener = None
+  }
+
+  def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
+    adapter.addCards(cards)
+    val cardCount = adapter.collection.cards.length
+    canScroll = cardCount > numSpaces
+    runUi(resetScroll(adapter.collection, cardCount - 1))
   }
 }
 

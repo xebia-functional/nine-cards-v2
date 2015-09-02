@@ -5,7 +5,7 @@ import java.util
 import android.animation.ValueAnimator
 import android.annotation.TargetApi
 import android.app.SharedElementCallback
-import android.os.Build
+import android.os.{Bundle, Build}
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
@@ -14,12 +14,15 @@ import android.transition.{Transition, Fade, TransitionSet, TransitionInflater}
 import android.view.{ViewGroup, Gravity, View}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
@@ -32,6 +35,8 @@ import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 
 import scala.collection.JavaConversions._
 
@@ -44,6 +49,8 @@ trait CollectionsDetailsComposer
   with FabButtonBehaviour {
 
   self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] =>
+
+  val nameActionFragment = "action-fragment"
 
   val resistanceDisplacement = .35f
 
@@ -62,6 +69,8 @@ trait CollectionsDetailsComposer
   lazy val toolbar = Option(findView(TR.collections_toolbar))
 
   lazy val root = Option(findView(TR.collections_root))
+
+  lazy val fragmentContent = Option(findView(TR.collections_fragment_content))
 
   lazy val viewPager = Option(findView(TR.collections_view_pager))
 
@@ -131,8 +140,9 @@ trait CollectionsDetailsComposer
     }) getOrElse Ui.nop
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
-    getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ On.click {
-      uiShortToast("Applications")
+    getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
+      (view: View) =>
+        showAction(view)
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
       uiShortToast("Recommendations")
@@ -149,11 +159,9 @@ trait CollectionsDetailsComposer
     vElevation(elevation)
   }.getOrElse(Tweak.blank)
 
-  def getAdapter: Option[CollectionsPagerAdapter] = {
-    viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
-      case adapter: CollectionsPagerAdapter => Some(adapter)
-      case _ => None
-    }
+  def getAdapter: Option[CollectionsPagerAdapter] = viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
+    case adapter: CollectionsPagerAdapter => Some(adapter)
+    case _ => None
   }
 
   def configureEnterTransition(
@@ -239,15 +247,9 @@ trait CollectionsDetailsComposer
 
     getWindow.getSharedElementEnterTransition.addListener(new Transition.TransitionListener {
       override def onTransitionStart(transition: Transition): Unit = {}
-
       override def onTransitionCancel(transition: Transition): Unit = {}
-
-      override def onTransitionEnd(transition: Transition): Unit = {
-        end()
-      }
-
+      override def onTransitionEnd(transition: Transition): Unit = end()
       override def onTransitionPause(transition: Transition): Unit = {}
-
       override def onTransitionResume(transition: Transition): Unit = {}
     })
   }
@@ -271,6 +273,30 @@ trait CollectionsDetailsComposer
           systemBarTintManager.setStatusBarTintColor(color)
         }
       }
+
+  private[this] def showAction(view: View): Ui[_] = {
+    val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
+    val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
+    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse (0, 0)
+    val (endX: Int, endY: Int) = fabButton map calculateAnchorViewPosition getOrElse (0, 0)
+    val args = new Bundle()
+    args.putInt(BaseActionFragment.startRevealPosX, startX + (sizeIconFabMenuItem / 2))
+    args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
+    args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
+    args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
+    swapFabButton ~
+      (fragmentContent <~ fadeBackground(in = true) <~ fragmentContentStyle(true)) ~
+      addFragment(f[AppsFragment].pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
+  }
+
+  def turnOffFragmentContent: Ui[_] = fragmentContent <~ fadeBackground(in = false) <~ fragmentContentStyle(false)
+
+  def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
+
+  def isActionShowed: Boolean = findFragmentByTag(nameActionFragment).isDefined
+
+  def unrevealActionFragment(): Ui[_] =
+    findFragmentByTag[BaseActionFragment](nameActionFragment) map (_.unreveal()) getOrElse Ui.nop
 
 }
 
