@@ -1,10 +1,10 @@
 import Libraries.android._
 import Libraries.graphics._
-import Libraries.macroid._
-import Libraries.playServices._
-import Libraries.net._
-import Libraries.scala._
 import Libraries.json._
+import Libraries.macroid._
+import Libraries.net._
+import Libraries.playServices._
+import Libraries.scala._
 import Libraries.test._
 import android.Keys._
 import sbt.Keys._
@@ -14,23 +14,23 @@ object Settings {
 
   // App Module
   lazy val appSettings = basicSettings ++ multiDex ++
-      Seq(
-        run <<= run in Android,
-        javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-        transitiveAndroidLibs in Android := true,
-        libraryDependencies ++= appDependencies,
-        apkbuildExcludes in Android ++= Seq(
-          "META-INF/LICENSE",
-          "META-INF/LICENSE.txt",
-          "META-INF/NOTICE",
-          "META-INF/NOTICE.txt",
-          "scalac-plugin.xml",
-          "reference.conf"),
-        dexMaxHeap in Android := "2048m",
-        proguardScala in Android := true,
-        useProguard in Android := true,
-        proguardOptions in Android ++= proguardCommons,
-        proguardCache in Android := Seq.empty)
+    Seq(
+      run <<= run in Android,
+      javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+      transitiveAndroidLibs in Android := true,
+      libraryDependencies ++= appDependencies,
+      apkbuildExcludes in Android ++= Seq(
+        "META-INF/LICENSE",
+        "META-INF/LICENSE.txt",
+        "META-INF/NOTICE",
+        "META-INF/NOTICE.txt",
+        "scalac-plugin.xml",
+        "reference.conf"),
+      dexMaxHeap in Android := "2048m",
+      proguardScala in Android := true,
+      useProguard in Android := true,
+      proguardOptions in Android ++= proguardCommons,
+      proguardCache in Android := Seq.empty)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++
@@ -42,15 +42,15 @@ object Settings {
 
   // Services Module
   lazy val servicesSettings = basicSettings ++ librarySettings ++
-      Seq(libraryDependencies ++= servicesDependencies)
+    Seq(libraryDependencies ++= servicesDependencies)
 
   // Process Module
   lazy val processSettings = basicSettings ++ librarySettings ++
-      Seq(libraryDependencies ++= processDependencies)
+    Seq(libraryDependencies ++= processDependencies)
 
   // Commons Module
   lazy val commonsSettings = basicSettings ++ librarySettings ++
-      Seq(libraryDependencies ++= commonsDependencies)
+    Seq(libraryDependencies ++= commonsDependencies)
 
   // Basic Setting for all modules
   lazy val basicSettings = Seq(
@@ -59,9 +59,18 @@ object Settings {
     libraryDependencies ++= Seq(scalaz, scalazConcurrent, rapture, raptureScalaz)
   )
 
+  lazy val duplicatedFiles = Set(
+    "AndroidManifest.xml",
+    "theme_dark.json",
+    "theme_light.json")
+
   // Settings associated to library modules
   lazy val librarySettings = Seq(
-    mappings in (Compile, packageBin) ~= { _.filter(!_._1.getName.equals("AndroidManifest.xml")) },
+    mappings in(Compile, packageBin) ~= {
+      _.filter { tuple =>
+        !duplicatedFiles.contains(tuple._1.getName)
+      }
+    },
     exportJars := true,
     scalacOptions in Compile ++= Seq("-deprecation", "-Xexperimental"),
     javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
@@ -136,7 +145,7 @@ object Settings {
     "-keep class android.** { *; }",
     "-keep class com.google.** { *; }"
   )
-  
+
   lazy val multiDex = Seq(
     dexMulti in Android := true,
     dexMinimizeMainFile in Android := true,
