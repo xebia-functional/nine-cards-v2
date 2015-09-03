@@ -71,10 +71,8 @@ trait FormedCollectionConversions
     contacts: Seq[UnformedContact],
     categories: Seq[String]) = {
     val collections = generateAddCollections(apps, categories, Seq.empty)
-    contacts.length compare minAppsToAdd match {
-      case 1 => collections :+ toAddCollectionRequestByContact(contacts.take(numSpaces), collections.length)
-      case _ => collections
-    }
+    if (contacts.length < minAppsToAdd) collections :+ toAddCollectionRequestByContact(contacts.take(numSpaces), collections.length)
+    else collections
   }
 
   @tailrec
