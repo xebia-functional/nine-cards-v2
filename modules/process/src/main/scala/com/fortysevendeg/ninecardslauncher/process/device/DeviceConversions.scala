@@ -1,18 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.process.device
 
 import android.content.{Intent, ComponentName}
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
+import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlaySimplePackage, GooglePlayPackage, GooglePlayApp}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ContactServices, ContactInfo => ContactInfoServices,
+  ContactEmail => ContactEmailServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence.AddCacheCategoryRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
-import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 trait DeviceConversions {
 
@@ -68,5 +68,25 @@ trait DeviceConversions {
       intent = intent
     )
   }
+
+  def toContactSeq(items: Seq[ContactServices]): Seq[Contact] = items map toContact
+
+  def toContact(item: ContactServices): Contact = Contact(
+      name = item.name,
+      lookupKey = item.lookupKey,
+      photoUri = item.photoUri,
+      info = item.info map toContactInfo)
+
+  def toContactInfo(item: ContactInfoServices): ContactInfo = ContactInfo(
+    emails = item.emails map toContactEmail,
+    phones = item.phones map toContactPhone)
+
+  def toContactEmail(item: ContactEmailServices): ContactEmail = ContactEmail(
+    address = item.address,
+    category = item.category.toString)
+
+  def toContactPhone(item: ContactPhoneServices): ContactPhone = ContactPhone(
+    number = item.number,
+    category = item.category.toString)
 
 }

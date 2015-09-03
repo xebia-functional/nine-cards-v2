@@ -416,7 +416,7 @@ class CollectionProcessImplSpec
 
     "the size of collections should be equal to size of categories" in
       new CollectionProcessScope with ValidCreateCollectionPersistenceServicesResponses {
-        val result = collectionProcess.createCollectionsFromUnformedItems(unformedItems)(contextSupport).run.run
+        val result = collectionProcess.createCollectionsFromUnformedItems(unformedApps, unformedContacts)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual categoriesUnformedItems.size
@@ -425,7 +425,7 @@ class CollectionProcessImplSpec
 
     "returns empty collections when persistence services fails" in
       new CollectionProcessScope with ErrorCreateCollectionPersistenceServicesResponses {
-        val result = collectionProcess.createCollectionsFromUnformedItems(unformedItems)(contextSupport).run.run
+        val result = collectionProcess.createCollectionsFromUnformedItems(unformedApps, unformedContacts)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual 0
@@ -434,10 +434,10 @@ class CollectionProcessImplSpec
 
     "the size of collections should be equal to size of categories with contact collection" in
       new CollectionProcessScope with ValidCreateCollectionPersistenceServicesResponses with WithContactsResponses {
-        val result = collectionProcess.createCollectionsFromUnformedItems(unformedItems)(contextSupport).run.run
+        val result = collectionProcess.createCollectionsFromUnformedItems(unformedApps, unformedContacts)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
-            resultSeqCollection.size shouldEqual categoriesUnformedItems.size + 1
+            resultSeqCollection.size shouldEqual categoriesUnformedItems.size
         }
       }
 

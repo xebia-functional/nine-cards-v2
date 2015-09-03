@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
@@ -36,28 +37,24 @@ trait DeviceProcessData {
     name = name4,
     packageName = packageName4,
     className = className4,
-    icon = 4
-  )
+    icon = 4)
 
   val applications: Seq[Application] = Seq(
     Application(
       name = name1,
       packageName = packageName1,
       className = className1,
-      icon = 2
-    ),
+      icon = 2),
     Application(
       name = name2,
       packageName = packageName2,
       className = className2,
-      icon = 8
-    ),
+      icon = 8),
     Application(
       name = name3,
       packageName = packageName3,
       className = className3,
-      icon = 4
-    )
+      icon = 4)
   )
 
   val newCacheCategory = CacheCategory(
@@ -67,8 +64,7 @@ trait DeviceProcessData {
     starRating = 4.5,
     numDownloads = "+100.000",
     ratingsCount = 5000,
-    commentCount = 40000
-  )
+    commentCount = 40000)
 
   val cacheCategories: Seq[CacheCategory] = Seq(
     CacheCategory(
@@ -78,8 +74,7 @@ trait DeviceProcessData {
       starRating = 3.5,
       numDownloads = "+500.000",
       ratingsCount = 78000,
-      commentCount = 5000
-    ),
+      commentCount = 5000),
     CacheCategory(
       id = 2,
       packageName = packageName2,
@@ -87,8 +82,7 @@ trait DeviceProcessData {
       starRating = 4.5,
       numDownloads = "+100.000",
       ratingsCount = 5000,
-      commentCount = 40000
-    ),
+      commentCount = 40000),
     CacheCategory(
       id = 3,
       packageName = packageName3,
@@ -96,9 +90,7 @@ trait DeviceProcessData {
       starRating = 4,
       numDownloads = "+10.000.000",
       ratingsCount = 2300,
-      commentCount = 34000
-    )
-  )
+      commentCount = 34000))
 
   val appPackagePathNoCached = AppPackagePath(
     packageName = packageName4,
@@ -117,8 +109,7 @@ trait DeviceProcessData {
     AppPackagePath(
       packageName = packageName3,
       className = className3,
-      path = path3)
-  )
+      path = path3))
 
   val appCategorizedNoCached = AppCategorized(
     name = name4,
@@ -129,8 +120,7 @@ trait DeviceProcessData {
     starRating = Option(4.5),
     numDownloads = Option("+100.000"),
     ratingsCount = Option(5000),
-    commentCount = Option(40000)
-  )
+    commentCount = Option(40000))
 
   val appsCategorized: Seq[AppCategorized] = Seq(
     AppCategorized(
@@ -142,8 +132,7 @@ trait DeviceProcessData {
       starRating = Option(3.5),
       numDownloads = Option("+500.000"),
       ratingsCount = Option(78000),
-      commentCount = Option(5000)
-    ),
+      commentCount = Option(5000)),
     AppCategorized(
       name = name2,
       packageName = packageName2,
@@ -153,8 +142,7 @@ trait DeviceProcessData {
       starRating = Option(4.5),
       numDownloads = Option("+100.000"),
       ratingsCount = Option(5000),
-      commentCount = Option(40000)
-    ),
+      commentCount = Option(40000)),
     AppCategorized(
       name = name3,
       packageName = packageName3,
@@ -164,9 +152,7 @@ trait DeviceProcessData {
       starRating = Option(4),
       numDownloads = Option("+10.000.000"),
       ratingsCount = Option(2300),
-      commentCount = Option(34000)
-    )
-  )
+      commentCount = Option(34000)))
 
   val googlePlaySimplePackageNoCached = GooglePlaySimplePackage(
     packageName = packageName4,
@@ -175,8 +161,7 @@ trait DeviceProcessData {
     starRating = 4.5,
     numDownloads = "+100.000",
     ratingCount = 5000,
-    commentCount = 40000
-  )
+    commentCount = 40000)
 
   val requestConfig = RequestConfig("fake-device-id", "fake-token")
 
@@ -189,8 +174,7 @@ trait DeviceProcessData {
   val appWebsitePath = AppWebsitePath(
     packageName = packageNameForCreateImage,
     url = urlForCreateImage,
-    path = pathForCreateImage
-  )
+    path = pathForCreateImage)
 
   val googlePlayPackage = GooglePlayPackage(
     GooglePlayApp(
@@ -204,29 +188,46 @@ trait DeviceProcessData {
       video = None,
       details = GooglePlayDetails(GooglePlayAppDetails(Seq("SOCIAL"), "", None, None, None, Option(1), Option("1"), None, Seq.empty)),
       offer = Seq.empty,
-      aggregateRating = GooglePlayAggregateRating(0, None, 0, 0, 0, 0, 0, 0)
-    )
-  )
+      aggregateRating = GooglePlayAggregateRating(0, None, 0, 0, 0, 0, 0, 0)))
 
   val shortcuts: Seq[Shortcut] = Seq(
     Shortcut(
       title = "Shortcut 1",
       icon = 0,
       name = "Shortcut 1",
-      packageName = "com.example.shortcut1"
-    ),
+      packageName = "com.example.shortcut1"),
     Shortcut(
       title = "Shortcut 2",
       icon = 0,
       name = "Shortcut 2",
-      packageName = "com.example.shortcut2"
-    ),
+      packageName = "com.example.shortcut2"),
     Shortcut(
       title = "Shortcut 3",
       icon = 0,
       name = "Shortcut 3",
-      packageName = "com.example.shortcut3"
-    )
-  )
+      packageName = "com.example.shortcut3"))
+
+  val contacts: Seq[Contact] = Seq(
+    Contact(
+      name = "Contact 1",
+      lookupKey = "lookupKey 1",
+      photoUri = "photoUri 2",
+      hasPhone = false,
+      favorite = false,
+      info = None),
+    Contact(
+      name = "Contact 2",
+      lookupKey = "lookupKey 2",
+      photoUri = "photoUri 2",
+      hasPhone = false,
+      favorite = false,
+      info = None),
+    Contact(
+      name = "Contact 3",
+      lookupKey = "lookupKey 3",
+      photoUri = "photoUri 3",
+      hasPhone = false,
+      favorite = false,
+      info = None))
 
 }

@@ -14,11 +14,17 @@ case class ShortcutException(message: String, cause: Option[Throwable] = None) e
   cause map initCause
 }
 
+case class ContactException(message: String, cause: Option[Throwable] = None) extends RuntimeException(message) {
+  cause map initCause
+}
+
 trait ImplicitsDeviceException {
   implicit def appCategorizationException = (t: Throwable) => AppCategorizationException(t.getMessage, t.some)
 
   implicit def createBitmapException = (t: Throwable) => CreateBitmapException(t.getMessage, t.some)
 
-  implicit def shortcutExceptionException = (t: Throwable) => ShortcutException(t.getMessage, t.some)
+  implicit def shortcutException = (t: Throwable) => ShortcutException(t.getMessage, t.some)
+
+  implicit def contactException = (t: Throwable) => ContactException(t.getMessage, t.some)
 
 }
