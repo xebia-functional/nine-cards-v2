@@ -52,16 +52,14 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   private[this] def fsColor(color: Int) = Tweak[FastScrollerView] { view =>
     view.barOn = changeColor(R.drawable.fastscroller_bar_on, color)
-    runUi(
-      view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color))))
+    runUi(view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color))))
   }
 
-  private[this] def changeColor(res: Int, color: Int): Drawable = {
-    val drawable = getDrawable(res)
-    drawable match {
-      case d: GradientDrawable => d.setColor(color); d
-      case d => d
-    }
+  private[this] def changeColor(res: Int, color: Int): Drawable = getDrawable(res) match {
+    case d: GradientDrawable =>
+      d.setColor(color)
+      d
+    case d => d
   }
 
   private[this] def getDrawable(res: Int): Drawable = if (SDK_INT < LOLLIPOP_MR1) {

@@ -31,7 +31,6 @@ class CollectionsDetailsActivity
   with UiExtensions
   with ScrolledListener
   with ActionsScreenListener
-  with CollectionsDetailDependencies
   with SystemBarsTint {
 
   val defaultPosition = 0
@@ -39,6 +38,8 @@ class CollectionsDetailsActivity
   val defaultIcon = ""
 
   lazy val di = new Injector
+
+  var collections: Seq[Collection] = Seq.empty
 
   implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
     case Answer(t) => t
@@ -119,8 +120,8 @@ class CollectionsDetailsActivity
 
   override def close(): Unit = finish()
 
-  override def startScroll(): Unit = getAdapter flatMap (_.getCurrentFragmentPosition) map { position =>
-    val color = getIndexColor(collections(position).themedColorIndex)
+  override def startScroll(): Unit = getCurrentCollection foreach { collection =>
+    val color = getIndexColor(collection.themedColorIndex)
     runUi(showFabButton(color))
   }
 
@@ -132,8 +133,9 @@ class CollectionsDetailsActivity
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
     currentPosition <- adapter.getCurrentFragmentPosition
+    collection <- getCurrentCollection
   } yield {
-      Task.fork(di.collectionProcess.addCards(collections(currentPosition).id, cards).run).resolveAsync(
+      Task.fork(di.collectionProcess.addCards(collection.id, cards).run).resolveAsync(
         onResult = (c: Seq[Card]) => {
           adapter.addCardsToCollection(currentPosition, c)
           fragment.addCards(c)

@@ -43,15 +43,11 @@ import CollectionsDetailsActivity._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait CollectionsDetailDependencies {
-  var collections: Seq[Collection] = Seq.empty
-}
-
 trait CollectionsDetailsComposer
   extends Styles
   with FabButtonBehaviour {
 
-  self: AppCompatActivity with SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] with CollectionsDetailDependencies =>
+  self: AppCompatActivity with SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] =>
 
   val nameActionFragment = "action-fragment"
 
@@ -169,7 +165,11 @@ trait CollectionsDetailsComposer
     case _ => None
   }
 
-  def getCurrentCollection: Option[Collection] = getAdapter flatMap (_.getCurrentFragmentPosition) flatMap collections.lift
+  def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
+    adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
+  }
+
+  def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
 
   def configureEnterTransition(
     position: Int,
@@ -254,9 +254,13 @@ trait CollectionsDetailsComposer
 
     getWindow.getSharedElementEnterTransition.addListener(new Transition.TransitionListener {
       override def onTransitionStart(transition: Transition): Unit = {}
+
       override def onTransitionCancel(transition: Transition): Unit = {}
+
       override def onTransitionEnd(transition: Transition): Unit = end()
+
       override def onTransitionPause(transition: Transition): Unit = {}
+
       override def onTransitionResume(transition: Transition): Unit = {}
     })
   }
@@ -278,8 +282,8 @@ trait CollectionsDetailsComposer
   private[this] def showAction(view: View): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
-    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse (0, 0)
-    val (endX: Int, endY: Int) = fabButton map calculateAnchorViewPosition getOrElse (0, 0)
+    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
+    val (endX: Int, endY: Int) = fabButton map calculateAnchorViewPosition getOrElse(0, 0)
     val args = new Bundle()
     args.putInt(BaseActionFragment.startRevealPosX, startX + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
