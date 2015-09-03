@@ -6,12 +6,13 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.device.{ShortcutException, AppCategorizationException}
+import com.fortysevendeg.ninecardslauncher.process.device.{ContactException, ShortcutException, AppCategorizationException}
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GooglePlayPackagesResponse, GooglePlaySimplePackagesResponse}
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
+import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
@@ -33,6 +34,8 @@ trait DeviceProcessSpecification
   val bitmapTransformationException = BitmapTransformationExceptionImpl("")
 
   val shortcutServicesException = ShortcutServicesException("")
+
+  val contactsServicesException = ContactsServiceException("")
 
   trait DeviceProcessScope
     extends Scope
@@ -65,6 +68,8 @@ trait DeviceProcessSpecification
     mockPersistenceServices.fetchCacheCategories returns
       Service(Task(Result.answer(cacheCategories)))
 
+    val mockContactsServices = mock[ContactsServices]
+
     val mockImageServices = mock[ImageServices]
 
     mockApiServices.googlePlaySimplePackages(any)(any) returns
@@ -72,6 +77,16 @@ trait DeviceProcessSpecification
 
     mockApiServices.googlePlayPackages(any)(any) returns
       Service(Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
+
+    mockContactsServices.getFavoriteContacts returns
+      Service(Task(Result.answer(contacts)))
+
+    mockContactsServices.findContactByLookupKey("lookupKey 1") returns
+      Service(Task(Result.answer(contacts.head)))
+    mockContactsServices.findContactByLookupKey("lookupKey 2") returns
+      Service(Task(Result.answer(contacts(1))))
+    mockContactsServices.findContactByLookupKey("lookupKey 3") returns
+      Service(Task(Result.answer(contacts(2))))
 
     mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
       Service(Task(Result.answer(appPathResponses.head))),
@@ -86,6 +101,7 @@ trait DeviceProcessSpecification
       mockApiServices,
       mockPersistenceServices,
       mockShortcutsServices,
+      mockContactsServices,
       mockImageServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
@@ -173,6 +189,27 @@ trait DeviceProcessSpecification
 
     mockShortcutsServices.getShortcuts(contextSupport) returns Service {
       Task(Errata(shortcutServicesException))
+    }
+
+  }
+
+  trait FavoriteContactsErrorScope {
+    self: DeviceProcessScope =>
+
+    mockContactsServices.getFavoriteContacts returns Service {
+      Task(Errata(contactsServicesException))
+    }
+
+  }
+
+  trait FilledFavoriteContactsErrorScope {
+    self: DeviceProcessScope =>
+
+    mockContactsServices.getFavoriteContacts returns
+      Service(Task(Result.answer(contacts)))
+
+    mockContactsServices.findContactByLookupKey(any) returns Service {
+      Task(Errata(contactsServicesException))
     }
 
   }
@@ -319,6 +356,37 @@ class DeviceProcessImplSpec
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ShortcutException]
           }
+        }
+      }
+
+  }
+
+  "Get Favorite Contacts" should {
+
+    "get favorite contacts" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getFavoriteContacts(contextSupport).run.run
+        result must beLike {
+          case Answer(r) => r.map(_.name) shouldEqual contacts.map(_.name)
+        }
+      }
+
+    "returns ContactException when ContactsServices fails getting the favorite contacts" in
+      new DeviceProcessScope with FavoriteContactsErrorScope {
+        val result = deviceProcess.getFavoriteContacts(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          }
+        }
+      }
+
+    "returns an empty list if ContactsServices fails filling the contacts" in
+      new DeviceProcessScope with FilledFavoriteContactsErrorScope {
+        val result = deviceProcess.getFavoriteContacts(contextSupport).run.run
+        result must beLike {
+          case Answer(resultContacts) =>
+            resultContacts shouldEqual Seq()
         }
       }
 

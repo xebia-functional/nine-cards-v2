@@ -8,11 +8,12 @@ trait CollectionProcess {
 
   /**
    * Creates Collections with the apps installed in the device and their categories, finally it adds a Collection with the favourite contacts if it's possible
-   * @param apps the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedItem] with the apps' data
+   * @param apps the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedApp] with the apps' data
+   * @param contacts the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedContact] with the contacts' data
    * @return the List[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
    * @throws CollectionException if there was an error creating the existing collections
    */
-  def createCollectionsFromUnformedItems(apps: Seq[UnformedItem])(implicit context: ContextSupport): ServiceDef2[List[Collection], CollectionException]
+  def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport): ServiceDef2[List[Collection], CollectionException]
 
   /**
    * Creates Collections from some already formed and given Collections

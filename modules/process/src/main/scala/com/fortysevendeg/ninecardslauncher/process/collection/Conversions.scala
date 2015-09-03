@@ -5,7 +5,6 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIn
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest => ServicesAddCollectionRequest,
   UpdateCollectionRequest => ServicesUpdateCollectionRequest, AddCardRequest => ServicesAddCardRequest, UpdateCardRequest => ServicesUpdateCardRequest, _}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
@@ -121,10 +120,10 @@ trait Conversions {
     numDownloads = card.numDownloads,
     notification = card.notification)
 
-  def toAddCardRequestSeq(items: Seq[UnformedItem]): Seq[ServicesAddCardRequest] =
+  def toAddCardRequestSeq(items: Seq[UnformedApp]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestFromUnformedItems(zipped._1, zipped._2))
 
-  def toAddCardRequestFromUnformedItems(item: UnformedItem, position: Int) = ServicesAddCardRequest(
+  def toAddCardRequestFromUnformedItems(item: UnformedApp, position: Int) = ServicesAddCardRequest(
     position = position,
     term = item.name,
     packageName = Option(item.packageName),
@@ -187,7 +186,7 @@ trait Conversions {
     notification = card.notification)
 
 
-  def toNineCardIntent(item: UnformedItem) = {
+  def toNineCardIntent(item: UnformedApp) = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(item.packageName),
       class_name = Option(item.className)))
@@ -196,10 +195,10 @@ trait Conversions {
     intent
   }
 
-  def toAddCardRequestByContacts(items: Seq[Contact]): Seq[ServicesAddCardRequest] =
+  def toAddCardRequestByContacts(items: Seq[UnformedContact]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestByContact(zipped._1, zipped._2))
 
-  def toAddCardRequestByContact(item: Contact, position: Int) = {
+  def toAddCardRequestByContact(item: UnformedContact, position: Int) = {
     val (intent: NineCardIntent, cardType: String) = toNineCardIntent(item)
     ServicesAddCardRequest(
       position = position,
@@ -210,13 +209,13 @@ trait Conversions {
       imagePath = item.photoUri)
   }
 
-  def toNineCardIntent(item: Contact): (NineCardIntent, String) = item match {
-    case Contact(_, _, _, _, _, Some(info)) if info.phones.nonEmpty =>
+  def toNineCardIntent(item: UnformedContact): (NineCardIntent, String) = item match {
+    case UnformedContact(_, _, _, Some(info)) if info.phones.nonEmpty =>
       val phone = info.phones.headOption map (_.number)
       val intent = NineCardIntent(NineCardIntentExtras(tel = phone))
       intent.setAction(openPhone)
       (intent, CardType.phone)
-    case Contact(_, _, _, _, _, Some(info)) if info.emails.nonEmpty =>
+    case UnformedContact(_, _, _, Some(info)) if info.emails.nonEmpty =>
       val address = info.emails.headOption map (_.address)
       val intent = NineCardIntent(NineCardIntentExtras(email = address))
       intent.setAction(openEmail)

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.device
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Shortcut, AppCategorized}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Shortcut, AppCategorized, Contact}
 
 trait DeviceProcess {
   def getCategorizedApps(implicit context: ContextSupport): ServiceDef2[Seq[AppCategorized], AppCategorizationException]
@@ -16,4 +16,12 @@ trait DeviceProcess {
    * @throws ShortcutException if exist some problem to get the shortcuts in the cell phone
    */
   def getAvailableShortcuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException]
+
+  /**
+   * Get the favorite contacts if they exist and fill all their data
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
+   *         information about the contact including its ContactInfo (if it exists)
+   * @throws ContactException if exist some problem to get the favorite contacts
+   */
+  def getFavoriteContacts(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
 }

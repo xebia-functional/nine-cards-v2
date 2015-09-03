@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
-import com.fortysevendeg.ninecardslauncher.process.device.{AppCategorizationException, CreateBitmapException}
+import com.fortysevendeg.ninecardslauncher.process.device.{ContactException, AppCategorizationException, CreateBitmapException}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserCollection
 import play.api.libs.json.Json
@@ -14,11 +14,12 @@ import play.api.libs.json.Json
 trait CreateCollectionsTasks
   extends Conversions {
 
-  def createNewConfiguration(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], AppCategorizationException with CollectionException] =
+  def createNewConfiguration(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], AppCategorizationException with ContactException with CollectionException] =
     for {
       _ <- di.deviceProcess.categorizeApps
       appsCategorized <- di.deviceProcess.getCategorizedApps
-      collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedItem(appsCategorized))
+      contacts <- di.deviceProcess.getFavoriteContacts
+      collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(appsCategorized), toSeqUnformedContact(contacts))
     } yield collections
 
   def loadConfiguration(deviceId: String)(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], AppCategorizationException with CreateBitmapException with UserConfigException with CollectionException] =
