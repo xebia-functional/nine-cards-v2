@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel, AddCardRequest => ServicesAddCardRequest}
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, PhoneHome, ContactPhone, ContactInfo}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, PhoneHome, ContactPhone => ServiceContactPhone, ContactInfo => ServiceContactInfo}
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -163,7 +163,7 @@ trait CollectionProcessImplData {
         numDownloads = Option(numDownloads),
         notification = Option(notification)))
 
-  def createSeqUnformedItem(num: Int = 150) =
+  def createSeqUnformedApps(num: Int = 150) =
     (0 until num) map { item =>
       UnformedApp(
         name = name,
@@ -177,6 +177,15 @@ trait CollectionProcessImplData {
         commentCount = commentCount)
     }
 
+  def createSeqUnformedContacs(num: Int = 15) =
+    (0 until num) map { item =>
+      UnformedContact(
+        name = name,
+        lookupKey = lookupKey,
+        photoUri = photoUri,
+        info = Option(ContactInfo(Seq.empty, Seq(ContactPhone(phoneNumber, PhoneHome.toString)))))
+    }
+
   val seqCard = createSeqCard()
   val card = seqCard.head
   val seqServicesCard = createSeqServicesCard()
@@ -187,11 +196,17 @@ trait CollectionProcessImplData {
   val seqServicesCollection = createSeqServicesCollection()
   val servicesCollection = seqServicesCollection.head
 
-  val unformedItems = createSeqUnformedItem()
+  val unformedApps = createSeqUnformedApps()
+  val unformedContacts = createSeqUnformedContacs()
 
-  val categoriesUnformedItems: Seq[String] = categories flatMap { category =>
-    val count = unformedItems.count(_.category == category)
+  val categoriesUnformedApps: Seq[String] = categories flatMap { category =>
+    val count = unformedApps.count(_.category == category)
     if (count >= minAppsToAdd) Option(category) else None
+  }
+
+  val categoriesUnformedItems: Seq[String] = {
+    val count = unformedContacts.size
+    if (count >= minAppsToAdd) categoriesUnformedApps :+ contacts else categoriesUnformedApps
   }
 
   val collectionForUnformedItem = servicesModel.Collection(
@@ -235,7 +250,7 @@ trait CollectionProcessImplData {
   val seqContacts: Seq[ServiceContact] = createSeqServiceContact()
 
   val seqContactsWithPhones: Seq[ServiceContact] = seqContacts map {
-    _.copy(info = Option(ContactInfo(Seq.empty, Seq(ContactPhone(phoneNumber, PhoneHome)))))
+    _.copy(info = Option(ServiceContactInfo(Seq.empty, Seq(ServiceContactPhone(phoneNumber, PhoneHome)))))
   }
 
   val addCollectionRequest = AddCollectionRequest(
