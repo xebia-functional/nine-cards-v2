@@ -103,7 +103,7 @@ trait CollectionsDetailsComposer
       (tabs <~
         stlViewPager(viewPager) <~
         stlOnPageChangeListener(
-          new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
+          new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       (tabs <~ vVisible <~~ enterViews) ~
       (viewPager <~ vVisible <~~ enterViews)
@@ -322,6 +322,7 @@ case object Jump extends PageMovement
 
 class OnPageChangeCollectionsListener(
   collections: Seq[Collection],
+  position: Int,
   updateToolbarColor: (Int) => Ui[_],
   updateCollection: (Collection, Int, PageMovement) => Ui[_])
   (implicit context: ContextWrapper, theme: NineCardsTheme)
@@ -329,9 +330,9 @@ class OnPageChangeCollectionsListener(
 
   var lastPosition = -1
 
-  var currentPosition = -1
+  var currentPosition = if (position == 0) position else -1
 
-  var currentMovement: PageMovement = Loading
+  var currentMovement: PageMovement = if (position == 0) Left else Loading
 
   private[this] def getColor(col: Collection): Int = resGetColor(getIndexColor(col.themedColorIndex))
 
@@ -353,9 +354,6 @@ class OnPageChangeCollectionsListener(
 
   override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit =
     currentMovement match {
-      case Loading if position == 0 => // Nothing
-        currentMovement = Left
-        currentPosition = 0
       case Loading => // Nothing
       case Start => // First time, we change automatically the movement
         currentMovement = if (currentPosition > 0) Jump else Idle
