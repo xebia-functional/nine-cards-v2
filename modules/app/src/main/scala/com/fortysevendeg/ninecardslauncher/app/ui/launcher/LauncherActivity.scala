@@ -37,6 +37,10 @@ class LauncherActivity
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
     runUi(initUi)
+
+    systemBarTintManager.setStatusBarTintEnabled(true)
+    systemBarTintManager.setNavigationBarTintEnabled(true)
+
     generateCollections()
   }
 
@@ -51,12 +55,15 @@ class LauncherActivity
 
   override def onBackPressed(): Unit = if (fabMenuOpened) {
     runUi(swapFabButton)
+  } else if (isDrawerVisible) {
+    runUi(revealOutDrawer)
   } else {
     super.onBackPressed()
   }
 
   private def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
-    onResult = { // Check if there are collections in DB, if there aren't we go to wizard
+    onResult = {
+      // Check if there are collections in DB, if there aren't we go to wizard
       case Nil => goToWizard()
       case collections => createCollections(collections)
     },

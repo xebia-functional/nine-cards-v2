@@ -14,8 +14,7 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
     resGetColor(R.color.background_default_2),
     resGetColor(R.color.background_default_3),
     resGetColor(R.color.background_default_4),
-    resGetColor(R.color.background_default_5)
-  )
+    resGetColor(R.color.background_default_5))
 
   val backgroundColor = colors(positionByChar())
 
@@ -32,7 +31,6 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
     paint.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL))
     paint.setAntiAlias(true)
     paint.setColor(Color.WHITE)
-    paint.setElegantTextHeight(true)
     paint
   }
 

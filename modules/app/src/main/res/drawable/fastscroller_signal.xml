@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="rectangle">
+
+    <corners
+        android:topLeftRadius="@dimen/fastscroller_signal_size"
+        android:topRightRadius="@dimen/fastscroller_signal_size"
+        android:bottomLeftRadius="@dimen/fastscroller_signal_size"
+        android:bottomRightRadius="0dp" />
+
+    <solid android:color="?android:attr/colorAccent" />
+
+    <size
+        android:height="@dimen/fastscroller_signal_size"
+        android:width="@dimen/fastscroller_signal_size" />
+</shape>

@@ -9,7 +9,8 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, AddCardRequest}
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.{Ui, Contexts}
@@ -27,7 +28,8 @@ class CollectionsDetailsActivity
   with CollectionsDetailsComposer
   with TypedFindView
   with UiExtensions
-  with ScrolledListener {
+  with ScrolledListener
+  with ActionsScreenListener {
 
   val defaultPosition = 0
 
@@ -104,10 +106,10 @@ class CollectionsDetailsActivity
 
   override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
 
-  override def onBackPressed(): Unit = if (fabMenuOpened) {
-    runUi(swapFabButton)
-  } else {
-    finish()
+  override def onBackPressed(): Unit = (fabMenuOpened, isActionShowed) match {
+    case (true, _) => runUi(swapFabButton)
+    case (_, true) => runUi(unrevealActionFragment())
+    case _ => finish()
   }
 
   override def pullToClose(scroll: Int, scrollType: Int, close: Boolean): Unit =
@@ -116,6 +118,24 @@ class CollectionsDetailsActivity
   override def close(): Unit = finish()
 
   override def startScroll(): Unit = showFabButton
+
+  override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
+
+  override def onEndFinishAction(): Unit = removeActionFragment()
+
+  override def addCards(cards: Seq[AddCardRequest]): Unit = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    currentPosition <- adapter.getCurrentFragmentPosition
+  } yield {
+      Task.fork(di.collectionProcess.addCards(collections(currentPosition).id, cards).run).resolveAsync(
+        onResult = (c: Seq[Card]) => {
+          adapter.addCardsToCollection(currentPosition, c)
+          fragment.addCards(c)
+        }
+      )
+    }
+
 }
 
 trait ScrolledListener {
@@ -128,6 +148,12 @@ trait ScrolledListener {
   def pullToClose(scroll: Int, scrollType: Int, close: Boolean)
 
   def close()
+}
+
+trait ActionsScreenListener {
+  def onStartFinishAction()
+  def onEndFinishAction()
+  def addCards(cards: Seq[AddCardRequest])
 }
 
 object ScrollType {

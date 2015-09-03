@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="wrap_content"
+       android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/fastscroller_signal"
+        style="@style/FastScrollerSignal">
+
+        <TextView
+            android:id="@+id/fastscroller_signal_text"
+            style="@style/FastScrollerText"/>
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/fastscroller_bar"
+        style="@style/FastScrollerBar" />
+
+</merge>

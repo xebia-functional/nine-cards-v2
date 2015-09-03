@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             style="@style/ActionsRoot">
+
+    <ProgressBar
+        style="@style/ActionsLoading"
+        android:id="@+id/action_loading"/>
+
+    <LinearLayout
+        style="@style/ActionsContent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/actions_toolbar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            style="@style/ActionsToolbar"/>
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
+            android:id="@+id/action_scroller_layout"
+            style="@style/ActionsListContent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/actions_recycler"
+                style="@style/ActionsRecycler"/>
+
+        </com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

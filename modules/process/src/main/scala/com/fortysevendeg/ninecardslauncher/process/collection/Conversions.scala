@@ -139,7 +139,7 @@ trait Conversions {
     position = position,
     term = addCardRequest.term,
     packageName = addCardRequest.packageName,
-    cardType = app,
+    cardType = addCardRequest.cardType,
     intent = nineCardIntentToJson(addCardRequest.intent),
     imagePath = addCardRequest.imagePath)
 

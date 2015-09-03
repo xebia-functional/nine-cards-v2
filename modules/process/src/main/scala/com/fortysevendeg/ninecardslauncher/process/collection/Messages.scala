@@ -15,6 +15,7 @@ case class AddCollectionRequest(
 case class AddCardRequest(
   term: String,
   packageName: Option[String],
+  cardType: String,
   intent: NineCardIntent,
   imagePath: String)
 

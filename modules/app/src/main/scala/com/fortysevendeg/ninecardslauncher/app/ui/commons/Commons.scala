@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.graphics.Color
+import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -110,6 +111,22 @@ object AnimationsUtils {
       case 0 => defaultVelocity
       case _ => (spaceVelocity - ((math.min(math.abs(velocity), maxRatioVelocity) * spaceVelocity) / maxRatioVelocity) + minVelocity).toInt
     }
+  }
+
+}
+
+object PositionsUtils {
+
+  def calculateAnchorViewPosition(view: View): (Int, Int) = {
+    val loc = new Array[Int](2)
+    view.getLocationOnScreen(loc)
+    (loc(0), loc(1))
+  }
+
+  def projectionScreenPositionInView(view: View, x : Int, y : Int): (Int, Int) = {
+    val loc = new Array[Int](2)
+    view.getLocationOnScreen(loc)
+    (x - loc(0), y - loc(1))
   }
 
 }

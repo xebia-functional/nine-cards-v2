@@ -186,7 +186,7 @@ trait DeviceProcessData {
       background = None,
       screenshots = Seq.empty,
       video = None,
-      details = GooglePlayDetails(GooglePlayAppDetails(Seq("SOCIAL"), "", None, None, None, 1, Option("1"), None, Seq.empty)),
+      details = GooglePlayDetails(GooglePlayAppDetails(Seq("SOCIAL"), "", None, None, None, Option(1), Option("1"), None, Seq.empty)),
       offer = Seq.empty,
       aggregateRating = GooglePlayAggregateRating(0, None, 0, 0, 0, 0, 0, 0)))
 
