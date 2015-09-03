@@ -17,5 +17,11 @@ trait DeviceProcess {
    */
   def getAvailableShortcuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException]
 
+  /**
+   * Get the favorite contacts if they exist and fill all their data
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
+   *         information about the contact including its ContactInfo (if it exists)
+   * @throws ContactException if exist some problem to get the favorite contacts
+   */
   def getFavoriteContacts(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
 }
