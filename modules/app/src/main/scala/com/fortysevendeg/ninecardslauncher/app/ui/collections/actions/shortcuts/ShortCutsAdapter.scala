@@ -1,0 +1,38 @@
+package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
+
+import android.support.v4.app.Fragment
+import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
+import android.view.View.OnClickListener
+import android.view.{LayoutInflater, View, ViewGroup}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
+import com.fortysevendeg.ninecardslauncher2.R
+import macroid.ActivityContextWrapper
+import macroid.FullDsl._
+
+case class ShortcutsAdapter(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit)
+  (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
+  extends RecyclerView.Adapter[ViewHolderShortcutLayoutAdapter] {
+
+  val heightHeader = resGetDimensionPixelSize(R.dimen.height_simple_category)
+
+  val heightApp = resGetDimensionPixelSize(R.dimen.height_simple_app)
+
+  override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderShortcutLayoutAdapter = {
+    val view = LayoutInflater.from(parent.getContext).inflate(R.layout.simple_item_horizontal, parent, false).asInstanceOf[ViewGroup]
+    view.setOnClickListener(new OnClickListener {
+      override def onClick(v: View): Unit = Option(v.getTag) foreach (tag => clickListener(shortcuts(Int.unbox(tag))))
+    })
+    new ViewHolderShortcutLayoutAdapter(view)
+  }
+
+  override def getItemCount: Int = shortcuts.size
+
+  override def onBindViewHolder(viewHolder: ViewHolderShortcutLayoutAdapter, position: Int): Unit = {
+    val shortcut = shortcuts(position)
+    runUi(viewHolder.bind(shortcut, position))
+  }
+
+  def getLayoutManager = new LinearLayoutManager(activityContext.application)
+
+}
