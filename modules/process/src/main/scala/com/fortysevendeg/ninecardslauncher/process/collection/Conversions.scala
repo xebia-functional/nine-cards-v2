@@ -5,9 +5,8 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIn
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCollectionRequest => ServicesAddCollectionRequest,
-  UpdateCollectionRequest => ServicesUpdateCollectionRequest, AddCardRequest => ServicesAddCardRequest, UpdateCardRequest => ServicesUpdateCardRequest, _}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, _}
 import play.api.libs.json.Json
 
 trait Conversions {

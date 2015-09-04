@@ -1,8 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.models
 
 import android.content.Intent
+import android.content.Intent._
 import android.net.Uri
+import android.os.Parcelable
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
+import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json._
 
 import scala.collection.JavaConversions._
@@ -55,7 +59,10 @@ case class FormedItem(
 
 case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
 
-  def this(intent: Intent, intentExtras: NineCardIntentExtras) = this(intentExtras)
+  def fill(intent: Intent) = fillIn(
+    intent,
+    FILL_IN_ACTION | FILL_IN_DATA | FILL_IN_CATEGORIES | FILL_IN_COMPONENT | FILL_IN_PACKAGE |
+      FILL_IN_SOURCE_BOUNDS | FILL_IN_SELECTOR | FILL_IN_CLIP_DATA)
 
   def extractPackageName(): Option[String] =
     Option(intentExtras.package_name.getOrElse(getStringExtra(nineCardExtraPackageName)))
@@ -117,44 +124,57 @@ object NineCardIntentImplicits {
 
   implicit val nineCardIntentReads = new Reads[NineCardIntent] {
     def reads(js: JsValue): JsResult[NineCardIntent] = {
-      val intent = NineCardIntent(
-        (js \ "intentExtras").as[NineCardIntentExtras]
-      )
-      for {
+      val intent = NineCardIntent((js \ "intentExtras").as[NineCardIntentExtras])
+      (for {
         packageName <- (js \ "packageName").asOpt[String]
         className <- (js \ "className").asOpt[String]
       } yield {
-        intent.setClassName(packageName, className)
+          intent.setClassName(packageName, className)
+        }) getOrElse {
+        (js \ "packageName").asOpt[String] foreach intent.setPackage
       }
-      (js \ "categories").asOpt[List[String]] map {
-        categories =>
-          categories map intent.addCategory
+      // We have to set data and type values together because Android SDK
+      // clear type value when data values is set and vice versa
+      (for {
+        dataString <- (js \ "dataString").asOpt[String]
+        typeString <- (js \ "type").asOpt[String]
+      } yield {
+          intent.setDataAndTypeAndNormalize(Uri.parse(dataString), typeString)
+        }) getOrElse {
+        (js \ "dataString").asOpt[String] map (dataString => intent.setDataAndNormalize(Uri.parse(dataString))) getOrElse {
+          (js \ "type").asOpt[String] foreach intent.setTypeAndNormalize
+        }
       }
-      (js \ "action").asOpt[String] map intent.setAction getOrElse intent.setAction("android.intent.action.VIEW")
-      (js \ "dataString").asOpt[String] map (dataString => intent.setData(Uri.parse(dataString)))
-      (js \ "extras").asOpt[JsObject] map {
-        extras =>
-          (extras \ "pairValue").asOpt[String] map (pairValue => intent.putExtra("pairValue", pairValue))
-          (extras \ "empty").asOpt[Boolean] map (empty => intent.putExtra("empty", empty))
-          (extras \ "parcelled").asOpt[Boolean] map (parcelled => intent.putExtra("parcelled", parcelled))
-      }
-      (js \ "flags").asOpt[Int] map (flags => intent.setFlags(flags))
-      (js \ "type").asOpt[String] map (t => intent.setType(t))
+      (js \ "categories").asOpt[List[String]] foreach (_ foreach intent.addCategory)
+      (js \ "action").asOpt[String] map intent.setAction
+      val e = (js \ "extras").asOpt[JsObject] foreach (_.value map { item =>
+        item._2 match {
+          case s:JsString => intent.putExtra(item._1, s.as[String])
+          case s:JsNumber => intent.putExtra(item._1, s.as[Int])
+          case s:JsBoolean => intent.putExtra(item._1, s.as[Boolean])
+          case _ =>
+        }
+      })
+      (js \ "flags").asOpt[Int] foreach intent.setFlags
       JsSuccess(intent)
     }
   }
 
   implicit val nineCardIntentWrites = new Writes[NineCardIntent] {
     def writes(intent: NineCardIntent): JsValue = {
-      val extras = Json.obj(
-        "pairValue" -> Json.toJsFieldJsValueWrapper(intent.getStringExtra("pairValue")),
-        "empty" -> Json.toJsFieldJsValueWrapper(intent.getBooleanExtra("empty", false)),
-        "parcelled" -> Json.toJsFieldJsValueWrapper(intent.getBooleanExtra("parcelled", false))
-      )
-      val categoriesSet = Option(intent.getCategories) map {
-        categories =>
-          categories.toSet map JsString
-      } getOrElse Set.empty
+      val jsExtras = Option(intent.getExtras) map { extras =>
+        (extras.keySet() map { key =>
+          extras.get(key).asInstanceOf[Any] match {
+            case s: String => key -> Json.toJsFieldJsValueWrapper(s)
+            case i: Int => key -> Json.toJsFieldJsValueWrapper(i)
+            case b: Boolean => key -> Json.toJsFieldJsValueWrapper(b)
+            case f: Float => key -> Json.toJsFieldJsValueWrapper(f)
+            case d: Double => key -> Json.toJsFieldJsValueWrapper(d)
+          }
+        }).toSeq
+      }
+      val extras = jsExtras map (e => Json.obj(e :_*)) getOrElse Json.obj()
+      val categoriesSet = Option(intent.getCategories) map (_.toSet map JsString) getOrElse Set.empty
       val categories = JsArray(categoriesSet.toSeq)
       Json.obj(
         "intentExtras" -> Json.toJsFieldJsValueWrapper(intent.intentExtras),
@@ -164,8 +184,8 @@ object NineCardIntentImplicits {
         "action" -> Json.toJsFieldJsValueWrapper(intent.getAction),
         "extras" -> Json.toJsFieldJsValueWrapper(extras),
         "flags" -> Json.toJsFieldJsValueWrapper(intent.getFlags),
-        "type" -> Json.toJsFieldJsValueWrapper(intent.getType)
-      )
+        "type" -> Json.toJsFieldJsValueWrapper(intent.getType),
+        "dataString" -> Json.toJsFieldJsValueWrapper((Option(intent.getData) map (_.toString)).orNull))
     }
   }
 }

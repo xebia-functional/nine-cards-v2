@@ -1,21 +1,21 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
 
 import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.ActionsSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
-import com.fortysevendeg.ninecardslauncher2.{TR, R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
+import ActionsSnails._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

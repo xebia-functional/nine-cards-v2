@@ -1,25 +1,22 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
 import android.support.v4.app.Fragment
-import android.support.v7.widget.{Toolbar, RecyclerView}
+import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
-import android.widget.ProgressBar
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
-
-import math.Ordering.Implicits._
 
 import scala.annotation.tailrec
+import scala.math.Ordering.Implicits._
 
 trait AppsComposer
   extends Styles {
@@ -32,6 +29,7 @@ trait AppsComposer
 
   def initUi: Ui[_] =
     (toolbar <~
+      tbTitle(R.string.applications) <~
       toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
       (loading <~ vVisible) ~

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/action_scroller_layout"
+    style="@style/ActionsListContent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/actions_recycler"
+        style="@style/ActionsRecycler"/>
+
+</com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout>

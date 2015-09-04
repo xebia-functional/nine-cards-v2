@@ -1,24 +1,28 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
+import android.content.Intent
+import android.content.Intent._
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, AddCardRequest}
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import macroid.{Ui, Contexts}
 import macroid.FullDsl._
+import macroid.{Contexts, Ui}
 import rapture.core.Answer
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 
 import scalaz.concurrent.Task
 
@@ -31,7 +35,8 @@ class CollectionsDetailsActivity
   with UiExtensions
   with ScrolledListener
   with ActionsScreenListener
-  with SystemBarsTint {
+  with SystemBarsTint
+  with NineCardIntentConversions {
 
   val defaultPosition = 0
 
@@ -91,6 +96,27 @@ class CollectionsDetailsActivity
     uiHandlerDelayed(ensureDrawCollection(position), 200)
   } else {
     drawCollections(collections, position)
+  }
+
+
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
+    super.onActivityResult(requestCode, resultCode, data)
+    requestCode match {
+      case `shortcutAdded` => Option(data) flatMap (i => Option(i.getExtras)) match {
+        case Some(b: Bundle) if b.containsKey(EXTRA_SHORTCUT_NAME) && b.containsKey(EXTRA_SHORTCUT_INTENT) =>
+          val shortcutName = b.getString(Intent.EXTRA_SHORTCUT_NAME)
+          val shortcutIntent = b.getParcelable[Intent](Intent.EXTRA_SHORTCUT_INTENT)
+          val nineCardIntent = toNineCardIntent(shortcutIntent)
+          val addCardRequest = AddCardRequest(
+            term = shortcutName,
+            packageName = None,
+            cardType = CardType.shortcut,
+            intent = nineCardIntent,
+            imagePath = "") // TODO we have to create the image from Intent
+          addCards(Seq(addCardRequest))
+        case _ =>
+      }
+    }
   }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
