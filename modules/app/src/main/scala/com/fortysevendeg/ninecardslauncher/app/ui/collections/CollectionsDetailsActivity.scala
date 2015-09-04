@@ -3,12 +3,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, AddCardRequest}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -29,7 +30,8 @@ class CollectionsDetailsActivity
   with TypedFindView
   with UiExtensions
   with ScrolledListener
-  with ActionsScreenListener {
+  with ActionsScreenListener
+  with SystemBarsTint {
 
   val defaultPosition = 0
 
@@ -37,12 +39,12 @@ class CollectionsDetailsActivity
 
   lazy val di = new Injector
 
+  var collections: Seq[Collection] = Seq.empty
+
   implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
     case Answer(t) => t
     case _ => getDefaultTheme
   }
-
-  var collections: Seq[Collection] = Seq.empty
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
@@ -71,7 +73,8 @@ class CollectionsDetailsActivity
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
     getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
-    systemBarTintManager.setStatusBarTintEnabled(true)
+
+    initSystemStatusBarTint
 
     Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
       onResult = (c: Seq[Collection]) => collections = c
@@ -107,7 +110,7 @@ class CollectionsDetailsActivity
   override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
 
   override def onBackPressed(): Unit = (fabMenuOpened, isActionShowed) match {
-    case (true, _) => runUi(swapFabButton)
+    case (true, _) => runUi(swapFabButton())
     case (_, true) => runUi(unrevealActionFragment())
     case _ => finish()
   }
@@ -117,7 +120,10 @@ class CollectionsDetailsActivity
 
   override def close(): Unit = finish()
 
-  override def startScroll(): Unit = showFabButton
+  override def startScroll(): Unit = getCurrentCollection foreach { collection =>
+    val color = getIndexColor(collection.themedColorIndex)
+    runUi(showFabButton(color))
+  }
 
   override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
 
@@ -127,8 +133,9 @@ class CollectionsDetailsActivity
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
     currentPosition <- adapter.getCurrentFragmentPosition
+    collection <- getCurrentCollection
   } yield {
-      Task.fork(di.collectionProcess.addCards(collections(currentPosition).id, cards).run).resolveAsync(
+      Task.fork(di.collectionProcess.addCards(collection.id, cards).run).resolveAsync(
         onResult = (c: Seq[Card]) => {
           adapter.addCardsToCollection(currentPosition, c)
           fragment.addCards(c)
@@ -152,7 +159,9 @@ trait ScrolledListener {
 
 trait ActionsScreenListener {
   def onStartFinishAction()
+
   def onEndFinishAction()
+
   def addCards(cards: Seq[AddCardRequest])
 }
 

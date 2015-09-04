@@ -1,6 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components
 
 import android.content.Context
+import android.graphics.drawable.{Drawable, GradientDrawable}
+import android.os.Build.VERSION._
+import android.os.Build.VERSION_CODES._
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.util.AttributeSet
@@ -9,10 +12,10 @@ import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, LayoutInflater, MotionEvent, View}
 import android.widget.FrameLayout.LayoutParams
 import android.widget.{FrameLayout, LinearLayout}
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, Ui}
@@ -43,7 +46,27 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
     case Some(rv: RecyclerView) => runUi(fastScroller <~ fsRecyclerView(rv))
   }
 
-  def fsRecyclerView(rv: RecyclerView) = Tweak[FastScrollerView](view => view.setRecyclerView(rv))
+  def setColor(color: Int) = runUi(fastScroller <~ fsColor(color))
+
+  private[this] def fsRecyclerView(rv: RecyclerView) = Tweak[FastScrollerView](view => view.setRecyclerView(rv))
+
+  private[this] def fsColor(color: Int) = Tweak[FastScrollerView] { view =>
+    view.barOn = changeColor(R.drawable.fastscroller_bar_on, color)
+    runUi(view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color))))
+  }
+
+  private[this] def changeColor(res: Int, color: Int): Drawable = getDrawable(res) match {
+    case d: GradientDrawable =>
+      d.setColor(color)
+      d
+    case d => d
+  }
+
+  private[this] def getDrawable(res: Int): Drawable = if (SDK_INT < LOLLIPOP_MR1) {
+    context.getResources.getDrawable(res)
+  } else {
+    context.getResources.getDrawable(res, null)
+  }
 
 }
 
@@ -73,6 +96,18 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val text = Option(findView(TR.fastscroller_signal_text))
 
+  val barOff = if (SDK_INT < LOLLIPOP_MR1) {
+    context.getResources.getDrawable(R.drawable.fastscroller_bar_off)
+  } else {
+    context.getResources.getDrawable(R.drawable.fastscroller_bar_off, null)
+  }
+
+  var barOn = if (SDK_INT < LOLLIPOP_MR1) {
+    context.getResources.getDrawable(R.drawable.fastscroller_bar_on)
+  } else {
+    context.getResources.getDrawable(R.drawable.fastscroller_bar_on, null)
+  }
+
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
     indicator.height = h
@@ -95,9 +130,9 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     case _ => super.onTouchEvent(event)
   }
 
-  def showSignal: Ui[_] = (signal <~ vVisible) ~ (bar <~ ivSrc(R.drawable.fastscroller_bar_on))
+  def showSignal: Ui[_] = (signal <~ vVisible) ~ (bar <~ ivSrc(barOn))
 
-  def hideSignal: Ui[_] = (signal <~ vGone) ~ (bar <~ ivSrc(R.drawable.fastscroller_bar_off))
+  def hideSignal: Ui[_] = (signal <~ vGone) ~ (bar <~ ivSrc(barOff))
 
   def setRecyclerView(rv: RecyclerView) = {
     indicator.setTotalHeight(rv)
@@ -184,5 +219,7 @@ trait FastScrollerListener {
 object FastScrollerLayoutTweak {
   // We should launch this tweak when the adapter has been added
   def fslLinkRecycler = Tweak[FastScrollerLayout](_.linkRecycler())
+
+  def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
 }
 

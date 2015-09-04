@@ -14,12 +14,14 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TouchState._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpaces
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Transformer, Ui}
+import macroid.{Tweak, ContextWrapper, Transformer, Ui}
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(context, attr, defStyleAttr) { self =>
+  extends FrameLayout(context, attr, defStyleAttr) {
+  self =>
 
   type PageChangedObserver = (Int => Unit)
 
@@ -27,7 +29,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  var startScroll: (Boolean) => Unit = (b: Boolean) => {}
+  val listener = new AnimatedWorkSpacesListener
 
   val dimen: Dimen = Dimen()
 
@@ -140,28 +142,22 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     runUi(ui ~ reset())
   }
 
-  private def layerHardware(activate: Boolean) = Transformer {
+  private[this] def layerHardware(activate: Boolean) = Transformer {
     case v: View if Option(v.getTag(R.id.use_layer_hardware)).isDefined => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
   }
 
-  def goToItem(): Int = {
-    (displacement, currentItem) match {
-      case (disp, item) if disp < 0 && item >= data.size - 1 => 0
-      case (disp, item) if disp < 0 => currentItem + 1
-      case (disp, item) if currentItem <= 0 => data.length - 1
-      case _ => currentItem - 1
-    }
+  def goToItem(): Int = (displacement, currentItem) match {
+    case (disp, item) if disp < 0 && item >= data.size - 1 => 0
+    case (disp, item) if disp < 0 => currentItem + 1
+    case _ if currentItem <= 0 => data.length - 1
+    case _ => currentItem - 1
   }
 
-  def notifyPageChangedObservers() = {
-    onPageChangedObservers foreach (observer => observer(goToItem()))
-  }
+  def notifyPageChangedObservers() = onPageChangedObservers foreach (observer => observer(goToItem()))
 
-  def addPageChangedObservers(f: PageChangedObserver) = {
-    onPageChangedObservers = onPageChangedObservers :+ f
-  }
+  def addPageChangedObservers(f: PageChangedObserver) = onPageChangedObservers = onPageChangedObservers :+ f
 
-  private def getSizeWidget = if (horizontalGallery) getWidth else getHeight
+  private[this] def getSizeWidget = if (horizontalGallery) getWidth else getHeight
 
   def isPosition(position: Int): Boolean = currentItem == position
 
@@ -205,17 +201,17 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     uiVisibility ~ applyTranslation(frontParentView, displacement) ~ transformPanelCanvas()
   }
 
-  private def applyTranslation(view: Option[ViewGroup], translate: Float): Ui[_] =
+  private[this] def applyTranslation(view: Option[ViewGroup], translate: Float): Ui[_] =
     view <~ (if (horizontalGallery) vTranslationX(translate) else vTranslationY(translate))
 
 
-  private def transformPanelCanvas(): Ui[_] = {
+  private[this] def transformPanelCanvas(): Ui[_] = {
     val percent = math.abs(displacement) / getSizeWidget
     val fromLeft = displacement > 0
     applyTransformer(if (fromLeft) previousParentView else nextParentView, percent, fromLeft)
   }
 
-  private def applyTransformer(view: Option[ViewGroup], percent: Float, fromLeft: Boolean): Ui[_] = {
+  private[this] def applyTransformer(view: Option[ViewGroup], percent: Float, fromLeft: Boolean): Ui[_] = {
     val translate = {
       val start = if (fromLeft) -getSizeWidget else getSizeWidget
       start - (start * percent)
@@ -223,7 +219,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     applyTranslation(view, translate)
   }
 
-  private def animateViews(dest: Int, duration: Int) = {
+  private[this] def animateViews(dest: Int, duration: Int) = {
     val swap = dest != 0
     if (swap) notifyPageChangedObservers()
     resetAfterAnimationListener.swap = swap
@@ -232,15 +228,14 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     mainAnimator.start()
   }
 
-  private def next(): Unit = {
-    for {
-      frontParent <- frontParentView
-      nextParent <- nextParentView
-      previousParent <- previousParentView
-      front <- frontView
-      next <- nextView
-      previous <- previousView
-    } yield {
+  private[this] def next(): Unit = for {
+    frontParent <- frontParentView
+    nextParent <- nextParentView
+    previousParent <- previousParentView
+    front <- frontView
+    next <- nextView
+    previous <- previousView
+  } yield {
       frontParentView = Some(nextParent)
       nextParentView = Some(previousParent)
       previousParentView = Some(frontParent)
@@ -253,17 +248,16 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       previewViewType = auxFront
       currentItem = goToItem()
     }
-  }
 
-  private def previous(): Unit = {
-    for {
-      frontParent <- frontParentView
-      nextParent <- nextParentView
-      previousParent <- previousParentView
-      front <- frontView
-      next <- nextView
-      previous <- previousView
-    } yield {
+
+  private[this] def previous(): Unit = for {
+    frontParent <- frontParentView
+    nextParent <- nextParentView
+    previousParent <- previousParentView
+    front <- frontView
+    next <- nextView
+    previous <- previousView
+  } yield {
       frontParentView = Some(previousParent)
       nextParentView = Some(frontParent)
       previousParentView = Some(nextParent)
@@ -276,14 +270,14 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       nextViewType = auxFront
       currentItem = goToItem()
     }
-  }
 
-  private def swapViews(): Unit = {
+
+  private[this] def swapViews(): Unit = {
     if (displacement < 0) next() else previous()
     runUi(reset())
   }
 
-  private def reset(): Ui[_] = {
+  private[this] def reset(): Ui[_] = {
     // TODO Shouldn't create views directly from here
 
     val auxFrontViewType = getItemViewType(data(currentItem), currentItem)
@@ -341,7 +335,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       applyTranslation(previousParentView, -getSizeWidget) ~
       (previousParentView <~ vGone) ~
       (nextParentView <~ vGone <~ vBringToFront) ~
-      (frontParentView <~ vClearAnimation <~ vVisible <~ vBringToFront)
+      (frontParentView <~ vClearAnimation <~ vVisible <~ vBringToFront) ~
+      Ui(listener.endScroll())
 
   }
 
@@ -379,7 +374,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     import android.view.MotionEvent._
     val action = MotionEventCompat.getActionMasked(event)
     if (velocityTracker.isEmpty) velocityTracker = Some(VelocityTracker.obtain())
-    velocityTracker map (_.addMovement(event))
+    velocityTracker foreach (_.addMovement(event))
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
     action match {
@@ -391,7 +386,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
             val deltaY = lastMotionY - y
             lastMotionX = x
             lastMotionY = y
-            runUi(performScroll(if (horizontalGallery) deltaX else deltaY))
+            if (overScroll(deltaX, deltaY)) {
+              runUi(applyTranslation(frontParentView, 0))
+            } else {
+              runUi(performScroll(if (horizontalGallery) deltaX else deltaY))
+            }
           case _ => setStateIfNeeded(x, y)
         }
       case ACTION_DOWN => lastMotionX = x; lastMotionY = y
@@ -401,7 +400,19 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     true
   }
 
-  private def setStateIfNeeded(x: Float, y: Float) {
+  private[this] def overScroll(deltaX: Float, deltaY: Float): Boolean = frontParentView exists { view =>
+    val xView = view.getX
+    val yView = view.getY
+    (infinite, horizontalGallery, xView, yView, deltaX, deltaY) match {
+      case (false, true, x, _, dx, _) if x >= 0 && dx < 0 && isFirst => true
+      case (false, true, x, _, dx, _) if x <= 0 && dx > 0 && isLast => true
+      case (false, false, _, y, _, dy) if y >= 0 && dy < 0 && isFirst => true
+      case (false, false, _, y, _, dy) if y <= 0 && dy > 0 && isLast => true
+      case _ => false
+    }
+  }
+
+  private[this] def setStateIfNeeded(x: Float, y: Float) = {
     val xDiff = math.abs(x - lastMotionX)
     val yDiff = math.abs(y - lastMotionY)
 
@@ -424,7 +435,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
         case _ => false
       }
       if (isScrolling) {
-        startScroll(x - lastMotionX > 0)
+        listener.startScroll(x - lastMotionX > 0)
         touchState = scrolling
         runUi(self <~ layerHardware(true))
       }
@@ -433,11 +444,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     }
   }
 
-  private def computeFling() = velocityTracker foreach {
+  private[this] def computeFling() = velocityTracker foreach {
     tracker =>
       tracker.computeCurrentVelocity(1000, maximumVelocity)
-      val velocity = if (horizontalGallery) tracker.getXVelocity else tracker.getYVelocity
-      if (touchState == scrolling) {
+      if (touchState == scrolling && !overScroll(-tracker.getXVelocity, -tracker.getYVelocity)) {
+        val velocity = if (horizontalGallery) tracker.getXVelocity else tracker.getYVelocity
         if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()
       }
       tracker.recycle()
@@ -446,9 +457,22 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
 }
 
+case class AnimatedWorkSpacesListener(
+  var startScroll: (Boolean) => Unit = (b: Boolean) => (),
+  var endScroll: () => Unit = () => ())
+
 case class Dimen(var width: Int = 0, var height: Int = 0)
 
 object TouchState {
   val stopped = 0
   val scrolling = 1
+}
+
+object AnimatedWorkSpacesTweaks {
+
+  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[LauncherWorkSpaces]{ view =>
+    view.listener.startScroll = listener.startScroll
+    view.listener.endScroll = listener.endScroll
+  }
+
 }

@@ -18,6 +18,7 @@
     <style name="FabMenuItemTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:background">@drawable/background_title_fab_menu_item</item>
         <item name="android:textColor">@color/collection_fab_button_item_title</item>
         <item name="android:padding">@dimen/padding_small</item>

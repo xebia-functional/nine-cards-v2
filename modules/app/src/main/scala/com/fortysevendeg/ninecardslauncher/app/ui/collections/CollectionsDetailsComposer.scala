@@ -25,13 +25,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseAction
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, FabButtonBehaviour}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -48,7 +47,7 @@ trait CollectionsDetailsComposer
   extends Styles
   with FabButtonBehaviour {
 
-  self: AppCompatActivity with TypedFindView with Contexts[AppCompatActivity] =>
+  self: AppCompatActivity with SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] =>
 
   val nameActionFragment = "action-fragment"
 
@@ -64,8 +63,6 @@ trait CollectionsDetailsComposer
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
 
-  lazy val systemBarTintManager = new SystemBarTintManager(this)
-
   lazy val toolbar = Option(findView(TR.collections_toolbar))
 
   lazy val root = Option(findView(TR.collections_root))
@@ -79,6 +76,11 @@ trait CollectionsDetailsComposer
   lazy val iconContent = Option(findView(TR.collections_icon_content))
 
   lazy val icon = Option(findView(TR.collections_icon))
+
+  def updateBarsInFabMenuShow: Ui[_] = updateStatusToBlack
+
+  def updateBarsInFabMenuHide: Ui[_] =
+    getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   def initUi(indexColor: Int, iconCollection: String)(implicit theme: NineCardsTheme) =
     (tabs <~ tabsStyle <~ vInvisible) ~
@@ -97,7 +99,7 @@ trait CollectionsDetailsComposer
       (tabs <~
         stlViewPager(viewPager) <~
         stlOnPageChangeListener(
-          new OnPageChangeCollectionsListener(collections, updateToolbarColor, updateCollection))) ~
+          new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       (tabs <~ vVisible <~~ enterViews) ~
       (viewPager <~ vVisible <~~ enterViews)
@@ -141,8 +143,7 @@ trait CollectionsDetailsComposer
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
-      (view: View) =>
-        showAction(view)
+      (view: View) => showAction(view)
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
       uiShortToast("Recommendations")
@@ -163,6 +164,12 @@ trait CollectionsDetailsComposer
     case adapter: CollectionsPagerAdapter => Some(adapter)
     case _ => None
   }
+
+  def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
+    adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
+  }
+
+  def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
 
   def configureEnterTransition(
     position: Int,
@@ -247,9 +254,13 @@ trait CollectionsDetailsComposer
 
     getWindow.getSharedElementEnterTransition.addListener(new Transition.TransitionListener {
       override def onTransitionStart(transition: Transition): Unit = {}
+
       override def onTransitionCancel(transition: Transition): Unit = {}
+
       override def onTransitionEnd(transition: Transition): Unit = end()
+
       override def onTransitionPause(transition: Transition): Unit = {}
+
       override def onTransitionResume(transition: Transition): Unit = {}
     })
   }
@@ -266,30 +277,29 @@ trait CollectionsDetailsComposer
 
   private[this] def updateToolbarColor(color: Int): Ui[_] =
     (toolbar <~ vBackgroundColor(color)) ~
-      Ui {
-        Lollipop ifSupportedThen {
-          getWindow.setStatusBarColor(color)
-        } getOrElse {
-          systemBarTintManager.setStatusBarTintColor(color)
-        }
-      }
+      updateStatusColor(color)
 
   private[this] def showAction(view: View): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
-    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse (0, 0)
-    val (endX: Int, endY: Int) = fabButton map calculateAnchorViewPosition getOrElse (0, 0)
+    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
+    val (endX: Int, endY: Int) = fabButton map calculateAnchorViewPosition getOrElse(0, 0)
     val args = new Bundle()
     args.putInt(BaseActionFragment.startRevealPosX, startX + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
     args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
-    swapFabButton ~
+    getCurrentCollection foreach (c =>
+      args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
+    swapFabButton(doUpdateBars = false) ~
       (fragmentContent <~ fadeBackground(in = true) <~ fragmentContentStyle(true)) ~
       addFragment(f[AppsFragment].pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
   }
 
-  def turnOffFragmentContent: Ui[_] = fragmentContent <~ fadeBackground(in = false) <~ fragmentContentStyle(false)
+  def turnOffFragmentContent: Ui[_] =
+    (fragmentContent <~
+      fadeBackground(in = false) <~
+      fragmentContentStyle(false)) ~ updateBarsInFabMenuHide
 
   def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
 
@@ -316,6 +326,7 @@ case object Jump extends PageMovement
 
 class OnPageChangeCollectionsListener(
   collections: Seq[Collection],
+  position: Int,
   updateToolbarColor: (Int) => Ui[_],
   updateCollection: (Collection, Int, PageMovement) => Ui[_])
   (implicit context: ContextWrapper, theme: NineCardsTheme)
@@ -323,16 +334,16 @@ class OnPageChangeCollectionsListener(
 
   var lastPosition = -1
 
-  var currentPosition = -1
+  var currentPosition = if (position == 0) position else -1
 
-  var currentMovement: PageMovement = Loading
+  var currentMovement: PageMovement = if (position == 0) Left else Loading
 
   private[this] def getColor(col: Collection): Int = resGetColor(getIndexColor(col.themedColorIndex))
 
   private[this] def jump(from: Collection, to: Collection) = {
     val valueAnimator = ValueAnimator.ofInt(0, 100)
     valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      override def onAnimationUpdate(value: ValueAnimator) {
+      override def onAnimationUpdate(value: ValueAnimator): Unit = {
         val color = interpolateColors(value.getAnimatedFraction, getColor(from), getColor(to))
         runUi(updateToolbarColor(color))
       }
@@ -354,10 +365,9 @@ class OnPageChangeCollectionsListener(
       case _ => // Scrolling to left or right
         val selectedCollection: Collection = collections(position)
         val nextCollection: Option[Collection] = collections.lift(position + 1)
-        nextCollection map {
-          next =>
-            val color = interpolateColors(positionOffset, getColor(selectedCollection), getColor(next))
-            runUi(updateToolbarColor(color))
+        nextCollection map { next =>
+          val color = interpolateColors(positionOffset, getColor(selectedCollection), getColor(next))
+          runUi(updateToolbarColor(color))
         }
     }
 

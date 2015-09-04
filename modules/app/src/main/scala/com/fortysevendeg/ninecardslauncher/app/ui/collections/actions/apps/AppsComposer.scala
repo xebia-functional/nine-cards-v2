@@ -1,14 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
 import android.support.v4.app.Fragment
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.{Toolbar, RecyclerView}
 import android.view.{View, ViewGroup}
+import android.widget.ProgressBar
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 import macroid.FullDsl._
@@ -24,20 +26,17 @@ trait AppsComposer
 
   self: TypedFindView with BaseActionFragment =>
 
-  lazy val toolbar = Option(findView(TR.actions_toolbar))
-
-  lazy val loading = Option(findView(TR.action_loading))
-
   lazy val recycler = Option(findView(TR.actions_recycler))
 
   lazy val scrollerLayout = findView(TR.action_scroller_layout)
 
   def initUi: Ui[_] =
     (toolbar <~
-      toolbarStyle <~
+      toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
       (loading <~ vVisible) ~
-      (recycler <~ recyclerStyle)
+      (recycler <~ recyclerStyle) ~
+      (scrollerLayout <~ fslColor(colorPrimary))
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
     val sortedApps = apps.sortBy(_.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A'))))

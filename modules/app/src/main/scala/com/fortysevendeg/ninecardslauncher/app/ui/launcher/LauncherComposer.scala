@@ -11,12 +11,14 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonBehaviour
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, FabButtonBehaviour}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenu
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -32,7 +34,7 @@ trait LauncherComposer
   extends Styles
   with FabButtonBehaviour {
 
-  self: AppCompatActivity with TypedFindView =>
+  self: AppCompatActivity with TypedFindView with SystemBarsTint =>
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
@@ -73,7 +75,9 @@ trait LauncherComposer
 
   lazy val micIcon = Option(findView(TR.launcher_mic_icon))
 
-  lazy val systemBarTintManager = new SystemBarTintManager(this)
+  def updateBarsInFabMenuShow: Ui[_] = updateNavigationToBlack ~ updateStatusToBlack
+
+  def updateBarsInFabMenuHide: Ui[_] = updateNavigationToTransparent ~ updateStatusToTransparent
 
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
@@ -81,11 +85,20 @@ trait LauncherComposer
     (workspacesContent <~
       vgAddView(getUi(w[LauncherWorkSpaces] <~
         wire(workspaces) <~
-        Tweak[LauncherWorkSpaces](_.startScroll = (toRight: Boolean) => {
-          val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
-          val collectionScreen = workspaces exists (_.isCollectionScreen)
-          if (collectionScreen && !goToWizardScreen) showFabButton
-        })))) ~
+        awsListener(AnimatedWorkSpacesListener(
+          startScroll = (toRight: Boolean) => {
+            val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
+            val collectionScreen = workspaces exists (_.isCollectionScreen)
+            (goToWizardScreen, collectionScreen) match {
+              case (false, true) => runUi(showFabButton())
+              case _ =>
+            }
+          },
+          endScroll = () => {
+            val collectionScreen = workspaces exists (_.isCollectionScreen)
+            if (collectionScreen) runUi(showFabButton())
+          }
+        ))))) ~
       (searchPanel <~ searchContentStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
@@ -191,34 +204,16 @@ trait LauncherComposer
     override def run(): Unit = runUi(fabButton <~ hideFabMenu)
   }
 
-  private[this] def updateStatusColor(color: Int): Ui[_] =
-    Ui {
-      Lollipop ifSupportedThen {
-        getWindow.setStatusBarColor(color)
-      } getOrElse {
-        systemBarTintManager.setStatusBarTintColor(color)
-      }
-    }
-
-  private[this] def updateNavigationColor(color: Int): Ui[_] =
-    Ui {
-      Lollipop ifSupportedThen {
-        getWindow.setNavigationBarColor(color)
-      } getOrElse {
-        systemBarTintManager.setNavigationBarTintColor(color)
-      }
-    }
-
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
   def revealInDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-    updateNavigationColor(resGetColor(android.R.color.black)) ~
+    updateNavigationToBlack ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source))) ~~
       updateStatusColor(resGetColor(R.color.drawer_toolbar))
 
   def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-    updateStatusColor(resGetColor(android.R.color.transparent)) ~
-      updateNavigationColor(resGetColor(android.R.color.transparent)) ~
+    updateStatusToTransparent ~
+      updateNavigationToTransparent ~
       (appDrawerMain mapUi (source => drawerContent <~ revealOutAppDrawer(source)))
 
 }

@@ -64,6 +64,7 @@ object SnailsCommons {
 
   def showFabMenuItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
+      val duration = resGetDimensionPixelSize(R.dimen.padding_large)
       val translationY = resGetDimensionPixelSize(R.dimen.padding_large)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)

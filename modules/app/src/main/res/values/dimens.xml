@@ -31,6 +31,8 @@
     <dimen name="shadow_displacement_default">1dp</dimen>
     <dimen name="shadow_radius_default">1dp</dimen>
 
+    <integer name="anim_duration_normal">200</integer>
+
     <!-- Groups of collections -->
     <dimen name="size_group_collection">72dp</dimen>
     <dimen name="margin_pager_collection">2dp</dimen>
@@ -49,8 +51,6 @@
     <integer name="anim_duration_icon_collection_detail">100</integer>
 
     <dimen name="space_enter_views_collection_detail">128dp</dimen>
-
-    <integer name="anim_duration_collection_detail">200</integer>
 
     <dimen name="padding_icon_home_indicator">8dp</dimen>
 
