@@ -30,7 +30,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, FabBu
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -171,6 +171,15 @@ trait CollectionsDetailsComposer
   }
 
   def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
+
+  def addCardsToCurrentFragment(c: Seq[Card]) = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    currentPosition <- adapter.getCurrentFragmentPosition
+  } yield {
+      adapter.addCardsToCollection(currentPosition, c)
+      fragment.addCards(c)
+    }
 
   def configureEnterTransition(
     position: Int,

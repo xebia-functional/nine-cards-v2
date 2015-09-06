@@ -10,19 +10,17 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 import rapture.core.Answer
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 
 import scalaz.concurrent.Task
 
@@ -36,13 +34,13 @@ class CollectionsDetailsActivity
   with ScrolledListener
   with ActionsScreenListener
   with SystemBarsTint
-  with NineCardIntentConversions {
+  with CollectionDetailsTasks {
 
   val defaultPosition = 0
 
   val defaultIcon = ""
 
-  lazy val di = new Injector
+  implicit lazy val di = new Injector
 
   var collections: Seq[Collection] = Seq.empty
 
@@ -106,14 +104,14 @@ class CollectionsDetailsActivity
         case Some(b: Bundle) if b.containsKey(EXTRA_SHORTCUT_NAME) && b.containsKey(EXTRA_SHORTCUT_INTENT) =>
           val shortcutName = b.getString(Intent.EXTRA_SHORTCUT_NAME)
           val shortcutIntent = b.getParcelable[Intent](Intent.EXTRA_SHORTCUT_INTENT)
-          val nineCardIntent = toNineCardIntent(shortcutIntent)
-          val addCardRequest = AddCardRequest(
-            term = shortcutName,
-            packageName = None,
-            cardType = CardType.shortcut,
-            intent = nineCardIntent,
-            imagePath = "") // TODO we have to create the image from Intent
-          addCards(Seq(addCardRequest))
+          for {
+            collection <- getCurrentCollection
+            intent <- Option(shortcutIntent)
+          } yield {
+            Task.fork(createShortcut(collection.id, shortcutName, shortcutIntent).run).resolveAsync(
+              onResult = (c: Seq[Card]) => addCardsToCurrentFragment(c)
+            )
+          }
         case _ =>
       }
     }
@@ -155,17 +153,10 @@ class CollectionsDetailsActivity
 
   override def onEndFinishAction(): Unit = removeActionFragment()
 
-  override def addCards(cards: Seq[AddCardRequest]): Unit = for {
-    adapter <- getAdapter
-    fragment <- adapter.getActiveFragment
-    currentPosition <- adapter.getCurrentFragmentPosition
-    collection <- getCurrentCollection
-  } yield {
-      Task.fork(di.collectionProcess.addCards(collection.id, cards).run).resolveAsync(
-        onResult = (c: Seq[Card]) => {
-          adapter.addCardsToCollection(currentPosition, c)
-          fragment.addCards(c)
-        }
+  override def addCards(cards: Seq[AddCardRequest]): Unit =
+    getCurrentCollection foreach { collection =>
+      Task.fork(createCards(collection.id, cards).run).resolveAsync(
+        onResult = (c: Seq[Card]) => addCardsToCurrentFragment(c)
       )
     }
 
