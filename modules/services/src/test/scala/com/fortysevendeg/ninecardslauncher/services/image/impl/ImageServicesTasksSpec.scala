@@ -259,27 +259,6 @@ class ImageServicesTasksSpec
 
   "Image Services Tasks" should {
 
-    "return a File when a valid fileName is provided" in
-      new ImageServicesTasksScope with FileNameImageServicesTasksScope{
-        val result = mockImageServicesTask.getPathByName(fileName)(contextSupport).run.run
-        result must beLike {
-          case Answer(resultFile) =>
-            resultFile.getName shouldEqual resultFileName
-            resultFile.getPath shouldEqual resultFilePath
-        }
-      }
-
-    "return a FileException when getPath in resourceUtils returns an empty string" in
-      new ImageServicesTasksScope with ErrorFileNameImageServicesTasksScope {
-        val result = mockImageServicesTask.getPathByName(fileName)(contextSupport).run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) =>
-              exception must beAnInstanceOf[FileException]
-          }
-        }
-      }
-
     "return a File when the file is created with a valid packageName" in
       new ImageServicesTasksScope with FileNameImageServicesTasksScope {
         val result = mockImageServicesTask.getPathByApp(packageName, className)(contextSupport).run.run
@@ -302,7 +281,7 @@ class ImageServicesTasksSpec
 
     "return a File when a valid packageName and a valid className is provided" in
       new ImageServicesTasksScope with FileNameImageServicesTasksScope {
-        val result = mockImageServicesTask.getPathByPackageName(packageName)(contextSupport).run.run
+        val result = mockImageServicesTask.getPathByName(packageName)(contextSupport).run.run
         result must beLike {
           case Answer(resultFile) =>
             resultFile.getName shouldEqual packageName
@@ -312,7 +291,7 @@ class ImageServicesTasksSpec
 
     "return a FileException when getPath in resourceUtils returns an empty string" in
       new ImageServicesTasksScope with ErrorFileNameImageServicesTasksScope {
-        val result = mockImageServicesTask.getPathByPackageName(packageName)(contextSupport).run.run
+        val result = mockImageServicesTask.getPathByName(packageName)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[FileException]
