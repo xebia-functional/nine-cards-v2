@@ -7,7 +7,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
@@ -64,20 +64,13 @@ object Snails {
   }
 
   private[this] def reveal(source: View, view: View, in: Boolean = true)(animationEnd: => Unit = ())(implicit context: ContextWrapper): Unit = {
-    val sb = resGetDimensionPixelSize("status_bar_height") getOrElse 25 dp
-    // TODO - Use the PositionUtils
-    val (drawerButtonSize, cx, cy) = {
-      val location = new Array[Int](2)
-      source.getLocationOnScreen(location)
-      (source.getWidth, location(0) + source.getWidth / 2, location(1) + source.getHeight / 2 - sb)
-    }
-
-    val fromRadius = drawerButtonSize / 2
-    val toRadius = SnailsUtils.calculateRadius(width = cx, height = cy)
+    val (cx, cy) = calculateAnchorViewPosition(source)
+    val fromRadius = source.getWidth / 2
+    val toRadius = SnailsUtils.calculateRadius(width = cx + fromRadius, height = cy + fromRadius)
 
     val (startRadius, endRadius) = if (in) (fromRadius, toRadius) else (toRadius, fromRadius)
 
-    val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx, cy, startRadius, endRadius)
+    val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx + fromRadius, cy + fromRadius, startRadius, endRadius)
     reveal.addListener(new AnimatorListenerAdapter {
       override def onAnimationStart(animation: Animator): Unit = {
         super.onAnimationStart(animation)
