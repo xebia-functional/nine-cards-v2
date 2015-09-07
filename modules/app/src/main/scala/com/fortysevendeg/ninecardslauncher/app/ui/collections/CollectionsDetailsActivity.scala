@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.content.Intent._
-import android.graphics.{BitmapFactory, Bitmap}
+import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
@@ -109,7 +109,7 @@ class CollectionsDetailsActivity
           getCurrentCollection foreach { collection =>
             val maybeBitmap = getBitmapFromShortcutIntent(b)
             Task.fork(createShortcut(collection.id, shortcutName, shortcutIntent, maybeBitmap).run).resolveAsync(
-              onResult = (c: Seq[Card]) => addCardsToCurrentFragment(c)
+              onResult = addCardsToCurrentFragment(_)
             )
           }
         case _ =>
@@ -157,7 +157,7 @@ class CollectionsDetailsActivity
   override def addCards(cards: Seq[AddCardRequest]): Unit =
     getCurrentCollection foreach { collection =>
       Task.fork(createCards(collection.id, cards).run).resolveAsync(
-        onResult = (c: Seq[Card]) => addCardsToCurrentFragment(c)
+        onResult = addCardsToCurrentFragment(_)
       )
     }
 

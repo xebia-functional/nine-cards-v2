@@ -37,7 +37,7 @@ trait AppsComposer
       (scrollerLayout <~ fslColor(colorPrimary))
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
-    val sortedApps = apps.sortBy(_.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A'))))
+    val sortedApps = apps sortBy sortByName
     val appsHeadered = generateAppsForList(sortedApps.toList, Seq.empty)
     val adapter = new AppsAdapter(appsHeadered, clickListener)
     (recycler <~
@@ -46,6 +46,8 @@ trait AppsComposer
       (loading <~ vGone) ~
       (scrollerLayout <~ fslLinkRecycler)
   }
+
+  private[this] def sortByName(app: AppCategorized) = app.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
 
   @tailrec
   private[this] def generateAppsForList(apps: List[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {

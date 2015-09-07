@@ -29,7 +29,7 @@ class ShortcutsFragment
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
     Task.fork(di.deviceProcess.getAvailableShortcuts.run).resolveAsyncUi(
-      onResult = (shortcut: Seq[Shortcut]) => addShortcuts(shortcut, (shortcut: Shortcut) => {
+      onResult = (shortcut: Seq[Shortcut]) => addShortcuts(shortcut, shortcut => {
         runUi(unreveal())
         getActivity.startActivityForResult(shortcut.intent, shortcutAdded)
       })

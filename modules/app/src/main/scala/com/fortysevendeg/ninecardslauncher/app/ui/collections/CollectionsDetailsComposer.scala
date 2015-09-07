@@ -144,7 +144,7 @@ trait CollectionsDetailsComposer
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
-      (view: View) => showAction(f[AppsFragment], view)
+      view: View => showAction(f[AppsFragment], view)
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
       uiShortToast("Recommendations")
@@ -153,7 +153,7 @@ trait CollectionsDetailsComposer
       uiShortToast("Contacts")
     }),
     getUi(w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
-      (view: View) => showAction(f[ShortcutsFragment], view)
+      view: View => showAction(f[ShortcutsFragment], view)
     })
   )
 

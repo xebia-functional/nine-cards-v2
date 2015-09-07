@@ -32,13 +32,15 @@ trait ShortcutsComposer
       (recycler <~ recyclerStyle)
 
   def addShortcuts(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit)(implicit fragment: Fragment) = {
-    val sortedShortcuts = shortcuts.sortBy(_.title map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A'))))
+    val sortedShortcuts = shortcuts sortBy sortByTitle
     val adapter = new ShortcutsAdapter(sortedShortcuts, clickListener)
     (recycler <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone)
   }
+
+  private[this] def sortByTitle(shortcut: Shortcut) = shortcut.title map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
 
 }
 
