@@ -1,30 +1,43 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
+import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
+import com.fortysevendeg.ninecardslauncher.process.device.ShortcutException
+import rapture.core.Result
+
+import scala.util.Random
+import scalaz.concurrent.Task
 
 trait CollectionDetailsTasks
   extends NineCardIntentConversions {
 
-  def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent)(implicit context: ContextSupport, di: Injector):
-  ServiceDef2[Seq[Card], CardException] = {
-    val addCardRequest = AddCardRequest(
+  def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap])(implicit context: ContextSupport, di: Injector):
+  ServiceDef2[Seq[Card], ShortcutException with CardException] = for {
+    path <- saveShortcutIcon(bitmap)
+    addCardRequest = AddCardRequest(
       term = name,
       packageName = None,
       cardType = CardType.shortcut,
       intent = toNineCardIntent(shortcutIntent),
-      imagePath = "") // TODO we have to create the image from Intent
-    createCards(collectionId, Seq(addCardRequest))
-  }
+      imagePath = path)
+    cards <- createCards(collectionId, Seq(addCardRequest))
+  } yield cards
 
   def createCards(collectionId: Int, cards: Seq[AddCardRequest])(implicit context: ContextSupport, di: Injector):
   ServiceDef2[Seq[Card], CardException] =
     di.collectionProcess.addCards(collectionId, cards)
+
+  private[this] def saveShortcutIcon(bitmap: Option[Bitmap])(implicit context: ContextSupport, di: Injector):
+  ServiceDef2[String, ShortcutException] = bitmap map { b =>
+    di.deviceProcess.saveShortcutIcon(Random.nextString(10), b) // Name is not important here
+  } getOrElse Service(Task(Result.answer(""))) // We use a empty string because the UI will generate an image
 
 }

@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.content.Intent._
+import android.graphics.{BitmapFactory, Bitmap}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
@@ -22,6 +23,7 @@ import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 import rapture.core.Answer
 
+import scala.util.Try
 import scalaz.concurrent.Task
 
 class CollectionsDetailsActivity
@@ -102,19 +104,18 @@ class CollectionsDetailsActivity
     requestCode match {
       case `shortcutAdded` => Option(data) flatMap (i => Option(i.getExtras)) match {
         case Some(b: Bundle) if b.containsKey(EXTRA_SHORTCUT_NAME) && b.containsKey(EXTRA_SHORTCUT_INTENT) =>
-          val shortcutName = b.getString(Intent.EXTRA_SHORTCUT_NAME)
-          val shortcutIntent = b.getParcelable[Intent](Intent.EXTRA_SHORTCUT_INTENT)
-          for {
-            collection <- getCurrentCollection
-            intent <- Option(shortcutIntent)
-          } yield {
-            Task.fork(createShortcut(collection.id, shortcutName, shortcutIntent).run).resolveAsync(
+          val shortcutName = b.getString(EXTRA_SHORTCUT_NAME)
+          val shortcutIntent = b.getParcelable[Intent](EXTRA_SHORTCUT_INTENT)
+          getCurrentCollection foreach { collection =>
+            val maybeBitmap = getBitmapFromShortcutIntent(b)
+            Task.fork(createShortcut(collection.id, shortcutName, shortcutIntent, maybeBitmap).run).resolveAsync(
               onResult = (c: Seq[Card]) => addCardsToCurrentFragment(c)
             )
           }
         case _ =>
       }
     }
+
   }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
@@ -159,6 +160,19 @@ class CollectionsDetailsActivity
         onResult = (c: Seq[Card]) => addCardsToCurrentFragment(c)
       )
     }
+
+  private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
+    case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
+      Try(b.getParcelable[Bitmap](EXTRA_SHORTCUT_ICON)).toOption
+    case b if b.containsKey(EXTRA_SHORTCUT_ICON_RESOURCE) =>
+      val extra = Try(b.getParcelable[ShortcutIconResource](EXTRA_SHORTCUT_ICON_RESOURCE)).toOption
+      extra flatMap { e =>
+        val resources = getPackageManager.getResourcesForApplication(e.packageName)
+        val id = resources.getIdentifier(e.resourceName, null, null)
+        Option(BitmapFactory.decodeResource(resources, id))
+      }
+    case _ => None
+  }
 
 }
 
