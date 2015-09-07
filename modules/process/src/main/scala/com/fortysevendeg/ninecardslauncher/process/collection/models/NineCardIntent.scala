@@ -10,6 +10,7 @@ import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json._
 
 import scala.collection.JavaConversions._
+import scala.util.Try
 
 case class UnformedApp(
   name: String,
@@ -163,14 +164,16 @@ object NineCardIntentImplicits {
   implicit val nineCardIntentWrites = new Writes[NineCardIntent] {
     def writes(intent: NineCardIntent): JsValue = {
       val jsExtras = Option(intent.getExtras) map { extras =>
-        (extras.keySet() map { key =>
-          extras.get(key).asInstanceOf[Any] match {
-            case s: String => key -> Json.toJsFieldJsValueWrapper(s)
-            case i: Int => key -> Json.toJsFieldJsValueWrapper(i)
-            case b: Boolean => key -> Json.toJsFieldJsValueWrapper(b)
-            case f: Float => key -> Json.toJsFieldJsValueWrapper(f)
-            case d: Double => key -> Json.toJsFieldJsValueWrapper(d)
-          }
+        (extras.keySet() flatMap { key =>
+          Try {
+            extras.get(key).asInstanceOf[Any] match {
+              case s: String => key -> Json.toJsFieldJsValueWrapper(s)
+              case i: Int => key -> Json.toJsFieldJsValueWrapper(i)
+              case b: Boolean => key -> Json.toJsFieldJsValueWrapper(b)
+              case f: Float => key -> Json.toJsFieldJsValueWrapper(f)
+              case d: Double => key -> Json.toJsFieldJsValueWrapper(d)
+            }
+          }.toOption
         }).toSeq
       }
       val extras = jsExtras map (e => Json.obj(e :_*)) getOrElse Json.obj()
