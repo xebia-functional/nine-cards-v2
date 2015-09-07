@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
@@ -25,6 +26,7 @@ class LauncherActivity
   with ContextSupportProvider
   with TypedFindView
   with LauncherComposer
+  with DrawerComposer
   with SystemBarsTint {
 
   implicit lazy val di: Injector = new Injector
@@ -38,7 +40,7 @@ class LauncherActivity
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
-    runUi(initUi)
+    runUi(initUi ~ initDrawerUi)
     initAllSystemBarsTint
     generateCollections()
   }
