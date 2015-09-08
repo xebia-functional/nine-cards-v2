@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
+import com.fortysevendeg.ninecardslauncher.services.image.{SaveBitmap, AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 
@@ -229,5 +229,11 @@ trait DeviceProcessData {
       hasPhone = false,
       favorite = false,
       info = None))
+
+  val pathShortcut = "/example/shortcut"
+
+  val nameShortcut = "aeiou-12345"
+
+  val fileNameShortcut = s"$pathShortcut/$nameShortcut"
 
 }

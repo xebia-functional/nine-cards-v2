@@ -1,5 +1,8 @@
 package android.content;
 
+import android.net.Uri;
+import android.os.Bundle;
+
 public class Intent implements android.os.Parcelable, java.lang.Cloneable {
 
     public static class ShortcutIconResource implements android.os.Parcelable {
@@ -36,7 +39,7 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
     public static  android.content.Intent parseUri(java.lang.String uri, int flags) throws java.net.URISyntaxException { throw new RuntimeException("<Stub>!"); }
     public static  android.content.Intent getIntentOld(java.lang.String uri) throws java.net.URISyntaxException { throw new RuntimeException("<Stub>!"); }
     public  java.lang.String getAction() { return ""; }
-    public  android.net.Uri getData() { throw new RuntimeException("<Stub>!"); }
+    public  android.net.Uri getData() { return null; }
     public  java.lang.String getDataString() { throw new RuntimeException("<Stub>!"); }
     public  java.lang.String getScheme() { throw new RuntimeException("<Stub>!"); }
     public  java.lang.String getType() { return ""; }
@@ -78,7 +81,7 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
     public  java.lang.String[] getStringArrayExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
     public  java.lang.CharSequence[] getCharSequenceArrayExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
     public  android.os.Bundle getBundleExtra(java.lang.String name) { throw new RuntimeException("<Stub>!"); }
-    public  android.os.Bundle getExtras() { throw new RuntimeException("<Stub>!"); }
+    public  android.os.Bundle getExtras() { return null; }
     public  int getFlags() { return 1; }
     public  java.lang.String getPackage() { throw new RuntimeException("<Stub>!"); }
     public  android.content.ComponentName getComponent() { return new android.content.ComponentName("", ""); }
@@ -86,12 +89,12 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
     public  android.content.ComponentName resolveActivity(android.content.pm.PackageManager pm) { throw new RuntimeException("<Stub>!"); }
     public  android.content.pm.ActivityInfo resolveActivityInfo(android.content.pm.PackageManager pm, int flags) { throw new RuntimeException("<Stub>!"); }
     public  android.content.Intent setAction(java.lang.String action) { return this; }
-    public  android.content.Intent setData(android.net.Uri data) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent setDataAndNormalize(android.net.Uri data) { throw new RuntimeException("<Stub>!"); }
+    public  android.content.Intent setData(android.net.Uri data) { return this; }
+    public  android.content.Intent setDataAndNormalize(android.net.Uri data) { return this; }
     public  android.content.Intent setType(java.lang.String type) { return this; }
-    public  android.content.Intent setTypeAndNormalize(java.lang.String type) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent setDataAndType(android.net.Uri data, java.lang.String type) { throw new RuntimeException("<Stub>!"); }
-    public  android.content.Intent setDataAndTypeAndNormalize(android.net.Uri data, java.lang.String type) { throw new RuntimeException("<Stub>!"); }
+    public  android.content.Intent setTypeAndNormalize(java.lang.String type) { return this; }
+    public  android.content.Intent setDataAndType(android.net.Uri data, java.lang.String type) { return this; }
+    public  android.content.Intent setDataAndTypeAndNormalize(android.net.Uri data, java.lang.String type) { return this; }
     public  android.content.Intent addCategory(java.lang.String category) { return this; }
     public  void removeCategory(java.lang.String category) { throw new RuntimeException("<Stub>!"); }
     public  void setSelector(android.content.Intent selector) { throw new RuntimeException("<Stub>!"); }
@@ -137,7 +140,7 @@ public class Intent implements android.os.Parcelable, java.lang.Cloneable {
     public  android.content.Intent setClassName(java.lang.String packageName, java.lang.String className) { return this; }
     public  android.content.Intent setClass(android.content.Context packageContext, java.lang.Class<?> cls) { throw new RuntimeException("<Stub>!"); }
     public  void setSourceBounds(android.graphics.Rect r) { throw new RuntimeException("<Stub>!"); }
-    public  int fillIn(android.content.Intent other, int flags) { throw new RuntimeException("<Stub>!"); }
+    public  int fillIn(android.content.Intent other, int flags) { return 0; }
     public  boolean filterEquals(android.content.Intent other) { throw new RuntimeException("<Stub>!"); }
     public  int filterHashCode() { throw new RuntimeException("<Stub>!"); }
     public  java.lang.String toString() {

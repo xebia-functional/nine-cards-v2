@@ -54,7 +54,7 @@ trait LauncherExecutor {
             newIntent.putExtra(Intent.EXTRA_EMAIL, email)
             tryOrError(activity, Intent.createChooser(newIntent, titleDialogEmail))
           }) getOrElse showError
-      case _ => activityContext.getOriginal.startActivity(intent)
+      case _ => activityContext.original.get map (tryOrError(_, intent)) getOrElse showError
     }
   }
 

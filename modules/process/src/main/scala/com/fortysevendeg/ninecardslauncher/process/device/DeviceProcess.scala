@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.device
 
+import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Shortcut, AppCategorized, Contact}
@@ -24,4 +25,11 @@ trait DeviceProcess {
    * @throws ContactException if exist some problem to get the favorite contacts
    */
   def getFavoriteContacts(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
+
+  /**
+   * Save shortcut icon from bitmap
+   * @return the String contains the path where the icon was stored
+   * @throws ShortcutException if exist some problem storing icon
+   */
+  def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport): ServiceDef2[String, ShortcutException]
 }

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -18,8 +18,7 @@ trait Styles {
       defaultIcon = IconTypes.CLOSE,
       defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
       padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
-    tbTitle(R.string.applications) +
-      tbNavigationIcon(closeDrawable) +
+    tbNavigationIcon(closeDrawable) +
       tbBackgroundColor(color)
   }
 

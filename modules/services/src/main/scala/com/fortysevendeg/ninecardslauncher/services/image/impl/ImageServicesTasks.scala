@@ -25,14 +25,6 @@ trait ImageServicesTasks
 
   val resourceUtils = new ResourceUtils
 
-  def getPathByName(name: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
-    Task {
-      CatchAll[FileException] {
-        new File(resourceUtils.getPath(if (name.isEmpty) "_" else name.substring(0, 1).toUpperCase))
-      }
-    }
-  }
-
   def getPathByApp(packageName: String, className: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
     Task {
       CatchAll[FileException] {
@@ -41,10 +33,10 @@ trait ImageServicesTasks
     }
   }
 
-  def getPathByPackageName(packageName: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
+  def getPathByName(name: String)(implicit context: ContextSupport): ServiceDef2[File, FileException] = Service {
     Task {
       CatchAll[FileException] {
-        new File(resourceUtils.getPath(packageName))
+        new File(resourceUtils.getPath(name))
       }
     }
   }

@@ -21,15 +21,16 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, FabButtonBehaviour}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -143,7 +144,7 @@ trait CollectionsDetailsComposer
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
-      (view: View) => showAction(view)
+      view: View => showAction(f[AppsFragment], view)
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
       uiShortToast("Recommendations")
@@ -151,8 +152,8 @@ trait CollectionsDetailsComposer
     getUi(w[FabItemMenu] <~ fabButtonContactsStyle <~ On.click {
       uiShortToast("Contacts")
     }),
-    getUi(w[FabItemMenu] <~ fabButtonShortcutsStyle <~ On.click {
-      uiShortToast("Shortcuts")
+    getUi(w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
+      view: View => showAction(f[ShortcutFragment], view)
     })
   )
 
@@ -170,6 +171,15 @@ trait CollectionsDetailsComposer
   }
 
   def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
+
+  def addCardsToCurrentFragment(c: Seq[Card]) = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    currentPosition <- adapter.getCurrentFragmentPosition
+  } yield {
+      adapter.addCardsToCollection(currentPosition, c)
+      fragment.addCards(c)
+    }
 
   def configureEnterTransition(
     position: Int,
@@ -279,7 +289,7 @@ trait CollectionsDetailsComposer
     (toolbar <~ vBackgroundColor(color)) ~
       updateStatusColor(color)
 
-  private[this] def showAction(view: View): Ui[_] = {
+  private[this] def showAction[F <: BaseActionFragment](fragmentBuilder: FragmentBuilder[F], view: View): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
@@ -293,7 +303,7 @@ trait CollectionsDetailsComposer
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton(doUpdateBars = false) ~
       (fragmentContent <~ fadeBackground(in = true) <~ fragmentContentStyle(true)) ~
-      addFragment(f[AppsFragment].pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
+      addFragment(fragmentBuilder.pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
   }
 
   def turnOffFragmentContent: Ui[_] =
