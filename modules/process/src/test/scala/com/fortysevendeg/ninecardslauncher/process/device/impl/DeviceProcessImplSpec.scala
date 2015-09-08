@@ -63,6 +63,12 @@ trait DeviceProcessSpecification
 
     val mockApiServices = mock[ApiServices]
 
+    mockApiServices.googlePlaySimplePackages(any)(any) returns
+      Service(Task(Result.answer(GooglePlaySimplePackagesResponse(statusCodeOk, GooglePlaySimplePackages(Seq.empty, Seq.empty)))))
+
+    mockApiServices.googlePlayPackages(any)(any) returns
+      Service(Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
+
     val mockShortcutsServices = mock[ShortcutsServices]
 
     mockShortcutsServices.getShortcuts(contextSupport) returns
@@ -75,13 +81,8 @@ trait DeviceProcessSpecification
 
     val mockContactsServices = mock[ContactsServices]
 
-    val mockImageServices = mock[ImageServices]
-
-    mockApiServices.googlePlaySimplePackages(any)(any) returns
-      Service(Task(Result.answer(GooglePlaySimplePackagesResponse(statusCodeOk, GooglePlaySimplePackages(Seq.empty, Seq.empty)))))
-
-    mockApiServices.googlePlayPackages(any)(any) returns
-      Service(Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
+    mockContactsServices.getContacts returns
+      Service(Task(Result.answer(contacts)))
 
     mockContactsServices.getFavoriteContacts returns
       Service(Task(Result.answer(contacts)))
@@ -92,6 +93,8 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(contacts(1))))
     mockContactsServices.findContactByLookupKey("lookupKey 3") returns
       Service(Task(Result.answer(contacts(2))))
+
+    val mockImageServices = mock[ImageServices]
 
     mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
       Service(Task(Result.answer(appPathResponses.head))),
@@ -235,6 +238,32 @@ trait DeviceProcessSpecification
 
     mockImageServices.saveBitmap(any[SaveBitmap])(any) returns Service {
       Task(Errata(fileServicesException))
+    }
+  }
+
+  trait SortedContactsScope {
+    self: DeviceProcessScope =>
+
+    mockContactsServices.getContacts returns
+      Service(Task(Result.answer(contactsUnsorted)))
+  }
+
+  trait FindContactScope {
+    self: DeviceProcessScope =>
+
+    mockContactsServices.findContactByLookupKey(anyString) returns
+      Service(Task(Result.answer(contact)))
+  }
+
+  trait ContactsErrorScope {
+    self: DeviceProcessScope =>
+
+    mockContactsServices.getContacts returns Service {
+      Task(Errata(contactsServicesException))
+    }
+
+    mockContactsServices.findContactByLookupKey(anyString) returns Service {
+      Task(Errata(contactsServicesException))
     }
   }
 
@@ -435,6 +464,52 @@ class DeviceProcessImplSpec
           }
         }
       }
+  }
+
+  "Get Contacts Sorted By Name" should {
+
+    "get contacts sorted" in
+      new DeviceProcessScope with SortedContactsScope {
+        val result = deviceProcess.getContactsSortedByName(contextSupport).run.run
+        result must beLike {
+          case Answer(response) => response.map(_.name) shouldEqual nameContactsSorted
+        }
+      }
+
+    "returns ContactException when ContactsService fails getting contacts" in
+      new DeviceProcessScope with ContactsErrorScope {
+        val result = deviceProcess.getContactsSortedByName(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          }
+        }
+      }
+
+  }
+
+  "Get Contact" should {
+
+    "get contact find a contact with data info filled" in
+      new DeviceProcessScope with FindContactScope {
+        val result = deviceProcess.getContact(lookupKey)(contextSupport).run.run
+        result must beLike {
+          case Answer(response) =>
+            response.lookupKey shouldEqual lookupKey
+            response.info must beSome
+        }
+      }
+
+    "returns ContactException when ContactsService fails getting contact" in
+      new DeviceProcessScope with ContactsErrorScope {
+        val result = deviceProcess.getContact(lookupKey)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          }
+        }
+      }
+
   }
 
 }

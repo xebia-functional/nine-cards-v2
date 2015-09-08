@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
+import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 import com.fortysevendeg.ninecardslauncher.services.image.{SaveBitmap, AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
@@ -167,7 +167,7 @@ trait DeviceProcessData {
 
   val packageNameForCreateImage = "com.example"
 
-  val pathForCreateImage =  "/example/for/create/image"
+  val pathForCreateImage = "/example/for/create/image"
 
   val urlForCreateImage = "http://www.w.com/image.jpg"
 
@@ -235,5 +235,63 @@ trait DeviceProcessData {
   val nameShortcut = "aeiou-12345"
 
   val fileNameShortcut = s"$pathShortcut/$nameShortcut"
+
+  val contactsUnsorted: Seq[Contact] = Seq(
+    Contact(
+      name = "C Contact",
+      lookupKey = "lookupKey 1",
+      photoUri = "photoUri 2",
+      hasPhone = false,
+      favorite = false,
+      info = None),
+    Contact(
+      name = "B Contact",
+      lookupKey = "lookupKey 2",
+      photoUri = "photoUri 2",
+      hasPhone = false,
+      favorite = false,
+      info = None),
+    Contact(
+      name = "A Contact",
+      lookupKey = "lookupKey 3",
+      photoUri = "photoUri 3",
+      hasPhone = false,
+      favorite = false,
+      info = None))
+
+  val nameContactsSorted: Seq[String] = Seq(
+    "A Contact",
+    "B Contact",
+    "C Contact"
+  )
+
+  val lookupKey = "lookupKey 1"
+
+  val contact = Contact(
+    name = "Simple Contact",
+    lookupKey = lookupKey,
+    photoUri = "photoUri 1",
+    hasPhone = true,
+    favorite = false,
+    info = Some(
+      ContactInfo(
+        emails = Seq(
+          ContactEmail(
+            address = "sample1@47deg.com",
+            category = EmailHome
+          )
+        ),
+        phones = Seq(
+          ContactPhone(
+            number = "+00 111 222 333",
+            category = PhoneHome
+          ),
+          ContactPhone(
+            number = "+00 444 555 666",
+            category = PhoneMobile
+          )
+        )
+      )
+    ))
 
 }

@@ -6,18 +6,19 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, Shortcut, AppCategorized}
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ImplicitsContactsServiceExceptions, ContactsServiceException, ContactsServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
+import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
 
+import scala.math.Ordering.Implicits._
 import scalaz.concurrent.Task
 
 class DeviceProcessImpl(
@@ -66,16 +67,37 @@ class DeviceProcessImpl(
       shortcuts <- shortcutsServices.getShortcuts
     } yield toShortcutSeq(shortcuts)).resolve[ShortcutException]
 
+  override def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) =
+    (for {
+      saveBitmapPath <- imageServices.saveBitmap(SaveBitmap(name, bitmap))
+    } yield saveBitmapPath.path).resolve[ShortcutException]
+
   override def getFavoriteContacts(implicit context: ContextSupport) =
     (for {
       favoriteContacts <- contactsServices.getFavoriteContacts
       filledFavoriteContacts <- fillContacts(favoriteContacts)
     } yield toContactSeq(filledFavoriteContacts)).resolve[ContactException]
 
-  override def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) =
+  override def getContactsSortedByName(implicit context: ContextSupport) =
     (for {
-      saveBitmapPath <- imageServices.saveBitmap(SaveBitmap(name, bitmap))
-    } yield saveBitmapPath.path).resolve[ShortcutException]
+      contacts <- contactsServices.getContacts
+      contactsSorted <- sortContactsByName(contacts)
+    } yield toContactSeq(contactsSorted)).resolve[ContactException]
+
+  override def getContact(lookupKey: String)(implicit context: ContextSupport) =
+    (for {
+      contact <- contactsServices.findContactByLookupKey(lookupKey)
+    } yield toContact(contact)).resolve[ContactException]
+
+  private[this] def sortContactsByName(contacts: Seq[ServicesContact]): ServiceDef2[Seq[ServicesContact], ContactsServiceException] =
+    Service {
+      Task {
+        def sortByName(contact: ServicesContact) = contact.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
+        CatchAll[ContactsServiceException] {
+          contacts sortBy sortByName
+        }
+      }
+    }
 
   private[this] def getApps(implicit context: ContextSupport):
   ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =
