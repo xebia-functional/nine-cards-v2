@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, Shortcut}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 
@@ -23,17 +23,16 @@ class ContactsFragment
 
   implicit lazy val fragment: Fragment = this // TODO : javi => We need that, but I don't like. We need a better way
 
-  override def getLayoutId: Int = R.layout.list_action_fragment
+  override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
-//    Task.fork(di.deviceProcess.getAvailableShortcuts.run).resolveAsyncUi(
-//      onResult = (shortcut: Seq[Shortcut]) => addContact(shortcut, shortcut => {
-//        runUi(unreveal())
-//        getActivity.startActivityForResult(shortcut.intent, shortcutAdded)
-//      })
-//    )
+    Task.fork(di.deviceProcess.getContacts.run).resolveAsyncUi(
+      onResult = (contacts: Seq[Contact]) => addContact(contacts, contact => {
+        runUi(unreveal())
+      })
+    )
   }
 }
 

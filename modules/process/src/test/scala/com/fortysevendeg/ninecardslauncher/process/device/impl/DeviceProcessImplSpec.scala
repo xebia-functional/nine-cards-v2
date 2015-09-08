@@ -241,13 +241,6 @@ trait DeviceProcessSpecification
     }
   }
 
-  trait SortedContactsScope {
-    self: DeviceProcessScope =>
-
-    mockContactsServices.getContacts returns
-      Service(Task(Result.answer(contactsUnsorted)))
-  }
-
   trait FindContactScope {
     self: DeviceProcessScope =>
 
@@ -469,16 +462,16 @@ class DeviceProcessImplSpec
   "Get Contacts Sorted By Name" should {
 
     "get contacts sorted" in
-      new DeviceProcessScope with SortedContactsScope {
-        val result = deviceProcess.getContactsSortedByName(contextSupport).run.run
+      new DeviceProcessScope {
+        val result = deviceProcess.getContacts(contextSupport).run.run
         result must beLike {
-          case Answer(response) => response.map(_.name) shouldEqual nameContactsSorted
+          case Answer(response) => response.map(_.name) shouldEqual contacts.map(_.name)
         }
       }
 
     "returns ContactException when ContactsService fails getting contacts" in
       new DeviceProcessScope with ContactsErrorScope {
-        val result = deviceProcess.getContactsSortedByName(contextSupport).run.run
+        val result = deviceProcess.getContacts(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]

@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -18,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCate
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
 
+import scala.collection.immutable.IndexedSeq
 import scala.math.Ordering.Implicits._
 import scalaz.concurrent.Task
 
@@ -78,26 +80,15 @@ class DeviceProcessImpl(
       filledFavoriteContacts <- fillContacts(favoriteContacts)
     } yield toContactSeq(filledFavoriteContacts)).resolve[ContactException]
 
-  override def getContactsSortedByName(implicit context: ContextSupport) =
+  override def getContacts(implicit context: ContextSupport) =
     (for {
       contacts <- contactsServices.getContacts
-      contactsSorted <- sortContactsByName(contacts)
-    } yield toContactSeq(contactsSorted)).resolve[ContactException]
+    } yield toContactSeq(contacts)).resolve[ContactException]
 
   override def getContact(lookupKey: String)(implicit context: ContextSupport) =
     (for {
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
-
-  private[this] def sortContactsByName(contacts: Seq[ServicesContact]): ServiceDef2[Seq[ServicesContact], ContactsServiceException] =
-    Service {
-      Task {
-        def sortByName(contact: ServicesContact) = contact.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
-        CatchAll[ContactsServiceException] {
-          contacts sortBy sortByName
-        }
-      }
-    }
 
   private[this] def getApps(implicit context: ContextSupport):
   ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =

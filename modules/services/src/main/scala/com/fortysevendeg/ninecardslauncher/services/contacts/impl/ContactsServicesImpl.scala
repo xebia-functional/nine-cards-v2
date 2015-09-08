@@ -23,7 +23,8 @@ class ContactsServicesImpl(
         CatchAll[ContactsServiceException] {
           contentResolverWrapper.fetchAll(
             uri = Fields.CONTENT_URI,
-            projection = allFields)(getListFromCursor(contactFromCursor))
+            projection = allFields,
+            orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
         }
       }
     }

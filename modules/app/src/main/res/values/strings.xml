@@ -54,6 +54,8 @@
     <string name="contacts">Contacts</string>
     <string name="shortcuts">Shortcuts</string>
 
+    <string name="unnamed">Unnamed</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Any Category</string>

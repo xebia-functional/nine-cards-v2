@@ -39,7 +39,7 @@ trait DeviceProcess {
    *         information about the contact
    * @throws ContactException if exist some problem to get the contacts
    */
-  def getContactsSortedByName(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
+  def getContacts(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
 
   /**
    * Get the contact and fill all their data

@@ -7,7 +7,9 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -16,10 +18,10 @@ import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
 
 import scala.annotation.tailrec
-import scala.math.Ordering.Implicits._
 
 trait ContactsComposer
-  extends Styles {
+  extends Styles
+  with HeaderUtils {
 
   self: TypedFindView with BaseActionFragment =>
 
@@ -36,8 +38,7 @@ trait ContactsComposer
       (recycler <~ recyclerStyle)
 
   def addContact(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit fragment: Fragment) = {
-    val sortedContacts = contacts sortBy sortByName
-    val contactsHeadered = generateContactsForList(sortedContacts.toList, Seq.empty)
+    val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)
     val adapter = new ContactsAdapter(contactsHeadered, clickListener)
     (recycler <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -46,14 +47,12 @@ trait ContactsComposer
       (scrollerLayout <~ fslLinkRecycler)
   }
 
-  private[this] def sortByName(contact: Contact) = contact.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
-
   @tailrec
   private[this] def generateContactsForList(contacts: List[Contact], acc: Seq[ContactHeadered]): Seq[ContactHeadered] = contacts match {
     case Nil => acc
     case h :: t =>
-      val currentChar = h.name.substring(0, 1).toUpperCase
-      val lastChar = acc.lastOption flatMap (_.contact map (_.name.substring(0, 1).toUpperCase))
+      val currentChar = Option(h.name) map (name => generateChar(name.substring(0, 1))) getOrElse charUnnamed
+      val lastChar = acc.lastOption flatMap (_.contact map (c => Option(c.name) map (name => generateChar(name.substring(0, 1))) getOrElse charUnnamed))
       val skipChar = lastChar exists (_ equals currentChar)
       if (skipChar) {
         generateContactsForList(t, acc :+ ContactHeadered(contact = Option(h)))
@@ -72,10 +71,12 @@ case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: 
 
   lazy val name = Option(findView(TR.simple_item_name))
 
-  def bind(contact: Contact, position: Int)(implicit fragment: Fragment): Ui[_] =
-    (icon <~ ivUriContact(fragment, contact.photoUri, contact.name, circular = true)) ~
-      (name <~ tvText(contact.name)) ~
+  def bind(contact: Contact, position: Int)(implicit fragment: Fragment): Ui[_] = {
+    val contactName = Option(contact.name) map (name => name) getOrElse resGetString(R.string.unnamed)
+    (icon <~ ivUriContact(fragment, contact.photoUri, contactName, circular = true)) ~
+      (name <~ tvText(contactName)) ~
       (content <~ vIntTag(position))
+  }
 
   override def findViewById(id: Int): View = content.findViewById(id)
 

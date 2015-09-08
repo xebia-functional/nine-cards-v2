@@ -40,7 +40,8 @@ trait ContactsServicesSpecification
 
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
-      allFields)(getListFromCursor(contactFromCursor)) returns contacts
+      allFields,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
 
     contentResolverWrapper.fetch(
       uri = Fields.EMAIL_CONTENT_URI,
@@ -96,7 +97,8 @@ trait ContactsServicesSpecification
 
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
-      allFields)(getListFromCursor(contactFromCursor)) throws contentResolverException
+      allFields,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       uri = Fields.EMAIL_CONTENT_URI,

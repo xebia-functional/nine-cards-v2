@@ -6,7 +6,6 @@ import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.ViewHolderAppLayoutAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsAdapter._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ViewHolderCategoryLayoutAdapter
@@ -36,7 +35,7 @@ case class ContactsAdapter(contacts: Seq[ContactHeadered], clickListener: (Conta
           Option(v.getTag) foreach (tag => contacts(Int.unbox(tag)).contact foreach clickListener)
         }
       })
-      new ViewHolderAppLayoutAdapter(view)
+      new ViewHolderContactLayoutAdapter(view)
   }
 
   override def getItemCount: Int = contacts.size

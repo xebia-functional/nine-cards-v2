@@ -236,35 +236,6 @@ trait DeviceProcessData {
 
   val fileNameShortcut = s"$pathShortcut/$nameShortcut"
 
-  val contactsUnsorted: Seq[Contact] = Seq(
-    Contact(
-      name = "C Contact",
-      lookupKey = "lookupKey 1",
-      photoUri = "photoUri 2",
-      hasPhone = false,
-      favorite = false,
-      info = None),
-    Contact(
-      name = "B Contact",
-      lookupKey = "lookupKey 2",
-      photoUri = "photoUri 2",
-      hasPhone = false,
-      favorite = false,
-      info = None),
-    Contact(
-      name = "A Contact",
-      lookupKey = "lookupKey 3",
-      photoUri = "photoUri 3",
-      hasPhone = false,
-      favorite = false,
-      info = None))
-
-  val nameContactsSorted: Seq[String] = Seq(
-    "A Contact",
-    "B Contact",
-    "C Contact"
-  )
-
   val lookupKey = "lookupKey 1"
 
   val contact = Contact(

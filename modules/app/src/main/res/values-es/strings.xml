@@ -50,6 +50,8 @@
     <string name="contacts">Contactos</string>
     <string name="shortcuts">Accesos directos</string>
 
+    <string name="unnamed">Sin nombre</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Todas</string>
