@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutT
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid.{Tweak, ActivityContextWrapper, Ui}
 
 import scala.annotation.tailrec
 import scala.math.Ordering.Implicits._
@@ -86,7 +86,7 @@ case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: Acti
   lazy val name = Option(findView(TR.simple_item_name))
 
   def bind(app: AppCategorized, position: Int)(implicit fragment: Fragment): Ui[_] =
-    (icon <~ ivUri(fragment, app.imagePath.get, app.name)) ~
+    (icon <~ (app.imagePath map (ivUri(fragment, _, app.name)) getOrElse Tweak.blank)) ~
       (name <~ tvText(app.name)) ~
       (content <~ vIntTag(position))
 

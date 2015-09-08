@@ -16,7 +16,7 @@ import macroid.{ActivityContextWrapper, Tweak, Ui}
 
 import scala.math.Ordering.Implicits._
 
-trait ShortcutsComposer
+trait ShortcutComposer
   extends Styles {
 
   self: TypedFindView with BaseActionFragment =>
@@ -33,7 +33,7 @@ trait ShortcutsComposer
 
   def addShortcuts(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit)(implicit fragment: Fragment) = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
-    val adapter = new ShortcutsAdapter(sortedShortcuts, clickListener)
+    val adapter = new ShortcutAdapter(sortedShortcuts, clickListener)
     (recycler <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~

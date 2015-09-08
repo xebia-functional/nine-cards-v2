@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 
-case class ShortcutsAdapter(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit)
+case class ShortcutAdapter(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit)
   (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
   extends RecyclerView.Adapter[ViewHolderShortcutLayoutAdapter] {
 

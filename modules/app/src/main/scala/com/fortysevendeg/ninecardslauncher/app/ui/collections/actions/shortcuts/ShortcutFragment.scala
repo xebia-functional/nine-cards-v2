@@ -14,9 +14,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 
 import scalaz.concurrent.Task
 
-class ShortcutsFragment
+class ShortcutFragment
   extends BaseActionFragment
-  with ShortcutsComposer
+  with ShortcutComposer
   with NineCardIntentConversions {
 
   implicit lazy val di: Injector = new Injector
