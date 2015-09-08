@@ -1,21 +1,22 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
+package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager.SpanSizeLookup
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import android.view.{LayoutInflater, View, ViewGroup}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.ViewHolderAppLayoutAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsAdapter._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ViewHolderCategoryLayoutAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
+import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
-import AppsAdapter._
 
-case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) => Unit)
+case class ContactsAdapter(contacts: Seq[ContactHeadered], clickListener: (Contact) => Unit)
   (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
   extends RecyclerView.Adapter[RecyclerView.ViewHolder]
   with FastScrollerListener {
@@ -32,23 +33,23 @@ case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) =
       val view = LayoutInflater.from(parent.getContext).inflate(R.layout.simple_item, parent, false).asInstanceOf[ViewGroup]
       view.setOnClickListener(new OnClickListener {
         override def onClick(v: View): Unit = {
-          Option(v.getTag) foreach (tag => apps(Int.unbox(tag)).app foreach clickListener)
+          Option(v.getTag) foreach (tag => contacts(Int.unbox(tag)).contact foreach clickListener)
         }
       })
       new ViewHolderAppLayoutAdapter(view)
   }
 
-  override def getItemCount: Int = apps.size
+  override def getItemCount: Int = contacts.size
 
-  override def getItemViewType(position: Int): Int = if (apps(position).header.isDefined) itemViewTypeHeader else itemViewTypeApp
+  override def getItemViewType(position: Int): Int = if (contacts(position).header.isDefined) itemViewTypeHeader else itemViewTypeApp
 
   override def onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int): Unit = {
-    val app = apps(position)
+    val contact = contacts(position)
     viewHolder match {
       case vh: ViewHolderCategoryLayoutAdapter =>
-        app.header map (category => runUi(vh.bind(category)))
-      case vh: ViewHolderAppLayoutAdapter =>
-        app.app map (app => runUi(vh.bind(app, position)))
+        contact.header map (category => runUi(vh.bind(category)))
+      case vh: ViewHolderContactLayoutAdapter =>
+        contact.contact map (contact => runUi(vh.bind(contact, position)))
     }
 
   }
@@ -56,15 +57,15 @@ case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) =
   def getLayoutManager = {
     val manager = new GridLayoutManager(activityContext.application, numInLine)
     manager.setSpanSizeLookup(new SpanSizeLookup {
-      override def getSpanSize(position: Int): Int = if (apps(position).header.isDefined) manager.getSpanCount else 1
+      override def getSpanSize(position: Int): Int = if (contacts(position).header.isDefined) manager.getSpanCount else 1
     })
     manager
   }
 
   override def getHeight = {
-    val heightHeaders = (apps count (_.header.isDefined)) * heightHeader
+    val heightHeaders = (contacts count (_.header.isDefined)) * heightHeader
     // Calculate the number of column showing apps
-    val rowsWithApps = apps.foldLeft(Tuple2(0, 0))((counter, app) =>
+    val rowsWithApps = contacts.foldLeft(Tuple2(0, 0))((counter, app) =>
       app.header.map {
         _ => Tuple2(0, counter._2)
       } getOrElse {
@@ -81,8 +82,8 @@ case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) =
 
   val defaultElement: Option[String] = None
 
-  override def getElement(position: Int): Option[String] = apps.foldLeft(Tuple2(defaultElement, false))((info, app) =>
-    if (app == apps(position)) {
+  override def getElement(position: Int): Option[String] = contacts.foldLeft(Tuple2(defaultElement, false))((info, app) =>
+    if (app == contacts(position)) {
       Tuple2(info._1, true)
     } else {
       (info._1, info._2) match {
@@ -94,7 +95,7 @@ case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) =
 
 }
 
-object AppsAdapter {
+object ContactsAdapter {
   val itemViewTypeHeader = 0
   val itemViewTypeApp = 1
 }

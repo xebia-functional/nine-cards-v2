@@ -96,14 +96,14 @@ object AsyncImageCardsTweaks {
         })
   )
 
-  def ivUriContact(fragment: Fragment, uri: String, name: String)(implicit context: ActivityContextWrapper): Tweak[W] = Tweak[W](
+  def ivUriContact(fragment: Fragment, uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper): Tweak[W] = Tweak[W](
     imageView =>
       Glide.`with`(fragment)
         .loadFromMediaStore(Uri.withAppendedPath(Uri.parse(uri), Contacts.Photo.DISPLAY_PHOTO))
         .asBitmap()
         .into(new SimpleTarget[Bitmap]() {
           override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
-            imageView.setImageDrawable(new CharDrawable(name.substring(0, 1)))
+            imageView.setImageDrawable(new CharDrawable(name.substring(0, 1), circular))
           }
           override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
             imageView.setImageBitmap(resource)
