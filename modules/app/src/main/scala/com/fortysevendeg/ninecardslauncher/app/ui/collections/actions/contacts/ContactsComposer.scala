@@ -1,15 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
 import android.support.v4.app.Fragment
-import android.support.v7.widget.RecyclerView
-import android.view.{View, ViewGroup}
+import android.support.v7.widget.Toolbar.LayoutParams
+import android.support.v7.widget.{RecyclerView, SwitchCompat}
+import android.view.ViewGroup.LayoutParams._
+import android.view.{Gravity, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, HeaderUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -29,13 +32,26 @@ trait ContactsComposer
 
   lazy val scrollerLayout = findView(TR.action_scroller_layout)
 
-  def initUi: Ui[_] =
+  var switch = slot[SwitchCompat]
+
+  def initUi: Ui[_] = {
+    val switchParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL)
+    switchParams.setMarginStart(resGetDimensionPixelSize(R.dimen.padding_default))
+    switchParams.setMarginEnd(resGetDimensionPixelSize(R.dimen.padding_default))
     (toolbar <~
       tbTitle(R.string.contacts) <~
       toolbarStyle(colorPrimary) <~
+      vgAddView(getUi(
+        w[SwitchCompat] <~
+          wire(switch) <~
+          scColor(ColorsUtils.getColorDark(colorPrimary, .4f), ColorsUtils.getColorLight(colorPrimary, .4f)) <~
+          scChecked(checked = true)
+      ), switchParams) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
       (loading <~ vVisible) ~
-      (recycler <~ recyclerStyle)
+      (recycler <~ recyclerStyle) ~
+      (scrollerLayout <~ fslColor(colorPrimary))
+  }
 
   def addContact(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit fragment: Fragment) = {
     val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)

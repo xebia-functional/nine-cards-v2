@@ -1,13 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
-import android.graphics.PorterDuff
-import android.graphics.drawable.Drawable
+import android.content.res.ColorStateList
+import android.graphics.{Color, PorterDuff}
+import android.graphics.drawable.{ColorDrawable, Drawable}
 import android.support.design.widget.FloatingActionButton
-import android.support.v7.widget.Toolbar
+import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v7.widget.{SwitchCompat, Toolbar}
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.ProgressBar
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Ui, Tweak}
 import macroid.FullDsl._
 
@@ -44,5 +48,22 @@ object ExtraTweaks {
     view.setBackgroundTintList(contextWrapper.application.getResources.getColorStateList(id))
     view.setRippleColor(ColorsUtils.getColorDark(resGetColor(id)))
   }
+
+  def scColor(colorOff: Int, colorOn: Int)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat] { view =>
+        val states = Array(
+        Array[Int](-android.R.attr.state_enabled),
+        Array[Int](-android.R.attr.state_checked),
+        Array[Int]()
+      )
+      val colors = Array[Int](colorOn, colorOff, colorOn)
+      val stateList = new ColorStateList(states, colors)
+      val d = DrawableCompat.wrap(view.getThumbDrawable)
+      DrawableCompat.setTintList(d.mutate(), stateList)
+      view.setThumbDrawable(d)
+  }
+
+  def scChecked(checked: Boolean)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat] (
+    _.setChecked(checked)
+  )
 
 }

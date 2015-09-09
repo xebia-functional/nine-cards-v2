@@ -2,7 +2,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.view.View
+import android.support.v7.widget.SwitchCompat
+import android.view._
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
