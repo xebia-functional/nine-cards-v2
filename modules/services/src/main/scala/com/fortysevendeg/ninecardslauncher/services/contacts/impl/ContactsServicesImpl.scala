@@ -91,7 +91,8 @@ class ContactsServicesImpl(
           contentResolverWrapper.fetchAll(
             uri = Fields.CONTENT_URI,
             projection = allFields,
-            where = Fields.STARRED_SELECTION)(getListFromCursor(contactFromCursor))
+            where = Fields.STARRED_SELECTION,
+            orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
         }
       }
     }
@@ -103,7 +104,8 @@ class ContactsServicesImpl(
           contentResolverWrapper.fetchAll(
             uri = Fields.CONTENT_URI,
             projection = allFields,
-            where = Fields.HAS_PHONE_NUMBER)(getListFromCursor(contactFromCursor))
+            where = Fields.HAS_PHONE_NUMBER,
+            orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
         }
       }
     }

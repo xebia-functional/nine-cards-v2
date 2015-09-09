@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -19,8 +18,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCate
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
 
-import scala.collection.immutable.IndexedSeq
-import scala.math.Ordering.Implicits._
 import scalaz.concurrent.Task
 
 class DeviceProcessImpl(
@@ -80,9 +77,13 @@ class DeviceProcessImpl(
       filledFavoriteContacts <- fillContacts(favoriteContacts)
     } yield toContactSeq(filledFavoriteContacts)).resolve[ContactException]
 
-  override def getContacts(implicit context: ContextSupport) =
+  override def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
     (for {
-      contacts <- contactsServices.getContacts
+      contacts <- filter match {
+        case AllContacts => contactsServices.getContacts
+        case FavoriteContacts => contactsServices.getFavoriteContacts
+        case ContactsWithPhoneNumber => contactsServices.getContactsWithPhone
+      }
     } yield toContactSeq(contacts)).resolve[ContactException]
 
   override def getContact(lookupKey: String)(implicit context: ContextSupport) =

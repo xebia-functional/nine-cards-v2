@@ -7,7 +7,7 @@ import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.device.{ContactException, ShortcutException, AppCategorizationException}
+import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
@@ -85,6 +85,9 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(contacts)))
 
     mockContactsServices.getFavoriteContacts returns
+      Service(Task(Result.answer(contacts)))
+
+    mockContactsServices.getContactsWithPhone returns
       Service(Task(Result.answer(contacts)))
 
     mockContactsServices.findContactByLookupKey("lookupKey 1") returns
@@ -461,9 +464,25 @@ class DeviceProcessImplSpec
 
   "Get Contacts Sorted By Name" should {
 
-    "get contacts sorted" in
+    "get all contacts sorted" in
       new DeviceProcessScope {
-        val result = deviceProcess.getContacts(contextSupport).run.run
+        val result = deviceProcess.getContacts()(contextSupport).run.run
+        result must beLike {
+          case Answer(response) => response.map(_.name) shouldEqual contacts.map(_.name)
+        }
+      }
+
+    "get favorite contacts sorted" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getContacts(FavoriteContacts)(contextSupport).run.run
+        result must beLike {
+          case Answer(response) => response.map(_.name) shouldEqual contacts.map(_.name)
+        }
+      }
+
+    "get contacts with phone number sorted" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getContacts(ContactsWithPhoneNumber)(contextSupport).run.run
         result must beLike {
           case Answer(response) => response.map(_.name) shouldEqual contacts.map(_.name)
         }
@@ -471,7 +490,7 @@ class DeviceProcessImplSpec
 
     "returns ContactException when ContactsService fails getting contacts" in
       new DeviceProcessScope with ContactsErrorScope {
-        val result = deviceProcess.getContacts(contextSupport).run.run
+        val result = deviceProcess.getContacts()(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]

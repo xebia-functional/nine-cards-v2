@@ -34,12 +34,13 @@ trait DeviceProcess {
   def getFavoriteContacts(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
 
   /**
-   * Get the contacts sorted without data
+   * Get the contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
+   * and contacts with phone number
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
    *         information about the contact
    * @throws ContactException if exist some problem to get the contacts
    */
-  def getContacts(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
+  def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
 
   /**
    * Get the contact and fill all their data

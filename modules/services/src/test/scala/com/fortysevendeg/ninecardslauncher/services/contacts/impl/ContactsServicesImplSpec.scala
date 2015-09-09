@@ -125,7 +125,8 @@ trait ContactsServicesSpecification
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
       allFields,
-      where = Fields.STARRED_SELECTION)(getListFromCursor(contactFromCursor)) returns contacts
+      where = Fields.STARRED_SELECTION,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
   }
 
   trait ErrorFavoriteContactsServicesResponses
@@ -135,7 +136,8 @@ trait ContactsServicesSpecification
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
       allFields,
-      where = Fields.STARRED_SELECTION)(getListFromCursor(contactFromCursor)) throws contentResolverException
+      where = Fields.STARRED_SELECTION,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
 
   }
 
@@ -146,7 +148,8 @@ trait ContactsServicesSpecification
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
       allFields,
-      where = Fields.HAS_PHONE_NUMBER)(getListFromCursor(contactFromCursor)) returns contacts
+      where = Fields.HAS_PHONE_NUMBER,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
   }
 
   trait ErrorContactsWithPhoneServicesResponses
@@ -156,7 +159,8 @@ trait ContactsServicesSpecification
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
       allFields,
-      where = Fields.HAS_PHONE_NUMBER)(getListFromCursor(contactFromCursor)) throws contentResolverException
+      where = Fields.HAS_PHONE_NUMBER,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
 
   }
 
