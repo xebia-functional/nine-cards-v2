@@ -17,7 +17,7 @@ class ContactsServicesImpl(
   extends ContactsServices
   with ImplicitsContactsServiceExceptions {
 
-  override def getContacts: ServiceDef2[Seq[Contact], ContactsServiceException] =
+  override def getContacts =
     Service {
       Task {
         CatchAll[ContactsServiceException] {
@@ -29,7 +29,7 @@ class ContactsServicesImpl(
       }
     }
 
-  override def fetchContactByEmail(email: String): ServiceDef2[Option[Contact], ContactsServiceException] =
+  override def fetchContactByEmail(email: String) =
     Service {
       Task {
         CatchAll[ContactsServiceException] {
@@ -42,7 +42,7 @@ class ContactsServicesImpl(
       }
     }
 
-  override def fetchContactByPhoneNumber(phoneNumber: String): ServiceDef2[Option[Contact], ContactsServiceException] =
+  override def fetchContactByPhoneNumber(phoneNumber: String) =
     Service {
       Task {
         CatchAll[ContactsServiceException] {
@@ -53,7 +53,7 @@ class ContactsServicesImpl(
       }
     }
 
-  override def findContactByLookupKey(lookupKey: String): ServiceDef2[Contact, ContactsServiceException] =
+  override def findContactByLookupKey(lookupKey: String) =
     Service {
       Task {
         CatchAll[ContactsServiceException] {
@@ -84,7 +84,7 @@ class ContactsServicesImpl(
       }
     }
 
-  override def getFavoriteContacts: ServiceDef2[Seq[Contact], ContactsServiceException] =
+  override def getFavoriteContacts =
     Service {
       Task {
         CatchAll[ContactsServiceException] {
@@ -92,6 +92,18 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.STARRED_SELECTION)(getListFromCursor(contactFromCursor))
+        }
+      }
+    }
+
+  override def getContactsWithPhone =
+    Service {
+      Task {
+        CatchAll[ContactsServiceException] {
+          contentResolverWrapper.fetchAll(
+            uri = Fields.CONTENT_URI,
+            projection = allFields,
+            where = Fields.HAS_PHONE_NUMBER)(getListFromCursor(contactFromCursor))
         }
       }
     }
