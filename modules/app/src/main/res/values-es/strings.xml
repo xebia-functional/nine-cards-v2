@@ -52,6 +52,11 @@
 
     <string name="unnamed">Sin nombre</string>
 
+    <!-- Contacts Action -->
+
+    <string name="allContacts">Todos los contacts</string>
+    <string name="contactsWithPhoneNumber">Contactos con número de teléfono</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Todas</string>

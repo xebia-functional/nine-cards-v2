@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, HeaderUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.process.device.{ContactsWithPhoneNumber, AllContacts, ContactsFilter}
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -34,7 +35,7 @@ trait ContactsComposer
 
   var switch = slot[SwitchCompat]
 
-  def initUi: Ui[_] = {
+  def initUi(onCheckedChange: (Boolean) => Unit): Ui[_] = {
     val switchParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL)
     switchParams.setMarginStart(resGetDimensionPixelSize(R.dimen.padding_default))
     switchParams.setMarginEnd(resGetDimensionPixelSize(R.dimen.padding_default))
@@ -44,8 +45,9 @@ trait ContactsComposer
       vgAddView(getUi(
         w[SwitchCompat] <~
           wire(switch) <~
-          scColor(ColorsUtils.getColorDark(colorPrimary, .4f), ColorsUtils.getColorLight(colorPrimary, .4f)) <~
-          scChecked(checked = true)
+          scColor(colorPrimary, ColorsUtils.getColorDark(colorPrimary, .1f)) <~
+          scChecked(checked = true) <~
+          scCheckedChangeListener(onCheckedChange)
       ), switchParams) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
       (loading <~ vVisible) ~
@@ -53,7 +55,7 @@ trait ContactsComposer
       (scrollerLayout <~ fslColor(colorPrimary))
   }
 
-  def addContact(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit fragment: Fragment) = {
+  def generateContactsAdapter(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit fragment: Fragment): Ui[_] = {
     val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)
     val adapter = new ContactsAdapter(contactsHeadered, clickListener)
     (recycler <~
@@ -61,6 +63,24 @@ trait ContactsComposer
       rvAdapter(adapter)) ~
       (loading <~ vGone) ~
       (scrollerLayout <~ fslLinkRecycler)
+  }
+
+  def reloadContactsAdapter(contacts: Seq[Contact], filter: ContactsFilter)(implicit fragment: Fragment): Ui[_] = {
+    val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)
+    getAdapter map { adapter =>
+      Ui(adapter.loadContacts(contactsHeadered)) ~
+        (rootContent <~ uiSnackbarShort(filter match {
+          case ContactsWithPhoneNumber => R.string.contactsWithPhoneNumber
+          case _ => R.string.allContacts
+        }))
+    } getOrElse rootContent <~ uiSnackbarShort(R.string.contactUsError)
+  }
+
+  private[this] def getAdapter: Option[ContactsAdapter] = recycler flatMap { rv =>
+    Option(rv.getAdapter) match {
+      case Some(a: ContactsAdapter) => Some(a)
+      case _ => None
+    }
   }
 
   @tailrec

@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsWithPhoneNumber, ContactsFilter}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, Shortcut}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -28,13 +29,24 @@ class ContactsFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    runUi(initUi)
-    Task.fork(di.deviceProcess.getContacts.run).resolveAsyncUi(
-      onResult = (contacts: Seq[Contact]) => addContact(contacts, contact => {
+    runUi(initUi(checked => reloadFilter(if (checked) {
+      ContactsWithPhoneNumber
+    } else {
+      AllContacts
+    }, reload = true)))
+    reloadFilter(ContactsWithPhoneNumber)
+  }
+
+  private[this] def reloadFilter(filter: ContactsFilter, reload: Boolean = false) = Task.fork(di.deviceProcess.getContacts(filter).run).resolveAsyncUi(
+    onResult = (contacts: Seq[Contact]) => if (reload) {
+      reloadContactsAdapter(contacts, filter)
+    } else {
+      generateContactsAdapter(contacts, contact => {
         runUi(unreveal())
       })
-    )
-  }
+    }
+  )
+
 }
 
 

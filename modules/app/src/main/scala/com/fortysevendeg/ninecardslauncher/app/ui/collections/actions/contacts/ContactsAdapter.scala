@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 
-case class ContactsAdapter(contacts: Seq[ContactHeadered], clickListener: (Contact) => Unit)
+case class ContactsAdapter(var contacts: Seq[ContactHeadered], clickListener: (Contact) => Unit)
   (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
   extends RecyclerView.Adapter[RecyclerView.ViewHolder]
   with FastScrollerListener {
@@ -59,6 +59,11 @@ case class ContactsAdapter(contacts: Seq[ContactHeadered], clickListener: (Conta
       override def getSpanSize(position: Int): Int = if (contacts(position).header.isDefined) manager.getSpanCount else 1
     })
     manager
+  }
+
+  def loadContacts(newContacts: Seq[ContactHeadered]) = {
+    contacts = newContacts
+    notifyDataSetChanged()
   }
 
   override def getHeight = {
