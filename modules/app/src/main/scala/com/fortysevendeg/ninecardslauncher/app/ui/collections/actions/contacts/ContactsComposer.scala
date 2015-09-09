@@ -45,7 +45,7 @@ trait ContactsComposer
       vgAddView(getUi(
         w[SwitchCompat] <~
           wire(switch) <~
-          scColor(colorPrimary, ColorsUtils.getColorDark(colorPrimary, .1f)) <~
+          scColor(colorPrimary) <~
           scChecked(checked = true) <~
           scCheckedChangeListener(onCheckedChange)
       ), switchParams) <~

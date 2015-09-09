@@ -48,13 +48,14 @@ object ExtraTweaks {
     view.setRippleColor(ColorsUtils.getColorDark(resGetColor(id)))
   }
 
-  def scColor(colorOn: Int, colorOff: Int)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat] { view =>
+  def scColor(color: Int)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat] { view =>
+    val colorOff = ColorsUtils.getColorDark(color, .1f)
     val states = Array(
       Array[Int](-android.R.attr.state_enabled),
       Array[Int](-android.R.attr.state_checked),
       Array[Int]()
     )
-    val thumbColors = Array[Int](colorOn, colorOff, colorOn)
+    val thumbColors = Array[Int](color, colorOff, color)
     val thumbStateList = new ColorStateList(states, thumbColors)
 
     val thumbDrawable = DrawableCompat.wrap(view.getThumbDrawable)
