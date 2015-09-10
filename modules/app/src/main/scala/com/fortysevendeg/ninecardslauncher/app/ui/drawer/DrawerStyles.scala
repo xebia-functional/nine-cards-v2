@@ -1,7 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.drawer
 
+import android.support.v7.widget.RecyclerView
+import android.view.View
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
@@ -18,6 +22,14 @@ trait DrawerStyles {
         vPaddings(elevation) +
         vCircleOutlineProvider(elevation)
     } getOrElse tivPressedColor(theme.get(AppDrawerPressedColor))
+  }
+
+  def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = {
+    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
+    rvFixedSize +
+      vPadding(padding, padding, padding, padding) +
+      vgClipToPadding(false) +
+      vOverScrollMode(View.OVER_SCROLL_NEVER)
   }
 
 }
