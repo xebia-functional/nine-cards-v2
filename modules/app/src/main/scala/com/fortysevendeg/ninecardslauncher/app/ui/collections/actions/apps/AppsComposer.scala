@@ -1,25 +1,22 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
 import android.support.v4.app.Fragment
-import android.support.v7.widget.{Toolbar, RecyclerView}
+import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
-import android.widget.ProgressBar
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
-import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
-
-import math.Ordering.Implicits._
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import macroid.FullDsl._
+import macroid.{Tweak, ActivityContextWrapper, Ui}
 
 import scala.annotation.tailrec
+import scala.math.Ordering.Implicits._
 
 trait AppsComposer
   extends Styles {
@@ -32,6 +29,7 @@ trait AppsComposer
 
   def initUi: Ui[_] =
     (toolbar <~
+      tbTitle(R.string.applications) <~
       toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
       (loading <~ vVisible) ~
@@ -39,7 +37,7 @@ trait AppsComposer
       (scrollerLayout <~ fslColor(colorPrimary))
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
-    val sortedApps = apps.sortBy(_.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A'))))
+    val sortedApps = apps sortBy sortByName
     val appsHeadered = generateAppsForList(sortedApps.toList, Seq.empty)
     val adapter = new AppsAdapter(appsHeadered, clickListener)
     (recycler <~
@@ -48,6 +46,8 @@ trait AppsComposer
       (loading <~ vGone) ~
       (scrollerLayout <~ fslLinkRecycler)
   }
+
+  private[this] def sortByName(app: AppCategorized) = app.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
 
   @tailrec
   private[this] def generateAppsForList(apps: List[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
@@ -86,7 +86,7 @@ case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: Acti
   lazy val name = Option(findView(TR.simple_item_name))
 
   def bind(app: AppCategorized, position: Int)(implicit fragment: Fragment): Ui[_] =
-    (icon <~ ivUri(fragment, app.imagePath.get, app.name)) ~
+    (icon <~ (app.imagePath map (ivUri(fragment, _, app.name)) getOrElse Tweak.blank)) ~
       (name <~ tvText(app.name)) ~
       (content <~ vIntTag(position))
 

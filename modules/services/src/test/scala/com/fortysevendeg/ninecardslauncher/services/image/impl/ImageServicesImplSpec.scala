@@ -8,7 +8,7 @@ import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationExceptionImpl, FileException, BitmapTransformationException}
+import com.fortysevendeg.ninecardslauncher.services.image._
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -23,6 +23,10 @@ trait ImageServicesImplSpecification
   val bitmapException = BitmapTransformationExceptionImpl("")
 
   val serviceBitmapException = Service(Task(Result.errata[Bitmap, BitmapTransformationException](bitmapException)))
+
+  val fileException = FileExceptionImpl("")
+
+  val serviceFileException = Service(Task(Result.errata[Unit, FileException](fileException)))
 
   trait ImageServicesScope
     extends Scope
@@ -39,6 +43,10 @@ trait ImageServicesImplSpecification
     val resources = mock[Resources]
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
+    val saveBitmap = SaveBitmap(
+      name = bitmapName,
+      bitmap = mock[Bitmap])
+
     val fileExistsTask = Service(Task {
       Result.catching[FileException] {
         val file = mock[File]
@@ -53,6 +61,15 @@ trait ImageServicesImplSpecification
         val file = mock[File]
         file.exists() returns false
         file.getAbsolutePath returns filePath
+        file
+      }
+    })
+
+    val saveBitmapTask = Service(Task {
+      Result.catching[FileException] {
+        val file = mock[File]
+        file.exists() returns true
+        file.getAbsolutePath returns resultFileSaveBitmap
         file
       }
     })
@@ -91,7 +108,7 @@ trait ImageServicesImplSpecification
     mockTasks.getPathByApp(appPackage.packageName, appPackage.className)(contextSupport) returns
       fileNotExistsTask
 
-    mockTasks.getPathByPackageName(appWebsite.packageName)(contextSupport) returns
+    mockTasks.getPathByName(appWebsite.packageName)(contextSupport) returns
       fileNotExistsTask
 
     val mockImageService = new ImageServicesImpl(imageServiceConfig, mockTasks)
@@ -105,7 +122,7 @@ trait ImageServicesImplSpecification
     mockTasks.getPathByApp(appPackage.packageName, appPackage.className)(contextSupport) returns
       fileExistsTask
 
-    mockTasks.getPathByPackageName(appWebsite.packageName)(contextSupport) returns
+    mockTasks.getPathByName(appWebsite.packageName)(contextSupport) returns
       fileExistsTask
   }
 
@@ -123,6 +140,22 @@ trait ImageServicesImplSpecification
       appWebsite.url,
       appPackage.name)(contextSupport, imageServiceConfig) returns
       serviceBitmapException
+  }
+
+  trait SaveBitmapImageServicesScope {
+
+    self: ImageServicesScope =>
+
+    mockTasks.getPathByName(bitmapName)(contextSupport) returns
+      saveBitmapTask
+  }
+
+  trait SaveBitmapErrorImageServicesScope {
+
+    self: ImageServicesScope =>
+
+    mockTasks.saveBitmap(any[File], any[Bitmap]) returns
+      serviceFileException
   }
 
 }
@@ -192,6 +225,29 @@ class ImageServicesImplSpec
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception shouldEqual bitmapException
+          }
+        }
+      }
+
+  }
+
+  "Image Services with Bitmaps" should {
+
+    "returns filename when the file exists" in
+      new ImageServicesScope with SaveBitmapImageServicesScope {
+        val result = mockImageService.saveBitmap(saveBitmap)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultSaveBitmapPath) =>
+            resultSaveBitmapPath.path shouldEqual saveBitmapPath.path
+        }
+      }
+
+    "returns a FileException if the bitmaps can't be stored" in
+      new ImageServicesScope with SaveBitmapImageServicesScope with SaveBitmapErrorImageServicesScope {
+        val result = mockImageService.saveBitmap(saveBitmap)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception shouldEqual fileException
           }
         }
       }

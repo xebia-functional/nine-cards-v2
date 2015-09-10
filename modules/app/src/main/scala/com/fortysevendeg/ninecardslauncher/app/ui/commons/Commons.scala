@@ -37,6 +37,8 @@ object ActivityResult {
 
   val wizard = 1
 
+  val shortcutAdded = 2
+
 }
 
 object AppUtils {

@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
+import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.services.image._
 
 trait ImageServicesImplData {
@@ -52,14 +53,20 @@ trait ImageServicesImplData {
   val appPackagePath = AppPackagePath(
     packageName = appPackage.packageName,
     className = appPackage.className,
-    path = filePath
-  )
+    path = filePath)
 
   val appWebsitePath = AppWebsitePath(
     packageName = appWebsite.packageName,
     url = appWebsite.url,
-    path = filePath
-  )
+    path = filePath)
+
+  val bitmapName = "aeiuo-12345"
+
+  val resultFileSaveBitmap = s"$fileFolder/$bitmapName"
+
+  val saveBitmapPath = SaveBitmapPath(
+    name = "",
+    path = resultFileSaveBitmap)
 
   val imageServiceConfig = ImageServicesConfig(List(1, 2, 3, 4, 5))
 

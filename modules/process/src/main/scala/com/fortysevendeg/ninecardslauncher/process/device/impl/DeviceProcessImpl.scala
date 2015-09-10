@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
+import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -60,16 +61,21 @@ class DeviceProcessImpl(
       _ <- createBitmapsFromAppWebSite(toAppWebSiteSeq(response.packages))
     } yield ()).resolve[CreateBitmapException]
 
-  override def getAvailableShortcuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException] =
+  override def getAvailableShortcuts(implicit context: ContextSupport) =
     (for {
       shortcuts <- shortcutsServices.getShortcuts
     } yield toShortcutSeq(shortcuts)).resolve[ShortcutException]
 
-  override def getFavoriteContacts(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException] =
+  override def getFavoriteContacts(implicit context: ContextSupport) =
     (for {
       favoriteContacts <- contactsServices.getFavoriteContacts
       filledFavoriteContacts <- fillContacts(favoriteContacts)
     } yield toContactSeq(filledFavoriteContacts)).resolve[ContactException]
+
+  override def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) =
+    (for {
+      saveBitmapPath <- imageServices.saveBitmap(SaveBitmap(name, bitmap))
+    } yield saveBitmapPath.path).resolve[ShortcutException]
 
   private[this] def getApps(implicit context: ContextSupport):
   ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =

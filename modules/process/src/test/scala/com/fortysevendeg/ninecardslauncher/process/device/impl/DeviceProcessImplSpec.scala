@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -37,6 +38,8 @@ trait DeviceProcessSpecification
 
   val contactsServicesException = ContactsServiceException("")
 
+  val fileServicesException = FileExceptionImpl("")
+
   trait DeviceProcessScope
     extends Scope
     with DeviceProcessData {
@@ -50,6 +53,8 @@ trait DeviceProcessSpecification
     val contextSupport = mock[ContextSupport]
     contextSupport.getPackageManager returns mockPackageManager
     contextSupport.getResources returns resources
+
+    val mockBitmap = mock[Bitmap]
 
     val mockAppsServices = mock[AppsServices]
 
@@ -212,6 +217,25 @@ trait DeviceProcessSpecification
       Task(Errata(contactsServicesException))
     }
 
+  }
+
+  trait SaveShortcutScope {
+    self: DeviceProcessScope =>
+
+    val saveBitmap = SaveBitmap(nameShortcut, mockBitmap)
+
+    val saveBitmapPath = SaveBitmapPath(nameShortcut, fileNameShortcut)
+
+    mockImageServices.saveBitmap(saveBitmap)(contextSupport) returns
+      Service(Task(Result.answer(saveBitmapPath)))
+  }
+
+  trait SaveShortcutErrorScope {
+    self: DeviceProcessScope =>
+
+    mockImageServices.saveBitmap(any[SaveBitmap])(any) returns Service {
+      Task(Errata(fileServicesException))
+    }
   }
 
 }
@@ -390,6 +414,27 @@ class DeviceProcessImplSpec
         }
       }
 
+  }
+
+  "Save shortcut icon" should {
+
+    "get path of icon stored" in
+      new DeviceProcessScope with SaveShortcutScope {
+        val result = deviceProcess.saveShortcutIcon(nameShortcut, mockBitmap)(contextSupport).run.run
+        result must beLike {
+          case Answer(path) => path shouldEqual fileNameShortcut
+        }
+      }
+
+    "returns ShortcutException when ImageServices fails storing the icon" in
+      new DeviceProcessScope with SaveShortcutErrorScope {
+        val result = deviceProcess.saveShortcutIcon(nameShortcut, mockBitmap)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[ShortcutException]
+          }
+        }
+      }
   }
 
 }

@@ -22,9 +22,14 @@ class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageSe
   } yield appPackagePath
 
   override def saveAppIcon(request: AppWebsite)(implicit contextSupport: ContextSupport) = for {
-    file <- imageServicesTasks.getPathByPackageName(request.packageName)
+    file <- imageServicesTasks.getPathByName(request.packageName)
     appWebsitePath <- createIfNotExists(file, request)
   } yield appWebsitePath
+
+  override def saveBitmap(request: SaveBitmap)(implicit contextSupport: ContextSupport) = for {
+    file <- imageServicesTasks.getPathByName(request.name)
+    _ <- imageServicesTasks.saveBitmap(file, request.bitmap)
+  } yield SaveBitmapPath(request.name, file.getAbsolutePath)
 
   private[this] def createIfNotExists(file: File, request: AppPackage)(implicit contextSupport: ContextSupport):
   ServiceDef2[AppPackagePath, BitmapTransformationException with FileException] =

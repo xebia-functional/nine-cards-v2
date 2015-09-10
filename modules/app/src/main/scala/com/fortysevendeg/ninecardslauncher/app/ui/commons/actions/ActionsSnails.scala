@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
 
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.annotation.TargetApi

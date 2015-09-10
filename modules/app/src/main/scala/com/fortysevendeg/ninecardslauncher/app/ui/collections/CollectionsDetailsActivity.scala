@@ -1,25 +1,29 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
+import android.content.Intent
+import android.content.Intent._
+import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, AddCardRequest}
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import macroid.{Ui, Contexts}
 import macroid.FullDsl._
+import macroid.{Contexts, Ui}
 import rapture.core.Answer
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 
+import scala.util.Try
 import scalaz.concurrent.Task
 
 class CollectionsDetailsActivity
@@ -31,13 +35,14 @@ class CollectionsDetailsActivity
   with UiExtensions
   with ScrolledListener
   with ActionsScreenListener
-  with SystemBarsTint {
+  with SystemBarsTint
+  with CollectionDetailsTasks {
 
   val defaultPosition = 0
 
   val defaultIcon = ""
 
-  lazy val di = new Injector
+  implicit lazy val di = new Injector
 
   var collections: Seq[Collection] = Seq.empty
 
@@ -93,6 +98,26 @@ class CollectionsDetailsActivity
     drawCollections(collections, position)
   }
 
+
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
+    super.onActivityResult(requestCode, resultCode, data)
+    requestCode match {
+      case `shortcutAdded` => Option(data) flatMap (i => Option(i.getExtras)) match {
+        case Some(b: Bundle) if b.containsKey(EXTRA_SHORTCUT_NAME) && b.containsKey(EXTRA_SHORTCUT_INTENT) =>
+          val shortcutName = b.getString(EXTRA_SHORTCUT_NAME)
+          val shortcutIntent = b.getParcelable[Intent](EXTRA_SHORTCUT_INTENT)
+          getCurrentCollection foreach { collection =>
+            val maybeBitmap = getBitmapFromShortcutIntent(b)
+            Task.fork(createShortcut(collection.id, shortcutName, shortcutIntent, maybeBitmap).run).resolveAsync(
+              onResult = addCardsToCurrentFragment(_)
+            )
+          }
+        case _ =>
+      }
+    }
+
+  }
+
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater.inflate(R.menu.collection_detail_menu, menu)
     super.onCreateOptionsMenu(menu)
@@ -129,19 +154,25 @@ class CollectionsDetailsActivity
 
   override def onEndFinishAction(): Unit = removeActionFragment()
 
-  override def addCards(cards: Seq[AddCardRequest]): Unit = for {
-    adapter <- getAdapter
-    fragment <- adapter.getActiveFragment
-    currentPosition <- adapter.getCurrentFragmentPosition
-    collection <- getCurrentCollection
-  } yield {
-      Task.fork(di.collectionProcess.addCards(collection.id, cards).run).resolveAsync(
-        onResult = (c: Seq[Card]) => {
-          adapter.addCardsToCollection(currentPosition, c)
-          fragment.addCards(c)
-        }
+  override def addCards(cards: Seq[AddCardRequest]): Unit =
+    getCurrentCollection foreach { collection =>
+      Task.fork(createCards(collection.id, cards).run).resolveAsync(
+        onResult = addCardsToCurrentFragment(_)
       )
     }
+
+  private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
+    case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
+      Try(b.getParcelable[Bitmap](EXTRA_SHORTCUT_ICON)).toOption
+    case b if b.containsKey(EXTRA_SHORTCUT_ICON_RESOURCE) =>
+      val extra = Try(b.getParcelable[ShortcutIconResource](EXTRA_SHORTCUT_ICON_RESOURCE)).toOption
+      extra flatMap { e =>
+        val resources = getPackageManager.getResourcesForApplication(e.packageName)
+        val id = resources.getIdentifier(e.resourceName, null, null)
+        Option(BitmapFactory.decodeResource(resources, id))
+      }
+    case _ => None
+  }
 
 }
 
