@@ -87,11 +87,13 @@ trait CollectionAdapterStyles {
   val alphaDefault = .1f
 
   def rootStyle(heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
-    vContentSizeMatchWidth(heightCard) +
+    Tweak[CardView] { view =>
+      view.getLayoutParams.height = heightCard
+    } +
       cvCardBackgroundColor(theme.get(CollectionDetailCardBackgroundColor)) +
       flForeground(createBackground)
 
-  private def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
+  private[this] def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
     val color = theme.get(CollectionDetailCardBackgroundPressedColor)
     Lollipop ifSupportedThen {
       new RippleDrawable(
@@ -107,25 +109,12 @@ trait CollectionAdapterStyles {
   }
 
   def iconContentStyle(heightCard: Int)(implicit context: ContextWrapper): Tweak[FrameLayout] =
-    lp[ViewGroup](MATCH_PARENT, (heightCard * iconContentHeightRatio).toInt)
-
-  def contentStyle(implicit context: ContextWrapper): Tweak[LinearLayout] =
-    vMatchParent +
-      llVertical
-
-  def iconStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
-    val size = resGetDimensionPixelSize(R.dimen.size_icon_card)
-    lp[ViewGroup](size, size) +
-      flLayoutGravity(Gravity.CENTER)
-  }
+    Tweak[FrameLayout] { view =>
+      view.getLayoutParams.height = (heightCard * iconContentHeightRatio).toInt
+    }
 
   def nameStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
-    vMatchWidth +
-      vPaddings(resGetDimensionPixelSize(R.dimen.padding_default)) +
-      tvColor(theme.get(CollectionDetailTextCardColor)) +
-      tvLines(2) +
-      tvSizeResource(R.dimen.text_default) +
-      tvEllipsize(TruncateAt.END)
+    tvColor(theme.get(CollectionDetailTextCardColor))
 
   def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, fragment: Fragment) = card.cardType match {
     case `phone` | `sms` | `email` =>
@@ -138,7 +127,7 @@ trait CollectionAdapterStyles {
         ivScaleType(ScaleType.FIT_CENTER)
   }
 
-  def expandLayout(implicit context: ContextWrapper): Tweak[View] = Tweak[View] {
+  private[this] def expandLayout(implicit context: ContextWrapper): Tweak[View] = Tweak[View] {
     view =>
       val params = view.getLayoutParams
       params.height = MATCH_PARENT
@@ -146,7 +135,7 @@ trait CollectionAdapterStyles {
       view.requestLayout()
   }
 
-  def reduceLayout(implicit context: ContextWrapper): Tweak[View] = Tweak[View] {
+  private[this] def reduceLayout(implicit context: ContextWrapper): Tweak[View] = Tweak[View] {
     view =>
       val size = resGetDimensionPixelSize(R.dimen.size_icon_card)
       val params = view.getLayoutParams
