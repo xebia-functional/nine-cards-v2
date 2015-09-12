@@ -61,6 +61,10 @@
     <string name="allContacts">All Contacts</string>
     <string name="contactsWithPhoneNumber">Contacts with phone number</string>
 
+    <string name="phones">Phone</string>
+    <string name="sms">SMS</string>
+    <string name="emails">Email</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Any Category</string>

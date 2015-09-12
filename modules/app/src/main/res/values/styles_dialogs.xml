@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dialog Contact Info -->
+
+    <style name="DialogContactInfoTitle">
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="DialogContactInfoItemContent">
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="DialogContactInfoImage">
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="DialogContactInfoText">
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="DialogContactInfoLineHorizontal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_default</item>
+        <item name="android:background">@color/divider_color_info_dialog</item>
+    </style>
+
+</resources>

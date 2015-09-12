@@ -50,15 +50,19 @@ trait ContactsComposer
           scCheckedChangeListener(onCheckedChange)
       ), switchParams) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
-      (loading <~ vVisible) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
   }
+
+  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+
+  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def generateContactsAdapter(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit fragment: Fragment): Ui[_] = {
     val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)
     val adapter = new ContactsAdapter(contactsHeadered, clickListener)
     (recycler <~
+      vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone) ~
@@ -67,13 +71,15 @@ trait ContactsComposer
 
   def reloadContactsAdapter(contacts: Seq[Contact], filter: ContactsFilter)(implicit fragment: Fragment): Ui[_] = {
     val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)
-    getAdapter map { adapter =>
-      Ui(adapter.loadContacts(contactsHeadered)) ~
-        (rootContent <~ uiSnackbarShort(filter match {
-          case ContactsWithPhoneNumber => R.string.contactsWithPhoneNumber
-          case _ => R.string.allContacts
-        }))
-    } getOrElse rootContent <~ uiSnackbarShort(R.string.contactUsError)
+    (recycler <~ vVisible) ~
+      (loading <~ vGone) ~
+      (getAdapter map { adapter =>
+        Ui(adapter.loadContacts(contactsHeadered)) ~
+          (rootContent <~ uiSnackbarShort(filter match {
+            case ContactsWithPhoneNumber => R.string.contactsWithPhoneNumber
+            case _ => R.string.allContacts
+          }))
+      } getOrElse showGeneralError)
   }
 
   private[this] def getAdapter: Option[ContactsAdapter] = recycler flatMap { rv =>
