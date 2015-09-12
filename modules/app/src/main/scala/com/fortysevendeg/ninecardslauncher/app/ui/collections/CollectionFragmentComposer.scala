@@ -1,22 +1,23 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v4.app.Fragment
-import android.support.v7.widget.{DefaultItemAnimator, CardView, GridLayoutManager, RecyclerView}
-import android.view.{ViewGroup, View}
-import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
+import android.support.v7.widget.{CardView, DefaultItemAnimator, GridLayoutManager, RecyclerView}
+import android.view.View
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RecyclerViewListenerTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{NineRecyclerView, PullToCloseListener, PullToCloseView}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, _}
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
@@ -143,6 +144,8 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
 
   lazy val name = Option(findView(TR.card_text))
 
+  lazy val badge = Option(findView(TR.card_badge))
+
   runUi(
     (content <~ rootStyle(heightCard)) ~
       (iconContent <~ iconContentStyle(heightCard)) ~
@@ -151,7 +154,13 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
   def bind(card: Card, position: Int)(implicit fragment: Fragment): Ui[_] =
     (icon <~ iconCardTransform(card)) ~
       (name <~ tvText(card.term)) ~
-      (content <~ vTag(position.toString))
+      (content <~ vTag(position.toString)) ~
+      (badge <~ (card.cardType match {
+        case CardType.phone => ivSrc(R.drawable.badge_phone) + vVisible
+        case CardType.sms => ivSrc(R.drawable.badge_sms) + vVisible
+        case CardType.email => ivSrc(R.drawable.badge_email) + vVisible
+        case _ => vGone
+      }))
 
   override def findViewById(id: Int): View = content.findViewById(id)
 

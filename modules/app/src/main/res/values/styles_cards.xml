@@ -32,4 +32,12 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <style name="CardBadge">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:layout_margin">@dimen/padding_small</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
 </resources>
