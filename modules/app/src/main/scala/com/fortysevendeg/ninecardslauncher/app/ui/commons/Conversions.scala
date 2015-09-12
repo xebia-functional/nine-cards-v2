@@ -15,6 +15,27 @@ trait NineCardIntentConversions {
     intent
   }
 
+  def phoneToNineCardIntent(tel: String): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      tel = Option(tel)))
+    intent.setAction(NineCardsIntentExtras.openPhone)
+    intent
+  }
+
+  def smsToNineCardIntent(tel: String): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      tel = Option(tel)))
+    intent.setAction(NineCardsIntentExtras.openSms)
+    intent
+  }
+
+  def emailToNineCardIntent(email: String): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      email = Option(email)))
+    intent.setAction(NineCardsIntentExtras.openEmail)
+    intent
+  }
+
   def toNineCardIntent(intent: Intent): NineCardIntent = {
     val i = new NineCardIntent(NineCardIntentExtras())
     i.fill(intent)

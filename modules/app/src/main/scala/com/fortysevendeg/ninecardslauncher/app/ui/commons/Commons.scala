@@ -39,6 +39,8 @@ object ActivityResult {
 
   val shortcutAdded = 2
 
+  val selectInfoContact = 3
+
 }
 
 object AppUtils {

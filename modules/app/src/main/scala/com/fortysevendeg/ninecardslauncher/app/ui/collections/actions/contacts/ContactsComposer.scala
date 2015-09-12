@@ -5,6 +5,7 @@ import android.support.v7.widget.Toolbar.LayoutParams
 import android.support.v7.widget.{RecyclerView, SwitchCompat}
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View, ViewGroup}
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -12,14 +13,14 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, HeaderUtils}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.process.device.{ContactsWithPhoneNumber, AllContacts, ContactsFilter}
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
+import com.fortysevendeg.ninecardslauncher.process.device.{ContactsFilter, ContactsWithPhoneNumber}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid.{Tweak, ActivityContextWrapper, Ui}
 
 import scala.annotation.tailrec
 
@@ -112,6 +113,8 @@ case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: 
   lazy val icon = Option(findView(TR.simple_item_icon))
 
   lazy val name = Option(findView(TR.simple_item_name))
+
+  runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
 
   def bind(contact: Contact, position: Int)(implicit fragment: Fragment): Ui[_] = {
     val contactName = Option(contact.name) map (name => name) getOrElse resGetString(R.string.unnamed)

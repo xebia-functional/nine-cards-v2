@@ -1,11 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
-import android.app.Dialog
+import android.app.{Activity, Dialog}
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
+import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, TextView}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.device.models.ContactPhone
 import com.fortysevendeg.ninecardslauncher.process.device.models.ContactEmail
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -17,7 +22,8 @@ import macroid.FullDsl._
 import scala.annotation.tailrec
 
 case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper)
-  extends DialogFragment {
+  extends DialogFragment
+  with NineCardIntentConversions {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
     val rootView = new LinearLayout(getActivity)
@@ -42,11 +48,31 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     view
   }
 
-  private[this] def createViewItem(text: String) = {
+  private[this] def createViewItem(data: String, cardType: String) = {
     val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_item_dialog, null)
     view.findViewById(R.id.contact_dialog_item_text) match {
-      case t: TextView => t.setText(text)
+      case t: TextView => t.setText(data)
     }
+    view.setOnClickListener(new OnClickListener {
+      override def onClick(v: View): Unit = {
+        val intent = cardType match {
+          case CardType.email => emailToNineCardIntent(data)
+          case CardType.sms => smsToNineCardIntent(data)
+          case CardType.phone => phoneToNineCardIntent(data)
+        }
+        val card = AddCardRequest(
+          term = contact.name,
+          packageName = None,
+          cardType = cardType,
+          intent = intent,
+          imagePath = contact.photoUri
+        )
+        val responseIntent = new Intent
+        responseIntent.putExtra(ContactsFragment.addCardRequest, card)
+        getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+        dismiss()
+      }
+    })
     view
   }
 
@@ -57,7 +83,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       val maybeViewCategory: Option[View] = if (acc.isEmpty) {
         Option(createViewCategory(R.string.emails))
       } else None
-      val viewItem = createViewItem(h.address)
+      val viewItem = createViewItem(h.address, CardType.email)
       val newAcc = maybeViewCategory map { viewCategory =>
         acc ++ Seq(viewCategory, viewItem)
       } getOrElse acc :+ viewItem
@@ -65,13 +91,13 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   @tailrec
-  private[this] def generatePhonesViews(emails: Seq[ContactPhone], acc: Seq[View]): Seq[View] = emails match {
+  private[this] def generatePhonesViews(phones: Seq[ContactPhone], acc: Seq[View]): Seq[View] = phones match {
     case Nil => acc
     case h :: t =>
       val maybeViewCategory: Option[View] = if (acc.isEmpty) {
         Option(createViewCategory(R.string.phones))
       } else None
-      val viewItem = createViewItem(h.number)
+      val viewItem = createViewItem(h.number, CardType.phone)
       val newAcc = maybeViewCategory map { viewCategory =>
         acc ++ Seq(viewCategory, viewItem)
       } getOrElse acc :+ viewItem
@@ -79,13 +105,13 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   @tailrec
-  private[this] def generateSmsViews(emails: Seq[ContactPhone], acc: Seq[View]): Seq[View] = emails match {
+  private[this] def generateSmsViews(phones: Seq[ContactPhone], acc: Seq[View]): Seq[View] = phones match {
     case Nil => acc
     case h :: t =>
       val maybeViewCategory: Option[View] = if (acc.isEmpty) {
         Option(createViewCategory(R.string.sms))
       } else None
-      val viewItem = createViewItem(h.number)
+      val viewItem = createViewItem(h.number, CardType.sms)
       val newAcc = maybeViewCategory map { viewCategory =>
         acc ++ Seq(viewCategory, viewItem)
       } getOrElse acc :+ viewItem

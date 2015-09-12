@@ -1,12 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view._
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityResult, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, ContactsWithPhoneNumber}
 import com.fortysevendeg.ninecardslauncher2.R
@@ -37,6 +40,22 @@ class ContactsFragment
     loadContacts(ContactsWithPhoneNumber)
   }
 
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
+    super.onActivityResult(requestCode, resultCode, data)
+    (requestCode, resultCode) match {
+      case (ActivityResult.selectInfoContact, Activity.RESULT_OK) =>
+        Option(data) flatMap (d => Option(d.getExtras)) map {
+          case extras if extras.containsKey(ContactsFragment.addCardRequest) =>
+            extras.get(ContactsFragment.addCardRequest) match {
+              case card: AddCardRequest =>
+                actionsScreenListener foreach (_.addCards(Seq(card)))
+                runUi(unreveal())
+              case _ => runUi(showGeneralError)
+            }
+        } getOrElse runUi(showGeneralError)
+    }
+  }
+
   private[this] def loadContacts(
     filter: ContactsFilter,
     reload: Boolean = false) = Task.fork(di.deviceProcess.getContacts(filter).run).resolveAsyncUi(
@@ -46,7 +65,6 @@ class ContactsFragment
     } else {
       generateContactsAdapter(contacts, contact => {
         showDialog(contact)
-        //        runUi(unreveal())
       })
     },
     onException = (ex: Throwable) => showGeneralError
@@ -58,12 +76,16 @@ class ContactsFragment
       Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
       ft.addToBackStack(null)
       val dialog = new SelectInfoContactDialogFragment(contact)
+      dialog.setTargetFragment(this, ActivityResult.selectInfoContact)
       dialog.show(ft, tagDialog)
     },
     onException = (ex: Throwable) => runUi(showGeneralError)
   )
 
+}
 
+object ContactsFragment {
+  val addCardRequest = "add-card-request"
 }
 
 

@@ -9,7 +9,7 @@ import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar}
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.CompoundButton.OnCheckedChangeListener
-import android.widget.{CompoundButton, ProgressBar, RadioGroup}
+import android.widget.{CompoundButton, ProgressBar}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak, Ui}
