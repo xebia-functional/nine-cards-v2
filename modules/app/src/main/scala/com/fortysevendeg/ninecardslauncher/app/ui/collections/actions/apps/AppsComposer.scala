@@ -9,14 +9,12 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, ActivityContextWrapper, Ui}
-
-import scala.annotation.tailrec
-import scala.math.Ordering.Implicits._
 
 trait AppsComposer
   extends Styles {
@@ -37,30 +35,14 @@ trait AppsComposer
       (scrollerLayout <~ fslColor(colorPrimary))
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
-    val sortedApps = apps sortBy sortByName
-    val appsHeadered = generateAppsForList(sortedApps.toList, Seq.empty)
-    val adapter = new AppsAdapter(appsHeadered, clickListener)
+    val adapter = new AppsAdapter(
+      apps = generateAppHeaderedList(apps),
+      clickListener = clickListener)
     (recycler <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone) ~
       (scrollerLayout <~ fslLinkRecycler)
-  }
-
-  private[this] def sortByName(app: AppCategorized) = app.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
-
-  @tailrec
-  private[this] def generateAppsForList(apps: List[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
-    case Nil => acc
-    case h :: t =>
-      val currentChar = h.name.substring(0, 1).toUpperCase
-      val lastChar = acc.lastOption flatMap (_.app map (_.name.substring(0, 1).toUpperCase))
-      val skipChar = lastChar exists (_ equals currentChar)
-      if (skipChar) {
-        generateAppsForList(t, acc :+ AppHeadered(app = Option(h)))
-      } else {
-        generateAppsForList(t, acc ++ Seq(AppHeadered(header = Option(currentChar)), AppHeadered(app = Option(h))))
-      }
   }
 
 }
