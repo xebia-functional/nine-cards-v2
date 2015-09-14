@@ -18,7 +18,7 @@ object AppHeadered {
   @tailrec
   private[this] def generateAppsForList(apps: Seq[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
     case Nil => acc
-    case h :: t =>
+    case Seq(h, t @ _ *) =>
       val currentChar = h.name.substring(0, 1).toUpperCase
       val lastChar = acc.lastOption flatMap (_.app map (_.name.substring(0, 1).toUpperCase))
       val skipChar = lastChar exists (_ equals currentChar)

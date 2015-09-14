@@ -1,7 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.drawer
 
 import android.support.v7.app.AppCompatActivity
-import android.view.View
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.ViewHolder
+import android.view.{View, ViewGroup}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
@@ -9,9 +11,9 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
@@ -29,6 +31,15 @@ trait DrawerComposer
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint =>
 
+  lazy val emptyAdapter = new RecyclerView.Adapter[RecyclerView.ViewHolder]() {
+
+    override def getItemCount: Int = 0
+
+    override def onBindViewHolder(vh: ViewHolder, i: Int): Unit = {}
+
+    override def onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder = new RecyclerView.ViewHolder(viewGroup) {}
+  }
+
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
   lazy val drawerContent = Option(findView(TR.launcher_drawer_content))
@@ -45,7 +56,9 @@ trait DrawerComposer
 
   def initDrawerUi(onAppDrawerListener: () => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (appDrawerMain <~ drawerAppStyle <~ On.click {
-      revealInDrawer ~ Ui { onAppDrawerListener() }
+      revealInDrawer ~ Ui {
+        onAppDrawerListener()
+      }
     }) ~
       (loadingDrawer <~ pbColor(resGetColor(R.color.drawer_toolbar)) <~ vVisible) ~
       (recycler <~ recyclerStyle) ~
@@ -72,7 +85,9 @@ trait DrawerComposer
       updateStatusColor(resGetColor(R.color.drawer_toolbar))
 
   def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-    updateStatusToTransparent ~
+    (recycler <~
+      rvAdapter(emptyAdapter)) ~
+      updateStatusToTransparent ~
       updateNavigationToTransparent ~
       (appDrawerMain mapUi (source => drawerContent <~ revealOutAppDrawer(source)))
 

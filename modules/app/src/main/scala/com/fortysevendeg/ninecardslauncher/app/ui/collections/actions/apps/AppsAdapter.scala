@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
-import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager.SpanSizeLookup
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
