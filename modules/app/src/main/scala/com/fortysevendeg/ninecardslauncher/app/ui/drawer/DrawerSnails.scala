@@ -4,8 +4,10 @@ import android.animation.{Animator, AnimatorListenerAdapter}
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import macroid.FullDsl._
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
@@ -43,13 +45,14 @@ object DrawerSnails {
   }
 
   private[this] def reveal(source: View, view: View, in: Boolean = true)(animationEnd: => Unit = ())(implicit context: ContextWrapper): Unit = {
+    val sb = resGetDimensionPixelSize("status_bar_height") getOrElse 25 dp
     val (cx, cy) = calculateAnchorViewPosition(source)
     val fromRadius = source.getWidth / 2
-    val toRadius = SnailsUtils.calculateRadius(width = cx + fromRadius, height = cy + fromRadius)
+    val toRadius = SnailsUtils.calculateRadius(width = cx + fromRadius, height = cy + fromRadius - sb)
 
     val (startRadius, endRadius) = if (in) (fromRadius, toRadius) else (toRadius, fromRadius)
 
-    val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx + fromRadius, cy + fromRadius, startRadius, endRadius)
+    val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx + fromRadius, cy + fromRadius - sb, startRadius, endRadius)
     reveal.addListener(new AnimatorListenerAdapter {
       override def onAnimationStart(animation: Animator): Unit = {
         super.onAnimationStart(animation)

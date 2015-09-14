@@ -8,6 +8,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
@@ -34,7 +35,7 @@ trait AppsComposer
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
 
-  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
+  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
     val adapter = new AppsAdapter(
       apps = generateAppHeaderedList(apps),
       clickListener = clickListener)
@@ -53,13 +54,13 @@ case class ViewHolderCategoryLayoutAdapter(content: ViewGroup)(implicit context:
 
   lazy val name = Option(findView(TR.simple_category_name))
 
-  def bind(category: String)(implicit fragment: Fragment): Ui[_] = name <~ tvText(category)
+  def bind(category: String): Ui[_] = name <~ tvText(category)
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
 }
 
-case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, fragment: Fragment)
+case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -67,8 +68,8 @@ case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: Acti
 
   lazy val name = Option(findView(TR.simple_item_name))
 
-  def bind(app: AppCategorized, position: Int)(implicit fragment: Fragment): Ui[_] =
-    (icon <~ (app.imagePath map (ivUri(fragment, _, app.name)) getOrElse Tweak.blank)) ~
+  def bind(app: AppCategorized, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
+    (icon <~ (app.imagePath map (ivUri(_, app.name)) getOrElse Tweak.blank)) ~
       (name <~ tvText(app.name)) ~
       (content <~ vIntTag(position))
 

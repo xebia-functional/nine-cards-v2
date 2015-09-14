@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -33,6 +34,25 @@ object RecyclerViewListenerTweaks {
       }
     })
   }
+
+}
+
+object AsyncImageTweaks {
+  type W = ImageView
+
+  def ivUri(uri: String)(implicit context: UiContext[_]): Tweak[W] = Tweak[W](
+    imageView => {
+      val glide = context match {
+        case c: ApplicationUiContext => Glide.`with`(c.value)
+        case c: ActivityUiContext => Glide.`with`(c.value)
+        case c: FragmentUiContext => Glide.`with`(c.value)
+      }
+      glide
+        .load(uri)
+        .crossFade()
+        .into(imageView)
+    }
+  )
 
 }
 
@@ -81,34 +101,48 @@ object AsyncImageFragmentTweaks {
 object AsyncImageCardsTweaks {
   type W = ImageView
 
-  def ivUri(fragment: Fragment, uri: String, name: String)(implicit context: ActivityContextWrapper): Tweak[W] = Tweak[W](
-    imageView =>
-      Glide.`with`(fragment)
+  def ivUri(uri: String, name: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+    imageView => {
+      val glide = uiContext match {
+        case c: ApplicationUiContext => Glide.`with`(c.value)
+        case c: ActivityUiContext => Glide.`with`(c.value)
+        case c: FragmentUiContext => Glide.`with`(c.value)
+      }
+      glide
         .load(uri)
         .asBitmap()
         .into(new SimpleTarget[Bitmap]() {
-          override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
-            imageView.setImageDrawable(new CharDrawable(name.substring(0, 1), true))
-          }
-          override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
-            imageView.setImageBitmap(resource)
-          }
-        })
+        override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
+          imageView.setImageDrawable(new CharDrawable(name.substring(0, 1), true))
+        }
+
+        override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
+          imageView.setImageBitmap(resource)
+        }
+      })
+    }
   )
 
-  def ivUriContact(fragment: Fragment, uri: String, name: String)(implicit context: ActivityContextWrapper): Tweak[W] = Tweak[W](
-    imageView =>
-      Glide.`with`(fragment)
+  def ivUriContact(uri: String, name: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+    imageView => {
+      val glide = uiContext match {
+        case c: ApplicationUiContext => Glide.`with`(c.value)
+        case c: ActivityUiContext => Glide.`with`(c.value)
+        case c: FragmentUiContext => Glide.`with`(c.value)
+      }
+      glide
         .loadFromMediaStore(Uri.withAppendedPath(Uri.parse(uri), Contacts.Photo.DISPLAY_PHOTO))
         .asBitmap()
         .into(new SimpleTarget[Bitmap]() {
-          override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
-            imageView.setImageDrawable(new CharDrawable(name.substring(0, 1)))
-          }
-          override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
-            imageView.setImageBitmap(resource)
-          }
-        })
+        override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
+          imageView.setImageDrawable(new CharDrawable(name.substring(0, 1)))
+        }
+
+        override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
+          imageView.setImageBitmap(resource)
+        }
+      })
+    }
   )
 
 }

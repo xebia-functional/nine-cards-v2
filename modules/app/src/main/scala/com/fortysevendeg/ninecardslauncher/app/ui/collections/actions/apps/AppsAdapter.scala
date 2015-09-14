@@ -7,6 +7,7 @@ import android.view.View.OnClickListener
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
@@ -16,7 +17,7 @@ import macroid.FullDsl._
 import AppsAdapter._
 
 case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) => Unit)
-  (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
+  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[RecyclerView.ViewHolder]
   with FastScrollerListener {
 

@@ -8,10 +8,11 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
+import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
@@ -31,6 +32,8 @@ class LauncherActivity
 
   implicit lazy val di: Injector = new Injector
 
+  implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
+
   implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
     case Answer(t) => t
     case _ => getDefaultTheme
@@ -40,7 +43,7 @@ class LauncherActivity
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
-    runUi(initUi ~ initDrawerUi)
+    runUi(initUi ~ initDrawerUi(onAppDrawerListener = () => loadApps()))
     initAllSystemBarsTint
     generateCollections()
   }
@@ -75,6 +78,12 @@ class LauncherActivity
   private[this] def goToWizard(): Ui[_] = Ui {
     val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])
     startActivityForResult(wizardIntent, wizard)
+  }
+
+  private[this] def loadApps() = {
+    Task.fork(di.deviceProcess.getCategorizedApps.run).resolveAsyncUi(
+      onResult = (apps: Seq[AppCategorized]) => addApps(apps, (app: AppCategorized) => {})
+    )
   }
 
 
