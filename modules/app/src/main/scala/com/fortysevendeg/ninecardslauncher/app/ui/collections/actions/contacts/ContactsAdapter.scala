@@ -68,30 +68,26 @@ case class ContactsAdapter(var contacts: Seq[ContactHeadered], clickListener: (C
 
   override def getHeight = {
     val heightHeaders = (contacts count (_.header.isDefined)) * heightHeader
-    // Calculate the number of column showing apps
-    val rowsWithApps = contacts.foldLeft(Tuple2(0, 0))((counter, app) =>
-      app.header.map {
-        _ => Tuple2(0, counter._2)
-      } getOrElse {
-        counter._1 match {
-          case 0 => Tuple2(1, counter._2 + 1)
-          case columns if columns < numInLine => Tuple2(counter._1 + 1, counter._2)
-          case _ => Tuple2(0, counter._2)
-        }
+    // Calculate the number of column showing contacts
+    val rowsWithContacts = contacts.foldLeft((0, 0))((counter, contact) =>
+      (contact.header, counter._1) match {
+        case (Some(_), _) => (0, counter._2)
+        case (_, 0) => (1, counter._2 + 1)
+        case (_, columns) if columns < numInLine => (counter._1 + 1, counter._2)
+        case _ => (0, counter._2)
       })
-
-    val heightApps = rowsWithApps._2 * heightApp
+    val heightApps = rowsWithContacts._2 * heightApp
     heightHeaders + heightApps
   }
 
   val defaultElement: Option[String] = None
 
-  override def getElement(position: Int): Option[String] = contacts.foldLeft(Tuple2(defaultElement, false))((info, app) =>
-    if (app == contacts(position)) {
-      Tuple2(info._1, true)
+  override def getElement(position: Int): Option[String] = contacts.foldLeft((defaultElement, false))((info, contact) =>
+    if (contact == contacts(position)) {
+      (info._1, true)
     } else {
       (info._1, info._2) match {
-        case (_, false) => app.header map (header => Tuple2(Option(header), info._2)) getOrElse info
+        case (_, false) => contact.header map (header => (Option(header), info._2)) getOrElse info
         case _ => info
       }
     }

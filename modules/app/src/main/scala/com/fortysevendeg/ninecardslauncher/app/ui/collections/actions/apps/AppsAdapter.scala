@@ -64,29 +64,25 @@ case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) =
   override def getHeight = {
     val heightHeaders = (apps count (_.header.isDefined)) * heightHeader
     // Calculate the number of column showing apps
-    val rowsWithApps = apps.foldLeft(Tuple2(0, 0))((counter, app) =>
-      app.header.map {
-        _ => Tuple2(0, counter._2)
-      } getOrElse {
-        counter._1 match {
-          case 0 => Tuple2(1, counter._2 + 1)
-          case columns if columns < numInLine => Tuple2(counter._1 + 1, counter._2)
-          case _ => Tuple2(0, counter._2)
-        }
+    val rowsWithApps = apps.foldLeft((0, 0))((counter, app) =>
+      (app.header, counter._1) match {
+        case (Some(_), _) => (0, counter._2)
+        case (_, 0) => (1, counter._2 + 1)
+        case (_, columns) if columns < numInLine => (counter._1 + 1, counter._2)
+        case _ => (0, counter._2)
       })
-
     val heightApps = rowsWithApps._2 * heightApp
     heightHeaders + heightApps
   }
 
   val defaultElement: Option[String] = None
 
-  override def getElement(position: Int): Option[String] = apps.foldLeft(Tuple2(defaultElement, false))((info, app) =>
+  override def getElement(position: Int): Option[String] = apps.foldLeft((defaultElement, false))((info, app) =>
     if (app == apps(position)) {
-      Tuple2(info._1, true)
+      (info._1, true)
     } else {
       (info._1, info._2) match {
-        case (_, false) => app.header map (header => Tuple2(Option(header), info._2)) getOrElse info
+        case (_, false) => app.header map (header => (Option(header), info._2)) getOrElse info
         case _ => info
       }
     }

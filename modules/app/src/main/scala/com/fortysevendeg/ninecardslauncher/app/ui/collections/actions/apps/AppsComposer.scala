@@ -40,7 +40,7 @@ trait AppsComposer
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
     val sortedApps = apps sortBy sortByName // We should sort the apps using queries when the database be ready
-    val appsHeadered = generateAppsForList(sortedApps.toList, Seq.empty)
+    val appsHeadered = generateAppsForList(sortedApps, Seq.empty)
     val adapter = new AppsAdapter(appsHeadered, clickListener)
     (recycler <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -52,11 +52,16 @@ trait AppsComposer
   private[this] def sortByName(app: AppCategorized) = app.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
 
   @tailrec
-  private[this] def generateAppsForList(apps: List[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
+  private[this] def generateAppsForList(apps: Seq[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
     case Nil => acc
-    case h :: t =>
-      val currentChar = Option(h.name) map (name => generateChar(name.substring(0, 1))) getOrElse charUnnamed
-      val lastChar = acc.lastOption flatMap (_.app map (c => Option(c.name) map (name => generateChar(name.substring(0, 1))) getOrElse charUnnamed))
+    case Seq(h, t @ _ *) =>
+      val currentChar: String = getCurrentChar(h.name)
+      val lastChar: Option[String] = for {
+        appHeadered <- acc.lastOption
+        appCategorized <- appHeadered.app
+        appName <- Option(Option(appCategorized.name) getOrElse charUnnamed)
+        c <- Option(generateChar(appName.substring(0, 1)))
+      } yield c
       val skipChar = lastChar exists (_ equals currentChar)
       if (skipChar) {
         generateAppsForList(t, acc :+ AppHeadered(app = Option(h)))

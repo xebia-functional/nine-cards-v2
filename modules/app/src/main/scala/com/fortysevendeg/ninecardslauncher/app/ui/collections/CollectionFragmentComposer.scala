@@ -155,12 +155,14 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
     (icon <~ iconCardTransform(card)) ~
       (name <~ tvText(card.term)) ~
       (content <~ vTag(position.toString)) ~
-      (badge <~ (card.cardType match {
-        case CardType.phone => ivSrc(R.drawable.badge_phone) + vVisible
-        case CardType.sms => ivSrc(R.drawable.badge_sms) + vVisible
-        case CardType.email => ivSrc(R.drawable.badge_email) + vVisible
-        case _ => vGone
-      }))
+      (badge <~ (getBadge(card.cardType) map { ivSrc(_) + vVisible } getOrElse vGone))
+
+  private[this] def getBadge(cardType: String): Option[Int] = cardType match {
+    case CardType.phone => Option(R.drawable.badge_phone)
+    case CardType.sms => Option(R.drawable.badge_sms)
+    case CardType.email => Option(R.drawable.badge_email)
+    case _ => None
+  }
 
   override def findViewById(id: Int): View = content.findViewById(id)
 

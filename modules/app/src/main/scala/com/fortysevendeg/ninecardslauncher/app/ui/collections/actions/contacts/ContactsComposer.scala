@@ -71,7 +71,7 @@ trait ContactsComposer
   }
 
   def reloadContactsAdapter(contacts: Seq[Contact], filter: ContactsFilter)(implicit fragment: Fragment): Ui[_] = {
-    val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)
+    val contactsHeadered = generateContactsForList(contacts, Seq.empty)
     (recycler <~ vVisible) ~
       (loading <~ vGone) ~
       (getAdapter map { adapter =>
@@ -91,11 +91,16 @@ trait ContactsComposer
   }
 
   @tailrec
-  private[this] def generateContactsForList(contacts: List[Contact], acc: Seq[ContactHeadered]): Seq[ContactHeadered] = contacts match {
+  private[this] def generateContactsForList(contacts: Seq[Contact], acc: Seq[ContactHeadered]): Seq[ContactHeadered] = contacts match {
     case Nil => acc
-    case h :: t =>
-      val currentChar = Option(h.name) map (name => generateChar(name.substring(0, 1))) getOrElse charUnnamed
-      val lastChar = acc.lastOption flatMap (_.contact map (c => Option(c.name) map (name => generateChar(name.substring(0, 1))) getOrElse charUnnamed))
+    case Seq(h, t @ _ *) =>
+      val currentChar: String = getCurrentChar(h.name)
+      val lastChar: Option[String] = for {
+        contactHeadered <- acc.lastOption
+        contact <- contactHeadered.contact
+        contactName <- Option(Option(contact.name) getOrElse charUnnamed)
+        c <- Option(generateChar(contactName.substring(0, 1)))
+      } yield c
       val skipChar = lastChar exists (_ equals currentChar)
       if (skipChar) {
         generateContactsForList(t, acc :+ ContactHeadered(contact = Option(h)))

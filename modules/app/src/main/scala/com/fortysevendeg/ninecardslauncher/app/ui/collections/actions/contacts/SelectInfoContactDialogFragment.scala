@@ -30,9 +30,9 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     rootView.setOrientation(LinearLayout.VERTICAL)
 
     val views = contact.info map { info =>
-      generatePhonesViews(info.phones, Seq.empty) ++
-        generateEmailsViews(info.emails, Seq.empty) ++
-        generateSmsViews(info.phones, Seq.empty)
+      generateItemsViews(info.phones map (_.number), Seq.empty, CardType.phone, R.string.phones) ++
+        generateItemsViews(info.emails map (_.address), Seq.empty, CardType.email, R.string.emails) ++
+        generateItemsViews(info.phones map (_.number), Seq.empty, CardType.sms, R.string.sms)
     } getOrElse Seq.empty
 
     runUi(rootView <~ vgAddViews(views))
@@ -77,45 +77,21 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   @tailrec
-  private[this] def generateEmailsViews(emails: Seq[ContactEmail], acc: Seq[View]): Seq[View] = emails match {
+  private[this] def generateItemsViews(
+    items: Seq[String],
+    acc: Seq[View],
+    cardType: String,
+    resHead: Int): Seq[View] = items match {
     case Nil => acc
     case h :: t =>
       val maybeViewCategory: Option[View] = if (acc.isEmpty) {
-        Option(createViewCategory(R.string.emails))
+        Option(createViewCategory(resHead))
       } else None
-      val viewItem = createViewItem(h.address, CardType.email)
+      val viewItem = createViewItem(h, cardType)
       val newAcc = maybeViewCategory map { viewCategory =>
         acc ++ Seq(viewCategory, viewItem)
       } getOrElse acc :+ viewItem
-      generateEmailsViews(t, newAcc)
-  }
-
-  @tailrec
-  private[this] def generatePhonesViews(phones: Seq[ContactPhone], acc: Seq[View]): Seq[View] = phones match {
-    case Nil => acc
-    case h :: t =>
-      val maybeViewCategory: Option[View] = if (acc.isEmpty) {
-        Option(createViewCategory(R.string.phones))
-      } else None
-      val viewItem = createViewItem(h.number, CardType.phone)
-      val newAcc = maybeViewCategory map { viewCategory =>
-        acc ++ Seq(viewCategory, viewItem)
-      } getOrElse acc :+ viewItem
-      generatePhonesViews(t, newAcc)
-  }
-
-  @tailrec
-  private[this] def generateSmsViews(phones: Seq[ContactPhone], acc: Seq[View]): Seq[View] = phones match {
-    case Nil => acc
-    case h :: t =>
-      val maybeViewCategory: Option[View] = if (acc.isEmpty) {
-        Option(createViewCategory(R.string.sms))
-      } else None
-      val viewItem = createViewItem(h.number, CardType.sms)
-      val newAcc = maybeViewCategory map { viewCategory =>
-        acc ++ Seq(viewCategory, viewItem)
-      } getOrElse acc :+ viewItem
-      generateSmsViews(t, newAcc)
+      generateItemsViews(t, newAcc, cardType, resHead)
   }
 
 }
