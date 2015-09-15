@@ -7,9 +7,9 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, SystemBarsTint}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, FabButtonBehaviour, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
@@ -108,7 +108,9 @@ trait LauncherComposer
         uiShortToast("App 4")
       })
 
-  def createCollections(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def createCollections(
+    collections: Seq[Collection])
+    (implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] =
     (loading <~ vGone) ~
       (workspaces <~
         lwsData(collections, selectedPageDefault) <~
@@ -150,13 +152,12 @@ trait LauncherComposer
 
 
   // TODO We add app randomly, in the future we should get the app from repository
-  private[this] def fillAppDrawer(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {
-    case i: ImageView if tagEquals(i, R.id.`type`, LauncherTags.app) => {
+  private[this] def fillAppDrawer(collections: Seq[Collection])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = Transformer {
+    case i: ImageView if tagEquals(i, R.id.`type`, LauncherTags.app) =>
       val r = scala.util.Random
       val randomCollection = collections(r.nextInt(collections.length))
       val randomCard = randomCollection.cards(r.nextInt(randomCollection.cards.length))
       i <~ ivUri(randomCard.imagePath)
-    }
   }
 
   private[this] def reloadPager(currentPage: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {

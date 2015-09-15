@@ -1,15 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
-import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.ContactsContract.Contacts
-import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import com.bumptech.glide.{DrawableTypeRequest, Glide}
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.fortysevendeg.ninecardslauncher.app.ui.components.CharDrawable
@@ -42,107 +40,49 @@ object AsyncImageTweaks {
 
   def ivUri(uri: String)(implicit context: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      val glide = context match {
-        case c: ApplicationUiContext => Glide.`with`(c.value)
-        case c: ActivityUiContext => Glide.`with`(c.value)
-        case c: FragmentUiContext => Glide.`with`(c.value)
-      }
-      glide
+      glide()
         .load(uri)
         .crossFade()
         .into(imageView)
     }
   )
 
-}
-
-object AsyncImageApplicationTweaks {
-  type W = ImageView
-
-  def ivUri(uri: String)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](
+  def ivCardUri(uri: String, name: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      Glide.`with`(context.application)
-        .load(uri)
-        .crossFade()
-        .into(imageView)
-    }
-  )
-
-}
-
-object AsyncImageActivityTweaks {
-  type W = ImageView
-
-  def ivUri(uri: String)(implicit context: ActivityContextWrapper): Tweak[W] = Tweak[W](
-    imageView => {
-      Glide.`with`(context.getOriginal)
-        .load(uri)
-        .crossFade()
-        .into(imageView)
-    }
-  )
-
-}
-
-object AsyncImageFragmentTweaks {
-  type W = ImageView
-
-  def ivUri(fragment: Fragment, uri: String): Tweak[W] = Tweak[W](
-    imageView => {
-      Glide.`with`(fragment)
-        .load(uri)
-        .crossFade()
-        .into(imageView)
-    }
-  )
-
-}
-
-object AsyncImageCardsTweaks {
-  type W = ImageView
-
-  def ivUri(uri: String, name: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
-    imageView => {
-      val glide = uiContext match {
-        case c: ApplicationUiContext => Glide.`with`(c.value)
-        case c: ActivityUiContext => Glide.`with`(c.value)
-        case c: FragmentUiContext => Glide.`with`(c.value)
-      }
-      glide
-        .load(uri)
-        .asBitmap()
-        .into(new SimpleTarget[Bitmap]() {
-        override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
-          imageView.setImageDrawable(new CharDrawable(name.substring(0, 1), true))
-        }
-
-        override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
-          imageView.setImageBitmap(resource)
-        }
-      })
-    }
-  )
+      makeRequest(
+        request = glide().load(uri),
+        imageView = imageView,
+        char = name.substring(0, 1))
+    })
 
   def ivUriContact(uri: String, name: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      val glide = uiContext match {
-        case c: ApplicationUiContext => Glide.`with`(c.value)
-        case c: ActivityUiContext => Glide.`with`(c.value)
-        case c: FragmentUiContext => Glide.`with`(c.value)
-      }
-      glide
-        .loadFromMediaStore(Uri.withAppendedPath(Uri.parse(uri), Contacts.Photo.DISPLAY_PHOTO))
+      makeRequest(
+        request = glide().loadFromMediaStore(Uri.withAppendedPath(Uri.parse(uri), Contacts.Photo.DISPLAY_PHOTO)),
+        imageView = imageView,
+        char = name.substring(0, 1))
+    })
+
+  private[this] def glide()(implicit uiContext: UiContext[_]) = uiContext match {
+    case c: ApplicationUiContext => Glide.`with`(c.value)
+    case c: ActivityUiContext => Glide.`with`(c.value)
+    case c: FragmentUiContext => Glide.`with`(c.value)
+  }
+
+  private[this] def makeRequest(
+    request: DrawableTypeRequest[_],
+    imageView: ImageView,
+    char: String)(implicit context: ActivityContextWrapper) =
+      request
         .asBitmap()
         .into(new SimpleTarget[Bitmap]() {
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
-          imageView.setImageDrawable(new CharDrawable(name.substring(0, 1)))
+          imageView.setImageDrawable(new CharDrawable(char))
         }
 
         override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
           imageView.setImageBitmap(resource)
         }
       })
-    }
-  )
 
 }

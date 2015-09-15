@@ -27,7 +27,7 @@ trait DrawerStyles {
   def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     rvFixedSize +
-      vPadding(padding, padding, padding, padding) +
+      vPaddings(padding) +
       vgClipToPadding(false) +
       vOverScrollMode(View.OVER_SCROLL_NEVER)
   }

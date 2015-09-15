@@ -19,7 +19,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
@@ -134,7 +134,7 @@ trait CollectionAdapterStyles {
         expandLayout +
         ivScaleType(ScaleType.CENTER_CROP)
     case _ =>
-      ivUri(card.imagePath, card.term) +
+      ivCardUri(card.imagePath, card.term) +
         reduceLayout +
         ivScaleType(ScaleType.FIT_CENTER)
   }
