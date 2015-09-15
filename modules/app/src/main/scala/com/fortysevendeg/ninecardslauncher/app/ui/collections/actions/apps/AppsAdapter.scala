@@ -1,12 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
-import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager.SpanSizeLookup
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher2.R
@@ -15,7 +16,7 @@ import macroid.FullDsl._
 import AppsAdapter._
 
 case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) => Unit)
-  (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
+  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[RecyclerView.ViewHolder]
   with FastScrollerListener {
 

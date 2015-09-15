@@ -1,17 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.View.OnClickListener
 import android.view.{View, ViewGroup}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, LauncherExecutor}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 
 case class CollectionAdapter(var collection: Collection, heightCard: Int)
-  (implicit activityContext: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme)
+  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with LauncherExecutor {
 

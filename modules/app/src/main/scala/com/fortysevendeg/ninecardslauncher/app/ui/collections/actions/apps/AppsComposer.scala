@@ -1,22 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
-import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, ActivityContextWrapper, Ui}
-
-import scala.annotation.tailrec
-import scala.math.Ordering.Implicits._
 
 trait AppsComposer
   extends Styles {
@@ -36,31 +34,15 @@ trait AppsComposer
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
 
-  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
-    val sortedApps = apps sortBy sortByName
-    val appsHeadered = generateAppsForList(sortedApps.toList, Seq.empty)
-    val adapter = new AppsAdapter(appsHeadered, clickListener)
+  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
+    val adapter = new AppsAdapter(
+      apps = generateAppHeaderedList(apps),
+      clickListener = clickListener)
     (recycler <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone) ~
       (scrollerLayout <~ fslLinkRecycler)
-  }
-
-  private[this] def sortByName(app: AppCategorized) = app.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
-
-  @tailrec
-  private[this] def generateAppsForList(apps: List[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
-    case Nil => acc
-    case h :: t =>
-      val currentChar = h.name.substring(0, 1).toUpperCase
-      val lastChar = acc.lastOption flatMap (_.app map (_.name.substring(0, 1).toUpperCase))
-      val skipChar = lastChar exists (_ equals currentChar)
-      if (skipChar) {
-        generateAppsForList(t, acc :+ AppHeadered(app = Option(h)))
-      } else {
-        generateAppsForList(t, acc ++ Seq(AppHeadered(header = Option(currentChar)), AppHeadered(app = Option(h))))
-      }
   }
 
 }
@@ -71,13 +53,13 @@ case class ViewHolderCategoryLayoutAdapter(content: ViewGroup)(implicit context:
 
   lazy val name = Option(findView(TR.simple_category_name))
 
-  def bind(category: String)(implicit fragment: Fragment): Ui[_] = name <~ tvText(category)
+  def bind(category: String): Ui[_] = name <~ tvText(category)
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
 }
 
-case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, fragment: Fragment)
+case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -85,8 +67,8 @@ case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: Acti
 
   lazy val name = Option(findView(TR.simple_item_name))
 
-  def bind(app: AppCategorized, position: Int)(implicit fragment: Fragment): Ui[_] =
-    (icon <~ (app.imagePath map (ivUri(fragment, _, app.name)) getOrElse Tweak.blank)) ~
+  def bind(app: AppCategorized, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
+    (icon <~ (app.imagePath map (ivCardUri(_, app.name)) getOrElse Tweak.blank)) ~
       (name <~ tvText(app.name)) ~
       (content <~ vIntTag(position))
 
