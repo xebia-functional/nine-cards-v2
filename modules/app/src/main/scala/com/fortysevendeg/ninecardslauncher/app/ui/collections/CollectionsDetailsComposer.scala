@@ -10,6 +10,7 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.transition.{Transition, Fade, TransitionSet, TransitionInflater}
 import android.view.{ViewGroup, Gravity, View}
 import android.widget.FrameLayout
@@ -64,6 +65,8 @@ trait CollectionsDetailsComposer
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
+
+  lazy val maxHeightToolbar = resGetDimensionPixelSize(R.dimen.height_toolbar_collection_details)
 
   lazy val toolbar = Option(findView(TR.collections_toolbar))
 
@@ -131,7 +134,7 @@ trait CollectionsDetailsComposer
     val newElevation = elevation + (if (ratio >= 1) 1 else 0)
     val scale = 1 - (ratio / 2)
     (tabs <~ vTranslationY(-move) <~ uiElevation(newElevation)) ~
-      (toolbar <~ vTranslationY(-move * 2) <~ uiElevation(newElevation)) ~
+      (toolbar <~ tbReduceLayout(move * 2) <~ uiElevation(newElevation)) ~
       (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
   }
 
@@ -157,6 +160,11 @@ trait CollectionsDetailsComposer
       view: View => showAction(f[ShortcutFragment], view)
     })
   )
+
+  private[this] def tbReduceLayout(reduce: Int) = Tweak[Toolbar] { view =>
+    view.getLayoutParams.height = maxHeightToolbar - reduce
+    view.requestLayout()
+  }
 
   private[this] def uiElevation(elevation: Float) = Lollipop.ifSupportedThen {
     vElevation(elevation)
