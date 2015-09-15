@@ -37,15 +37,6 @@ trait Styles {
     tivDefaultColor(theme.get(SearchIconsColor)) +
       tivPressedColor(theme.get(SearchPressedColor))
 
-  def drawerAppStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] = {
-    val elevation = resGetDimensionPixelSize(R.dimen.elevation_pressed)
-    Lollipop ifSupportedThen {
-      vStateListAnimator(R.anim.elevation_transition) +
-        vPaddings(elevation) +
-        vCircleOutlineProvider(elevation)
-    } getOrElse tivPressedColor(theme.get(AppDrawerPressedColor))
-  }
-
   def drawerItemStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
     tivPressedColor(theme.get(AppDrawerPressedColor)) +
       vTag(R.id.`type`, LauncherTags.app)

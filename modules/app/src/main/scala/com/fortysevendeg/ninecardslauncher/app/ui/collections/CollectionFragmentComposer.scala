@@ -10,7 +10,9 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RecyclerViewListenerTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{NineRecyclerView, PullToCloseListener, PullToCloseView}
@@ -47,7 +49,7 @@ trait CollectionFragmentComposer
     ))
   )
 
-  def initUi(collection: Collection)(implicit contextWrapper: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme) =
+  def initUi(collection: Collection)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
     recyclerView <~ vGlobalLayoutListener(view => {
       val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
       val padding = resGetDimensionPixelSize(R.dimen.padding_small)
@@ -61,7 +63,7 @@ trait CollectionFragmentComposer
       getScrollListener(collection, resGetDimensionPixelSize(R.dimen.space_moving_collection_details))
 
   def loadCollection(collection: Collection, heightCard: Int, padding: Int, spaceMove: Int)
-    (implicit contextWrapper: ActivityContextWrapper, fragment: Fragment, theme: NineCardsTheme): Ui[_] = {
+    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
     val adapter = new CollectionAdapter(collection, heightCard)
     recyclerView <~ rvLayoutManager(new GridLayoutManager(contextWrapper.application, numInLine)) <~
       rvFixedSize <~
@@ -151,10 +153,10 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
       (iconContent <~ iconContentStyle(heightCard)) ~
       (name <~ nameStyle))
 
-  def bind(card: Card, position: Int)(implicit fragment: Fragment): Ui[_] =
+  def bind(card: Card, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     (icon <~ iconCardTransform(card)) ~
       (name <~ tvText(card.term)) ~
-      (content <~ vTag(position.toString)) ~
+      (content <~ vIntTag(position)) ~
       (badge <~ (getBadge(card.cardType) map { ivSrc(_) + vVisible } getOrElse vGone))
 
   private[this] def getBadge(cardType: String): Option[Int] = cardType match {
