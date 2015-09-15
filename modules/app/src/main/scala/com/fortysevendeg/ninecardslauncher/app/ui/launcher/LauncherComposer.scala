@@ -1,28 +1,27 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import android.content.Intent
+import android.content.{Context, Intent}
 import android.speech.RecognizerIntent
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ImageView
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, FabButtonBehaviour}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, SystemBarsTint, FabButtonBehaviour}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab._
 import macroid.FullDsl._
@@ -32,9 +31,38 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait LauncherComposer
   extends Styles
-  with FabButtonBehaviour {
+  with FabButtonBehaviour
+  with LauncherExecutor {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint =>
+
+  // TODO For now, we always use 4 applications in app drawer panel
+  lazy val packagesForAppsDrawer = Seq(
+    ("com.google.android.dialer", "com.google.android.dialer.extensions.GoogleDialtactsActivity"),
+    ("com.google.android.apps.inbox", "com.google.android.apps.bigtop.activities.InitActivity"),
+    ("com.android.chrome", "com.google.android.apps.chrome.Main"),
+    ("com.google.android.GoogleCamera", "com.android.camera.CameraLauncher")
+  )
+
+  lazy val cardsForAppsDrawer = packagesForAppsDrawer map { app =>
+    val (packageName, className) = app
+    val dirPath = getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE).getPath
+    val imagePath = s"$dirPath/${packageName.toLowerCase.replace(".", "_")}_${className.toLowerCase.replace(".", "_")}"
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(packageName),
+      class_name = Option(className)))
+    intent.setAction(NineCardsIntentExtras.openApp)
+    intent.setClassName(packageName, className)
+    Card(
+      id = 0,
+      position = 0,
+      term = "Doesn't matter",
+      packageName = Option(packageName),
+      cardType = CardType.app,
+      intent = intent,
+      imagePath = imagePath
+    )
+  }
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
@@ -111,17 +139,17 @@ trait LauncherComposer
       (micIcon <~ micButtonStyle <~ On.click(
         uiStartIntent(new Intent(RecognizerIntent.ACTION_WEB_SEARCH))
       )) ~
-      (appDrawer1 <~ drawerItemStyle <~ On.click {
-        uiShortToast("App 1")
+      (appDrawer1 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 0) <~ FuncOn.click { view: View =>
+        clickAppDrawerItem(view)
       }) ~
-      (appDrawer2 <~ drawerItemStyle <~ On.click {
-        uiShortToast("App 2")
+      (appDrawer2 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 1) <~ FuncOn.click { view: View =>
+        clickAppDrawerItem(view)
       }) ~
-      (appDrawer3 <~ drawerItemStyle <~ On.click {
-        uiShortToast("App 3")
+      (appDrawer3 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 2) <~ FuncOn.click { view: View =>
+        clickAppDrawerItem(view)
       }) ~
-      (appDrawer4 <~ drawerItemStyle <~ On.click {
-        uiShortToast("App 4")
+      (appDrawer4 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 3) <~ FuncOn.click { view: View =>
+        clickAppDrawerItem(view)
       }) ~
       (appDrawerMain <~ drawerAppStyle <~ On.click {
         revealInDrawer
@@ -157,6 +185,12 @@ trait LauncherComposer
       (appDrawerPanel <~ fillAppDrawer(collections)) ~
       createPager(selectedPageDefault)
 
+  private[this] def clickAppDrawerItem(view: View)(implicit context: ActivityContextWrapper): Ui[_] = Ui {
+    val position = Int.unbox(view.getTag(R.id.app_drawer_position))
+    val card = cardsForAppsDrawer(position)
+    execute(card.intent)
+  }
+
   private[this] def getItemsForFabMenu(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonCreateCollectionStyle <~ On.click {
       uiShortToast("Create Collection")
@@ -170,24 +204,20 @@ trait LauncherComposer
   )
 
   private[this] def createPager(activatePosition: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
-    workspaces map {
-      ws =>
-        val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
-          val view = pagination(position)
-          view.setActivated(activatePosition == position)
-          view
-        }
-        paginationPanel <~ vgAddViews(pagerViews)
+    workspaces map { ws =>
+      val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
+        val view = pagination(position)
+        view.setActivated(activatePosition == position)
+        view
+      }
+      paginationPanel <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
-
-  // TODO We add app randomly, in the future we should get the app from repository
   private[this] def fillAppDrawer(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {
     case i: ImageView if tagEquals(i, R.id.`type`, LauncherTags.app) => {
-      val r = scala.util.Random
-      val randomCollection = collections(r.nextInt(collections.length))
-      val randomCard = randomCollection.cards(r.nextInt(randomCollection.cards.length))
-      i <~ ivUri(randomCard.imagePath)
+      val position = Int.unbox(i.getTag(R.id.app_drawer_position))
+      val card = cardsForAppsDrawer(position)
+      i <~ ivUri(card.imagePath)
     }
   }
 
