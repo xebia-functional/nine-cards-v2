@@ -27,6 +27,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.C
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, FabButtonBehaviour}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
@@ -94,6 +95,8 @@ trait CollectionsDetailsComposer
       (viewPager <~ vInvisible) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
+
+  def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ uiSnackbarShort(R.string.contactUsError)
 
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {

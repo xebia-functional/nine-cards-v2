@@ -89,11 +89,13 @@ class CollectionsDetailsActivity
     if (doAnimation) {
       configureEnterTransition(position, () => runUi(ensureDrawCollection(position)))
       Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
-        onResult = (c: Seq[Collection]) => collections = c
+        onResult = (c: Seq[Collection]) => collections = c,
+        onException = (ex: Throwable) => runUi(showError())
       )
     } else {
       Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
-        onResult = (c: Seq[Collection]) => drawCollections(c, position)
+        onResult = (c: Seq[Collection]) => drawCollections(c, position),
+        onException = (ex: Throwable) => showError()
       )
     }
 

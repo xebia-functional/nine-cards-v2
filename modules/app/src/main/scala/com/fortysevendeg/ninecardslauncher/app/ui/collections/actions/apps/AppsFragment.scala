@@ -30,6 +30,7 @@ class AppsFragment
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
     Task.fork(di.deviceProcess.getCategorizedApps.run).resolveAsyncUi(
+      onPreTask = () => showLoading,
       onResult = (apps: Seq[AppCategorized]) => addApps(apps, (app: AppCategorized) => {
         val card = AddCardRequest(
           term = app.name,
@@ -40,7 +41,8 @@ class AppsFragment
         )
         actionsScreenListener foreach (_.addCards(Seq(card)))
         runUi(unreveal())
-      })
+      }),
+      onException = (ex: Throwable) => showGeneralError
     )
   }
 }

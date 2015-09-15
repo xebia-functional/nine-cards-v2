@@ -29,10 +29,12 @@ class ShortcutFragment
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
     Task.fork(di.deviceProcess.getAvailableShortcuts.run).resolveAsyncUi(
+      onPreTask = () => showLoading,
       onResult = (shortcut: Seq[Shortcut]) => addShortcuts(shortcut, shortcut => {
         runUi(unreveal())
         getActivity.startActivityForResult(shortcut.intent, shortcutAdded)
-      })
+      }),
+      onException = (ex: Throwable) => showGeneralError
     )
   }
 }

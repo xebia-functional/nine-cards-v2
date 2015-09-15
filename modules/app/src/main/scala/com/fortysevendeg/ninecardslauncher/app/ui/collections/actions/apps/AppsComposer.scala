@@ -34,15 +34,19 @@ trait AppsComposer
       tbTitle(R.string.applications) <~
       toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
-      (loading <~ vVisible) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
+
+  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+
+  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
     val sortedApps = apps sortBy sortByName // We should sort the apps using queries when the database be ready
     val appsHeadered = generateAppsForList(sortedApps, Seq.empty)
     val adapter = new AppsAdapter(appsHeadered, clickListener)
     (recycler <~
+      vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone) ~
