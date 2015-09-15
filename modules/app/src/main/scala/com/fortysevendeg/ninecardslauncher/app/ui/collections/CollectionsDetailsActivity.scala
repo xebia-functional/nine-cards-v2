@@ -42,6 +42,8 @@ class CollectionsDetailsActivity
 
   val defaultIcon = ""
 
+  val defaultToDoAnimation = true
+
   implicit lazy val di = new Injector
 
   var collections: Seq[Collection] = Seq.empty
@@ -55,25 +57,28 @@ class CollectionsDetailsActivity
     super.onCreate(bundle)
 
     val position = getInt(
-      Seq(getIntent.getExtras, bundle),
+      Seq(bundle, getIntent.getExtras),
       startPosition,
       defaultPosition)
 
     val indexColor = getInt(
-      Seq(getIntent.getExtras, bundle),
+      Seq(bundle, getIntent.getExtras),
       indexColorToolbar,
       defaultPosition)
 
     val icon = getString(
-      Seq(getIntent.getExtras, bundle),
+      Seq(bundle, getIntent.getExtras),
       iconToolbar,
       defaultIcon)
+
+    val doAnimation = getBoolean(
+      Seq(bundle, getIntent.getExtras),
+      toDoAnimation,
+      defaultToDoAnimation)
 
     setContentView(R.layout.collections_detail_activity)
 
     runUi(initUi(indexColor, icon))
-
-    configureEnterTransition(position, () => runUi(ensureDrawCollection(position)))
 
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
@@ -81,15 +86,17 @@ class CollectionsDetailsActivity
 
     initSystemStatusBarTint
 
-    Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
-      onResult = (c: Seq[Collection]) => collections = c
-    )
+    if (doAnimation) {
+      configureEnterTransition(position, () => runUi(ensureDrawCollection(position)))
+      Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
+        onResult = (c: Seq[Collection]) => collections = c
+      )
+    } else {
+      Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+        onResult = (c: Seq[Collection]) => drawCollections(c, position)
+      )
+    }
 
-  }
-
-  override def finishAfterTransition(): Unit = {
-    super.finishAfterTransition()
-    runUi(toolbar <~ vVisible)
   }
 
   def ensureDrawCollection(position: Int): Ui[_] = if (collections.isEmpty) {
@@ -98,6 +105,20 @@ class CollectionsDetailsActivity
     drawCollections(collections, position)
   }
 
+  override def finishAfterTransition(): Unit = {
+    super.finishAfterTransition()
+    runUi(toolbar <~ vVisible)
+  }
+
+  override def onSaveInstanceState(outState: Bundle): Unit = {
+    outState.putInt(startPosition, getCurrentPosition getOrElse defaultPosition)
+    outState.putBoolean(toDoAnimation, false)
+    getCurrentCollection foreach { collection =>
+      outState.putInt(indexColorToolbar, collection.themedColorIndex)
+      outState.putString(iconToolbar, collection.icon)
+    }
+    super.onSaveInstanceState(outState)
+  }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
@@ -205,6 +226,7 @@ object CollectionsDetailsActivity {
   val startPosition = "start_position"
   val indexColorToolbar = "color_toolbar"
   val iconToolbar = "icon_toolbar"
+  val toDoAnimation = "to_do_animation"
   val snapshotName = "snapshot"
 
   def getContentTransitionName(position: Int) = s"icon_$position"

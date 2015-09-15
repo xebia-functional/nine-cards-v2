@@ -167,6 +167,8 @@ trait CollectionsDetailsComposer
     case _ => None
   }
 
+  def getCurrentPosition: Option[Int] = getAdapter flatMap ( _.getCurrentFragmentPosition )
+
   def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
     adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
   }
