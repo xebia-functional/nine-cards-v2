@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.{CardView, RecyclerView}
 import android.view.View.OnClickListener
-import android.view.{View, ViewGroup}
+import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, LauncherExecutor}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme

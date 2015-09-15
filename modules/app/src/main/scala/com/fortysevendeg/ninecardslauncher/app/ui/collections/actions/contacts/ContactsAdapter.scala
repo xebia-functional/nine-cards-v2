@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
-import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager.SpanSizeLookup
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
@@ -8,6 +7,7 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsAdapter._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ViewHolderCategoryLayoutAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -16,7 +16,7 @@ import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 
 case class ContactsAdapter(var contacts: Seq[ContactHeadered], clickListener: (Contact) => Unit)
-  (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
+  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[RecyclerView.ViewHolder]
   with FastScrollerListener {
 

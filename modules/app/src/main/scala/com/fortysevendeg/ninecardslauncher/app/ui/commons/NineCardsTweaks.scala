@@ -55,12 +55,13 @@ object AsyncImageTweaks {
         char = name.substring(0, 1))
     })
 
-  def ivUriContact(uri: String, name: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivUriContact(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       makeRequest(
         request = glide().loadFromMediaStore(Uri.withAppendedPath(Uri.parse(uri), Contacts.Photo.DISPLAY_PHOTO)),
         imageView = imageView,
-        char = name.substring(0, 1))
+        char = name.substring(0, 1),
+        circular = circular)
     })
 
   private[this] def glide()(implicit uiContext: UiContext[_]) = uiContext match {
@@ -72,12 +73,13 @@ object AsyncImageTweaks {
   private[this] def makeRequest(
     request: DrawableTypeRequest[_],
     imageView: ImageView,
-    char: String)(implicit context: ActivityContextWrapper) =
+    char: String,
+    circular: Boolean = false)(implicit context: ActivityContextWrapper) =
       request
         .asBitmap()
         .into(new SimpleTarget[Bitmap]() {
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
-          imageView.setImageDrawable(new CharDrawable(char))
+          imageView.setImageDrawable(new CharDrawable(char, circle = circular))
         }
 
         override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {

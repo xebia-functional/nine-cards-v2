@@ -14,7 +14,7 @@ case class ViewHolderCategoryLayoutAdapter(content: ViewGroup)(implicit context:
 
   lazy val name = Option(findView(TR.simple_category_name))
 
-  def bind(category: String)(implicit fragment: Fragment): Ui[_] = name <~ tvText(category)
+  def bind(category: String): Ui[_] = name <~ tvText(category)
 
   override def findViewById(id: Int): View = content.findViewById(id)
 

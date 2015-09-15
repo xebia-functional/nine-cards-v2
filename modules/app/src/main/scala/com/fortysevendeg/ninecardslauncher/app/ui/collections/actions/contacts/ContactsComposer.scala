@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
-import android.support.v4.app.Fragment
 import android.support.v7.widget.Toolbar.LayoutParams
 import android.support.v7.widget.{RecyclerView, SwitchCompat}
 import android.view.ViewGroup.LayoutParams._
@@ -11,9 +10,9 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, HeaderUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -59,7 +58,7 @@ trait ContactsComposer
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def generateContactsAdapter(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit fragment: Fragment): Ui[_] = {
+  def generateContactsAdapter(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
     val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)
     val adapter = new ContactsAdapter(contactsHeadered, clickListener)
     (recycler <~
@@ -70,7 +69,7 @@ trait ContactsComposer
       (scrollerLayout <~ fslLinkRecycler)
   }
 
-  def reloadContactsAdapter(contacts: Seq[Contact], filter: ContactsFilter)(implicit fragment: Fragment): Ui[_] = {
+  def reloadContactsAdapter(contacts: Seq[Contact], filter: ContactsFilter)(implicit uiContext: UiContext[_]): Ui[_] = {
     val contactsHeadered = generateContactsForList(contacts, Seq.empty)
     (recycler <~ vVisible) ~
       (loading <~ vGone) ~
@@ -111,7 +110,7 @@ trait ContactsComposer
 
 }
 
-case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, fragment: Fragment)
+case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -121,9 +120,9 @@ case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: 
 
   runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
 
-  def bind(contact: Contact, position: Int)(implicit fragment: Fragment): Ui[_] = {
-    val contactName = Option(contact.name) map (name => name) getOrElse resGetString(R.string.unnamed)
-    (icon <~ ivUriContact(fragment, contact.photoUri, contactName, circular = true)) ~
+  def bind(contact: Contact, position: Int): Ui[_] = {
+    val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
+    (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
       (name <~ tvText(contactName)) ~
       (content <~ vIntTag(position))
   }
