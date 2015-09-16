@@ -52,7 +52,7 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
         charPaint.getTextBounds(char, 0, 1, bounds)
         val x: Int = (pb.centerX() - bounds.exactCenterX).toInt
         val y: Int = (pb.centerY() - bounds.exactCenterY).toInt
-        canvas.drawText(char, x, y, charPaint)
+        canvas.drawText(char.toUpperCase, x, y, charPaint)
     }
   }
 

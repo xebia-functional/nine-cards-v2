@@ -122,7 +122,7 @@ trait CollectionAdapterStyles {
         expandLayout +
         ivScaleType(ScaleType.CENTER_CROP)
     case _ =>
-      ivCardUri(card.imagePath, card.term) +
+      ivCardUri(card.imagePath, card.term, circular = true) +
         reduceLayout +
         ivScaleType(ScaleType.FIT_CENTER)
   }

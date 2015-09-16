@@ -51,12 +51,13 @@ object AsyncImageTweaks {
     }
   )
 
-  def ivCardUri(uri: String, name: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       makeRequest(
         request = glide().load(uri),
         imageView = imageView,
-        char = name.substring(0, 1))
+        char = name.substring(0, 1),
+        circular = circular)
     })
 
   def ivUriContact(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
