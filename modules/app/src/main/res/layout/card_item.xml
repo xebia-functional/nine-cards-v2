@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/CardRoot">
+
+    <LinearLayout
+        style="@style/CardContent">
+
+        <FrameLayout
+            android:id="@+id/card_icon_content"
+            style="@style/CardIconContent">
+
+            <ImageView
+                android:id="@+id/card_icon"
+                style="@style/CardIcon"/>
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/card_text"
+            style="@style/CardText"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/card_badge"
+        style="@style/CardBadge"/>
+
+</android.support.v7.widget.CardView>

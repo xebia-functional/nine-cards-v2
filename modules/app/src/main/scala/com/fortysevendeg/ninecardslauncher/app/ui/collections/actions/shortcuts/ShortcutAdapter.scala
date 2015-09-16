@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
 
-import android.support.v4.app.Fragment
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
@@ -11,7 +10,7 @@ import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 
 case class ShortcutAdapter(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit)
-  (implicit activityContext: ActivityContextWrapper, fragment: Fragment)
+  (implicit activityContext: ActivityContextWrapper)
   extends RecyclerView.Adapter[ViewHolderShortcutLayoutAdapter] {
 
   val heightHeader = resGetDimensionPixelSize(R.dimen.height_simple_category)

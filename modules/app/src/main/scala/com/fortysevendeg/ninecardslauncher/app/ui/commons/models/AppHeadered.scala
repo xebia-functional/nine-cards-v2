@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.models
 
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 
 import scala.annotation.tailrec
@@ -8,7 +9,8 @@ import scala.math.Ordering.Implicits._
 
 case class AppHeadered(app: Option[AppCategorized] = None, header: Option[String] = None)
 
-object AppHeadered {
+object AppHeadered
+  extends HeaderUtils {
 
   def generateAppHeaderedList(apps: Seq[AppCategorized]): Seq[AppHeadered] =
     generateAppsForList(apps sortBy sortByName, Seq.empty)
@@ -19,15 +21,19 @@ object AppHeadered {
   private[this] def generateAppsForList(apps: Seq[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
     case Nil => acc
     case Seq(h, t @ _ *) =>
-      val currentChar = h.name.substring(0, 1).toUpperCase
-      val lastChar = acc.lastOption flatMap (_.app map (_.name.substring(0, 1).toUpperCase))
+      val currentChar: String = getCurrentChar(h.name)
+      val lastChar: Option[String] = for {
+        appsHeadered <- acc.lastOption
+        app <- appsHeadered.app
+        appName <- Option(Option(app.name) getOrElse charUnnamed)
+        c <- Option(generateChar(appName.substring(0, 1)))
+      } yield c
       val skipChar = lastChar exists (_ equals currentChar)
-      val seqHeadered = if (skipChar) {
-        acc :+ AppHeadered(app = Option(h))
+      if (skipChar) {
+        generateAppsForList(t, acc :+ AppHeadered(app = Option(h)))
       } else {
-        acc ++ Seq(AppHeadered(header = Option(currentChar)), AppHeadered(app = Option(h)))
+        generateAppsForList(t, acc ++ Seq(AppHeadered(header = Option(currentChar)), AppHeadered(app = Option(h))))
       }
-      generateAppsForList(t, seqHeadered)
   }
 
 }

@@ -18,6 +18,7 @@ public interface Fields {
 
     String LOOKUP_SELECTION = ContactsContract.Contacts.LOOKUP_KEY + " = ?";
     String STARRED_SELECTION = ContactsContract.Contacts.STARRED + " > 0";
+    String HAS_PHONE_NUMBER_SELECTION = ContactsContract.Contacts.HAS_PHONE_NUMBER + " == 1";
 
     // -- Email -- //
     Uri EMAIL_CONTENT_URI = ContactsContract.CommonDataKinds.Email.CONTENT_URI;

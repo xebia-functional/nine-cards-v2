@@ -39,6 +39,8 @@ object ActivityResult {
 
   val shortcutAdded = 2
 
+  val selectInfoContact = 3
+
 }
 
 object AppUtils {
@@ -76,6 +78,13 @@ object AppUtils {
 }
 
 object ColorsUtils {
+
+  def getColorLight(color: Int, ratio: Float = 0.1f) = {
+    val colorHsv = Array(0f, 0f, 0f)
+    Color.colorToHSV(color, colorHsv)
+    colorHsv.update(2, math.min(colorHsv(2) + ratio, 1))
+    Color.HSVToColor(colorHsv)
+  }
 
   def getColorDark(color: Int, ratio: Float = 0.1f) = {
     val colorHsv = Array(0f, 0f, 0f)

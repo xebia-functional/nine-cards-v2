@@ -22,6 +22,7 @@ import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
@@ -149,8 +150,8 @@ trait CollectionsDetailsComposer
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
       uiShortToast("Recommendations")
     }),
-    getUi(w[FabItemMenu] <~ fabButtonContactsStyle <~ On.click {
-      uiShortToast("Contacts")
+    getUi(w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
+      view: View => showAction(f[ContactsFragment], view)
     }),
     getUi(w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
       view: View => showAction(f[ShortcutFragment], view)

@@ -19,6 +19,13 @@ trait DeviceProcess {
   def getAvailableShortcuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException]
 
   /**
+    * Save shortcut icon from bitmap
+   * @return the String contains the path where the icon was stored
+   * @throws ShortcutException if exist some problem storing icon
+   */
+  def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport): ServiceDef2[String, ShortcutException]
+
+  /**
    * Get the favorite contacts if they exist and fill all their data
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
    *         information about the contact including its ContactInfo (if it exists)
@@ -27,9 +34,19 @@ trait DeviceProcess {
   def getFavoriteContacts(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
 
   /**
-   * Save shortcut icon from bitmap
-   * @return the String contains the path where the icon was stored
-   * @throws ShortcutException if exist some problem storing icon
+   * Get the contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
+   * and contacts with phone number
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
+   *         information about the contact
+   * @throws ContactException if exist some problem to get the contacts
    */
-  def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport): ServiceDef2[String, ShortcutException]
+  def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
+
+  /**
+   * Get the contact and fill all their data
+   * @return the com.fortysevendeg.ninecardslauncher.process.device.models.Contact contains
+   *         information about the contact
+   * @throws ContactException if exist some problem to get the contacts
+   */
+  def getContact(lookupKey: String)(implicit context: ContextSupport): ServiceDef2[Contact, ContactException]
 }

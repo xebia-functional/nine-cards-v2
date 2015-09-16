@@ -1,11 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.{CardView, RecyclerView}
 import android.view.View.OnClickListener
-import android.view.{View, ViewGroup}
+import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, LauncherExecutor}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 
@@ -14,14 +15,15 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with LauncherExecutor {
 
-  override def onCreateViewHolder(parentViewGroup: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
-    val adapter = new CollectionLayoutAdapter(heightCard)
+  override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
+    val view = LayoutInflater.from(parent.getContext).inflate(R.layout.card_item, parent, false).asInstanceOf[CardView]
+    val adapter = new ViewHolderCollectionAdapter(view, heightCard)
     adapter.content.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
         Option(v.getTag) foreach (tag => execute(collection.cards(tag.toString.toInt).intent))
       }
     })
-    new ViewHolderCollectionAdapter(adapter)
+    adapter
   }
 
   override def getItemCount: Int = collection.cards.size

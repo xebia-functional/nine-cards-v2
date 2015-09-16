@@ -1,13 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v4.app.Fragment
-import android.support.v7.widget.{DefaultItemAnimator, CardView, GridLayoutManager, RecyclerView}
-import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
+import android.support.v7.widget.{CardView, DefaultItemAnimator, GridLayoutManager, RecyclerView}
+import android.view.View
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RecyclerViewListenerTweaks._
@@ -16,8 +17,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTwe
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{NineRecyclerView, PullToCloseListener, PullToCloseView}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, _}
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
@@ -133,45 +135,37 @@ trait CollectionFragmentComposer
 
 }
 
-class CollectionLayoutAdapter(heightCard: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends CollectionAdapterStyles {
+case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+  extends RecyclerView.ViewHolder(content)
+  with CollectionAdapterStyles
+  with TypedFindView {
 
-  var iconContent = slot[FrameLayout]
+  lazy val iconContent = Option(findView(TR.card_icon_content))
 
-  var icon = slot[ImageView]
+  lazy val icon = Option(findView(TR.card_icon))
 
-  var name = slot[TextView]
+  lazy val name = Option(findView(TR.card_text))
 
-  val content = layout
+  lazy val badge = Option(findView(TR.card_badge))
 
-  private def layout(implicit context: ActivityContextWrapper) = getUi(
-    l[CardView](
-      l[LinearLayout](
-        l[FrameLayout](
-          w[ImageView] <~ wire(icon) <~ iconStyle
-        ) <~ wire(iconContent) <~ iconContentStyle(heightCard),
-        w[TextView] <~ wire(name) <~ nameStyle
-      ) <~ contentStyle
-    ) <~ rootStyle(heightCard)
-  )
-
-}
-
-class ViewHolderCollectionAdapter(adapter: CollectionLayoutAdapter)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(adapter.content)
-  with CollectionAdapterStyles {
-
-  val content = adapter.content
-
-  val iconContent = adapter.iconContent
-
-  val icon = adapter.icon
-
-  val name = adapter.name
+  runUi(
+    (content <~ rootStyle(heightCard)) ~
+      (iconContent <~ iconContentStyle(heightCard)) ~
+      (name <~ nameStyle))
 
   def bind(card: Card, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     (icon <~ iconCardTransform(card)) ~
       (name <~ tvText(card.term)) ~
-      (content <~ vIntTag(position))
+      (content <~ vIntTag(position)) ~
+      (badge <~ (getBadge(card.cardType) map { ivSrc(_) + vVisible } getOrElse vGone))
+
+  private[this] def getBadge(cardType: String): Option[Int] = cardType match {
+    case CardType.phone => Option(R.drawable.badge_phone)
+    case CardType.sms => Option(R.drawable.badge_sms)
+    case CardType.email => Option(R.drawable.badge_email)
+    case _ => None
+  }
+
+  override def findViewById(id: Int): View = content.findViewById(id)
 
 }

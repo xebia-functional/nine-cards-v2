@@ -40,7 +40,8 @@ trait ContactsServicesSpecification
 
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
-      allFields)(getListFromCursor(contactFromCursor)) returns contacts
+      allFields,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
 
     contentResolverWrapper.fetch(
       uri = Fields.EMAIL_CONTENT_URI,
@@ -96,7 +97,8 @@ trait ContactsServicesSpecification
 
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
-      allFields)(getListFromCursor(contactFromCursor)) throws contentResolverException
+      allFields,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       uri = Fields.EMAIL_CONTENT_URI,
@@ -113,6 +115,52 @@ trait ContactsServicesSpecification
       projection = allFields,
       where = Fields.LOOKUP_SELECTION,
       whereParams = Seq(firstLookupKey))(getEntityFromCursor(contactFromCursor)) throws contentResolverException
+
+  }
+
+  trait FavoriteContactsServicesResponses
+    extends ContactsServicesScope
+    with ContactsServicesImplData {
+
+    contentResolverWrapper.fetchAll(
+      Fields.CONTENT_URI,
+      allFields,
+      where = Fields.STARRED_SELECTION,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
+  }
+
+  trait ErrorFavoriteContactsServicesResponses
+    extends ErrorContactsServicesResponses
+    with ContactsServicesImplData {
+
+    contentResolverWrapper.fetchAll(
+      Fields.CONTENT_URI,
+      allFields,
+      where = Fields.STARRED_SELECTION,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
+
+  }
+
+  trait ContactsWithPhoneServicesResponses
+    extends ContactsServicesScope
+    with ContactsServicesImplData {
+
+    contentResolverWrapper.fetchAll(
+      Fields.CONTENT_URI,
+      allFields,
+      where = Fields.HAS_PHONE_NUMBER,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
+  }
+
+  trait ErrorContactsWithPhoneServicesResponses
+    extends ErrorContactsServicesResponses
+    with ContactsServicesImplData {
+
+    contentResolverWrapper.fetchAll(
+      Fields.CONTENT_URI,
+      allFields,
+      where = Fields.HAS_PHONE_NUMBER,
+      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
 
   }
 
@@ -256,6 +304,56 @@ class ContactsServicesImplSpec
           }
         }
 
+    }
+
+    "getFavoriteContacts" should {
+
+      "returns favorites contacts from the content resolver" in
+        new FavoriteContactsServicesResponses {
+          val result = contactsServices.getFavoriteContacts.run.run
+
+          result must beLike {
+            case Answer(seq) => seq shouldEqual contacts
+          }
+        }
+
+      "return a ContactsServiceException when the content resolver throws an exception" in
+        new ErrorFavoriteContactsServicesResponses {
+          val result = contactsServices.getFavoriteContacts.run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, exception)) => exception must beLike {
+                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "getContactsWithPhone" should {
+
+      "returns contacts with phone numbers from the content resolver" in
+        new ContactsWithPhoneServicesResponses {
+          val result = contactsServices.getContactsWithPhone.run.run
+
+          result must beLike {
+            case Answer(seq) => seq shouldEqual contacts
+          }
+        }
+
+      "return a ContactsServiceException when the content resolver throws an exception" in
+        new ErrorContactsWithPhoneServicesResponses {
+          val result = contactsServices.getContactsWithPhone.run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, exception)) => exception must beLike {
+                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
     }
 
   }

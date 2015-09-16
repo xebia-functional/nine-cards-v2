@@ -17,7 +17,7 @@ case class AddCardRequest(
   packageName: Option[String],
   cardType: String,
   intent: NineCardIntent,
-  imagePath: String)
+  imagePath: String) extends Serializable
 
 case class EditCollectionRequest(
   name: String,

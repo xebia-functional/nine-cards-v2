@@ -8,6 +8,7 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -31,7 +32,7 @@ trait ShortcutComposer
       (loading <~ vVisible) ~
       (recycler <~ recyclerStyle)
 
-  def addShortcuts(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit)(implicit fragment: Fragment) = {
+  def addShortcuts(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit) = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
     val adapter = new ShortcutAdapter(sortedShortcuts, clickListener)
     (recycler <~
@@ -44,7 +45,7 @@ trait ShortcutComposer
 
 }
 
-case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, fragment: Fragment)
+case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -52,7 +53,7 @@ case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context:
 
   lazy val name = Option(findView(TR.simple_item_name))
 
-  def bind(shortcut: Shortcut, position: Int)(implicit fragment: Fragment): Ui[_] =
+  def bind(shortcut: Shortcut, position: Int): Ui[_] =
     (icon <~ (shortcut.icon map ivSrc getOrElse Tweak.blank)) ~
       (name <~ tvText(shortcut.title)) ~
       (content <~ vIntTag(position))

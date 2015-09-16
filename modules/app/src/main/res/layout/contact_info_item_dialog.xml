@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/DialogContactInfoItemContent">
+
+    <ImageView
+        style="@style/DialogContactInfoImage"
+        android:id="@+id/contact_dialog_item_image"/>
+
+
+    <TextView
+        style="@style/DialogContactInfoText"
+        android:id="@+id/contact_dialog_item_text"/>
+
+</LinearLayout>

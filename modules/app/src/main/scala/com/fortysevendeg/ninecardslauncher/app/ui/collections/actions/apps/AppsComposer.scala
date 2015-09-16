@@ -47,19 +47,7 @@ trait AppsComposer
 
 }
 
-case class ViewHolderCategoryLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
-
-  lazy val name = Option(findView(TR.simple_category_name))
-
-  def bind(category: String): Ui[_] = name <~ tvText(category)
-
-  override def findViewById(id: Int): View = content.findViewById(id)
-
-}
-
-case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper)
+case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
