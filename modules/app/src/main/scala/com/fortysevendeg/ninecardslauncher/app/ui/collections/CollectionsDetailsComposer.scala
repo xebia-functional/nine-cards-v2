@@ -199,6 +199,15 @@ trait CollectionsDetailsComposer
       fragment.addCards(c)
     }
 
+  def exitTransition(implicit theme: NineCardsTheme) =
+    ((toolbar <~ exitViews()) ~
+      (tabs <~ exitViews()) ~
+      (iconContent <~ exitViews()) ~
+      (viewPager <~ exitViews(up = false))) ~
+      (root <~~ fadeBackground(in = false, theme.get(CollectionDetailBackgroundColor), 1f)) ~~
+      Ui(finish())
+
+
   def configureEnterTransition(
     position: Int,
     end: (() => Unit)) = Lollipop.ifSupportedThen {
@@ -212,9 +221,6 @@ trait CollectionsDetailsComposer
 
     val enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.shared_element_enter_collection_detail)
     getWindow.setSharedElementEnterTransition(enterTransition)
-
-    getWindow.setSharedElementReturnTransition(new TransitionSet())
-    getWindow.setReturnTransition(new Fade())
 
     iconContent foreach (_.setTransitionName(getContentTransitionName(position)))
 

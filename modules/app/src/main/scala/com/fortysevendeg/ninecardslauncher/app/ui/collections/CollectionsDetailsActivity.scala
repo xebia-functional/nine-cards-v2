@@ -101,6 +101,11 @@ class CollectionsDetailsActivity
 
   }
 
+  override def onPause(): Unit = {
+    super.onPause()
+    overridePendingTransition(0, 0)
+  }
+
   def ensureDrawCollection(position: Int): Ui[_] = if (collections.isEmpty) {
     uiHandlerDelayed(ensureDrawCollection(position), 200)
   } else {
@@ -148,8 +153,8 @@ class CollectionsDetailsActivity
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case android.R.id.home =>
-      finish()
-      true
+      runUi(exitTransition)
+      false
     case _ => super.onOptionsItemSelected(item)
   }
 
@@ -160,13 +165,13 @@ class CollectionsDetailsActivity
   override def onBackPressed(): Unit = (fabMenuOpened, isActionShowed) match {
     case (true, _) => runUi(swapFabButton())
     case (_, true) => runUi(unrevealActionFragment())
-    case _ => finish()
+    case _ => runUi(exitTransition)
   }
 
   override def pullToClose(scroll: Int, scrollType: Int, close: Boolean): Unit =
     runUi(pullCloseScrollY(scroll, scrollType, close))
 
-  override def close(): Unit = finish()
+  override def close(): Unit = runUi(exitTransition)
 
   override def startScroll(): Unit = getCurrentCollection foreach { collection =>
     val color = getIndexColor(collection.themedColorIndex)
