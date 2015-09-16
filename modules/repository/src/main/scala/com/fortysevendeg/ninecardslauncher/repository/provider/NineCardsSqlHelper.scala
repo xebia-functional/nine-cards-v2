@@ -10,6 +10,19 @@ class NineCardsSqlHelper(context: Context)
 
   override def onCreate(db: SQLiteDatabase) = {
 
+    db.execSQL("CREATE TABLE " + AppEntity.table +
+      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+      AppEntity.name + " TEXT not null, " +
+      AppEntity.packageName + " TEXT not null, " +
+      AppEntity.className + " TEXT not null, " +
+      AppEntity.category + " TEXT not null, " +
+      AppEntity.imagePath + " TEXT not null, " +
+      AppEntity.colorPrimary + " INTEGER, " +
+      AppEntity.dateInstalled + " INTEGER, " +
+      AppEntity.dateUpdate + " INTEGER, " +
+      AppEntity.version + " TEXT not null, " +
+      AppEntity.installedFromGooglePlay + " INTEGER )")
+
     db.execSQL("CREATE TABLE " + CacheCategoryEntity.table +
       "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
       CacheCategoryEntity.packageName + " TEXT not null, " +
@@ -72,6 +85,19 @@ class NineCardsSqlHelper(context: Context)
         db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.sharedCollectionId + " TEXT")
         db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.originalSharedCollectionId + " TEXT")
         db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.sharedCollectionSubscribed + " INTEGER")
+      case 5 =>
+        db.execSQL("CREATE TABLE " + AppEntity.table +
+          "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+          AppEntity.name + " TEXT not null, " +
+          AppEntity.packageName + " TEXT not null, " +
+          AppEntity.className + " TEXT not null, " +
+          AppEntity.category + " TEXT not null, " +
+          AppEntity.imagePath + " TEXT not null, " +
+          AppEntity.colorPrimary + " INTEGER, " +
+          AppEntity.dateInstalled + " INTEGER, " +
+          AppEntity.dateUpdate + " INTEGER, " +
+          AppEntity.version + " TEXT not null, " +
+          AppEntity.installedFromGooglePlay + " INTEGER )")
     }
 
     new Handler().post(
@@ -84,5 +110,5 @@ class NineCardsSqlHelper(context: Context)
 object NineCardsSqlHelper {
   val id = "_id"
   val databaseName = "nineCards"
-  val databaseVersion = 4
+  val databaseVersion = 5
 }
