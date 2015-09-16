@@ -37,7 +37,7 @@ trait AppsComposer
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit fragment: Fragment) = {
+  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
     val adapter = new AppsAdapter(
       apps = generateAppHeaderedList(apps),
       clickListener = clickListener)

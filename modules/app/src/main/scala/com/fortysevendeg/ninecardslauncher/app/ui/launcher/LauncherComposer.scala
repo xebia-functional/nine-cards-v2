@@ -3,16 +3,15 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 import android.content.{Context, Intent}
 import android.speech.RecognizerIntent
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.ImageView
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, SystemBarsTint, FabButtonBehaviour}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, LauncherExecutor, SystemBarsTint, FabButtonBehaviour}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
@@ -188,7 +187,7 @@ trait LauncherComposer
       paginationPanel <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
-  private[this] def fillAppDrawer(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {
+  private[this] def fillAppDrawer(collections: Seq[Collection])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = Transformer {
     case i: ImageView if tagEquals(i, R.id.`type`, LauncherTags.app) => {
       val position = Int.unbox(i.getTag(R.id.app_drawer_position))
       val card = cardsForAppsDrawer(position)
