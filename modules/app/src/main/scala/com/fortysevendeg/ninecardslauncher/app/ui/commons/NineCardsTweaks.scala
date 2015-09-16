@@ -4,11 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.ContactsContract.Contacts
-import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import com.bumptech.glide.{DrawableTypeRequest, Glide}
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import com.fortysevendeg.ninecardslauncher.app.ui.components.CharDrawable
@@ -36,79 +35,56 @@ object RecyclerViewListenerTweaks {
 
 }
 
-object AsyncImageApplicationTweaks {
+object AsyncImageTweaks {
   type W = ImageView
 
-  def ivUri(uri: String)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](
+  def ivUri(uri: String)(implicit context: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      Glide.`with`(context.application)
+      glide()
         .load(uri)
         .crossFade()
         .into(imageView)
     }
   )
 
-}
-
-object AsyncImageActivityTweaks {
-  type W = ImageView
-
-  def ivUri(uri: String)(implicit context: ActivityContextWrapper): Tweak[W] = Tweak[W](
+  def ivCardUri(uri: String, name: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      Glide.`with`(context.getOriginal)
-        .load(uri)
-        .crossFade()
-        .into(imageView)
-    }
-  )
+      makeRequest(
+        request = glide().load(uri),
+        imageView = imageView,
+        char = name.substring(0, 1))
+    })
 
-}
-
-object AsyncImageFragmentTweaks {
-  type W = ImageView
-
-  def ivUri(fragment: Fragment, uri: String): Tweak[W] = Tweak[W](
+  def ivUriContact(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      Glide.`with`(fragment)
-        .load(uri)
-        .crossFade()
-        .into(imageView)
-    }
-  )
+      makeRequest(
+        request = glide().loadFromMediaStore(Uri.withAppendedPath(Uri.parse(uri), Contacts.Photo.DISPLAY_PHOTO)),
+        imageView = imageView,
+        char = name.substring(0, 1),
+        circular = circular)
+    })
 
-}
+  private[this] def glide()(implicit uiContext: UiContext[_]) = uiContext match {
+    case c: ApplicationUiContext => Glide.`with`(c.value)
+    case c: ActivityUiContext => Glide.`with`(c.value)
+    case c: FragmentUiContext => Glide.`with`(c.value)
+  }
 
-object AsyncImageCardsTweaks {
-  type W = ImageView
-
-  def ivUri(fragment: Fragment, uri: String, name: String)(implicit context: ActivityContextWrapper): Tweak[W] = Tweak[W](
-    imageView =>
-      Glide.`with`(fragment)
-        .load(uri)
+  private[this] def makeRequest(
+    request: DrawableTypeRequest[_],
+    imageView: ImageView,
+    char: String,
+    circular: Boolean = false)(implicit context: ActivityContextWrapper) =
+      request
         .asBitmap()
         .into(new SimpleTarget[Bitmap]() {
-          override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
-            imageView.setImageDrawable(new CharDrawable(name.substring(0, 1), true))
-          }
-          override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
-            imageView.setImageBitmap(resource)
-          }
-        })
-  )
+        override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
+          imageView.setImageDrawable(new CharDrawable(char, circle = circular))
+        }
 
-  def ivUriContact(fragment: Fragment, uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper): Tweak[W] = Tweak[W](
-    imageView =>
-      Glide.`with`(fragment)
-        .loadFromMediaStore(Uri.withAppendedPath(Uri.parse(uri), Contacts.Photo.DISPLAY_PHOTO))
-        .asBitmap()
-        .into(new SimpleTarget[Bitmap]() {
-          override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit = {
-            imageView.setImageDrawable(new CharDrawable(name.substring(0, 1), circular))
-          }
-          override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
-            imageView.setImageBitmap(resource)
-          }
-        })
-  )
+        override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit = {
+          imageView.setImageBitmap(resource)
+        }
+      })
 
 }

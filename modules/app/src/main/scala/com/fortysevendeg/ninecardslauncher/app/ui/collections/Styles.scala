@@ -19,8 +19,9 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageCardsTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
@@ -116,13 +117,13 @@ trait CollectionAdapterStyles {
   def nameStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
     tvColor(theme.get(CollectionDetailTextCardColor))
 
-  def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, fragment: Fragment) = card.cardType match {
+  def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) = card.cardType match {
     case `phone` | `sms` | `email` =>
-      ivUriContact(fragment, card.imagePath, card.term) +
+      ivUriContact(card.imagePath, card.term) +
         expandLayout +
         ivScaleType(ScaleType.CENTER_CROP)
     case _ =>
-      ivUri(fragment, card.imagePath, card.term) +
+      ivCardUri(card.imagePath, card.term) +
         reduceLayout +
         ivScaleType(ScaleType.FIT_CENTER)
   }

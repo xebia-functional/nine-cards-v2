@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.Contexts
@@ -28,7 +29,7 @@ class CollectionFragment
     case _ => getDefaultTheme
   }
 
-  implicit lazy val fragment: Fragment = this // TODO : javi => We need that, but I don't like. We need a better way
+  implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
   lazy val position = getArguments.getInt(keyPosition, 0)
 

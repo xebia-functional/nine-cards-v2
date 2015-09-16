@@ -3,27 +3,24 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 import android.content.{Context, Intent}
 import android.speech.RecognizerIntent
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageActivityTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, SystemBarsTint, FabButtonBehaviour}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab._
 import macroid.FullDsl._
 import macroid._
 
@@ -85,14 +82,6 @@ trait LauncherComposer
 
   lazy val appDrawer4 = Option(findView(TR.launcher_page_4))
 
-  lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
-
-  lazy val drawerContent = Option(findView(TR.launcher_drawer_content))
-
-  lazy val drawerTabApp = Option(findView(TR.launcher_drawer_tab_app))
-
-  lazy val drawerTabContacts = Option(findView(TR.launcher_drawer_tab_contact))
-
   lazy val paginationPanel = Option(findView(TR.launcher_pagination_panel))
 
   lazy val searchPanel = Option(findView(TR.launcher_search_panel))
@@ -150,25 +139,11 @@ trait LauncherComposer
       }) ~
       (appDrawer4 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 3) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
-      }) ~
-      (appDrawerMain <~ drawerAppStyle <~ On.click {
-        revealInDrawer
-      }) ~
-      (drawerContent <~ vGone) ~
-      (drawerTabApp <~
-        ttInitTab(R.string.apps, R.drawable.app_drawer_icon_list_app) <~
-        ttSelect <~
-        On.click {
-          uiShortToast("App") ~ (drawerTabApp <~ ttSelect) ~ (drawerTabContacts <~ ttUnselect)
-        }) ~
-      (drawerTabContacts <~
-        ttInitTab(R.string.contacts, R.drawable.app_drawer_icon_list_contact) <~
-        ttUnselect <~
-        On.click {
-          uiShortToast("Contacts") ~ (drawerTabContacts <~ ttSelect) ~ (drawerTabApp <~ ttUnselect)
-        })
+      })
 
-  def createCollections(collections: Seq[Collection])(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def createCollections(
+    collections: Seq[Collection])
+    (implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] =
     (loading <~ vGone) ~
       (workspaces <~
         lwsData(collections, selectedPageDefault) <~
@@ -229,21 +204,5 @@ trait LauncherComposer
   private[this] def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
     w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
-
-  class RunnableWrapper(implicit context: ActivityContextWrapper) extends Runnable {
-    override def run(): Unit = runUi(fabButton <~ hideFabMenu)
-  }
-
-  def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
-
-  def revealInDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-    updateNavigationToBlack ~
-      (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source))) ~~
-      updateStatusColor(resGetColor(R.color.drawer_toolbar))
-
-  def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-    updateStatusToTransparent ~
-      updateNavigationToTransparent ~
-      (appDrawerMain mapUi (source => drawerContent <~ revealOutAppDrawer(source)))
 
 }
