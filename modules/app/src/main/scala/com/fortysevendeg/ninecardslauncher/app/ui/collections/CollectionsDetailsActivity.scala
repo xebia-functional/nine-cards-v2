@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.content.Intent
 import android.content.Intent._
 import android.graphics.{Bitmap, BitmapFactory}
-import android.os.Bundle
+import android.os.{Handler, Bundle}
 import android.support.v7.app.AppCompatActivity
 import android.view._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._

@@ -34,7 +34,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -100,8 +100,8 @@ trait CollectionsDetailsComposer
 
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
-    val adapter = CollectionsPagerAdapter(manager.get, collections)
-    (root <~ rootStyle) ~
+    val adapter = CollectionsPagerAdapter(manager.get, collections, position)
+    (root <~ fadeBackground(in = true, theme.get(CollectionDetailBackgroundColor), 1f)) ~
       (viewPager <~ vpAdapter(adapter)) ~
       Ui(adapter.activateFragment(position)) ~
       (tabs <~
@@ -109,6 +109,7 @@ trait CollectionsDetailsComposer
         stlOnPageChangeListener(
           new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
+      uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter) }, 100) ~
       (tabs <~ vVisible <~~ enterViews) ~
       (viewPager <~ vVisible <~~ enterViews)
   }
@@ -185,6 +186,11 @@ trait CollectionsDetailsComposer
   }
 
   def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
+
+  def getActiveFragment(): Option[CollectionFragment] = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+  } yield fragment
 
   def addCardsToCurrentFragment(c: Seq[Card]) = for {
     adapter <- getAdapter
