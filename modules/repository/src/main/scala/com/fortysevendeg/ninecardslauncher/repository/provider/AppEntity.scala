@@ -30,7 +30,6 @@ object AppEntity {
   val version = "version"
   val installedFromGooglePlay = "installedFromGooglePlay"
 
-
   val allFields = Seq[String](
     NineCardsSqlHelper.id,
     name,
@@ -44,7 +43,7 @@ object AppEntity {
     version,
     installedFromGooglePlay)
 
-  def AppEntityFromCursor(cursor: Cursor) =
+  def appEntityFromCursor(cursor: Cursor) =
     AppEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = AppEntityData(
@@ -62,7 +61,7 @@ object AppEntity {
 
 object AppEntityData {
 
-  def AppEntityDataFromCursor(cursor: Cursor) =
+  def appEntityDataFromCursor(cursor: Cursor) =
     AppEntityData(
       name = cursor.getString(cursor.getColumnIndex(name)),
       packageName = cursor.getString(cursor.getColumnIndex(packageName)),
