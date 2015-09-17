@@ -36,9 +36,10 @@ trait ContactsComposer
   var switch = slot[SwitchCompat]
 
   def initUi(onCheckedChange: (Boolean) => Unit): Ui[_] = {
+    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     val switchParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL)
-    switchParams.setMarginStart(resGetDimensionPixelSize(R.dimen.padding_default))
-    switchParams.setMarginEnd(resGetDimensionPixelSize(R.dimen.padding_default))
+    switchParams.setMarginStart(padding)
+    switchParams.setMarginEnd(padding)
     (toolbar <~
       tbTitle(R.string.contacts) <~
       toolbarStyle(colorPrimary) <~

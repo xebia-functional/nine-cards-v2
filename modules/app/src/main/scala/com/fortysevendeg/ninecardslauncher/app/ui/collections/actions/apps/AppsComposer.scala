@@ -1,9 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
-import android.support.v7.widget.RecyclerView
-import android.view.{View, ViewGroup}
+import android.support.v7.widget.Toolbar.LayoutParams
+import android.support.v7.widget.{SwitchCompat, RecyclerView}
+import android.view.ViewGroup.LayoutParams._
+import android.view.{Gravity, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -25,19 +29,38 @@ trait AppsComposer
 
   lazy val scrollerLayout = findView(TR.action_scroller_layout)
 
-  def initUi: Ui[_] =
+  var switch = slot[SwitchCompat]
+
+  def initUi(allApps: Boolean, onCheckedChange: (Boolean) => Unit): Ui[_] = {
+    val switchViewTweak = if (allApps) {
+      Tweak.blank
+    } else {
+      val padding = resGetDimensionPixelSize(R.dimen.padding_default)
+      val switchParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL)
+      switchParams.setMarginStart(padding)
+      switchParams.setMarginEnd(padding)
+      vgAddView(getUi(
+        w[SwitchCompat] <~
+          wire(switch) <~
+          scColor(colorPrimary) <~
+          scChecked(checked = true) <~
+          scCheckedChangeListener(onCheckedChange)
+      ), switchParams)
+    }
     (toolbar <~
       tbTitle(R.string.applications) <~
       toolbarStyle(colorPrimary) <~
+      switchViewTweak <~
       tbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
+  }
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
+  def generateAppsAdapter(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
     val adapter = new AppsAdapter(
       apps = generateAppHeaderedList(apps),
       clickListener = clickListener)
@@ -47,6 +70,27 @@ trait AppsComposer
       rvAdapter(adapter)) ~
       (loading <~ vGone) ~
       (scrollerLayout <~ fslLinkRecycler)
+  }
+
+  def reloadAppsAdapter(apps: Seq[AppCategorized], filter: AppsFilter, category: String)(implicit uiContext: UiContext[_]): Ui[_] = {
+    val contactsHeadered = generateAppHeaderedList(apps)
+    val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
+    (recycler <~ vVisible) ~
+      (loading <~ vGone) ~
+      (getAdapter map { adapter =>
+        Ui(adapter.loadApps(contactsHeadered)) ~
+          (rootContent <~ uiSnackbarShort(filter match {
+            case AppsByCategory => resGetString(R.string.appsByCategory, categoryName)
+            case _ => resGetString(R.string.allApps)
+          }))
+      } getOrElse showGeneralError)
+  }
+
+  private[this] def getAdapter: Option[AppsAdapter] = recycler flatMap { rv =>
+    Option(rv.getAdapter) match {
+      case Some(a: AppsAdapter) => Some(a)
+      case _ => None
+    }
   }
 
 }

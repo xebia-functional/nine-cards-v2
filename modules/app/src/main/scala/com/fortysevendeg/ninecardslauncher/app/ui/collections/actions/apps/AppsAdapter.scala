@@ -16,7 +16,7 @@ import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 import AppsAdapter._
 
-case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) => Unit)
+case class AppsAdapter(var apps: Seq[AppHeadered], clickListener: (AppCategorized) => Unit)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[RecyclerView.ViewHolder]
   with FastScrollerListener {
@@ -51,7 +51,6 @@ case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) =
       case vh: ViewHolderAppLayoutAdapter =>
         app.app map (app => runUi(vh.bind(app, position)))
     }
-
   }
 
   def getLayoutManager = {
@@ -60,6 +59,11 @@ case class AppsAdapter(apps: Seq[AppHeadered], clickListener: (AppCategorized) =
       override def getSpanSize(position: Int): Int = if (apps(position).header.isDefined) manager.getSpanCount else 1
     })
     manager
+  }
+
+  def loadApps(newApps: Seq[AppHeadered]) = {
+    apps = newApps
+    notifyDataSetChanged()
   }
 
   override def getHeight = {
