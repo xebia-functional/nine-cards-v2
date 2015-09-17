@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.animation._
 import android.graphics.Color
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.{DecelerateInterpolator, AccelerateInterpolator, AccelerateDecelerateInterpolator}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -18,7 +18,7 @@ object SnailsCommons {
 
   val maxFadeBackground = 0.7f
 
-  val defaultDelay = 60
+  val defaultDelay = 30
 
   val noDelay = 0
 
@@ -66,24 +66,27 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def showFabMenuItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def animFabMenuItem(show: Boolean)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
-      val duration = resGetDimensionPixelSize(R.dimen.padding_large)
+      val duration = resGetInteger(R.integer.anim_duration_normal)
       val translationY = resGetDimensionPixelSize(R.dimen.padding_large)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
-      view.setTranslationY(translationY)
-      view.setAlpha(0)
-      view.setVisibility(View.VISIBLE)
+      if (show) {
+        view.setVisibility(View.VISIBLE)
+        view.setTranslationY(translationY)
+      }
+      val delay = if (show) extractDelay(view) else 0
       view.animate.
-        setStartDelay(extractDelay(view)).
-        setInterpolator(new AccelerateDecelerateInterpolator()).
-        alpha(1).
-        translationY(0).
+        setStartDelay(delay).
+        setDuration(duration).
+        setInterpolator(new DecelerateInterpolator()).
+        translationY(if (show) 0 else translationY).
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
+            if (!show) view.setVisibility(View.GONE)
             view.setLayerType(View.LAYER_TYPE_NONE, null)
             animPromise.success()
           }
@@ -91,22 +94,53 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def hideFabMenuItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def animFabMenuTitleItem(show: Boolean)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
-      val translationY = resGetDimensionPixelSize(R.dimen.padding_large)
+      val duration = resGetInteger(R.integer.anim_duration_normal)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
-      view.setVisibility(View.VISIBLE)
+      if (show) {
+        view.setVisibility(View.VISIBLE)
+        view.setAlpha(0)
+      }
       view.animate.
-        setStartDelay(0).
-        alpha(0).
-        setInterpolator(new AccelerateDecelerateInterpolator()).
-        translationY(translationY).
+        setStartDelay(extractDelay(view)).
+        setDuration(duration).
+        setInterpolator(new DecelerateInterpolator()).
+        alpha(if (show) 1 else 0).
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            view.setVisibility(View.GONE)
+            if (!show) view.setVisibility(View.GONE)
+            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            animPromise.success()
+          }
+        }).start()
+      animPromise.future
+  }
+
+  def animFabMenuIconItem(show: Boolean)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+    view =>
+      val duration = resGetInteger(R.integer.anim_duration_normal)
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      val animPromise = Promise[Unit]()
+      if (show) {
+        view.setVisibility(View.VISIBLE)
+        view.setScaleX(0)
+        view.setScaleY(0)
+      }
+      view.animate.
+        setStartDelay(extractDelay(view)).
+        setDuration(duration).
+        setInterpolator(new DecelerateInterpolator()).
+        scaleX(if (show) 1 else 0).
+        scaleY(if (show) 1 else 0).
+        setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) = {
+            super.onAnimationEnd(animation)
+            if (!show) view.setVisibility(View.GONE)
             view.setLayerType(View.LAYER_TYPE_NONE, null)
             animPromise.success()
           }

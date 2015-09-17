@@ -36,9 +36,9 @@ trait LauncherComposer
   // TODO For now, we always use 4 applications in app drawer panel
   lazy val packagesForAppsDrawer = Seq(
     ("com.google.android.dialer", "com.google.android.dialer.extensions.GoogleDialtactsActivity"),
-    ("com.google.android.apps.inbox", "com.google.android.apps.bigtop.activities.InitActivity"),
     ("com.android.chrome", "com.google.android.apps.chrome.Main"),
-    ("com.google.android.GoogleCamera", "com.android.camera.CameraLauncher")
+    ("com.google.android.GoogleCamera", "com.android.camera.CameraLauncher"),
+    ("com.google.android.apps.inbox", "com.google.android.apps.bigtop.activities.InitActivity")
   )
 
   lazy val cardsForAppsDrawer = packagesForAppsDrawer map { app =>

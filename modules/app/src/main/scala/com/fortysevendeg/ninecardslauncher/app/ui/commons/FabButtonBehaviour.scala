@@ -76,7 +76,9 @@ trait FabButtonBehaviour
 
   private[this] def animFabButton(open: Boolean)(implicit context: ActivityContextWrapper) = Transformer {
     case i: FabItemMenu if tagEquals(i, R.id.`type`, fabButtonItem) =>
-      i <~ (if (open) hideFabMenuItem else showFabMenuItem)
+      (i <~ animFabMenuItem(!open)) ~
+        (i.icon <~ animFabMenuIconItem(!open)) ~
+        (i.title <~ animFabMenuTitleItem(!open))
   }
 
   def fabMenuOpened: Boolean = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))
