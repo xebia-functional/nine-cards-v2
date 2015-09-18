@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity._
 
 case class CollectionEntity(id: Int, data: CollectionEntityData)
@@ -58,6 +59,19 @@ object CollectionEntity {
         originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(originalSharedCollectionId)),
         sharedCollectionId = cursor.getString(cursor.getColumnIndex(sharedCollectionId)),
         sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(sharedCollectionSubscribed)) > 0))
+
+  def createTableSQL = "CREATE TABLE " + CollectionEntity.table +
+    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    CollectionEntity.position + " INTEGER not null, " +
+    CollectionEntity.name + " TEXT not null, " +
+    CollectionEntity.collectionType + " TEXT not null, " +
+    CollectionEntity.icon + " TEXT not null, " +
+    CollectionEntity.themedColorIndex + " INTEGER not null, " +
+    CollectionEntity.appsCategory + " TEXT, " +
+    CollectionEntity.originalSharedCollectionId + " TEXT, " +
+    CollectionEntity.sharedCollectionId + " TEXT, " +
+    CollectionEntity.sharedCollectionSubscribed + " INTEGER, " +
+    CollectionEntity.constrains + " TEXT )"
 }
 
 object CollectionEntityData {

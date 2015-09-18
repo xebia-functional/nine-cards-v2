@@ -6,67 +6,15 @@ import android.os.Handler
 
 class NineCardsSqlHelper(context: Context)
   extends SQLiteOpenHelper(context, NineCardsSqlHelper.databaseName, null, NineCardsSqlHelper.databaseVersion)
-  with DBUtils {
+  with DBUtils{
 
   override def onCreate(db: SQLiteDatabase) = {
 
-    db.execSQL("CREATE TABLE " + AppEntity.table +
-      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      AppEntity.name + " TEXT not null, " +
-      AppEntity.packageName + " TEXT not null, " +
-      AppEntity.className + " TEXT not null, " +
-      AppEntity.category + " TEXT not null, " +
-      AppEntity.imagePath + " TEXT not null, " +
-      AppEntity.colorPrimary + " INTEGER, " +
-      AppEntity.dateInstalled + " INTEGER, " +
-      AppEntity.dateUpdate + " INTEGER, " +
-      AppEntity.version + " TEXT not null, " +
-      AppEntity.installedFromGooglePlay + " INTEGER )")
-
-    db.execSQL("CREATE TABLE " + CacheCategoryEntity.table +
-      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      CacheCategoryEntity.packageName + " TEXT not null, " +
-      CacheCategoryEntity.category + " TEXT not null, " +
-      CacheCategoryEntity.starRating + " DOUBLE, " +
-      CacheCategoryEntity.numDownloads + " TEXT, " +
-      CacheCategoryEntity.ratingsCount + " INTEGER, " +
-      CacheCategoryEntity.commentCount + " INTEGER )")
-
-    db.execSQL("CREATE TABLE " + CollectionEntity.table +
-      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      CollectionEntity.position + " INTEGER not null, " +
-      CollectionEntity.name + " TEXT not null, " +
-      CollectionEntity.collectionType + " TEXT not null, " +
-      CollectionEntity.icon + " TEXT not null, " +
-      CollectionEntity.themedColorIndex + " INTEGER not null, " +
-      CollectionEntity.appsCategory + " TEXT, " +
-      CollectionEntity.originalSharedCollectionId + " TEXT, " +
-      CollectionEntity.sharedCollectionId + " TEXT, " +
-      CollectionEntity.sharedCollectionSubscribed + " INTEGER, " +
-      CollectionEntity.constrains + " TEXT )")
-
-    db.execSQL("CREATE TABLE " + CardEntity.table +
-      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      CardEntity.position + " INTEGER not null, " +
-      CardEntity.collectionId + " INTEGER not null, " +
-      CardEntity.term + " TEXT not null, " +
-      CardEntity.packageName + " TEXT, " +
-      CardEntity.cardType + " TEXT not null, " +
-      CardEntity.intent + " TEXT, " +
-      CardEntity.imagePath + " TEXT, " +
-      CardEntity.starRating + " DOUBLE, " +
-      CardEntity.micros + " INTEGER, " +
-      CardEntity.notification + " TEXT, " +
-      CardEntity.numDownloads + " TEXT )")
-
-    db.execSQL("CREATE TABLE " + GeoInfoEntity.table +
-      "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-      GeoInfoEntity.constrain + " TEXT not null, " +
-      GeoInfoEntity.occurrence + " TEXT not null, " +
-      GeoInfoEntity.wifi + " TEXT, " +
-      GeoInfoEntity.latitude + " DOUBLE, " +
-      GeoInfoEntity.longitude + " DOUBLE, " +
-      GeoInfoEntity.system + " INTEGER )")
+    db.execSQL(AppEntity.createTableSQL)
+    db.execSQL(CacheCategoryEntity.createTableSQL)
+    db.execSQL(CollectionEntity.createTableSQL)
+    db.execSQL(CardEntity.createTableSQL)
+    db.execSQL(GeoInfoEntity.createTableSQL)
 
     new Handler().postDelayed(
       new Runnable() {
@@ -85,19 +33,7 @@ class NineCardsSqlHelper(context: Context)
         db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.sharedCollectionId + " TEXT")
         db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.originalSharedCollectionId + " TEXT")
         db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.sharedCollectionSubscribed + " INTEGER")
-      case 5 =>
-        db.execSQL("CREATE TABLE " + AppEntity.table +
-          "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-          AppEntity.name + " TEXT not null, " +
-          AppEntity.packageName + " TEXT not null, " +
-          AppEntity.className + " TEXT not null, " +
-          AppEntity.category + " TEXT not null, " +
-          AppEntity.imagePath + " TEXT not null, " +
-          AppEntity.colorPrimary + " INTEGER, " +
-          AppEntity.dateInstalled + " INTEGER, " +
-          AppEntity.dateUpdate + " INTEGER, " +
-          AppEntity.version + " TEXT not null, " +
-          AppEntity.installedFromGooglePlay + " INTEGER )")
+      case 5 => db.execSQL(AppEntity.createTableSQL)
     }
 
     new Handler().post(

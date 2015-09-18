@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity._
 
 case class CacheCategoryEntity(id: Int, data: CacheCategoryEntityData)
@@ -42,6 +43,15 @@ object CacheCategoryEntity {
         numDownloads = cursor.getString(cursor.getColumnIndex(numDownloads)),
         ratingsCount = cursor.getInt(cursor.getColumnIndex(ratingsCount)),
         commentCount = cursor.getInt(cursor.getColumnIndex(commentCount))))
+
+  def createTableSQL = "CREATE TABLE " + CacheCategoryEntity.table +
+    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    CacheCategoryEntity.packageName + " TEXT not null, " +
+    CacheCategoryEntity.category + " TEXT not null, " +
+    CacheCategoryEntity.starRating + " DOUBLE, " +
+    CacheCategoryEntity.numDownloads + " TEXT, " +
+    CacheCategoryEntity.ratingsCount + " INTEGER, " +
+    CacheCategoryEntity.commentCount + " INTEGER )"
 }
 
 object CacheCategoryEntityData {

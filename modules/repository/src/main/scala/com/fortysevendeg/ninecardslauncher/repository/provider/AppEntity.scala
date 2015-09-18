@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 
 case class AppEntity(id: Int, data: AppEntityData)
@@ -57,6 +58,19 @@ object AppEntity {
         dateUpdate = cursor.getInt(cursor.getColumnIndex(dateUpdate)),
         version = cursor.getString(cursor.getColumnIndex(version)),
         installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0))
+
+  def createTableSQL = "CREATE TABLE " + AppEntity.table +
+    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    AppEntity.name + " TEXT not null, " +
+    AppEntity.packageName + " TEXT not null, " +
+    AppEntity.className + " TEXT not null, " +
+    AppEntity.category + " TEXT not null, " +
+    AppEntity.imagePath + " TEXT not null, " +
+    AppEntity.colorPrimary + " INTEGER, " +
+    AppEntity.dateInstalled + " INTEGER, " +
+    AppEntity.dateUpdate + " INTEGER, " +
+    AppEntity.version + " TEXT not null, " +
+    AppEntity.installedFromGooglePlay + " INTEGER )"
 }
 
 object AppEntityData {
