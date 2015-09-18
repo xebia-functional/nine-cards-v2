@@ -12,9 +12,9 @@ case class AppEntityData(
   className: String,
   category: String,
   imagePath: String,
-  colorPrimary: Int,
-  dateInstalled: Int,
-  dateUpdate: Int,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
   version: String,
   installedFromGooglePlay: Boolean)
 
@@ -53,9 +53,9 @@ object AppEntity {
         className = cursor.getString(cursor.getColumnIndex(className)),
         category = cursor.getString(cursor.getColumnIndex(category)),
         imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
-        colorPrimary = cursor.getInt(cursor.getColumnIndex(colorPrimary)),
-        dateInstalled = cursor.getInt(cursor.getColumnIndex(dateInstalled)),
-        dateUpdate = cursor.getInt(cursor.getColumnIndex(dateUpdate)),
+        colorPrimary = cursor.getString(cursor.getColumnIndex(colorPrimary)),
+        dateInstalled = cursor.getDouble(cursor.getColumnIndex(dateInstalled)),
+        dateUpdate = cursor.getDouble(cursor.getColumnIndex(dateUpdate)),
         version = cursor.getString(cursor.getColumnIndex(version)),
         installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0))
 
@@ -66,9 +66,9 @@ object AppEntity {
     AppEntity.className + " TEXT not null, " +
     AppEntity.category + " TEXT not null, " +
     AppEntity.imagePath + " TEXT not null, " +
-    AppEntity.colorPrimary + " INTEGER, " +
-    AppEntity.dateInstalled + " INTEGER, " +
-    AppEntity.dateUpdate + " INTEGER, " +
+    AppEntity.colorPrimary + " TEXT not null, " +
+    AppEntity.dateInstalled + " DOUBLE, " +
+    AppEntity.dateUpdate + " DOUBLE, " +
     AppEntity.version + " TEXT not null, " +
     AppEntity.installedFromGooglePlay + " INTEGER )"
 }
@@ -82,9 +82,9 @@ object AppEntityData {
       className = cursor.getString(cursor.getColumnIndex(className)),
       category = cursor.getString(cursor.getColumnIndex(category)),
       imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
-      colorPrimary = cursor.getInt(cursor.getColumnIndex(colorPrimary)),
-      dateInstalled = cursor.getInt(cursor.getColumnIndex(dateInstalled)),
-      dateUpdate = cursor.getInt(cursor.getColumnIndex(dateUpdate)),
+      colorPrimary = cursor.getString(cursor.getColumnIndex(colorPrimary)),
+      dateInstalled = cursor.getDouble(cursor.getColumnIndex(dateInstalled)),
+      dateUpdate = cursor.getDouble(cursor.getColumnIndex(dateUpdate)),
       version = cursor.getString(cursor.getColumnIndex(version)),
       installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0)
 }

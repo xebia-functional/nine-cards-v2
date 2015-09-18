@@ -10,9 +10,9 @@ case class AppData(
   className: String,
   category: String,
   imagePath: String,
-  colorPrimary: Int,
-  dateInstalled: Int,
-  dateUpdate: Int,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
   version: String,
   installedFromGooglePlay: Boolean)
 

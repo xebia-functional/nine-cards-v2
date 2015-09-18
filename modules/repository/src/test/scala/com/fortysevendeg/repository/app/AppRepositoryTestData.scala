@@ -15,9 +15,9 @@ trait AppRepositoryTestData {
   val testClassName = Random.nextString(5)
   val testCategory = Random.nextString(5)
   val testImagePath = Random.nextString(5)
-  val testColorPrimary = Random.nextInt(1)
-  val testDateInstalled = Random.nextInt(1)
-  val testDateUpdate = Random.nextInt(1)
+  val testColorPrimary = Random.nextString(5)
+  val testDateInstalled = Random.nextDouble()
+  val testDateUpdate = Random.nextDouble()
   val testVersion = Random.nextString(5)
   val testInstalledFromGooglePlay = Random.nextBoolean()
 

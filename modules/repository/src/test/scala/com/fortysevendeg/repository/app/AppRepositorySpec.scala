@@ -134,9 +134,9 @@ trait AppMockCursor
     (className, 3, appSeq map (_.data.className), StringDataType),
     (category, 4, appSeq map (_.data.category), StringDataType),
     (imagePath, 5, appSeq map (_.data.imagePath), StringDataType),
-    (colorPrimary, 6, appSeq map (_.data.colorPrimary), IntDataType),
-    (dateInstalled, 7, appSeq map (_.data.dateInstalled), IntDataType),
-    (dateUpdate, 8, appSeq map (_.data.dateUpdate), IntDataType),
+    (colorPrimary, 6, appSeq map (_.data.colorPrimary), StringDataType),
+    (dateInstalled, 7, appSeq map (_.data.dateInstalled), DoubleDataType),
+    (dateUpdate, 8, appSeq map (_.data.dateUpdate), DoubleDataType),
     (version, 9, appSeq map (_.data.version), StringDataType),
     (installedFromGooglePlay, 10, appSeq map (item => if (item.data.installedFromGooglePlay) 1 else 0), IntDataType))
 
@@ -154,9 +154,9 @@ trait EmptyAppMockCursor
     (className, 3, Seq.empty, StringDataType),
     (category, 4, Seq.empty, StringDataType),
     (imagePath, 5, Seq.empty, StringDataType),
-    (colorPrimary, 6, Seq.empty, IntDataType),
-    (dateInstalled, 7, Seq.empty, IntDataType),
-    (dateUpdate, 8, Seq.empty, IntDataType),
+    (colorPrimary, 6, Seq.empty, StringDataType),
+    (dateInstalled, 7, Seq.empty, DoubleDataType),
+    (dateUpdate, 8, Seq.empty, DoubleDataType),
     (version, 9, Seq.empty, StringDataType),
     (installedFromGooglePlay, 10, Seq.empty, IntDataType))
 
