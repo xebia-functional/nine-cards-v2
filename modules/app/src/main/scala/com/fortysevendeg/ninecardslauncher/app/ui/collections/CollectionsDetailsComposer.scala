@@ -326,13 +326,13 @@ trait CollectionsDetailsComposer
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton(doUpdateBars = false) ~
-      (fragmentContent <~ fadeBackground(in = true) <~ fragmentContentStyle(true)) ~
+      (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
   }
 
   def turnOffFragmentContent: Ui[_] =
     (fragmentContent <~
-      fadeBackground(in = false) <~
+      colorContentDialog(paint = false) <~
       fragmentContentStyle(false)) ~ updateBarsInFabMenuHide
 
   def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
