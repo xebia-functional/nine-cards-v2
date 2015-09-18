@@ -90,7 +90,6 @@ trait CollectionsDetailsComposer
     (tabs <~ tabsStyle <~ vInvisible) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
-      (viewPager <~ vInvisible) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
 
@@ -108,8 +107,7 @@ trait CollectionsDetailsComposer
           new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter) }, 100) ~
-      (tabs <~ vVisible <~~ enterViews) ~
-      (viewPager <~ vVisible <~~ enterViews)
+      (tabs <~ vVisible <~~ enterViews)
   }
 
   def pullCloseScrollY(scroll: Int, scrollType: Int, close: Boolean): Ui[_] = {
@@ -203,8 +201,8 @@ trait CollectionsDetailsComposer
     ((toolbar <~ exitViews()) ~
       (tabs <~ exitViews()) ~
       (iconContent <~ exitViews()) ~
-      (viewPager <~ exitViews(up = false))) ~
-      (root <~~ fadeBackground(in = false, theme.get(CollectionDetailBackgroundColor), 1f)) ~~
+      (root <~ vBackgroundColorResource(android.R.color.transparent))) ~
+      (viewPager <~~ exitViews(up = false)) ~~
       Ui(finish())
 
 
