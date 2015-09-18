@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 
 import scalaz.concurrent.Task
 
@@ -66,7 +67,11 @@ class AppsFragment
 
   def getAppsByFilter(apps: Seq[AppCategorized], filter: AppsFilter) = filter match {
     case AllApps => apps
-    case AppsByCategory => apps filter(_.category.contains(category))
+    case AppsByCategory =>
+      category match {
+        case `game` => apps filter(app => gamesCategories contains (app.category getOrElse ""))
+        case c => apps filter(_.category.contains(c))
+      }
   }
 
 }

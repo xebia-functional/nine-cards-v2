@@ -60,6 +60,10 @@ object NineCardCategories {
     mediaAndVideo, medical, musicAndAudio, newsAndMagazines, personalization, photography,
     productivity, shopping, social, sports, tools, transportation, travelAndLocal, weather, appWidgets, contacts)
 
+  val gamesCategories = Seq(gameAction, gameAdventure, gameRacing, gameCard, gameCasino, gameCasual, gameFamily,
+    gameSports, gameEducational, gameStrategy, gameWallpaper, gameTrivia, gameBoard, gameRolePlaying, gameMusic,
+    gameWord, gamePuzzle, gameArcade, gameSimulation, gameWidgets)
+
 }
 
 object CollectionType {
