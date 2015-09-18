@@ -80,9 +80,13 @@ trait FabButtonBehaviour
 
   private[this] def animFabButton(open: Boolean)(implicit context: ActivityContextWrapper) = Transformer {
     case i: FabItemMenu if tagEquals(i, R.id.`type`, fabButtonItem) =>
-      (i <~ animFabMenuItem(!open)) ~
-        (i.icon <~ animFabMenuIconItem(!open)) ~
-        (i.title <~ animFabMenuTitleItem(!open))
+      if (open) {
+        i <~ vGone
+      } else {
+        (i <~ animFabMenuItem) ~
+          (i.icon <~ animFabMenuIconItem) ~
+          (i.title <~ animFabMenuTitleItem)
+      }
   }
 
   def fabMenuOpened: Boolean = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))

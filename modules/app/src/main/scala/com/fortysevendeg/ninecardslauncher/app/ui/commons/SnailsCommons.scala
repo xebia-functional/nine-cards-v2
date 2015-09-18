@@ -60,26 +60,23 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def animFabMenuItem(show: Boolean)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def animFabMenuItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       val duration = resGetInteger(R.integer.anim_duration_normal)
       val translationY = resGetDimensionPixelSize(R.dimen.padding_default)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
-      if (show) {
-        view.setVisibility(View.VISIBLE)
-        view.setTranslationY(translationY)
-      }
-      val delay = if (show) extractDelay(view) else 0
+      view.setVisibility(View.VISIBLE)
+      view.setTranslationY(translationY)
+      val delay = extractDelay(view)
       view.animate.
         setStartDelay(delay).
         setDuration(duration).
-        translationY(if (show) 0 else translationY).
+        translationY(0).
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            if (!show) view.setVisibility(View.GONE)
             view.setLayerType(View.LAYER_TYPE_NONE, null)
             animPromise.success()
           }
@@ -87,25 +84,22 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def animFabMenuTitleItem(show: Boolean)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def animFabMenuTitleItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       val duration = resGetInteger(R.integer.anim_duration_normal)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
-      if (show) {
-        view.setVisibility(View.VISIBLE)
-        view.setAlpha(0)
-      }
+      view.setVisibility(View.VISIBLE)
+      view.setAlpha(0)
       view.animate.
         setStartDelay(extractDelay(view)).
         setDuration(duration).
         setInterpolator(new AccelerateInterpolator()).
-        alpha(if (show) 1 else 0).
+        alpha(1).
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            if (!show) view.setVisibility(View.GONE)
             view.setLayerType(View.LAYER_TYPE_NONE, null)
             animPromise.success()
           }
@@ -113,32 +107,29 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def animFabMenuIconItem(show: Boolean)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def animFabMenuIconItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       val duration = resGetInteger(R.integer.anim_duration_normal)
       val size = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
-      if (show) {
-        view.setVisibility(View.VISIBLE)
-        view.setScaleX(0)
-        view.setScaleY(0)
-        view.setAlpha(0)
-      }
+      view.setVisibility(View.VISIBLE)
+      view.setScaleX(0)
+      view.setScaleY(0)
+      view.setAlpha(0)
       view.setPivotX(size / 2)
       view.setPivotY(size)
       view.animate.
         setStartDelay(extractDelay(view)).
         setDuration(duration).
         setInterpolator(new DecelerateInterpolator()).
-        alpha(if (show) 1 else 0).
-        scaleX(if (show) 1 else 0).
-        scaleY(if (show) 1 else 0).
+        alpha(1).
+        scaleX(1).
+        scaleY(1).
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            if (!show) view.setVisibility(View.GONE)
             view.setLayerType(View.LAYER_TYPE_NONE, null)
             animPromise.success()
           }
