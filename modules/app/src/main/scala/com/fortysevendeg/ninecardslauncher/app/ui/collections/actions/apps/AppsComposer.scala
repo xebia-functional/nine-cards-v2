@@ -56,7 +56,9 @@ trait AppsComposer
       (scrollerLayout <~ fslColor(colorPrimary))
   }
 
-  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ (scrollerLayout <~ fslInvisible)
+
+  def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible) ~ (scrollerLayout <~ fslVisible)
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
@@ -64,25 +66,25 @@ trait AppsComposer
     val adapter = new AppsAdapter(
       apps = generateAppHeaderedList(apps),
       clickListener = clickListener)
-    (recycler <~
-      vVisible <~
-      rvLayoutManager(adapter.getLayoutManager) <~
-      rvAdapter(adapter)) ~
-      (loading <~ vGone) ~
+    showData ~
+      (recycler <~
+        rvLayoutManager(adapter.getLayoutManager) <~
+        rvAdapter(adapter)) ~
       (scrollerLayout <~ fslLinkRecycler)
   }
 
   def reloadAppsAdapter(apps: Seq[AppCategorized], filter: AppsFilter, category: String)(implicit uiContext: UiContext[_]): Ui[_] = {
     val contactsHeadered = generateAppHeaderedList(apps)
     val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
-    (recycler <~ vVisible) ~
-      (loading <~ vGone) ~
+    showData ~
       (getAdapter map { adapter =>
         Ui(adapter.loadApps(contactsHeadered)) ~
           (rootContent <~ uiSnackbarShort(filter match {
             case AppsByCategory => resGetString(R.string.appsByCategory, categoryName)
             case _ => resGetString(R.string.allApps)
-          }))
+          })) ~
+          (scrollerLayout <~ fslReset) ~
+          (recycler <~ rvScrollToTop)
       } getOrElse showGeneralError)
   }
 

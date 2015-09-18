@@ -70,11 +70,13 @@ case class AppsAdapter(var apps: Seq[AppHeadered], clickListener: (AppCategorize
     val heightHeaders = (apps count (_.header.isDefined)) * heightHeader
     // Calculate the number of column showing apps
     val rowsWithApps = apps.foldLeft((0, 0))((counter, app) =>
-      (app.header, counter._1) match {
-        case (Some(_), _) => (0, counter._2)
-        case (_, 0) => (1, counter._2 + 1)
-        case (_, columns) if columns < numInLine => (counter._1 + 1, counter._2)
-        case _ => (0, counter._2)
+      (app.header, counter._1, counter._2) match {
+        case (Some(_), _, count) => (0, count)
+        case (None, 0, count) => (1, count + 1)
+        case (None, columns, count) if columns < numInLine =>
+          val newColumn = if (columns == numInLine - 1) 0 else columns + 1
+          (newColumn, count)
+        case (None, columns, count) => (0, count)
       })
     val heightApps = rowsWithApps._2 * heightApp
     heightHeaders + heightApps

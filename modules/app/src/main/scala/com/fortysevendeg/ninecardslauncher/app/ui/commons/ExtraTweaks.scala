@@ -84,6 +84,7 @@ object ExtraTweaks {
   def rvSwapAdapter[VH <: RecyclerView.ViewHolder](adapter: RecyclerView.Adapter[VH]): Tweak[RecyclerView] =
     Tweak[RecyclerView](_.swapAdapter(adapter, false))
 
+  def rvScrollToTop: Tweak[RecyclerView] = Tweak[RecyclerView](_.scrollToPosition(0))
 
   def uiSnackbarShort(res: Int) = Tweak[View] { view =>
     runUi(Ui(Snackbar.make(view, res, Snackbar.LENGTH_SHORT).show()))

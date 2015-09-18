@@ -55,31 +55,34 @@ trait ContactsComposer
       (scrollerLayout <~ fslColor(colorPrimary))
   }
 
-  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ (scrollerLayout <~ fslInvisible)
+
+  def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible) ~ (scrollerLayout <~ fslVisible)
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def generateContactsAdapter(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
     val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)
     val adapter = new ContactsAdapter(contactsHeadered, clickListener)
-    (recycler <~
-      vVisible <~
-      rvLayoutManager(adapter.getLayoutManager) <~
-      rvAdapter(adapter)) ~
+    showData ~
+      (recycler <~
+        rvLayoutManager(adapter.getLayoutManager) <~
+        rvAdapter(adapter)) ~
       (loading <~ vGone) ~
       (scrollerLayout <~ fslLinkRecycler)
   }
 
   def reloadContactsAdapter(contacts: Seq[Contact], filter: ContactsFilter)(implicit uiContext: UiContext[_]): Ui[_] = {
     val contactsHeadered = generateContactsForList(contacts, Seq.empty)
-    (recycler <~ vVisible) ~
-      (loading <~ vGone) ~
+    showData ~
       (getAdapter map { adapter =>
         Ui(adapter.loadContacts(contactsHeadered)) ~
           (rootContent <~ uiSnackbarShort(filter match {
             case ContactsWithPhoneNumber => R.string.contactsWithPhoneNumber
             case _ => R.string.allContacts
-          }))
+          })) ~
+          (scrollerLayout <~ fslReset) ~
+          (recycler <~ rvScrollToTop)
       } getOrElse showGeneralError)
   }
 
@@ -93,7 +96,7 @@ trait ContactsComposer
   @tailrec
   private[this] def generateContactsForList(contacts: Seq[Contact], acc: Seq[ContactHeadered]): Seq[ContactHeadered] = contacts match {
     case Nil => acc
-    case Seq(h, t @ _ *) =>
+    case Seq(h, t@_ *) =>
       val currentChar: String = getCurrentChar(h.name)
       val lastChar: Option[String] = for {
         contactHeadered <- acc.lastOption
