@@ -8,6 +8,7 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, LauncherExecutor, SystemBarsTint, FabButtonBehaviour}
@@ -92,9 +93,11 @@ trait LauncherComposer
 
   lazy val micIcon = Option(findView(TR.launcher_mic_icon))
 
-  def updateBarsInFabMenuShow: Ui[_] =
-    updateNavigationColor(getDefaultColorBackground) ~
-      updateStatusColor(getDefaultColorBackground)
+  def updateBarsInFabMenuShow: Ui[_] = {
+    val color = getResources.getColor(R.color.background_dialog)
+    updateNavigationColor(color) ~
+      updateStatusColor(color)
+  }
 
   def updateBarsInFabMenuHide: Ui[_] = updateNavigationToTransparent ~ updateStatusToTransparent
 

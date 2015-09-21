@@ -53,9 +53,9 @@ trait CollectionsDetailsComposer
 
   val nameActionFragment = "action-fragment"
 
-  val resistanceDisplacement = .35f
+  val resistanceDisplacement = .2f
 
-  val resistanceScale = .15f
+  val resistanceScale = .05f
 
   lazy val iconIndicatorDrawable = new PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
@@ -90,7 +90,6 @@ trait CollectionsDetailsComposer
     (tabs <~ tabsStyle <~ vInvisible) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
-      (viewPager <~ vInvisible) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
 
@@ -99,7 +98,7 @@ trait CollectionsDetailsComposer
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
     val adapter = CollectionsPagerAdapter(manager.get, collections, position)
-    (root <~ fadeBackground(in = true, theme.get(CollectionDetailBackgroundColor), 1f)) ~
+    (root <~ fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
       (viewPager <~ vpAdapter(adapter)) ~
       Ui(adapter.activateFragment(position)) ~
       (tabs <~
@@ -108,8 +107,7 @@ trait CollectionsDetailsComposer
           new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter) }, 100) ~
-      (tabs <~ vVisible <~~ enterViews) ~
-      (viewPager <~ vVisible <~~ enterViews)
+      (tabs <~ vVisible <~~ enterViews)
   }
 
   def pullCloseScrollY(scroll: Int, scrollType: Int, close: Boolean): Ui[_] = {
@@ -207,8 +205,8 @@ trait CollectionsDetailsComposer
     ((toolbar <~ exitViews()) ~
       (tabs <~ exitViews()) ~
       (iconContent <~ exitViews()) ~
-      (viewPager <~ exitViews(up = false))) ~
-      (root <~~ fadeBackground(in = false, theme.get(CollectionDetailBackgroundColor), 1f)) ~~
+      (root <~ vBackgroundColorResource(android.R.color.transparent))) ~
+      (viewPager <~~ exitViews(up = false)) ~~
       Ui(finish())
 
 
@@ -332,13 +330,13 @@ trait CollectionsDetailsComposer
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton(doUpdateBars = false) ~
-      (fragmentContent <~ fadeBackground(in = true) <~ fragmentContentStyle(true)) ~
+      (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
   }
 
   def turnOffFragmentContent: Ui[_] =
     (fragmentContent <~
-      fadeBackground(in = false) <~
+      colorContentDialog(paint = false) <~
       fragmentContentStyle(false)) ~ updateBarsInFabMenuHide
 
   def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
