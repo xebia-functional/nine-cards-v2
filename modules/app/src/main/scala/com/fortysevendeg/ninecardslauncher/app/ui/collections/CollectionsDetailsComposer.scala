@@ -192,13 +192,22 @@ trait CollectionsDetailsComposer
     fragment <- adapter.getActiveFragment
   } yield fragment
 
-  def addCardsToCurrentFragment(c: Seq[Card]) = for {
+  protected def addCardsToCurrentFragment(c: Seq[Card]) = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
     currentPosition <- adapter.getCurrentFragmentPosition
   } yield {
       adapter.addCardsToCollection(currentPosition, c)
       fragment.addCards(c)
+    }
+
+  protected def removeCardToCurrentFragment(c: Card) = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    currentPosition <- adapter.getCurrentFragmentPosition
+  } yield {
+      adapter.removeCardToCollection(currentPosition, c)
+      fragment.removeCard(c)
     }
 
   def exitTransition(implicit theme: NineCardsTheme) =

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v7.widget.{CardView, RecyclerView}
-import android.view.View.OnClickListener
+import android.view.View.{OnLongClickListener, OnClickListener}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, LauncherExecutor}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
@@ -20,7 +20,18 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     val adapter = new ViewHolderCollectionAdapter(view, heightCard)
     adapter.content.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
-        Option(v.getTag) foreach (tag => execute(collection.cards(tag.toString.toInt).intent))
+        Option(v.getTag) foreach (tag => execute(collection.cards(Int.unbox(tag)).intent))
+      }
+    })
+    adapter.content.setOnLongClickListener(new OnLongClickListener {
+      override def onLongClick(v: View): Boolean = {
+        Option(v.getTag) foreach { tag =>
+          activityContext.original.get match {
+            case Some(activity: CollectionsDetailsActivity) =>
+              activity.removeCard(collection.cards(Int.unbox(tag)))
+          }
+        }
+        false
       }
     })
     adapter
@@ -37,6 +48,12 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     collection = collection.copy(cards = collection.cards ++ cards)
     val count = cards.length
     notifyItemRangeInserted(collection.cards.length - count, count)
+  }
+
+  def removeCard(card: Card) = {
+    val position = collection.cards.indexOf(card)
+    collection = collection.copy(cards = collection.cards.filterNot(c => card == c))
+    notifyItemRangeRemoved(position, 1)
   }
 
 }
