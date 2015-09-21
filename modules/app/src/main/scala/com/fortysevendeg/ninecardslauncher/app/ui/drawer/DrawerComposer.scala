@@ -54,13 +54,17 @@ trait DrawerComposer
 
   lazy val recycler = Option(findView(TR.launcher_drawer_recycler))
 
+  def showDrawerLoading: Ui[_] = (loadingDrawer <~ vVisible) ~ (recycler <~ vGone) ~ (scrollerLayout <~ fslInvisible)
+
+  def showDrawerData: Ui[_] = (loadingDrawer <~ vGone) ~ (recycler <~ vVisible) ~ (scrollerLayout <~ fslVisible)
+
   def initDrawerUi(onAppDrawerListener: () => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (appDrawerMain <~ drawerAppStyle <~ On.click {
       revealInDrawer ~ Ui {
         onAppDrawerListener()
       }
     }) ~
-      (loadingDrawer <~ pbColor(resGetColor(R.color.drawer_toolbar)) <~ vVisible) ~
+      (loadingDrawer <~ pbColor(resGetColor(R.color.drawer_toolbar))) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(resGetColor(R.color.drawer_toolbar))) ~
       (drawerContent <~ vGone) ~
@@ -91,14 +95,18 @@ trait DrawerComposer
       updateNavigationToTransparent ~
       (appDrawerMain mapUi (source => drawerContent <~ revealOutAppDrawer(source)))
 
-  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
+  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)
+    (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val adapter = new AppsAdapter(
       apps = generateAppHeaderedList(apps),
       clickListener = clickListener)
-    (recycler <~
-      rvLayoutManager(adapter.getLayoutManager) <~
-      rvAdapter(adapter)) ~
-      (loadingDrawer <~ vGone) ~
-      (scrollerLayout <~ fslLinkRecycler)
+    showDrawerData ~
+      (recycler <~
+        rvLayoutManager(adapter.getLayoutManager) <~
+        rvAdapter(adapter) <~
+        rvScrollToTop) ~
+      (scrollerLayout <~
+        fslLinkRecycler <~
+        fslReset)
   }
 }
