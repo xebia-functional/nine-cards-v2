@@ -84,6 +84,7 @@ class LauncherActivity
 
   private[this] def loadApps() = {
     Task.fork(di.deviceProcess.getCategorizedApps.run).resolveAsyncUi(
+      onPreTask = () => showDrawerLoading,
       onResult = (apps: Seq[AppCategorized]) => addApps(apps, (app: AppCategorized) => {
         execute(toNineCardIntent(app))
       })
