@@ -14,11 +14,15 @@ import scala.util.{Failure, Success, Try}
 
 object SnailsCommons {
 
+  val fadeColorBackground = Color.BLACK
+
   val maxFadeBackground = 0.7f
 
   val defaultDelay = 60
 
   val noDelay = 0
+
+  def getDefaultColorBackground = ColorsUtils.setAlpha(fadeColorBackground, maxFadeBackground)
 
   def showFabMenu(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
@@ -110,20 +114,23 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def fadeBackground(in: Boolean)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def fadeBackground(
+    in: Boolean,
+    color: Int = fadeColorBackground,
+    maxFade: Float = maxFadeBackground)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
 
       val (fadeStart, fadeEnd) = if (in) {
-        (0f, maxFadeBackground)
+        (0f, maxFade)
       } else {
-        (maxFadeBackground, 0f)
+        (maxFade, 0f)
       }
 
-      val colorFrom = ColorsUtils.setAlpha(Color.BLACK, fadeStart)
-      val colorTo = ColorsUtils.setAlpha(Color.BLACK, fadeEnd)
+      val colorFrom = ColorsUtils.setAlpha(color, fadeStart)
+      val colorTo = ColorsUtils.setAlpha(color, fadeEnd)
 
       val valueAnimator = ValueAnimator.ofInt(0, 100)
       valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

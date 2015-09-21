@@ -28,7 +28,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lines">2</item>
         <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
         <item name="android:ellipsize">end</item>
     </style>
 

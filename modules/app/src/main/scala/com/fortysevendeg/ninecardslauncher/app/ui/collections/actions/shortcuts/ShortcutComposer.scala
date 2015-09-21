@@ -29,13 +29,17 @@ trait ShortcutComposer
       tbTitle(R.string.shortcuts) <~
       toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
-      (loading <~ vVisible) ~
       (recycler <~ recyclerStyle)
+
+  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+
+  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def addShortcuts(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit) = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
     val adapter = new ShortcutAdapter(sortedShortcuts, clickListener)
     (recycler <~
+      vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone)

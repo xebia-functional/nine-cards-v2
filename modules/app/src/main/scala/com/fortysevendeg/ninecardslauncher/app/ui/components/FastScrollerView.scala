@@ -33,11 +33,10 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
     if (!getChildAt(0).isInstanceOf[RecyclerView]) {
       throw new IllegalStateException("FastScrollerLayout must contain a RecyclerView")
     }
-    fastScroller map {
-      fs =>
-        val ll = new LayoutParams(WRAP_CONTENT, MATCH_PARENT)
-        ll.gravity = Gravity.RIGHT
-        runUi(this <~ vgAddView(fs, ll))
+    fastScroller map { fs =>
+      val ll = new LayoutParams(WRAP_CONTENT, MATCH_PARENT)
+      ll.gravity = Gravity.RIGHT
+      runUi(this <~ vgAddView(fs, ll))
     }
     super.onFinishInflate()
   }
@@ -47,6 +46,10 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   def setColor(color: Int) = runUi(fastScroller <~ fsColor(color))
+
+  def reset = runUi(fastScroller <~ fsReset)
+
+  private[this] def fsReset = Tweak[FastScrollerView](_.reset())
 
   private[this] def fsRecyclerView(rv: RecyclerView) = Tweak[FastScrollerView](view => view.setRecyclerView(rv))
 
@@ -130,16 +133,27 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     case _ => super.onTouchEvent(event)
   }
 
+  def show: Ui[_] = (signal <~ vGone) ~ (bar <~ vVisible)
+
+  def hide: Ui[_] = (signal <~ vGone) ~ (bar <~ vGone)
+
   def showSignal: Ui[_] = (signal <~ vVisible) ~ (bar <~ ivSrc(barOn))
 
   def hideSignal: Ui[_] = (signal <~ vGone) ~ (bar <~ ivSrc(barOff))
 
   def setRecyclerView(rv: RecyclerView) = {
-    indicator.setTotalHeight(rv)
+    indicator.setTotalHeight(rv, getHeight)
+    scrollListener foreach rv.removeOnScrollListener
     val sl = new ScrollListener
     scrollListener = Option(sl)
     rv.addOnScrollListener(sl)
     recyclerView = Option(rv)
+  }
+
+  def reset() = {
+    recyclerView foreach (rv => indicator.setTotalHeight(rv, getHeight))
+    scrollListener foreach (_.y = 0)
+    runUi(changePosition(0))
   }
 
   private[this] def changePosition(y: Float): Ui[_] = {
@@ -189,9 +203,9 @@ case class FastScrollerIndicator(
   var moving: Boolean = false,
   var lastScrollToPosition: Int = -1) {
 
-  def setTotalHeight(recyclerView: RecyclerView) = {
+  def setTotalHeight(recyclerView: RecyclerView, height: Int) = {
     totalHeight = Option(recyclerView.getAdapter) match {
-      case Some(listener: FastScrollerListener) => listener.getHeight
+      case Some(listener: FastScrollerListener) => listener.getHeight - height
       case _ => 0
     }
   }
@@ -221,5 +235,16 @@ object FastScrollerLayoutTweak {
   def fslLinkRecycler = Tweak[FastScrollerLayout](_.linkRecycler())
 
   def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
+
+  def fslInvisible = Tweak[FastScrollerLayout]{ view =>
+    runUi(view.fastScroller map (fs => fs.hide) getOrElse Ui.nop)
+  }
+
+  def fslVisible = Tweak[FastScrollerLayout]{ view =>
+    runUi(view.fastScroller map (fs => fs.show) getOrElse Ui.nop)
+  }
+
+  def fslReset = Tweak[FastScrollerLayout](_.reset)
+
 }
 

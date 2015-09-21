@@ -8,17 +8,28 @@ import macroid.{ContextWrapper, Ui}
 
 import scala.collection.mutable
 
-case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collections: Seq[Collection])(implicit context: ContextWrapper)
+case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collections: Seq[Collection], startPosition: Int)
+  (implicit context: ContextWrapper)
   extends FragmentStatePagerAdapter(fragmentManager) {
 
   val fragments: mutable.WeakHashMap[Int, CollectionFragment] = mutable.WeakHashMap.empty
 
   var scrollType = ScrollType.down
 
+  var firstTime = false
+
+  private[this] def firstTimeInStartPosition(position: Int) = (firstTime, position == startPosition) match {
+    case (false, true) =>
+      firstTime = true
+      true
+    case _ => false
+  }
+
   override def getItem(position: Int): Fragment = {
     val fragment = new CollectionFragment()
     val bundle = new Bundle()
     bundle.putInt(CollectionFragment.keyPosition, position)
+    bundle.putBoolean(CollectionFragment.keyAnimateCards,firstTimeInStartPosition(position))
     bundle.putSerializable(CollectionFragment.keyCollection, collections(position))
     bundle.putInt(CollectionFragment.keyScrollType, scrollType)
     fragment.setArguments(bundle)

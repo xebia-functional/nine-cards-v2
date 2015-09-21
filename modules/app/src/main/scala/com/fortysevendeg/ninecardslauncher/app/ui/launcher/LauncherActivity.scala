@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext, SystemBarsTint}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
@@ -28,7 +28,9 @@ class LauncherActivity
   with TypedFindView
   with LauncherComposer
   with DrawerComposer
-  with SystemBarsTint {
+  with SystemBarsTint
+  with NineCardIntentConversions
+  with LauncherExecutor {
 
   implicit lazy val di: Injector = new Injector
 
@@ -82,7 +84,10 @@ class LauncherActivity
 
   private[this] def loadApps() = {
     Task.fork(di.deviceProcess.getCategorizedApps.run).resolveAsyncUi(
-      onResult = (apps: Seq[AppCategorized]) => addApps(apps, (app: AppCategorized) => {})
+      onPreTask = () => showDrawerLoading,
+      onResult = (apps: Seq[AppCategorized]) => addApps(apps, (app: AppCategorized) => {
+        execute(toNineCardIntent(app))
+      })
     )
   }
 

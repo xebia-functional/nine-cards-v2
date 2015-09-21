@@ -3,36 +3,34 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable._
-import android.support.v4.app.Fragment
-import android.support.v7.widget.{CardView, RecyclerView}
-import android.text.TextUtils.TruncateAt
+import android.support.v7.widget.CardView
+import android.view.View
 import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, View, ViewGroup}
+import android.view.animation.AnimationUtils
 import android.widget.ImageView.ScaleType
-import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
+import android.widget.{FrameLayout, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
-import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, SlidingTabLayout}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, NineRecyclerView, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
-import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 
 trait Styles {
 
@@ -70,13 +68,14 @@ trait Styles {
 
 trait CollectionFragmentStyles {
 
-  def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = {
+  def recyclerStyle(animateCards: Boolean)(implicit context: ContextWrapper): Tweak[NineRecyclerView] = {
     val paddingTop = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     vMatchParent +
       vPadding(padding, paddingTop, padding, padding) +
       vgClipToPadding(false) +
-      vOverScrollMode(View.OVER_SCROLL_NEVER)
+      vOverScrollMode(View.OVER_SCROLL_NEVER) +
+      (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)
   }
 
 }
@@ -123,7 +122,7 @@ trait CollectionAdapterStyles {
         expandLayout +
         ivScaleType(ScaleType.CENTER_CROP)
     case _ =>
-      ivCardUri(card.imagePath, card.term) +
+      ivCardUri(card.imagePath, card.term, circular = true) +
         reduceLayout +
         ivScaleType(ScaleType.FIT_CENTER)
   }

@@ -8,7 +8,7 @@
         android:bottomLeftRadius="@dimen/fastscroller_signal_size"
         android:bottomRightRadius="0dp" />
 
-    <solid android:color="?android:attr/colorAccent" />
+    <solid android:color="@color/accent" />
 
     <size
         android:height="@dimen/fastscroller_signal_size"

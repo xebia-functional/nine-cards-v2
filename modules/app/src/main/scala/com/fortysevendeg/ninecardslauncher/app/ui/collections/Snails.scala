@@ -60,4 +60,26 @@ object Snails {
       animPromise.future
   }
 
+  def exitViews(up: Boolean = true)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+    view =>
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      val animPromise = Promise[Unit]()
+      val move = resGetDimensionPixelSize(R.dimen.space_enter_views_collection_detail)
+      view
+        .animate
+        .setDuration(resGetInteger(R.integer.anim_duration_normal))
+        .setInterpolator(new AccelerateDecelerateInterpolator())
+        .translationY(if (up) -move else move)
+        .alpha(0)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            animPromise.success()
+          }
+        }).start()
+      animPromise.future
+  }
+
 }
