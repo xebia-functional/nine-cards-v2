@@ -6,29 +6,30 @@ import android.os.Bundle
 import android.support.v4.app.ActivityOptionsCompat
 import macroid.{Ui, ActivityContextWrapper}
 
+import scala.annotation.tailrec
 import scala.util.Try
 
 trait UiExtensions {
 
-  private[this] def getData[T](bundles: Seq[Bundle], conversor: (Bundle, String) => T, key: String, default: T): T = {
+  @tailrec
+  private[this] def getData[T](bundles: Seq[Bundle], conversor: (Bundle, String) => T, key: String, default: T): T =
     bundles match {
       case Nil => default
-      case h :: t =>
-        val maybeT = if (h.containsKey(key))
-          Some(conversor(h, key))
-        else None
-        maybeT map (data => data) getOrElse getData(t, conversor, key, default)
+      case Seq(h, t @ _ *) if h.containsKey(key) => conversor(h, key)
+      case Seq(h, t @ _ *) => getData(t, conversor, key, default)
     }
-  }
 
   def getInt(bundles: Seq[Bundle], key: String, default: Int) =
-    getData(bundles, (b, k) => b.getInt(k), key, default)
+    getData(flat(bundles), (b, k) => b.getInt(k), key, default)
 
   def getString(bundles: Seq[Bundle], key: String, default: String) =
-    getData(bundles, (b, k) => b.getString(k), key, default)
+    getData(flat(bundles), (b, k) => b.getString(k), key, default)
 
   def getBoolean(bundles: Seq[Bundle], key: String, default: Boolean) =
-    getData(bundles, (b, k) => b.getBoolean(k), key, default)
+    getData(flat(bundles), (b, k) => b.getBoolean(k), key, default)
+
+  private[this] def flat(bundles: Seq[Bundle]): Seq[Bundle] =
+    bundles flatMap (b => Option(b))
 
 }
 

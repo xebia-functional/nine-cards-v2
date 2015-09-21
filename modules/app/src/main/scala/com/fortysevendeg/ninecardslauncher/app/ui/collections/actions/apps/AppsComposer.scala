@@ -30,15 +30,19 @@ trait AppsComposer
       tbTitle(R.string.applications) <~
       toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
-      (loading <~ vVisible) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
+
+  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+
+  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
     val adapter = new AppsAdapter(
       apps = generateAppHeaderedList(apps),
       clickListener = clickListener)
     (recycler <~
+      vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone) ~

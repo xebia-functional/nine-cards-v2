@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.support.v4.app.Fragment
 import android.support.v7.widget.{CardView, DefaultItemAnimator, GridLayoutManager, RecyclerView}
 import android.view.View
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -38,9 +38,9 @@ trait CollectionFragmentComposer
 
   var pullToCloseView = slot[PullToCloseView]
 
-  def layout(implicit contextWrapper: ActivityContextWrapper) = getUi(
+  def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = getUi(
     l[PullToCloseView](
-      w[NineRecyclerView] <~ wire(recyclerView) <~ recyclerStyle
+      w[NineRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards)
     ) <~ wire(pullToCloseView) <~ pcvListener(PullToCloseListener(
       startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
       endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),
@@ -49,12 +49,11 @@ trait CollectionFragmentComposer
     ))
   )
 
-  def initUi(collection: Collection)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
+  def initUi(collection: Collection, animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
     recyclerView <~ vGlobalLayoutListener(view => {
       val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
       val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-      val heightCard = (view.getHeight - (padding + spaceMove)) / numInLine
-      loadCollection(collection, heightCard, padding, spaceMove) ~
+      loadCollection(collection, padding, spaceMove, animateCards) ~
         uiHandler(startScroll(padding, spaceMove))
     })
 
@@ -62,18 +61,54 @@ trait CollectionFragmentComposer
     recyclerView <~
       getScrollListener(collection, resGetDimensionPixelSize(R.dimen.space_moving_collection_details))
 
-  def loadCollection(collection: Collection, heightCard: Int, padding: Int, spaceMove: Int)
-    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
-    val adapter = new CollectionAdapter(collection, heightCard)
-    recyclerView <~ rvLayoutManager(new GridLayoutManager(contextWrapper.application, numInLine)) <~
-      rvFixedSize <~
-      rvAdapter(adapter) <~
-      rvAddItemDecoration(new CollectionItemDecorator) <~
-      rvItemAnimator(new DefaultItemAnimator) <~
+  def setAnimatedAdapter(collection: Collection)
+    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = {
+    val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+    recyclerView <~
+      rvAdapter(createAdapter(collection)) <~
+      nrvScheduleLayoutAnimation <~
       getScrollListener(collection, spaceMove)
   }
+  def scrollType(newSType: Int)(implicit contextWrapper: ContextWrapper): Ui[_] = {
+    val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+    (canScroll, sType) match {
+      case (scroll, s) if s != newSType && scroll =>
+        sType = newSType
+        recyclerView <~
+          vScrollBy(0, -Int.MaxValue) <~
+          (if (sType == ScrollType.up) vScrollBy(0, spaceMove) else Tweak.blank)
+      case (_, s) if s != newSType =>
+        sType = newSType
+        recyclerView <~ vPadding(padding, if (newSType == ScrollType.up) padding else spaceMove, padding, padding)
+      case _ => Ui.nop
+    }
+  }
 
-  private def getScrollListener(collection: Collection, spaceMove: Int)(implicit contextWrapper: ActivityContextWrapper) =
+  def getAdapter: Option[CollectionAdapter] = recyclerView flatMap { rv =>
+    Option(rv.getAdapter) match {
+      case Some(a: CollectionAdapter) => Some(a)
+      case _ => None
+    }
+  }
+
+  private[this] def loadCollection(collection: Collection, padding: Int, spaceMove: Int, animateCards: Boolean)
+    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
+
+    val adapterTweaks = if (!animateCards) {
+      rvAdapter(createAdapter(collection)) +
+        getScrollListener(collection, spaceMove)
+    } else Tweak.blank
+
+    recyclerView <~
+      rvLayoutManager(new GridLayoutManager(contextWrapper.application, numInLine)) <~
+      rvFixedSize <~
+      adapterTweaks <~
+      rvAddItemDecoration(new CollectionItemDecorator) <~
+      rvItemAnimator(new DefaultItemAnimator)
+  }
+
+  private[this] def getScrollListener(collection: Collection, spaceMove: Int)(implicit contextWrapper: ActivityContextWrapper) =
     rvCollectionScrollListener(
       scrolled = (scrollY: Int, dx: Int, dy: Int) => {
         val sy = scrollY + dy
@@ -110,27 +145,12 @@ trait CollectionFragmentComposer
       case (_, s) => recyclerView <~ vPadding(padding, if (s == ScrollType.up) padding else spaceMove, padding, padding)
     }
 
-  def scrollType(newSType: Int)(implicit contextWrapper: ContextWrapper): Ui[_] = {
+  private[this] def createAdapter(collection: Collection)
+    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = {
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-    (canScroll, sType) match {
-      case (scroll, s) if s != newSType && scroll =>
-        sType = newSType
-        recyclerView <~
-          vScrollBy(0, -Int.MaxValue) <~
-          (if (sType == ScrollType.up) vScrollBy(0, spaceMove) else Tweak.blank)
-      case (_, s) if s != newSType =>
-        sType = newSType
-        recyclerView <~ vPadding(padding, if (newSType == ScrollType.up) padding else spaceMove, padding, padding)
-      case _ => Ui.nop
-    }
-  }
-
-  def getAdapter: Option[CollectionAdapter] = recyclerView flatMap { rv =>
-    Option(rv.getAdapter) match {
-      case Some(a: CollectionAdapter) => Some(a)
-      case _ => None
-    }
+    val heightCard = recyclerView map (view => (view.getHeight - (padding + spaceMove)) / numInLine)  getOrElse 0
+    new CollectionAdapter(collection, heightCard)
   }
 
 }

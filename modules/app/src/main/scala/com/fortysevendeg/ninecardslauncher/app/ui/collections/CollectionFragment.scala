@@ -31,16 +31,19 @@ class CollectionFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
+  lazy val animateCards = getArguments.getBoolean(keyAnimateCards, false)
+
   lazy val position = getArguments.getInt(keyPosition, 0)
 
   lazy val collection = getArguments.getSerializable(keyCollection).asInstanceOf[Collection]
 
-  override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = layout
+  override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View =
+    layout(animateCards)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     sType = getArguments.getInt(keyScrollType, ScrollType.down)
     canScroll = collection.cards.length > numSpaces
-    runUi(initUi(collection))
+    runUi(initUi(collection, animateCards))
     super.onViewCreated(view, savedInstanceState)
   }
 
@@ -57,6 +60,8 @@ class CollectionFragment
     scrolledListener = None
   }
 
+  def bindAnimatedAdapter = if (animateCards) runUi(setAnimatedAdapter(collection))
+
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)
     val cardCount = adapter.collection.cards.length
@@ -69,5 +74,6 @@ object CollectionFragment {
   val keyPosition = "tab_position"
   val keyCollection = "collection"
   val keyScrollType = "scroll_type"
+  val keyAnimateCards = "animate_cards"
 }
 

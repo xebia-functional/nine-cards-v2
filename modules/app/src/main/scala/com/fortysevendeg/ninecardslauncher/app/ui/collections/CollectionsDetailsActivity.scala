@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.content.Intent
 import android.content.Intent._
 import android.graphics.{Bitmap, BitmapFactory}
-import android.os.Bundle
+import android.os.{Handler, Bundle}
 import android.support.v7.app.AppCompatActivity
 import android.view._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
@@ -42,6 +42,8 @@ class CollectionsDetailsActivity
 
   val defaultIcon = ""
 
+  val defaultToDoAnimation = true
+
   implicit lazy val di = new Injector
 
   var collections: Seq[Collection] = Seq.empty
@@ -55,25 +57,28 @@ class CollectionsDetailsActivity
     super.onCreate(bundle)
 
     val position = getInt(
-      Seq(getIntent.getExtras, bundle),
+      Seq(bundle, getIntent.getExtras),
       startPosition,
       defaultPosition)
 
     val indexColor = getInt(
-      Seq(getIntent.getExtras, bundle),
+      Seq(bundle, getIntent.getExtras),
       indexColorToolbar,
       defaultPosition)
 
     val icon = getString(
-      Seq(getIntent.getExtras, bundle),
+      Seq(bundle, getIntent.getExtras),
       iconToolbar,
       defaultIcon)
+
+    val doAnimation = getBoolean(
+      Seq(bundle, getIntent.getExtras),
+      toDoAnimation,
+      defaultToDoAnimation)
 
     setContentView(R.layout.collections_detail_activity)
 
     runUi(initUi(indexColor, icon))
-
-    configureEnterTransition(position, () => runUi(ensureDrawCollection(position)))
 
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
@@ -81,15 +86,24 @@ class CollectionsDetailsActivity
 
     initSystemStatusBarTint
 
-    Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
-      onResult = (c: Seq[Collection]) => collections = c
-    )
+    if (doAnimation) {
+      configureEnterTransition(position, () => runUi(ensureDrawCollection(position)))
+      Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
+        onResult = (c: Seq[Collection]) => collections = c,
+        onException = (ex: Throwable) => runUi(showError())
+      )
+    } else {
+      Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+        onResult = (c: Seq[Collection]) => drawCollections(c, position),
+        onException = (ex: Throwable) => showError()
+      )
+    }
 
   }
 
-  override def finishAfterTransition(): Unit = {
-    super.finishAfterTransition()
-    runUi(toolbar <~ vVisible)
+  override def onPause(): Unit = {
+    super.onPause()
+    overridePendingTransition(0, 0)
   }
 
   def ensureDrawCollection(position: Int): Ui[_] = if (collections.isEmpty) {
@@ -98,6 +112,20 @@ class CollectionsDetailsActivity
     drawCollections(collections, position)
   }
 
+  override def finishAfterTransition(): Unit = {
+    super.finishAfterTransition()
+    runUi(toolbar <~ vVisible)
+  }
+
+  override def onSaveInstanceState(outState: Bundle): Unit = {
+    outState.putInt(startPosition, getCurrentPosition getOrElse defaultPosition)
+    outState.putBoolean(toDoAnimation, false)
+    getCurrentCollection foreach { collection =>
+      outState.putInt(indexColorToolbar, collection.themedColorIndex)
+      outState.putString(iconToolbar, collection.icon)
+    }
+    super.onSaveInstanceState(outState)
+  }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
@@ -125,8 +153,8 @@ class CollectionsDetailsActivity
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case android.R.id.home =>
-      finish()
-      true
+      runUi(exitTransition)
+      false
     case _ => super.onOptionsItemSelected(item)
   }
 
@@ -137,13 +165,13 @@ class CollectionsDetailsActivity
   override def onBackPressed(): Unit = (fabMenuOpened, isActionShowed) match {
     case (true, _) => runUi(swapFabButton())
     case (_, true) => runUi(unrevealActionFragment())
-    case _ => finish()
+    case _ => runUi(exitTransition)
   }
 
   override def pullToClose(scroll: Int, scrollType: Int, close: Boolean): Unit =
     runUi(pullCloseScrollY(scroll, scrollType, close))
 
-  override def close(): Unit = finish()
+  override def close(): Unit = runUi(exitTransition)
 
   override def startScroll(): Unit = getCurrentCollection foreach { collection =>
     val color = getIndexColor(collection.themedColorIndex)
@@ -205,6 +233,7 @@ object CollectionsDetailsActivity {
   val startPosition = "start_position"
   val indexColorToolbar = "color_toolbar"
   val iconToolbar = "icon_toolbar"
+  val toDoAnimation = "to_do_animation"
   val snapshotName = "snapshot"
 
   def getContentTransitionName(position: Int) = s"icon_$position"

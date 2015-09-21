@@ -5,13 +5,14 @@ import java.util
 import android.animation.ValueAnimator
 import android.annotation.TargetApi
 import android.app.SharedElementCallback
-import android.os.{Bundle, Build}
+import android.os.{Build, Bundle}
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
-import android.transition.{Transition, Fade, TransitionSet, TransitionInflater}
-import android.view.{ViewGroup, Gravity, View}
+import android.support.v7.widget.Toolbar
+import android.transition.{Fade, Transition, TransitionInflater, TransitionSet}
+import android.view.{Gravity, View, ViewGroup}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -20,29 +21,28 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, FabButtonBehaviour}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 
 import scala.collection.JavaConversions._
-
-import CollectionsDetailsActivity._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CollectionsDetailsComposer
@@ -64,6 +64,8 @@ trait CollectionsDetailsComposer
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
   lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
+
+  lazy val maxHeightToolbar = resGetDimensionPixelSize(R.dimen.height_toolbar_collection_details)
 
   lazy val toolbar = Option(findView(TR.collections_toolbar))
 
@@ -92,10 +94,12 @@ trait CollectionsDetailsComposer
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
 
+  def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ uiSnackbarShort(R.string.contactUsError)
+
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
-    val adapter = CollectionsPagerAdapter(manager.get, collections)
-    (root <~ rootStyle) ~
+    val adapter = CollectionsPagerAdapter(manager.get, collections, position)
+    (root <~ fadeBackground(in = true, theme.get(CollectionDetailBackgroundColor), 1f)) ~
       (viewPager <~ vpAdapter(adapter)) ~
       Ui(adapter.activateFragment(position)) ~
       (tabs <~
@@ -103,6 +107,7 @@ trait CollectionsDetailsComposer
         stlOnPageChangeListener(
           new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
+      uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter) }, 100) ~
       (tabs <~ vVisible <~~ enterViews) ~
       (viewPager <~ vVisible <~~ enterViews)
   }
@@ -131,7 +136,7 @@ trait CollectionsDetailsComposer
     val newElevation = elevation + (if (ratio >= 1) 1 else 0)
     val scale = 1 - (ratio / 2)
     (tabs <~ vTranslationY(-move) <~ uiElevation(newElevation)) ~
-      (toolbar <~ vTranslationY(-move * 2) <~ uiElevation(newElevation)) ~
+      (toolbar <~ tbReduceLayout(move * 2) <~ uiElevation(newElevation)) ~
       (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
   }
 
@@ -158,6 +163,11 @@ trait CollectionsDetailsComposer
     })
   )
 
+  private[this] def tbReduceLayout(reduce: Int) = Tweak[Toolbar] { view =>
+    view.getLayoutParams.height = maxHeightToolbar - reduce
+    view.requestLayout()
+  }
+
   private[this] def uiElevation(elevation: Float) = Lollipop.ifSupportedThen {
     vElevation(elevation)
   }.getOrElse(Tweak.blank)
@@ -167,11 +177,18 @@ trait CollectionsDetailsComposer
     case _ => None
   }
 
+  def getCurrentPosition: Option[Int] = getAdapter flatMap ( _.getCurrentFragmentPosition )
+
   def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
     adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
   }
 
   def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
+
+  def getActiveFragment(): Option[CollectionFragment] = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+  } yield fragment
 
   def addCardsToCurrentFragment(c: Seq[Card]) = for {
     adapter <- getAdapter
@@ -181,6 +198,15 @@ trait CollectionsDetailsComposer
       adapter.addCardsToCollection(currentPosition, c)
       fragment.addCards(c)
     }
+
+  def exitTransition(implicit theme: NineCardsTheme) =
+    ((toolbar <~ exitViews()) ~
+      (tabs <~ exitViews()) ~
+      (iconContent <~ exitViews()) ~
+      (viewPager <~ exitViews(up = false))) ~
+      (root <~~ fadeBackground(in = false, theme.get(CollectionDetailBackgroundColor), 1f)) ~~
+      Ui(finish())
+
 
   def configureEnterTransition(
     position: Int,
@@ -195,9 +221,6 @@ trait CollectionsDetailsComposer
 
     val enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.shared_element_enter_collection_detail)
     getWindow.setSharedElementEnterTransition(enterTransition)
-
-    getWindow.setSharedElementReturnTransition(new TransitionSet())
-    getWindow.setReturnTransition(new Fade())
 
     iconContent foreach (_.setTransitionName(getContentTransitionName(position)))
 
