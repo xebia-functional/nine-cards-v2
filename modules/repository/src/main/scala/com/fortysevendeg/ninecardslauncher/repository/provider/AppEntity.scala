@@ -1,0 +1,89 @@
+package com.fortysevendeg.ninecardslauncher.repository.provider
+
+import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
+
+case class AppEntity(id: Int, data: AppEntityData)
+
+case class AppEntityData(
+  name: String,
+  packageName: String,
+  className: String,
+  category: String,
+  imagePath: String,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
+  version: String,
+  installedFromGooglePlay: Boolean)
+
+object AppEntity {
+  val table = "app"
+  val name = "name"
+  val packageName = "packageName"
+  val className = "className"
+  val category = "category"
+  val imagePath = "imagePath"
+  val colorPrimary = "colorPrimary"
+  val dateInstalled = "dateInstalled"
+  val dateUpdate = "dateUpdate"
+  val version = "version"
+  val installedFromGooglePlay = "installedFromGooglePlay"
+
+  val allFields = Seq[String](
+    NineCardsSqlHelper.id,
+    name,
+    packageName,
+    className,
+    category,
+    imagePath,
+    colorPrimary,
+    dateInstalled,
+    dateUpdate,
+    version,
+    installedFromGooglePlay)
+
+  def appEntityFromCursor(cursor: Cursor) =
+    AppEntity(
+      id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
+      data = AppEntityData(
+        name = cursor.getString(cursor.getColumnIndex(name)),
+        packageName = cursor.getString(cursor.getColumnIndex(packageName)),
+        className = cursor.getString(cursor.getColumnIndex(className)),
+        category = cursor.getString(cursor.getColumnIndex(category)),
+        imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
+        colorPrimary = cursor.getString(cursor.getColumnIndex(colorPrimary)),
+        dateInstalled = cursor.getDouble(cursor.getColumnIndex(dateInstalled)),
+        dateUpdate = cursor.getDouble(cursor.getColumnIndex(dateUpdate)),
+        version = cursor.getString(cursor.getColumnIndex(version)),
+        installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0))
+
+  def createTableSQL = "CREATE TABLE " + AppEntity.table +
+    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    AppEntity.name + " TEXT not null, " +
+    AppEntity.packageName + " TEXT not null, " +
+    AppEntity.className + " TEXT not null, " +
+    AppEntity.category + " TEXT not null, " +
+    AppEntity.imagePath + " TEXT not null, " +
+    AppEntity.colorPrimary + " TEXT not null, " +
+    AppEntity.dateInstalled + " DOUBLE, " +
+    AppEntity.dateUpdate + " DOUBLE, " +
+    AppEntity.version + " TEXT not null, " +
+    AppEntity.installedFromGooglePlay + " INTEGER )"
+}
+
+object AppEntityData {
+
+  def appEntityDataFromCursor(cursor: Cursor) =
+    AppEntityData(
+      name = cursor.getString(cursor.getColumnIndex(name)),
+      packageName = cursor.getString(cursor.getColumnIndex(packageName)),
+      className = cursor.getString(cursor.getColumnIndex(className)),
+      category = cursor.getString(cursor.getColumnIndex(category)),
+      imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
+      colorPrimary = cursor.getString(cursor.getColumnIndex(colorPrimary)),
+      dateInstalled = cursor.getDouble(cursor.getColumnIndex(dateInstalled)),
+      dateUpdate = cursor.getDouble(cursor.getColumnIndex(dateUpdate)),
+      version = cursor.getString(cursor.getColumnIndex(version)),
+      installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0)
+}

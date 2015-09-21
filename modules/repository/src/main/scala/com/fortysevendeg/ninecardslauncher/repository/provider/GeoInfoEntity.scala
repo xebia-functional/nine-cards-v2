@@ -11,8 +11,7 @@ case class GeoInfoEntityData(
   wifi: String,
   latitude: Double,
   longitude: Double,
-  system: Boolean
-  )
+  system: Boolean)
 
 object GeoInfoEntity {
   val table = "GeoInfo"
@@ -42,6 +41,15 @@ object GeoInfoEntity {
         latitude = cursor.getDouble(cursor.getColumnIndex(latitude)),
         longitude = cursor.getDouble(cursor.getColumnIndex(longitude)),
         system = cursor.getInt(cursor.getColumnIndex(system)) > 0))
+
+  def createTableSQL = "CREATE TABLE " + GeoInfoEntity.table +
+    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    GeoInfoEntity.constrain + " TEXT not null, " +
+    GeoInfoEntity.occurrence + " TEXT not null, " +
+    GeoInfoEntity.wifi + " TEXT, " +
+    GeoInfoEntity.latitude + " DOUBLE, " +
+    GeoInfoEntity.longitude + " DOUBLE, " +
+    GeoInfoEntity.system + " INTEGER )"
 }
 
 object GeoInfoEntityData {
