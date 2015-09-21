@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import com.fortysevendeg.ninecardslauncher.repository.provider.CacheCategoryEntity._
 
 case class CacheCategoryEntity(id: Int, data: CacheCategoryEntityData)
@@ -12,8 +11,7 @@ case class CacheCategoryEntityData(
   starRating: Double,
   numDownloads: String,
   ratingsCount: Int,
-  commentCount: Int
-  )
+  commentCount: Int)
 
 object CacheCategoryEntity {
   val table = "cacheCategory"

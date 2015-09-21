@@ -16,8 +16,7 @@ case class CollectionEntityData(
   constrains: String,
   originalSharedCollectionId: String,
   sharedCollectionId: String,
-  sharedCollectionSubscribed: Boolean
-  )
+  sharedCollectionSubscribed: Boolean)
 
 object CollectionEntity {
   val table = "Collection"

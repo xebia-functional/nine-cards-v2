@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 
 case class CardEntity(id: Int, data: CardEntityData)

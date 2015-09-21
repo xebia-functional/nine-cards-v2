@@ -12,8 +12,7 @@ case class GeoInfoEntityData(
   wifi: String,
   latitude: Double,
   longitude: Double,
-  system: Boolean
-  )
+  system: Boolean)
 
 object GeoInfoEntity {
   val table = "GeoInfo"
