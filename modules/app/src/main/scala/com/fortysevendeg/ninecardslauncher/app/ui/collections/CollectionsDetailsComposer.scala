@@ -53,9 +53,9 @@ trait CollectionsDetailsComposer
 
   val nameActionFragment = "action-fragment"
 
-  val resistanceDisplacement = .35f
+  val resistanceDisplacement = .2f
 
-  val resistanceScale = .15f
+  val resistanceScale = .05f
 
   lazy val iconIndicatorDrawable = new PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
@@ -98,7 +98,7 @@ trait CollectionsDetailsComposer
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
     val adapter = CollectionsPagerAdapter(manager.get, collections, position)
-    (root <~ fadeBackground(in = true, theme.get(CollectionDetailBackgroundColor), 1f)) ~
+    (root <~ fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
       (viewPager <~ vpAdapter(adapter)) ~
       Ui(adapter.activateFragment(position)) ~
       (tabs <~

@@ -137,22 +137,18 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def fadeBackground(in: Boolean, color: Int, maxFade: Float)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def fadeBackground(color: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
+      val duration = resGetInteger(R.integer.anim_duration_normal)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
 
-      val (fadeStart, fadeEnd) = if (in) {
-        (0f, maxFade)
-      } else {
-        (maxFade, 0f)
-      }
-
-      val colorFrom = ColorsUtils.setAlpha(color, fadeStart)
-      val colorTo = ColorsUtils.setAlpha(color, fadeEnd)
+      val colorFrom = ColorsUtils.setAlpha(color, 0f)
+      val colorTo = ColorsUtils.setAlpha(color, 1f)
 
       val valueAnimator = ValueAnimator.ofInt(0, 100)
+      valueAnimator.setDuration(duration)
       valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
         override def onAnimationUpdate(value: ValueAnimator) = {
           val color = interpolateColors(value.getAnimatedFraction, colorFrom, colorTo)
