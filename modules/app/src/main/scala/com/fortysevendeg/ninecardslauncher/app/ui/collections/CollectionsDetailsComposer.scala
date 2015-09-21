@@ -11,7 +11,7 @@ import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.transition.{Fade, Transition, TransitionInflater, TransitionSet}
+import android.transition.{Transition, TransitionInflater}
 import android.view.{Gravity, View, ViewGroup}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -148,7 +148,11 @@ trait CollectionsDetailsComposer
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
-      view: View => showAction(f[AppsFragment], view)
+      view: View =>
+        val category = getCurrentCollection flatMap (_.appsCategory)
+        // TODO Remove "if (cat == "")" when ticket 9C-257 is resolved
+        val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
+        showAction(f[AppsFragment], view, map)
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
       uiShortToast("Recommendations")
@@ -311,7 +315,8 @@ trait CollectionsDetailsComposer
     (toolbar <~ vBackgroundColor(color)) ~
       updateStatusColor(color)
 
-  private[this] def showAction[F <: BaseActionFragment](fragmentBuilder: FragmentBuilder[F], view: View): Ui[_] = {
+  private[this] def showAction[F <: BaseActionFragment]
+  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, String] = Map.empty): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
@@ -321,6 +326,7 @@ trait CollectionsDetailsComposer
     args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
     args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
+    map foreach (item => args.putString(item._1, item._2))
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton(doUpdateBars = false) ~
