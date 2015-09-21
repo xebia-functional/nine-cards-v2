@@ -39,8 +39,9 @@ trait ContactsServicesSpecification
     extends ContactsServicesScope {
 
     contentResolverWrapper.fetchAll(
-      Fields.CONTENT_URI,
-      allFields,
+      uri = Fields.CONTENT_URI,
+      projection = allFields,
+      where = Fields.ALL_CONTACTS_SELECTION,
       orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
 
     contentResolverWrapper.fetch(
@@ -96,8 +97,9 @@ trait ContactsServicesSpecification
     val contentResolverException = new RuntimeException("Irrelevant message")
 
     contentResolverWrapper.fetchAll(
-      Fields.CONTENT_URI,
-      allFields,
+      uri = Fields.CONTENT_URI,
+      projection = allFields,
+      where = Fields.ALL_CONTACTS_SELECTION,
       orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
