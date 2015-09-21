@@ -148,7 +148,7 @@ trait ContactsServicesSpecification
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
       allFields,
-      where = Fields.HAS_PHONE_NUMBER,
+      where = Fields.HAS_PHONE_NUMBER_SELECTION,
       orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
   }
 
@@ -159,7 +159,7 @@ trait ContactsServicesSpecification
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
       allFields,
-      where = Fields.HAS_PHONE_NUMBER,
+      where = Fields.HAS_PHONE_NUMBER_SELECTION,
       orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
 
   }

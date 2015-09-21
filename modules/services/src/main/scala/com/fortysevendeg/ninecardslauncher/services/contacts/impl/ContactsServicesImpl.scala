@@ -104,7 +104,7 @@ class ContactsServicesImpl(
           contentResolverWrapper.fetchAll(
             uri = Fields.CONTENT_URI,
             projection = allFields,
-            where = Fields.HAS_PHONE_NUMBER,
+            where = Fields.HAS_PHONE_NUMBER_SELECTION,
             orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
         }
       }
