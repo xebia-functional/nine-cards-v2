@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
 import android.support.design.widget.{NavigationView, Snackbar, FloatingActionButton}
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar}
 import android.view.{MenuItem, View}
@@ -44,6 +45,10 @@ object ExtraTweaks {
   }))
 
   def dlStatusBarBackground(res: Int) = Tweak[DrawerLayout](_.setStatusBarBackground(res))
+
+  def dlOpenDrawer = Tweak[DrawerLayout](_.openDrawer(GravityCompat.START))
+
+  def dlCloseDrawer = Tweak[DrawerLayout](_.closeDrawer(GravityCompat.START))
 
   def nvNavigationItemSelectedListener(onItem: (Int) => Boolean) = Tweak[NavigationView](_.setNavigationItemSelectedListener(
     new OnNavigationItemSelectedListener {

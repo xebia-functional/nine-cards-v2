@@ -2,12 +2,14 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.content.{Context, Intent}
 import android.speech.RecognizerIntent
+import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
@@ -19,6 +21,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -68,6 +71,10 @@ trait LauncherComposer
   lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
 
   lazy val navigationView = Option(findView(TR.launcher_navigation_view))
+
+  lazy val menuName = Option(findView(TR.menu_name))
+
+  lazy val menuAvatar = Option(findView(TR.menu_avatar))
 
   lazy val loading = Option(findView(TR.launcher_loading))
 
@@ -139,10 +146,11 @@ trait LauncherComposer
             }
           ))))) ~
       (searchPanel <~ searchContentStyle) ~
+      (menuAvatar <~ menuAvatarStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       (burgerIcon <~ burgerButtonStyle <~ On.click(
-        uiShortToast("Open Menu")
+        drawerLayout <~ dlOpenDrawer
       )) ~
       (googleIcon <~ googleButtonStyle <~ On.click(
         uiStartIntent(new Intent(Intent.ACTION_WEB_SEARCH))
@@ -181,6 +189,14 @@ trait LauncherComposer
         )) ~
       (appDrawerPanel <~ fillAppDrawer(collections)) ~
       createPager(selectedPageDefault)
+
+  def userInfoMenu(userInfo: UserInfo)(implicit uiContext: UiContext[_]): Ui[_] =
+    (menuName <~ tvText(userInfo.email)) ~
+      (menuAvatar <~ ivUri(userInfo.imageUrl))
+
+  def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
+
+  def isMenuVisible: Boolean = drawerLayout exists (_.isDrawerOpen(GravityCompat.START))
 
   private[this] def clickAppDrawerItem(view: View)(implicit context: ActivityContextWrapper): Ui[_] = Ui {
     val position = Int.unbox(view.getTag(R.id.app_drawer_position))
