@@ -110,10 +110,7 @@ object Settings {
     okHttp % "provided",
     specs2,
     mockito,
-    mockServer,
-    stetho,
-    stethoOkhttp,
-    stethoUrlconnection)
+    mockServer)
 
   lazy val repositoryDependencies = Seq(
     androidProvidedLib,
