@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
@@ -118,13 +119,20 @@ trait LauncherComposer
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
         itemId match {
-          case R.id.menu_collections => runUi(showMessage(R.string.todo))
-          case R.id.menu_moments => runUi(showMessage(R.string.todo))
-          case R.id.menu_profile => runUi(showMessage(R.string.todo))
-          case R.id.menu_wallpapers => runUi(showMessage(R.string.todo))
-          case R.id.menu_android_settings => runUi(showMessage(R.string.todo))
-          case R.id.menu_9cards_settings => runUi(showMessage(R.string.todo))
-          case R.id.menu_widgets => runUi(showMessage(R.string.todo))
+          case R.id.menu_collections =>
+            runUi((workspaces <~ lwsSelect(1)) ~ closeMenu())
+          case R.id.menu_moments =>
+            runUi((workspaces <~ lwsSelect(0)) ~ closeMenu())
+          case R.id.menu_profile =>
+            runUi(showMessage(R.string.todo))
+          case R.id.menu_wallpapers =>
+            runUi(uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER)))
+          case R.id.menu_android_settings =>
+            runUi(uiStartIntent(new Intent(android.provider.Settings.ACTION_SETTINGS)))
+          case R.id.menu_9cards_settings =>
+            runUi(showMessage(R.string.todo))
+          case R.id.menu_widgets =>
+            runUi(showMessage(R.string.todo))
         }
         true
       })) ~
