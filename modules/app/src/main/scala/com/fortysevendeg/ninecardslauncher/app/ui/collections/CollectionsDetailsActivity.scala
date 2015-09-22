@@ -139,7 +139,7 @@ class CollectionsDetailsActivity
           getCurrentCollection foreach { collection =>
             val maybeBitmap = getBitmapFromShortcutIntent(b)
             Task.fork(createShortcut(collection.id, shortcutName, shortcutIntent, maybeBitmap).run).resolveAsync(
-              onResult = addCardsInCurrentFragment(_)
+              onResult = addCardsToCurrentFragment(_)
             )
           }
         case _ =>
@@ -187,7 +187,7 @@ class CollectionsDetailsActivity
   def addCards(cards: Seq[AddCardRequest]): Unit =
     getCurrentCollection foreach { collection =>
       Task.fork(createCards(collection.id, cards).run).resolveAsync(
-        onResult = addCardsInCurrentFragment(_)
+        onResult = addCardsToCurrentFragment(_)
       )
     }
 
@@ -198,7 +198,7 @@ class CollectionsDetailsActivity
     val dialog = new RemoveCardDialogFragment(() => {
       getCurrentCollection foreach { collection =>
         Task.fork(removeCard(collection.id, card.id).run).resolveAsync(
-          onResult = (_) => removeCardInCurrentFragment(card)
+          onResult = (_) => removeCardFromCurrentFragment(card)
         )
       }
     })
