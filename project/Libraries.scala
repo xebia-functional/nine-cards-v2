@@ -66,4 +66,10 @@ object Libraries {
     lazy val playServicesBase = playServicesDep("play-services-base")
   }
 
+  object debug {
+    lazy val stetho = "com.facebook.stetho" % "stetho" % Versions.stethoV
+    lazy val stethoOkhttp = "com.facebook.stetho" % "stetho-okhttp" % Versions.stethoV
+    lazy val stethoUrlconnection = "com.facebook.stetho" % "stetho-urlconnection" % Versions.stethoV
+  }
+
 }
