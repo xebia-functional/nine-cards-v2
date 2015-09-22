@@ -4,4 +4,9 @@ case class Application(
   name: String,
   packageName: String,
   className: String,
-  icon: Int)
+  resourceIcon: Int,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
+  version: String,
+  installedFromGooglePlay: Boolean)

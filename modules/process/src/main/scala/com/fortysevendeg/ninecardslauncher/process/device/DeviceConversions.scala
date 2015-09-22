@@ -50,7 +50,7 @@ trait DeviceConversions {
         packageName = item.packageName,
         className = item.className,
         name = item.name,
-        icon = item.icon
+        icon = item.resourceIcon
       )
   }
 

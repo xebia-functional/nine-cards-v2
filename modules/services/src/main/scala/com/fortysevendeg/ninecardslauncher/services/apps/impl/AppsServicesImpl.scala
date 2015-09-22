@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.apps.impl
 
+import android.R.attr
 import android.content.Intent
-import android.content.pm.ResolveInfo
+import android.content.pm.{PackageManager, ResolveInfo}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -23,14 +24,42 @@ class AppsServicesImpl
         val apps: Seq[ResolveInfo] = packageManager.queryIntentActivities(categoryLauncherIntent(), 0).toSeq
 
         apps map {
-          resolveInfo =>
-            Application(
-              name = resolveInfo.loadLabel(packageManager).toString,
-              packageName = resolveInfo.activityInfo.applicationInfo.packageName,
-              className = resolveInfo.activityInfo.name,
-              icon = resolveInfo.activityInfo.icon)
+          resolveInfo => getApplication(resolveInfo.activityInfo.applicationInfo.packageName)
         }
       }
+    }
+  }
+
+  def getApp(packageName: String)(implicit context: ContextSupport) = Service{
+    Task {
+      CatchAll[AppsInstalledException] {
+        getApplication(packageName)
+      }
+    }
+  }
+
+  private[this] def getApplication(packageName: String)(implicit context: ContextSupport) = {
+    val packageManager = context.getPackageManager
+    val packageInfo = packageManager.getPackageInfo(packageName, 0)
+    val resources = packageManager.getResourcesForApplication(packageInfo.applicationInfo)
+
+    Application(
+      name = packageInfo.applicationInfo.name,
+      packageName = packageInfo.packageName,
+      className = packageInfo.applicationInfo.className,
+      resourceIcon = packageInfo.applicationInfo.icon,
+      colorPrimary = resources.getColor(attr.colorPrimary).toString,
+      dateInstalled = packageInfo.firstInstallTime,
+      dateUpdate = packageInfo.lastUpdateTime,
+      version = packageInfo.versionCode.toString,
+      installedFromGooglePlay = isFromGooglePlay(packageManager, packageInfo.packageName))
+  }
+
+  private[this] def isFromGooglePlay(packageManager: PackageManager, packageName: String) = {
+    packageManager.getInstallerPackageName(packageName) match {
+      case "com.google.android.feedback" => true
+      case "com.android.vending" => true
+      case _  => false
     }
   }
 
