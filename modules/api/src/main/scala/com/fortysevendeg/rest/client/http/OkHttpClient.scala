@@ -6,7 +6,6 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.rest.client.http.Methods._
 import com.squareup.{okhttp => okHttp}
 import play.api.libs.json.{Json, Writes}
-import com.facebook.stetho.okhttp.StethoInterceptor
 
 import scalaz.concurrent.Task
 
@@ -17,8 +16,6 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
   val jsonMediaType = okHttp.MediaType.parse("application/json")
 
   val textPlainMediaType = okHttp.MediaType.parse("text/plain")
-
-  okHttpClient.networkInterceptors().add(new StethoInterceptor())
 
   override def doGet(
     url: String,
