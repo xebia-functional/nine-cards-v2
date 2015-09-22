@@ -192,21 +192,21 @@ trait CollectionsDetailsComposer
     fragment <- adapter.getActiveFragment
   } yield fragment
 
-  protected def addCardsToCurrentFragment(c: Seq[Card]) = for {
+  protected def addCardsInCurrentFragment(c: Seq[Card]) = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
     currentPosition <- adapter.getCurrentFragmentPosition
   } yield {
-      adapter.addCardsToCollection(currentPosition, c)
+      adapter.addCardsInCollection(currentPosition, c)
       fragment.addCards(c)
     }
 
-  protected def removeCardToCurrentFragment(c: Card) = for {
+  protected def removeCardInCurrentFragment(c: Card) = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
     currentPosition <- adapter.getCurrentFragmentPosition
   } yield {
-      adapter.removeCardToCollection(currentPosition, c)
+      adapter.removeCardInCollection(currentPosition, c)
       fragment.removeCard(c)
     }
 

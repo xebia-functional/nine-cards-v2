@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 
 case class CollectionAdapter(var collection: Collection, heightCard: Int)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
@@ -26,10 +27,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     adapter.content.setOnLongClickListener(new OnLongClickListener {
       override def onLongClick(v: View): Boolean = {
         Option(v.getTag) foreach { tag =>
-          activityContext.original.get match {
-            case Some(activity: CollectionsDetailsActivity) =>
-              activity.removeCard(collection.cards(Int.unbox(tag)))
-          }
+          activity[CollectionsDetailsActivity] foreach (_.removeCard(collection.cards(Int.unbox(tag))))
         }
         false
       }

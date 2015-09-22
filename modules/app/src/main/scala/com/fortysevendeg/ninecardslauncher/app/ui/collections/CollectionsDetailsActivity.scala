@@ -139,7 +139,7 @@ class CollectionsDetailsActivity
           getCurrentCollection foreach { collection =>
             val maybeBitmap = getBitmapFromShortcutIntent(b)
             Task.fork(createShortcut(collection.id, shortcutName, shortcutIntent, maybeBitmap).run).resolveAsync(
-              onResult = addCardsToCurrentFragment(_)
+              onResult = addCardsInCurrentFragment(_)
             )
           }
         case _ =>
@@ -184,10 +184,10 @@ class CollectionsDetailsActivity
 
   override def onEndFinishAction(): Unit = removeActionFragment()
 
-  override def addCards(cards: Seq[AddCardRequest]): Unit =
+  def addCards(cards: Seq[AddCardRequest]): Unit =
     getCurrentCollection foreach { collection =>
       Task.fork(createCards(collection.id, cards).run).resolveAsync(
-        onResult = addCardsToCurrentFragment(_)
+        onResult = addCardsInCurrentFragment(_)
       )
     }
 
@@ -198,7 +198,7 @@ class CollectionsDetailsActivity
     val dialog = new RemoveCardDialogFragment(() => {
       getCurrentCollection foreach { collection =>
         Task.fork(removeCard(collection.id, card.id).run).resolveAsync(
-          onResult = (_) => removeCardToCurrentFragment(card)
+          onResult = (_) => removeCardInCurrentFragment(card)
         )
       }
     })
@@ -236,8 +236,6 @@ trait ActionsScreenListener {
   def onStartFinishAction()
 
   def onEndFinishAction()
-
-  def addCards(cards: Seq[AddCardRequest])
 }
 
 object ScrollType {
