@@ -8,11 +8,10 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, LauncherExecutor, SystemBarsTint, FabButtonBehaviour}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, LauncherExecutor, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
@@ -20,7 +19,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -67,6 +65,10 @@ trait LauncherComposer
 
   var workspaces: Option[LauncherWorkSpaces] = None
 
+  lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
+
+  lazy val navigationView = Option(findView(TR.launcher_navigation_view))
+
   lazy val loading = Option(findView(TR.launcher_loading))
 
   lazy val content = Option(findView(TR.launcher_content))
@@ -93,6 +95,8 @@ trait LauncherComposer
 
   lazy val micIcon = Option(findView(TR.launcher_mic_icon))
 
+  def showMessage(message: Int): Ui[_] = drawerLayout <~ uiSnackbarShort(message)
+
   def updateBarsInFabMenuShow: Ui[_] = {
     val color = getResources.getColor(R.color.background_dialog)
     updateNavigationColor(color) ~
@@ -104,23 +108,36 @@ trait LauncherComposer
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-    (workspacesContent <~
-      vgAddView(getUi(w[LauncherWorkSpaces] <~
-        wire(workspaces) <~
-        awsListener(AnimatedWorkSpacesListener(
-          startScroll = (toRight: Boolean) => {
-            val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
-            val collectionScreen = workspaces exists (_.isCollectionScreen)
-            (goToWizardScreen, collectionScreen) match {
-              case (false, true) => runUi(showFabButton())
-              case _ =>
+    (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
+      (navigationView <~ nvNavigationItemSelectedListener(itemId => {
+        itemId match {
+          case R.id.menu_collections => runUi(showMessage(R.string.todo))
+          case R.id.menu_moments => runUi(showMessage(R.string.todo))
+          case R.id.menu_profile => runUi(showMessage(R.string.todo))
+          case R.id.menu_wallpapers => runUi(showMessage(R.string.todo))
+          case R.id.menu_android_settings => runUi(showMessage(R.string.todo))
+          case R.id.menu_9cards_settings => runUi(showMessage(R.string.todo))
+          case R.id.menu_widgets => runUi(showMessage(R.string.todo))
+        }
+        true
+      })) ~
+      (workspacesContent <~
+        vgAddView(getUi(w[LauncherWorkSpaces] <~
+          wire(workspaces) <~
+          awsListener(AnimatedWorkSpacesListener(
+            startScroll = (toRight: Boolean) => {
+              val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
+              val collectionScreen = workspaces exists (_.isCollectionScreen)
+              (goToWizardScreen, collectionScreen) match {
+                case (false, true) => runUi(showFabButton())
+                case _ =>
+              }
+            },
+            endScroll = () => {
+              val collectionScreen = workspaces exists (_.isCollectionScreen)
+              if (collectionScreen) runUi(showFabButton())
             }
-          },
-          endScroll = () => {
-            val collectionScreen = workspaces exists (_.isCollectionScreen)
-            if (collectionScreen) runUi(showFabButton())
-          }
-        ))))) ~
+          ))))) ~
       (searchPanel <~ searchContentStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~

@@ -7,6 +7,16 @@
     <string name="loading">Cargando</string>
     <string name="contactUsError">Opps! Por favor contacta con nosotros si este problema persiste</string>
 
+    <!-- Menu -->
+    <string name="collectionsTitle">Colecciones</string>
+    <string name="momentsTitle">Momentos</string>
+    <string name="profileTitle">Perfil</string>
+    <string name="configurationTitle">Configuración</string>
+    <string name="wallpaperTitle">Fondo de Pantalla</string>
+    <string name="androidSettingsTitle">Ajustes de Android</string>
+    <string name="nineCardsSettingsTitle">Ajustes de 9Cards</string>
+    <string name="widgetsTitle">Widgets</string>
+
     <!-- Wizard -->
     <string name="buttonContinue">Continuar</string>
     <string name="welcome">Bienvenido a 9 Cards</string>
