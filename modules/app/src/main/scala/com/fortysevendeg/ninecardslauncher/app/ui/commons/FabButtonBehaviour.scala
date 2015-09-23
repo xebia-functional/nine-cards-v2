@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
+import android.graphics.Color
 import android.os.Handler
 import android.support.design.widget.FloatingActionButton
 import android.view.{Gravity, View}
@@ -61,12 +62,15 @@ trait FabButtonBehaviour
         pmdAnimIcon(if (opened) IconTypes.ADD else IconTypes.CLOSE)) ~
         (fabMenuContent <~
           animFabButton(opened) <~
-          fadeBackground(!opened) <~
+          colorContentDialog(!opened) <~
           fabContentStyle(!opened)) ~
         (if (opened) postDelayedHideFabButton else removeDelayedHideFabButton)
       ui ~ (if (doUpdateBars) updateBars(opened) else Ui.nop)
     } getOrElse Ui.nop
   }
+
+  def colorContentDialog(paint: Boolean)(implicit context: ActivityContextWrapper) =
+    vBackgroundColorResource(if (paint) R.color.background_dialog else android.R.color.transparent)
 
   private[this] def updateBars(opened: Boolean): Ui[_] = if (opened) {
     updateBarsInFabMenuHide
@@ -76,7 +80,13 @@ trait FabButtonBehaviour
 
   private[this] def animFabButton(open: Boolean)(implicit context: ActivityContextWrapper) = Transformer {
     case i: FabItemMenu if tagEquals(i, R.id.`type`, fabButtonItem) =>
-      i <~ (if (open) hideFabMenuItem else showFabMenuItem)
+      if (open) {
+        i <~ vGone
+      } else {
+        (i <~ animFabMenuItem) ~
+          (i.icon <~ animFabMenuIconItem) ~
+          (i.title <~ animFabMenuTitleItem)
+      }
   }
 
   def fabMenuOpened: Boolean = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))

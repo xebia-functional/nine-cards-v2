@@ -42,7 +42,7 @@
     <dimen name="margin_pager_collection">2dp</dimen>
     <integer name="anim_duration_pager_appear">175</integer>
 
-    <dimen name="margin_bottom_fab_menu_content_collections">86dp</dimen>
+    <dimen name="margin_bottom_fab_menu_content_collections">60dp</dimen>
 
     <!-- Collections Details -->
     <dimen name="size_icon_collection_detail">60dp</dimen>

@@ -17,19 +17,29 @@ import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
+import com.squareup.{okhttp => okHttp}
 import macroid.ContextWrapper
+import com.facebook.stetho.okhttp.StethoInterceptor
 
 class Injector(implicit contextWrapper: ContextWrapper) {
+
+  private[this] def createHttpClient = {
+    val okHttpClient = new okHttp.OkHttpClient
+    if (BuildConfig.DEBUG) {
+      okHttpClient.networkInterceptors().add(new StethoInterceptor())
+    }
+    new OkHttpClient(okHttpClient)
+  }
 
   val resources = contextWrapper.application.getResources
 
   // Services
 
   private[this] lazy val serviceClient = new ServiceClient(
-    httpClient = new OkHttpClient(),
+    httpClient = createHttpClient,
     baseUrl = resources.getString(R.string.api_base_url))
 
   private[this] lazy val apiServicesConfig = ApiServicesConfig(

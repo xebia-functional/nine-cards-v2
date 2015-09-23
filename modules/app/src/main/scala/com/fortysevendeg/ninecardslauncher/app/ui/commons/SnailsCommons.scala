@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.animation._
 import android.graphics.Color
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.{DecelerateInterpolator, AccelerateInterpolator, AccelerateDecelerateInterpolator}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -14,15 +14,9 @@ import scala.util.{Failure, Success, Try}
 
 object SnailsCommons {
 
-  val fadeColorBackground = Color.BLACK
-
-  val maxFadeBackground = 0.7f
-
-  val defaultDelay = 60
+  val defaultDelay = 30
 
   val noDelay = 0
-
-  def getDefaultColorBackground = ColorsUtils.setAlpha(fadeColorBackground, maxFadeBackground)
 
   def showFabMenu(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
@@ -66,20 +60,19 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def showFabMenuItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def animFabMenuItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
-      val duration = resGetDimensionPixelSize(R.dimen.padding_large)
-      val translationY = resGetDimensionPixelSize(R.dimen.padding_large)
+      val duration = resGetInteger(R.integer.anim_duration_normal)
+      val translationY = resGetDimensionPixelSize(R.dimen.padding_default)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
-      view.setTranslationY(translationY)
-      view.setAlpha(0)
       view.setVisibility(View.VISIBLE)
+      view.setTranslationY(translationY)
+      val delay = extractDelay(view)
       view.animate.
-        setStartDelay(extractDelay(view)).
-        setInterpolator(new AccelerateDecelerateInterpolator()).
-        alpha(1).
+        setStartDelay(delay).
+        setDuration(duration).
         translationY(0).
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
@@ -91,22 +84,22 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def hideFabMenuItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def animFabMenuTitleItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
-      val translationY = resGetDimensionPixelSize(R.dimen.padding_large)
+      val duration = resGetInteger(R.integer.anim_duration_normal)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
       view.setVisibility(View.VISIBLE)
+      view.setAlpha(0)
       view.animate.
-        setStartDelay(0).
-        alpha(0).
-        setInterpolator(new AccelerateDecelerateInterpolator()).
-        translationY(translationY).
+        setStartDelay(extractDelay(view)).
+        setDuration(duration).
+        setInterpolator(new AccelerateInterpolator()).
+        alpha(1).
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            view.setVisibility(View.GONE)
             view.setLayerType(View.LAYER_TYPE_NONE, null)
             animPromise.success()
           }
@@ -114,25 +107,48 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def fadeBackground(
-    in: Boolean,
-    color: Int = fadeColorBackground,
-    maxFade: Float = maxFadeBackground)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def animFabMenuIconItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
+      val duration = resGetInteger(R.integer.anim_duration_normal)
+      val size = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      val animPromise = Promise[Unit]()
+      view.setVisibility(View.VISIBLE)
+      view.setScaleX(0)
+      view.setScaleY(0)
+      view.setAlpha(0)
+      view.setPivotX(size / 2)
+      view.setPivotY(size)
+      view.animate.
+        setStartDelay(extractDelay(view)).
+        setDuration(duration).
+        setInterpolator(new DecelerateInterpolator()).
+        alpha(1).
+        scaleX(1).
+        scaleY(1).
+        setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) = {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            animPromise.success()
+          }
+        }).start()
+      animPromise.future
+  }
+
+  def fadeBackground(color: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+    view =>
+      val duration = resGetInteger(R.integer.anim_duration_normal)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
 
-      val (fadeStart, fadeEnd) = if (in) {
-        (0f, maxFade)
-      } else {
-        (maxFade, 0f)
-      }
-
-      val colorFrom = ColorsUtils.setAlpha(color, fadeStart)
-      val colorTo = ColorsUtils.setAlpha(color, fadeEnd)
+      val colorFrom = ColorsUtils.setAlpha(color, 0f)
+      val colorTo = ColorsUtils.setAlpha(color, 1f)
 
       val valueAnimator = ValueAnimator.ofInt(0, 100)
+      valueAnimator.setDuration(duration)
       valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
         override def onAnimationUpdate(value: ValueAnimator) = {
           val color = interpolateColors(value.getAnimatedFraction, colorFrom, colorTo)
