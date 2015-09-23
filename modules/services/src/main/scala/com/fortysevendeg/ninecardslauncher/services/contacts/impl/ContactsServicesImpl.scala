@@ -4,10 +4,9 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactInfo}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactInfo
 
 import scalaz.concurrent.Task
 
@@ -24,6 +23,7 @@ class ContactsServicesImpl(
           contentResolverWrapper.fetchAll(
             uri = Fields.CONTENT_URI,
             projection = allFields,
+            where = Fields.ALL_CONTACTS_SELECTION,
             orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
         }
       }
@@ -104,7 +104,7 @@ class ContactsServicesImpl(
           contentResolverWrapper.fetchAll(
             uri = Fields.CONTENT_URI,
             projection = allFields,
-            where = Fields.HAS_PHONE_NUMBER,
+            where = Fields.HAS_PHONE_NUMBER_SELECTION,
             orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
         }
       }
