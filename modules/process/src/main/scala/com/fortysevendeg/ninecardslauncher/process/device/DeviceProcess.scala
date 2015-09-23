@@ -20,7 +20,7 @@ trait DeviceProcess {
   def getAvailableShortcuts(implicit context: ContextSupport): ServiceDef2[Seq[Shortcut], ShortcutException]
 
   /**
-    * Save shortcut icon from bitmap
+   * Save shortcut icon from bitmap
    * @return the String contains the path where the icon was stored
    * @throws ShortcutException if exist some problem storing icon
    */
@@ -51,11 +51,30 @@ trait DeviceProcess {
    */
   def getContact(lookupKey: String)(implicit context: ContextSupport): ServiceDef2[Contact, ContactException]
 
+  /**
+   * Get the installed apps and store them in the repository
+   * @throws AppException if exist some problem to get the apps or storing them
+   */
   def saveInstalledApps(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
 
+  /**
+   * Get an installed app and store it in the repository
+   * @param packageName the packageName of the app to save
+   * @throws AppException if exist some problem to get the app or storing it
+   */
   def saveApp(packageName: String)(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
 
+  /**
+   * Delete an app from the repository
+   * @param packageName the packageName of the app to delete
+   * @throws AppException if exist some problem deleting the app
+   */
   def deleteApp(packageName: String)(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
 
+  /**
+   * Get the contact and fill all their data
+   * @param packageName the packageName of the app to update
+   * @throws AppException if exist some problem to get the app or updating it
+   */
   def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
 }
