@@ -1,45 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/launcher_drawer_content"
     style="@style/LauncherDrawerContent"
-    android:id="@+id/launcher_drawer_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
-        style="@style/LauncherDrawerLayoutContent">
+        android:id="@+id/launcher_drawer_toolbar"
+        style="@style/LauncherDrawerToolbar">
 
-        <LinearLayout
-            android:id="@+id/launcher_drawer_toolbar"
-            style="@style/LauncherDrawerToolbar">
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
+            android:id="@+id/launcher_drawer_tab_app"
+            style="@style/LauncherDrawerTab"/>
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
-                android:id="@+id/launcher_drawer_tab_app"
-                style="@style/LauncherDrawerTab"/>
-
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
-                android:id="@+id/launcher_drawer_tab_contact"
-                style="@style/LauncherDrawerTab"/>
-
-        </LinearLayout>
-
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
-            android:id="@+id/launcher_drawer_scroller_layout"
-            style="@style/LauncherDrawerInnerContent">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/launcher_drawer_recycler"
-                style="@style/LauncherDrawerRecycler"/>
-
-            <ProgressBar
-                android:id="@+id/launcher_drawer_loading"
-                style="@style/LauncherDrawerLoading"/>
-
-
-        </com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout>
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
+            android:id="@+id/launcher_drawer_tab_contact"
+            style="@style/LauncherDrawerTab"/>
 
     </LinearLayout>
 
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
+        android:id="@+id/launcher_drawer_scroller_layout"
+        style="@style/LauncherDrawerInnerContent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/launcher_drawer_recycler"
+            style="@style/LauncherDrawerRecycler"/>
+
+        <ProgressBar
+            android:id="@+id/launcher_drawer_loading"
+            style="@style/LauncherDrawerLoading"/>
+
+
+    </com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/launcher_drawer_button"
+        app:layout_anchor="@id/launcher_drawer_recycler"
         style="@style/LauncherDrawerFabButton"/>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

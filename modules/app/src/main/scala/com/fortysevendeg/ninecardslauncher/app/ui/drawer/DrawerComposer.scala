@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.drawer
 
+import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -54,9 +55,13 @@ trait DrawerComposer
 
   lazy val recycler = Option(findView(TR.launcher_drawer_recycler))
 
-  def showDrawerLoading: Ui[_] = (loadingDrawer <~ vVisible) ~ (recycler <~ vGone) ~ (scrollerLayout <~ fslInvisible)
+  def showDrawerLoading: Ui[_] = (loadingDrawer <~ vVisible) ~
+    (recycler <~ vGone) ~
+    (scrollerLayout <~ fslInvisible)
 
-  def showDrawerData: Ui[_] = (loadingDrawer <~ vGone) ~ (recycler <~ vVisible) ~ (scrollerLayout <~ fslVisible)
+  def showDrawerData: Ui[_] = (loadingDrawer <~ vGone) ~
+    (recycler <~ vVisible) ~
+    (scrollerLayout <~ fslVisible)
 
   def initDrawerUi(onAppDrawerListener: () => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (appDrawerMain <~ drawerAppStyle <~ On.click {
@@ -89,11 +94,11 @@ trait DrawerComposer
       updateStatusColor(resGetColor(R.color.drawer_toolbar))
 
   def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-    (recycler <~
+    ((recycler <~
       rvAdapter(emptyAdapter)) ~
       updateStatusToTransparent ~
-      updateNavigationToTransparent ~
-      (appDrawerMain mapUi (source => drawerContent <~ revealOutAppDrawer(source)))
+      updateNavigationToTransparent) ~
+      (appDrawerMain mapUiF (source => drawerContent <~~ revealOutAppDrawer(source)))
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {

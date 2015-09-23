@@ -89,7 +89,8 @@
         <item name="android:layout_marginRight">@dimen/margin_app_drawer_fab_button</item>
         <item name="android:layout_marginTop">@dimen/margin_top_app_drawer_fab_button</item>
         <item name="android:src">@drawable/app_drawer_icon_google_play</item>
-        <item name="android:layout_gravity">right</item>
+        <item name="android:layout_gravity">bottom|right</item>
+        <item name="layout_anchorGravity">bottom|right|end</item>
         <item name="borderWidth">0dp</item>
         <item name="elevation">@dimen/elevation_fab_button</item>
         <item name="pressedTranslationZ">@dimen/elevation_fab_button_pressed</item>
