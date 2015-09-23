@@ -82,10 +82,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">@dimen/margin_app_drawer_fab_button</item>
-        <item name="android:layout_marginLeft">@dimen/margin_app_drawer_fab_button</item>
         <item name="android:layout_marginRight">@dimen/margin_app_drawer_fab_button</item>
-        <item name="android:layout_marginTop">@dimen/margin_top_app_drawer_fab_button</item>
-        <item name="android:src">@drawable/app_drawer_fab_button_play</item>
         <item name="android:layout_gravity">bottom|right</item>
         <item name="borderWidth">0dp</item>
         <item name="elevation">@dimen/elevation_fab_button</item>

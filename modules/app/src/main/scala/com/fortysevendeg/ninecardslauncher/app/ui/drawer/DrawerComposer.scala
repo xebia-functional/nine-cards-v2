@@ -4,20 +4,23 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.{View, ViewGroup}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.ActionAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.ContactHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, AppCategorized}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -54,6 +57,8 @@ trait DrawerComposer
 
   lazy val recycler = Option(findView(TR.launcher_drawer_recycler))
 
+  lazy val drawerFabButton = Option(findView(TR.launcher_drawer_button))
+
   def showDrawerLoading: Ui[_] = (loadingDrawer <~ vVisible) ~
     (recycler <~ vGone) ~
     (scrollerLayout <~ fslInvisible)
@@ -62,25 +67,34 @@ trait DrawerComposer
     (recycler <~ vVisible) ~
     (scrollerLayout <~ fslVisible)
 
-  def initDrawerUi(onAppDrawerListener: () => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
+
+  def initDrawerUi(
+    onAppDrawerListener: () => Unit,
+    onAppTabClickListener: () => Unit,
+    onContactTabClickListener: () => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (appDrawerMain <~ drawerAppStyle <~ On.click {
-      revealInDrawer ~ Ui {
-        onAppDrawerListener()
-      }
+      revealInDrawer ~ Ui(onAppDrawerListener())
     }) ~
       (loadingDrawer <~ pbColor(resGetColor(R.color.drawer_toolbar))) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(resGetColor(R.color.drawer_toolbar))) ~
       (drawerContent <~ vGone) ~
+      (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_play)) ~
       (drawerTabApp <~
-        ttInitTab(R.drawable.app_drawer_icon_applications, R.drawable.app_drawer_icon_applications_inactive) <~
+        ttInitTab(
+          drawableOn = R.drawable.app_drawer_icon_applications,
+          drawableOff = R.drawable.app_drawer_icon_applications_inactive) <~
         On.click {
-          uiShortToast("App") ~ (drawerTabApp <~ ttSelect) ~ (drawerTabContacts <~ ttUnselect)
+          appsTabClicked(onAppTabClickListener)
         }) ~
       (drawerTabContacts <~
-        ttInitTab(R.drawable.app_drawer_icon_contacts, R.drawable.app_drawer_icon_contacts_inactive, false) <~
+        ttInitTab(
+          drawableOn = R.drawable.app_drawer_icon_contacts,
+          drawableOff = R.drawable.app_drawer_icon_contacts_inactive,
+          selected = false) <~
         On.click {
-          uiShortToast("Contacts") ~ (drawerTabContacts <~ ttSelect) ~ (drawerTabApp <~ ttUnselect)
+          contactsTabClicked(onContactTabClickListener)
         })
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
@@ -88,7 +102,7 @@ trait DrawerComposer
   def revealInDrawer(implicit context: ActivityContextWrapper): Ui[_] =
     updateNavigationToBlack ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source))) ~~
-      updateStatusColor(resGetColor(R.color.drawer_toolbar))
+      updateStatusColor(resGetColor(R.color.drawer_status_bar))
 
   def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
     ((recycler <~
@@ -98,10 +112,19 @@ trait DrawerComposer
       (appDrawerMain mapUiF (source => drawerContent <~~ revealOutAppDrawer(source)))
 
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)
-    (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
-    val adapter = new AppsAdapter(
+    (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
+    swipeAdapter(new AppsAdapter(
       apps = generateAppHeaderedList(apps),
-      clickListener = clickListener)
+      clickListener = clickListener))
+
+
+  def addContacts(contacts: Seq[Contact], clickListener: (Contact) => Unit)
+    (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
+    swipeAdapter(new ContactsAdapter(
+      contacts = generateContactsForList(contacts),
+      clickListener = clickListener))
+
+  private[this] def swipeAdapter(adapter: ActionAdapter) =
     showDrawerData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
@@ -110,5 +133,31 @@ trait DrawerComposer
       (scrollerLayout <~
         fslLinkRecycler <~
         fslReset)
-  }
+
+  private[this] def appsTabClicked(listener: () => Unit): Ui[_] =
+    drawerTabApp map (_.isSelected) match {
+      case Some(false) =>
+        (drawerTabApp <~ ttSelect) ~
+          (drawerTabContacts <~ ttUnselect) ~
+          (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_play)) ~
+          Ui(listener())
+      case Some(true) =>
+        Ui.nop
+      case _ =>
+        Ui.nop
+    }
+
+  private[this] def contactsTabClicked(listener: () => Unit): Ui[_] =
+    drawerTabContacts map (_.isSelected) match {
+      case Some(false) =>
+        (drawerTabContacts <~ ttSelect) ~
+          (drawerTabApp <~ ttUnselect) ~
+          (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_contact)) ~
+          Ui(listener())
+      case Some(true) =>
+        Ui.nop
+      case _ =>
+        Ui.nop
+    }
+
 }

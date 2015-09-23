@@ -12,6 +12,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.ContactHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, HeaderUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
@@ -20,8 +21,6 @@ import com.fortysevendeg.ninecardslauncher.process.device.{ContactsFilter, Conta
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, ActivityContextWrapper, Ui}
-
-import scala.annotation.tailrec
 
 trait ContactsComposer
   extends Styles
@@ -62,7 +61,7 @@ trait ContactsComposer
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def generateContactsAdapter(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val contactsHeadered = generateContactsForList(contacts.toList, Seq.empty)
+    val contactsHeadered = generateContactsForList(contacts)
     val adapter = new ContactsAdapter(contactsHeadered, clickListener)
     showData ~
       (recycler <~
@@ -73,7 +72,7 @@ trait ContactsComposer
   }
 
   def reloadContactsAdapter(contacts: Seq[Contact], filter: ContactsFilter)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val contactsHeadered = generateContactsForList(contacts, Seq.empty)
+    val contactsHeadered = generateContactsForList(contacts)
     showData ~
       (getAdapter map { adapter =>
         Ui(adapter.loadContacts(contactsHeadered)) ~
@@ -91,25 +90,6 @@ trait ContactsComposer
       case Some(a: ContactsAdapter) => Some(a)
       case _ => None
     }
-  }
-
-  @tailrec
-  private[this] def generateContactsForList(contacts: Seq[Contact], acc: Seq[ContactHeadered]): Seq[ContactHeadered] = contacts match {
-    case Nil => acc
-    case Seq(h, t@_ *) =>
-      val currentChar: String = getCurrentChar(h.name)
-      val lastChar: Option[String] = for {
-        contactHeadered <- acc.lastOption
-        contact <- contactHeadered.contact
-        contactName <- Option(Option(contact.name) getOrElse charUnnamed)
-        c <- Option(generateChar(contactName.substring(0, 1)))
-      } yield c
-      val skipChar = lastChar exists (_ equals currentChar)
-      if (skipChar) {
-        generateContactsForList(t, acc :+ ContactHeadered(contact = Option(h)))
-      } else {
-        generateContactsForList(t, acc ++ Seq(ContactHeadered(header = Option(currentChar)), ContactHeadered(contact = Option(h))))
-      }
   }
 
 }

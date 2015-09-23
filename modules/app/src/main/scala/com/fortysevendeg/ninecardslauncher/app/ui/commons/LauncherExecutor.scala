@@ -3,13 +3,15 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.app.Activity
 import android.content.{ComponentName, Intent}
 import android.net.Uri
+import android.provider.ContactsContract
 import android.widget.Toast
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
+import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 trait LauncherExecutor {
 
@@ -51,10 +53,22 @@ trait LauncherExecutor {
         } yield {
             val newIntent = new Intent(Intent.ACTION_SEND)
             newIntent.setType(typeEmail)
-            newIntent.putExtra(Intent.EXTRA_EMAIL, Array(email))
+            newIntent.putExtra(Intent.EXTRA_EMAIL, Array[String](email))
             tryOrError(activity, Intent.createChooser(newIntent, titleDialogEmail))
           }) getOrElse showError
       case _ => activityContext.original.get map (tryOrError(_, intent)) getOrElse showError
+    }
+  }
+
+  def execute(contact: Contact)(implicit activityContext: ActivityContextWrapper) = {
+    val contactUri = ContactsContract.Contacts.CONTENT_LOOKUP_URI
+      .buildUpon()
+      .appendPath(contact.lookupKey)
+      .build()
+    val intent = new Intent(Intent.ACTION_VIEW, contactUri)
+    activityContext.original.get match {
+      case Some(a) => tryOrError(a, intent)
+      case _ => showError
     }
   }
 

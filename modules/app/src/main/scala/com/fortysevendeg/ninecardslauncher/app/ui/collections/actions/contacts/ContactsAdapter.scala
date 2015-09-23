@@ -5,10 +5,12 @@ import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.ActionAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsAdapter._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ViewHolderCategoryLayoutAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.ContactHeadered
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher2.R
@@ -17,7 +19,7 @@ import macroid.FullDsl._
 
 case class ContactsAdapter(var contacts: Seq[ContactHeadered], clickListener: (Contact) => Unit)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
-  extends RecyclerView.Adapter[RecyclerView.ViewHolder]
+  extends ActionAdapter
   with FastScrollerListener {
 
   val heightHeader = resGetDimensionPixelSize(R.dimen.height_simple_category)
@@ -53,7 +55,7 @@ case class ContactsAdapter(var contacts: Seq[ContactHeadered], clickListener: (C
 
   }
 
-  def getLayoutManager = {
+  def getLayoutManager: GridLayoutManager = {
     val manager = new GridLayoutManager(activityContext.application, numInLine)
     manager.setSpanSizeLookup(new SpanSizeLookup {
       override def getSpanSize(position: Int): Int = if (contacts(position).header.isDefined) manager.getSpanCount else 1

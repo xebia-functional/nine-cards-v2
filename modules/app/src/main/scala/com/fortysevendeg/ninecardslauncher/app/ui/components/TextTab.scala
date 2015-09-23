@@ -9,7 +9,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{IdGeneration, Tweak}
+import macroid.{Ui, IdGeneration, Tweak}
 
 class TextTab(context: Context, attrs: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attrs, defStyleAttr)
@@ -41,12 +41,14 @@ object TextTab extends IdGeneration {
   }
 
   def ttSelect = Tweak[TextTab] { view =>
-    runUi((view.arrow <~ vVisible) ~
+    runUi(Ui(view.setSelected(true)) ~
+      (view.arrow <~ vVisible) ~
       (view.icon <~ ivSrc(view.loadIntTag(R.id.drawable_on))))
   }
 
   def ttUnselect = Tweak[TextTab] { view =>
-    runUi((view.arrow <~ vInvisible) ~
+    runUi(Ui(view.setSelected(false)) ~
+      (view.arrow <~ vInvisible) ~
       (view.icon <~ ivSrc(view.loadIntTag(R.id.drawable_off))))
   }
 
