@@ -7,6 +7,16 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 trait PersistenceServices {
 
+  def getApp(packageName: String): ServiceDef2[Option[App], PersistenceServiceException]
+
+  def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]
+
+  def deleteApp(app: App): ServiceDef2[Int, PersistenceServiceException]
+
+  def deleteAppByPackage(packageName: String): ServiceDef2[Int, PersistenceServiceException]
+
+  def updateApp(request: UpdateAppRequest): ServiceDef2[Int, PersistenceServiceException]
+
   def addCacheCategory(request: AddCacheCategoryRequest): ServiceDef2[CacheCategory, PersistenceServiceException]
 
   def deleteCacheCategory(request: DeleteCacheCategoryRequest): ServiceDef2[Int, PersistenceServiceException]

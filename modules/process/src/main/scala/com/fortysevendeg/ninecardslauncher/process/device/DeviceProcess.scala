@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Shortcut, AppCategorized, Contact}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.AppData
 
 trait DeviceProcess {
   def getCategorizedApps(implicit context: ContextSupport): ServiceDef2[Seq[AppCategorized], AppCategorizationException]
@@ -49,4 +50,12 @@ trait DeviceProcess {
    * @throws ContactException if exist some problem to get the contacts
    */
   def getContact(lookupKey: String)(implicit context: ContextSupport): ServiceDef2[Contact, ContactException]
+
+  def saveInstalledApps(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
+
+  def saveApp(packageName: String)(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
+
+  def deleteApp(packageName: String)(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
+
+  def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
 }

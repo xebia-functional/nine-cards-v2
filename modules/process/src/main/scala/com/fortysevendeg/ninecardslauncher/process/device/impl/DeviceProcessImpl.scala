@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => 
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{AppData, App, CacheCategory}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
 
@@ -91,6 +91,28 @@ class DeviceProcessImpl(
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
 
+  override def saveInstalledApps(implicit context: ContextSupport) =
+    (for {
+      installedApps <- appsService.getInstalledApps
+      _ <- addApps(toAddAppRequestSeq(installedApps))
+    } yield ()).resolve[AppException]
+
+  override def saveApp(packageName: String)(implicit context: ContextSupport) =
+    (for {
+      app <- appsService.getApp(packageName)
+    } yield ()).resolve[AppException]
+
+  override def deleteApp(packageName: String)(implicit context: ContextSupport) =
+    (for {
+      _ <- persistenceServices.deleteAppByPackage(packageName)
+    } yield ()).resolve[AppException]
+
+  override def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport) =
+    (for {
+      Some(app) <- persistenceServices.getApp(packageName)
+      _ <- persistenceServices.updateApp(toUpdateAppRequest(app.id, appData))
+    } yield ()).resolve[AppException]
+
   private[this] def getApps(implicit context: ContextSupport):
   ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =
     for {
@@ -110,6 +132,12 @@ class DeviceProcessImpl(
             imagePath = path)
       }
     }
+
+  private[this] def addApps(items: Seq[AddAppRequest]):
+  ServiceDef2[Seq[App], PersistenceServiceException] = Service {
+    val tasks = items map (persistenceServices.addApp(_).run)
+    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
+  }
 
   private[this] def addCacheCategories(items: Seq[AddCacheCategoryRequest]):
   ServiceDef2[Seq[CacheCategory], PersistenceServiceException] = Service {

@@ -30,7 +30,7 @@ class AppsServicesImpl
     }
   }
 
-  def getApp(packageName: String)(implicit context: ContextSupport) = Service{
+  override def getApp(packageName: String)(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[AppsInstalledException] {
         getApplication(packageName)
