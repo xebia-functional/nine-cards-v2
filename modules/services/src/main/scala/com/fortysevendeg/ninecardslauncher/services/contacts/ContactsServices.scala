@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.services.contacts
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.image.FileException
 
 trait ContactsServices {
 
