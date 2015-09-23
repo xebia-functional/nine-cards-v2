@@ -18,7 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.ContactHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, AppCategorized}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -41,6 +41,18 @@ trait DrawerComposer
     override def onBindViewHolder(vh: ViewHolder, i: Int): Unit = {}
 
     override def onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder = new RecyclerView.ViewHolder(viewGroup) {}
+  }
+
+  object AppMenuIds {
+    val alphabetical = 0
+    val categories = 1
+    val date = 2
+  }
+
+  object ContactsMenuIds {
+    val alphabetical = 0
+    val favorites = 1
+    val last = 2
   }
 
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
@@ -82,9 +94,14 @@ trait DrawerComposer
       (drawerContent <~ vGone) ~
       (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_play)) ~
       (drawerTabApp <~
-        ttInitTab(
+       ttInitTab(
           drawableOn = R.drawable.app_drawer_icon_applications,
-          drawableOff = R.drawable.app_drawer_icon_applications_inactive) <~
+          drawableOff = R.drawable.app_drawer_icon_applications_inactive,
+          menuListener = appsMenuClicked) <~
+        ttAddMenuOptions(Seq(
+          (AppMenuIds.alphabetical, R.string.apps_alphabetical),
+          (AppMenuIds.categories, R.string.apps_categories),
+          (AppMenuIds.date, R.string.apps_date))) <~
         On.click {
           appsTabClicked(onAppTabClickListener)
         }) ~
@@ -92,7 +109,12 @@ trait DrawerComposer
         ttInitTab(
           drawableOn = R.drawable.app_drawer_icon_contacts,
           drawableOff = R.drawable.app_drawer_icon_contacts_inactive,
-          selected = false) <~
+          selected = false,
+          menuListener = contactsMenuClicked) <~
+        ttAddMenuOptions(Seq(
+          (ContactsMenuIds.alphabetical, R.string.contacts_alphabetical),
+          (ContactsMenuIds.favorites, R.string.contacts_favorites),
+          (ContactsMenuIds.last, R.string.contacts_last))) <~
         On.click {
           contactsTabClicked(onContactTabClickListener)
         })
@@ -142,10 +164,15 @@ trait DrawerComposer
           (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_play)) ~
           Ui(listener())
       case Some(true) =>
-        Ui.nop
+        drawerTabApp <~ ttOpenMenu
       case _ =>
         Ui.nop
     }
+
+  private[this] def appsMenuClicked(menuItemId: Int): Boolean = {
+    runUi(drawerContent <~ uiSnackbarShort(s"Apps menu item clicked $menuItemId"))
+    true
+  }
 
   private[this] def contactsTabClicked(listener: () => Unit): Ui[_] =
     drawerTabContacts map (_.isSelected) match {
@@ -155,9 +182,14 @@ trait DrawerComposer
           (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_contact)) ~
           Ui(listener())
       case Some(true) =>
-        Ui.nop
+        drawerTabApp <~ ttOpenMenu
       case _ =>
         Ui.nop
     }
+
+  private[this] def contactsMenuClicked(menuItemId: Int): Boolean = {
+    runUi(drawerContent <~ uiSnackbarShort(s"Contacts menu item clicked $menuItemId"))
+    true
+  }
 
 }

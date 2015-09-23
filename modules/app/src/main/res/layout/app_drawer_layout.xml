@@ -10,11 +10,11 @@
         android:id="@+id/launcher_drawer_toolbar"
         style="@style/LauncherDrawerToolbar">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab
             android:id="@+id/launcher_drawer_tab_app"
             style="@style/LauncherDrawerTab"/>
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.TextTab
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab
             android:id="@+id/launcher_drawer_tab_contact"
             style="@style/LauncherDrawerTab"/>
 
