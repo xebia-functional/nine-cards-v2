@@ -67,6 +67,10 @@ trait LauncherComposer
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
 
+  val pageWidgets = 0
+
+  val pageCollections = 1
+
   var workspaces: Option[LauncherWorkSpaces] = None
 
   lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
@@ -118,22 +122,7 @@ trait LauncherComposer
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
-        itemId match {
-          case R.id.menu_collections =>
-            runUi((workspaces <~ lwsSelect(1)) ~ closeMenu())
-          case R.id.menu_moments =>
-            runUi((workspaces <~ lwsSelect(0)) ~ closeMenu())
-          case R.id.menu_profile =>
-            runUi(showMessage(R.string.todo))
-          case R.id.menu_wallpapers =>
-            runUi(uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER)))
-          case R.id.menu_android_settings =>
-            runUi(uiStartIntent(new Intent(android.provider.Settings.ACTION_SETTINGS)))
-          case R.id.menu_9cards_settings =>
-            runUi(showMessage(R.string.todo))
-          case R.id.menu_widgets =>
-            runUi(showMessage(R.string.todo))
-        }
+        runUi(goToMenuOption(itemId))
         true
       })) ~
       (workspacesContent <~
@@ -205,6 +194,23 @@ trait LauncherComposer
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
 
   def isMenuVisible: Boolean = drawerLayout exists (_.isDrawerOpen(GravityCompat.START))
+
+  def goToWorkspace(page: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+    (workspaces <~ lwsSelect(page)) ~
+      (paginationPanel <~ reloadPager(page)) ~
+      closeMenu()
+
+  private[this] def goToMenuOption(itemId: Int)
+    (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = itemId match {
+    case R.id.menu_collections => goToWorkspace(pageCollections)
+    case R.id.menu_moments => goToWorkspace(pageWidgets)
+    case R.id.menu_profile => showMessage(R.string.todo)
+    case R.id.menu_wallpapers => uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
+    case R.id.menu_android_settings => uiStartIntent(new Intent(android.provider.Settings.ACTION_SETTINGS))
+    case R.id.menu_9cards_settings => showMessage(R.string.todo)
+    case R.id.menu_widgets => showMessage(R.string.todo)
+    case _ => Ui.nop
+  }
 
   private[this] def clickAppDrawerItem(view: View)(implicit context: ActivityContextWrapper): Ui[_] = Ui {
     val position = Int.unbox(view.getTag(R.id.app_drawer_position))
