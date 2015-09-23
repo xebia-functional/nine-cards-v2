@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.fortysevendeg.ninecardslauncher.utils.MyFrameLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/LauncherRoot">
 
@@ -103,4 +103,4 @@
 
     <include layout="@layout/app_drawer_layout"/>
 
-</com.fortysevendeg.ninecardslauncher.utils.MyFrameLayout>
+</FrameLayout>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/launcher_drawer_content"
     style="@style/LauncherDrawerContent"
     android:layout_width="match_parent"
@@ -38,7 +37,6 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/launcher_drawer_button"
-        app:layout_anchor="@id/launcher_drawer_recycler"
         style="@style/LauncherDrawerFabButton"/>
 
-</android.support.design.widget.CoordinatorLayout>
+</FrameLayout>

@@ -2,13 +2,14 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.{View, LayoutInflater}
-import android.widget.{ImageView, LinearLayout, TextView}
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import android.view.LayoutInflater
+import android.widget.{ImageView, LinearLayout}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{Tweak, Ui}
+import macroid.{IdGeneration, Tweak}
 
 class TextTab(context: Context, attrs: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attrs, defStyleAttr)
@@ -20,28 +21,33 @@ class TextTab(context: Context, attrs: AttributeSet, defStyleAttr: Int)
 
   LayoutInflater.from(context).inflate(R.layout.app_drawer_tab, this)
 
-  val text: Option[TextView] = Option(findView(TR.launcher_drawer_tab_text))
+  val checkedState: Array[Int] = Array(android.R.attr.state_checked)
+
+  val icon: Option[ImageView] = Option(findView(TR.launcher_drawer_tab_icon))
 
   val arrow: Option[ImageView] = Option(findView(TR.launcher_drawer_tab_arrow))
 
-  val line: Option[View] = Option(findView(TR.launcher_drawer_tab_bottom))
+  def loadIntTag(tag: Int) = Option(getTag(tag)) map Int.unbox getOrElse 0
 
 }
 
-object TextTab {
+object TextTab extends IdGeneration {
 
-  def ttInitTab(textResource: Int, drawable: Int): Tweak[TextTab] = Tweak[TextTab] { tt =>
-    runUi(tt.text <~
-      tvText(textResource) <~
-      tvCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0))
+  def ttInitTab(drawableOn: Int, drawableOff: Int, selected: Boolean = true) = Tweak[TextTab] { view =>
+    runUi(view <~
+      vIntTag(R.id.drawable_on, drawableOn) <~
+      vIntTag(R.id.drawable_off, drawableOff) <~
+      (if (selected) ttSelect else ttUnselect))
   }
 
-  def ttSelect = Tweak[TextTab] { tt =>
-    runUi((tt.arrow <~ vVisible) ~ (tt.line <~ vVisible))
+  def ttSelect = Tweak[TextTab] { view =>
+    runUi((view.arrow <~ vVisible) ~
+      (view.icon <~ ivSrc(view.loadIntTag(R.id.drawable_on))))
   }
 
-  def ttUnselect = Tweak[TextTab] { tt =>
-    runUi((tt.arrow <~ vInvisible) ~ (tt.line <~ vInvisible))
+  def ttUnselect = Tweak[TextTab] { view =>
+    runUi((view.arrow <~ vInvisible) ~
+      (view.icon <~ ivSrc(view.loadIntTag(R.id.drawable_off))))
   }
 
 }

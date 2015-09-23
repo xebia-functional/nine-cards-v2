@@ -5,4 +5,6 @@
     <item name="fab_menu_opened" type="id" />
     <item name="fab_menu_position" type="id" />
     <item name="app_drawer_position" type="id" />
+    <item name="drawable_on" type="id" />
+    <item name="drawable_off" type="id" />
 </resources>

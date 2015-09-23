@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.drawer
 
-import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -74,14 +73,12 @@ trait DrawerComposer
       (scrollerLayout <~ fslColor(resGetColor(R.color.drawer_toolbar))) ~
       (drawerContent <~ vGone) ~
       (drawerTabApp <~
-        ttInitTab(R.string.apps, R.drawable.app_drawer_icon_list_app) <~
-        ttSelect <~
+        ttInitTab(R.drawable.app_drawer_icon_applications, R.drawable.app_drawer_icon_applications_inactive) <~
         On.click {
           uiShortToast("App") ~ (drawerTabApp <~ ttSelect) ~ (drawerTabContacts <~ ttUnselect)
         }) ~
       (drawerTabContacts <~
-        ttInitTab(R.string.contacts, R.drawable.app_drawer_icon_list_contact) <~
-        ttUnselect <~
+        ttInitTab(R.drawable.app_drawer_icon_contacts, R.drawable.app_drawer_icon_contacts_inactive, false) <~
         On.click {
           uiShortToast("Contacts") ~ (drawerTabContacts <~ ttSelect) ~ (drawerTabApp <~ ttUnselect)
         })
