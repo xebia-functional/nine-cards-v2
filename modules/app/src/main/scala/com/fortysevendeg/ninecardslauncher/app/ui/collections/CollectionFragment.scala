@@ -66,14 +66,14 @@ class CollectionFragment
     adapter.addCards(cards)
     val cardCount = adapter.collection.cards.length
     canScroll = cardCount > numSpaces
-    runUi(resetScroll(adapter.collection, cardCount - 1))
+    runUi(resetScroll(adapter.collection))
   }
 
   def removeCard(card: Card) = getAdapter foreach { adapter =>
     adapter.removeCard(card)
     val cardCount = adapter.collection.cards.length
     canScroll = cardCount > numSpaces
-    runUi(resetScroll(adapter.collection, cardCount - 1))
+    runUi(resetScroll(adapter.collection))
   }
 }
 
