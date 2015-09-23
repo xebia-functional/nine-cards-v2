@@ -9,7 +9,7 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.ActionAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.HeaderedItemAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -114,17 +114,17 @@ trait DrawerComposer
   def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
     swipeAdapter(new AppsAdapter(
-      apps = generateAppHeaderedList(apps),
+      initialSeq = generateAppHeaderedList(apps),
       clickListener = clickListener))
 
 
   def addContacts(contacts: Seq[Contact], clickListener: (Contact) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
     swipeAdapter(new ContactsAdapter(
-      contacts = generateContactsForList(contacts),
+      initialSeq = generateContactsForList(contacts),
       clickListener = clickListener))
 
-  private[this] def swipeAdapter(adapter: ActionAdapter) =
+  private[this] def swipeAdapter(adapter: HeaderedItemAdapter[_]) =
     showDrawerData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~

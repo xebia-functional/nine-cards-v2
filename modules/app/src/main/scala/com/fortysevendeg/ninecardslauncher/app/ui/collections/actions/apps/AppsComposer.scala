@@ -9,6 +9,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
@@ -64,7 +65,7 @@ trait AppsComposer
 
   def generateAppsAdapter(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
     val adapter = new AppsAdapter(
-      apps = generateAppHeaderedList(apps),
+      initialSeq = generateAppHeaderedList(apps),
       clickListener = clickListener)
     showData ~
       (recycler <~
@@ -78,7 +79,7 @@ trait AppsComposer
     val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
     showData ~
       (getAdapter map { adapter =>
-        Ui(adapter.loadApps(contactsHeadered)) ~
+        Ui(adapter.loadItems(contactsHeadered)) ~
           (rootContent <~ uiSnackbarShort(filter match {
             case AppsByCategory => resGetString(R.string.appsByCategory, categoryName)
             case _ => resGetString(R.string.allApps)
@@ -99,17 +100,22 @@ trait AppsComposer
 
 case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
+  with ItemHeaderedViewHolder[AppCategorized]
   with TypedFindView {
 
   lazy val icon = Option(findView(TR.simple_item_icon))
 
   lazy val name = Option(findView(TR.simple_item_name))
 
-  def bind(app: AppCategorized, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
-    (icon <~ (app.imagePath map (ivCardUri(_, app.name)) getOrElse Tweak.blank)) ~
-      (name <~ tvText(app.name)) ~
-      (content <~ vIntTag(position))
+  override def bind(item: ItemHeadered[AppCategorized], position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
+    item.item match {
+      case Some(app) =>
+        (icon <~ (app.imagePath map (ivCardUri(_, app.name)) getOrElse Tweak.blank)) ~
+          (name <~ tvText(app.name)) ~
+          (content <~ vIntTag(position))
+      case _ =>
+        Ui.nop
+    }
 
   override def findViewById(id: Int): View = content.findViewById(id)
-
 }

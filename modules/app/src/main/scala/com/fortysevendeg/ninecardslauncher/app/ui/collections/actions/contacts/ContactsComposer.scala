@@ -10,6 +10,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.ContactHeadered._
@@ -75,7 +76,7 @@ trait ContactsComposer
     val contactsHeadered = generateContactsForList(contacts)
     showData ~
       (getAdapter map { adapter =>
-        Ui(adapter.loadContacts(contactsHeadered)) ~
+        Ui(adapter.loadItems(contactsHeadered)) ~
           (rootContent <~ uiSnackbarShort(filter match {
             case ContactsWithPhoneNumber => R.string.contactsWithPhoneNumber
             case _ => R.string.allContacts
@@ -96,6 +97,7 @@ trait ContactsComposer
 
 case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
+  with ItemHeaderedViewHolder[Contact]
   with TypedFindView {
 
   lazy val icon = Option(findView(TR.simple_item_icon))
@@ -104,13 +106,16 @@ case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: 
 
   runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
 
-  def bind(contact: Contact, position: Int): Ui[_] = {
-    val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
-    (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
-      (name <~ tvText(contactName)) ~
-      (content <~ vIntTag(position))
-  }
+  override def bind(item: ItemHeadered[Contact], position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
+    item.item match {
+      case Some(contact) =>
+        val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
+        (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
+          (name <~ tvText(contactName)) ~
+          (content <~ vIntTag(position))
+      case _ =>
+        Ui.nop
+    }
 
   override def findViewById(id: Int): View = content.findViewById(id)
-
 }

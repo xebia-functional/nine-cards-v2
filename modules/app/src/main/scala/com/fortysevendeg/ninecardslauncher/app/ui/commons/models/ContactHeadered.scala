@@ -1,11 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.models
 
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.ItemHeadered
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 
 import scala.annotation.tailrec
 
-case class ContactHeadered(contact: Option[Contact] = None, header: Option[String] = None)
+case class ContactHeadered(item: Option[Contact] = None, header: Option[String] = None)
+  extends ItemHeadered[Contact]
 
 object ContactHeadered
   extends HeaderUtils {
@@ -20,15 +22,15 @@ object ContactHeadered
       val currentChar: String = getCurrentChar(h.name)
       val lastChar: Option[String] = for {
         contactHeadered <- acc.lastOption
-        contact <- contactHeadered.contact
+        contact <- contactHeadered.item
         contactName <- Option(Option(contact.name) getOrElse charUnnamed)
         c <- Option(generateChar(contactName.substring(0, 1)))
       } yield c
       val skipChar = lastChar exists (_ equals currentChar)
       if (skipChar) {
-        generateContactsForList(t, acc :+ ContactHeadered(contact = Option(h)))
+        generateContactsForList(t, acc :+ ContactHeadered(item = Option(h)))
       } else {
-        generateContactsForList(t, acc ++ Seq(ContactHeadered(header = Option(currentChar)), ContactHeadered(contact = Option(h))))
+        generateContactsForList(t, acc ++ Seq(ContactHeadered(header = Option(currentChar)), ContactHeadered(item = Option(h))))
       }
   }
 

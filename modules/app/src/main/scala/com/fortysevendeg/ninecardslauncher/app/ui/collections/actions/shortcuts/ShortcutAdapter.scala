@@ -15,7 +15,7 @@ case class ShortcutAdapter(shortcuts: Seq[Shortcut], clickListener: (Shortcut) =
 
   val heightHeader = resGetDimensionPixelSize(R.dimen.height_simple_category)
 
-  val heightApp = resGetDimensionPixelSize(R.dimen.height_simple_app)
+  val heightApp = resGetDimensionPixelSize(R.dimen.height_simple_item)
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderShortcutLayoutAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.simple_item_horizontal, parent, false).asInstanceOf[ViewGroup]
