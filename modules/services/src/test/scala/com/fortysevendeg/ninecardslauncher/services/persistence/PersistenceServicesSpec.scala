@@ -41,6 +41,10 @@ trait PersistenceServicesSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 
+    mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.answer(Option(repoApp))))
+
+    mockAppRepository.fetchAppByPackage(nonExistentPackageName) returns Service(Task(Result.answer(None)))
+
     mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.answer(repoCacheCategory)))
 
     mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Service(Task(Result.answer(1)))
@@ -116,6 +120,8 @@ trait PersistenceServicesSpecification
 
     val exception = RepositoryException("Irrelevant message")
 
+    mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
+
     mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.errata(exception)))
 
     mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Service(Task(Result.errata(exception)))
@@ -175,6 +181,42 @@ trait PersistenceServicesSpecification
 
 class PersistenceServicesSpec
   extends PersistenceServicesSpecification {
+
+  "getApp" should {
+
+    "return an App when a valid packageName is provided" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.getApp(packageName).run.run
+
+      result must beLike {
+        case Answer(maybeApp) =>
+          maybeApp must beSome[App].which { app =>
+            app.id shouldEqual appId
+            app.packageName shouldEqual packageName
+          }
+      }
+    }
+
+    "return None when an invalid packageName is provided" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.getApp(nonExistentPackageName).run.run
+
+      result must beLike {
+        case Answer(maybeApp) =>
+          maybeApp must beNone
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.getApp(packageName).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
 
   "addCacheCategory" should {
 
