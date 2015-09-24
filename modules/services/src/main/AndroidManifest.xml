@@ -3,7 +3,7 @@
       package="com.fortysevendeg.ninecardslauncher.services"
       android:versionCode="1"
       android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="23"/>
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="22"/>
 
     <application />
 </manifest>

@@ -83,30 +83,24 @@ trait DrawerComposer
       (drawerContent <~ vGone) ~
       (drawerFabButton <~
         ivSrc(R.drawable.app_drawer_fab_button_play) <~
-        On.click {
-          fabButtonClicked(launchStore, launchDial)
-        }) ~
+        On.click(fabButtonClicked(launchStore, launchDial))) ~
       (drawerTabApp <~
-        ttInitTab(
+        dtInitTab(
           drawableOn = R.drawable.app_drawer_icon_applications,
           drawableOff = R.drawable.app_drawer_icon_applications_inactive,
           menuResource = R.menu.drawer_apps_menu,
           menuItemId = R.id.sort_apps_alphabetical,
           menuListener = callAppsListener(onAppMenuClickListener, _)) <~
-        On.click {
-          appsTabClicked(onAppMenuClickListener)
-        }) ~
+        On.click(appsTabClicked(onAppMenuClickListener))) ~
       (drawerTabContacts <~
-        ttInitTab(
+        dtInitTab(
           drawableOn = R.drawable.app_drawer_icon_contacts,
           drawableOff = R.drawable.app_drawer_icon_contacts_inactive,
           selected = false,
           menuItemId = R.id.sort_contacts_alphabetical,
           menuResource = R.menu.drawer_contacts_menu,
           menuListener = callContactsListener(onContactMenuClickListener, _)) <~
-        On.click {
-          contactsTabClicked(onContactMenuClickListener)
-        })
+        On.click(contactsTabClicked(onContactMenuClickListener)))
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
@@ -148,14 +142,12 @@ trait DrawerComposer
   private[this] def appsTabClicked(listener: (AppsMenuOption) => Unit): Ui[_] =
     drawerTabApp map (t => (t.isSelected, t.getSelectedMenuItem)) match {
       case Some((false, menuItemId)) =>
-        (drawerTabApp <~ ttSelect) ~
-          (drawerTabContacts <~ ttUnselect) ~
+        (drawerTabApp <~ dtSelect) ~
+          (drawerTabContacts <~ dtUnselect) ~
           (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_play)) ~
           Ui(callAppsListener(listener, menuItemId))
-      case Some((true, _)) =>
-        drawerTabApp <~ ttOpenMenu
-      case _ =>
-        Ui.nop
+      case Some((true, _)) => drawerTabApp <~ dtOpenMenu
+      case _ => Ui.nop
     }
 
   private[this] def toAppsMenuOption(menuItemId: Int): Option[AppsMenuOption] =
@@ -174,14 +166,12 @@ trait DrawerComposer
   private[this] def contactsTabClicked(listener: (ContactsMenuOption) => Unit): Ui[_] =
     drawerTabContacts map (t => (t.isSelected, t.getSelectedMenuItem)) match {
       case Some((false, menuItemId)) =>
-        (drawerTabContacts <~ ttSelect) ~
-          (drawerTabApp <~ ttUnselect) ~
+        (drawerTabContacts <~ dtSelect) ~
+          (drawerTabApp <~ dtUnselect) ~
           (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_contact)) ~
           Ui(toContactsMenuOption(menuItemId) foreach listener)
-      case Some((true, _)) =>
-        drawerTabContacts <~ ttOpenMenu
-      case _ =>
-        Ui.nop
+      case Some((true, _)) => drawerTabContacts <~ dtOpenMenu
+      case _ => Ui.nop
     }
 
   private[this] def toContactsMenuOption(menuItemId: Int): Option[ContactsMenuOption] =

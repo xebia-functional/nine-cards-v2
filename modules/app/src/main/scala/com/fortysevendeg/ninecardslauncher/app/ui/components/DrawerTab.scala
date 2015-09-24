@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{Tweak, Ui}
+import macroid.Tweak
 
 class DrawerTab(context: Context, attrs: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attrs, defStyleAttr)
@@ -37,7 +37,7 @@ class DrawerTab(context: Context, attrs: AttributeSet, defStyleAttr: Int)
 
 object DrawerTab {
 
-  def ttInitTab(
+  def dtInitTab(
     drawableOn: Int,
     drawableOff: Int,
     selected: Boolean = true,
@@ -47,28 +47,34 @@ object DrawerTab {
     runUi((view <~
       vIntTag(R.id.drawable_on, drawableOn) <~
       vIntTag(R.id.drawable_off, drawableOff) <~
-      (if (selected) ttSelect else ttUnselect)) ~
-      Ui {
-        view.maybePopupMenu foreach { popupMenu =>
-          popupMenu.inflate(menuResource)
-          selectedMenuItem(popupMenu.getMenu, menuItemId) foreach { menuItem =>
+      (if (selected) dtSelect else dtUnselect)) <~
+      loadPopupMenu(selected, menuResource, menuItemId, menuListener))
+  }
+
+  private[this] def loadPopupMenu(
+    selected: Boolean,
+    menuResource: Int,
+    menuItemId: Int,
+    menuListener: (Int) => Unit = (_) => ()) = Tweak[DrawerTab] { view =>
+    view.maybePopupMenu foreach { popupMenu =>
+      popupMenu.inflate(menuResource)
+      selectedMenuItem(popupMenu.getMenu, menuItemId) foreach { menuItem =>
+        menuItem.setChecked(true)
+        view.setTag(R.id.selected_item, menuItem.getItemId)
+        if (selected) menuListener(menuItem.getItemId)
+      }
+      popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener {
+        override def onMenuItemClick(menuItem: MenuItem): Boolean =
+          if (menuItem.isChecked) {
+            false
+          } else {
             menuItem.setChecked(true)
             view.setTag(R.id.selected_item, menuItem.getItemId)
-            if (selected) menuListener(menuItem.getItemId)
+            menuListener(menuItem.getItemId)
+            true
           }
-          popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener {
-            override def onMenuItemClick(menuItem: MenuItem): Boolean =
-              if (menuItem.isChecked) {
-                false
-              } else {
-                menuItem.setChecked(true)
-                view.setTag(R.id.selected_item, menuItem.getItemId)
-                menuListener(menuItem.getItemId)
-                true
-              }
-          })
-        }
       })
+    }
   }
 
   private[this] def selectedMenuItem(menu: Menu, menuItemId: Int): Option[MenuItem] =
@@ -78,18 +84,18 @@ object DrawerTab {
       case _ => None
     }
 
-  def ttSelect = Tweak[DrawerTab] { view =>
-    runUi(Ui(view.setSelected(true)) ~
+  def dtSelect = Tweak[DrawerTab] { view =>
+    runUi((view <~ vSelected(true)) ~
       (view.maybeArrow <~ vVisible) ~
       (view.maybeIcon <~ ivSrc(view.loadIntTag(R.id.drawable_on))))
   }
 
-  def ttUnselect = Tweak[DrawerTab] { view =>
-    runUi(Ui(view.setSelected(false)) ~
+  def dtUnselect = Tweak[DrawerTab] { view =>
+    runUi((view <~ vSelected(false)) ~
       (view.maybeArrow <~ vInvisible) ~
       (view.maybeIcon <~ ivSrc(view.loadIntTag(R.id.drawable_off))))
   }
 
-  def ttOpenMenu = Tweak[DrawerTab](_.maybePopupMenu foreach (_.show()))
+  def dtOpenMenu = Tweak[DrawerTab](_.maybePopupMenu foreach (_.show()))
 
 }

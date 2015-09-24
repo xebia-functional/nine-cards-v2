@@ -113,8 +113,7 @@ case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: 
         (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
           (name <~ tvText(contactName)) ~
           (content <~ vIntTag(position))
-      case _ =>
-        Ui.nop
+      case _ => Ui.nop
     }
 
   override def findViewById(id: Int): View = content.findViewById(id)

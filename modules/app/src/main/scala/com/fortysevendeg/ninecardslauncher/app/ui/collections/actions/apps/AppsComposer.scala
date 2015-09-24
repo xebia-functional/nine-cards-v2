@@ -113,8 +113,7 @@ case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: Acti
         (icon <~ (app.imagePath map (ivCardUri(_, app.name)) getOrElse Tweak.blank)) ~
           (name <~ tvText(app.name)) ~
           (content <~ vIntTag(position))
-      case _ =>
-        Ui.nop
+      case _ => Ui.nop
     }
 
   override def findViewById(id: Int): View = content.findViewById(id)

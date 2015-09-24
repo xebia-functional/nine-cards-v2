@@ -23,6 +23,8 @@ object ExtraTweaks {
 
   def vIntTag(id: Int, tag: Int) = Tweak[View](_.setTag(id, tag))
 
+  def vSelected(selected: Boolean) = Tweak[View](_.setSelected(selected))
+
   def tbBackgroundColor(color: Int) = Tweak[Toolbar](_.setBackgroundColor(color))
 
   def tbTitle(res: Int) = Tweak[Toolbar](_.setTitle(res))
