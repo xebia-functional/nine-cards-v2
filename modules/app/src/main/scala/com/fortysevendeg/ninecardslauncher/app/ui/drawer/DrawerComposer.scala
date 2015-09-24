@@ -70,6 +70,8 @@ trait DrawerComposer
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def initDrawerUi(
+    launchStore: () => Unit,
+    launchDial: () => Unit,
     onAppMenuClickListener: (AppsMenuOption) => Unit,
     onContactMenuClickListener: (ContactsMenuOption) => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (appDrawerMain <~ drawerAppStyle <~ On.click {
@@ -79,7 +81,11 @@ trait DrawerComposer
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(resGetColor(R.color.drawer_toolbar))) ~
       (drawerContent <~ vGone) ~
-      (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_play)) ~
+      (drawerFabButton <~
+        ivSrc(R.drawable.app_drawer_fab_button_play) <~
+        On.click {
+          fabButtonClicked(launchStore, launchDial)
+        }) ~
       (drawerTabApp <~
         ttInitTab(
           drawableOn = R.drawable.app_drawer_icon_applications,
@@ -162,7 +168,7 @@ trait DrawerComposer
 
   private[this] def callAppsListener(
     listener: (AppsMenuOption) => Unit,
-    menuItemId: Int) =
+    menuItemId: Int): Unit =
     toAppsMenuOption(menuItemId) foreach listener
 
   private[this] def contactsTabClicked(listener: (ContactsMenuOption) => Unit): Ui[_] =
@@ -188,7 +194,14 @@ trait DrawerComposer
 
   private[this] def callContactsListener(
     listener: (ContactsMenuOption) => Unit,
-    menuItemId: Int) =
+    menuItemId: Int): Unit =
     toContactsMenuOption(menuItemId) foreach listener
+
+  private[this] def fabButtonClicked(launchStore: () => Unit, launchDial: () => Unit): Ui[_] =
+    (drawerTabApp, drawerTabContacts) match {
+      case (Some(appTab), Some(contactTab)) if appTab.isSelected => Ui(launchStore())
+      case (Some(appTab), Some(contactTab)) if contactTab.isSelected => Ui(launchDial())
+      case _ => Ui.nop
+    }
 
 }
