@@ -22,8 +22,6 @@ trait AppsServicesImplSpecification
     extends Scope
     with AppsServicesImplData {
 
-    val androidFeedback = "com.google.android.feedback"
-
     val packageManager = mock[PackageManager]
     val contextSupport = mock[ContextSupport]
     contextSupport.getPackageManager returns packageManager
@@ -92,6 +90,18 @@ trait AppsServicesImplSpecification
 
   }
 
+  trait AppsServicesImplInvalidPackageNameErrorScope {
+    self : AppsServicesImplScope =>
+
+    case class CustomException(message: String, cause: Option[Throwable] = None)
+      extends RuntimeException(message)
+
+    val exception = CustomException("")
+
+    packageManager.getPackageInfo(invalidPackageName, 0) throws exception
+
+  }
+
 }
 
 class AppsServicesImplSpec
@@ -121,6 +131,30 @@ class AppsServicesImplSpec
           }
         }
     }
+
+    "getApplication" should {
+
+      "returns the installed app when a valid packageName is provided" in
+        new AppsServicesImplScope {
+          val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).run.run
+          result must beLike {
+            case Answer(resultApplication) => resultApplication shouldEqual sampleApp1
+          }
+        }
+
+      "returns an AppsInstalledException when an invalid packageName is provided" in
+        new AppsServicesImplScope with AppsServicesImplInvalidPackageNameErrorScope {
+          val result = mockAppsServicesImpl.getApplication(invalidPackageName)(contextSupport).run.run
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, appsException)) => appsException must beLike {
+                case e: AppsInstalledException => e.cause must beSome.which(_ shouldEqual exception)
+              }
+            }
+          }
+        }
+    }
+
 
   }
 

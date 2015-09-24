@@ -4,6 +4,8 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 
 trait AppsServicesImplData {
 
+  val androidFeedback = "com.google.android.feedback"
+
   val sampleApp1 =  Application(
     "Sample Name 1",
     "com.fortysevendeg.ninecardslauncher.test.sampleapp1",
@@ -27,5 +29,9 @@ trait AppsServicesImplData {
     installedFromGooglePlay = true)
 
   val applicationList = Seq(sampleApp1, sampleApp2)
+
+  val validPackageName = sampleApp1.packageName
+
+  val invalidPackageName = "com.fortysevendeg.ninecardslauncher.test.sampleapp3"
 
 }
