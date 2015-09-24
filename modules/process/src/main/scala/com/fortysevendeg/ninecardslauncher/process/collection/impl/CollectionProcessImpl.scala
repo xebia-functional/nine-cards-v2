@@ -49,7 +49,8 @@ class CollectionProcessImpl(
       Some(collection) <- findCollectionById(collectionId)
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
       collectionList <- getCollections
-      _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
+      // TODO This call have problems. We should fix in ticket 9C-258
+//      _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
     } yield ()).resolve[CollectionException]
 
   override def reorderCollection(position: Int, newPosition: Int) =
@@ -77,7 +78,8 @@ class CollectionProcessImpl(
       Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
       cardList <- getCardsByCollectionId(collectionId)
       _ <- persistenceServices.deleteCard(ServicesDeleteCardRequest(card))
-      _ <- updateCardList(moveCardList(cardList, card.position))
+      // TODO Update Cards don't work. Fix it in ticket 9C-258
+//      _ <- updateCardList(moveCardList(cardList, card.position))
     } yield ()).resolve[CardException]
 
   override def reorderCard(collectionId: Int, cardId: Int, newPosition: Int) =

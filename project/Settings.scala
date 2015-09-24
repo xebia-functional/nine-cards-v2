@@ -6,6 +6,7 @@ import Libraries.net._
 import Libraries.playServices._
 import Libraries.scala._
 import Libraries.test._
+import Libraries.debug._
 import android.Keys._
 import sbt.Keys._
 import sbt._
@@ -88,7 +89,10 @@ object Settings {
     aar(playServicesBase),
     aar(multiDexLib),
     glide,
-    okHttp)
+    okHttp,
+    stetho,
+    stethoOkhttp,
+    stethoUrlconnection)
 
   lazy val processDependencies = Seq(
     androidProvidedLib,
@@ -143,8 +147,8 @@ object Settings {
     "-keep class macroid.** { *; }",
     "-keep class com.fortysevendeg.** { *; }",
     "-keep class android.** { *; }",
-    "-keep class com.google.** { *; }"
-  )
+    "-keep class com.google.** { *; }",
+    "-keep class com.facebook.stetho.** { *; }")
 
   lazy val multiDex = Seq(
     dexMulti in Android := true,

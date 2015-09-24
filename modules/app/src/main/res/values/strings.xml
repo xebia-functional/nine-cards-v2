@@ -68,6 +68,8 @@
 
     <string name="unnamed">Unnamed</string>
 
+    <string name="removeCardMessage">Are you sure that you want remove this card?</string>
+
     <!-- Contacts Action -->
 
     <string name="allContacts">All Contacts</string>

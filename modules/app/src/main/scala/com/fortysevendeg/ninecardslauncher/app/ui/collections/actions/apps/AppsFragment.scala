@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiExtensions, FragmentUiContext, NineCardIntentConversions, UiContext}
@@ -58,7 +60,7 @@ class AppsFragment
           intent = toNineCardIntent(app),
           imagePath = app.imagePath getOrElse ""
         )
-        actionsScreenListener foreach (_.addCards(Seq(card)))
+        activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
         runUi(unreveal())
       })
     },

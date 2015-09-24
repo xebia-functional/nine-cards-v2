@@ -57,6 +57,12 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     collections = collections.patch(positionCollection, Seq(newCollection), 1)
   }
 
+  def removeCardFromCollection(positionCollection: Int, card: Card) = {
+    val currentCollection = collections(positionCollection)
+    val newCollection = currentCollection.copy(cards = currentCollection.cards.filterNot(c => card == c))
+    collections = collections.patch(positionCollection, Seq(newCollection), 1)
+  }
+
   def getCurrentFragmentPosition: Option[Int] = fragments find (f => f._2.activeFragment) map (_._1)
 
   def getActiveFragment: Option[CollectionFragment] = fragments find (f => f._2.activeFragment) map (_._2)

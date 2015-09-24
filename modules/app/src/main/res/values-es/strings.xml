@@ -62,6 +62,8 @@
 
     <string name="unnamed">Sin nombre</string>
 
+    <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta?</string>
+
     <!-- Contacts Action -->
 
     <string name="allContacts">Todos los contacts</string>
