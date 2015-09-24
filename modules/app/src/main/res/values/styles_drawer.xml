@@ -8,18 +8,6 @@
         <item name="android:clickable">true</item>
     </style>
 
-    <style name="LauncherDrawerLayoutContent">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="LauncherDrawerAppBar">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/height_toolbar_app_drawer</item>
-        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-    </style>
-
     <style name="LauncherDrawerToolbarParent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_toolbar_app_drawer</item>
@@ -29,12 +17,6 @@
     </style>
 
     <style name="LauncherDrawerToolbar" parent="LauncherDrawerToolbarParent"/>
-
-    <style name="LauncherDrawerTabLayout">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="layout_scrollFlags">scroll|enterAlways</item>
-    </style>
 
     <style name="LauncherDrawerTab">
         <item name="android:layout_width">0dp</item>

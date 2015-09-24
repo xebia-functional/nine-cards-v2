@@ -53,7 +53,7 @@ trait LauncherExecutor {
         } yield {
             val newIntent = new Intent(Intent.ACTION_SEND)
             newIntent.setType(typeEmail)
-            newIntent.putExtra(Intent.EXTRA_EMAIL, Array[String](email))
+            newIntent.putExtra(Intent.EXTRA_EMAIL, Array(email))
             tryOrError(activity, Intent.createChooser(newIntent, titleDialogEmail))
           }) getOrElse showError
       case _ => activityContext.original.get map (tryOrError(_, intent)) getOrElse showError
