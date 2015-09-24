@@ -17,10 +17,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.ContactHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, AppCategorized}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{AppCategorized, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -41,18 +41,6 @@ trait DrawerComposer
     override def onBindViewHolder(vh: ViewHolder, i: Int): Unit = {}
 
     override def onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder = new RecyclerView.ViewHolder(viewGroup) {}
-  }
-
-  object AppMenuIds {
-    val alphabetical = 0
-    val categories = 1
-    val date = 2
-  }
-
-  object ContactsMenuIds {
-    val alphabetical = 0
-    val favorites = 1
-    val last = 2
   }
 
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
@@ -82,11 +70,10 @@ trait DrawerComposer
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def initDrawerUi(
-    onAppDrawerListener: () => Unit,
-    onAppTabClickListener: () => Unit,
-    onContactTabClickListener: () => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+    onAppMenuClickListener: (AppsMenuOption) => Unit,
+    onContactMenuClickListener: (ContactsMenuOption) => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (appDrawerMain <~ drawerAppStyle <~ On.click {
-      revealInDrawer ~ Ui(onAppDrawerListener())
+      revealInDrawer
     }) ~
       (loadingDrawer <~ pbColor(resGetColor(R.color.drawer_toolbar))) ~
       (recycler <~ recyclerStyle) ~
@@ -94,29 +81,25 @@ trait DrawerComposer
       (drawerContent <~ vGone) ~
       (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_play)) ~
       (drawerTabApp <~
-       ttInitTab(
+        ttInitTab(
           drawableOn = R.drawable.app_drawer_icon_applications,
           drawableOff = R.drawable.app_drawer_icon_applications_inactive,
-          menuListener = appsMenuClicked) <~
-        ttAddMenuOptions(Seq(
-          (AppMenuIds.alphabetical, R.string.apps_alphabetical),
-          (AppMenuIds.categories, R.string.apps_categories),
-          (AppMenuIds.date, R.string.apps_date))) <~
+          menuResource = R.menu.drawer_apps_menu,
+          menuItemId = R.id.sort_apps_alphabetical,
+          menuListener = callAppsListener(onAppMenuClickListener, _)) <~
         On.click {
-          appsTabClicked(onAppTabClickListener)
+          appsTabClicked(onAppMenuClickListener)
         }) ~
       (drawerTabContacts <~
         ttInitTab(
           drawableOn = R.drawable.app_drawer_icon_contacts,
           drawableOff = R.drawable.app_drawer_icon_contacts_inactive,
           selected = false,
-          menuListener = contactsMenuClicked) <~
-        ttAddMenuOptions(Seq(
-          (ContactsMenuIds.alphabetical, R.string.contacts_alphabetical),
-          (ContactsMenuIds.favorites, R.string.contacts_favorites),
-          (ContactsMenuIds.last, R.string.contacts_last))) <~
+          menuItemId = R.id.sort_contacts_alphabetical,
+          menuResource = R.menu.drawer_contacts_menu,
+          menuListener = callContactsListener(onContactMenuClickListener, _)) <~
         On.click {
-          contactsTabClicked(onContactTabClickListener)
+          contactsTabClicked(onContactMenuClickListener)
         })
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
@@ -156,40 +139,56 @@ trait DrawerComposer
         fslLinkRecycler <~
         fslReset)
 
-  private[this] def appsTabClicked(listener: () => Unit): Ui[_] =
-    drawerTabApp map (_.isSelected) match {
-      case Some(false) =>
+  private[this] def appsTabClicked(listener: (AppsMenuOption) => Unit): Ui[_] =
+    drawerTabApp map (t => (t.isSelected, t.getSelectedMenuItem)) match {
+      case Some((false, menuItemId)) =>
         (drawerTabApp <~ ttSelect) ~
           (drawerTabContacts <~ ttUnselect) ~
           (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_play)) ~
-          Ui(listener())
-      case Some(true) =>
+          Ui(callAppsListener(listener, menuItemId))
+      case Some((true, _)) =>
         drawerTabApp <~ ttOpenMenu
       case _ =>
         Ui.nop
     }
 
-  private[this] def appsMenuClicked(menuItemId: Int): Boolean = {
-    runUi(drawerContent <~ uiSnackbarShort(s"Apps menu item clicked $menuItemId"))
-    true
-  }
+  private[this] def toAppsMenuOption(menuItemId: Int): Option[AppsMenuOption] =
+    menuItemId match {
+      case R.id.sort_apps_alphabetical => Some(AppsAlphabetical)
+      case R.id.sort_apps_categories => Some(AppsByCategories)
+      case R.id.sort_apps_date => Some(AppsByLastInstall)
+      case _ => None
+    }
 
-  private[this] def contactsTabClicked(listener: () => Unit): Ui[_] =
-    drawerTabContacts map (_.isSelected) match {
-      case Some(false) =>
+  private[this] def callAppsListener(
+    listener: (AppsMenuOption) => Unit,
+    menuItemId: Int) =
+    toAppsMenuOption(menuItemId) foreach listener
+
+  private[this] def contactsTabClicked(listener: (ContactsMenuOption) => Unit): Ui[_] =
+    drawerTabContacts map (t => (t.isSelected, t.getSelectedMenuItem)) match {
+      case Some((false, menuItemId)) =>
         (drawerTabContacts <~ ttSelect) ~
           (drawerTabApp <~ ttUnselect) ~
           (drawerFabButton <~ ivSrc(R.drawable.app_drawer_fab_button_contact)) ~
-          Ui(listener())
-      case Some(true) =>
-        drawerTabApp <~ ttOpenMenu
+          Ui(toContactsMenuOption(menuItemId) foreach listener)
+      case Some((true, _)) =>
+        drawerTabContacts <~ ttOpenMenu
       case _ =>
         Ui.nop
     }
 
-  private[this] def contactsMenuClicked(menuItemId: Int): Boolean = {
-    runUi(drawerContent <~ uiSnackbarShort(s"Contacts menu item clicked $menuItemId"))
-    true
-  }
+  private[this] def toContactsMenuOption(menuItemId: Int): Option[ContactsMenuOption] =
+    menuItemId match {
+      case R.id.sort_contacts_alphabetical => Some(ContactsAlphabetical)
+      case R.id.sort_contacts_favorites => Some(ContactsFavorites)
+      case R.id.sort_contacts_last => Some(ContactsByLastCall)
+      case _ => None
+    }
+
+  private[this] def callContactsListener(
+    listener: (ContactsMenuOption) => Unit,
+    menuItemId: Int) =
+    toContactsMenuOption(menuItemId) foreach listener
 
 }
