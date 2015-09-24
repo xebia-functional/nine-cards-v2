@@ -16,7 +16,7 @@ class AppsServicesImpl
   extends AppsServices
   with ImplicitsAppsExceptions {
 
-  override def getInstalledApps(implicit context: ContextSupport) = Service {
+  override def getInstalledApplications(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[AppsInstalledException] {
         val packageManager = context.getPackageManager
@@ -24,21 +24,21 @@ class AppsServicesImpl
         val apps: Seq[ResolveInfo] = packageManager.queryIntentActivities(categoryLauncherIntent(), 0).toSeq
 
         apps map {
-          resolveInfo => getApplication(resolveInfo.activityInfo.applicationInfo.packageName)
+          resolveInfo => getApplicationByPackageName(resolveInfo.activityInfo.applicationInfo.packageName)
         }
       }
     }
   }
 
-  override def getApp(packageName: String)(implicit context: ContextSupport) = Service {
+  override def getApplication(packageName: String)(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[AppsInstalledException] {
-        getApplication(packageName)
+        getApplicationByPackageName(packageName)
       }
     }
   }
 
-  private[this] def getApplication(packageName: String)(implicit context: ContextSupport) = {
+  private[this] def getApplicationByPackageName(packageName: String)(implicit context: ContextSupport) = {
     val packageManager = context.getPackageManager
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
     val resources = packageManager.getResourcesForApplication(packageInfo.applicationInfo)

@@ -69,7 +69,7 @@ class AppsServicesImplSpec
 
     "returns the list of installed apps when they exist" in
       new AppsServicesImplScope {
-        val result = mockAppsServicesImpl.getInstalledApps(contextSupport).run.run
+        val result = mockAppsServicesImpl.getInstalledApplications(contextSupport).run.run
         result must beLike {
           case Answer(resultApplicationList) => resultApplicationList shouldEqual applicationList
         }
@@ -77,7 +77,7 @@ class AppsServicesImplSpec
 
     "returns an AppsInstalledException when no apps exist" in
       new AppsServicesImplScope with AppsServicesImplErrorScope {
-        val result = mockAppsServicesImpl.getInstalledApps(contextSupport).run.run
+        val result = mockAppsServicesImpl.getInstalledApplications(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, appsException)) => appsException must beLike {

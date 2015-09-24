@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
 import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepoApp, AppData => RepoAppData}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, UpdateAppRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteAppRequest, AddAppRequest, UpdateAppRequest}
 
 trait AppConversions {
 
@@ -21,20 +21,20 @@ trait AppConversions {
       version = app.data.version,
       installedFromGooglePlay = app.data.installedFromGooglePlay)
 
-  def toRepositoryApp(app: App): RepoApp =
+  def toRepositoryApp(request: DeleteAppRequest): RepoApp =
     RepoApp(
-      id = app.id,
+      id = request.id,
       data = RepoAppData(
-        name = app.name,
-        packageName = app.packageName,
-        className = app.className,
-        category = "category",
-        imagePath = "imagePath",
-        colorPrimary = app.colorPrimary,
-        dateInstalled = app.dateInstalled,
-        dateUpdate = app.dateUpdate,
-        version = app.version,
-        installedFromGooglePlay = app.installedFromGooglePlay)
+        name = request.name,
+        packageName = request.packageName,
+        className = request.className,
+        category = request.category,
+        imagePath = request.imagePath,
+        colorPrimary = request.colorPrimary,
+        dateInstalled = request.dateInstalled,
+        dateUpdate = request.dateUpdate,
+        version = request.version,
+        installedFromGooglePlay = request.installedFromGooglePlay)
     )
 
   def toRepositoryApp(request: UpdateAppRequest): RepoApp =
@@ -44,8 +44,8 @@ trait AppConversions {
         name = request.name,
         packageName = request.packageName,
         className = request.className,
-        category = "category",
-        imagePath = "imagePath",
+        category = request.category,
+        imagePath = request.imagePath,
         colorPrimary = request.colorPrimary,
         dateInstalled = request.dateInstalled,
         dateUpdate = request.dateUpdate,
@@ -58,8 +58,8 @@ trait AppConversions {
       name = request.name,
       packageName = request.packageName,
       className = request.className,
-      category = "category",
-      imagePath = "imagePath",
+      category = request.category,
+      imagePath = request.imagePath,
       colorPrimary = request.colorPrimary,
       dateInstalled = request.dateInstalled,
       dateUpdate = request.dateUpdate,

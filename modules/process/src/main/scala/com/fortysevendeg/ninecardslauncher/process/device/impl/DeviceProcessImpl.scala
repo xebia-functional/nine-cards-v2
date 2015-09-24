@@ -91,15 +91,32 @@ class DeviceProcessImpl(
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
 
-  override def saveInstalledApps(implicit context: ContextSupport) =
+  override def saveInstalledApps(implicit context: ContextSupport, requestConfig: RequestConfig)=
     (for {
-      installedApps <- appsService.getInstalledApps
-      _ <- addApps(toAddAppRequestSeq(installedApps))
+      installedApps <- appsService.getInstalledApplications
+      googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))
+      appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
+      apps = installedApps map {
+        app =>
+          val path = appPaths.find {
+            path =>
+              path.packageName.equals(app.packageName) && path.className.equals(app.className)
+          } map (_.path)
+          val category = googlePlayPackagesResponse.packages.find {
+            googlePlayPackage =>
+              googlePlayPackage.app.title.equals(app.name)
+          } map (_.app.details.appDetails.appCategory.headOption.getOrElse(""))
+          toAddAppRequest(app, category.getOrElse(""), path.getOrElse(""))
+      }
+      _ <- addApps(apps)
     } yield ()).resolve[AppException]
 
-  override def saveApp(packageName: String)(implicit context: ContextSupport) =
+  override def saveApp(packageName: String)(implicit context: ContextSupport, requestConfig: RequestConfig) =
     (for {
-      app <- appsService.getApp(packageName)
+      app <- appsService.getApplication(packageName)
+      googlePlayPackageResponse <- apiServices.googlePlayPackage(packageName)
+      appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
+      _ <- persistenceServices.addApp(toAddAppRequest(app, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
     } yield ()).resolve[AppException]
 
   override def deleteApp(packageName: String)(implicit context: ContextSupport) =
@@ -107,16 +124,18 @@ class DeviceProcessImpl(
       _ <- persistenceServices.deleteAppByPackage(packageName)
     } yield ()).resolve[AppException]
 
-  override def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport) =
+  override def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport, requestConfig: RequestConfig) =
     (for {
       Some(app) <- persistenceServices.getApp(packageName)
-      _ <- persistenceServices.updateApp(toUpdateAppRequest(app.id, appData))
+      googlePlayPackageResponse <- apiServices.googlePlayPackage(packageName)
+      appPackagePath <- imageServices.saveAppIcon(toAppPackageByApp(app))
+      _ <- persistenceServices.updateApp(toUpdateAppRequest(app.id, appData, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
     } yield ()).resolve[AppException]
 
   private[this] def getApps(implicit context: ContextSupport):
   ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =
     for {
-      applications <- appsService.getInstalledApps
+      applications <- appsService.getInstalledApplications
       paths <- createBitmapsFromAppPackage(toAppPackageSeq(applications))
     } yield {
       applications map {

@@ -9,34 +9,34 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => 
   ContactEmail => ContactEmailServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateAppRequest, AddAppRequest, AddCacheCategoryRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{AppData, CacheCategory}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, AppData, CacheCategory}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
 
 import scala.util.Try
 
 trait DeviceConversions {
 
-  def toAddAppRequestSeq(items: Seq[Application]): Seq[AddAppRequest] = items map {
-    item =>
+  def toAddAppRequest(item: Application, category: String, imagePath: String): AddAppRequest =
       AddAppRequest(
         name = item.name,
         packageName = item.packageName,
         className = item.packageName,
-        resourceIcon = item.resourceIcon,
+        category = category,
+        imagePath = imagePath,
         colorPrimary = item.colorPrimary,
         dateInstalled = item.dateInstalled,
         dateUpdate = item.dateUpdate,
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
-  }
 
-  def toUpdateAppRequest(id: Int, appData: AppData): UpdateAppRequest =
+  def toUpdateAppRequest(id: Int, appData: AppData, category: String, imagePath: String): UpdateAppRequest =
       UpdateAppRequest(
         id = id,
         name = appData.name,
         packageName = appData.packageName,
         className = appData.packageName,
-        resourceIcon = appData.resourceIcon,
+        category = category,
+        imagePath = imagePath,
         colorPrimary = appData.colorPrimary,
         dateInstalled = appData.dateInstalled,
         dateUpdate = appData.dateUpdate,
@@ -70,14 +70,21 @@ trait DeviceConversions {
         commentCount = item.commentCount)
   }
 
-  def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map {
-    item =>
-      AppPackage(
-        packageName = item.packageName,
-        className = item.className,
-        name = item.name,
-        icon = item.resourceIcon)
-  }
+  def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map toAppPackage
+
+  def toAppPackage(item: Application): AppPackage =
+    AppPackage(
+      packageName = item.packageName,
+      className = item.className,
+      name = item.name,
+      icon = item.resourceIcon)
+
+  def toAppPackageByApp(item: App): AppPackage =
+    AppPackage(
+      packageName = item.packageName,
+      className = item.className,
+      name = item.name,
+      icon = item.resourceIcon)
 
   def toShortcutSeq(items: Seq[ShortcutServices])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
 
