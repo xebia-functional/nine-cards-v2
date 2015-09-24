@@ -43,6 +43,16 @@ object ActivityResult {
 
 }
 
+object ActionFilters {
+
+  val testFilter = "test-filter"
+
+  val testQuestionFilter = "test-question-filter"
+
+  val testAnswerFilter = "test-answer-filter"
+
+}
+
 object AppUtils {
   def getUniqueId: Int = (System.currentTimeMillis & 0xfffffff).toInt
 

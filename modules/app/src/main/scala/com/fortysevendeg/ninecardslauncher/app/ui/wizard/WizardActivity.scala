@@ -7,7 +7,7 @@ import android.os.{Build, Bundle}
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.commons.{Broadkast, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActionFilters._
 
 import scala.util.{Failure, Success, Try}
 import scalaz.concurrent.Task
@@ -26,7 +27,10 @@ class WizardActivity
   with WizardTasks
   with WizardPersistence
   with TypedFindView
-  with WizardComposer {
+  with WizardComposer
+  with Broadkast {
+
+  self =>
 
   implicit lazy val di = new Injector
 
@@ -34,10 +38,31 @@ class WizardActivity
 
   lazy val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq
 
+  override val actionsFilters: Seq[String] = Seq(testFilter, testQuestionFilter, testAnswerFilter)
+
+  override def actionSubscribed(action: String, data: Option[String]): Unit = action match {
+    case `testFilter` => runUi(uiShortToast(data getOrElse "empty test!!"))
+    case `testAnswerFilter` => runUi(uiShortToast(data getOrElse "empty answer!!"))
+  }
+
+  override def returnActionSubscribed(action: String): Option[BroadAction] = None
+
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.wizard_activity)
     runUi(showUser ~ loadUsers(accounts, requestToken, launchService, close()))
+  }
+
+  override def onResume(): Unit = {
+    super.onResume()
+    registerKast
+    self ? BroadAction(testQuestionFilter)
+  }
+
+
+  override def onPause(): Unit = {
+    super.onPause()
+    unregisterKast
   }
 
   override def onBackPressed(): Unit = {
@@ -90,7 +115,7 @@ class WizardActivity
     setToken(null)
   }
 
-  private def launchService(maybeKey: Option[String]) = {
+  private def launchService(maybeKey: Option[String]): Unit = {
     val intent = new Intent(this, classOf[CreateCollectionService])
     maybeKey map (key => intent.putExtra(CreateCollectionService.keyDevice, key))
     startService(intent)

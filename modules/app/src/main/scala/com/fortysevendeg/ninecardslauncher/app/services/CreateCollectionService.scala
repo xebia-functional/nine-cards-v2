@@ -4,30 +4,39 @@ import android.app.{PendingIntent, Service}
 import android.content.Intent
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import android.util.Log
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.commons.{Broadkast, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActionFilters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import macroid.Contexts
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 
-import scalaz.{\/-, -\/}
 import scalaz.concurrent.Task
 
 class CreateCollectionService
   extends Service
   with Contexts[Service]
   with ContextSupportProvider
-  with CreateCollectionsTasks {
+  with CreateCollectionsTasks
+  with Broadkast {
 
   val tag = "9cards"
 
   implicit lazy val di = new Injector
 
   private var loadDeviceId: Option[String] = None
+
+  override val actionsFilters: Seq[String] = Seq(testFilter, testQuestionFilter, testAnswerFilter)
+
+  override def actionSubscribed(action: String, data: Option[String]): Unit = {}
+
+  override def returnActionSubscribed(action: String): Option[BroadAction] = action match {
+    case `testQuestionFilter` => Option(BroadAction(testAnswerFilter, Option("vamos!!!")))
+    case _ => None
+  }
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     loadDeviceId = Option(intent) flatMap {
