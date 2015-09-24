@@ -2,13 +2,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v7.widget.{CardView, DefaultItemAnimator, GridLayoutManager, RecyclerView}
 import android.view.View
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RecyclerViewListenerTweaks._
@@ -50,14 +49,16 @@ trait CollectionFragmentComposer
   )
 
   def initUi(collection: Collection, animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
-    recyclerView <~ vGlobalLayoutListener(view => {
-      val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-      val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-      loadCollection(collection, padding, spaceMove, animateCards) ~
-        uiHandler(startScroll(padding, spaceMove))
-    })
+    recyclerView <~
+      rvResetPositions <~
+      vGlobalLayoutListener(view => {
+        val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+        val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+        loadCollection(collection, padding, spaceMove, animateCards) ~
+          uiHandler(startScroll(padding, spaceMove))
+      })
 
-  def resetScroll(collection: Collection, position: Int)(implicit contextWrapper: ActivityContextWrapper) =
+  def resetScroll(collection: Collection)(implicit contextWrapper: ActivityContextWrapper) =
     recyclerView <~
       getScrollListener(collection, resGetDimensionPixelSize(R.dimen.space_moving_collection_details))
 
@@ -69,6 +70,7 @@ trait CollectionFragmentComposer
       nrvScheduleLayoutAnimation <~
       getScrollListener(collection, spaceMove)
   }
+
   def scrollType(newSType: Int)(implicit contextWrapper: ContextWrapper): Ui[_] = {
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
@@ -149,7 +151,7 @@ trait CollectionFragmentComposer
     (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = {
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-    val heightCard = recyclerView map (view => (view.getHeight - (padding + spaceMove)) / numInLine)  getOrElse 0
+    val heightCard = recyclerView map (view => (view.getHeight - (padding + spaceMove)) / numInLine) getOrElse 0
     new CollectionAdapter(collection, heightCard)
   }
 
@@ -177,7 +179,9 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
     (icon <~ iconCardTransform(card)) ~
       (name <~ tvText(card.term)) ~
       (content <~ vIntTag(position)) ~
-      (badge <~ (getBadge(card.cardType) map { ivSrc(_) + vVisible } getOrElse vGone))
+      (badge <~ (getBadge(card.cardType) map {
+        ivSrc(_) + vVisible
+      } getOrElse vGone))
 
   private[this] def getBadge(cardType: String): Option[Int] = cardType match {
     case CardType.phone => Option(R.drawable.badge_phone)
