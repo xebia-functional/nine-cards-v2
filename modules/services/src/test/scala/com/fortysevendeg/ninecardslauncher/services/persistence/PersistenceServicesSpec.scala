@@ -21,6 +21,8 @@ trait PersistenceServicesSpecification
   trait RepositoryServicesScope
     extends Scope {
 
+    val mockAppRepository = mock[AppRepository]
+
     val mockCardRepository = mock[CardRepository]
 
     val mockCacheCategoryRepository = mock[CacheCategoryRepository]
@@ -30,6 +32,7 @@ trait PersistenceServicesSpecification
     val mockGeoInfoRepository = mock[GeoInfoRepository]
 
     val persistenceServices = new PersistenceServicesImpl(
+      appRepository = mockAppRepository,
       cacheCategoryRepository = mockCacheCategoryRepository,
       cardRepository = mockCardRepository,
       collectionRepository = mockCollectionRepository,

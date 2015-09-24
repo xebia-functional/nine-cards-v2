@@ -16,6 +16,9 @@ class AppsServicesImpl
   extends AppsServices
   with ImplicitsAppsExceptions {
 
+  val androidFeedback = "com.google.android.feedback"
+  val androidVending = "com.android.vending"
+
   override def getInstalledApplications(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[AppsInstalledException] {
@@ -57,8 +60,8 @@ class AppsServicesImpl
 
   private[this] def isFromGooglePlay(packageManager: PackageManager, packageName: String) = {
     packageManager.getInstallerPackageName(packageName) match {
-      case "com.google.android.feedback" => true
-      case "com.android.vending" => true
+      case `androidFeedback` => true
+      case `androidVending` => true
       case _  => false
     }
   }
