@@ -2,7 +2,7 @@
 <resources
         xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <string name="app_name">9 Cards 2.0</string>
+    <string name="app_name">9 Cards</string>
     <string name="edit">Edit</string>
     <string name="make_public">Make Public</string>
     <string name="share">Share</string>
@@ -55,6 +55,8 @@
     <string name="shortcuts">Shortcuts</string>
 
     <string name="unnamed">Unnamed</string>
+
+    <string name="removeCardMessage">Are you sure that you want remove this card?</string>
 
     <!-- Contacts Action -->
 

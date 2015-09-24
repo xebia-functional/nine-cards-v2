@@ -18,4 +18,5 @@ object Versions {
   val okHttpV = "2.3.0"
   val akkaActorV = "2.3.9"
   val mockServerV = "3.9.2"
+  val stethoV = "1.2.0"
 }

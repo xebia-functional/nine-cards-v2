@@ -2,21 +2,21 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.os.Handler
 import android.support.design.widget.FloatingActionButton
-import android.view.{Gravity, View}
 import android.view.ViewGroup.LayoutParams._
-import android.widget.{LinearLayout, FrameLayout}
+import android.view.{Gravity, View}
+import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{PathMorphDrawable, FabItemMenu, IconTypes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PathMorphDrawableTweaks._
-import FabButtonTags._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid._
 import macroid.FullDsl._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import macroid._
 
 trait FabButtonBehaviour
   extends FabButtonStyle {
@@ -61,12 +61,15 @@ trait FabButtonBehaviour
         pmdAnimIcon(if (opened) IconTypes.ADD else IconTypes.CLOSE)) ~
         (fabMenuContent <~
           animFabButton(opened) <~
-          fadeBackground(!opened) <~
+          colorContentDialog(!opened) <~
           fabContentStyle(!opened)) ~
         (if (opened) postDelayedHideFabButton else removeDelayedHideFabButton)
       ui ~ (if (doUpdateBars) updateBars(opened) else Ui.nop)
     } getOrElse Ui.nop
   }
+
+  def colorContentDialog(paint: Boolean)(implicit context: ActivityContextWrapper) =
+    vBackgroundColorResource(if (paint) R.color.background_dialog else android.R.color.transparent)
 
   private[this] def updateBars(opened: Boolean): Ui[_] = if (opened) {
     updateBarsInFabMenuHide
@@ -76,7 +79,13 @@ trait FabButtonBehaviour
 
   private[this] def animFabButton(open: Boolean)(implicit context: ActivityContextWrapper) = Transformer {
     case i: FabItemMenu if tagEquals(i, R.id.`type`, fabButtonItem) =>
-      i <~ (if (open) hideFabMenuItem else showFabMenuItem)
+      if (open) {
+        i <~ vGone
+      } else {
+        (i <~ animFabMenuItem) ~
+          (i.icon <~ animFabMenuIconItem) ~
+          (i.title <~ animFabMenuTitleItem)
+      }
   }
 
   def fabMenuOpened: Boolean = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))
