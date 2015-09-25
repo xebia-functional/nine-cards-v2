@@ -360,6 +360,29 @@ trait PersistenceServicesData {
   val seqRepoCollection: Seq[repositoryModel.Collection] = createSeqRepoCollection(data = repoCollectionData)
   val repoCollection: repositoryModel.Collection = seqRepoCollection.head
 
+  def createAddAppRequest(
+    name: String = name,
+    packageName: String = packageName,
+    className: String = className,
+    category: String = category,
+    imagePath: String = imagePath,
+    colorPrimary: String = colorPrimary,
+    dateInstalled: Double = dateInstalled,
+    dateUpdate: Double = dateUpdate,
+    version: String = version,
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): AddAppRequest =
+    AddAppRequest(
+      name = name,
+      packageName = packageName,
+      className = className,
+      category = category,
+      imagePath = imagePath,
+      colorPrimary = colorPrimary,
+      dateInstalled = dateInstalled,
+      dateUpdate = dateUpdate,
+      version = version,
+      installedFromGooglePlay = installedFromGooglePlay)
+
   def createAddCacheCategoryRequest(
     packageName: String = packageName,
     category: String = category,

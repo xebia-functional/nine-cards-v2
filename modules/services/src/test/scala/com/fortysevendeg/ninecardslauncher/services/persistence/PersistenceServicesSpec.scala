@@ -45,6 +45,8 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.fetchAppByPackage(nonExistentPackageName) returns Service(Task(Result.answer(None)))
 
+    mockAppRepository.addApp(repoAppData) returns Service(Task(Result.answer(repoApp)))
+
     mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.answer(repoCacheCategory)))
 
     mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Service(Task(Result.answer(1)))
@@ -121,6 +123,8 @@ trait PersistenceServicesSpecification
     val exception = RepositoryException("Irrelevant message")
 
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
+
+    mockAppRepository.addApp(repoAppData) returns Service(Task(Result.errata(exception)))
 
     mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.errata(exception)))
 
@@ -209,6 +213,31 @@ class PersistenceServicesSpec
       val result = persistenceServices.getApp(packageName).run.run
 
       result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "addApp" should {
+
+    "return a App value for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addApp(createAddAppRequest()).run.run
+
+      result must beLike[Result[App, PersistenceServiceException]] {
+        case Answer(app) =>
+          app.id shouldEqual appId
+          app.packageName shouldEqual packageName
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addApp(createAddAppRequest()).run.run
+
+      result must beLike[Result[App, PersistenceServiceException]] {
         case Errata(e) => e.headOption must beSome.which {
           case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
             case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
