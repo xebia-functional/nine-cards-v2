@@ -18,6 +18,11 @@
 
     <color name="shadow_default">#32364550</color>
 
+    <!-- Menu -->
+    <color name="background_menu">#ffffff</color>
+    <color name="background_menu_header">#3F51B5</color>
+    <color name="text_menu_name">#ffffff</color>
+
     <!-- Groups of collections -->
     <color name="collection_group_name">#ffffff</color>
     <color name="workspaces_pager_default">#32ffffff</color>

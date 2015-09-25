@@ -1,34 +1,33 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
-import android.graphics.Color
 import android.os.Handler
 import android.support.design.widget.FloatingActionButton
-import android.view.{Gravity, View}
 import android.view.ViewGroup.LayoutParams._
-import android.widget.{LinearLayout, FrameLayout}
+import android.view.{Gravity, View}
+import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{PathMorphDrawable, FabItemMenu, IconTypes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PathMorphDrawableTweaks._
-import FabButtonTags._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid._
 import macroid.FullDsl._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import macroid._
 
 trait FabButtonBehaviour
   extends FabButtonStyle {
 
   self: TypedFindView =>
 
-  lazy val fabButton = Option(findView(TR.launcher_fab_button))
+  lazy val fabButton = Option(findView(TR.fab_button))
 
-  lazy val fabMenuContent = Option(findView(TR.launcher_menu_content))
+  lazy val fabMenuContent = Option(findView(TR.fab_menu_content))
 
-  lazy val fabMenu = Option(findView(TR.launcher_menu))
+  lazy val fabMenu = Option(findView(TR.fab_menu))
 
   // Show/Hide FabButton Manager
 

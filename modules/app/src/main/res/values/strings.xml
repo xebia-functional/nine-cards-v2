@@ -9,6 +9,18 @@
     <string name="loading">Loading</string>
     <string name="contactUsError">Oops! Please contact us if this problem persists</string>
 
+    <string name="todo">TODO. Sorry. We are working in that</string>
+
+    <!-- Menu -->
+    <string name="collectionsTitle">Collections</string>
+    <string name="momentsTitle">Moments</string>
+    <string name="profileTitle">Profile</string>
+    <string name="configurationTitle">Configuration</string>
+    <string name="wallpaperTitle">Wallpaper</string>
+    <string name="androidSettingsTitle">Android Settings</string>
+    <string name="nineCardsSettingsTitle">9Cards Setting</string>
+    <string name="widgetsTitle">Widgets</string>
+
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>
     <string name="welcome">Welcome to <xliff:g id="app_name">9 Cards</xliff:g></string>
@@ -55,6 +67,8 @@
     <string name="shortcuts">Shortcuts</string>
 
     <string name="unnamed">Unnamed</string>
+
+    <string name="removeCardMessage">Are you sure that you want remove this card?</string>
 
     <!-- Contacts Action -->
 

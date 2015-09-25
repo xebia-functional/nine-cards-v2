@@ -93,7 +93,7 @@ trait CollectionsDetailsComposer
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
 
-  def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ uiSnackbarShort(R.string.contactUsError)
+  def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ uiSnackbarShort(error)
 
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
@@ -192,13 +192,22 @@ trait CollectionsDetailsComposer
     fragment <- adapter.getActiveFragment
   } yield fragment
 
-  def addCardsToCurrentFragment(c: Seq[Card]) = for {
+  protected def addCardsToCurrentFragment(c: Seq[Card]) = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
     currentPosition <- adapter.getCurrentFragmentPosition
   } yield {
       adapter.addCardsToCollection(currentPosition, c)
       fragment.addCards(c)
+    }
+
+  protected def removeCardFromCurrentFragment(c: Card) = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    currentPosition <- adapter.getCurrentFragmentPosition
+  } yield {
+      adapter.removeCardFromCollection(currentPosition, c)
+      fragment.removeCard(c)
     }
 
   def exitTransition(implicit theme: NineCardsTheme) =

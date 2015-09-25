@@ -35,6 +35,10 @@ trait CollectionDetailsTasks
   ServiceDef2[Seq[Card], CardException] =
     di.collectionProcess.addCards(collectionId, cards)
 
+  def removeCard(collectionId: Int, cardId: Int)(implicit context: ContextSupport, di: Injector):
+  ServiceDef2[Unit, CardException] =
+    di.collectionProcess.deleteCard(collectionId, cardId)
+
   private[this] def saveShortcutIcon(bitmap: Option[Bitmap])(implicit context: ContextSupport, di: Injector):
   ServiceDef2[String, ShortcutException] = bitmap map { b =>
     di.deviceProcess.saveShortcutIcon(Random.nextString(10), b) // Name is not important here
