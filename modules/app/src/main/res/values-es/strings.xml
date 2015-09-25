@@ -76,6 +76,13 @@
     <string name="sms">SMS</string>
     <string name="emails">Email</string>
 
+    <!-- Drawer -->
+    <string name="apps_alphabetical">Alfabético</string>
+    <string name="apps_categories">Por categorías</string>
+    <string name="apps_date">Por fecha</string>
+    <string name="contacts_alphabetical">Alfabético</string>
+    <string name="contacts_favorites">Favoritos</string>
+    <string name="contacts_last">Últimas llamadas</string>
 
     <!-- Categories -->
 
