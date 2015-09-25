@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v7.widget.{CardView, DefaultItemAnimator, GridLayoutManager, RecyclerView}
-import android.util.Log
 import android.view.View
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -11,7 +10,6 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
@@ -114,7 +112,6 @@ trait CollectionFragmentComposer
   private[this] def getScrollListener(cardsCount: Int, spaceMove: Int)(implicit contextWrapper: ActivityContextWrapper) =
     nrvCollectionScrollListener(
       scrolled = (scrollY: Int, dx: Int, dy: Int) => {
-        Log.d("9cards", s"scrolled: $scrollY")
         val sy = scrollY + dy
         if (activeFragment && cardsCount > numSpaces) {
           scrolledListener foreach (_.scrollY(sy, dy))
@@ -122,7 +119,6 @@ trait CollectionFragmentComposer
         sy
       },
       scrollStateChanged = (scrollY: Int, recyclerView: RecyclerView, newState: Int) => {
-        Log.d("9cards", "scrollStateChanged")
         if (newState == RecyclerView.SCROLL_STATE_DRAGGING) scrolledListener foreach (_.startScroll())
         if (activeFragment &&
           newState == RecyclerView.SCROLL_STATE_IDLE &&
