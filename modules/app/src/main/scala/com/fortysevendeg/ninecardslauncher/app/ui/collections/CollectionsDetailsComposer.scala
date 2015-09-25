@@ -93,7 +93,7 @@ trait CollectionsDetailsComposer
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
 
-  def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ uiSnackbarShort(R.string.contactUsError)
+  def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ uiSnackbarShort(error)
 
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
