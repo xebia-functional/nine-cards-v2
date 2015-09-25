@@ -59,7 +59,9 @@ class LauncherActivity
     }
   }
 
-  override def onBackPressed(): Unit = if (fabMenuOpened) {
+  override def onBackPressed(): Unit = if (isMenuVisible) {
+    runUi(closeMenu())
+  } else if (fabMenuOpened) {
     runUi(swapFabButton())
   } else if (isDrawerVisible) {
     runUi(revealOutDrawer)
@@ -67,14 +69,20 @@ class LauncherActivity
     super.onBackPressed()
   }
 
-  private def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+  private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
     onResult = {
       // Check if there are collections in DB, if there aren't we go to wizard
       case Nil => goToWizard()
-      case collections => createCollections(collections)
+      case collections =>
+        getUserInfo()
+        createCollections(collections)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading
+  )
+
+  private[this] def getUserInfo() = Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
+    onResult = userInfoMenu
   )
 
   private[this] def goToWizard(): Ui[_] = Ui {
