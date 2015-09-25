@@ -23,11 +23,11 @@ trait FabButtonBehaviour
 
   self: TypedFindView =>
 
-  lazy val fabButton = Option(findView(TR.launcher_fab_button))
+  lazy val fabButton = Option(findView(TR.fab_button))
 
-  lazy val fabMenuContent = Option(findView(TR.launcher_menu_content))
+  lazy val fabMenuContent = Option(findView(TR.fab_menu_content))
 
-  lazy val fabMenu = Option(findView(TR.launcher_menu))
+  lazy val fabMenu = Option(findView(TR.fab_menu))
 
   // Show/Hide FabButton Manager
 

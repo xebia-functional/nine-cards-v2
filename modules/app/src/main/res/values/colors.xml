@@ -18,6 +18,11 @@
 
     <color name="shadow_default">#32364550</color>
 
+    <!-- Menu -->
+    <color name="background_menu">#ffffff</color>
+    <color name="background_menu_header">#3F51B5</color>
+    <color name="text_menu_name">#ffffff</color>
+
     <!-- Groups of collections -->
     <color name="collection_group_name">#ffffff</color>
     <color name="workspaces_pager_default">#32ffffff</color>
@@ -61,10 +66,10 @@
     <color name="fastscroller_bar_on">#3F51B5</color>
 
     <!-- Drawer -->
-    <color name="drawer_toolbar">#ff303aa6</color>
+    <color name="drawer_status_bar">#ff2F3E9E</color>
+    <color name="drawer_toolbar">#ff3E50B4</color>
     <color name="drawer_fab_button">#ff303aa6</color>
     <color name="drawer_fab_button_ripple">#ff0e1550</color>
-    <color name="drawer_tab_color_default">#ffffff</color>
     <color name="drawer_tab_bottom">#ffffff</color>
     <color name="drawer_content">#ffffff</color>
 

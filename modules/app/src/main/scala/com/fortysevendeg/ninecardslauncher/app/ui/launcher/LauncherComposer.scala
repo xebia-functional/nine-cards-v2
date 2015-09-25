@@ -2,17 +2,19 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.content.{Context, Intent}
 import android.speech.RecognizerIntent
+import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, LauncherExecutor, SystemBarsTint, FabButtonBehaviour}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, LauncherExecutor, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
@@ -20,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -65,7 +67,19 @@ trait LauncherComposer
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
 
+  val pageWidgets = 0
+
+  val pageCollections = 1
+
   var workspaces: Option[LauncherWorkSpaces] = None
+
+  lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
+
+  lazy val navigationView = Option(findView(TR.launcher_navigation_view))
+
+  lazy val menuName = Option(findView(TR.menu_name))
+
+  lazy val menuAvatar = Option(findView(TR.menu_avatar))
 
   lazy val loading = Option(findView(TR.launcher_loading))
 
@@ -93,6 +107,8 @@ trait LauncherComposer
 
   lazy val micIcon = Option(findView(TR.launcher_mic_icon))
 
+  def showMessage(message: Int): Ui[_] = drawerLayout <~ uiSnackbarShort(message)
+
   def updateBarsInFabMenuShow: Ui[_] = {
     val color = getResources.getColor(R.color.background_dialog)
     updateNavigationColor(color) ~
@@ -104,28 +120,34 @@ trait LauncherComposer
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-    (workspacesContent <~
-      vgAddView(getUi(w[LauncherWorkSpaces] <~
-        wire(workspaces) <~
-        awsListener(AnimatedWorkSpacesListener(
-          startScroll = (toRight: Boolean) => {
-            val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
-            val collectionScreen = workspaces exists (_.isCollectionScreen)
-            (goToWizardScreen, collectionScreen) match {
-              case (false, true) => runUi(showFabButton())
-              case _ =>
+    (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
+      (navigationView <~ nvNavigationItemSelectedListener(itemId => {
+        runUi(goToMenuOption(itemId))
+        true
+      })) ~
+      (workspacesContent <~
+        vgAddView(getUi(w[LauncherWorkSpaces] <~
+          wire(workspaces) <~
+          awsListener(AnimatedWorkSpacesListener(
+            startScroll = (toRight: Boolean) => {
+              val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
+              val collectionScreen = workspaces exists (_.isCollectionScreen)
+              (goToWizardScreen, collectionScreen) match {
+                case (false, true) => runUi(showFabButton())
+                case _ =>
+              }
+            },
+            endScroll = () => {
+              val collectionScreen = workspaces exists (_.isCollectionScreen)
+              if (collectionScreen) runUi(showFabButton())
             }
-          },
-          endScroll = () => {
-            val collectionScreen = workspaces exists (_.isCollectionScreen)
-            if (collectionScreen) runUi(showFabButton())
-          }
-        ))))) ~
+          ))))) ~
       (searchPanel <~ searchContentStyle) ~
+      (menuAvatar <~ menuAvatarStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       (burgerIcon <~ burgerButtonStyle <~ On.click(
-        uiShortToast("Open Menu")
+        drawerLayout <~ dlOpenDrawer
       )) ~
       (googleIcon <~ googleButtonStyle <~ On.click(
         uiStartIntent(new Intent(Intent.ACTION_WEB_SEARCH))
@@ -164,6 +186,31 @@ trait LauncherComposer
         )) ~
       (appDrawerPanel <~ fillAppDrawer(collections)) ~
       createPager(selectedPageDefault)
+
+  def userInfoMenu(userInfo: UserInfo)(implicit uiContext: UiContext[_]): Ui[_] =
+    (menuName <~ tvText(userInfo.email)) ~
+      (menuAvatar <~ ivUri(userInfo.imageUrl))
+
+  def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
+
+  def isMenuVisible: Boolean = drawerLayout exists (_.isDrawerOpen(GravityCompat.START))
+
+  def goToWorkspace(page: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+    (workspaces <~ lwsSelect(page)) ~
+      (paginationPanel <~ reloadPager(page)) ~
+      closeMenu()
+
+  private[this] def goToMenuOption(itemId: Int)
+    (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = itemId match {
+    case R.id.menu_collections => goToWorkspace(pageCollections)
+    case R.id.menu_moments => goToWorkspace(pageWidgets)
+    case R.id.menu_profile => showMessage(R.string.todo)
+    case R.id.menu_wallpapers => uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
+    case R.id.menu_android_settings => uiStartIntent(new Intent(android.provider.Settings.ACTION_SETTINGS))
+    case R.id.menu_9cards_settings => showMessage(R.string.todo)
+    case R.id.menu_widgets => showMessage(R.string.todo)
+    case _ => Ui.nop
+  }
 
   private[this] def clickAppDrawerItem(view: View)(implicit context: ActivityContextWrapper): Ui[_] = Ui {
     val position = Int.unbox(view.getTag(R.id.app_drawer_position))

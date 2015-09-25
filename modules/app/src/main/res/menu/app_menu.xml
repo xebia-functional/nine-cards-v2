@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_collections"
+        android:icon="@drawable/menu_icon_collections"
+        android:title="@string/collectionsTitle"/>
+
+    <item
+        android:id="@+id/menu_moments"
+        android:icon="@drawable/menu_icon_moments"
+        android:title="@string/momentsTitle"/>
+
+    <item
+        android:id="@+id/menu_profile"
+        android:icon="@drawable/menu_icon_profile"
+        android:title="@string/profileTitle"/>
+
+
+    <item
+        android:title="@string/configurationTitle"
+        android:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/menu_wallpapers"
+                android:title="@string/wallpaperTitle"/>
+
+            <item
+                android:id="@+id/menu_android_settings"
+                android:title="@string/androidSettingsTitle"/>
+
+            <item
+                android:id="@+id/menu_9cards_settings"
+                android:title="@string/nineCardsSettingsTitle"/>
+
+            <item
+                android:id="@+id/menu_widgets"
+                android:title="@string/widgetsTitle"/>
+        </menu>
+    </item>
+
+</menu>
