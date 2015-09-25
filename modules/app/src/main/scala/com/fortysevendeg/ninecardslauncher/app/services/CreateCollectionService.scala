@@ -4,7 +4,7 @@ import android.app.{PendingIntent, Service}
 import android.content.Intent
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import com.fortysevendeg.ninecardslauncher.app.commons.{Broadkast, ContextSupportProvider}
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActionFilters._
@@ -21,7 +21,7 @@ class CreateCollectionService
   with Contexts[Service]
   with ContextSupportProvider
   with CreateCollectionsTasks
-  with Broadkast {
+  with BroadcastDispatcher {
 
   val tag = "9cards"
 
@@ -31,9 +31,9 @@ class CreateCollectionService
 
   override val actionsFilters: Seq[String] = Seq(testFilter, testQuestionFilter, testAnswerFilter)
 
-  override def actionSubscribed(action: String, data: Option[String]): Unit = {}
+  override def manageCommand(action: String, data: Option[String]): Unit = {}
 
-  override def returnActionSubscribed(action: String): Option[BroadAction] = action match {
+  override def manageQuestion(action: String): Option[BroadAction] = action match {
     case `testQuestionFilter` => Option(BroadAction(testAnswerFilter, Option("vamos!!!")))
     case _ => None
   }
@@ -54,6 +54,8 @@ class CreateCollectionService
       setProgress(0, 0, true).
       setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
 
+    registerDispatchers
+
     startForeground(notificationId, builder.build)
 
     val service = loadDeviceId map loadConfiguration getOrElse createNewConfiguration
@@ -65,32 +67,11 @@ class CreateCollectionService
     super.onStartCommand(intent, flags, startId)
   }
 
-  // TODO 9C-190 - Move synchronizeGeoInfo to UserConfigProcess
 
-//  private def synchronizeGeoInfo(userConfig: UserConfig) = {
-//    userConfig.geoInfo.homeMorning map (addUserConfigUserLocation(_, NineCardsMoments.HomeMorning))
-//    userConfig.geoInfo.homeNight map (addUserConfigUserLocation(_, NineCardsMoments.HomeNight))
-//    userConfig.geoInfo.work map (addUserConfigUserLocation(_, NineCardsMoments.Work))
-//  }
-//
-//  private def addUserConfigUserLocation(config: UserConfigUserLocation, constrain: String) = {
-//    if (!config.wifi.isEmpty)
-//      sharedPreferences.edit.putString(HomeMorningKey, config.wifi).apply()
-//
-//    import play.api.libs.json._
-//
-//    val reads = Json.writes[UserConfigTimeSlot]
-//    val ocurrenceStr: String = config.occurrence map (o => Json.toJson(o)(reads).toString()) mkString("[", ", ", "]")
-//    val request = AddGeoInfoRequest(
-//      constrain = constrain,
-//      occurrence = ocurrenceStr,
-//      wifi = config.wifi,
-//      latitude = config.lat,
-//      longitude = config.lng,
-//      system = true
-//    )
-//    persistenceServices.addGeoInfo(request)
-//  }
+  override def onDestroy(): Unit = {
+    super.onDestroy()
+    unregisterDispatcher
+  }
 
   private def closeService() = {
     stopForeground(true)

@@ -7,7 +7,7 @@ import android.os.{Build, Bundle}
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.{Broadkast, ContextSupportProvider}
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -28,7 +28,7 @@ class WizardActivity
   with WizardPersistence
   with TypedFindView
   with WizardComposer
-  with Broadkast {
+  with BroadcastDispatcher {
 
   self =>
 
@@ -40,12 +40,12 @@ class WizardActivity
 
   override val actionsFilters: Seq[String] = Seq(testFilter, testQuestionFilter, testAnswerFilter)
 
-  override def actionSubscribed(action: String, data: Option[String]): Unit = action match {
+  override def manageCommand(action: String, data: Option[String]): Unit = action match {
     case `testFilter` => runUi(uiShortToast(data getOrElse "empty test!!"))
     case `testAnswerFilter` => runUi(uiShortToast(data getOrElse "empty answer!!"))
   }
 
-  override def returnActionSubscribed(action: String): Option[BroadAction] = None
+  override def manageQuestion(action: String): Option[BroadAction] = None
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -55,14 +55,14 @@ class WizardActivity
 
   override def onResume(): Unit = {
     super.onResume()
-    registerKast
-    self ? BroadAction(testQuestionFilter)
+    registerDispatchers
+    self ? testQuestionFilter
   }
 
 
   override def onPause(): Unit = {
     super.onPause()
-    unregisterKast
+    unregisterDispatcher
   }
 
   override def onBackPressed(): Unit = {

@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
-import com.fortysevendeg.ninecardslauncher.app.commons.Broadkast
+import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActionFilters._
 trait CreateCollectionsTasks
   extends Conversions {
 
-  self : Broadkast =>
+  self : BroadcastDispatcher =>
 
   def createNewConfiguration(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], AppCategorizationException with ContactException with CollectionException] =
     for {
