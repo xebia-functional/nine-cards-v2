@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.content.Intent
 import android.content.Intent._
 import android.graphics.{Bitmap, BitmapFactory}
-import android.os.{Handler, Bundle}
+import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
@@ -37,6 +37,8 @@ class CollectionsDetailsActivity
   with ActionsScreenListener
   with SystemBarsTint
   with CollectionDetailsTasks {
+
+  val tagDialog = "dialog"
 
   val defaultPosition = 0
 
@@ -182,12 +184,26 @@ class CollectionsDetailsActivity
 
   override def onEndFinishAction(): Unit = removeActionFragment()
 
-  override def addCards(cards: Seq[AddCardRequest]): Unit =
+  def addCards(cards: Seq[AddCardRequest]): Unit =
     getCurrentCollection foreach { collection =>
       Task.fork(createCards(collection.id, cards).run).resolveAsync(
         onResult = addCardsToCurrentFragment(_)
       )
     }
+
+  def removeCard(card: Card): Unit = {
+    val ft = getSupportFragmentManager.beginTransaction()
+    Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(null)
+    val dialog = new RemoveCardDialogFragment(() => {
+      getCurrentCollection foreach { collection =>
+        Task.fork(removeCard(collection.id, card.id).run).resolveAsync(
+          onResult = (_) => removeCardFromCurrentFragment(card)
+        )
+      }
+    })
+    dialog.show(ft, tagDialog)
+  }
 
   private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
     case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
@@ -220,8 +236,6 @@ trait ActionsScreenListener {
   def onStartFinishAction()
 
   def onEndFinishAction()
-
-  def addCards(cards: Seq[AddCardRequest])
 }
 
 object ScrollType {

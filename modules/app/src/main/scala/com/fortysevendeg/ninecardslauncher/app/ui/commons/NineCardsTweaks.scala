@@ -4,18 +4,21 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.ContactsContract.Contacts
-import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.OnScrollListener
+import android.support.v7.widget.{GridLayoutManager, RecyclerView}
+import android.view.View
+import android.view.ViewGroup.OnHierarchyChangeListener
 import android.widget.ImageView
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.bumptech.glide.{DrawableTypeRequest, Glide}
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.{DrawableTypeRequest, Glide}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.CharDrawable
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 import macroid.FullDsl._
+import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 
 object RecyclerViewListenerTweaks {
   type W = RecyclerView
@@ -34,6 +37,23 @@ object RecyclerViewListenerTweaks {
         super.onScrollStateChanged(recyclerView, newState)
         scrollStateChanged(scrollY, recyclerView, newState)
       }
+    })
+  }
+
+  def rvResetPositions(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { recyclerView =>
+    recyclerView.setOnHierarchyChangeListener(new OnHierarchyChangeListener {
+      override def onChildViewAdded(parent: View, child: View): Unit = reset
+      override def onChildViewRemoved(parent: View, child: View): Unit = reset
+      private[this] def reset = recyclerView.getLayoutManager match {
+        case layoutManager: GridLayoutManager =>
+          val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
+          0 until recyclerView.getChildCount foreach { position =>
+            val newPosition = position + firstVisiblePosition
+            val v = recyclerView.getChildAt(position)
+            runUi(v <~ vIntTag(newPosition))
+          }
+      }
+
     })
   }
 
