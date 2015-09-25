@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.AddAppRequest
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, CacheCategory}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{AppData, App, CacheCategory}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 
 trait DeviceProcessData {
@@ -135,6 +135,39 @@ trait DeviceProcessData {
       installedFromGooglePlay = installedFromGooglePlay2),
     App(
       id = 3,
+      name = name3,
+      packageName = packageName3,
+      className = className3,
+      resourceIcon = resourceIcon3,
+      colorPrimary = colorPrimary3,
+      dateInstalled = dateInstalled3,
+      dateUpdate = dateUpdate3,
+      version = version3,
+      installedFromGooglePlay = installedFromGooglePlay3)
+  )
+
+  val appDataSeq: Seq[AppData] = Seq(
+    AppData(
+      name = name1,
+      packageName = packageName1,
+      className = className1,
+      resourceIcon = resourceIcon1,
+      colorPrimary = colorPrimary1,
+      dateInstalled = dateInstalled1,
+      dateUpdate = dateUpdate1,
+      version = version1,
+      installedFromGooglePlay = installedFromGooglePlay1),
+    AppData(
+      name = name2,
+      packageName = packageName2,
+      className = className2,
+      resourceIcon = resourceIcon2,
+      colorPrimary = colorPrimary2,
+      dateInstalled = dateInstalled2,
+      dateUpdate = dateUpdate2,
+      version = version2,
+      installedFromGooglePlay = installedFromGooglePlay2),
+    AppData(
       name = name3,
       packageName = packageName3,
       className = className3,

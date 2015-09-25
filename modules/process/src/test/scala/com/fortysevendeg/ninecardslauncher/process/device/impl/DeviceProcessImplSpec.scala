@@ -92,6 +92,15 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(apps(1)))),
       Service(Task(Result.answer(apps(2)))))
 
+    mockPersistenceServices.deleteAppByPackage(any) returns
+      Service(Task(Result.answer(1)))
+
+    mockPersistenceServices.getApp(any) returns
+      Service(Task(Result.answer(apps.headOption)))
+
+    mockPersistenceServices.updateApp(any) returns
+      Service(Task(Result.answer(1)))
+
     val mockContactsServices = mock[ContactsServices]
 
     mockContactsServices.getContacts returns
@@ -173,6 +182,17 @@ trait DeviceProcessSpecification
       Task(Errata(persistenceServiceException))
     }
 
+    mockPersistenceServices.deleteAppByPackage(any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.getApp(any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.updateApp(any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
 
   }
 
@@ -611,9 +631,9 @@ class DeviceProcessImplSpec
 
   }
 
-  "Getting and saving one installed app" should {
+  "Getting and saving an installed app" should {
 
-    "gets and saves one intalled app" in
+    "gets and saves an intalled app" in
       new DeviceProcessScope {
         val result = deviceProcess.saveApp(packageName1)(contextSupport, requestConfig).run.run
         result must beLike {
@@ -654,6 +674,71 @@ class DeviceProcessImplSpec
     "returns an empty Answer if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.saveApp(packageName1)(contextSupport, requestConfig).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+  }
+
+  "Deleting an app" should {
+
+    "deletes an app" in
+      new DeviceProcessScope {
+        val result = deviceProcess.deleteApp(packageName1)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
+        }
+      }
+
+    "returns an empty Answer if persistence service fails" in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.deleteApp(packageName1)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+  }
+
+  "Updating an installed app" should {
+
+    "gets and saves one intalled app" in
+      new DeviceProcessScope {
+        val result = deviceProcess.updateApp(packageName1, appDataSeq.head)(contextSupport, requestConfig).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
+        }
+      }
+
+    "returns a AppException if api service fails" in
+      new DeviceProcessScope with ErrorApiServicesProcessScope {
+        val result = deviceProcess.updateApp(packageName1, appDataSeq.head)(contextSupport, requestConfig).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+    "returns an empty Answer if image service fails" in
+      new DeviceProcessScope with ErrorImageServicesProcessScope {
+        val result = deviceProcess.updateApp(packageName1, appDataSeq.head)(contextSupport, requestConfig).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
+        }
+      }
+
+    "returns an empty Answer if persistence service fails" in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.updateApp(packageName1, appDataSeq.head)(contextSupport, requestConfig).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
