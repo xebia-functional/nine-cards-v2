@@ -11,11 +11,11 @@ import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GooglePlayPackagesResponse, GooglePlaySimplePackagesResponse}
+import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -29,6 +29,8 @@ trait DeviceProcessSpecification
   with Mockito {
 
   val appInstalledException = AppsInstalledException("")
+
+  val apiServiceException = ApiServiceException("")
 
   val persistenceServiceException = PersistenceServiceException("")
 
@@ -58,7 +60,7 @@ trait DeviceProcessSpecification
 
     val mockAppsServices = mock[AppsServices]
 
-    mockAppsServices.getInstalledApps(contextSupport) returns
+    mockAppsServices.getInstalledApplications(contextSupport) returns
       Service(Task(Result.answer(applications)))
 
     val mockApiServices = mock[ApiServices]
@@ -78,6 +80,11 @@ trait DeviceProcessSpecification
 
     mockPersistenceServices.fetchCacheCategories returns
       Service(Task(Result.answer(cacheCategories)))
+
+    mockPersistenceServices.addApp(any[AddAppRequest]) returns(
+      Service(Task(Result.answer(apps.head))),
+      Service(Task(Result.answer(apps(1)))),
+      Service(Task(Result.answer(apps(2)))))
 
     val mockContactsServices = mock[ContactsServices]
 
@@ -126,8 +133,17 @@ trait DeviceProcessSpecification
   trait ErrorAppServicesProcessScope {
     self: DeviceProcessScope =>
 
-    mockAppsServices.getInstalledApps(contextSupport) returns Service {
+    mockAppsServices.getInstalledApplications(contextSupport) returns Service {
       Task(Errata(appInstalledException))
+    }
+
+  }
+
+  trait ErrorApiServicesProcessScope {
+    self: DeviceProcessScope =>
+
+    mockApiServices.googlePlayPackages(any)(any) returns Service {
+      Task(Errata(apiServiceException))
     }
 
   }
@@ -138,6 +154,11 @@ trait DeviceProcessSpecification
     mockPersistenceServices.fetchCacheCategories returns Service {
       Task(Errata(persistenceServiceException))
     }
+
+    mockPersistenceServices.addApp(any[AddAppRequest]) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
 
   }
 
@@ -162,7 +183,7 @@ trait DeviceProcessSpecification
     mockPersistenceServices.addCacheCategory(any) returns
       Service(Task(Result.answer(newCacheCategory)))
 
-    mockAppsServices.getInstalledApps(contextSupport) returns
+    mockAppsServices.getInstalledApplications(contextSupport) returns
       Service(Task(Result.answer(applications :+ applicationNoCached)))
 
     mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
@@ -262,6 +283,7 @@ trait DeviceProcessSpecification
       Task(Errata(contactsServicesException))
     }
   }
+
 
 }
 
@@ -519,6 +541,57 @@ class DeviceProcessImplSpec
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
           }
+        }
+      }
+
+  }
+
+  "Getting and saving installed apps in DeviceProcess" should {
+
+    "gets and save installed apps" in
+      new DeviceProcessScope {
+        val result = deviceProcess.saveInstalledApps(contextSupport, requestConfig).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
+        }
+      }
+
+    "returns a AppException if app service fails" in
+      new DeviceProcessScope with ErrorAppServicesProcessScope {
+        val result = deviceProcess.saveInstalledApps(contextSupport, requestConfig).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+    "returns a AppException if api service fails" in
+      new DeviceProcessScope with ErrorApiServicesProcessScope {
+        val result = deviceProcess.saveInstalledApps(contextSupport, requestConfig).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+    "returns an empty Answer if image service fails" in
+      new DeviceProcessScope with ErrorImageServicesProcessScope {
+        val result = deviceProcess.saveInstalledApps(contextSupport, requestConfig).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
+        }
+      }
+
+    "returns an empty Answer if persistence service fails" in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.saveInstalledApps(contextSupport, requestConfig).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
         }
       }
 

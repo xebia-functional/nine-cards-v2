@@ -91,7 +91,7 @@ class DeviceProcessImpl(
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
 
-  override def saveInstalledApps(implicit context: ContextSupport, requestConfig: RequestConfig)=
+  override def saveInstalledApps(implicit context: ContextSupport, requestConfig: RequestConfig) =
     (for {
       installedApps <- appsService.getInstalledApplications
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))
