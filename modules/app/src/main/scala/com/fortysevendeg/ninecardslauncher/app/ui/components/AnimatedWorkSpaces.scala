@@ -201,9 +201,13 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     uiVisibility ~ applyTranslation(frontParentView, displacement) ~ transformPanelCanvas()
   }
 
+  def selectPosition(position: Int): Unit = {
+    currentItem = position
+    runUi(reset())
+  }
+
   private[this] def applyTranslation(view: Option[ViewGroup], translate: Float): Ui[_] =
     view <~ (if (horizontalGallery) vTranslationX(translate) else vTranslationY(translate))
-
 
   private[this] def transformPanelCanvas(): Ui[_] = {
     val percent = math.abs(displacement) / getSizeWidget

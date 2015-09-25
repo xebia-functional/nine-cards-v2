@@ -21,7 +21,7 @@
 
     <style name="SimpleItemRoot">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/height_simple_app</item>
+        <item name="android:layout_height">@dimen/height_simple_item</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center</item>

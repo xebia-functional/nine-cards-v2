@@ -37,6 +37,11 @@ trait Styles {
     tivDefaultColor(theme.get(SearchIconsColor)) +
       tivPressedColor(theme.get(SearchPressedColor))
 
+  def menuAvatarStyle(implicit context: ContextWrapper): Tweak[ImageView] =
+    Lollipop ifSupportedThen {
+      vCircleOutlineProvider()
+    } getOrElse Tweak.blank
+
   def drawerItemStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
     tivPressedColor(theme.get(AppDrawerPressedColor)) +
       vTag(R.id.`type`, LauncherTags.app)

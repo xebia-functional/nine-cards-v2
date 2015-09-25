@@ -3,10 +3,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.content.res.ColorStateList
 import android.graphics.{Color, PorterDuff}
 import android.graphics.drawable.Drawable
-import android.support.design.widget.{Snackbar, FloatingActionButton}
+import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
+import android.support.design.widget.{NavigationView, Snackbar, FloatingActionButton}
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar}
-import android.view.View
+import android.view.{MenuItem, View}
 import android.view.View.OnClickListener
 import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget.{CompoundButton, ProgressBar}
@@ -22,6 +25,8 @@ object ExtraTweaks {
   def vIntTag(tag: Int) = Tweak[View](_.setTag(tag))
 
   def vIntTag(id: Int, tag: Int) = Tweak[View](_.setTag(id, tag))
+
+  def vSelected(selected: Boolean) = Tweak[View](_.setSelected(selected))
 
   def tbBackgroundColor(color: Int) = Tweak[Toolbar](_.setBackgroundColor(color))
 
@@ -40,6 +45,17 @@ object ExtraTweaks {
   def tbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[Toolbar](_.setNavigationOnClickListener(new OnClickListener {
     override def onClick(v: View): Unit = runUi(click(v))
   }))
+
+  def dlStatusBarBackground(res: Int) = Tweak[DrawerLayout](_.setStatusBarBackground(res))
+
+  def dlOpenDrawer = Tweak[DrawerLayout](_.openDrawer(GravityCompat.START))
+
+  def dlCloseDrawer = Tweak[DrawerLayout](_.closeDrawer(GravityCompat.START))
+
+  def nvNavigationItemSelectedListener(onItem: (Int) => Boolean) = Tweak[NavigationView](_.setNavigationItemSelectedListener(
+    new OnNavigationItemSelectedListener {
+      override def onNavigationItemSelected(menuItem: MenuItem): Boolean = onItem(menuItem.getItemId)
+    }))
 
   def pbColor(color: Int) = Tweak[ProgressBar](_.getIndeterminateDrawable.setColorFilter(color, PorterDuff.Mode.MULTIPLY))
 
