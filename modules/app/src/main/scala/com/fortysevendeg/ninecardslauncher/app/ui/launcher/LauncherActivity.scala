@@ -8,11 +8,12 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerComposer
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.drawer.{ContactsMenuOption, AppsMenuOption, DrawerComposer}
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
+import com.fortysevendeg.ninecardslauncher.process.device.AllContacts
+import com.fortysevendeg.ninecardslauncher.process.device.models.{AppCategorized, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
@@ -41,11 +42,17 @@ class LauncherActivity
     case _ => getDefaultTheme
   }
 
+  val playStorePackage = "com.android.vending"
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
-    runUi(initUi ~ initDrawerUi(onAppDrawerListener = () => loadApps()))
+    runUi(initUi ~ initDrawerUi(
+      launchStore = () => launchApp(playStorePackage),
+      launchDial = () => launchDial(None),
+      onAppMenuClickListener = loadApps,
+      onContactMenuClickListener = loadContacts))
     initAllSystemBarsTint
     generateCollections()
   }
@@ -59,7 +66,9 @@ class LauncherActivity
     }
   }
 
-  override def onBackPressed(): Unit = if (fabMenuOpened) {
+  override def onBackPressed(): Unit = if (isMenuVisible) {
+    runUi(closeMenu())
+  } else if (fabMenuOpened) {
     runUi(swapFabButton())
   } else if (isDrawerVisible) {
     runUi(revealOutDrawer)
@@ -67,14 +76,20 @@ class LauncherActivity
     super.onBackPressed()
   }
 
-  private def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+  private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
     onResult = {
       // Check if there are collections in DB, if there aren't we go to wizard
       case Nil => goToWizard()
-      case collections => createCollections(collections)
+      case collections =>
+        getUserInfo()
+        createCollections(collections)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading
+  )
+
+  private[this] def getUserInfo() = Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
+    onResult = userInfoMenu
   )
 
   private[this] def goToWizard(): Ui[_] = Ui {
@@ -82,14 +97,22 @@ class LauncherActivity
     startActivityForResult(wizardIntent, wizard)
   }
 
-  private[this] def loadApps() = {
+  private[this] def loadApps(appsMenuOption: AppsMenuOption): Unit =
+    // TODO - Take into account the `appsMenuOption` param
     Task.fork(di.deviceProcess.getCategorizedApps.run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
       onResult = (apps: Seq[AppCategorized]) => addApps(apps, (app: AppCategorized) => {
         execute(toNineCardIntent(app))
       })
     )
-  }
 
+  private[this] def loadContacts(contactsMenuOption: ContactsMenuOption): Unit =
+    // TODO - Take into account the `contactsMenuOption` param
+    Task.fork(di.deviceProcess.getContacts(filter = AllContacts).run).resolveAsyncUi(
+      onPreTask = () => showDrawerLoading,
+      onResult = (contacts: Seq[Contact]) => addContacts(contacts, (contact: Contact) => {
+        execute(contact)
+      })
+    )
 
 }

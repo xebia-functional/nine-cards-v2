@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.models
 
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.ItemHeadered
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 
@@ -7,7 +8,8 @@ import scala.annotation.tailrec
 
 import scala.math.Ordering.Implicits._
 
-case class AppHeadered(app: Option[AppCategorized] = None, header: Option[String] = None)
+case class AppHeadered(item: Option[AppCategorized] = None, header: Option[String] = None)
+  extends ItemHeadered[AppCategorized]
 
 object AppHeadered
   extends HeaderUtils {
@@ -24,15 +26,15 @@ object AppHeadered
       val currentChar: String = getCurrentChar(h.name)
       val lastChar: Option[String] = for {
         appsHeadered <- acc.lastOption
-        app <- appsHeadered.app
+        app <- appsHeadered.item
         appName <- Option(Option(app.name) getOrElse charUnnamed)
         c <- Option(generateChar(appName.substring(0, 1)))
       } yield c
       val skipChar = lastChar exists (_ equals currentChar)
       if (skipChar) {
-        generateAppsForList(t, acc :+ AppHeadered(app = Option(h)))
+        generateAppsForList(t, acc :+ AppHeadered(item = Option(h)))
       } else {
-        generateAppsForList(t, acc ++ Seq(AppHeadered(header = Option(currentChar)), AppHeadered(app = Option(h))))
+        generateAppsForList(t, acc ++ Seq(AppHeadered(header = Option(currentChar)), AppHeadered(item = Option(h))))
       }
   }
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LauncherSearchPanel"
+    android:id="@+id/launcher_search_panel">
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+        style="@style/LauncherBurgerButton"
+        android:id="@+id/launcher_burger_icon"/>
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+        style="@style/LauncherGoogleButton"
+        android:id="@+id/launcher_google_icon"/>
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+        style="@style/LauncherMicButton"
+        android:id="@+id/launcher_mic_icon"/>
+
+</LinearLayout>
