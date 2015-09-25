@@ -11,8 +11,6 @@ trait PersistenceServices {
 
   def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]
 
-  def deleteApp(request: DeleteAppRequest): ServiceDef2[Int, PersistenceServiceException]
-
   def deleteAppByPackage(packageName: String): ServiceDef2[Int, PersistenceServiceException]
 
   def updateApp(request: UpdateAppRequest): ServiceDef2[Int, PersistenceServiceException]

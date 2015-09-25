@@ -14,19 +14,6 @@ case class AddAppRequest(
   version: String,
   installedFromGooglePlay: Boolean)
 
-case class DeleteAppRequest(
-  id: Int,
-  name: String,
-  packageName: String,
-  className: String,
-  category: String,
-  imagePath: String,
-  colorPrimary: String,
-  dateInstalled: Double,
-  dateUpdate: Double,
-  version: String,
-  installedFromGooglePlay: Boolean)
-
 case class UpdateAppRequest(
   id: Int,
   name: String,

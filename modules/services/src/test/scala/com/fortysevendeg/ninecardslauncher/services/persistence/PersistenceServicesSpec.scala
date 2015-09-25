@@ -47,6 +47,8 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.answer(repoApp)))
 
+    mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(1)))
+
     mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.answer(repoCacheCategory)))
 
     mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Service(Task(Result.answer(1)))
@@ -125,6 +127,8 @@ trait PersistenceServicesSpecification
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.errata(exception)))
+
+    mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
     mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.errata(exception)))
 
@@ -238,6 +242,30 @@ class PersistenceServicesSpec
       val result = persistenceServices.addApp(createAddAppRequest()).run.run
 
       result must beLike[Result[App, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteAppByPackage" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteAppByPackage(packageName).run.run
+
+      result must beLike[Result[Int, PersistenceServiceException]] {
+        case Answer(deleted) =>
+          deleted shouldEqual 1
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteAppByPackage(packageName).run.run
+
+      result must beLike[Result[Int, PersistenceServiceException]] {
         case Errata(e) => e.headOption must beSome.which {
           case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
             case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)

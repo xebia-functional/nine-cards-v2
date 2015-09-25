@@ -55,11 +55,6 @@ class PersistenceServicesImpl(
       app <- appRepository.addApp(toRepositoryAppData(request))
     } yield toApp(app)).resolve[PersistenceServiceException]
 
-  override def deleteApp(request: DeleteAppRequest) =
-    (for {
-      deleted <- appRepository.deleteApp(toRepositoryApp(request))
-    } yield deleted).resolve[PersistenceServiceException]
-
   override def deleteAppByPackage(packageName: String) =
     (for {
       deleted <- appRepository.deleteAppByPackage(packageName)
