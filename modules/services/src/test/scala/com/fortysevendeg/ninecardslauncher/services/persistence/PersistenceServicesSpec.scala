@@ -49,6 +49,8 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(1)))
 
+    mockAppRepository.updateApp(repoApp) returns Service(Task(Result.answer(1)))
+
     mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.answer(repoCacheCategory)))
 
     mockCacheCategoryRepository.deleteCacheCategory(repoCacheCategory) returns Service(Task(Result.answer(1)))
@@ -129,6 +131,8 @@ trait PersistenceServicesSpecification
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
+
+    mockAppRepository.updateApp(repoApp) returns Service(Task(Result.errata(exception)))
 
     mockCacheCategoryRepository.addCacheCategory(repoCacheCategoryData) returns Service(Task(Result.errata(exception)))
 
@@ -266,6 +270,30 @@ class PersistenceServicesSpec
       val result = persistenceServices.deleteAppByPackage(packageName).run.run
 
       result must beLike[Result[Int, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "updateApp" should {
+
+    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.updateApp(createUpdateAppRequest()).run.run
+
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual 1
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateApp(createUpdateAppRequest()).run.run
+
+      result must beLike {
         case Errata(e) => e.headOption must beSome.which {
           case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
             case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
