@@ -96,17 +96,15 @@ class DeviceProcessImpl(
       installedApps <- appsService.getInstalledApplications
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))
       appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
-      apps = installedApps map {
-        app =>
-          val path = appPaths.find {
-            path =>
-              path.packageName.equals(app.packageName) && path.className.equals(app.className)
-          } map (_.path)
-          val category = googlePlayPackagesResponse.packages.find {
-            googlePlayPackage =>
-              googlePlayPackage.app.title.equals(app.name)
-          } map (_.app.details.appDetails.appCategory.headOption.getOrElse(""))
-          toAddAppRequest(app, category.getOrElse(""), path.getOrElse(""))
+      apps = installedApps map { app =>
+        val path = appPaths.find { path =>
+          path.packageName.equals(app.packageName) && path.className.equals(app.className)
+        } map (_.path)
+        val category = googlePlayPackagesResponse.packages.find {
+          googlePlayPackage =>
+            googlePlayPackage.app.title.equals(app.name)
+        } map (_.app.details.appDetails.appCategory.headOption.getOrElse(""))
+        toAddAppRequest(app, category.getOrElse(""), path.getOrElse(""))
       }
       _ <- addApps(apps)
     } yield ()).resolve[AppException]

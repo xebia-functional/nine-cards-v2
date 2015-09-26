@@ -6,9 +6,16 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 
 trait AppsServices {
 
-  /** Obtains a sequence with all the installed apps */
+  /**
+   * Obtains a sequence with all the installed apps
+   * @throws AppsInstalledException if exist some problem obtaining the installed apps
+   */
   def getInstalledApplications(implicit context: ContextSupport): ServiceDef2[Seq[Application], AppsInstalledException]
 
-  /** Obtains an installed by the package name */
+  /**
+   * Obtains an installed app by the package name
+   * @param packageName the package name of the app to get
+   * @throws AppsInstalledException if exist some problem obtaining the installed app
+   */
   def getApplication(packageName: String)(implicit context: ContextSupport): ServiceDef2[Application, AppsInstalledException]
 }

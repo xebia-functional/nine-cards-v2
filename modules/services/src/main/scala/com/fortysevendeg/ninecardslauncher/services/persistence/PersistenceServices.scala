@@ -7,12 +7,34 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 trait PersistenceServices {
 
+  /**
+   * Obtains an app from the repository by the package name
+   * @param packageName the package name of the app to get
+   * @throws PersistenceServiceException if exist some problem obtaining the app
+   */
   def getApp(packageName: String): ServiceDef2[Option[App], PersistenceServiceException]
 
+  /**
+   * Adds an app to the repository
+   * @param request includes the necessary data to create a new app in the repository
+   * @throws PersistenceServiceException if exist some problem obtaining the app
+   */
   def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]
 
+  /**
+   * Deletes an app from the repository by the package name
+   * @param packageName the package name of the app to delete
+   * @return an Int if the app has been deleted correctly
+   * @throws PersistenceServiceException if exist some problem deleting the app
+   */
   def deleteAppByPackage(packageName: String): ServiceDef2[Int, PersistenceServiceException]
 
+  /**
+   * Updates the data of an app from the repository
+   * @param request includes the data to update the app
+   * @return an Int if the app has been updated correctly
+   * @throws PersistenceServiceException if exist some problem updating the app
+   */
   def updateApp(request: UpdateAppRequest): ServiceDef2[Int, PersistenceServiceException]
 
   def addCacheCategory(request: AddCacheCategoryRequest): ServiceDef2[CacheCategory, PersistenceServiceException]
