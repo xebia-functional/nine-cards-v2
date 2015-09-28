@@ -1,12 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{CardData, CollectionData, GeoInfoData, CacheCategoryData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{AppData, CardData, CollectionData, GeoInfoData, CacheCategoryData}
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 import scala.util.Random
 
 trait PersistenceServicesData {
+
+  val appId: Int =  Random.nextInt(10)
+  val className: String = Random.nextString(5)
+  val resourceIcon: Int = Random.nextInt(10)
+  val colorPrimary: String = Random.nextString(5)
+  val dateInstalled: Double = Random.nextDouble()
+  val dateUpdate: Double = Random.nextDouble()
+  val version: String = Random.nextString(5)
+  val installedFromGooglePlay: Boolean = Random.nextBoolean()
 
   val cacheCategoryId: Int = Random.nextInt(10)
   val nonExistentCacheCategoryId: Int = Random.nextInt(10) + 100
@@ -51,6 +60,58 @@ trait PersistenceServicesData {
   val intent: String = Random.nextString(5)
   val imagePath: String = Random.nextString(5)
   val notification: String = Random.nextString(5)
+
+  def createSeqApp(
+    num: Int = 5,
+    id: Int = appId,
+    name: String = name,
+    packageName: String = packageName,
+    className: String = className,
+    resourceIcon: Int = resourceIcon,
+    colorPrimary: String = colorPrimary,
+    dateInstalled: Double = dateInstalled,
+    dateUpdate: Double = dateUpdate,
+    version: String = version,
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[App] = List.tabulate(num)(
+    item => App(
+      id = id + item,
+      name = name,
+      packageName = packageName,
+      className = className,
+      resourceIcon = resourceIcon,
+      colorPrimary = colorPrimary,
+      dateInstalled = dateInstalled,
+      dateUpdate = dateUpdate,
+      version = version,
+      installedFromGooglePlay = installedFromGooglePlay))
+
+  def createSeqRepoApp(
+    num: Int = 5,
+    id: Int = appId,
+    data: repositoryModel.AppData = createRepoAppData()): Seq[repositoryModel.App] =
+    List.tabulate(num)(item => repositoryModel.App(id = id + item, data = data))
+
+  def createRepoAppData(
+    name: String = name,
+    packageName: String = packageName,
+    className: String = className,
+    category: String = category,
+    imagePath: String = imagePath,
+    colorPrimary: String = colorPrimary,
+    dateInstalled: Double = dateInstalled,
+    dateUpdate: Double = dateUpdate,
+    version: String = version,
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): repositoryModel.AppData = repositoryModel.AppData(
+    name = name,
+    packageName = packageName,
+    className = className,
+    category = category,
+    imagePath = imagePath,
+    colorPrimary = colorPrimary,
+    dateInstalled = dateInstalled,
+    dateUpdate = dateUpdate,
+    version = version,
+    installedFromGooglePlay = installedFromGooglePlay)
 
   def createSeqCacheCategory(
     num: Int = 5,
@@ -269,6 +330,12 @@ trait PersistenceServicesData {
       numDownloads = Option(numDownloads),
       notification = Option(notification))
 
+  val seqApp: Seq[App] = createSeqApp()
+  val app: App = seqApp.head
+  val repoAppData: AppData = createRepoAppData()
+  val seqRepoApp: Seq[repositoryModel.App] = createSeqRepoApp(data = repoAppData)
+  val repoApp: repositoryModel.App = seqRepoApp.head
+
   val seqCacheCategory: Seq[CacheCategory] = createSeqCacheCategory()
   val cacheCategory: CacheCategory = seqCacheCategory.head
   val repoCacheCategoryData: CacheCategoryData = createRepoCacheCategoryData()
@@ -292,6 +359,54 @@ trait PersistenceServicesData {
   val repoCollectionData: CollectionData = createRepoCollectionData()
   val seqRepoCollection: Seq[repositoryModel.Collection] = createSeqRepoCollection(data = repoCollectionData)
   val repoCollection: repositoryModel.Collection = seqRepoCollection.head
+
+  def createAddAppRequest(
+    name: String = name,
+    packageName: String = packageName,
+    className: String = className,
+    category: String = category,
+    imagePath: String = imagePath,
+    colorPrimary: String = colorPrimary,
+    dateInstalled: Double = dateInstalled,
+    dateUpdate: Double = dateUpdate,
+    version: String = version,
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): AddAppRequest =
+    AddAppRequest(
+      name = name,
+      packageName = packageName,
+      className = className,
+      category = category,
+      imagePath = imagePath,
+      colorPrimary = colorPrimary,
+      dateInstalled = dateInstalled,
+      dateUpdate = dateUpdate,
+      version = version,
+      installedFromGooglePlay = installedFromGooglePlay)
+
+  def createUpdateAppRequest(
+    id: Int = appId,
+    name: String = name,
+    packageName: String = packageName,
+    className: String = className,
+    category: String = category,
+    imagePath: String = imagePath,
+    colorPrimary: String = colorPrimary,
+    dateInstalled: Double = dateInstalled,
+    dateUpdate: Double = dateUpdate,
+    version: String = version,
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): UpdateAppRequest =
+    UpdateAppRequest(
+      id = id,
+      name = name,
+      packageName = packageName,
+      className = className,
+      category = category,
+      imagePath = imagePath,
+      colorPrimary = colorPrimary,
+      dateInstalled = dateInstalled,
+      dateUpdate = dateUpdate,
+      version = version,
+      installedFromGooglePlay = installedFromGooglePlay)
 
   def createAddCacheCategoryRequest(
     packageName: String = packageName,

@@ -3,6 +3,17 @@ package com.fortysevendeg.ninecardslauncher.process.device.models
 import android.content.Intent
 import android.graphics.drawable.Drawable
 
+case class App(
+  name: String,
+  packageName: String,
+  className: String,
+  resourceIcon: Int,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
+  version: String,
+  installedFromGooglePlay: Boolean)
+
 case class AppCategorized(
   name: String,
   packageName: String,
