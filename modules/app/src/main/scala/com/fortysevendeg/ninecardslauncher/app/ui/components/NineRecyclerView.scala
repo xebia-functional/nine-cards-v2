@@ -1,13 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components
 
 import android.content.Context
+import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.util.AttributeSet
-import android.view.ViewGroup.LayoutParams
+import android.view.ViewGroup.{OnHierarchyChangeListener, LayoutParams}
 import android.view.animation.AnimationUtils
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{View, MotionEvent}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import macroid.FullDsl._
 import macroid.{Tweak, ContextWrapper}
 
 class NineRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
@@ -20,6 +22,27 @@ class NineRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(
   var disableScroll = false
 
   var enableAnimation = false
+
+  def createScrollListener(
+    scrolled: (Int, Int, Int) => Int,
+    scrollStateChanged: (Int, RecyclerView, Int) => Unit) = {
+    val sl = new NineOnScrollListener {
+      var scrollY = scrollListener map (_.scrollY) getOrElse 0
+      override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = {
+        super.onScrolled(recyclerView, dx, dy)
+        scrollY = scrolled(scrollY, dx, dy)
+      }
+      override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
+        super.onScrollStateChanged(recyclerView, newState)
+        scrollStateChanged(scrollY, recyclerView, newState)
+      }
+    }
+    clearOnScrollListeners()
+    addOnScrollListener(sl)
+    scrollListener = Option(sl)
+  }
+
+  var scrollListener: Option[NineOnScrollListener] = None
 
   override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(disableScroll) {
     true
@@ -48,6 +71,11 @@ class NineRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(
       case _ => super.attachLayoutAnimationParameters(child, params, index, count)
     }
 
+  abstract class NineOnScrollListener
+    extends OnScrollListener {
+    var scrollY: Int
+  }
+
 }
 
 object NineRecyclerViewTweaks {
@@ -61,5 +89,27 @@ object NineRecyclerViewTweaks {
   }
 
   def nrvScheduleLayoutAnimation = Tweak[W](_.scheduleLayoutAnimation())
+
+  def nrvCollectionScrollListener(
+    scrolled: (Int, Int, Int) => Int,
+    scrollStateChanged: (Int, RecyclerView, Int) => Unit
+  )(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.createScrollListener(scrolled, scrollStateChanged))
+
+  def nrvResetPositions(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { recyclerView =>
+    recyclerView.setOnHierarchyChangeListener(new OnHierarchyChangeListener {
+      override def onChildViewAdded(parent: View, child: View): Unit = reset
+      override def onChildViewRemoved(parent: View, child: View): Unit = reset
+      private[this] def reset = recyclerView.getLayoutManager match {
+        case layoutManager: GridLayoutManager =>
+          val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
+          0 until recyclerView.getChildCount foreach { position =>
+            val newPosition = position + firstVisiblePosition
+            val v = recyclerView.getChildAt(position)
+            runUi(v <~ vIntTag(newPosition))
+          }
+      }
+
+    })
+  }
 
 }
