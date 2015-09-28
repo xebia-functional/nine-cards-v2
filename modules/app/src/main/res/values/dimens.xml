@@ -10,6 +10,8 @@
 
     <dimen name="radius_default">3dp</dimen>
 
+    <dimen name="text_xxxlarge">22sp</dimen>
+    <dimen name="text_xxlarge">20sp</dimen>
     <dimen name="text_xlarge">18sp</dimen>
     <dimen name="text_large">16sp</dimen>
     <dimen name="text_default">14sp</dimen>
@@ -36,6 +38,9 @@
     <dimen name="shadow_radius_default">1dp</dimen>
 
     <integer name="anim_duration_normal">200</integer>
+
+    <!-- Wizard -->
+    <dimen name="min_width_button_wizard">190dp</dimen>
 
     <!-- Menu -->
     <dimen name="menu_height">170dp</dimen>

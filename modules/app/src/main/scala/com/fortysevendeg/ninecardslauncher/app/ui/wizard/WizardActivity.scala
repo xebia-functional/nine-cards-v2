@@ -54,7 +54,7 @@ class WizardActivity
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.wizard_activity)
-    runUi(showUser ~ loadUsers(accounts, requestToken, launchService, close()))
+    runUi(showUser ~ initUi(accounts, requestToken, launchService, close()))
   }
 
   override def onResume(): Unit = {

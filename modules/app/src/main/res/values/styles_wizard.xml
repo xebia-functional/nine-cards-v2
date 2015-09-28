@@ -7,6 +7,8 @@
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
+    <!-- Loading -->
+
     <style name="WizardLoadingContent">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -29,50 +31,134 @@
     </style>
 
     <style name="WizardContent">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:padding">@dimen/padding_default</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
-    <style name="WizardTitle">
+    <!-- User -->
+
+    <style name="WizardUserContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="WizardUserLogo">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_default</item>
-        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:src">@drawable/wizard_logo</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="WizardUserTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:textSize">@dimen/text_xxxlarge</item>
         <item name="android:text">@string/welcome</item>
+        <item name="android:textColor">@color/text_wizard_title</item>
     </style>
 
-    <style name="WizardMessage">
+    <style name="WizardUserSelectContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">0px</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="WizardUserSelect">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_default</item>
-        <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:text">@string/welcomeMessage</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
     </style>
 
-    <style name="WizardRadioGroup">
+    <style name="WizardUserButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">@dimen/min_width_button_wizard</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:text">@string/buttonLetStart</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_wizard_button</item>
+    </style>
+
+    <style name="WizardUserTerms">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:text">@string/termsAndConditions</item>
+        <item name="android:textColor">@color/text_wizard_terms</item>
+    </style>
+
+    <!-- Devices -->
+
+    <style name="WizardDeviceContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="WizardDeviceTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:textSize">@dimen/text_xxxlarge</item>
+        <item name="android:text">@string/welcome</item>
+        <item name="android:textColor">@color/text_wizard_title</item>
+    </style>
+
+    <style name="WizardDeviceMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:text">@string/addDeviceMessage</item>
+        <item name="android:textColor">@color/text_wizard_message</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="WizardDeviceRadioGroup">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
         <item name="android:padding">@dimen/padding_default</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:textColor">@color/text_wizard_title</item>
+        <item name="android:textSize">@dimen/text_default</item>
     </style>
 
-    <style name="WizardButton">
-        <item name="android:layout_width">match_parent</item>
+    <style name="WizardDeviceButton">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:minWidth">@dimen/min_width_button_wizard</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:text">@string/buttonContinue</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_wizard_button</item>
+        <item name="android:layout_marginBottom">@dimen/padding_large</item>
     </style>
 
-    <style name="WizardEndMessage">
+    <!-- Screens -->
+
+    <style name="WizardScreensMessage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">center</item>
         <item name="android:padding">@dimen/padding_default</item>
         <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:text">@string/welcomeMessage</item>
+    </style>
+
+    <style name="WizardScreensButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
     </style>
 
 </resources>

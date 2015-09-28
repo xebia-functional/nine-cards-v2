@@ -18,6 +18,14 @@
 
     <color name="shadow_default">#32364550</color>
 
+    <!-- Wizard -->
+
+    <color name="text_wizard_button">#ffffff</color>
+    <color name="text_wizard_terms">#88000000</color>
+
+    <color name="text_wizard_title">#000000</color>
+    <color name="text_wizard_message">#88000000</color>
+
     <!-- Menu -->
     <color name="background_menu">#ffffff</color>
     <color name="background_menu_header">#3F51B5</color>

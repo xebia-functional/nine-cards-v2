@@ -23,8 +23,11 @@
 
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>
-    <string name="welcome">Welcome to <xliff:g id="app_name">9 Cards</xliff:g></string>
-    <string name="welcomeMessage">Please select an account so you can begin your <xliff:g id="app_name">9 Cards</xliff:g> experience:</string>
+    <string name="buttonLetStart">Let\'s start</string>
+    <string name="termsAndConditions">Accept terms and conditions</string>
+    <string name="welcome">A launcher craft if for\nAndroid Power Users</string>
+
+    <string name="errorSelectUser">You must select a user</string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g></string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>

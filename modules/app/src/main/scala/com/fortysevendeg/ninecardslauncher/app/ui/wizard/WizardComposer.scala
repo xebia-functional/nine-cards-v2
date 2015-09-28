@@ -19,11 +19,15 @@ trait WizardComposer {
 
   val newConfigurationKey = "new_configuration"
 
+  lazy val rootLayout = Option(findView(TR.wizard_root))
+
   lazy val loadingRootLayout = Option(findView(TR.wizard_loading_content))
 
   lazy val userRootLayout = Option(findView(TR.wizard_user_content))
 
   lazy val usersGroup = Option(findView(TR.wizard_user_group))
+
+  lazy val usersTerms = Option(findView(TR.wizard_user_terms))
 
   lazy val userAction = Option(findView(TR.wizard_user_action))
 
@@ -39,21 +43,25 @@ trait WizardComposer {
 
   lazy val wizardRootLayout = Option(findView(TR.wizard_finish_content))
 
-  def loadUsers(
+  def showMessage(message: Int): Ui[_] = rootLayout <~ uiSnackbarShort(message)
+
+  def initUi(
     accounts: Seq[Account],
     requestToken: (String) => Unit,
     launchService: (Option[String]) => Unit,
     finishUi: Ui[_]
-    )(implicit context: ActivityContextWrapper): Ui[_] =
+  )(implicit context: ActivityContextWrapper): Ui[_] =
     addUsersToRadioGroup(accounts) ~
-      (userAction <~ On.click {
-        usersGroup <~ Transformer {
-          case i: RadioButton if i.isChecked =>
-            requestToken(i.getTag.toString)
-            showLoading
-        }
+      (userAction <~
+        vBackgroundTint(resGetColor(R.color.primary)) <~ On.click {
+        usersGroup map { view =>
+          val username = view.getSelectedItem.toString
+          requestToken(username)
+          showLoading
+        } getOrElse showMessage(R.string.errorSelectUser)
       }) ~
-      (deviceAction <~ On.click {
+      (deviceAction <~
+        vBackgroundTint(resGetColor(R.color.primary)) <~ On.click {
         devicesGroup <~ Transformer {
           case i: RadioButton if i.isChecked =>
             val tag = i.getTag.toString
@@ -70,11 +78,9 @@ trait WizardComposer {
   def finishProcess: Ui[_] = finishAction <~ vEnabled(true)
 
   def addUsersToRadioGroup(accounts: Seq[Account])(implicit context: ActivityContextWrapper): Ui[_] = {
-    val radioViews = accounts map (account => userRadio(account.name, account.name))
-    (usersGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
-      Ui {
-        radioViews.headOption foreach (_.setChecked(true))
-      }
+    val accountsName = accounts map (_.name) toArray
+    val sa = new ArrayAdapter[String](context.getOriginal, android.R.layout.simple_spinner_dropdown_item, accountsName)
+    usersGroup <~ sAdapter(sa)
   }
 
   def addDevicesToRadioGroup(devices: Seq[UserDevice])(implicit context: ActivityContextWrapper): Ui[_] = {
