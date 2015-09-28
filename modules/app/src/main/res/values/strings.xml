@@ -35,10 +35,10 @@
 
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
     <string name="goTo9Cards">Dive in!</string>
-    <string name="workingNotificationTitle">Categorizing your apps</string>
+    <string name="workingNotificationTitle">Wait a moment...</string>
 
-    <string name="loadingYourAppsMessage">Analyzing your apps, check out our tutorial while you wait</string>
     <string name="downloadingAppsInfoMessage">Categorizing your apps</string>
+    <string name="loadingAppsInfoMessage">Configuring your apps</string>
     <string name="loadingUserConfigMessage">Loading available configurations</string>
     <string name="loadingFromDeviceMessage">Synchronizing your device configuration</string>
     <string name="loadingForMyDeviceMessage">Generating a new device configuration</string>

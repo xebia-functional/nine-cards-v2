@@ -22,6 +22,8 @@ import macroid.{ContextWrapper, Tweak, Ui}
  */
 object ExtraTweaks {
 
+  def vEnabled(enabled: Boolean) = Tweak[View](_.setEnabled(enabled))
+
   def vIntTag(tag: Int) = Tweak[View](_.setTag(tag))
 
   def vIntTag(id: Int, tag: Int) = Tweak[View](_.setTag(id, tag))

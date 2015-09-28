@@ -45,12 +45,17 @@ object ActivityResult {
 
 object ActionFilters {
 
-  val testFilter = "test-filter"
+  // Wizard
+  val wizardStateActionFilter = "wizard-state-action-filter"
+  val wizardAskStateActionFilter = "wizard-ask-state-action-filter"
+  val wizardAnswerStateActionFilter = "wizard-answer-state-action-filter"
 
-  val testQuestionFilter = "test-question-filter"
+}
 
-  val testAnswerFilter = "test-answer-filter"
-
+object WizardState {
+  val stateCreatingCollections = "wizard-state-creating-collections"
+  val stateSuccess = "wizard-state-success"
+  val stateFaliure = "wizard-state-faliure"
 }
 
 object AppUtils {

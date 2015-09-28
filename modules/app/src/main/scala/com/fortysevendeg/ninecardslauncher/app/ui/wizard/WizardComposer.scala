@@ -10,14 +10,12 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserDevice, UserInfo}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import macroid._
-
 
 trait WizardComposer {
 
   self: TypedFindView =>
-
-  var finished = false
 
   val newConfigurationKey = "new_configuration"
 
@@ -67,7 +65,9 @@ trait WizardComposer {
             showWizard
         }
       }) ~
-      (finishAction <~ On.click(finishUi))
+      (finishAction <~ vEnabled(false) <~ On.click(finishUi))
+
+  def finishProcess: Ui[_] = finishAction <~ vEnabled(true)
 
   def addUsersToRadioGroup(accounts: Seq[Account])(implicit context: ActivityContextWrapper): Ui[_] = {
     val radioViews = accounts map (account => userRadio(account.name, account.name))
@@ -115,8 +115,7 @@ trait WizardComposer {
     (loadingRootLayout <~ vGone) ~
       (userRootLayout <~ vGone) ~
       (wizardRootLayout <~ vVisible) ~
-      (deviceRootLayout <~ vGone) ~
-      Ui(finished = true)
+      (deviceRootLayout <~ vGone)
 
   def showDevices(implicit context: ActivityContextWrapper): Ui[_] =
     (loadingRootLayout <~ vGone) ~

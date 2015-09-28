@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActionFilters._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 
 import scala.util.{Failure, Success, Try}
 import scalaz.concurrent.Task
@@ -28,9 +29,7 @@ class WizardActivity
   with WizardPersistence
   with TypedFindView
   with WizardComposer
-  with BroadcastDispatcher {
-
-  self =>
+  with BroadcastDispatcher { self =>
 
   implicit lazy val di = new Injector
 
@@ -38,11 +37,16 @@ class WizardActivity
 
   lazy val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq
 
-  override val actionsFilters: Seq[String] = Seq(testFilter, testQuestionFilter, testAnswerFilter)
+  override val actionsFilters: Seq[String] = Seq(
+    wizardStateActionFilter,
+    wizardAskStateActionFilter,
+    wizardAnswerStateActionFilter)
 
-  override def manageCommand(action: String, data: Option[String]): Unit = action match {
-    case `testFilter` => runUi(uiShortToast(data getOrElse "empty test!!"))
-    case `testAnswerFilter` => runUi(uiShortToast(data getOrElse "empty answer!!"))
+  override def manageCommand(action: String, data: Option[String]): Unit = (action, data) match {
+    case (`wizardStateActionFilter`, Some(`stateSuccess`)) => runUi(finishProcess)
+    case (`wizardStateActionFilter`, Some(`stateFaliure`)) => runUi(showUser)
+    case (`wizardAnswerStateActionFilter`, Some(`stateCreatingCollections`)) => runUi(showWizard)
+    case _ =>
   }
 
   override def manageQuestion(action: String): Option[BroadAction] = None
@@ -56,22 +60,15 @@ class WizardActivity
   override def onResume(): Unit = {
     super.onResume()
     registerDispatchers
-    self ? testQuestionFilter
+    self ? wizardAskStateActionFilter
   }
-
 
   override def onPause(): Unit = {
     super.onPause()
     unregisterDispatcher
   }
 
-  override def onBackPressed(): Unit = {
-    if (finished) {
-      setResult(Activity.RESULT_OK)
-      finish()
-      super.onBackPressed()
-    }
-  }
+  override def onBackPressed(): Unit = {}
 
   private[this] def requestToken(username: String): Unit = (for {
     account <- accounts find (_.name == username)
