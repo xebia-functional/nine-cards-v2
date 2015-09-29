@@ -43,7 +43,10 @@
     <dimen name="wizard_min_width_button">190dp</dimen>
     <dimen name="wizard_height_image_content">300dp</dimen>
     <dimen name="wizard_max_width_step_message">260dp</dimen>
-    <integer name="wizard_anim_ripple_duration">500</integer>
+    <integer name="wizard_anim_ripple_duration">400</integer>
+
+    <dimen name="wizard_margin_pager">6dp</dimen>
+    <dimen name="wizard_size_pager">10dp</dimen>
 
     <!-- Menu -->
     <dimen name="menu_height">170dp</dimen>

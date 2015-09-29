@@ -82,6 +82,11 @@
                 android:id="@+id/wizard_steps_action"
                 style="@style/WizardStepsButton"/>
 
+
+            <LinearLayout
+                style="@style/WizardStepsPaginationPanel"
+                android:id="@+id/wizard_steps_pagination_panel"/>
+
         </LinearLayout>
 
     </com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundView>

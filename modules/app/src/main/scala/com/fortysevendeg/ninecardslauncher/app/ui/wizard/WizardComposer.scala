@@ -2,7 +2,10 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts._
 import android.os.Build
+import android.view.ViewGroup
 import android.widget._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -16,19 +19,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.wizard.StepsWorkspacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundViewTweaks._
 import macroid._
 
-trait WizardComposer {
+trait WizardComposer
+  extends WizardStyles {
 
   self: TypedFindView =>
 
   val newConfigurationKey = "new_configuration"
-
-  def createSteps(implicit activityContextWrapper: ActivityContextWrapper) = Seq(
-    StepData(R.drawable.wizard_01, resGetString(R.string.wizard_step_1)),
-    StepData(R.drawable.wizard_02, resGetString(R.string.wizard_step_2)),
-    StepData(R.drawable.wizard_01, resGetString(R.string.wizard_step_3)),
-    StepData(R.drawable.wizard_04, resGetString(R.string.wizard_step_4)),
-    StepData(R.drawable.wizard_05, resGetString(R.string.wizard_step_5))
-  )
 
   lazy val rootLayout = Option(findView(TR.wizard_root))
 
@@ -56,7 +52,17 @@ trait WizardComposer {
 
   lazy val wizardWorkspaceContent = Option(findView(TR.wizard_steps_workspace_content))
 
+  lazy val paginationPanel = Option(findView(TR.wizard_steps_pagination_panel))
+
   var workspaces: Option[StepsWorkspaces] = None
+
+  def createSteps(implicit activityContextWrapper: ActivityContextWrapper) = Seq(
+    StepData(R.drawable.wizard_01, resGetString(R.string.wizard_step_1)),
+    StepData(R.drawable.wizard_02, resGetString(R.string.wizard_step_2)),
+    StepData(R.drawable.wizard_03, resGetString(R.string.wizard_step_3)),
+    StepData(R.drawable.wizard_04, resGetString(R.string.wizard_step_4)),
+    StepData(R.drawable.wizard_05, resGetString(R.string.wizard_step_5))
+  )
 
   def showMessage(message: Int): Ui[_] = rootLayout <~ uiSnackbarShort(message)
 
@@ -69,7 +75,7 @@ trait WizardComposer {
     val steps = createSteps
     addUsersToRadioGroup(accounts) ~
       (userAction <~
-        vBackgroundTint(resGetColor(R.color.primary)) <~
+        defaultActionStyle <~
         On.click {
           usersGroup map { view =>
             val username = view.getSelectedItem.toString
@@ -78,7 +84,7 @@ trait WizardComposer {
           } getOrElse showMessage(R.string.errorSelectUser)
         }) ~
       (deviceAction <~
-        vBackgroundTint(resGetColor(R.color.primary)) <~
+        defaultActionStyle <~
         On.click {
           devicesGroup <~ Transformer {
             case i: RadioButton if i.isChecked =>
@@ -99,14 +105,14 @@ trait WizardComposer {
             val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
             runUi(
               (wizardRootLayout <~ rbvColor(backgroundColor)) ~
-                (stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)))
+                (stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
+                (paginationPanel <~ reloadPagers(currentPage)))
           }
           )))) ~
       (stepsAction <~
-        vInvisible <~
-        vBackgroundTint(resGetColor(R.color.wizard_background_button_dive_in)) <~
-        vEnabled(false) <~
-        On.click(finishUi))
+        diveInActionStyle <~
+        On.click(finishUi)) ~
+      createPagers(steps)
   }
 
   def finishProcess: Ui[_] = stepsAction <~ vEnabled(true)
@@ -126,13 +132,27 @@ trait WizardComposer {
       }
   }
 
-  private def userRadio(title: String, tag: String)(implicit context: ActivityContextWrapper): RadioButton = getUi(
-    w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)
+  private[this] def createPagers(steps: Seq[StepData])(implicit context: ActivityContextWrapper) = {
+    val pagerViews = steps.indices map { position =>
+      val view = pagination(position)
+      view.setActivated(position == 0)
+      view
+    }
+    paginationPanel <~ vgAddViews(pagerViews)
+  }
+
+  private[this] def reloadPagers(currentPage: Int)(implicit context: ActivityContextWrapper) = Transformer {
+    case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true)
+    case i: ImageView => i <~ vActivated(false)
+  }
+
+  private[this] def pagination(position: Int)(implicit context: ActivityContextWrapper) = getUi(
+    w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
 
-  def radioStyle(implicit context: ActivityContextWrapper): Tweak[RadioButton] =
-    vWrapContent +
-      vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
+  private[this] def userRadio(title: String, tag: String)(implicit context: ActivityContextWrapper): RadioButton = getUi(
+    w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)
+  )
 
   def searchDevices(userInfo: UserInfo)(implicit context: ActivityContextWrapper): Ui[_] =
     addDevicesToRadioGroup(userInfo.devices) ~

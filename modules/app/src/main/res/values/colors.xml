@@ -30,6 +30,8 @@
 
     <color name="wizard_background_button_dive_in">#BF3126</color>
 
+    <color name="wizard_pager">#ffffff</color>
+
     <color name="wizard_background_step_0">#3F51B5</color>
     <color name="wizard_background_step_1">#4CAF4F</color>
     <color name="wizard_background_step_2">#2196F3</color>
