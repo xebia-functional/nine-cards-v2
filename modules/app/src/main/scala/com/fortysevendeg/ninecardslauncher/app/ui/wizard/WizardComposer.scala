@@ -32,7 +32,7 @@ trait WizardComposer
 
   lazy val userRootLayout = Option(findView(TR.wizard_user_content))
 
-  lazy val usersGroup = Option(findView(TR.wizard_user_group))
+  lazy val usersSpinner = Option(findView(TR.wizard_user_group))
 
   lazy val usersTerms = Option(findView(TR.wizard_user_terms))
 
@@ -77,11 +77,16 @@ trait WizardComposer
       (userAction <~
         defaultActionStyle <~
         On.click {
-          usersGroup map { view =>
-            val username = view.getSelectedItem.toString
-            requestToken(username)
-            showLoading
-          } getOrElse showMessage(R.string.errorSelectUser)
+          val termsAccept = usersTerms exists (_.isChecked)
+          if (termsAccept) {
+            usersSpinner map { view =>
+              val username = view.getSelectedItem.toString
+              requestToken(username)
+              showLoading
+            } getOrElse showMessage(R.string.errorSelectUser)
+          } else {
+            showMessage(R.string.messageAcceptTerms)
+          }
         }) ~
       (deviceAction <~
         defaultActionStyle <~
@@ -120,7 +125,7 @@ trait WizardComposer
   def addUsersToRadioGroup(accounts: Seq[Account])(implicit context: ActivityContextWrapper): Ui[_] = {
     val accountsName = accounts map (_.name) toArray
     val sa = new ArrayAdapter[String](context.getOriginal, android.R.layout.simple_spinner_dropdown_item, accountsName)
-    usersGroup <~ sAdapter(sa)
+    usersSpinner <~ sAdapter(sa)
   }
 
   def addDevicesToRadioGroup(devices: Seq[UserDevice])(implicit context: ActivityContextWrapper): Ui[_] = {

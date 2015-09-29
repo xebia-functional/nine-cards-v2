@@ -45,6 +45,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:src">@drawable/wizard_logo</item>
         <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:layout_marginTop">@dimen/wizard_margin_top_logo</item>
     </style>
 
     <style name="WizardUserTitle">
@@ -54,6 +55,7 @@
         <item name="android:textSize">@dimen/text_xxxlarge</item>
         <item name="android:text">@string/welcome</item>
         <item name="android:textColor">@color/wizard_text_title</item>
+        <item name="android:gravity">center_horizontal</item>
     </style>
 
     <style name="WizardUserSelectContent">
