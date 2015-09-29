@@ -1,9 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.apps.impl
 
-import android.R.attr
 import android.content.Intent
 import android.content.pm.{PackageManager, ResolveInfo}
-import android.util.TypedValue
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -25,7 +23,7 @@ class AppsServicesImpl
       CatchAll[AppsInstalledException] {
         val packageManager = context.getPackageManager
         val apps: Seq[ResolveInfo] = packageManager.queryIntentActivities(categoryLauncherIntent(), 0).toSeq
-        apps map getApplication
+        apps map getApplicationByResolveInfo
       }
     }
   }
@@ -35,16 +33,16 @@ class AppsServicesImpl
       CatchAll[AppsInstalledException] {
         val packageManager = context.getPackageManager
         val intent = packageManager.getLaunchIntentForPackage(packageName)
-        getApplication(packageManager.resolveActivity(intent, 0))
+        println(s"intent: $intent")
+        getApplicationByResolveInfo(packageManager.resolveActivity(intent, 0))
       }
     }
   }
 
-  private[this] def getApplication(resolveInfo: ResolveInfo)(implicit context: ContextSupport) = {
+  private[this] def getApplicationByResolveInfo(resolveInfo: ResolveInfo)(implicit context: ContextSupport) = {
 
     val packageManager = context.getPackageManager
     val packageName = resolveInfo.activityInfo.applicationInfo.packageName
-
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
 
     Application(

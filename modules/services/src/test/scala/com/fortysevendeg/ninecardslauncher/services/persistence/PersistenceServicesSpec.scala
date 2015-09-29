@@ -41,6 +41,8 @@ trait PersistenceServicesSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 
+    mockAppRepository.fetchApps returns Service(Task(Result.answer(seqRepoApp)))
+
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.answer(Option(repoApp))))
 
     mockAppRepository.fetchAppByPackage(nonExistentPackageName) returns Service(Task(Result.answer(None)))
@@ -126,6 +128,8 @@ trait PersistenceServicesSpecification
 
     val exception = RepositoryException("Irrelevant message")
 
+    mockAppRepository.fetchApps returns Service(Task(Result.errata(exception)))
+
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.errata(exception)))
@@ -194,7 +198,31 @@ trait PersistenceServicesSpecification
 class PersistenceServicesSpec
   extends PersistenceServicesSpecification {
 
-  "getApp" should {
+  "fetchApps" should {
+
+    "return a sequence of the apps " in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchApps.run.run
+
+      result must beLike[Result[Seq[App], PersistenceServiceException]] {
+        case Answer(apps) =>
+          apps shouldEqual seqApp
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchApps.run.run
+
+      result must beLike[Result[Seq[App], PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "findAppByPackage" should {
 
     "return an App when a valid packageName is provided" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.findAppByPackage(packageName).run.run
