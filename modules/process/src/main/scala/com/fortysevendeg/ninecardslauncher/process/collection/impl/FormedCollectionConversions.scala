@@ -7,7 +7,6 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.{ImplicitsCollectionException, Conversions, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.collection.utils.NineCardAppUtils._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.{NineCardCategories, CollectionType}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
@@ -90,7 +89,8 @@ trait FormedCollectionConversions
   }
 
   private[this] def generateAddCollection(items: Seq[UnformedApp], category: String, position: Int): AddCollectionRequest = {
-    val appsCategory = items.filter(_.category.contains(category)).sortWith(mfIndex(_) < mfIndex(_)).take(numSpaces)
+    // TODO We should sort the application using an endpoint in the new sever
+    val appsCategory = items.filter(_.category.contains(category)).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,

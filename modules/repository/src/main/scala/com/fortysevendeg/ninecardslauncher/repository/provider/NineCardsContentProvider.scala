@@ -23,6 +23,8 @@ class NineCardsContentProvider extends ContentProvider {
       case `codeCollectionSingleItem` => (CollectionEntity.table, MimeTypeSingleItem)
       case `codeGeoInfoAllItems` => (GeoInfoEntity.table, MimeTypeAllItems)
       case `codeGeoInfoSingleItem` => (GeoInfoEntity.table, MimeTypeSingleItem)
+      case `codeAppAllItems` => (AppEntity.table, MimeTypeAllItems)
+      case `codeAppSingleItem` => (AppEntity.table, MimeTypeSingleItem)
       case _ => throw new IllegalArgumentException(invalidUri + uri)
     }
 
@@ -126,10 +128,14 @@ object NineCardsContentProvider {
   val codeCollectionSingleItem = 6
   val codeGeoInfoAllItems = 7
   val codeGeoInfoSingleItem = 8
+  val codeAppAllItems = 9
+  val codeAppSingleItem = 10
   val mimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.com.fortysevendeg.ninecardslauncher"
   val mimeTypeSingleItemValue = "vnd.android.cursor.item/vnd.com.fortysevendeg.ninecardslauncher"
 
   val uriMatcher = new UriMatcher(UriMatcher.NO_MATCH)
+  uriMatcher.addURI(authorityPart, AppEntity.table, codeAppAllItems)
+  uriMatcher.addURI(authorityPart, s"${AppEntity.table}/#", codeAppSingleItem)
   uriMatcher.addURI(authorityPart, CacheCategoryEntity.table, codeCacheCategoryAllItems)
   uriMatcher.addURI(authorityPart, s"${CacheCategoryEntity.table}/#", codeCacheCategorySingleItem)
   uriMatcher.addURI(authorityPart, CardEntity.table, codeCardAllItems)

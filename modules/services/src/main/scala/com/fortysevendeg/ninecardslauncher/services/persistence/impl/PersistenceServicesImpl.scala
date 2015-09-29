@@ -45,7 +45,12 @@ class PersistenceServicesImpl(
 
   val FilenameInstallation = "__installation_entity__"
 
-  override def getApp(packageName: String) =
+  override def fetchApps =
+    (for {
+      apps <- appRepository.fetchApps
+    } yield apps map toApp).resolve[PersistenceServiceException]
+
+  override def findAppByPackage(packageName: String) =
     (for {
       app <- appRepository.fetchAppByPackage(packageName)
     } yield app map toApp).resolve[PersistenceServiceException]

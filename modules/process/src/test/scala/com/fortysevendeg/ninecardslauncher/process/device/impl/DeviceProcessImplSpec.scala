@@ -328,7 +328,7 @@ class DeviceProcessImplSpec
 
     "returns apps categorized" in
       new DeviceProcessScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        val result = deviceProcess.getdApps(contextSupport).run.run
         result must beLike {
           case Answer(apps) =>
             apps.length shouldEqual appsCategorized.length
@@ -338,7 +338,7 @@ class DeviceProcessImplSpec
 
     "returns apps categorized when a installed app isn't cached" in
       new DeviceProcessScope with NoCachedDataScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        val result = deviceProcess.getdApps(contextSupport).run.run
         result must beLike {
           case Answer(apps) =>
             val appsCategorizedAndNoCached: Seq[AppCategorized] = appsCategorized :+ appCategorizedNoCached
@@ -349,7 +349,7 @@ class DeviceProcessImplSpec
 
     "returns a AppCategorizationException if app service fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        val result = deviceProcess.getdApps(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppCategorizationException]
@@ -359,7 +359,7 @@ class DeviceProcessImplSpec
 
     "returns a AppCategorizationException if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        val result = deviceProcess.getdApps(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppCategorizationException]
@@ -369,7 +369,7 @@ class DeviceProcessImplSpec
 
     "returns a empty string if image service fails creating a image" in
       new DeviceProcessScope with ErrorImageServicesProcessScope {
-        val result = deviceProcess.getCategorizedApps(contextSupport).run.run
+        val result = deviceProcess.getdApps(contextSupport).run.run
         result must beLike {
           case Answer(apps) =>
             apps.length shouldEqual appsCategorized.length

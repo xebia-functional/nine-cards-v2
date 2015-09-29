@@ -3,13 +3,17 @@ package com.fortysevendeg.ninecardslauncher.process.device
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Shortcut, AppCategorized, Contact}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Shortcut, App, Contact}
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.AppData
 
 trait DeviceProcess {
-  def getCategorizedApps(implicit context: ContextSupport): ServiceDef2[Seq[AppCategorized], AppCategorizationException]
-  def categorizeApps(implicit context: ContextSupport):  ServiceDef2[Unit, AppCategorizationException]
+
+
+
+  def getSavedApps(implicit context: ContextSupport): ServiceDef2[Seq[App], AppException]
+
+
   def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport): ServiceDef2[Unit, CreateBitmapException]
 
   /**
@@ -56,14 +60,14 @@ trait DeviceProcess {
    * Get the installed apps and store them in the repository
    * @throws AppException if exist some problem to get the apps or storing them
    */
-  def saveInstalledApps(implicit context: ContextSupport, requestConfig: RequestConfig): ServiceDef2[Unit, AppException]
+  def saveInstalledApps(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
 
   /**
    * Get an installed app and store it in the repository
    * @param packageName the packageName of the app to save
    * @throws AppException if exist some problem to get the app or storing it
    */
-  def saveApp(packageName: String)(implicit context: ContextSupport, requestConfig: RequestConfig): ServiceDef2[Unit, AppException]
+  def saveApp(packageName: String)(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
 
   /**
    * Delete an app from the repository
@@ -77,5 +81,5 @@ trait DeviceProcess {
    * @param packageName the packageName of the app to update
    * @throws AppException if exist some problem to get the app or updating it
    */
-  def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport, requestConfig: RequestConfig): ServiceDef2[Unit, AppException]
+  def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
 }

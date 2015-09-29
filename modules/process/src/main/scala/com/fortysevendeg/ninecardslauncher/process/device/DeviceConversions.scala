@@ -9,12 +9,25 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => 
   ContactEmail => ContactEmailServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateAppRequest, AddAppRequest, AddCacheCategoryRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, AppData, CacheCategory}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, AppData}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
 
 import scala.util.Try
 
 trait DeviceConversions {
+
+  def toApp(app: AppPersistence): App =
+    App(
+      name = app.name,
+      packageName = app.packageName,
+      className = app.packageName,
+      category = app.category,
+      imagePath = app.imagePath,
+      colorPrimary = app.colorPrimary,
+      dateInstalled = app.dateInstalled,
+      dateUpdate = app.dateUpdate,
+      version = app.version,
+      installedFromGooglePlay = app.installedFromGooglePlay)
 
   def toAddAppRequest(item: Application, category: String, imagePath: String): AddAppRequest =
       AddAppRequest(
@@ -42,14 +55,6 @@ trait DeviceConversions {
         dateUpdate = appData.dateUpdate,
         version = appData.version,
         installedFromGooglePlay = appData.installedFromGooglePlay)
-
-
-  def copyCacheCategory(app: AppCategorized, cacheCategory: Option[CacheCategory]): AppCategorized = app.copy(
-    category = cacheCategory map (_.category),
-    starRating = cacheCategory map (_.starRating),
-    numDownloads = cacheCategory map (_.numDownloads),
-    ratingsCount = cacheCategory map (_.ratingsCount),
-    commentCount = cacheCategory map (_.commentCount))
 
   def toAppWebSiteSeq(googlePlayPackages: Seq[GooglePlayPackage]): Seq[AppWebsite] = googlePlayPackages map {
     case GooglePlayPackage(GooglePlayApp(docid, title, _, _, Some(icon), _, _, _, _, _, _)) =>
@@ -79,7 +84,7 @@ trait DeviceConversions {
       name = item.name,
       icon = item.resourceIcon)
 
-  def toAppPackageByApp(item: App): AppPackage =
+  def toAppPackageByAppData(item: AppData): AppPackage =
     AppPackage(
       packageName = item.packageName,
       className = item.className,

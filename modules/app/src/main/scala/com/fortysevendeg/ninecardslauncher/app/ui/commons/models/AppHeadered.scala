@@ -2,25 +2,25 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons.models
 
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.ItemHeadered
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
+import com.fortysevendeg.ninecardslauncher.process.device.models.App
 
 import scala.annotation.tailrec
 
 import scala.math.Ordering.Implicits._
 
-case class AppHeadered(item: Option[AppCategorized] = None, header: Option[String] = None)
-  extends ItemHeadered[AppCategorized]
+case class AppHeadered(item: Option[App] = None, header: Option[String] = None)
+  extends ItemHeadered[App]
 
 object AppHeadered
   extends HeaderUtils {
 
-  def generateAppHeaderedList(apps: Seq[AppCategorized]): Seq[AppHeadered] =
+  def generateAppHeaderedList(apps: Seq[App]): Seq[AppHeadered] =
     generateAppsForList(apps sortBy sortByName, Seq.empty)
 
-  private[this] def sortByName(app: AppCategorized) = app.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
+  private[this] def sortByName(app: App) = app.name map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
 
   @tailrec
-  private[this] def generateAppsForList(apps: Seq[AppCategorized], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
+  private[this] def generateAppsForList(apps: Seq[App], acc: Seq[AppHeadered]): Seq[AppHeadered] = apps match {
     case Nil => acc
     case Seq(h, t @ _ *) =>
       val currentChar: String = getCurrentChar(h.name)

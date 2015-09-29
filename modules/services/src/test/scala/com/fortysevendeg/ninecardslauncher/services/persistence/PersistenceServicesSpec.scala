@@ -197,7 +197,7 @@ class PersistenceServicesSpec
   "getApp" should {
 
     "return an App when a valid packageName is provided" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.getApp(packageName).run.run
+      val result = persistenceServices.findAppByPackage(packageName).run.run
 
       result must beLike {
         case Answer(maybeApp) =>
@@ -209,7 +209,7 @@ class PersistenceServicesSpec
     }
 
     "return None when an invalid packageName is provided" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.getApp(nonExistentPackageName).run.run
+      val result = persistenceServices.findAppByPackage(nonExistentPackageName).run.run
 
       result must beLike {
         case Answer(maybeApp) =>
@@ -218,7 +218,7 @@ class PersistenceServicesSpec
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.getApp(packageName).run.run
+      val result = persistenceServices.findAppByPackage(packageName).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {

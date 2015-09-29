@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.apps.impl
 import android.R.attr
 import android.content.Intent
 import android.content.pm.{PackageManager, ResolveInfo}
+import android.util.TypedValue
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -23,12 +24,8 @@ class AppsServicesImpl
     Task {
       CatchAll[AppsInstalledException] {
         val packageManager = context.getPackageManager
-
         val apps: Seq[ResolveInfo] = packageManager.queryIntentActivities(categoryLauncherIntent(), 0).toSeq
-
-        apps map {
-          resolveInfo => getApplicationByPackageName(resolveInfo.activityInfo.applicationInfo.packageName)
-        }
+        apps map getApplication
       }
     }
   }
@@ -36,22 +33,26 @@ class AppsServicesImpl
   override def getApplication(packageName: String)(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[AppsInstalledException] {
-        getApplicationByPackageName(packageName)
+        val packageManager = context.getPackageManager
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        getApplication(packageManager.resolveActivity(intent, 0))
       }
     }
   }
 
-  private[this] def getApplicationByPackageName(packageName: String)(implicit context: ContextSupport) = {
+  private[this] def getApplication(resolveInfo: ResolveInfo)(implicit context: ContextSupport) = {
+
     val packageManager = context.getPackageManager
+    val packageName = resolveInfo.activityInfo.applicationInfo.packageName
+
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
-    val resources = packageManager.getResourcesForApplication(packageInfo.applicationInfo)
 
     Application(
-      name = packageInfo.applicationInfo.name,
-      packageName = packageInfo.packageName,
-      className = packageInfo.applicationInfo.className,
-      resourceIcon = packageInfo.applicationInfo.icon,
-      colorPrimary = resources.getColor(attr.colorPrimary).toString,
+      name = resolveInfo.loadLabel(packageManager).toString,
+      packageName = packageName,
+      className = resolveInfo.activityInfo.name,
+      resourceIcon = resolveInfo.activityInfo.icon,
+      colorPrimary = "", // TODO Implement in ticket 9C-272
       dateInstalled = packageInfo.firstInstallTime,
       dateUpdate = packageInfo.lastUpdateTime,
       version = packageInfo.versionCode.toString,

@@ -6,15 +6,14 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
+import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{AppData, App, CacheCategory}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, AppData, CacheCategory}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
 
@@ -36,23 +35,51 @@ class DeviceProcessImpl(
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  override def getCategorizedApps(implicit context: ContextSupport) = {
+  override def getSavedApps(implicit context: ContextSupport) =
     (for {
-      cacheCategories <- persistenceServices.fetchCacheCategories
-      apps <- getApps
-    } yield {
-        apps map (app => copyCacheCategory(app, cacheCategories.find(_.packageName == app.packageName)))
-      }).resolve[AppCategorizationException]
-  }
+      apps <- persistenceServices.fetchApps
+    } yield apps map toApp).resolve[AppException]
 
-  override def categorizeApps(implicit context: ContextSupport) =
+  override def saveInstalledApps(implicit context: ContextSupport) =
     (for {
-      apps <- getCategorizedApps
-      packagesWithoutCategory = apps.filter(_.category.isEmpty) map (_.packageName)
       requestConfig <- apiUtils.getRequestConfig
-      response <- apiServices.googlePlaySimplePackages(packagesWithoutCategory)(requestConfig)
-      _ <- addCacheCategories(toAddCacheCategoryRequestSeq(response.apps.items))
-    } yield ()).resolve[AppCategorizationException]
+      installedApps <- appsService.getInstalledApplications
+      googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
+      appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
+      apps = installedApps map { app =>
+        val path = appPaths.find { path =>
+          path.packageName.equals(app.packageName) && path.className.equals(app.className)
+        } map (_.path)
+        val category = googlePlayPackagesResponse.packages.find { googlePlayPackage =>
+          googlePlayPackage.app.docid.equals(app.packageName)
+        } map (_.app.details.appDetails.appCategory.headOption.getOrElse(""))
+        toAddAppRequest(app, category.getOrElse(""), path.getOrElse(""))
+      }
+      _ <- addApps(apps)
+    } yield ()).resolve[AppException]
+
+  override def saveApp(packageName: String)(implicit context: ContextSupport) =
+    (for {
+      requestConfig <- apiUtils.getRequestConfig
+      app <- appsService.getApplication(packageName)
+      googlePlayPackageResponse <- apiServices.googlePlayPackage(packageName)(requestConfig)
+      appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
+      _ <- persistenceServices.addApp(toAddAppRequest(app, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
+    } yield ()).resolve[AppException]
+
+  override def deleteApp(packageName: String)(implicit context: ContextSupport) =
+    (for {
+      _ <- persistenceServices.deleteAppByPackage(packageName)
+    } yield ()).resolve[AppException]
+
+  override def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport) =
+    (for {
+      requestConfig <- apiUtils.getRequestConfig
+      Some(app) <- persistenceServices.findAppByPackage(packageName)
+      googlePlayPackageResponse <- apiServices.googlePlayPackage(packageName)(requestConfig)
+      appPackagePath <- imageServices.saveAppIcon(toAppPackageByAppData(appData))
+      _ <- persistenceServices.updateApp(toUpdateAppRequest(app.id, appData, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
+    } yield ()).resolve[AppException]
 
   override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport) =
     (for {
@@ -90,65 +117,6 @@ class DeviceProcessImpl(
     (for {
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
-
-  override def saveInstalledApps(implicit context: ContextSupport, requestConfig: RequestConfig) =
-    (for {
-      installedApps <- appsService.getInstalledApplications
-      googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))
-      appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
-      apps = installedApps map { app =>
-        val path = appPaths.find { path =>
-          path.packageName.equals(app.packageName) && path.className.equals(app.className)
-        } map (_.path)
-        val category = googlePlayPackagesResponse.packages.find {
-          googlePlayPackage =>
-            googlePlayPackage.app.title.equals(app.name)
-        } map (_.app.details.appDetails.appCategory.headOption.getOrElse(""))
-        toAddAppRequest(app, category.getOrElse(""), path.getOrElse(""))
-      }
-      _ <- addApps(apps)
-    } yield ()).resolve[AppException]
-
-  override def saveApp(packageName: String)(implicit context: ContextSupport, requestConfig: RequestConfig) =
-    (for {
-      app <- appsService.getApplication(packageName)
-      googlePlayPackageResponse <- apiServices.googlePlayPackage(packageName)
-      appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
-      _ <- persistenceServices.addApp(toAddAppRequest(app, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
-    } yield ()).resolve[AppException]
-
-  override def deleteApp(packageName: String)(implicit context: ContextSupport) =
-    (for {
-      _ <- persistenceServices.deleteAppByPackage(packageName)
-    } yield ()).resolve[AppException]
-
-  override def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport, requestConfig: RequestConfig) =
-    (for {
-      Some(app) <- persistenceServices.getApp(packageName)
-      googlePlayPackageResponse <- apiServices.googlePlayPackage(packageName)
-      appPackagePath <- imageServices.saveAppIcon(toAppPackageByApp(app))
-      _ <- persistenceServices.updateApp(toUpdateAppRequest(app.id, appData, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
-    } yield ()).resolve[AppException]
-
-  private[this] def getApps(implicit context: ContextSupport):
-  ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =
-    for {
-      applications <- appsService.getInstalledApplications
-      paths <- createBitmapsFromAppPackage(toAppPackageSeq(applications))
-    } yield {
-      applications map {
-        app =>
-          val path = paths.find {
-            path =>
-              path.packageName.equals(app.packageName) && path.className.equals(app.className)
-          } map (_.path)
-          AppCategorized(
-            name = app.name,
-            packageName = app.packageName,
-            className = app.className,
-            imagePath = path)
-      }
-    }
 
   private[this] def addApps(items: Seq[AddAppRequest]):
   ServiceDef2[Seq[App], PersistenceServiceException] = Service {
