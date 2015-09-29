@@ -40,7 +40,10 @@
     <integer name="anim_duration_normal">200</integer>
 
     <!-- Wizard -->
-    <dimen name="min_width_button_wizard">190dp</dimen>
+    <dimen name="wizard_min_width_button">190dp</dimen>
+    <dimen name="wizard_height_image_content">300dp</dimen>
+    <dimen name="wizard_max_width_step_message">260dp</dimen>
+    <integer name="wizard_anim_ripple_duration">500</integer>
 
     <!-- Menu -->
     <dimen name="menu_height">170dp</dimen>

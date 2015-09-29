@@ -11,6 +11,9 @@ import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserDevice
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.StepsWorkspacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundViewTweaks._
 import macroid._
 
 trait WizardComposer {
@@ -18,6 +21,14 @@ trait WizardComposer {
   self: TypedFindView =>
 
   val newConfigurationKey = "new_configuration"
+
+  def createSteps(implicit activityContextWrapper: ActivityContextWrapper) = Seq(
+    StepData(R.drawable.wizard_01, resGetString(R.string.wizard_step_1)),
+    StepData(R.drawable.wizard_02, resGetString(R.string.wizard_step_2)),
+    StepData(R.drawable.wizard_01, resGetString(R.string.wizard_step_3)),
+    StepData(R.drawable.wizard_04, resGetString(R.string.wizard_step_4)),
+    StepData(R.drawable.wizard_05, resGetString(R.string.wizard_step_5))
+  )
 
   lazy val rootLayout = Option(findView(TR.wizard_root))
 
@@ -39,9 +50,13 @@ trait WizardComposer {
 
   lazy val deviceAction = Option(findView(TR.wizard_device_action))
 
-  lazy val finishAction = Option(findView(TR.wizard_finish_action))
+  lazy val stepsAction = Option(findView(TR.wizard_steps_action))
 
-  lazy val wizardRootLayout = Option(findView(TR.wizard_finish_content))
+  lazy val wizardRootLayout = Option(findView(TR.wizard_steps_content))
+
+  lazy val wizardWorkspaceContent = Option(findView(TR.wizard_steps_workspace_content))
+
+  var workspaces: Option[StepsWorkspaces] = None
 
   def showMessage(message: Int): Ui[_] = rootLayout <~ uiSnackbarShort(message)
 
@@ -50,32 +65,51 @@ trait WizardComposer {
     requestToken: (String) => Unit,
     launchService: (Option[String]) => Unit,
     finishUi: Ui[_]
-  )(implicit context: ActivityContextWrapper): Ui[_] =
+  )(implicit context: ActivityContextWrapper): Ui[_] = {
+    val steps = createSteps
     addUsersToRadioGroup(accounts) ~
       (userAction <~
-        vBackgroundTint(resGetColor(R.color.primary)) <~ On.click {
-        usersGroup map { view =>
-          val username = view.getSelectedItem.toString
-          requestToken(username)
-          showLoading
-        } getOrElse showMessage(R.string.errorSelectUser)
-      }) ~
+        vBackgroundTint(resGetColor(R.color.primary)) <~
+        On.click {
+          usersGroup map { view =>
+            val username = view.getSelectedItem.toString
+            requestToken(username)
+            showLoading
+          } getOrElse showMessage(R.string.errorSelectUser)
+        }) ~
       (deviceAction <~
-        vBackgroundTint(resGetColor(R.color.primary)) <~ On.click {
-        devicesGroup <~ Transformer {
-          case i: RadioButton if i.isChecked =>
-            val tag = i.getTag.toString
-            if (tag == newConfigurationKey) {
-              launchService(None)
-            } else {
-              launchService(Option(tag))
-            }
-            showWizard
-        }
-      }) ~
-      (finishAction <~ vEnabled(false) <~ On.click(finishUi))
+        vBackgroundTint(resGetColor(R.color.primary)) <~
+        On.click {
+          devicesGroup <~ Transformer {
+            case i: RadioButton if i.isChecked =>
+              val tag = i.getTag.toString
+              if (tag == newConfigurationKey) {
+                launchService(None)
+              } else {
+                launchService(Option(tag))
+              }
+              showWizard
+          }
+        }) ~
+      (wizardWorkspaceContent <~
+        vgAddView(getUi(w[StepsWorkspaces] <~
+          wire(workspaces) <~
+          swData(steps) <~
+          awsAddPageChangedObserver(currentPage => {
+            val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
+            runUi(
+              (wizardRootLayout <~ rbvColor(backgroundColor)) ~
+                (stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)))
+          }
+          )))) ~
+      (stepsAction <~
+        vInvisible <~
+        vBackgroundTint(resGetColor(R.color.wizard_background_button_dive_in)) <~
+        vEnabled(false) <~
+        On.click(finishUi))
+  }
 
-  def finishProcess: Ui[_] = finishAction <~ vEnabled(true)
+  def finishProcess: Ui[_] = stepsAction <~ vEnabled(true)
 
   def addUsersToRadioGroup(accounts: Seq[Account])(implicit context: ActivityContextWrapper): Ui[_] = {
     val accountsName = accounts map (_.name) toArray
@@ -120,7 +154,7 @@ trait WizardComposer {
   def showWizard(implicit context: ActivityContextWrapper): Ui[_] =
     (loadingRootLayout <~ vGone) ~
       (userRootLayout <~ vGone) ~
-      (wizardRootLayout <~ vVisible) ~
+      (wizardRootLayout <~ vVisible <~ rbvColor(resGetColor(R.color.wizard_background_step_0), forceFade = true)) ~
       (deviceRootLayout <~ vGone)
 
   def showDevices(implicit context: ActivityContextWrapper): Ui[_] =

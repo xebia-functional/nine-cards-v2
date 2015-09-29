@@ -67,19 +67,23 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/wizard_finish_content"
-        style="@style/WizardContent">
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundView
+        android:id="@+id/wizard_steps_content"
+        style="@style/WizardStepsRoot">
 
-        <TextView
-            android:text="@string/construction"
-            style="@style/WizardScreensMessage"/>
+        <LinearLayout
+            style="@style/WizardStepsContent">
 
-        <Button
-            android:id="@+id/wizard_finish_action"
-            android:text="@string/goTo9Cards"
-            style="@style/WizardScreensButton"/>
+            <FrameLayout
+                android:id="@+id/wizard_steps_workspace_content"
+                style="@style/WizardStepsWorkspaceContent" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/wizard_steps_action"
+                style="@style/WizardStepsButton"/>
+
+        </LinearLayout>
+
+    </com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundView>
 
 </FrameLayout>

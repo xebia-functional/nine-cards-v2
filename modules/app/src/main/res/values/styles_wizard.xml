@@ -30,14 +30,6 @@
         <item name="android:textSize">@dimen/text_default</item>
     </style>
 
-    <style name="WizardContent">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:padding">@dimen/padding_default</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:gravity">center_vertical</item>
-    </style>
-
     <!-- User -->
 
     <style name="WizardUserContent">
@@ -61,7 +53,7 @@
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:textSize">@dimen/text_xxxlarge</item>
         <item name="android:text">@string/welcome</item>
-        <item name="android:textColor">@color/text_wizard_title</item>
+        <item name="android:textColor">@color/wizard_text_title</item>
     </style>
 
     <style name="WizardUserSelectContent">
@@ -79,11 +71,11 @@
     <style name="WizardUserButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minWidth">@dimen/min_width_button_wizard</item>
+        <item name="android:minWidth">@dimen/wizard_min_width_button</item>
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:text">@string/buttonLetStart</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_wizard_button</item>
+        <item name="android:textColor">@color/wizard_text_button</item>
     </style>
 
     <style name="WizardUserTerms">
@@ -91,7 +83,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:text">@string/termsAndConditions</item>
-        <item name="android:textColor">@color/text_wizard_terms</item>
+        <item name="android:textColor">@color/wizard_text_terms</item>
     </style>
 
     <!-- Devices -->
@@ -99,7 +91,6 @@
     <style name="WizardDeviceContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:padding">@dimen/padding_default</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center</item>
     </style>
@@ -110,7 +101,7 @@
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:textSize">@dimen/text_xxxlarge</item>
         <item name="android:text">@string/welcome</item>
-        <item name="android:textColor">@color/text_wizard_title</item>
+        <item name="android:textColor">@color/wizard_text_title</item>
     </style>
 
     <style name="WizardDeviceMessage">
@@ -119,7 +110,7 @@
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:text">@string/addDeviceMessage</item>
-        <item name="android:textColor">@color/text_wizard_message</item>
+        <item name="android:textColor">@color/wizard_text_message</item>
         <item name="android:gravity">center_horizontal</item>
     </style>
 
@@ -129,36 +120,83 @@
         <item name="android:layout_weight">1</item>
         <item name="android:padding">@dimen/padding_default</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:textColor">@color/text_wizard_title</item>
+        <item name="android:textColor">@color/wizard_text_title</item>
         <item name="android:textSize">@dimen/text_default</item>
     </style>
 
     <style name="WizardDeviceButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minWidth">@dimen/min_width_button_wizard</item>
+        <item name="android:minWidth">@dimen/wizard_min_width_button</item>
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:text">@string/buttonContinue</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/text_wizard_button</item>
+        <item name="android:textColor">@color/wizard_text_button</item>
         <item name="android:layout_marginBottom">@dimen/padding_large</item>
     </style>
 
-    <!-- Screens -->
+    <!-- Steps -->
 
-    <style name="WizardScreensMessage">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">0px</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:gravity">center</item>
-        <item name="android:padding">@dimen/padding_default</item>
-        <item name="android:textSize">@dimen/text_default</item>
+    <style name="WizardStepsRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="WizardScreensButton">
+    <style name="WizardStepsContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="WizardStepsWorkspaceContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="WizardStepsButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">@dimen/wizard_min_width_button</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:text">@string/goTo9Cards</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/wizard_text_button</item>
+        <item name="android:layout_marginBottom">@dimen/padding_large</item>
+    </style>
+
+    <!-- Step Item -->
+
+    <style name="WizardStepItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="WizardStepItemImageContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/wizard_height_image_content</item>
+    </style>
+
+    <style name="WizardStepItemImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="WizardStepItemMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxWidth">@dimen/wizard_max_width_step_message</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/wizard_text_step_item_message</item>
+        <item name="android:lines">3</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
 </resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/WizardStepItemRoot">
+
+    <FrameLayout
+        style="@style/WizardStepItemImageContent">
+
+        <ImageView
+            android:id="@+id/wizard_step_item_image"
+            style="@style/WizardStepItemImage"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/wizard_step_item_message"
+        style="@style/WizardStepItemMessage"/>
+
+</LinearLayout>

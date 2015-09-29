@@ -50,6 +50,12 @@
     <string name="loadUserConfigDeviceReplace">Reemplazar %1$s con nueva configuración</string>
     <string name="deviceNotFoundMessage">Este dispositivo no está asociado a ninguna cuenta. Por favor, entra de nuevo</string>
 
+    <string name="wizard_step_1">9 Cards te organiza todas tus aplicaciones en colecciones inteligentes</string>
+    <string name="wizard_step_2">Comparte colecciones con tus amigos o descárgate colecciones de la comunidad</string>
+    <string name="wizard_step_3">9 Cards es un launcher inteligente que se adapta a tu día a día</string>
+    <string name="wizard_step_4">Ajusta los widgets que más utilices según el momento</string>
+    <string name="wizard_step_5">Si quieres saber más sobre 9Cards, visita nuestro canal de YouTube</string>
+
     <!-- Collections -->
 
     <string name="create_new_collection">Crear nueva colección</string>

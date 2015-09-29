@@ -20,11 +20,21 @@
 
     <!-- Wizard -->
 
-    <color name="text_wizard_button">#ffffff</color>
-    <color name="text_wizard_terms">#88000000</color>
+    <color name="wizard_text_button">#ffffff</color>
+    <color name="wizard_text_terms">#88000000</color>
 
-    <color name="text_wizard_title">#000000</color>
-    <color name="text_wizard_message">#88000000</color>
+    <color name="wizard_text_title">#000000</color>
+    <color name="wizard_text_message">#88000000</color>
+
+    <color name="wizard_text_step_item_message">#ffffff</color>
+
+    <color name="wizard_background_button_dive_in">#BF3126</color>
+
+    <color name="wizard_background_step_0">#3F51B5</color>
+    <color name="wizard_background_step_1">#4CAF4F</color>
+    <color name="wizard_background_step_2">#2196F3</color>
+    <color name="wizard_background_step_3">#FF9800</color>
+    <color name="wizard_background_step_4">#F44336</color>
 
     <!-- Menu -->
     <color name="background_menu">#ffffff</color>
