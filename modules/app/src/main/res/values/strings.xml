@@ -23,8 +23,13 @@
 
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>
-    <string name="welcome">Welcome to <xliff:g id="app_name">9 Cards</xliff:g></string>
-    <string name="welcomeMessage">Please select an account so you can begin your <xliff:g id="app_name">9 Cards</xliff:g> experience:</string>
+    <string name="buttonLetStart">Let\'s start</string>
+    <string name="termsAndConditions">Accept terms and conditions</string>
+    <string name="welcome">A launcher craft if for\nAndroid Power Users</string>
+
+    <string name="errorSelectUser">You must select a user</string>
+
+    <string name="messageAcceptTerms">You should accept terms and conditions</string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g></string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
@@ -35,10 +40,10 @@
 
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
     <string name="goTo9Cards">Dive in!</string>
-    <string name="workingNotificationTitle">Categorizing your apps</string>
+    <string name="workingNotificationTitle">Wait a moment...</string>
 
-    <string name="loadingYourAppsMessage">Analyzing your apps, check out our tutorial while you wait</string>
     <string name="downloadingAppsInfoMessage">Categorizing your apps</string>
+    <string name="loadingAppsInfoMessage">Configuring your apps</string>
     <string name="loadingUserConfigMessage">Loading available configurations</string>
     <string name="loadingFromDeviceMessage">Synchronizing your device configuration</string>
     <string name="loadingForMyDeviceMessage">Generating a new device configuration</string>
@@ -51,7 +56,11 @@
     <string name="loadUserConfigDeviceReplace">Replace <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g> with a new configuration</string>
     <string name="deviceNotFoundMessage">This device is not associated with your account. Please log in</string>
 
-    <string name="construction">We are working in Wizard. Please, you should wait that the icon disappear in Notification Bar before to press the button</string>
+    <string name="wizard_step_1">9 Cards will organize all your applications in smart collections</string> <!-- Pending review language -->
+    <string name="wizard_step_2">Share collections with friends or download collections community</string> <!-- Pending review language -->
+    <string name="wizard_step_3">9 Cards is an intelligent launcher that fits your everyday</string> <!-- Pending review language -->
+    <string name="wizard_step_4">Adjusts the widgets use by time</string> <!-- Pending review language -->
+    <string name="wizard_step_5">If you want to know more about 9Cards, visit our YouTube channel</string> <!-- Pending review language -->
 
     <!-- Collections -->
 
