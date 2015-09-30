@@ -16,6 +16,7 @@ object Settings {
   // App Module
   lazy val appSettings = basicSettings ++ multiDex ++
     Seq(
+      name := "nine-cards-v2",
       run <<= run in Android,
       javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
       transitiveAndroidLibs in Android := true,
