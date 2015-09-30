@@ -83,6 +83,4 @@ object LauncherWorkSpacesTweaks {
 
   def lwsSelect(position: Int) = Tweak[W] (_.selectPosition(position))
 
-  def lwsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W] (_.addPageChangedObservers(observer))
-
 }

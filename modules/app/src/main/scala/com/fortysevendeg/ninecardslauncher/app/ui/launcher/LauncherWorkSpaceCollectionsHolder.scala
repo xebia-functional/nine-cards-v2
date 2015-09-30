@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.graphics.drawable._
@@ -18,18 +17,18 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.Dimen
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.CollectionItemTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import CollectionsDetailsActivity._
 
 class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityContext: ActivityContextWrapper)
   extends LauncherWorkSpaceHolder

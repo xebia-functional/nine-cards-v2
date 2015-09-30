@@ -61,7 +61,6 @@ object DrawerTab {
       selectedMenuItem(popupMenu.getMenu, menuItemId) foreach { menuItem =>
         menuItem.setChecked(true)
         view.setTag(R.id.selected_item, menuItem.getItemId)
-        if (selected) menuListener(menuItem.getItemId)
       }
       popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener {
         override def onMenuItemClick(menuItem: MenuItem): Boolean =

@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, NineCardIntent}
@@ -14,19 +12,27 @@ import play.api.libs.json.Json
 trait CreateCollectionsTasks
   extends Conversions {
 
-  def createNewConfiguration(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], AppException with ContactException with CollectionException] =
+  self: CreateCollectionService =>
+
+  def createNewConfiguration: ServiceDef2[Seq[Collection], AppException with ContactException with CollectionException] =
     for {
       saveInstalledApps <- di.deviceProcess.saveInstalledApps
+      _ = setProcess(GettingAppsProcess)
       apps <- di.deviceProcess.getSavedApps
+      _ = setProcess(LoadingConfigProcess)
       contacts <- di.deviceProcess.getFavoriteContacts
+      _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
     } yield collections
 
-  def loadConfiguration(deviceId: String)(implicit context: ContextSupport, di: Injector): ServiceDef2[Seq[Collection], AppException with UserConfigException with CreateBitmapException with CollectionException] =
+   def loadConfiguration(deviceId: String): ServiceDef2[Seq[Collection], AppException with CreateBitmapException with UserConfigException with CollectionException] =
     for {
       apps <- di.deviceProcess.getSavedApps
+      _ = setProcess(GettingAppsProcess)
       userCollections <- di.userConfigProcess.getUserCollection(deviceId)
+      _ = setProcess(LoadingConfigProcess)
       bitmaps <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(apps, userCollections))
+      _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(userCollections))
     } yield collections
 
@@ -34,9 +40,8 @@ trait CreateCollectionsTasks
     import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
     val intents = userCollections flatMap (_.items map (item => Json.parse(item.intent).as[NineCardIntent]))
     intents flatMap {
-      _.extractPackageName() flatMap {
-        pn =>
-          if (!apps.exists(_.packageName == pn)) Option(pn) else None
+      _.extractPackageName() flatMap { pn =>
+        if (!apps.exists(_.packageName == pn)) Option(pn) else None
       }
     }
   }

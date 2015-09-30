@@ -14,10 +14,9 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TouchState._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpaces
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{Tweak, ContextWrapper, Transformer, Ui}
+import macroid.{ContextWrapper, Transformer, Tweak, Ui}
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(context, attr, defStyleAttr) {
@@ -474,9 +473,13 @@ object TouchState {
 
 object AnimatedWorkSpacesTweaks {
 
-  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[LauncherWorkSpaces]{ view =>
+  type W = AnimatedWorkSpaces[_,_]
+
+  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W]{ view =>
     view.listener.startScroll = listener.startScroll
     view.listener.endScroll = listener.endScroll
   }
+
+  def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W] (_.addPageChangedObservers(observer))
 
 }

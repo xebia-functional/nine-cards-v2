@@ -72,8 +72,6 @@ class LauncherActivity
     runUi(swapFabButton())
   } else if (isDrawerVisible) {
     runUi(revealOutDrawer)
-  } else {
-    super.onBackPressed()
   }
 
   private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
