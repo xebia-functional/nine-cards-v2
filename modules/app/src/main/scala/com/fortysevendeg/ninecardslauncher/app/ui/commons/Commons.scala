@@ -43,15 +43,6 @@ object ActivityResult {
 
 }
 
-object ActionFilters {
-
-  // Wizard
-  val wizardStateActionFilter = "wizard-state-action-filter"
-  val wizardAskStateActionFilter = "wizard-ask-state-action-filter"
-  val wizardAnswerStateActionFilter = "wizard-answer-state-action-filter"
-
-}
-
 object WizardState {
   val stateCreatingCollections = "wizard-state-creating-collections"
   val stateSuccess = "wizard-state-success"

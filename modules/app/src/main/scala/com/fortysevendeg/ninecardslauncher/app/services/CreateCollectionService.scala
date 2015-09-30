@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
-import android.app.{PendingIntent, Service}
-import android.content.Intent
+import android.app.{NotificationManager, PendingIntent, Service}
+import android.content.{Context, Intent}
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActionFilters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -31,19 +31,16 @@ class CreateCollectionService
 
   lazy val builder = new NotificationCompat.Builder(this)
 
+  lazy val notifyManager = getSystemService(Context.NOTIFICATION_SERVICE).asInstanceOf[NotificationManager]
+
   private var loadDeviceId: Option[String] = None
 
   private var currentState: Option[String] = None
 
-  override val actionsFilters: Seq[String] = Seq(
-    wizardStateActionFilter,
-    wizardAskStateActionFilter,
-    wizardAnswerStateActionFilter)
+  override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
-  override def manageCommand(action: String, data: Option[String]): Unit = {}
-
-  override def manageQuestion(action: String): Option[BroadAction] = action match {
-    case `wizardAskStateActionFilter` => Option(BroadAction(wizardAnswerStateActionFilter, currentState))
+  override def manageQuestion(action: String): Option[BroadAction] = WizardActionFilter(action) match {
+    case WizardAskActionFilter => Option(BroadAction(WizardAnswerActionFilter.action, currentState))
     case _ => None
   }
 
@@ -55,12 +52,12 @@ class CreateCollectionService
     setState(stateCreatingCollections)
 
     val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
-    val title: String = getString(com.fortysevendeg.ninecardslauncher2.R.string.workingNotificationTitle)
+    val title: String = getString(R.string.workingNotificationTitle)
     builder.
       setContentTitle(title).
       setTicker(title).
-      setContentText(getString(com.fortysevendeg.ninecardslauncher2.R.string.downloadingAppsInfoMessage)).
-      setSmallIcon(com.fortysevendeg.ninecardslauncher2.R.drawable.icon_notification_working).
+      setContentText(getString(R.string.downloadingAppsInfoMessage)).
+      setSmallIcon(R.drawable.icon_notification_working).
       setProgress(1, maxProgress, true).
       setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
 
@@ -85,12 +82,13 @@ class CreateCollectionService
 
   private[this] def setState(state: String) = {
     currentState = Option(state)
-    self ! BroadAction(wizardStateActionFilter, Option(state))
+    self ! BroadAction(WizardStateActionFilter.action, Option(state))
   }
 
   protected def setProcess(process: CreateCollectionsProcess) = {
     getTextByProcess(process) foreach builder.setContentText
     builder.setProgress(maxProgress, process.progress, false)
+    notifyManager.notify(notificationId, builder.build())
   }
 
   private[this] def getTextByProcess(process: CreateCollectionsProcess): Option[String] = process match {

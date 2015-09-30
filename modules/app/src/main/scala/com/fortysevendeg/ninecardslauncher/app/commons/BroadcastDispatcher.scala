@@ -8,9 +8,9 @@ trait BroadcastDispatcher {
 
   val actionsFilters: Seq[String]
 
-  def manageCommand(action: String, command: Option[String])
+  def manageCommand(action: String, command: Option[String]): Unit = {}
 
-  def manageQuestion(action: String): Option[BroadAction]
+  def manageQuestion(action: String): Option[BroadAction] = None
 
   lazy val broadcast = new BroadcastReceiver {
     override def onReceive(context: Context, intent: Intent): Unit = Option(intent) map { i =>

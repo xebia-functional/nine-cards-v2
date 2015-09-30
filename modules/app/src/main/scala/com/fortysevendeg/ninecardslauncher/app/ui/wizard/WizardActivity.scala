@@ -13,9 +13,9 @@ import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActionFilters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 
 import scala.util.{Failure, Success, Try}
@@ -37,19 +37,14 @@ class WizardActivity
 
   lazy val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq
 
-  override val actionsFilters: Seq[String] = Seq(
-    wizardStateActionFilter,
-    wizardAskStateActionFilter,
-    wizardAnswerStateActionFilter)
+  override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
-  override def manageCommand(action: String, data: Option[String]): Unit = (action, data) match {
-    case (`wizardStateActionFilter`, Some(`stateSuccess`)) => runUi(finishProcess)
-    case (`wizardStateActionFilter`, Some(`stateFaliure`)) => runUi(showUser)
-    case (`wizardAnswerStateActionFilter`, Some(`stateCreatingCollections`)) => runUi(showWizard)
+  override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
+    case (WizardStateActionFilter, Some(`stateSuccess`)) => runUi(finishProcess)
+    case (WizardStateActionFilter, Some(`stateFaliure`)) => runUi(showUser)
+    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => runUi(showWizard)
     case _ =>
   }
-
-  override def manageQuestion(action: String): Option[BroadAction] = None
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -60,7 +55,7 @@ class WizardActivity
   override def onResume(): Unit = {
     super.onResume()
     registerDispatchers
-    self ? wizardAskStateActionFilter
+    self ? WizardAskActionFilter.action
   }
 
   override def onPause(): Unit = {
