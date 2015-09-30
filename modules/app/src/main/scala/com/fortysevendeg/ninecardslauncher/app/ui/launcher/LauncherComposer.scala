@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
@@ -174,7 +173,7 @@ trait LauncherComposer
     (loading <~ vGone) ~
       (workspaces <~
         lwsData(collections, selectedPageDefault) <~
-        lwsAddPageChangedObserver(currentPage => {
+        awsAddPageChangedObserver(currentPage => {
           val widgetScreen = workspaces exists (_.isWidgetScreen(currentPage))
           runUi((paginationPanel <~ reloadPager(currentPage)) ~
             (if (widgetScreen) {

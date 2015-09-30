@@ -258,7 +258,7 @@ class PersistenceServicesImpl(
       Task {
         val cursor = Option(context.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
         val result = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
-
+        cursor foreach (_.close())
         result map {
           Result.answer[String, AndroidIdNotFoundException]
         } getOrElse Result.errata[String, AndroidIdNotFoundException](AndroidIdNotFoundException(message = "Android Id not found"))

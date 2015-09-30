@@ -10,6 +10,8 @@
 
     <dimen name="radius_default">3dp</dimen>
 
+    <dimen name="text_xxxlarge">22sp</dimen>
+    <dimen name="text_xxlarge">20sp</dimen>
     <dimen name="text_xlarge">18sp</dimen>
     <dimen name="text_large">16sp</dimen>
     <dimen name="text_default">14sp</dimen>
@@ -36,6 +38,17 @@
     <dimen name="shadow_radius_default">1dp</dimen>
 
     <integer name="anim_duration_normal">200</integer>
+
+    <!-- Wizard -->
+    <dimen name="wizard_min_width_button">190dp</dimen>
+    <dimen name="wizard_height_image_content">300dp</dimen>
+    <dimen name="wizard_max_width_step_message">260dp</dimen>
+    <integer name="wizard_anim_ripple_duration">400</integer>
+
+    <dimen name="wizard_margin_top_logo">18dp</dimen>
+
+    <dimen name="wizard_margin_pager">6dp</dimen>
+    <dimen name="wizard_size_pager">10dp</dimen>
 
     <!-- Menu -->
     <dimen name="menu_height">170dp</dimen>

@@ -43,6 +43,12 @@ object ActivityResult {
 
 }
 
+object WizardState {
+  val stateCreatingCollections = "wizard-state-creating-collections"
+  val stateSuccess = "wizard-state-success"
+  val stateFaliure = "wizard-state-faliure"
+}
+
 object AppUtils {
   def getUniqueId: Int = (System.currentTimeMillis & 0xfffffff).toInt
 

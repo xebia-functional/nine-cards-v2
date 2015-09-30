@@ -6,13 +6,13 @@ import android.graphics.drawable.Drawable
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
 import android.support.design.widget.{NavigationView, Snackbar, FloatingActionButton}
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v4.view.GravityCompat
+import android.support.v4.view.{TintableBackgroundView, GravityCompat}
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar}
+import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar, AppCompatSpinner}
 import android.view.{MenuItem, View}
 import android.view.View.OnClickListener
 import android.widget.CompoundButton.OnCheckedChangeListener
-import android.widget.{CompoundButton, ProgressBar}
+import android.widget.{SpinnerAdapter, Spinner, CompoundButton, ProgressBar}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak, Ui}
@@ -22,11 +22,19 @@ import macroid.{ContextWrapper, Tweak, Ui}
  */
 object ExtraTweaks {
 
+  def vEnabled(enabled: Boolean) = Tweak[View](_.setEnabled(enabled))
+
   def vIntTag(tag: Int) = Tweak[View](_.setTag(tag))
 
   def vIntTag(id: Int, tag: Int) = Tweak[View](_.setTag(id, tag))
 
+  def vBackgroundTint(color: Int) = Tweak[View] {
+     case t: TintableBackgroundView => t.setSupportBackgroundTintList(ColorStateList.valueOf(color))
+  }
+
   def vSelected(selected: Boolean) = Tweak[View](_.setSelected(selected))
+
+  def sAdapter(adapter: SpinnerAdapter) = Tweak[Spinner](_.setAdapter(adapter))
 
   def tbBackgroundColor(color: Int) = Tweak[Toolbar](_.setBackgroundColor(color))
 
