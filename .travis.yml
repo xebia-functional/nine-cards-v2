@@ -8,6 +8,11 @@ addons:
       - libc6-i386
       - lib32z1
       - lib32stdc++6
+  artifacts:
+    debug: true
+    paths:
+      - $HOME/modules/app/target/android-bin/nine-cards-v2-debug.apk
+  s3_region: "eu-central-1"
 before_install:
   - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
   - tar xf android-sdk_r24-linux.tgz
@@ -30,3 +35,5 @@ script:
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
+  - test ${TRAVIS_BRANCH} = fede-9c-273 && sbt ++$TRAVIS_SCALA_VERSION "project app" android:package
+  - test ${TRAVIS_BRANCH} = fede-9c-273 && travis-artifacts upload
