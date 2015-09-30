@@ -22,7 +22,9 @@ trait WizardPersistence {
 
   def getAndroidId: Option[String] = {
     val cursor = Option(getContentResolver.query(Uri.parse(contentGServices), null, null, Array(androidId), null))
-    cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+    val id = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+    cursor foreach (_.close())
+    id
   }
 
 }

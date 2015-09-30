@@ -27,6 +27,7 @@ import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait DrawerComposer
   extends DrawerStyles
@@ -75,7 +76,7 @@ trait DrawerComposer
     onAppMenuClickListener: (AppsMenuOption) => Unit,
     onContactMenuClickListener: (ContactsMenuOption) => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (appDrawerMain <~ drawerAppStyle <~ On.click {
-      revealInDrawer
+      revealInDrawer ~ tryToCallListener(onAppMenuClickListener, onContactMenuClickListener)
     }) ~
       (loadingDrawer <~ pbColor(resGetColor(R.color.drawer_toolbar))) ~
       (recycler <~ recyclerStyle) ~
@@ -186,6 +187,16 @@ trait DrawerComposer
     listener: (ContactsMenuOption) => Unit,
     menuItemId: Int): Unit =
     toContactsMenuOption(menuItemId) foreach listener
+
+  private[this] def tryToCallListener(
+    onAppMenuClickListener: (AppsMenuOption) => Unit,
+    onContactMenuClickListener: (ContactsMenuOption) => Unit): Ui[Unit] = (drawerTabApp, drawerTabContacts) match {
+    case (Some(app), Some(contacts)) if app.isSelected =>
+      Ui(callAppsListener(onAppMenuClickListener, app.getSelectedMenuItem))
+    case (Some(app), Some(contacts)) if contacts.isSelected =>
+      Ui(callContactsListener(onContactMenuClickListener, contacts.getSelectedMenuItem))
+    case _ => Ui.nop
+  }
 
   private[this] def fabButtonClicked(launchStore: () => Unit, launchDial: () => Unit): Ui[_] =
     (drawerTabApp, drawerTabContacts) match {
