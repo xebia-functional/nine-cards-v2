@@ -11,7 +11,7 @@ addons:
   artifacts:
     debug: true
     paths:
-      - $HOME/modules/app/target/android-bin/nine-cards-v2-debug.apk
+      - $TRAVIS_BUILD_DIR/modules/app/target/android-bin/nine-cards-v2-debug.apk
   s3_region: "eu-central-1"
 before_install:
   - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
@@ -26,14 +26,14 @@ before_install:
   - echo yes | android update sdk --all --filter extra-android-m2repository --no-ui
   - echo yes | android update sdk --all --filter extra-google-m2repository --no-ui
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION "project api" clean coverage test
-  - sbt ++$TRAVIS_SCALA_VERSION "project app" clean coverage test
-  - sbt ++$TRAVIS_SCALA_VERSION "project commons" clean coverage test
-  - sbt ++$TRAVIS_SCALA_VERSION "project process" clean coverage test
-  - sbt ++$TRAVIS_SCALA_VERSION "project repository" clean coverage test
-  - sbt ++$TRAVIS_SCALA_VERSION "project services" clean coverage test
-after_success:
-  - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
-  - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
+#  - sbt ++$TRAVIS_SCALA_VERSION "project commons" coverage test
+#  - sbt ++$TRAVIS_SCALA_VERSION "project api" coverage test
+#  - sbt ++$TRAVIS_SCALA_VERSION "project repository" coverage test
+#  - sbt ++$TRAVIS_SCALA_VERSION "project services" coverage test
+#  - sbt ++$TRAVIS_SCALA_VERSION "project process" coverage test
+#  - sbt ++$TRAVIS_SCALA_VERSION "project app" coverage test
+#after_success:
+#  - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
+#  - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
   - test ${TRAVIS_BRANCH} = fede-9c-273 && sbt ++$TRAVIS_SCALA_VERSION "project app" android:package
   - test ${TRAVIS_BRANCH} = fede-9c-273 && travis-artifacts upload
