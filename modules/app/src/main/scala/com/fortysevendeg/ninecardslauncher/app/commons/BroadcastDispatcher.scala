@@ -20,6 +20,7 @@ trait BroadcastDispatcher {
         manageCommand(action, data)
       case Some((Some(action: String), Some(key: String), _)) if key == questionType =>
         manageQuestion(action) foreach (ba => dispatcher ! ba)
+      case _ =>
     }
   }
 

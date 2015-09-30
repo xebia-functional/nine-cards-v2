@@ -18,23 +18,23 @@ trait CreateCollectionsTasks
   def createNewConfiguration: ServiceDef2[Seq[Collection], AppCategorizationException with ContactException with CollectionException] =
     for {
       _ <- di.deviceProcess.categorizeApps
-      _ = setProcess(processGettingApps)
+      _ = setProcess(GettingAppsProcess)
       appsCategorized <- di.deviceProcess.getCategorizedApps
-      _ = setProcess(processLoadingConfig)
+      _ = setProcess(LoadingConfigProcess)
       contacts <- di.deviceProcess.getFavoriteContacts
-      _ = setProcess(processCreatingCollections)
+      _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(appsCategorized), toSeqUnformedContact(contacts))
     } yield collections
 
   def loadConfiguration(deviceId: String): ServiceDef2[Seq[Collection], AppCategorizationException with CreateBitmapException with UserConfigException with CollectionException] =
     for {
       _ <- di.deviceProcess.categorizeApps
-      _ = setProcess(processGettingApps)
+      _ = setProcess(GettingAppsProcess)
       userCollections <- di.userConfigProcess.getUserCollection(deviceId)
       appsCategorized <- di.deviceProcess.getCategorizedApps
-      _ = setProcess(processLoadingConfig)
+      _ = setProcess(LoadingConfigProcess)
       _ <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(appsCategorized, userCollections))
-      _ = setProcess(processCreatingCollections)
+      _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(userCollections))
     } yield collections
 

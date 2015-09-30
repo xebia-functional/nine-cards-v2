@@ -88,27 +88,17 @@ class CreateCollectionService
     self ! BroadAction(wizardStateActionFilter, Option(state))
   }
 
-  protected def setProcess(process: String) = {
+  protected def setProcess(process: CreateCollectionsProcess) = {
     getTextByProcess(process) foreach builder.setContentText
-    val progress = getProgressByProcess(process)
-    builder.setProgress(maxProgress, progress, false)
+    builder.setProgress(maxProgress, process.progress, false)
   }
 
-  private[this] def getTextByProcess(process: String): Option[String] = process match {
-    case `processGettingApps` => Option(resGetString(R.string.loadingAppsInfoMessage))
-    case `processLoadingConfig` => Option(resGetString(R.string.loadingUserConfigMessage))
-    case `processCreatingCollections` => Option(loadDeviceId map (_ =>
+  private[this] def getTextByProcess(process: CreateCollectionsProcess): Option[String] = process match {
+    case GettingAppsProcess => Option(resGetString(R.string.loadingAppsInfoMessage))
+    case LoadingConfigProcess => Option(resGetString(R.string.loadingUserConfigMessage))
+    case CreatingCollectionsProcess => Option(loadDeviceId map (_ =>
       resGetString(R.string.loadingFromDeviceMessage)) getOrElse resGetString(R.string.loadingForMyDeviceMessage))
-    case _ => None
   }
-
-  private[this] def getProgressByProcess(process: String): Int = process match {
-    case `processGettingApps` => 2
-    case `processLoadingConfig` => 3
-    case `processCreatingCollections` => 4
-    case _ => 0
-  }
-
   override def onDestroy(): Unit = {
     super.onDestroy()
     unregisterDispatcher
@@ -127,9 +117,23 @@ object CreateCollectionService {
   val keyDevice: String = "__key_device__"
   val notificationId: Int = 1101
   val homeMorningKey = "home"
+}
 
-  val processGettingApps = "wizard-process-getting-apps"
-  val processLoadingConfig = "wizard-process-loading-config"
-  val processCreatingCollections = "wizard-process-creating-collections"
+sealed trait CreateCollectionsProcess {
+  val progress: Int
+}
 
+case object GettingAppsProcess
+  extends CreateCollectionsProcess {
+  override val progress: Int = 2
+}
+
+case object LoadingConfigProcess
+  extends CreateCollectionsProcess {
+  override val progress: Int = 3
+}
+
+case object CreatingCollectionsProcess
+  extends CreateCollectionsProcess {
+  override val progress: Int = 4
 }
