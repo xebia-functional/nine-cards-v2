@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              style="@style/WizardRoot">
+             android:id="@+id/wizard_root"
+             style="@style/WizardRoot">
 
     <LinearLayout
         android:id="@+id/wizard_loading_content"
@@ -16,63 +17,78 @@
 
     <LinearLayout
         android:id="@+id/wizard_user_content"
-        style="@style/WizardContent">
+        style="@style/WizardUserContent">
+
+        <ImageView
+            style="@style/WizardUserLogo"/>
 
         <TextView
-            android:text="@string/welcome"
-            style="@style/WizardTitle"/>
+            style="@style/WizardUserTitle"/>
 
-        <TextView
-            android:text="@string/welcomeMessage"
-            style="@style/WizardMessage"/>
+        <FrameLayout
+            style="@style/WizardUserSelectContent">
 
-        <RadioGroup
-            android:id="@+id/wizard_user_group"
-            style="@style/WizardRadioGroup" />
+            <Spinner
+                android:id="@+id/wizard_user_group"
+                style="@style/WizardUserSelect"/>
 
-        <Button
+        </FrameLayout>
+
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/wizard_user_action"
-            android:text="@string/buttonContinue"
-            style="@style/WizardButton" />
+            style="@style/WizardUserButton"/>
+
+        <CheckBox
+            android:id="@+id/wizard_user_terms"
+            style="@style/WizardUserTerms"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/wizard_device_content"
-        style="@style/WizardContent">
+        style="@style/WizardDeviceContent">
 
         <TextView
             android:id="@+id/wizard_device_title"
-            style="@style/WizardTitle"/>
+            style="@style/WizardDeviceTitle"/>
 
         <TextView
             android:id="@+id/wizard_device_message"
-            style="@style/WizardMessage"/>
+            style="@style/WizardDeviceMessage"/>
 
         <RadioGroup
             android:id="@+id/wizard_device_group"
-            style="@style/WizardRadioGroup" />
+            style="@style/WizardDeviceRadioGroup"/>
 
         <Button
             android:id="@+id/wizard_device_action"
             android:text="@string/buttonContinue"
-            style="@style/WizardButton" />
+            style="@style/WizardDeviceButton"/>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/wizard_finish_content"
-        style="@style/WizardContent">
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundView
+        android:id="@+id/wizard_steps_content"
+        style="@style/WizardStepsRoot">
 
-        <TextView
-            android:text="@string/construction"
-            style="@style/WizardEndMessage"/>
+        <LinearLayout
+            style="@style/WizardStepsContent">
 
-        <Button
-            android:id="@+id/wizard_finish_action"
-            android:text="@string/goTo9Cards"
-            style="@style/WizardButton" />
+            <FrameLayout
+                android:id="@+id/wizard_steps_workspace_content"
+                style="@style/WizardStepsWorkspaceContent" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/wizard_steps_action"
+                style="@style/WizardStepsButton"/>
+
+
+            <LinearLayout
+                style="@style/WizardStepsPaginationPanel"
+                android:id="@+id/wizard_steps_pagination_panel"/>
+
+        </LinearLayout>
+
+    </com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundView>
 
 </FrameLayout>
