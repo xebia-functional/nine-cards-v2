@@ -33,7 +33,6 @@ class AppsServicesImpl
       CatchAll[AppsInstalledException] {
         val packageManager = context.getPackageManager
         val intent = packageManager.getLaunchIntentForPackage(packageName)
-        println(s"intent: $intent")
         getApplicationByResolveInfo(packageManager.resolveActivity(intent, 0))
       }
     }

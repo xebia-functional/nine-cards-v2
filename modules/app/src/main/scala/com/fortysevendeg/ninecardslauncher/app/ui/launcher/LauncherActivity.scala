@@ -97,7 +97,6 @@ class LauncherActivity
 
   private[this] def loadApps(appsMenuOption: AppsMenuOption): Unit =
     // TODO - Take into account the `appsMenuOption` param
-    println("loadApps")
     Task.fork(di.deviceProcess.getSavedApps.run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
       onResult = (apps: Seq[App]) => addApps(apps, (app: App) => {
