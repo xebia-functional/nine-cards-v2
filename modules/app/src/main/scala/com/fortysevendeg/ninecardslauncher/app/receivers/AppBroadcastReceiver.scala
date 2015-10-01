@@ -25,7 +25,7 @@ class AppBroadcastReceiver
     (action, replacing) match {
       case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).run).resolveAsync()
       case (ACTION_PACKAGE_REMOVED, false) => Task.fork(deleteApp(packageName).run).resolveAsync()
-      case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, false) => Task.fork(updateApp(packageName).run).resolveAsync()
+      case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => Task.fork(updateApp(packageName).run).resolveAsync()
       case (_, _) =>
     }
   }
