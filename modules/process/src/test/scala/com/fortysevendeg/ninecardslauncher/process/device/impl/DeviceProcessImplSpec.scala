@@ -628,7 +628,7 @@ class DeviceProcessImplSpec
 
     "gets and saves one installed app" in
       new DeviceProcessScope {
-        val result = deviceProcess.updateApp(packageName1, appDataSeq.head)(contextSupport).run.run
+        val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
         result must beLike {
           case Answer(resultApps) =>
             resultApps shouldEqual ((): Unit)
@@ -637,7 +637,7 @@ class DeviceProcessImplSpec
 
     "returns a AppException if api service fails" in
       new DeviceProcessScope with ErrorApiServicesProcessScope {
-        val result = deviceProcess.updateApp(packageName1, appDataSeq.head)(contextSupport).run.run
+        val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
@@ -647,7 +647,7 @@ class DeviceProcessImplSpec
 
     "returns an empty Answer if image service fails" in
       new DeviceProcessScope with ErrorImageServicesProcessScope {
-        val result = deviceProcess.updateApp(packageName1, appDataSeq.head)(contextSupport).run.run
+        val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
         result must beLike {
           case Answer(resultApps) =>
             resultApps shouldEqual ((): Unit)
@@ -656,7 +656,7 @@ class DeviceProcessImplSpec
 
     "returns an empty Answer if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.updateApp(packageName1, appDataSeq.head)(contextSupport).run.run
+        val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
