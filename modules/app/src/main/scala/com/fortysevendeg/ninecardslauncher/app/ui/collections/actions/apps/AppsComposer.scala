@@ -63,31 +63,55 @@ trait AppsComposer
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def generateAppsAdapter(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
+  def generateAppsAdapter(
+    apps: Seq[AppCategorized],
+    filter: AppsFilter,
+    category: String,
+    clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
+    val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
     val adapter = new AppsAdapter(
-      initialSeq = generateAppHeaderedList(apps),
+      initialSeq = generateAppsHeadered(apps, filter, categoryName),
       clickListener = clickListener)
     showData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter)) ~
-      (scrollerLayout <~ fslLinkRecycler)
+      (scrollerLayout <~
+        fslLinkRecycler <~
+        (filter match {
+          case AllApps => fslVisible
+          case AppsByCategory => fslInvisible
+        }))
   }
 
-  def reloadAppsAdapter(apps: Seq[AppCategorized], filter: AppsFilter, category: String)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val contactsHeadered = generateAppHeaderedList(apps)
+  def reloadAppsAdapter(
+    apps: Seq[AppCategorized],
+    filter: AppsFilter,
+    category: String)(implicit uiContext: UiContext[_]): Ui[_] = {
     val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
+    val appsHeadered = generateAppsHeadered(apps, filter, categoryName)
     showData ~
       (getAdapter map { adapter =>
-        Ui(adapter.loadItems(contactsHeadered)) ~
+        Ui(adapter.loadItems(appsHeadered)) ~
           (rootContent <~ uiSnackbarShort(filter match {
             case AppsByCategory => resGetString(R.string.appsByCategory, categoryName)
             case _ => resGetString(R.string.allApps)
           })) ~
-          (scrollerLayout <~ fslReset) ~
+          (scrollerLayout <~
+            fslReset <~
+            (filter match {
+              case AllApps => fslVisible
+              case AppsByCategory => fslInvisible
+            })) ~
           (recycler <~ rvScrollToTop)
       } getOrElse showGeneralError)
   }
+
+  private[this] def generateAppsHeadered(apps: Seq[AppCategorized], filter: AppsFilter, category: String) =
+    filter match {
+      case AllApps => generateAppHeaderedList(apps)
+      case AppsByCategory => generateAppHeaderedListByCategory(category, apps)
+    }
 
   private[this] def getAdapter: Option[AppsAdapter] = recycler flatMap { rv =>
     Option(rv.getAdapter) match {
