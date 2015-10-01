@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.drawer
 
 import android.animation.{Animator, AnimatorListenerAdapter}
+import android.annotation.TargetApi
+import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -15,7 +17,7 @@ import scala.concurrent.Promise
 object DrawerSnails {
 
   def revealInAppDrawer(source: View)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view ⇒
+    view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
@@ -30,7 +32,7 @@ object DrawerSnails {
   }
 
   def revealOutAppDrawer(source: View)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view ⇒
+    view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
       val animPromise = Promise[Unit]()
@@ -44,6 +46,7 @@ object DrawerSnails {
       animPromise.future
   }
 
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private[this] def reveal(source: View, view: View, in: Boolean = true)(animationEnd: => Unit = ())(implicit context: ContextWrapper): Unit = {
     val sb = resGetDimensionPixelSize("status_bar_height") getOrElse 25 dp
     val (cx, cy) = calculateAnchorViewPosition(source)

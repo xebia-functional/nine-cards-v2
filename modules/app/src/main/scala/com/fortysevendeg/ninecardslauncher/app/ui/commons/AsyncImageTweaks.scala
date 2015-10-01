@@ -29,6 +29,7 @@ object AsyncImageTweaks {
     }
   )
 
+
   def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       makeRequest(
