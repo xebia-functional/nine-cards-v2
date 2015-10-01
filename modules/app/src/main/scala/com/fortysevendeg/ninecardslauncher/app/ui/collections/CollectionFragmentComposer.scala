@@ -145,9 +145,8 @@ trait CollectionFragmentComposer
 
   private[this] def createAdapter(collection: Collection)
     (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = {
-    val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-    val heightCard = recyclerView map (view => (view.getHeight - (padding + spaceMove)) / numInLine) getOrElse 0
+    // In Android Design Library 23.0.1 has a problem calculating the height. We have to subtract 25 dp. We should to check this when we'll change to a new version
+    val heightCard = recyclerView map (view => (view.getHeight - (25 dp) - (view.getPaddingBottom + view.getPaddingTop)) / numInLine) getOrElse 0
     new CollectionAdapter(collection, heightCard)
   }
 

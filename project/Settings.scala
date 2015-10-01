@@ -20,13 +20,13 @@ object Settings {
       javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
       transitiveAndroidLibs in Android := true,
       libraryDependencies ++= appDependencies,
-      apkbuildExcludes in Android ++= Seq(
+      packagingOptions in Android := PackagingOptions(excludes = Seq(
         "META-INF/LICENSE",
         "META-INF/LICENSE.txt",
         "META-INF/NOTICE",
         "META-INF/NOTICE.txt",
         "scalac-plugin.xml",
-        "reference.conf"),
+        "reference.conf")),
       dexMaxHeap in Android := "2048m",
       proguardScala in Android := true,
       useProguard in Android := true,
@@ -152,8 +152,8 @@ object Settings {
 
   lazy val multiDex = Seq(
     dexMulti in Android := true,
-    dexMinimizeMainFile in Android := true,
-    dexMainFileClasses in Android := multiDexClasses
+    dexMinimizeMain in Android := true,
+    dexMainClasses in Android := multiDexClasses
   )
 
   lazy val multiDexClasses = Seq(
