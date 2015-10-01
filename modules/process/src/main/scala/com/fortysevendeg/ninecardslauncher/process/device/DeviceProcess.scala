@@ -7,8 +7,17 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{Shortcut, App,
 
 trait DeviceProcess {
 
+  /**
+   * Get the saved apps from the database
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.App]
+   * @throws AppException if exist some problem to get the apps
+   */
   def getSavedApps(implicit context: ContextSupport): ServiceDef2[Seq[App], AppException]
 
+  /**
+   * Create the bitmaps from a sequence of packages
+   * @throws CreateBitmapException if exist some problem creating the bitmaps
+   */
   def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport): ServiceDef2[Unit, CreateBitmapException]
 
   /**
