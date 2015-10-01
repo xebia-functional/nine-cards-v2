@@ -145,9 +145,7 @@ trait CollectionFragmentComposer
 
   private[this] def createAdapter(collection: Collection)
     (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = {
-    val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-    val heightCard = recyclerView map (view => (view.getHeight - (padding + spaceMove)) / numInLine) getOrElse 0
+    val heightCard = recyclerView map (view => (view.getHeight - (25 dp) - (view.getPaddingBottom + view.getPaddingTop)) / numInLine) getOrElse 0
     new CollectionAdapter(collection, heightCard)
   }
 
