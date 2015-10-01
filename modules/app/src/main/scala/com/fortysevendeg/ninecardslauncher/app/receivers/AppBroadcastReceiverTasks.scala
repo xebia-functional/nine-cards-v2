@@ -11,4 +11,7 @@ trait AppBroadcastReceiverTasks {
   def deleteApp(packageName: String)(implicit di: Injector, contextSupport: ContextSupport) =
     di.deviceProcess.deleteApp(packageName)
 
+  def updateApp(packageName: String)(implicit di: Injector, contextSupport: ContextSupport) =
+    di.deviceProcess.updateApp(packageName)
+
 }

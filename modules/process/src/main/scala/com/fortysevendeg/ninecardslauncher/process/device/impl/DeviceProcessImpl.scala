@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => 
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, AppData, CacheCategory}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, CacheCategory}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
 
@@ -72,13 +72,14 @@ class DeviceProcessImpl(
       _ <- persistenceServices.deleteAppByPackage(packageName)
     } yield ()).resolve[AppException]
 
-  override def updateApp(packageName: String, appData: AppData)(implicit context: ContextSupport) =
+  override def updateApp(packageName: String)(implicit context: ContextSupport) =
     (for {
       requestConfig <- apiUtils.getRequestConfig
-      Some(app) <- persistenceServices.findAppByPackage(packageName)
+      app <- appsService.getApplication(packageName)
+      Some(appPersistence) <- persistenceServices.findAppByPackage(packageName)
       googlePlayPackageResponse <- apiServices.googlePlayPackage(packageName)(requestConfig)
-      appPackagePath <- imageServices.saveAppIcon(toAppPackageByAppData(appData))
-      _ <- persistenceServices.updateApp(toUpdateAppRequest(app.id, appData, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
+      appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
+      _ <- persistenceServices.updateApp(toUpdateAppRequest(appPersistence.id, app, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
     } yield ()).resolve[AppException]
 
   override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport) =

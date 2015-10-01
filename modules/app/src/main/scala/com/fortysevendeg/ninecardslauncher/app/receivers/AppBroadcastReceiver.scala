@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.receivers
 
+import android.content.Intent._
 import android.content._
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -14,7 +15,7 @@ class AppBroadcastReceiver
   override def onReceive(context: Context, intent: Intent): Unit = {
 
     val action: String = intent.getAction
-    val replacing = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)
+    val replacing = intent.getBooleanExtra(EXTRA_REPLACING, false)
 
     val packageName: String = intent.getData.toString.replace("package:", "")
 
@@ -22,11 +23,9 @@ class AppBroadcastReceiver
     implicit val di = new Injector
 
     (action, replacing) match {
-      case (Intent.ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).run).resolveAsync()
-      case (Intent.ACTION_PACKAGE_REMOVED, false) => Task.fork(deleteApp(packageName).run).resolveAsync()
-      case (Intent.ACTION_PACKAGE_CHANGED, false) =>
-      case (Intent.ACTION_PACKAGE_REPLACED, false) =>
-      case (_, true) =>
+      case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).run).resolveAsync()
+      case (ACTION_PACKAGE_REMOVED, false) => Task.fork(deleteApp(packageName).run).resolveAsync()
+      case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, false) => Task.fork(updateApp(packageName).run).resolveAsync()
       case (_, _) =>
     }
   }
