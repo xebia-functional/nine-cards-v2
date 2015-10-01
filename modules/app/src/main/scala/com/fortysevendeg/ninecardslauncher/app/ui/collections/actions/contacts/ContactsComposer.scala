@@ -63,7 +63,7 @@ trait ContactsComposer
 
   def generateContactsAdapter(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
     val contactsHeadered = generateContactsForList(contacts)
-    val adapter = new ContactsAdapter(contactsHeadered, clickListener)
+    val adapter = new ContactsAdapter(contactsHeadered, clickListener, None)
     showData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~

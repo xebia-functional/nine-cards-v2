@@ -71,7 +71,8 @@ trait AppsComposer
     val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
     val adapter = new AppsAdapter(
       initialSeq = generateAppsHeadered(apps, filter, categoryName),
-      clickListener = clickListener)
+      clickListener = clickListener,
+      longClickListener = None)
     showData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
