@@ -16,6 +16,8 @@ import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.CharDrawable
 import macroid.{ActivityContextWrapper, Tweak}
+import macroid.FullDsl._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 
 object AsyncImageTweaks {
   type W = ImageView
@@ -60,11 +62,12 @@ object AsyncImageTweaks {
     char: String,
     circular: Boolean = false)(implicit context: ActivityContextWrapper) = {
     request
-      .placeholder(android.R.color.transparent)
       .crossFade()
       .into(new ViewTarget[ImageView, GlideDrawable](imageView) {
+        override def onLoadStarted(placeholder: Drawable): Unit =
+          imageView.setImageDrawable(null)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          imageView.setImageDrawable(new CharDrawable(char, circle = circular))
+          runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ fadeIn(200))
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit = {
           view.setImageDrawable(resource.getCurrent)
         }
