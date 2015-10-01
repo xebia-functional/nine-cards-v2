@@ -12,7 +12,7 @@ addons:
     debug: true
     paths:
       - $TRAVIS_BUILD_DIR/modules/app/target/android-bin/nine-cards-v2-debug.apk
-  s3_region: "Ireland"
+  s3_region: "us-east-1"
 before_install:
   - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
   - tar xf android-sdk_r24-linux.tgz
