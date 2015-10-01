@@ -6,7 +6,6 @@ import android.graphics.drawable._
 import android.support.v7.widget.CardView
 import android.view.View
 import android.view.ViewGroup.LayoutParams._
-import android.view.animation.AnimationUtils
 import android.widget.ImageView.ScaleType
 import android.widget.{FrameLayout, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._

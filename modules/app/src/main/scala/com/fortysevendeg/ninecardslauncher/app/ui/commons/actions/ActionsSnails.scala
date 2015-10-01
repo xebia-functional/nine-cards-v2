@@ -15,7 +15,6 @@ import scala.concurrent.Promise
 
 object ActionsSnails {
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   def revealIn(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
@@ -33,7 +32,6 @@ object ActionsSnails {
       animPromise.future
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   def revealOut(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
@@ -100,6 +98,7 @@ object ActionsSnails {
       animPromise.future
   }
 
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private[this] def circularReveal(
     view: View,
     x: Int,

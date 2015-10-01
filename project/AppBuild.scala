@@ -20,14 +20,17 @@ object AppBuild extends Build {
         packageDebug <<= packageDebug in Android in app,
         install <<= install in Android in app,
         run <<= (run in Android in app).dependsOn(setDebugTask(true)),
-        packageName in Android := "com.fortysevendeg.ninecardslauncher"
+        applicationId in Android := "com.fortysevendeg.ninecardslauncher"
       )
       .aggregate(app)
 
   lazy val app = Project(id = "app", base = file("modules/app"))
     .androidBuildWith(process)
     .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
-    .settings(packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask))
+    .settings(
+      outputLayout in Android <<= (outputLayout in Android),
+        packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask)
+    )
     .settings(appSettings: _*)
 
   lazy val process = Project(id = "process", base = file("modules/process"))

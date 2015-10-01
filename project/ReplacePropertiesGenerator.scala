@@ -52,8 +52,8 @@ object ReplacePropertiesGenerator {
 
   def replaceValuesTask = Def.task[Seq[File]] {
     try {
-      val dir: File = (binPath in Android).value
-      val valuesFile: File =  new File(dir, "resources/res/values/values.xml")
+      val dir: (File, File) = (collectResources in Android).value
+      val valuesFile: File =  new File(dir._2, "/values/values.xml")
       replaceContent(valuesFile)
       Seq(valuesFile)
     } catch {
