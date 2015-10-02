@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions
 
 import android.support.v7.widget.GridLayoutManager.SpanSizeLookup
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
-import android.view.View.OnClickListener
+import android.view.View.{OnLongClickListener, OnClickListener}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.HeaderedItemAdapter._
@@ -38,6 +38,8 @@ trait HeaderedItemAdapter[T]
 
   val clickListener: (T) => Unit
 
+  val longClickListener: Option[(T) => Unit]
+
   val heightHeader = resGetDimensionPixelSize(R.dimen.height_simple_category)
 
   val heightItem = resGetDimensionPixelSize(R.dimen.height_simple_item)
@@ -57,6 +59,14 @@ trait HeaderedItemAdapter[T]
           Option(v.getTag) foreach (tag => seq(Int.unbox(tag)).item foreach clickListener)
         }
       })
+      longClickListener foreach { listener =>
+        view.setOnLongClickListener(new OnLongClickListener {
+          override def onLongClick(v: View): Boolean = {
+            Option(v.getTag) foreach (tag => seq(Int.unbox(tag)).item foreach listener)
+            true
+          }
+        })
+      }
       createViewHolder(view)
   }
 

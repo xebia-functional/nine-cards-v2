@@ -2,8 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import java.io.InputStream
 
-import android.content.{UriMatcher, ContentResolver}
-import android.graphics.Bitmap
+import android.content.{ContentResolver, UriMatcher}
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.ContactsContract
@@ -11,15 +10,14 @@ import android.provider.ContactsContract.Contacts
 import android.widget.ImageView
 import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.model.stream.StreamModelLoader
+import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
-import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.CharDrawable
-import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak}
+import macroid.FullDsl._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 
 object AsyncImageTweaks {
   type W = ImageView
@@ -63,19 +61,17 @@ object AsyncImageTweaks {
     imageView: ImageView,
     char: String,
     circular: Boolean = false)(implicit context: ActivityContextWrapper) = {
-    val fadeDuration = resGetInteger(R.integer.fade_duration_new_image)
     request
-      .asBitmap()
-      .into(new SimpleTarget[Bitmap]() {
-      override def onLoadStarted(placeholder: Drawable): Unit =
-        imageView.setImageDrawable(null)
-
-      override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-        runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ fadeIn(fadeDuration))
-
-      override def onResourceReady(resource: Bitmap, glideAnimation: GlideAnimation[_ >: Bitmap]): Unit =
-        runUi(imageView <~ ivSrc(resource) <~ fadeIn(fadeDuration))
-    })
+      .crossFade()
+      .into(new ViewTarget[ImageView, GlideDrawable](imageView) {
+        override def onLoadStarted(placeholder: Drawable): Unit =
+          imageView.setImageDrawable(null)
+        override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
+          runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ fadeIn(200))
+        override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit = {
+          view.setImageDrawable(resource.getCurrent)
+        }
+      })
   }
 
   class ContactPhotoLoader(contentResolver: ContentResolver) extends StreamModelLoader[Uri] {

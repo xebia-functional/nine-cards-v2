@@ -18,8 +18,6 @@
     <dimen name="text_medium">12sp</dimen>
     <dimen name="text_small">10sp</dimen>
 
-    <integer name="fade_duration_new_image">200</integer>
-
     <dimen name="divider_default">1px</dimen>
 
     <dimen name="elevation_toolbar">4dp</dimen>

@@ -72,6 +72,20 @@ trait LauncherExecutor {
     }
   }
 
+  def launchSettings(packageName: String)(implicit activityContext: ActivityContextWrapper) =
+    for {
+      activity <- activityContext.original.get
+    } yield {
+      val intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+      intent.addCategory(Intent.CATEGORY_DEFAULT)
+      intent.setData(Uri.parse(s"package:$packageName"))
+      if (Try(activity.startActivity(intent)).isFailure) {
+        val intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.addCategory(Intent.CATEGORY_DEFAULT)
+        tryOrError(activity, intent)
+      }
+    }
+
   def launchDial(phoneNumber: Option[String])(implicit activityContext: ActivityContextWrapper) = {
     val intent = new Intent(Intent.ACTION_DIAL)
     phoneNumber foreach (number => intent.setData(Uri.parse(s"tel:$number")))

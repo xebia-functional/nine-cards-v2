@@ -52,7 +52,7 @@ class AppsFragment
     onResult = (apps: Seq[AppCategorized]) => if (reload) {
       reloadAppsAdapter(getAppsByFilter(apps, filter), filter, category)
     } else {
-      generateAppsAdapter(getAppsByFilter(apps, filter), (app: AppCategorized) => {
+      generateAppsAdapter(getAppsByFilter(apps, filter), filter, category, (app: AppCategorized) => {
         val card = AddCardRequest(
           term = app.name,
           packageName = Option(app.packageName),
