@@ -65,6 +65,7 @@ object Settings {
 
   val bucketName = sys.env("AWS_BUCKET")
   val hostName = s"$bucketName.s3.amazonaws.com"
+  val apkName = s"nine-cards-v2-${sys.env("GIT_BRANCH")}.apk"
   lazy val customS3Settings = s3Settings ++ Seq(
     host in upload := hostName,
     progress in upload := true,
@@ -73,7 +74,7 @@ object Settings {
       hostName,
       sys.env("AWS_ACCESS_KEY_ID"),
       sys.env("AWS_SECRET_KEY")),
-    mappings in upload := Seq((target.value / "android-bin" / "nine-cards-v2-debug.apk" ,"nine-cards-v2.apk"))
+    mappings in upload := Seq((target.value / "android-bin" / "nine-cards-v2-debug.apk", apkName))
   )
 
   lazy val duplicatedFiles = Set(

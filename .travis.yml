@@ -8,6 +8,8 @@ addons:
       - libc6-i386
       - lib32z1
       - lib32stdc++6
+env:
+  - GIT_BRANCH=${TRAVIS_BRANCH}
 before_install:
   - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
   - tar xf android-sdk_r24-linux.tgz
@@ -30,5 +32,5 @@ script:
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
-  - test ${TRAVIS_BRANCH} = fede-9c-273 && sbt ++$TRAVIS_SCALA_VERSION "project app" android:package
-  - test ${TRAVIS_BRANCH} = fede-9c-273 && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
+  - test (${TRAVIS_BRANCH} = master || ${TRAVIS_PULL_REQUEST} = "true") && sbt ++$TRAVIS_SCALA_VERSION "project app" android:package
+  - test (${TRAVIS_BRANCH} = master || ${TRAVIS_PULL_REQUEST} = "true") && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
