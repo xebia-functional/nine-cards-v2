@@ -36,7 +36,7 @@ class ContextSupportReceiverImpl(context: Context) extends ContextSupport {
   override def getResources = context.getResources
   override def getContentResolver = context.getContentResolver
   override def getFilesDir = context.getFilesDir
-  override def getAppIconsDir = context.getFilesDir //TODO find getAppIconsDir
+  override def getAppIconsDir = context.getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE)
   override def getAssets = context.getAssets
   override def getPackageName: String = context.getPackageName
 }

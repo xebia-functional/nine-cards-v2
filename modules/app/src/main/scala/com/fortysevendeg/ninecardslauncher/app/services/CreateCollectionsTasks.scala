@@ -16,7 +16,7 @@ trait CreateCollectionsTasks
 
   def createNewConfiguration: ServiceDef2[Seq[Collection], AppException with ContactException with CollectionException] =
     for {
-      saveInstalledApps <- di.deviceProcess.saveInstalledApps
+      _ <- di.deviceProcess.saveInstalledApps
       _ = setProcess(GettingAppsProcess)
       apps <- di.deviceProcess.getSavedApps
       _ = setProcess(LoadingConfigProcess)
@@ -27,6 +27,7 @@ trait CreateCollectionsTasks
 
    def loadConfiguration(deviceId: String): ServiceDef2[Seq[Collection], AppException with CreateBitmapException with UserConfigException with CollectionException] =
     for {
+      _ <- di.deviceProcess.saveInstalledApps
       apps <- di.deviceProcess.getSavedApps
       _ = setProcess(GettingAppsProcess)
       userCollections <- di.userConfigProcess.getUserCollection(deviceId)
