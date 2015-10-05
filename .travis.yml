@@ -8,10 +8,6 @@ addons:
       - libc6-i386
       - lib32z1
       - lib32stdc++6
-env:
-  - GIT_BRANCH=${TRAVIS_BRANCH}
-  - GIT_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER}
-  - GIT_PR=${TRAVIS_PULL_REQUEST}
 before_install:
   - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
   - tar xf android-sdk_r24-linux.tgz
@@ -24,6 +20,9 @@ before_install:
   - echo yes | android update sdk --all --filter extra-android-support --no-ui
   - echo yes | android update sdk --all --filter extra-android-m2repository --no-ui
   - echo yes | android update sdk --all --filter extra-google-m2repository --no-ui
+  - export GIT_BRANCH=${TRAVIS_BRANCH}
+  - export GIT_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER}
+  - export GIT_PR=${TRAVIS_PULL_REQUEST}
 script:
   - sbt ++$TRAVIS_SCALA_VERSION "project commons" coverage test
   - sbt ++$TRAVIS_SCALA_VERSION "project api" coverage test
