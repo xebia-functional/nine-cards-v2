@@ -65,7 +65,11 @@ object Settings {
 
   val bucketName = sys.env("AWS_BUCKET")
   val hostName = s"$bucketName.s3.amazonaws.com"
-  val apkName = s"nine-cards-v2-${sys.env("GIT_BRANCH")}.apk"
+  val buildNumber = sys.env("GIT_BUILD_NUMBER")
+  val apkName = sys.env("GIT_PR") match {
+    case "false" => s"nine-cards-v2-latest.apk"
+    case _ => s"nine-cards-v2-$buildNumber.apk"
+  }
   lazy val customS3Settings = s3Settings ++ Seq(
     host in upload := hostName,
     progress in upload := true,

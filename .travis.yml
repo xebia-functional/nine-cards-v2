@@ -10,6 +10,8 @@ addons:
       - lib32stdc++6
 env:
   - GIT_BRANCH=${TRAVIS_BRANCH}
+  - GIT_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER}
+  - GIT_PR=${TRAVIS_PULL_REQUEST}
 before_install:
   - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
   - tar xf android-sdk_r24-linux.tgz
