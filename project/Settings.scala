@@ -74,7 +74,7 @@ object Settings {
       hostName,
       sys.env("AWS_ACCESS_KEY_ID"),
       sys.env("AWS_SECRET_KEY")),
-    mappings in upload := Seq((target.value / "android-bin" / "nine-cards-v2-debug.apk", apkName))
+    mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-debug.apk", apkName))
   )
 
   lazy val duplicatedFiles = Set(
