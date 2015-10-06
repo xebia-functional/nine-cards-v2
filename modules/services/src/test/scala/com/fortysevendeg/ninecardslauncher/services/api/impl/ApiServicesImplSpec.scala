@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiRecommendationService, ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice
@@ -40,7 +40,14 @@ trait ApiServicesSpecification
 
     val userConfigService = mock[ApiUserConfigService]
 
-    val apiServices = new ApiServicesImpl(apiServicesConfig, apiUserService, googlePlayService, userConfigService)
+    val apiRecommendationService = mock[ApiRecommendationService]
+
+    val apiServices = new ApiServicesImpl(
+      apiServicesConfig, 
+      apiUserService, 
+      googlePlayService, 
+      userConfigService, 
+      apiRecommendationService)
 
   }
 
@@ -57,6 +64,10 @@ trait ApiServicesSpecification
     val googlePlayPackages = generateGooglePlayPackages
 
     val googlePlaySimplePackages = generateGooglePlaySimplePackages
+
+    val googlePlayApps = 1 to 10 map (_ => generateGooglePlayApp)
+    
+    val googlePlayRecommendation = generateGooglePlayRecommendation(googlePlayApps)
 
     val userConfig = generateUserConfig
 
@@ -130,6 +141,11 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[apiModel.UserConfig](statusCode, Some(userConfig))))
       }
 
+    apiRecommendationService.getRecommendedApps(any, any)(any, any) returns
+      Service {
+        Task(Answer(ServiceClientResponse[apiModel.GooglePlayRecommendation](statusCode, Some(googlePlayRecommendation))))
+      }
+
   }
 
   trait ErrorApiServicesImplResponses
@@ -198,6 +214,10 @@ trait ApiServicesSpecification
     }
 
     userConfigService.tester(any, any)(any) returns Service {
+      Task(Errata(exception))
+    }
+
+    apiRecommendationService.getRecommendedApps(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
   }
@@ -559,6 +579,32 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.tester(Map.empty).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, apiException)) => apiException must beLike {
+              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
+            }
+          }
+        }
+      }
+
+  }
+
+  "getRecommendedApps" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.getRecommendedApps(Seq.empty, 10).run.run
+        result must beLike {
+          case Answer(response) =>
+            response.statusCode shouldEqual statusCode
+            response.seq.map(_.docid) shouldEqual googlePlayApps.map(_.docid)
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.getRecommendedApps(Seq.empty, 10).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
