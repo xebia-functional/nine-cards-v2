@@ -101,6 +101,8 @@ class LauncherActivity
       onPreTask = () => showDrawerLoading,
       onResult = (apps: Seq[App]) => addApps(apps, (app: App) => {
         execute(toNineCardIntent(app))
+      }, (app: App) => {
+        launchSettings(app.packageName)
       })
     )
 

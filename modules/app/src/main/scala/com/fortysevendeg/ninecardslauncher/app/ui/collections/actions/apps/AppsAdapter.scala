@@ -9,7 +9,8 @@ import macroid.ActivityContextWrapper
 
 case class AppsAdapter(
   initialSeq: Seq[AppHeadered],
-  clickListener: (App) => Unit)
+  clickListener: (App) => Unit,
+  longClickListener: Option[(App) => Unit])
   (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_])
   extends HeaderedItemAdapter[App] {
 

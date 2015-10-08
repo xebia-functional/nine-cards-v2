@@ -8,14 +8,17 @@ import Libraries.scala._
 import Libraries.test._
 import Libraries.debug._
 import android.Keys._
+import com.typesafe.sbt.S3Plugin._
+import com.typesafe.sbt.S3Plugin.S3._
 import sbt.Keys._
 import sbt._
 
 object Settings {
 
   // App Module
-  lazy val appSettings = basicSettings ++ multiDex ++
+  lazy val appSettings = basicSettings ++ multiDex ++ customS3Settings ++
     Seq(
+      name := "nine-cards-v2",
       run <<= run in Android,
       javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
       transitiveAndroidLibs in Android := true,
@@ -58,6 +61,24 @@ object Settings {
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
     libraryDependencies ++= Seq(scalaz, scalazConcurrent)
+  )
+
+  val bucketName = sys.env("AWS_BUCKET")
+  val hostName = s"$bucketName.s3.amazonaws.com"
+  val buildNumber = sys.env("GIT_BUILD_NUMBER")
+  val apkName = sys.env("GIT_PR") match {
+    case "false" => s"nine-cards-v2-latest.apk"
+    case _ => s"nine-cards-v2-$buildNumber.apk"
+  }
+  lazy val customS3Settings = s3Settings ++ Seq(
+    host in upload := hostName,
+    progress in upload := true,
+    credentials += Credentials(
+      "Amazon S3",
+      hostName,
+      sys.env("AWS_ACCESS_KEY_ID"),
+      sys.env("AWS_SECRET_KEY")),
+    mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-debug.apk", apkName))
   )
 
   lazy val duplicatedFiles = Set(

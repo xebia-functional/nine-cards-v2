@@ -14,6 +14,9 @@ case class AppHeadered(item: Option[App] = None, header: Option[String] = None)
 object AppHeadered
   extends HeaderUtils {
 
+  def generateAppHeaderedListByCategory(category: String, apps: Seq[App]) =
+    AppHeadered(header = Option(category)) +: (apps sortBy sortByName map (app => AppHeadered(item = Option(app))))
+
   def generateAppHeaderedList(apps: Seq[App]): Seq[AppHeadered] =
     generateAppsForList(apps sortBy sortByName, Seq.empty)
 

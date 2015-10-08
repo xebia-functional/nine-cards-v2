@@ -117,18 +117,20 @@ trait DrawerComposer
       updateNavigationToTransparent) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealOutAppDrawer(source)))
 
-  def addApps(apps: Seq[App], clickListener: (App) => Unit)
+  def addApps(apps: Seq[App], clickListener: (App) => Unit, longClickListener: (App) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
     swipeAdapter(new AppsAdapter(
       initialSeq = generateAppHeaderedList(apps),
-      clickListener = clickListener))
+      clickListener = clickListener,
+      longClickListener = Option(longClickListener)))
 
 
   def addContacts(contacts: Seq[Contact], clickListener: (Contact) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
     swipeAdapter(new ContactsAdapter(
       initialSeq = generateContactsForList(contacts),
-      clickListener = clickListener))
+      clickListener = clickListener,
+      longClickListener = None))
 
   private[this] def swipeAdapter(adapter: HeaderedItemAdapter[_]) =
     showDrawerData ~
