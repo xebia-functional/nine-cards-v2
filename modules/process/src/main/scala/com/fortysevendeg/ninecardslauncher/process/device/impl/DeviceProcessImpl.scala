@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -120,7 +119,7 @@ class DeviceProcessImpl(
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
 
-  private def getAppCategory(packageName: String)(implicit context: ContextSupport) =
+  private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
       requestConfig <- apiUtils.getRequestConfig
       appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).run.run match {
@@ -134,6 +133,8 @@ class DeviceProcessImpl(
     val tasks = items map (persistenceServices.addApp(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
   }
+
+
 
   private[this] def addCacheCategories(items: Seq[AddCacheCategoryRequest]):
   ServiceDef2[Seq[CacheCategory], PersistenceServiceException] = Service {
