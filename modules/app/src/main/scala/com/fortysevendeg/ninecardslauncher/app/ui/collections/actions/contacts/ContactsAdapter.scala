@@ -9,7 +9,8 @@ import macroid.ActivityContextWrapper
 
 case class ContactsAdapter(
   initialSeq: Seq[ContactHeadered],
-  clickListener: (Contact) => Unit)
+  clickListener: (Contact) => Unit,
+  longClickListener: Option[(Contact) => Unit])
   (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_])
   extends HeaderedItemAdapter[Contact] {
 
