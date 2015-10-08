@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.receivers
 
+import com.fortysevendeg.ninecardslauncher2.R
 import android.content.Intent._
 import android.content._
 import com.fortysevendeg.ninecardslauncher.app.di.Injector

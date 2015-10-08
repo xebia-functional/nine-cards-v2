@@ -1,10 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
@@ -60,11 +62,10 @@ class DeviceProcessImpl(
 
   override def saveApp(packageName: String)(implicit context: ContextSupport) =
     (for {
-      requestConfig <- apiUtils.getRequestConfig
       app <- appsService.getApplication(packageName)
-      googlePlayPackageResponse <- apiServices.googlePlayPackage(packageName)(requestConfig)
+      appCategory <- getAppCategory(packageName)
       appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
-      _ <- persistenceServices.addApp(toAddAppRequest(app, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
+      _ <- persistenceServices.addApp(toAddAppRequest(app, appCategory, appPackagePath.path))
     } yield ()).resolve[AppException]
 
   override def deleteApp(packageName: String)(implicit context: ContextSupport) =
@@ -118,6 +119,15 @@ class DeviceProcessImpl(
     (for {
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
+
+  private def getAppCategory(packageName: String)(implicit context: ContextSupport) =
+    for {
+      requestConfig <- apiUtils.getRequestConfig
+      appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).run.run match {
+        case Answer(g) => g.app.details.appDetails.appCategory.headOption.getOrElse("")
+        case _ => misc
+      }
+    } yield appCategory
 
   private[this] def addApps(items: Seq[AddAppRequest]):
   ServiceDef2[Seq[App], PersistenceServiceException] = Service {
