@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, LauncherExecutor, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
@@ -30,6 +31,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait LauncherComposer
   extends Styles
+  with DrawerComposer
   with FabButtonBehaviour
   with LauncherExecutor {
 
@@ -198,6 +200,16 @@ trait LauncherComposer
     (workspaces <~ lwsSelect(page)) ~
       (paginationPanel <~ reloadPager(page)) ~
       closeMenu()
+
+  def backByPriority(implicit context: ActivityContextWrapper): Ui[_] = if (isMenuVisible) {
+    closeMenu()
+  } else if (fabMenuOpened) {
+    swapFabButton()
+  } else if (isDrawerVisible) {
+    revealOutDrawer
+  } else {
+    Ui.nop
+  }
 
   private[this] def goToMenuOption(itemId: Int)
     (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = itemId match {
