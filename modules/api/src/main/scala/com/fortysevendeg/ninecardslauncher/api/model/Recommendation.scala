@@ -1,13 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.api.model
 
 case class RecommendationRequest(
-    collectionId: String,
+    collectionId: Option[String],
     categories: Seq[String],
     adPresenceRatio: Double,
     likePackages: Seq[String],
     excludePackages: Seq[String],
     limit: Int,
-    adsRequest: AdsRequest)
+    adsRequest: Option[AdsRequest])
 
 case class AdsRequest(
     userAgentHeader: String,

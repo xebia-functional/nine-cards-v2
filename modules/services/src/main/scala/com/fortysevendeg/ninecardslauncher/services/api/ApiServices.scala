@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.services.api.models.{DeviceType, GoogleDevice, UserConfigDevice, UserConfigGeoInfo}
+import com.fortysevendeg.ninecardslauncher.services.api.models._
 
 trait ApiServices {
 
@@ -157,4 +157,16 @@ trait ApiServices {
    */
   def tester(
     replace: Map[String, String])(implicit requestConfig: RequestConfig): ServiceDef2[TesterResponse, ApiServiceException]
+
+  /**
+   * Fetches the recommended applications based on some request params
+   * @param categories sequence of package ids
+   * @param limit the maximum number of apps returned
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
+   *         of the response and the sequence of recommended [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
+   * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+   */
+  def getRecommendedApps(
+    categories: Seq[String],
+    limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[RecommendationResponse, ApiServiceException]
 }
