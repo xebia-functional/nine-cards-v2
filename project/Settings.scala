@@ -63,12 +63,12 @@ object Settings {
     libraryDependencies ++= Seq(scalaz, scalazConcurrent)
   )
 
-  val bucketName = sys.env("AWS_BUCKET")
+  val bucketName = sys.env.getOrElse("AWS_BUCKET", "")
+  val pullRequest = sys.env.getOrElse("GIT_PR", "false")
   val hostName = s"$bucketName.s3.amazonaws.com"
-  val buildNumber = sys.env("GIT_BUILD_NUMBER")
-  val apkName = sys.env("GIT_PR") match {
+  val apkName = pullRequest match {
     case "false" => s"nine-cards-v2-latest.apk"
-    case _ => s"nine-cards-v2-$buildNumber.apk"
+    case number => s"nine-cards-v2-$number.apk"
   }
   lazy val customS3Settings = s3Settings ++ Seq(
     host in upload := hostName,
@@ -76,8 +76,8 @@ object Settings {
     credentials += Credentials(
       "Amazon S3",
       hostName,
-      sys.env("AWS_ACCESS_KEY_ID"),
-      sys.env("AWS_SECRET_KEY")),
+      sys.env.getOrElse("AWS_ACCESS_KEY_ID", ""),
+      sys.env.getOrElse("AWS_SECRET_KEY", "")),
     mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-debug.apk", apkName))
   )
 
