@@ -157,4 +157,10 @@ trait ApiServicesImplData {
       communityMember = false,
       joinedThrough = None,
       tester = false)
+
+  def generateGooglePlayRecommendation(googlePlayApps: Seq[GooglePlayApp]) =
+    GooglePlayRecommendation(
+      googlePlayApps.size,
+      googlePlayApps map (app => GooglePlayRecommendationItems(app.docid, app, None))
+    )
 }

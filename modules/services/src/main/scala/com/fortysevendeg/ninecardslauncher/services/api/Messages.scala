@@ -60,3 +60,7 @@ case class CheckpointJoinedByResponse(
 case class TesterResponse(
   statusCode: Int,
   userConfig: UserConfig) extends UserConfigResponse
+
+case class RecommendationResponse(
+  statusCode: Int,
+  seq: Seq[GooglePlayApp])
