@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -46,15 +47,21 @@ class DeviceProcessImpl(
       requestConfig <- apiUtils.getRequestConfig
       installedApps <- appsService.getInstalledApplications
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
+      googlePlayPackages = googlePlayPackagesResponse.packages match {
+        case Seq() => None
+        case _ => Some(googlePlayPackagesResponse)
+      }
       appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
       apps = installedApps map { app =>
         val path = appPaths.find { path =>
           path.packageName.equals(app.packageName) && path.className.equals(app.className)
         } map (_.path)
-        val category = googlePlayPackagesResponse.packages.find { googlePlayPackage =>
-          googlePlayPackage.app.docid.equals(app.packageName)
-        } map (_.app.details.appDetails.appCategory.headOption.getOrElse(""))
-        toAddAppRequest(app, category.getOrElse(""), path.getOrElse(""))
+        val category = googlePlayPackages match {
+          case Some(g) => g.packages.find { googlePlayPackage => googlePlayPackage.app.docid.equals(app.packageName)
+            } map (_.app.details.appDetails.appCategory.headOption.getOrElse(""))
+          case None => Some(misc)
+        }
+        toAddAppRequest(app, category.getOrElse(misc), path.getOrElse(""))
       }
       _ <- addApps(apps)
     } yield ()).resolve[AppException]
@@ -123,7 +130,7 @@ class DeviceProcessImpl(
     for {
       requestConfig <- apiUtils.getRequestConfig
       appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).run.run match {
-        case Answer(g) => g.app.details.appDetails.appCategory.headOption.getOrElse("")
+        case Answer(g) => g.app.details.appDetails.appCategory.headOption.getOrElse(misc)
         case _ => misc
       }
     } yield appCategory
@@ -133,8 +140,6 @@ class DeviceProcessImpl(
     val tasks = items map (persistenceServices.addApp(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
   }
-
-
 
   private[this] def addCacheCategories(items: Seq[AddCacheCategoryRequest]):
   ServiceDef2[Seq[CacheCategory], PersistenceServiceException] = Service {
