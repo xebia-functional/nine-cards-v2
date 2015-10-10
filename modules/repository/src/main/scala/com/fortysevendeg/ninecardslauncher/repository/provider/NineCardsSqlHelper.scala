@@ -11,7 +11,6 @@ class NineCardsSqlHelper(context: Context)
   override def onCreate(db: SQLiteDatabase) = {
 
     db.execSQL(AppEntity.createTableSQL)
-    db.execSQL(CacheCategoryEntity.createTableSQL)
     db.execSQL(CollectionEntity.createTableSQL)
     db.execSQL(CardEntity.createTableSQL)
     db.execSQL(GeoInfoEntity.createTableSQL)
@@ -34,6 +33,7 @@ class NineCardsSqlHelper(context: Context)
         db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.originalSharedCollectionId + " TEXT")
         db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.sharedCollectionSubscribed + " INTEGER")
       case 5 => db.execSQL(AppEntity.createTableSQL)
+      case 6 => db.execSQL("DROP TABLE CacheCategory")
     }
 
     new Handler().post(
@@ -46,5 +46,5 @@ class NineCardsSqlHelper(context: Context)
 object NineCardsSqlHelper {
   val id = "_id"
   val databaseName = "nineCards"
-  val databaseVersion = 5
+  val databaseVersion = 6
 }

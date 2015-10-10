@@ -88,9 +88,6 @@ trait Conversions {
   def toFetchCollectionByPositionRequest(pos: Int) = FetchCollectionByPositionRequest(
     position = pos)
 
-  def toFetchCacheCategoryByPackageRequest(appsCategory: String) = FetchCacheCategoryByPackageRequest(
-    packageName = appsCategory)
-
   def toCardSeq(servicesCardSeq: Seq[ServicesCard]) = servicesCardSeq map toCard
 
   def toCard(servicesCard: ServicesCard) = Card(

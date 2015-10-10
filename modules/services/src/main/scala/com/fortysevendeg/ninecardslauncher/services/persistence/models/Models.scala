@@ -40,15 +40,6 @@ case class Card(
   numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
-case class CacheCategory(
-  id: Int,
-  packageName: String,
-  category: String,
-  starRating: Double,
-  numDownloads: String,
-  ratingsCount: Int,
-  commentCount: Int)
-
 case class GeoInfo(
   id: Int,
   constrain: String,

@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ContactServices, ContactInfo => ContactInfoServices,
   ContactEmail => ContactEmailServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateAppRequest, AddAppRequest, AddCacheCategoryRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateAppRequest, AddAppRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
 
@@ -62,17 +62,6 @@ trait DeviceConversions {
         packageName = docid,
         url = icon,
         name = title)
-  }
-
-  def toAddCacheCategoryRequestSeq(items: Seq[GooglePlaySimplePackage]): Seq[AddCacheCategoryRequest] = items map {
-    item =>
-      AddCacheCategoryRequest(
-        packageName = item.packageName,
-        category = item.appCategory,
-        starRating = item.starRating,
-        numDownloads = item.numDownloads,
-        ratingsCount = item.ratingCount,
-        commentCount = item.commentCount)
   }
 
   def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map toAppPackage

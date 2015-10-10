@@ -27,40 +27,6 @@ case class UpdateAppRequest(
   version: String,
   installedFromGooglePlay: Boolean)
 
-case class AddCacheCategoryRequest(
-  packageName: String,
-  category: String,
-  starRating: Double,
-  numDownloads: String,
-  ratingsCount: Int,
-  commentCount: Int)
-
-case class DeleteCacheCategoryRequest(cacheCategory: CacheCategory)
-
-case class DeleteCacheCategoryResponse(deleted: Int)
-
-case class DeleteCacheCategoryByPackageRequest(packageName: String)
-
-case class DeleteCacheCategoryByPackageResponse(deleted: Int)
-
-case class FindCacheCategoryByIdRequest(id: Int)
-
-case class FindCacheCategoryByIdResponse(category: Option[CacheCategory])
-
-case class FetchCacheCategoryByPackageRequest(packageName: String)
-
-case class FetchCacheCategoryByPackageResponse(category: Option[CacheCategory])
-
-case class UpdateCacheCategoryRequest(
-  id: Int, packageName: String,
-  category: String,
-  starRating: Double,
-  numDownloads: String,
-  ratingsCount: Int,
-  commentCount: Int)
-
-case class UpdateCacheCategoryResponse(updated: Int)
-
 case class AddCardRequest(
   collectionId: Option[Int] = None,
   position: Int,

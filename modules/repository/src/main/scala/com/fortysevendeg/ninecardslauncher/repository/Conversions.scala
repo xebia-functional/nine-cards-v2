@@ -19,16 +19,6 @@ object Conversions {
       version = app.data.version,
       installedFromGooglePlay = app.data.installedFromGooglePlay))
 
-  def toCacheCategory(cacheCategory: CacheCategoryEntity): CacheCategory = CacheCategory(
-    id = cacheCategory.id,
-    data = CacheCategoryData(
-      packageName = cacheCategory.data.packageName,
-      category = cacheCategory.data.category,
-      starRating = cacheCategory.data.starRating,
-      numDownloads = cacheCategory.data.numDownloads,
-      ratingsCount = cacheCategory.data.ratingsCount,
-      commentCount = cacheCategory.data.commentCount))
-
   def toCard(cardEntity: CardEntity): Card = Card(
     id = cardEntity.id,
     data = CardData(

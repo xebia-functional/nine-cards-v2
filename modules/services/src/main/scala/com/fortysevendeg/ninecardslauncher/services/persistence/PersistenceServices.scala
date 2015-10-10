@@ -45,20 +45,6 @@ trait PersistenceServices {
    */
   def updateApp(request: UpdateAppRequest): ServiceDef2[Int, PersistenceServiceException]
 
-  def addCacheCategory(request: AddCacheCategoryRequest): ServiceDef2[CacheCategory, PersistenceServiceException]
-
-  def deleteCacheCategory(request: DeleteCacheCategoryRequest): ServiceDef2[Int, PersistenceServiceException]
-
-  def deleteCacheCategoryByPackage(request: DeleteCacheCategoryByPackageRequest): ServiceDef2[Int, PersistenceServiceException]
-
-  def fetchCacheCategoryByPackage(request: FetchCacheCategoryByPackageRequest): ServiceDef2[Option[CacheCategory], PersistenceServiceException]
-
-  def fetchCacheCategories: ServiceDef2[Seq[CacheCategory], PersistenceServiceException]
-
-  def findCacheCategoryById(request: FindCacheCategoryByIdRequest): ServiceDef2[Option[CacheCategory], PersistenceServiceException]
-
-  def updateCacheCategory(request: UpdateCacheCategoryRequest): ServiceDef2[Int, PersistenceServiceException]
-
   def addCard(request: AddCardRequest): ServiceDef2[Card, PersistenceServiceException]
 
   def deleteCard(request: DeleteCardRequest): ServiceDef2[Int, PersistenceServiceException]

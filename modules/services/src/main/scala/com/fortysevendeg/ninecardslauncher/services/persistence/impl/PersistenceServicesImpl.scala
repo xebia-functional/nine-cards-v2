@@ -23,7 +23,6 @@ import scalaz.concurrent.Task
 
 class PersistenceServicesImpl(
   appRepository: AppRepository,
-  cacheCategoryRepository: CacheCategoryRepository,
   cardRepository: CardRepository,
   collectionRepository: CollectionRepository,
   geoInfoRepository: GeoInfoRepository)
@@ -68,41 +67,6 @@ class PersistenceServicesImpl(
   override def updateApp(request: UpdateAppRequest) =
     (for {
       updated <- appRepository.updateApp(toRepositoryApp(request))
-    } yield updated).resolve[PersistenceServiceException]
-
-  override def addCacheCategory(request: AddCacheCategoryRequest) =
-    (for {
-      cacheCategory <- cacheCategoryRepository.addCacheCategory(toRepositoryCacheCategoryData(request))
-    } yield toCacheCategory(cacheCategory)).resolve[PersistenceServiceException]
-
-  override def deleteCacheCategory(request: DeleteCacheCategoryRequest) =
-    (for {
-      deleted <- cacheCategoryRepository.deleteCacheCategory(toRepositoryCacheCategory(request.cacheCategory))
-    } yield deleted).resolve[PersistenceServiceException]
-
-  override def deleteCacheCategoryByPackage(request: DeleteCacheCategoryByPackageRequest) =
-    (for {
-      deleted <- cacheCategoryRepository.deleteCacheCategoryByPackage(request.packageName)
-    } yield deleted).resolve[PersistenceServiceException]
-
-  override def fetchCacheCategoryByPackage(request: FetchCacheCategoryByPackageRequest) =
-    (for {
-      maybeCacheCategory <- cacheCategoryRepository.fetchCacheCategoryByPackage(request.packageName)
-    } yield maybeCacheCategory map toCacheCategory).resolve[PersistenceServiceException]
-
-  override def fetchCacheCategories =
-    (for {
-      cacheCategories <- cacheCategoryRepository.fetchCacheCategories
-    } yield cacheCategories map toCacheCategory).resolve[PersistenceServiceException]
-
-  override def findCacheCategoryById(request: FindCacheCategoryByIdRequest) =
-    (for {
-      maybeCacheCategory <- cacheCategoryRepository.findCacheCategoryById(request.id)
-    } yield maybeCacheCategory map toCacheCategory).resolve[PersistenceServiceException]
-
-  override def updateCacheCategory(request: UpdateCacheCategoryRequest) =
-    (for {
-      updated <- cacheCategoryRepository.updateCacheCategory(toRepositoryCacheCategory(request))
     } yield updated).resolve[PersistenceServiceException]
 
   override def addCard(request: AddCardRequest) =

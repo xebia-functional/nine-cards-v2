@@ -16,17 +16,9 @@ case class AppData(
   version: String,
   installedFromGooglePlay: Boolean)
 
-case class CacheCategory(
-  id: Int,
-  data: CacheCategoryData)
 
-case class CacheCategoryData(
-  packageName: String,
-  category: String,
-  starRating: Double,
-  numDownloads: String,
-  ratingsCount: Int,
-  commentCount: Int)
+
+
 
 case class Collection(
   id: Int,

@@ -15,8 +15,6 @@ class NineCardsContentProvider extends ContentProvider {
 
   private[this] def getUriInfo(uri: Uri): (String, MimeType) =
     uriMatcher.`match`(uri) match {
-      case `codeCacheCategoryAllItems` => (CacheCategoryEntity.table, MimeTypeAllItems)
-      case `codeCacheCategorySingleItem` => (CacheCategoryEntity.table, MimeTypeSingleItem)
       case `codeCardAllItems` => (CardEntity.table, MimeTypeAllItems)
       case `codeCardSingleItem` => (CardEntity.table, MimeTypeSingleItem)
       case `codeCollectionAllItems` => (CollectionEntity.table, MimeTypeAllItems)
@@ -120,8 +118,6 @@ class NineCardsContentProvider extends ContentProvider {
 object NineCardsContentProvider {
 
   val invalidUri = "Invalid uri: "
-  val codeCacheCategoryAllItems = 1
-  val codeCacheCategorySingleItem = 2
   val codeCardAllItems = 3
   val codeCardSingleItem = 4
   val codeCollectionAllItems = 5
@@ -136,8 +132,6 @@ object NineCardsContentProvider {
   val uriMatcher = new UriMatcher(UriMatcher.NO_MATCH)
   uriMatcher.addURI(authorityPart, AppEntity.table, codeAppAllItems)
   uriMatcher.addURI(authorityPart, s"${AppEntity.table}/#", codeAppSingleItem)
-  uriMatcher.addURI(authorityPart, CacheCategoryEntity.table, codeCacheCategoryAllItems)
-  uriMatcher.addURI(authorityPart, s"${CacheCategoryEntity.table}/#", codeCacheCategorySingleItem)
   uriMatcher.addURI(authorityPart, CardEntity.table, codeCardAllItems)
   uriMatcher.addURI(authorityPart, s"${CardEntity.table}/#", codeCardSingleItem)
   uriMatcher.addURI(authorityPart, CollectionEntity.table, codeCollectionAllItems)
