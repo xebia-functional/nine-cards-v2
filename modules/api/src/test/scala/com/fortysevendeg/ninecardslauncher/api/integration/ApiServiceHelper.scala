@@ -103,13 +103,13 @@ trait ApiServiceHelper {
 
 
   def createRecommendationRequest(
-    collectionId: String = "",
+    collectionId: Option[String] = None,
     categories: Seq[String] = Seq.empty,
     adPresenceRatio: Double = 0.0,
     likePackages: Seq[String] = Seq.empty,
     excludePackages: Seq[String] = Seq.empty,
     limit: Int = 10,
-    adsRequest: AdsRequest = createAdsRequest()): RecommendationRequest =
+    adsRequest: Option[AdsRequest] = Some(createAdsRequest())): RecommendationRequest =
     RecommendationRequest(
       collectionId = collectionId,
       categories = categories,

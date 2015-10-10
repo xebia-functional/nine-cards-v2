@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.di
 
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiRecommendationService, ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
@@ -51,7 +51,8 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     apiServicesConfig = apiServicesConfig,
     apiUserService = new ApiUserService(serviceClient),
     googlePlayService = new ApiGooglePlayService(serviceClient),
-    userConfigService = new ApiUserConfigService(serviceClient))
+    userConfigService = new ApiUserConfigService(serviceClient),
+    recommendationService = new ApiRecommendationService(serviceClient))
 
   private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
     contextWrapper.application.getContentResolver)

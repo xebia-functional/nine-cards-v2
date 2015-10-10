@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services.{ApiRecommendationService, ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
@@ -17,7 +17,8 @@ class ApiServicesImpl(
   apiServicesConfig: ApiServicesConfig,
   apiUserService: ApiUserService,
   googlePlayService: ApiGooglePlayService,
-  userConfigService: ApiUserConfigService)
+  userConfigService: ApiUserConfigService,
+  recommendationService: ApiRecommendationService)
   extends ApiServices
   with Conversions
   with ImplicitsApiServiceExceptions {
@@ -45,9 +46,12 @@ class ApiServicesImpl(
 
   val userConfigNotFoundMessage = "User configuration not found"
 
+  val categoryNotFoundMessage = "Google Play Category not found"
+
   import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
+  import com.fortysevendeg.ninecardslauncher.api.reads.RecommendationImplicits._
 
   override def login(
     email: String,
@@ -155,6 +159,12 @@ class ApiServicesImpl(
       response <- userConfigService.tester(replace, requestConfig.toHeader)
       userConfig <- readOption(response.data, userConfigNotFoundMessage)
     } yield TesterResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
+
+  override def getRecommendedApps(categories: Seq[String], limit: Int)(implicit requestConfig: RequestConfig) =
+    (for {
+      response <- recommendationService.getRecommendedApps(toRecommendationRequest(categories, limit), requestConfig.toHeader)
+      recommendation <- readOption(response.data, categoryNotFoundMessage)
+    } yield RecommendationResponse(response.statusCode, toPlayAppSeq(recommendation))).resolve[ApiServiceException]
 
   implicit class RequestHeaderHeader(request: RequestConfig) {
     def toHeader: Seq[(String, String)] =
