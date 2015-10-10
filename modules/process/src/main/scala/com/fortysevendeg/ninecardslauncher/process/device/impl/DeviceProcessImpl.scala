@@ -84,9 +84,9 @@ class DeviceProcessImpl(
       requestConfig <- apiUtils.getRequestConfig
       app <- appsService.getApplication(packageName)
       Some(appPersistence) <- persistenceServices.findAppByPackage(packageName)
-      googlePlayPackageResponse <- apiServices.googlePlayPackage(packageName)(requestConfig)
+      appCategory <- getAppCategory(packageName)
       appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
-      _ <- persistenceServices.updateApp(toUpdateAppRequest(appPersistence.id, app, googlePlayPackageResponse.app.details.appDetails.appCategory.headOption.getOrElse(""), appPackagePath.path))
+      _ <- persistenceServices.updateApp(toUpdateAppRequest(appPersistence.id, app, appCategory, appPackagePath.path))
     } yield ()).resolve[AppException]
 
   override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport) =
