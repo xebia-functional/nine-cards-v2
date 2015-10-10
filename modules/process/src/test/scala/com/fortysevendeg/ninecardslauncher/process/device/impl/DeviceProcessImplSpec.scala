@@ -635,13 +635,12 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns a AppException if api service fails" in
+    "returns an empty Answer if api service fails" in
       new DeviceProcessScope with ErrorApiServicesProcessScope {
         val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
-          }
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
         }
       }
 
