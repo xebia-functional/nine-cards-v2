@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -47,20 +46,12 @@ class DeviceProcessImpl(
       requestConfig <- apiUtils.getRequestConfig
       installedApps <- appsService.getInstalledApplications
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
-      googlePlayPackages = googlePlayPackagesResponse.packages match {
-        case Seq() => None
-        case _ => Some(googlePlayPackagesResponse)
-      }
       appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
       apps = installedApps map { app =>
         val path = appPaths.find { path =>
           path.packageName.equals(app.packageName) && path.className.equals(app.className)
         } map (_.path)
-        val category = googlePlayPackages match {
-          case Some(g) => g.packages.find { googlePlayPackage => googlePlayPackage.app.docid.equals(app.packageName)
-            } map (_.app.details.appDetails.appCategory.headOption.getOrElse(""))
-          case None => Some(misc)
-        }
+        val category = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
         toAddAppRequest(app, category.getOrElse(misc), path.getOrElse(""))
       }
       _ <- addApps(apps)
@@ -81,7 +72,6 @@ class DeviceProcessImpl(
 
   override def updateApp(packageName: String)(implicit context: ContextSupport) =
     (for {
-      requestConfig <- apiUtils.getRequestConfig
       app <- appsService.getApplication(packageName)
       Some(appPersistence) <- persistenceServices.findAppByPackage(packageName)
       appCategory <- getAppCategory(packageName)
