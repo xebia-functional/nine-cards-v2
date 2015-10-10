@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
+import com.fortysevendeg.ninecardslauncher.api.model.GooglePlayRecommendation
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json._
@@ -316,5 +317,18 @@ trait Conversions {
       from = apiTimeSlot.from,
       to = apiTimeSlot.to,
       days = apiTimeSlot.days)
+
+  def toRecommendationRequest(categories: Seq[String], limit: Int): apiModel.RecommendationRequest =
+    apiModel.RecommendationRequest(
+      collectionId = None,
+      categories = categories,
+      adPresenceRatio = 0.0,
+      likePackages = Seq.empty,
+      excludePackages = Seq.empty,
+      limit = limit,
+      adsRequest = None)
+
+  def toPlayAppSeq(recommendation: GooglePlayRecommendation): Seq[GooglePlayApp] =
+    recommendation.items map (item => toGooglePlayApp(item.app))
 
 }

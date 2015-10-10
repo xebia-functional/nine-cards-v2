@@ -21,7 +21,6 @@ before_install:
   - echo yes | android update sdk --all --filter extra-android-m2repository --no-ui
   - echo yes | android update sdk --all --filter extra-google-m2repository --no-ui
   - export GIT_BRANCH=${TRAVIS_BRANCH}
-  - export GIT_BUILD_NUMBER=${TRAVIS_BUILD_NUMBER}
   - export GIT_PR=${TRAVIS_PULL_REQUEST}
 script:
   - sbt ++$TRAVIS_SCALA_VERSION "project commons" coverage test

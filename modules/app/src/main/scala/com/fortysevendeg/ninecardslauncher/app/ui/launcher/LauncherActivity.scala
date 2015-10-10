@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
@@ -28,7 +29,6 @@ class LauncherActivity
   with ContextSupportProvider
   with TypedFindView
   with LauncherComposer
-  with DrawerComposer
   with SystemBarsTint
   with NineCardIntentConversions
   with LauncherExecutor {
@@ -43,6 +43,8 @@ class LauncherActivity
   }
 
   val playStorePackage = "com.android.vending"
+
+  var hasFocus = false
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
@@ -66,12 +68,24 @@ class LauncherActivity
     }
   }
 
-  override def onBackPressed(): Unit = if (isMenuVisible) {
-    runUi(closeMenu())
-  } else if (fabMenuOpened) {
-    runUi(swapFabButton())
-  } else if (isDrawerVisible) {
-    runUi(revealOutDrawer)
+  override def onBackPressed(): Unit = runUi(backByPriority)
+
+  override def onWindowFocusChanged(hasFocus: Boolean): Unit = {
+    super.onWindowFocusChanged(hasFocus)
+    this.hasFocus = hasFocus
+  }
+
+  override def onNewIntent(intent: Intent): Unit = {
+    super.onNewIntent(intent)
+    val alreadyOnHome = hasFocus && ((intent.getFlags &
+      Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+      != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+    if (alreadyOnHome) runUi(backByPriority)
+  }
+
+  override def dispatchKeyEvent(event: KeyEvent): Boolean = (event.getAction, event.getKeyCode) match {
+    case (KeyEvent.ACTION_DOWN | KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HOME) => true
+    case _ => super.dispatchKeyEvent(event)
   }
 
   private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
