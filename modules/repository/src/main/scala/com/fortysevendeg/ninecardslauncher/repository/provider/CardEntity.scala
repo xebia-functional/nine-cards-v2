@@ -62,19 +62,20 @@ object CardEntity {
         numDownloads = cursor.getString(cursor.getColumnIndex(numDownloads)),
         notification = cursor.getString(cursor.getColumnIndex(notification))))
 
-  def createTableSQL = "CREATE TABLE " + CardEntity.table +
-    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-    CardEntity.position + " INTEGER not null, " +
-    CardEntity.collectionId + " INTEGER not null, " +
-    CardEntity.term + " TEXT not null, " +
-    CardEntity.packageName + " TEXT, " +
-    CardEntity.cardType + " TEXT not null, " +
-    CardEntity.intent + " TEXT, " +
-    CardEntity.imagePath + " TEXT, " +
-    CardEntity.starRating + " DOUBLE, " +
-    CardEntity.micros + " INTEGER, " +
-    CardEntity.notification + " TEXT, " +
-    CardEntity.numDownloads + " TEXT )"
+  def createTableSQL =
+    s"""CREATE TABLE ${CardEntity.table}
+       |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+       |${CardEntity.position} INTEGER not null,
+       |${CardEntity.collectionId} INTEGER not null,
+       |${CardEntity.term} TEXT not null,
+       |${CardEntity.packageName} TEXT,
+       |${CardEntity.cardType} TEXT not null,
+       |${CardEntity.intent} TEXT,
+       |${CardEntity.imagePath} TEXT,
+       |${CardEntity.starRating} DOUBLE,
+       |${CardEntity.micros} INTEGER,
+       |${CardEntity.notification} TEXT,
+       |${CardEntity.numDownloads} TEXT )""".stripMargin
 }
 
 object CardEntityData {

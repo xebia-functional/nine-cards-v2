@@ -58,18 +58,19 @@ object AppEntity {
         version = cursor.getString(cursor.getColumnIndex(version)),
         installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0))
 
-  def createTableSQL = "CREATE TABLE " + AppEntity.table +
-    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-    AppEntity.name + " TEXT not null, " +
-    AppEntity.packageName + " TEXT not null, " +
-    AppEntity.className + " TEXT not null, " +
-    AppEntity.category + " TEXT not null, " +
-    AppEntity.imagePath + " TEXT not null, " +
-    AppEntity.colorPrimary + " TEXT not null, " +
-    AppEntity.dateInstalled + " DOUBLE, " +
-    AppEntity.dateUpdate + " DOUBLE, " +
-    AppEntity.version + " TEXT not null, " +
-    AppEntity.installedFromGooglePlay + " INTEGER )"
+  def createTableSQL =
+    s"""CREATE TABLE ${AppEntity.table}
+       |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+       |${AppEntity.name} TEXT not null,
+       |${AppEntity.packageName} TEXT not null,
+       |${AppEntity.className} TEXT not null,
+       |${AppEntity.category} TEXT not null,
+       |${AppEntity.imagePath} TEXT not null,
+       |${AppEntity.colorPrimary} TEXT not null,
+       |${AppEntity.dateInstalled} DOUBLE,
+       |${AppEntity.dateUpdate} DOUBLE,
+       |${AppEntity.version} TEXT not null,
+       |${AppEntity.installedFromGooglePlay} INTEGER )""".stripMargin
 }
 
 object AppEntityData {

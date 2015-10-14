@@ -42,14 +42,15 @@ object CacheCategoryEntity {
         ratingsCount = cursor.getInt(cursor.getColumnIndex(ratingsCount)),
         commentCount = cursor.getInt(cursor.getColumnIndex(commentCount))))
 
-  def createTableSQL = "CREATE TABLE " + CacheCategoryEntity.table +
-    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-    CacheCategoryEntity.packageName + " TEXT not null, " +
-    CacheCategoryEntity.category + " TEXT not null, " +
-    CacheCategoryEntity.starRating + " DOUBLE, " +
-    CacheCategoryEntity.numDownloads + " TEXT, " +
-    CacheCategoryEntity.ratingsCount + " INTEGER, " +
-    CacheCategoryEntity.commentCount + " INTEGER )"
+  def createTableSQL =
+    s"""CREATE TABLE ${CacheCategoryEntity.table}
+       |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+       |${CacheCategoryEntity.packageName} TEXT not null,
+       |${CacheCategoryEntity.category} TEXT not null,
+       |${CacheCategoryEntity.starRating} DOUBLE,
+       |${CacheCategoryEntity.numDownloads} TEXT,
+       |${CacheCategoryEntity.ratingsCount} INTEGER,
+       |${CacheCategoryEntity.commentCount} INTEGER )""".stripMargin
 }
 
 object CacheCategoryEntityData {
