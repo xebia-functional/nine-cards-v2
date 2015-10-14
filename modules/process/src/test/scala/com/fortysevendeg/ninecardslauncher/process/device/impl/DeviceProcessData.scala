@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
-import com.fortysevendeg.ninecardslauncher.services.persistence.AddAppRequest
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{AppData, App, CacheCategory}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
+import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 
 trait DeviceProcessData {
@@ -109,36 +108,36 @@ trait DeviceProcessData {
       version = version3,
       installedFromGooglePlay = installedFromGooglePlay3)
   )
-
+  
   val apps: Seq[App] = Seq(
     App(
-      id = 1,
       name = name1,
       packageName = packageName1,
       className = className1,
-      resourceIcon = resourceIcon1,
+      category = category1,
+      imagePath = imagePath1,
       colorPrimary = colorPrimary1,
       dateInstalled = dateInstalled1,
       dateUpdate = dateUpdate1,
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1),
     App(
-      id = 2,
       name = name2,
       packageName = packageName2,
       className = className2,
-      resourceIcon = resourceIcon2,
+      category = category1,
+      imagePath = imagePath2,
       colorPrimary = colorPrimary2,
       dateInstalled = dateInstalled2,
       dateUpdate = dateUpdate2,
       version = version2,
       installedFromGooglePlay = installedFromGooglePlay2),
     App(
-      id = 3,
       name = name3,
       packageName = packageName3,
       className = className3,
-      resourceIcon = resourceIcon3,
+      category = category1,
+      imagePath = imagePath3,
       colorPrimary = colorPrimary3,
       dateInstalled = dateInstalled3,
       dateUpdate = dateUpdate3,
@@ -146,73 +145,44 @@ trait DeviceProcessData {
       installedFromGooglePlay = installedFromGooglePlay3)
   )
 
-  val appDataSeq: Seq[AppData] = Seq(
-    AppData(
+  val appsPersistence: Seq[AppPersistence] = Seq(
+    AppPersistence(
+      id = 1,
       name = name1,
       packageName = packageName1,
       className = className1,
-      resourceIcon = resourceIcon1,
+      category = category1,
+      imagePath = imagePath1,
       colorPrimary = colorPrimary1,
       dateInstalled = dateInstalled1,
       dateUpdate = dateUpdate1,
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1),
-    AppData(
+    AppPersistence(
+      id = 2,
       name = name2,
       packageName = packageName2,
       className = className2,
-      resourceIcon = resourceIcon2,
+      category = category1,
+      imagePath = imagePath2,
       colorPrimary = colorPrimary2,
       dateInstalled = dateInstalled2,
       dateUpdate = dateUpdate2,
       version = version2,
       installedFromGooglePlay = installedFromGooglePlay2),
-    AppData(
+    AppPersistence(
+      id = 3,
       name = name3,
       packageName = packageName3,
       className = className3,
-      resourceIcon = resourceIcon3,
+      category = category1,
+      imagePath = imagePath3,
       colorPrimary = colorPrimary3,
       dateInstalled = dateInstalled3,
       dateUpdate = dateUpdate3,
       version = version3,
       installedFromGooglePlay = installedFromGooglePlay3)
   )
-
-  val newCacheCategory = CacheCategory(
-    id = 4,
-    packageName = packageName4,
-    category = "SOCIAL",
-    starRating = 4.5,
-    numDownloads = "+100.000",
-    ratingsCount = 5000,
-    commentCount = 40000)
-
-  val cacheCategories: Seq[CacheCategory] = Seq(
-    CacheCategory(
-      id = 1,
-      packageName = packageName1,
-      category = "SOCIAL",
-      starRating = 3.5,
-      numDownloads = "+500.000",
-      ratingsCount = 78000,
-      commentCount = 5000),
-    CacheCategory(
-      id = 2,
-      packageName = packageName2,
-      category = "COMMUNICATION",
-      starRating = 4.5,
-      numDownloads = "+100.000",
-      ratingsCount = 5000,
-      commentCount = 40000),
-    CacheCategory(
-      id = 3,
-      packageName = packageName3,
-      category = "TOOLS",
-      starRating = 4,
-      numDownloads = "+10.000.000",
-      ratingsCount = 2300,
-      commentCount = 34000))
 
   val appPackagePathNoCached = AppPackagePath(
     packageName = packageName4,
@@ -232,49 +202,6 @@ trait DeviceProcessData {
       packageName = packageName3,
       className = className3,
       path = path3))
-
-  val appCategorizedNoCached = AppCategorized(
-    name = name4,
-    packageName = packageName4,
-    className = className4,
-    imagePath = Option(path4),
-    category = Option("SOCIAL"),
-    starRating = Option(4.5),
-    numDownloads = Option("+100.000"),
-    ratingsCount = Option(5000),
-    commentCount = Option(40000))
-
-  val appsCategorized: Seq[AppCategorized] = Seq(
-    AppCategorized(
-      name = name1,
-      packageName = packageName1,
-      className = className1,
-      imagePath = Option(path1),
-      category = Option("SOCIAL"),
-      starRating = Option(3.5),
-      numDownloads = Option("+500.000"),
-      ratingsCount = Option(78000),
-      commentCount = Option(5000)),
-    AppCategorized(
-      name = name2,
-      packageName = packageName2,
-      className = className2,
-      imagePath = Option(path2),
-      category = Option("COMMUNICATION"),
-      starRating = Option(4.5),
-      numDownloads = Option("+100.000"),
-      ratingsCount = Option(5000),
-      commentCount = Option(40000)),
-    AppCategorized(
-      name = name3,
-      packageName = packageName3,
-      className = className3,
-      imagePath = Option(path3),
-      category = Option("TOOLS"),
-      starRating = Option(4),
-      numDownloads = Option("+10.000.000"),
-      ratingsCount = Option(2300),
-      commentCount = Option(34000)))
 
   val googlePlaySimplePackageNoCached = GooglePlaySimplePackage(
     packageName = packageName4,

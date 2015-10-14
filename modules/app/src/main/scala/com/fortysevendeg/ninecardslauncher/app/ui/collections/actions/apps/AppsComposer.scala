@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
+import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, ActivityContextWrapper, Ui}
@@ -64,10 +64,10 @@ trait AppsComposer
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def generateAppsAdapter(
-    apps: Seq[AppCategorized],
+    apps: Seq[App],
     filter: AppsFilter,
     category: String,
-    clickListener: (AppCategorized) => Unit)(implicit uiContext: UiContext[_]) = {
+    clickListener: (App) => Unit)(implicit uiContext: UiContext[_]) = {
     val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
     val adapter = new AppsAdapter(
       initialSeq = generateAppsHeadered(apps, filter, categoryName),
@@ -86,7 +86,7 @@ trait AppsComposer
   }
 
   def reloadAppsAdapter(
-    apps: Seq[AppCategorized],
+    apps: Seq[App],
     filter: AppsFilter,
     category: String)(implicit uiContext: UiContext[_]): Ui[_] = {
     val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
@@ -108,7 +108,7 @@ trait AppsComposer
       } getOrElse showGeneralError)
   }
 
-  private[this] def generateAppsHeadered(apps: Seq[AppCategorized], filter: AppsFilter, category: String) =
+  private[this] def generateAppsHeadered(apps: Seq[App], filter: AppsFilter, category: String) =
     filter match {
       case AllApps => generateAppHeaderedList(apps)
       case AppsByCategory => generateAppHeaderedListByCategory(category, apps)
@@ -125,17 +125,17 @@ trait AppsComposer
 
 case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
-  with ItemHeaderedViewHolder[AppCategorized]
+  with ItemHeaderedViewHolder[App]
   with TypedFindView {
 
   lazy val icon = Option(findView(TR.simple_item_icon))
 
   lazy val name = Option(findView(TR.simple_item_name))
 
-  override def bind(item: ItemHeadered[AppCategorized], position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
+  override def bind(item: ItemHeadered[App], position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     item.item match {
       case Some(app) =>
-        (icon <~ (app.imagePath map (ivCardUri(_, app.name)) getOrElse Tweak.blank)) ~
+        (icon <~ ivCardUri(app.imagePath, app.name)) ~
           (name <~ tvText(app.name)) ~
           (content <~ vIntTag(position))
       case _ => Ui.nop

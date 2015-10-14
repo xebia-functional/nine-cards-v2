@@ -7,23 +7,13 @@ case class App(
   name: String,
   packageName: String,
   className: String,
-  resourceIcon: Int,
+  category: String,
+  imagePath: String,
   colorPrimary: String,
   dateInstalled: Double,
   dateUpdate: Double,
   version: String,
   installedFromGooglePlay: Boolean)
-
-case class AppCategorized(
-  name: String,
-  packageName: String,
-  className: String,
-  imagePath: Option[String],
-  category: Option[String] = None,
-  starRating: Option[Double] = None,
-  numDownloads: Option[String] = None,
-  ratingsCount: Option[Int] = None,
-  commentCount: Option[Int] = None)
 
 case class Shortcut (
   title: String,

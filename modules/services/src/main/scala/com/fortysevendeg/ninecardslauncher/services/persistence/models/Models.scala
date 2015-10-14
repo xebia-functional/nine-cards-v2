@@ -5,18 +5,8 @@ case class App(
   name: String,
   packageName: String,
   className: String,
-  resourceIcon: Int,
-  colorPrimary: String,
-  dateInstalled: Double,
-  dateUpdate: Double,
-  version: String,
-  installedFromGooglePlay: Boolean)
-
-case class AppData(
-  name: String,
-  packageName: String,
-  className: String,
-  resourceIcon: Int,
+  category: String,
+  imagePath: String,
   colorPrimary: String,
   dateInstalled: Double,
   dateUpdate: Double,

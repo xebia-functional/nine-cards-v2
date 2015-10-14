@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.di
 
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiRecommendationService, ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
@@ -21,10 +22,9 @@ import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.squareup.{okhttp => okHttp}
-import macroid.ContextWrapper
 import com.facebook.stetho.okhttp.StethoInterceptor
 
-class Injector(implicit contextWrapper: ContextWrapper) {
+class Injector(implicit contextSupport: ContextSupport) {
 
   private[this] def createHttpClient = {
     val okHttpClient = new okHttp.OkHttpClient
@@ -34,7 +34,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     new OkHttpClient(okHttpClient)
   }
 
-  val resources = contextWrapper.application.getResources
+  val resources = contextSupport.getResources
 
   // Services
 
@@ -55,7 +55,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     recommendationService = new ApiRecommendationService(serviceClient))
 
   private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
-    contextWrapper.application.getContentResolver)
+    contextSupport.getContentResolver)
 
   private[this] lazy val uriCreator = new UriCreator
 
@@ -96,7 +96,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
 
   private[this] lazy val nameCategories: Map[String, String] = (categories map {
     category =>
-      val identifier = resources.getIdentifier(category.toLowerCase, "string", contextWrapper.application.getPackageName)
+      val identifier = resources.getIdentifier(category.toLowerCase, "string", contextSupport.getPackageName)
       (category, if (identifier != 0) resources.getString(identifier) else category)
   }).toMap
 

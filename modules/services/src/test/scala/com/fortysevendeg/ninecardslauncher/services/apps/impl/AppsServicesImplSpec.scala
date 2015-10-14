@@ -1,16 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.services.apps.impl
 
-import android.R.attr
 import android.content.Intent
 import android.content.pm._
-import android.content.res.Resources
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsInstalledException
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Errata, Answer, Result}
+import rapture.core.{Errata, Answer}
 
 import scala.collection.JavaConversions._
 
@@ -33,8 +31,10 @@ trait AppsServicesImplSpecification
       val mockActivityInfo = mock[ActivityInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
       sampleResolveInfo.activityInfo = mockActivityInfo
+      mockActivityInfo.name = sampleApp.className
       mockActivityInfo.applicationInfo = mockApplicationInfo
       mockApplicationInfo.packageName = sampleApp.packageName
+      sampleResolveInfo.loadLabel(packageManager) returns sampleApp.name
       sampleResolveInfo
     }
 
@@ -52,15 +52,8 @@ trait AppsServicesImplSpecification
       samplePackageInfo
     }
 
-    def createMockResourcesForApplication(sampleApp: Application): Resources = {
-      val sampleResources = mock[Resources]
-      sampleResources.getColor(attr.colorPrimary) returns sampleApp.colorPrimary.toInt
-      sampleResources
-    }
-
     val mockApps = List(createMockResolveInfo(sampleApp1), createMockResolveInfo(sampleApp2))
     val mockPackageInfo = List(createMockPackageInfo(sampleApp1), createMockPackageInfo(sampleApp2))
-    val mockResources= List(createMockResourcesForApplication(sampleApp1), createMockResourcesForApplication(sampleApp2))
 
     val packageInfo1 = createMockPackageInfo(sampleApp1)
     val packageInfo2 = createMockPackageInfo(sampleApp2)
@@ -68,10 +61,10 @@ trait AppsServicesImplSpecification
     packageManager.queryIntentActivities(mockIntent, 0) returns mockApps
     packageManager.getPackageInfo(sampleApp1.packageName, 0) returns packageInfo1
     packageManager.getPackageInfo(sampleApp2.packageName, 0) returns packageInfo2
-    packageManager.getResourcesForApplication(packageInfo1.applicationInfo) returns createMockResourcesForApplication(sampleApp1)
-    packageManager.getResourcesForApplication(packageInfo2.applicationInfo) returns createMockResourcesForApplication(sampleApp2)
     packageManager.getInstallerPackageName(sampleApp1.packageName) returns androidFeedback
     packageManager.getInstallerPackageName(sampleApp2.packageName) returns androidFeedback
+    packageManager.getLaunchIntentForPackage(sampleApp1.packageName) returns mockIntent
+    packageManager.resolveActivity(mockIntent, 0) returns mockApps.head
 
     val mockAppsServicesImpl = new AppsServicesImpl {
       override def categoryLauncherIntent(): Intent = mockIntent
@@ -98,8 +91,30 @@ trait AppsServicesImplSpecification
 
     val exception = CustomException("")
 
-    packageManager.getPackageInfo(invalidPackageName, 0) throws exception
+    packageManager.getLaunchIntentForPackage(invalidPackageName) throws exception
 
+  }
+
+  trait AppsServicesImplResolveActivityErrorScope {
+    self : AppsServicesImplScope =>
+
+    case class CustomException(message: String, cause: Option[Throwable] = None)
+      extends RuntimeException(message)
+
+    val exception = CustomException("")
+
+    packageManager.resolveActivity(mockIntent, 0) throws exception
+  }
+
+  trait AppsServicesImplPackageInfoErrorScope {
+    self : AppsServicesImplScope =>
+
+    case class CustomException(message: String, cause: Option[Throwable] = None)
+      extends RuntimeException(message)
+
+    val exception = CustomException("")
+
+    packageManager.getPackageInfo(sampleApp1.packageName, 0) throws exception
   }
 
 }
@@ -153,9 +168,31 @@ class AppsServicesImplSpec
             }
           }
         }
+
+      "returns an AppsInstalledException when the resolveActivity method fails" in
+        new AppsServicesImplScope with AppsServicesImplResolveActivityErrorScope {
+          val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).run.run
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, appsException)) => appsException must beLike {
+                case e: AppsInstalledException => e.cause must beSome.which(_ shouldEqual exception)
+              }
+            }
+          }
+        }
+
+      "returns an AppsInstalledException when the getPackageInfo method fails" in
+        new AppsServicesImplScope with AppsServicesImplPackageInfoErrorScope {
+          val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).run.run
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, appsException)) => appsException must beLike {
+                case e: AppsInstalledException => e.cause must beSome.which(_ shouldEqual exception)
+              }
+            }
+          }
+        }
     }
-
-
   }
 
 }

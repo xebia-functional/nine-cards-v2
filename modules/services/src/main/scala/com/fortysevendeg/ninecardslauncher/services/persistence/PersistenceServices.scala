@@ -8,15 +8,23 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 trait PersistenceServices {
 
   /**
+   * Obtains all the apps from the repository
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
+   * @throws PersistenceServiceException if exist some problem obtaining the app
+   */
+  def fetchApps: ServiceDef2[Seq[App], PersistenceServiceException]
+
+  /**
    * Obtains an app from the repository by the package name
    * @param packageName the package name of the app to get
    * @throws PersistenceServiceException if exist some problem obtaining the app
    */
-  def getApp(packageName: String): ServiceDef2[Option[App], PersistenceServiceException]
+  def findAppByPackage(packageName: String): ServiceDef2[Option[App], PersistenceServiceException]
 
   /**
    * Adds an app to the repository
    * @param request includes the necessary data to create a new app in the repository
+   * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.App
    * @throws PersistenceServiceException if exist some problem obtaining the app
    */
   def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]

@@ -9,12 +9,25 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => 
   ContactEmail => ContactEmailServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateAppRequest, AddAppRequest, AddCacheCategoryRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, AppData, CacheCategory}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
 
 import scala.util.Try
 
 trait DeviceConversions {
+
+  def toApp(app: AppPersistence): App =
+    App(
+      name = app.name,
+      packageName = app.packageName,
+      className = app.className,
+      category = app.category,
+      imagePath = app.imagePath,
+      colorPrimary = app.colorPrimary,
+      dateInstalled = app.dateInstalled,
+      dateUpdate = app.dateUpdate,
+      version = app.version,
+      installedFromGooglePlay = app.installedFromGooglePlay)
 
   def toAddAppRequest(item: Application, category: String, imagePath: String): AddAppRequest =
       AddAppRequest(
@@ -29,27 +42,19 @@ trait DeviceConversions {
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
 
-  def toUpdateAppRequest(id: Int, appData: AppData, category: String, imagePath: String): UpdateAppRequest =
+  def toUpdateAppRequest(id: Int, item: Application, category: String, imagePath: String): UpdateAppRequest =
       UpdateAppRequest(
         id = id,
-        name = appData.name,
-        packageName = appData.packageName,
-        className = appData.packageName,
+        name = item.name,
+        packageName = item.packageName,
+        className = item.packageName,
         category = category,
         imagePath = imagePath,
-        colorPrimary = appData.colorPrimary,
-        dateInstalled = appData.dateInstalled,
-        dateUpdate = appData.dateUpdate,
-        version = appData.version,
-        installedFromGooglePlay = appData.installedFromGooglePlay)
-
-
-  def copyCacheCategory(app: AppCategorized, cacheCategory: Option[CacheCategory]): AppCategorized = app.copy(
-    category = cacheCategory map (_.category),
-    starRating = cacheCategory map (_.starRating),
-    numDownloads = cacheCategory map (_.numDownloads),
-    ratingsCount = cacheCategory map (_.ratingsCount),
-    commentCount = cacheCategory map (_.commentCount))
+        colorPrimary = item.colorPrimary,
+        dateInstalled = item.dateInstalled,
+        dateUpdate = item.dateUpdate,
+        version = item.version,
+        installedFromGooglePlay = item.installedFromGooglePlay)
 
   def toAppWebSiteSeq(googlePlayPackages: Seq[GooglePlayPackage]): Seq[AppWebsite] = googlePlayPackages map {
     case GooglePlayPackage(GooglePlayApp(docid, title, _, _, Some(icon), _, _, _, _, _, _)) =>
@@ -73,13 +78,6 @@ trait DeviceConversions {
   def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map toAppPackage
 
   def toAppPackage(item: Application): AppPackage =
-    AppPackage(
-      packageName = item.packageName,
-      className = item.className,
-      name = item.name,
-      icon = item.resourceIcon)
-
-  def toAppPackageByApp(item: App): AppPackage =
     AppPackage(
       packageName = item.packageName,
       className = item.className,
