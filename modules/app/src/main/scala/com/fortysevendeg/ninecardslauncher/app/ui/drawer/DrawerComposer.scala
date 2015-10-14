@@ -20,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiCon
 import com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{AppCategorized, Contact}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -117,7 +117,7 @@ trait DrawerComposer
       updateNavigationToTransparent) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealOutAppDrawer(source)))
 
-  def addApps(apps: Seq[AppCategorized], clickListener: (AppCategorized) => Unit, longClickListener: (AppCategorized) => Unit)
+  def addApps(apps: Seq[App], clickListener: (App) => Unit, longClickListener: (App) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
     swipeAdapter(new AppsAdapter(
       initialSeq = generateAppHeaderedList(apps),

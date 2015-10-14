@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.{ContactsMenuOption, AppsMenuOption, DrawerComposer}
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.process.device.AllContacts
-import com.fortysevendeg.ninecardslauncher.process.device.models.{AppCategorized, Contact}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
@@ -111,11 +111,11 @@ class LauncherActivity
 
   private[this] def loadApps(appsMenuOption: AppsMenuOption): Unit =
     // TODO - Take into account the `appsMenuOption` param
-    Task.fork(di.deviceProcess.getCategorizedApps.run).resolveAsyncUi(
+    Task.fork(di.deviceProcess.getSavedApps.run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
-      onResult = (apps: Seq[AppCategorized]) => addApps(apps, (app: AppCategorized) => {
+      onResult = (apps: Seq[App]) => addApps(apps, (app: App) => {
         execute(toNineCardIntent(app))
-      }, (app: AppCategorized) => {
+      }, (app: App) => {
         launchSettings(app.packageName)
       })
     )

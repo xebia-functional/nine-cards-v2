@@ -1,25 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{AppCategorized, Contact, ContactInfo => DeviceContactInfo,
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactInfo => DeviceContactInfo,
   ContactEmail => DeviceContactEmail, ContactPhone => DeviceContactPhone}
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollectionItem, UserCollection}
 
 trait Conversions {
 
-  def toSeqUnformedApp(apps: Seq[AppCategorized]): Seq[UnformedApp] = apps map toUnformedApp
+  def toSeqUnformedApp(apps: Seq[App]): Seq[UnformedApp] = apps map toUnformedApp
 
-  def toUnformedApp(appCategorized: AppCategorized): UnformedApp = UnformedApp(
-    name = appCategorized.name,
-    packageName = appCategorized.packageName,
-    className = appCategorized.className,
-    imagePath = appCategorized.imagePath getOrElse "", // TODO image default?
-    category = appCategorized.category getOrElse misc,
-    starRating = appCategorized.starRating getOrElse 0,
-    numDownloads = appCategorized.numDownloads getOrElse "",
-    ratingsCount = appCategorized.ratingsCount getOrElse 0,
-    commentCount = appCategorized.commentCount getOrElse 0)
+  def toUnformedApp(app: App): UnformedApp = UnformedApp(
+    name = app.name,
+    packageName = app.packageName,
+    className = app.className,
+    imagePath = app.imagePath,
+    category = app.category)
 
   def toSeqUnformedContact(contacts: Seq[Contact]): Seq[UnformedContact] = contacts map toUnformedContact
 

@@ -22,6 +22,7 @@ import scalaz.Scalaz._
 import scalaz.concurrent.Task
 
 class PersistenceServicesImpl(
+  appRepository: AppRepository,
   cacheCategoryRepository: CacheCategoryRepository,
   cardRepository: CardRepository,
   collectionRepository: CollectionRepository,
@@ -43,6 +44,31 @@ class PersistenceServicesImpl(
   val FilenameUser = "__user_entity__"
 
   val FilenameInstallation = "__installation_entity__"
+
+  override def fetchApps =
+    (for {
+      apps <- appRepository.fetchApps
+    } yield apps map toApp).resolve[PersistenceServiceException]
+
+  override def findAppByPackage(packageName: String) =
+    (for {
+      app <- appRepository.fetchAppByPackage(packageName)
+    } yield app map toApp).resolve[PersistenceServiceException]
+
+  override def addApp(request: AddAppRequest) =
+    (for {
+      app <- appRepository.addApp(toRepositoryAppData(request))
+    } yield toApp(app)).resolve[PersistenceServiceException]
+
+  override def deleteAppByPackage(packageName: String) =
+    (for {
+      deleted <- appRepository.deleteAppByPackage(packageName)
+    } yield deleted).resolve[PersistenceServiceException]
+
+  override def updateApp(request: UpdateAppRequest) =
+    (for {
+      updated <- appRepository.updateApp(toRepositoryApp(request))
+    } yield updated).resolve[PersistenceServiceException]
 
   override def addCacheCategory(request: AddCacheCategoryRequest) =
     (for {

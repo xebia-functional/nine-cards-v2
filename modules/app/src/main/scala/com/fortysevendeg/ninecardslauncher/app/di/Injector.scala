@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.di
 
 import com.fortysevendeg.ninecardslauncher.api.services.{ApiRecommendationService, ApiGooglePlayService, ApiUserConfigService, ApiUserService}
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
@@ -9,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigProcessImpl
-import com.fortysevendeg.ninecardslauncher.repository.repositories.{CacheCategoryRepository, CardRepository, CollectionRepository, GeoInfoRepository}
+import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.contacts.impl.ContactsServicesImpl
@@ -21,10 +22,9 @@ import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.squareup.{okhttp => okHttp}
-import macroid.ContextWrapper
 import com.facebook.stetho.okhttp.StethoInterceptor
 
-class Injector(implicit contextWrapper: ContextWrapper) {
+class Injector(implicit contextSupport: ContextSupport) {
 
   private[this] def createHttpClient = {
     val okHttpClient = new okHttp.OkHttpClient
@@ -34,7 +34,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     new OkHttpClient(okHttpClient)
   }
 
-  val resources = contextWrapper.application.getResources
+  val resources = contextSupport.getResources
 
   // Services
 
@@ -55,11 +55,12 @@ class Injector(implicit contextWrapper: ContextWrapper) {
     recommendationService = new ApiRecommendationService(serviceClient))
 
   private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
-    contextWrapper.application.getContentResolver)
+    contextSupport.getContentResolver)
 
   private[this] lazy val uriCreator = new UriCreator
 
   private[this] lazy val persistenceServices = new PersistenceServicesImpl(
+    appRepository = new AppRepository(contentResolverWrapper, uriCreator),
     cacheCategoryRepository = new CacheCategoryRepository(contentResolverWrapper, uriCreator),
     cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
     collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
@@ -95,7 +96,7 @@ class Injector(implicit contextWrapper: ContextWrapper) {
 
   private[this] lazy val nameCategories: Map[String, String] = (categories map {
     category =>
-      val identifier = resources.getIdentifier(category.toLowerCase, "string", contextWrapper.application.getPackageName)
+      val identifier = resources.getIdentifier(category.toLowerCase, "string", contextSupport.getPackageName)
       (category, if (identifier != 0) resources.getString(identifier) else category)
   }).toMap
 

@@ -7,6 +7,44 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 trait PersistenceServices {
 
+  /**
+   * Obtains all the apps from the repository
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
+   * @throws PersistenceServiceException if exist some problem obtaining the app
+   */
+  def fetchApps: ServiceDef2[Seq[App], PersistenceServiceException]
+
+  /**
+   * Obtains an app from the repository by the package name
+   * @param packageName the package name of the app to get
+   * @throws PersistenceServiceException if exist some problem obtaining the app
+   */
+  def findAppByPackage(packageName: String): ServiceDef2[Option[App], PersistenceServiceException]
+
+  /**
+   * Adds an app to the repository
+   * @param request includes the necessary data to create a new app in the repository
+   * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.App
+   * @throws PersistenceServiceException if exist some problem obtaining the app
+   */
+  def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]
+
+  /**
+   * Deletes an app from the repository by the package name
+   * @param packageName the package name of the app to delete
+   * @return an Int if the app has been deleted correctly
+   * @throws PersistenceServiceException if exist some problem deleting the app
+   */
+  def deleteAppByPackage(packageName: String): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+   * Updates the data of an app from the repository
+   * @param request includes the data to update the app
+   * @return an Int if the app has been updated correctly
+   * @throws PersistenceServiceException if exist some problem updating the app
+   */
+  def updateApp(request: UpdateAppRequest): ServiceDef2[Int, PersistenceServiceException]
+
   def addCacheCategory(request: AddCacheCategoryRequest): ServiceDef2[CacheCategory, PersistenceServiceException]
 
   def deleteCacheCategory(request: DeleteCacheCategoryRequest): ServiceDef2[Int, PersistenceServiceException]

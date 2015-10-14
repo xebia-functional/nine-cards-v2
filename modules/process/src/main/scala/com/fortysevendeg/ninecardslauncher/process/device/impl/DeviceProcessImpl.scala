@@ -5,16 +5,16 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
+import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, CacheCategory}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
 
@@ -36,23 +36,48 @@ class DeviceProcessImpl(
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  override def getCategorizedApps(implicit context: ContextSupport) = {
+  override def getSavedApps(implicit context: ContextSupport) =
     (for {
-      cacheCategories <- persistenceServices.fetchCacheCategories
-      apps <- getApps
-    } yield {
-        apps map (app => copyCacheCategory(app, cacheCategories.find(_.packageName == app.packageName)))
-      }).resolve[AppCategorizationException]
-  }
+      apps <- persistenceServices.fetchApps
+    } yield apps map toApp).resolve[AppException]
 
-  override def categorizeApps(implicit context: ContextSupport) =
+  override def saveInstalledApps(implicit context: ContextSupport) =
     (for {
-      apps <- getCategorizedApps
-      packagesWithoutCategory = apps.filter(_.category.isEmpty) map (_.packageName)
       requestConfig <- apiUtils.getRequestConfig
-      response <- apiServices.googlePlaySimplePackages(packagesWithoutCategory)(requestConfig)
-      _ <- addCacheCategories(toAddCacheCategoryRequestSeq(response.apps.items))
-    } yield ()).resolve[AppCategorizationException]
+      installedApps <- appsService.getInstalledApplications
+      googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
+      appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
+      apps = installedApps map { app =>
+        val path = appPaths.find { path =>
+          path.packageName.equals(app.packageName) && path.className.equals(app.className)
+        } map (_.path)
+        val category = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
+        toAddAppRequest(app, category.getOrElse(misc), path.getOrElse(""))
+      }
+      _ <- addApps(apps)
+    } yield ()).resolve[AppException]
+
+  override def saveApp(packageName: String)(implicit context: ContextSupport) =
+    (for {
+      app <- appsService.getApplication(packageName)
+      appCategory <- getAppCategory(packageName)
+      appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
+      _ <- persistenceServices.addApp(toAddAppRequest(app, appCategory, appPackagePath.path))
+    } yield ()).resolve[AppException]
+
+  override def deleteApp(packageName: String)(implicit context: ContextSupport) =
+    (for {
+      _ <- persistenceServices.deleteAppByPackage(packageName)
+    } yield ()).resolve[AppException]
+
+  override def updateApp(packageName: String)(implicit context: ContextSupport) =
+    (for {
+      app <- appsService.getApplication(packageName)
+      Some(appPersistence) <- persistenceServices.findAppByPackage(packageName)
+      appCategory <- getAppCategory(packageName)
+      appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
+      _ <- persistenceServices.updateApp(toUpdateAppRequest(appPersistence.id, app, appCategory, appPackagePath.path))
+    } yield ()).resolve[AppException]
 
   override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport) =
     (for {
@@ -91,25 +116,20 @@ class DeviceProcessImpl(
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
 
-  private[this] def getApps(implicit context: ContextSupport):
-  ServiceDef2[Seq[AppCategorized], AppsInstalledException with BitmapTransformationException] =
+  private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
-      applications <- appsService.getInstalledApps
-      paths <- createBitmapsFromAppPackage(toAppPackageSeq(applications))
-    } yield {
-      applications map {
-        app =>
-          val path = paths.find {
-            path =>
-              path.packageName.equals(app.packageName) && path.className.equals(app.className)
-          } map (_.path)
-          AppCategorized(
-            name = app.name,
-            packageName = app.packageName,
-            className = app.className,
-            imagePath = path)
+      requestConfig <- apiUtils.getRequestConfig
+      appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).run.run match {
+        case Answer(g) => g.app.details.appDetails.appCategory.headOption.getOrElse(misc)
+        case _ => misc
       }
-    }
+    } yield appCategory
+
+  private[this] def addApps(items: Seq[AddAppRequest]):
+  ServiceDef2[Seq[App], PersistenceServiceException] = Service {
+    val tasks = items map (persistenceServices.addApp(_).run)
+    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
+  }
 
   private[this] def addCacheCategories(items: Seq[AddCacheCategoryRequest]):
   ServiceDef2[Seq[CacheCategory], PersistenceServiceException] = Service {

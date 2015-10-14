@@ -1,5 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.models
 
+case class App(
+  id: Int,
+  name: String,
+  packageName: String,
+  className: String,
+  category: String,
+  imagePath: String,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
+  version: String,
+  installedFromGooglePlay: Boolean)
+
 case class Collection(
   id: Int,
   position: Int,

@@ -6,6 +6,8 @@ object NineCardsUri {
 
   val contentPrefix = "content://"
 
+  val appUriString = s"$contentPrefix$authorityPart/${AppEntity.table}"
+
   val cacheCategoryUriString = s"$contentPrefix$authorityPart/${CacheCategoryEntity.table}"
 
   val cardUriString = s"$contentPrefix$authorityPart/${CardEntity.table}"

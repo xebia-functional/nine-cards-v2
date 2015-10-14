@@ -5,6 +5,20 @@ import com.fortysevendeg.ninecardslauncher.repository.provider._
 
 object Conversions {
 
+  def toApp(app: AppEntity): App = App(
+    id = app.id,
+    data = AppData(
+      name = app.data.name,
+      packageName = app.data.packageName,
+      className = app.data.className,
+      category = app.data.category,
+      imagePath = app.data.imagePath,
+      colorPrimary = app.data.colorPrimary,
+      dateInstalled = app.data.dateInstalled,
+      dateUpdate = app.data.dateUpdate,
+      version = app.data.version,
+      installedFromGooglePlay = app.data.installedFromGooglePlay))
+
   def toCacheCategory(cacheCategory: CacheCategoryEntity): CacheCategory = CacheCategory(
     id = cacheCategory.id,
     data = CacheCategoryData(

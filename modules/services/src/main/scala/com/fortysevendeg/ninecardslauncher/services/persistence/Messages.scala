@@ -2,6 +2,31 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
+case class AddAppRequest(
+  name: String,
+  packageName: String,
+  className: String,
+  category: String,
+  imagePath: String,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
+  version: String,
+  installedFromGooglePlay: Boolean)
+
+case class UpdateAppRequest(
+  id: Int,
+  name: String,
+  packageName: String,
+  className: String,
+  category: String,
+  imagePath: String,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
+  version: String,
+  installedFromGooglePlay: Boolean)
+
 case class AddCacheCategoryRequest(
   packageName: String,
   category: String,

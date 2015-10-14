@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.apps.impl
 
 import android.content.Intent
-import android.content.pm.ResolveInfo
+import android.content.pm.{PackageManager, ResolveInfo}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -15,22 +15,52 @@ class AppsServicesImpl
   extends AppsServices
   with ImplicitsAppsExceptions {
 
-  override def getInstalledApps(implicit context: ContextSupport) = Service {
+  val androidFeedback = "com.google.android.feedback"
+  val androidVending = "com.android.vending"
+
+  override def getInstalledApplications(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[AppsInstalledException] {
         val packageManager = context.getPackageManager
-
         val apps: Seq[ResolveInfo] = packageManager.queryIntentActivities(categoryLauncherIntent(), 0).toSeq
-
-        apps map {
-          resolveInfo =>
-            Application(
-              name = resolveInfo.loadLabel(packageManager).toString,
-              packageName = resolveInfo.activityInfo.applicationInfo.packageName,
-              className = resolveInfo.activityInfo.name,
-              icon = resolveInfo.activityInfo.icon)
-        }
+        apps map getApplicationByResolveInfo
       }
+    }
+  }
+
+  override def getApplication(packageName: String)(implicit context: ContextSupport) = Service {
+    Task {
+      CatchAll[AppsInstalledException] {
+        val packageManager = context.getPackageManager
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        getApplicationByResolveInfo(packageManager.resolveActivity(intent, 0))
+      }
+    }
+  }
+
+  private[this] def getApplicationByResolveInfo(resolveInfo: ResolveInfo)(implicit context: ContextSupport) = {
+
+    val packageManager = context.getPackageManager
+    val packageName = resolveInfo.activityInfo.applicationInfo.packageName
+    val packageInfo = packageManager.getPackageInfo(packageName, 0)
+
+    Application(
+      name = resolveInfo.loadLabel(packageManager).toString,
+      packageName = packageName,
+      className = resolveInfo.activityInfo.name,
+      resourceIcon = resolveInfo.activityInfo.icon,
+      colorPrimary = "", // TODO Implement in ticket 9C-272
+      dateInstalled = packageInfo.firstInstallTime,
+      dateUpdate = packageInfo.lastUpdateTime,
+      version = packageInfo.versionCode.toString,
+      installedFromGooglePlay = isFromGooglePlay(packageManager, packageInfo.packageName))
+  }
+
+  private[this] def isFromGooglePlay(packageManager: PackageManager, packageName: String) = {
+    packageManager.getInstallerPackageName(packageName) match {
+      case `androidFeedback` => true
+      case `androidVending` => true
+      case _  => false
     }
   }
 

@@ -17,11 +17,7 @@ case class UnformedApp(
   packageName: String,
   className: String,
   imagePath: String,
-  category: String,
-  starRating: Double,
-  numDownloads: String,
-  ratingsCount: Int,
-  commentCount: Int)
+  category: String)
 
 case class UnformedContact(
   name: String,

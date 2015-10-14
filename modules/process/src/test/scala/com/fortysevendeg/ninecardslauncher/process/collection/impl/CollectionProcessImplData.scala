@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardInt
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel, AddCardRequest => ServicesAddCardRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, PhoneHome, ContactPhone => ServiceContactPhone, ContactInfo => ServiceContactInfo}
 import play.api.libs.json.Json
 
@@ -170,11 +170,7 @@ trait CollectionProcessImplData {
         packageName = packageName,
         className = className,
         imagePath = imagePath,
-        category = categories(Random.nextInt(categories.length)),
-        starRating = starRating,
-        numDownloads = numDownloads,
-        ratingsCount = ratingsCount,
-        commentCount = commentCount)
+        category = categories(Random.nextInt(categories.length)))
     }
 
   def createSeqUnformedContacs(num: Int = 15) =

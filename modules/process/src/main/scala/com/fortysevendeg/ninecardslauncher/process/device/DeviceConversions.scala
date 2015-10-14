@@ -8,21 +8,53 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ContactServices, ContactInfo => ContactInfoServices,
   ContactEmail => ContactEmailServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
-import com.fortysevendeg.ninecardslauncher.services.persistence.AddCacheCategoryRequest
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.CacheCategory
+import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateAppRequest, AddAppRequest, AddCacheCategoryRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
 
 import scala.util.Try
 
 trait DeviceConversions {
 
-  def copyCacheCategory(app: AppCategorized, cacheCategory: Option[CacheCategory]): AppCategorized = app.copy(
-    category = cacheCategory map (_.category),
-    starRating = cacheCategory map (_.starRating),
-    numDownloads = cacheCategory map (_.numDownloads),
-    ratingsCount = cacheCategory map (_.ratingsCount),
-    commentCount = cacheCategory map (_.commentCount)
-  )
+  def toApp(app: AppPersistence): App =
+    App(
+      name = app.name,
+      packageName = app.packageName,
+      className = app.className,
+      category = app.category,
+      imagePath = app.imagePath,
+      colorPrimary = app.colorPrimary,
+      dateInstalled = app.dateInstalled,
+      dateUpdate = app.dateUpdate,
+      version = app.version,
+      installedFromGooglePlay = app.installedFromGooglePlay)
+
+  def toAddAppRequest(item: Application, category: String, imagePath: String): AddAppRequest =
+      AddAppRequest(
+        name = item.name,
+        packageName = item.packageName,
+        className = item.packageName,
+        category = category,
+        imagePath = imagePath,
+        colorPrimary = item.colorPrimary,
+        dateInstalled = item.dateInstalled,
+        dateUpdate = item.dateUpdate,
+        version = item.version,
+        installedFromGooglePlay = item.installedFromGooglePlay)
+
+  def toUpdateAppRequest(id: Int, item: Application, category: String, imagePath: String): UpdateAppRequest =
+      UpdateAppRequest(
+        id = id,
+        name = item.name,
+        packageName = item.packageName,
+        className = item.packageName,
+        category = category,
+        imagePath = imagePath,
+        colorPrimary = item.colorPrimary,
+        dateInstalled = item.dateInstalled,
+        dateUpdate = item.dateUpdate,
+        version = item.version,
+        installedFromGooglePlay = item.installedFromGooglePlay)
 
   def toAppWebSiteSeq(googlePlayPackages: Seq[GooglePlayPackage]): Seq[AppWebsite] = googlePlayPackages map {
     case GooglePlayPackage(GooglePlayApp(docid, title, _, _, Some(icon), _, _, _, _, _, _)) =>
@@ -40,19 +72,17 @@ trait DeviceConversions {
         starRating = item.starRating,
         numDownloads = item.numDownloads,
         ratingsCount = item.ratingCount,
-        commentCount = item.commentCount
-      )
+        commentCount = item.commentCount)
   }
 
-  def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map {
-    item =>
-      AppPackage(
-        packageName = item.packageName,
-        className = item.className,
-        name = item.name,
-        icon = item.icon
-      )
-  }
+  def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map toAppPackage
+
+  def toAppPackage(item: Application): AppPackage =
+    AppPackage(
+      packageName = item.packageName,
+      className = item.className,
+      name = item.name,
+      icon = item.resourceIcon)
 
   def toShortcutSeq(items: Seq[ShortcutServices])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
 
@@ -65,8 +95,7 @@ trait DeviceConversions {
     Shortcut(
       title = item.title,
       icon = drawable,
-      intent = intent
-    )
+      intent = intent)
   }
 
   def toContactSeq(items: Seq[ContactServices]): Seq[Contact] = items map toContact

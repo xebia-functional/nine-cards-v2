@@ -3,16 +3,17 @@ package com.fortysevendeg.ninecardslauncher.process.device.models
 import android.content.Intent
 import android.graphics.drawable.Drawable
 
-case class AppCategorized(
+case class App(
   name: String,
   packageName: String,
   className: String,
-  imagePath: Option[String],
-  category: Option[String] = None,
-  starRating: Option[Double] = None,
-  numDownloads: Option[String] = None,
-  ratingsCount: Option[Int] = None,
-  commentCount: Option[Int] = None)
+  category: String,
+  imagePath: String,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
+  version: String,
+  installedFromGooglePlay: Boolean)
 
 case class Shortcut (
   title: String,

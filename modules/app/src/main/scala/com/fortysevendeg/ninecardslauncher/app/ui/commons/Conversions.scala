@@ -2,11 +2,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardIntent, NineCardIntentExtras, NineCardsIntentExtras}
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppCategorized
+import com.fortysevendeg.ninecardslauncher.process.device.models.App
 
 trait NineCardIntentConversions {
 
-  def toNineCardIntent(app: AppCategorized): NineCardIntent = {
+  def toNineCardIntent(app: App): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(app.packageName),
       class_name = Option(app.className)))

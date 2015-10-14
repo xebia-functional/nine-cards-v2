@@ -1,5 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.repository.model
 
+case class App(
+  id: Int,
+  data: AppData)
+
+case class AppData(
+  name: String,
+  packageName: String,
+  className: String,
+  category: String,
+  imagePath: String,
+  colorPrimary: String,
+  dateInstalled: Double,
+  dateUpdate: Double,
+  version: String,
+  installedFromGooglePlay: Boolean)
+
 case class CacheCategory(
   id: Int,
   data: CacheCategoryData)
