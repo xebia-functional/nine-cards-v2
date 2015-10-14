@@ -25,13 +25,13 @@ class NineCardsSqlHelper(context: Context)
 
     (oldVersion + 1 to newVersion) foreach {
       case 2 =>
-        db.execSQL("ALTER TABLE " + CardEntity.table + " ADD COLUMN " + CardEntity.notification + " TEXT")
+        db.execSQL(s"ALTER TABLE ${CardEntity.table} ADD COLUMN ${CardEntity.notification} TEXT")
       case 3 =>
-        db.execSQL("ALTER TABLE " + CardEntity.table + " ADD COLUMN " + CardEntity.micros + " INTEGER")
+        db.execSQL(s"ALTER TABLE ${CardEntity.table} ADD COLUMN ${CardEntity.micros} INTEGER")
       case 4 =>
-        db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.sharedCollectionId + " TEXT")
-        db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.originalSharedCollectionId + " TEXT")
-        db.execSQL("ALTER TABLE " + CollectionEntity.table + " ADD COLUMN " + CollectionEntity.sharedCollectionSubscribed + " INTEGER")
+        db.execSQL(s"ALTER TABLE ${CollectionEntity.table} ADD COLUMN ${CollectionEntity.sharedCollectionId} TEXT")
+        db.execSQL(s"ALTER TABLE ${CollectionEntity.table} ADD COLUMN ${CollectionEntity.originalSharedCollectionId} TEXT")
+        db.execSQL(s"ALTER TABLE ${CollectionEntity.table} ADD COLUMN ${CollectionEntity.sharedCollectionSubscribed} INTEGER")
       case 5 => db.execSQL(AppEntity.createTableSQL)
       case 6 => db.execSQL("DROP TABLE CacheCategory")
     }

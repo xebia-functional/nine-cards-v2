@@ -58,18 +58,19 @@ object CollectionEntity {
         sharedCollectionId = cursor.getString(cursor.getColumnIndex(sharedCollectionId)),
         sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(sharedCollectionSubscribed)) > 0))
 
-  def createTableSQL = "CREATE TABLE " + CollectionEntity.table +
-    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-    CollectionEntity.position + " INTEGER not null, " +
-    CollectionEntity.name + " TEXT not null, " +
-    CollectionEntity.collectionType + " TEXT not null, " +
-    CollectionEntity.icon + " TEXT not null, " +
-    CollectionEntity.themedColorIndex + " INTEGER not null, " +
-    CollectionEntity.appsCategory + " TEXT, " +
-    CollectionEntity.originalSharedCollectionId + " TEXT, " +
-    CollectionEntity.sharedCollectionId + " TEXT, " +
-    CollectionEntity.sharedCollectionSubscribed + " INTEGER, " +
-    CollectionEntity.constrains + " TEXT )"
+  def createTableSQL =
+    s"""CREATE TABLE ${CollectionEntity.table}
+       |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+       |${CollectionEntity.position} INTEGER not null,
+       |${CollectionEntity.name} TEXT not null,
+       |${CollectionEntity.collectionType} TEXT not null,
+       |${CollectionEntity.icon} TEXT not null,
+       |${CollectionEntity.themedColorIndex} INTEGER not null,
+       |${CollectionEntity.appsCategory} TEXT,
+       |${CollectionEntity.originalSharedCollectionId} TEXT,
+       |${CollectionEntity.sharedCollectionId} TEXT,
+       |${CollectionEntity.sharedCollectionSubscribed} INTEGER,
+       |${CollectionEntity.constrains} TEXT )""".stripMargin
 }
 
 object CollectionEntityData {

@@ -14,7 +14,7 @@ trait ContextSupportProvider {
     override def getFilesDir = ctx.application.getFilesDir
     override def getAppIconsDir = ctx.application.getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE)
     override def getAssets = ctx.application.getAssets
-    override def getPackageName: String = ctx.application.getPackageName
+    override def getPackageName = ctx.application.getPackageName
   }
 
 }

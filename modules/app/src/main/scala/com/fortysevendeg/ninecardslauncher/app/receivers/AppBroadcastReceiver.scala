@@ -15,10 +15,9 @@ class AppBroadcastReceiver
 
   override def onReceive(context: Context, intent: Intent): Unit = {
 
-    val action: String = intent.getAction
+    val action = intent.getAction
     val replacing = intent.getBooleanExtra(EXTRA_REPLACING, false)
-
-    val packageName: String = intent.getData.toString.replace("package:", "")
+    val packageName = getPackageName(intent)
 
     implicit val contextSupport = new ContextSupportReceiverImpl(context)
     implicit val di = new Injector
@@ -30,6 +29,10 @@ class AppBroadcastReceiver
       case (_, _) =>
     }
   }
+
+  private[this] def getPackageName(intent: Intent): String = {
+    intent.getData.toString.replace("package:", "")
+  }
 }
 
 class ContextSupportReceiverImpl(context: Context) extends ContextSupport {
@@ -39,5 +42,5 @@ class ContextSupportReceiverImpl(context: Context) extends ContextSupport {
   override def getFilesDir = context.getFilesDir
   override def getAppIconsDir = context.getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE)
   override def getAssets = context.getAssets
-  override def getPackageName: String = context.getPackageName
+  override def getPackageName = context.getPackageName
 }

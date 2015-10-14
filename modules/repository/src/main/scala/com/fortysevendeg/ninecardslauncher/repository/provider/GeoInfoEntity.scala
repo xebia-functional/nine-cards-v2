@@ -42,14 +42,15 @@ object GeoInfoEntity {
         longitude = cursor.getDouble(cursor.getColumnIndex(longitude)),
         system = cursor.getInt(cursor.getColumnIndex(system)) > 0))
 
-  def createTableSQL = "CREATE TABLE " + GeoInfoEntity.table +
-    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-    GeoInfoEntity.constrain + " TEXT not null, " +
-    GeoInfoEntity.occurrence + " TEXT not null, " +
-    GeoInfoEntity.wifi + " TEXT, " +
-    GeoInfoEntity.latitude + " DOUBLE, " +
-    GeoInfoEntity.longitude + " DOUBLE, " +
-    GeoInfoEntity.system + " INTEGER )"
+  def createTableSQL =
+    s"""CREATE TABLE ${GeoInfoEntity.table}
+       |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+       |${GeoInfoEntity.constrain} TEXT not null,
+       |${GeoInfoEntity.occurrence} TEXT not null,
+       |${GeoInfoEntity.wifi} TEXT,
+       |${GeoInfoEntity.latitude} DOUBLE,
+       |${GeoInfoEntity.longitude} DOUBLE,
+       |${GeoInfoEntity.system} INTEGER )""".stripMargin
 }
 
 object GeoInfoEntityData {
