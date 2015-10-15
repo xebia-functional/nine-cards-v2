@@ -61,7 +61,6 @@ class Injector(implicit contextSupport: ContextSupport) {
 
   private[this] lazy val persistenceServices = new PersistenceServicesImpl(
     appRepository = new AppRepository(contentResolverWrapper, uriCreator),
-    cacheCategoryRepository = new CacheCategoryRepository(contentResolverWrapper, uriCreator),
     cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
     collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
     geoInfoRepository = new GeoInfoRepository(contentResolverWrapper, uriCreator))

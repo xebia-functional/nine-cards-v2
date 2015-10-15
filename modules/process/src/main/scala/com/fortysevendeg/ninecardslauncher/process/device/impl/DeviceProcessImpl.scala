@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => 
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, CacheCategory}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
 
@@ -128,12 +128,6 @@ class DeviceProcessImpl(
   private[this] def addApps(items: Seq[AddAppRequest]):
   ServiceDef2[Seq[App], PersistenceServiceException] = Service {
     val tasks = items map (persistenceServices.addApp(_).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
-  }
-
-  private[this] def addCacheCategories(items: Seq[AddCacheCategoryRequest]):
-  ServiceDef2[Seq[CacheCategory], PersistenceServiceException] = Service {
-    val tasks = items map (persistenceServices.addCacheCategory(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
   }
 

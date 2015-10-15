@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{AppData, CardData, CollectionData, GeoInfoData, CacheCategoryData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{AppData, CardData, CollectionData, GeoInfoData}
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
@@ -17,8 +17,6 @@ trait PersistenceServicesData {
   val version: String = Random.nextString(5)
   val installedFromGooglePlay: Boolean = Random.nextBoolean()
 
-  val cacheCategoryId: Int = Random.nextInt(10)
-  val nonExistentCacheCategoryId: Int = Random.nextInt(10) + 100
   val packageName: String = Random.nextString(5)
   val nonExistentPackageName: String = "nonExistentPackageName"
   val category: String = Random.nextString(5)
@@ -114,44 +112,6 @@ trait PersistenceServicesData {
     dateUpdate = dateUpdate,
     version = version,
     installedFromGooglePlay = installedFromGooglePlay)
-
-  def createSeqCacheCategory(
-    num: Int = 5,
-    id: Int = cacheCategoryId,
-    packageName: String = packageName,
-    category: String = category,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
-    ratingsCount: Int = ratingsCount,
-    commentCount: Int = commentCount): Seq[CacheCategory] = List.tabulate(num)(
-    item => CacheCategory(
-      id = id + item,
-      packageName = packageName,
-      category = category,
-      starRating = starRating,
-      numDownloads = numDownloads,
-      ratingsCount = ratingsCount,
-      commentCount = commentCount))
-
-  def createSeqRepoCacheCategory(
-    num: Int = 5,
-    id: Int = cacheCategoryId,
-    data: repositoryModel.CacheCategoryData = createRepoCacheCategoryData()): Seq[repositoryModel.CacheCategory] =
-    List.tabulate(num)(item => repositoryModel.CacheCategory(id = id + item, data = data))
-
-  def createRepoCacheCategoryData(
-    packageName: String = packageName,
-    category: String = category,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
-    ratingsCount: Int = ratingsCount,
-    commentCount: Int = commentCount): CacheCategoryData = repositoryModel.CacheCategoryData(
-    packageName = packageName,
-    category = category,
-    starRating = starRating,
-    numDownloads = numDownloads,
-    ratingsCount = ratingsCount,
-    commentCount = commentCount)
 
   def createSeqGeoInfo(
     num: Int = 5,
@@ -338,12 +298,6 @@ trait PersistenceServicesData {
   val seqRepoApp: Seq[repositoryModel.App] = createSeqRepoApp(data = repoAppData)
   val repoApp: repositoryModel.App = seqRepoApp.head
 
-  val seqCacheCategory: Seq[CacheCategory] = createSeqCacheCategory()
-  val cacheCategory: CacheCategory = seqCacheCategory.head
-  val repoCacheCategoryData: CacheCategoryData = createRepoCacheCategoryData()
-  val seqRepoCacheCategory: Seq[repositoryModel.CacheCategory] = createSeqRepoCacheCategory(data = repoCacheCategoryData)
-  val repoCacheCategory: repositoryModel.CacheCategory = seqRepoCacheCategory.head
-
   val seqGeoInfo: Seq[GeoInfo] = createSeqGeoInfo()
   val geoInfo: GeoInfo = seqGeoInfo.head
   val repoGeoInfoData: GeoInfoData = createRepoGeoInfoData()
@@ -409,50 +363,6 @@ trait PersistenceServicesData {
       dateUpdate = dateUpdate,
       version = version,
       installedFromGooglePlay = installedFromGooglePlay)
-
-  def createAddCacheCategoryRequest(
-    packageName: String = packageName,
-    category: String = category,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
-    ratingsCount: Int = ratingsCount,
-    commentCount: Int = commentCount): AddCacheCategoryRequest =
-    AddCacheCategoryRequest(
-      packageName = packageName,
-      category = category,
-      starRating = starRating,
-      numDownloads = numDownloads,
-      ratingsCount = ratingsCount,
-      commentCount = commentCount)
-
-  def createDeleteCacheCategoryRequest(cacheCategory: CacheCategory): DeleteCacheCategoryRequest =
-    DeleteCacheCategoryRequest(cacheCategory = cacheCategory)
-
-  def createDeleteCacheCategoryByPackageRequest(packageName: String): DeleteCacheCategoryByPackageRequest =
-    DeleteCacheCategoryByPackageRequest(packageName = packageName)
-
-  def createFetchCacheCategoryByPackageRequest(packageName: String): FetchCacheCategoryByPackageRequest =
-    FetchCacheCategoryByPackageRequest(packageName = packageName)
-
-  def createFindCacheCategoryByIdRequest(id: Int): FindCacheCategoryByIdRequest =
-    FindCacheCategoryByIdRequest(id = id)
-
-  def createUpdateCacheCategoryRequest(
-    id: Int = cacheCategoryId,
-    packageName: String = packageName,
-    category: String = category,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
-    ratingsCount: Int = ratingsCount,
-    commentCount: Int = commentCount): UpdateCacheCategoryRequest =
-    UpdateCacheCategoryRequest(
-      id = id,
-      packageName = packageName,
-      category = category,
-      starRating = starRating,
-      numDownloads = numDownloads,
-      ratingsCount = ratingsCount,
-      commentCount = commentCount)
 
   def createAddGeoInfoRequest(
     constrain: String = constrain,
