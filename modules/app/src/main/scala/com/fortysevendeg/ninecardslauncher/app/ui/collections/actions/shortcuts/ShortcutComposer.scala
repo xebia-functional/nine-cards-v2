@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
 
-import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -8,7 +7,6 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}

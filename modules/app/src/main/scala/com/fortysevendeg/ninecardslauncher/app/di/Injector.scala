@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessC
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigProcessImpl
@@ -84,6 +85,10 @@ class Injector(implicit contextSupport: ContextSupport) {
     config = imageServicesConfig)
 
   // Process
+
+  lazy val recommendationsProcess = new RecommendationsProcessImpl(
+    apiServices = apiServices,
+    persistenceServices = persistenceServices)
 
   lazy val deviceProcess = new DeviceProcessImpl(
     appsService = appsServices,

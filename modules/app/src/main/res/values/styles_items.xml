@@ -69,4 +69,91 @@
         <item name="android:paddingLeft">@dimen/padding_default</item>
     </style>
 
+    <!-- Recommendations Items -->
+
+    <style name="RecommendationsItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="RecommendationsItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="RecommendationsItemHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="RecommendationsItemHeaderTitles">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="RecommendationsItemHeaderIcon">
+        <item name="android:layout_width">@dimen/size_icon_app</item>
+        <item name="android:layout_height">@dimen/size_icon_app</item>
+    </style>
+
+    <style name="RecommendationsItemHeaderName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <style name="RecommendationsItemHeaderTitleDataContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="RecommendationsItemHeaderDownloads">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <style name="RecommendationsItemHeaderTag">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <style name="RecommendationsItemScreenshots">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_screenshot</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="RecommendationsItemScreenshotItem">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">@dimen/height_screenshot</item>
+    </style>
+
+    <style name="RecommendationsItemDescription">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">3</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <style name="RecommendationsItemInstallNow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:padding">@dimen/padding_small</item>
+        <item name="android:text">@string/installNow</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
 </resources>

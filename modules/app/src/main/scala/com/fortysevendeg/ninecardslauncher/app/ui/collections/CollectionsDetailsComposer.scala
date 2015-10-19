@@ -25,6 +25,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
@@ -154,8 +155,12 @@ trait CollectionsDetailsComposer
         val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         showAction(f[AppsFragment], view, map)
     }),
-    getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
-      uiShortToast("Recommendations")
+    getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
+      view: View =>
+        val category = getCurrentCollection flatMap (_.appsCategory)
+        // TODO Remove "if (cat == "")" when ticket 9C-257 is resolved
+        val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(RecommendationsFragment.categoryKey -> cat)) getOrElse Map.empty
+        showAction(f[RecommendationsFragment], view, map)
     }),
     getUi(w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
       view: View => showAction(f[ContactsFragment], view)

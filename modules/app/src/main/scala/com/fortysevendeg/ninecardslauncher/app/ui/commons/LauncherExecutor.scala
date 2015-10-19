@@ -101,6 +101,11 @@ trait LauncherExecutor {
       intent <- Option(activity.getPackageManager.getLaunchIntentForPackage(packageName))
     } yield tryOrError(activity, intent)) getOrElse showError
 
+  def launchGooglePlay(packageName: String)(implicit activityContext: ActivityContextWrapper) =
+    (for {
+      activity <- activityContext.original.get
+    } yield tryOrError(activity, googlePlayIntent(packageName))) getOrElse showError
+
   private[this] def tryOrNineIntent(activity: Activity, newIntent: Intent, nineIntent: NineCardIntent)
     (implicit activityContext: ActivityContextWrapper) =
     if (Try(activity.startActivity(newIntent)).isFailure) tryLaunchPackage(nineIntent)
@@ -137,14 +142,16 @@ trait LauncherExecutor {
     (for {
       packageName <- intent.extractPackageName()
       activity <- activityContext.original.get
-    } yield {
-        val newIntent = new Intent(Intent.ACTION_VIEW,
-          Uri.parse(activityContext.application.getString(R.string.google_play_url, packageName)))
-        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
-        tryOrError(activity, newIntent)
-      }) getOrElse showError
+    } yield tryOrError(activity, googlePlayIntent(packageName))) getOrElse showError
 
   private[this] def showError(implicit activityContext: ActivityContextWrapper) =
     Toast.makeText(activityContext.application, R.string.contactUsError, Toast.LENGTH_SHORT).show()
+
+  private[this] def googlePlayIntent(packageName: String)(implicit activityContext: ActivityContextWrapper) = {
+    val intent = new Intent(Intent.ACTION_VIEW,
+      Uri.parse(activityContext.application.getString(R.string.google_play_url, packageName)))
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+    intent
+  }
 
 }

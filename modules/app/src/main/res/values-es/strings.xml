@@ -87,6 +87,11 @@
     <string name="sms">SMS</string>
     <string name="emails">Email</string>
 
+    <!-- Recommendations Action -->
+
+    <string name="installNow">Instalar ahora</string>
+    <string name="free">Gratis</string>
+
     <!-- Drawer -->
     <string name="apps_alphabetical">Alfabético</string>
     <string name="apps_categories">Por categorías</string>

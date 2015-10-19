@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/RecommendationsItemRoot">
+
+    <LinearLayout
+        style="@style/RecommendationsItemContent">
+
+        <LinearLayout
+            style="@style/RecommendationsItemHeader">
+
+            <ImageView
+                android:id="@+id/recommendation_item_icon"
+                style="@style/RecommendationsItemHeaderIcon"/>
+
+            <LinearLayout
+                style="@style/RecommendationsItemHeaderTitles">
+
+                <TextView
+                    android:id="@+id/recommendation_item_name"
+                    style="@style/RecommendationsItemHeaderName"/>
+
+                <LinearLayout
+                    style="@style/RecommendationsItemHeaderTitleDataContent">
+
+                    <TextView
+                        android:id="@+id/recommendation_item_downloads"
+                        style="@style/RecommendationsItemHeaderDownloads"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/recommendation_item_tag"
+                style="@style/RecommendationsItemHeaderTag"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/RecommendationsItemScreenshots">
+
+            <ImageView
+                android:id="@+id/recommendation_item_screenshot1"
+                style="@style/RecommendationsItemScreenshotItem"/>
+
+            <ImageView
+                android:id="@+id/recommendation_item_screenshot2"
+                style="@style/RecommendationsItemScreenshotItem"/>
+
+            <ImageView
+                android:id="@+id/recommendation_item_screenshot3"
+                style="@style/RecommendationsItemScreenshotItem"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/recommendation_item_description"
+            style="@style/RecommendationsItemDescription"/>
+
+        <Button
+            android:id="@+id/recommendation_item_install_now"
+            style="@style/RecommendationsItemInstallNow"/>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
