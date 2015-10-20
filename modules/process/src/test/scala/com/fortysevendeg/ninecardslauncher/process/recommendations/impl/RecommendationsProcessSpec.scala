@@ -37,20 +37,38 @@ trait RecommendationsProcessSpecification
 
   }
 
-  trait SuccessRecommendationsProcessScope
+  trait SuccessCategoriesRecommendationsProcessScope
     extends RecommendationsProcessScope {
 
     val googlePlayApps = generateGooglePlayApps()
 
-    apiServices.getRecommendedApps(categories, limit)(requestConfig) returns
+    apiServices.getRecommendedApps(categories, Seq.empty, Seq.empty, limit)(requestConfig) returns
       Service(Task(Result.answer(RecommendationResponse(statusCodeOk, googlePlayApps))))
 
   }
 
-  trait ErrorRecommendationsProcessScope
+  trait ErrorCategoriesRecommendationsProcessScope
     extends RecommendationsProcessScope {
 
-    apiServices.getRecommendedApps(categories, limit)(requestConfig) returns
+    apiServices.getRecommendedApps(categories, Seq.empty, Seq.empty, limit)(requestConfig) returns
+      Service(Task(Errata(apiException)))
+
+  }
+
+  trait SuccessLikePackagesRecommendationsProcessScope
+    extends RecommendationsProcessScope {
+
+    val googlePlayApps = generateGooglePlayApps()
+
+    apiServices.getRecommendedApps(Seq.empty, likePackages, Seq.empty, limit)(requestConfig) returns
+      Service(Task(Result.answer(RecommendationResponse(statusCodeOk, googlePlayApps))))
+
+  }
+
+  trait ErrorLikePackagesRecommendationsProcessScope
+    extends RecommendationsProcessScope {
+
+    apiServices.getRecommendedApps(Seq.empty, likePackages, Seq.empty, limit)(requestConfig) returns
       Service(Task(Errata(apiException)))
 
   }
@@ -63,11 +81,11 @@ class RecommendationsProcessSpec
   "getRecommendedAppsByCategory" should {
 
     "return an equivalent sequence to the returned by the Service" in
-      new SuccessRecommendationsProcessScope {
+      new SuccessCategoriesRecommendationsProcessScope {
 
         val result = process.getRecommendedAppsByCategory(category)(contextSupport).run.run
 
-        there was one(apiServices).getRecommendedApps(categories, limit)(requestConfig)
+        there was one(apiServices).getRecommendedApps(categories, Seq.empty, Seq.empty, limit)(requestConfig)
 
         result must beLike {
           case Answer(response) =>
@@ -77,9 +95,39 @@ class RecommendationsProcessSpec
       }
 
     "returns a RecommendedAppsException if app service fails" in
-      new ErrorRecommendationsProcessScope {
+      new ErrorCategoriesRecommendationsProcessScope {
 
         val result = process.getRecommendedAppsByCategory(category)(contextSupport).run.run
+
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[RecommendedAppsException]
+          }
+        }
+      }
+
+  }
+
+  "getRecommendedAppsByPackages" should {
+
+    "return an equivalent sequence to the returned by the Service" in
+      new SuccessLikePackagesRecommendationsProcessScope {
+
+        val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).run.run
+
+        there was one(apiServices).getRecommendedApps(Seq.empty, likePackages, Seq.empty, limit)(requestConfig)
+
+        result must beLike {
+          case Answer(response) =>
+            response.seq.map(_.packageName).toSet shouldEqual googlePlayApps.map(_.docid).toSet
+        }
+
+      }
+
+    "returns a RecommendedAppsException if app service fails" in
+      new ErrorLikePackagesRecommendationsProcessScope {
+
+        val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).run.run
 
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {

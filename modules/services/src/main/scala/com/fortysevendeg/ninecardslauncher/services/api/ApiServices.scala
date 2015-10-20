@@ -161,6 +161,8 @@ trait ApiServices {
   /**
    * Fetches the recommended applications based on some request params
    * @param categories sequence of package ids
+   * @param likePackages sequence of similar packages
+   * @param excludePackages sequence of exclude packages
    * @param limit the maximum number of apps returned
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
    *         of the response and the sequence of recommended [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
@@ -168,5 +170,7 @@ trait ApiServices {
    */
   def getRecommendedApps(
     categories: Seq[String],
+    likePackages: Seq[String],
+    excludePackages: Seq[String],
     limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[RecommendationResponse, ApiServiceException]
 }

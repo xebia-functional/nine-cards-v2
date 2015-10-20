@@ -12,6 +12,13 @@ trait RecommendationsProcess {
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
    * @throws RecommendedAppsException if there was an error fetching the recommended apps
    */
-  def getRecommendedAppsByCategory(category: String)(implicit context: ContextSupport): ServiceDef2[Seq[RecommendedApp], RecommendedAppsException]
+  def getRecommendedAppsByCategory(category: String, excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): ServiceDef2[Seq[RecommendedApp], RecommendedAppsException]
 
+  /**
+   * Get recommended apps based on a category
+   * @param packages a valid list of packages
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
+   * @throws RecommendedAppsException if there was an error fetching the recommended apps
+   */
+  def getRecommendedAppsByPackages(packages: Seq[String], excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): ServiceDef2[Seq[RecommendedApp], RecommendedAppsException]
 }
