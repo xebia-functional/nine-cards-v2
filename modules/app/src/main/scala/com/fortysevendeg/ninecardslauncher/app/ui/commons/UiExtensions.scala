@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.ActivityOptionsCompat
-import macroid.{Ui, ActivityContextWrapper}
+import macroid.{ActivityContextWrapper, Ui}
 
 import scala.annotation.tailrec
 import scala.ref.WeakReference
@@ -28,6 +28,9 @@ trait UiExtensions {
 
   def getBoolean(bundles: Seq[Bundle], key: String, default: Boolean) =
     getData(flat(bundles), (b, k) => b.getBoolean(k), key, default)
+
+  def getSeqString(bundles: Seq[Bundle], key: String, default: Seq[String]) =
+    getData(flat(bundles), (b, k) => b.getStringArray(k).toSeq, key, default)
 
   private[this] def flat(bundles: Seq[Bundle]): Seq[Bundle] =
     bundles flatMap (b => Option(b))

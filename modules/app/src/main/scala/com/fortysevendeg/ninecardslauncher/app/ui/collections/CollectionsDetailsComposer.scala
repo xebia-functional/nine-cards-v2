@@ -157,7 +157,9 @@ trait CollectionsDetailsComposer
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
       view: View =>
-        val category = getCurrentCollection flatMap (_.appsCategory)
+        val collection = getCurrentCollection
+        val packages = collection map ( _.cards flatMap  (_.packageName) ) getOrElse Seq.empty
+        val category = collection flatMap (_.appsCategory)
         // TODO Remove "if (cat == "")" when ticket 9C-257 is resolved
         val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(RecommendationsFragment.categoryKey -> cat)) getOrElse Map.empty
         showAction(f[RecommendationsFragment], view, map)
@@ -330,7 +332,7 @@ trait CollectionsDetailsComposer
       updateStatusColor(color)
 
   private[this] def showAction[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, String] = Map.empty): Ui[_] = {
+  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, String] = Map.empty, packages: Seq[String] = Seq.empty): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
@@ -340,6 +342,7 @@ trait CollectionsDetailsComposer
     args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
     args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
+    args.putStringArray(BaseActionFragment.packages, packages.toArray)
     map foreach (item => args.putString(item._1, item._2))
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
