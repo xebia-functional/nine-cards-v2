@@ -11,7 +11,7 @@ trait Conversions {
       title = googlePlayApp.title,
       icon = googlePlayApp.icon,
       downloads = googlePlayApp.details.appDetails.numDownloads,
-      starts = googlePlayApp.aggregateRating.starRating,
+      stars = googlePlayApp.aggregateRating.starRating,
       description = googlePlayApp.descriptionHtml,
       free = googlePlayApp.offer.headOption exists (_.micros == 0),
       screenshots = googlePlayApp.screenshots)

@@ -5,7 +5,7 @@ case class RecommendedApp(
   title: String,
   icon: Option[String],
   downloads: String,
-  starts: Double,
+  stars: Double,
   description: Option[String],
   free: Boolean,
   screenshots: Seq[String])

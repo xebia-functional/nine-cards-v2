@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -57,6 +58,8 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)(implicit c
 
   lazy val tag = Option(findView(TR.recommendation_item_tag))
 
+  lazy val stars = Option(findView(TR.recommendation_item_stars))
+
   lazy val screenshots = Seq(
     Option(findView(TR.recommendation_item_screenshot1)),
     Option(findView(TR.recommendation_item_screenshot2)),
@@ -71,6 +74,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)(implicit c
       case (view, screenshot) => view <~ ivUri(screenshot)
     }
     (icon <~ ivUri(recommendedApp.icon getOrElse "")) ~ // If icon don't exist ivUri will solve the problem
+      (stars <~ ivSrc(getStarDrawable(recommendedApp.stars))) ~
       (name <~ tvText(recommendedApp.title)) ~
       (downloads <~ tvText(recommendedApp.downloads)) ~
       (description <~ (recommendedApp.description map (d => tvText(d) + vVisible) getOrElse vGone)) ~
@@ -81,5 +85,17 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)(implicit c
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)
+
+  private[this] def getStarDrawable(value: Double) = value match {
+    case v if v < 1.1 => R.drawable.recommendations_starts_01
+    case v if v < 1.6 => R.drawable.recommendations_starts_01_5
+    case v if v < 2.1 => R.drawable.recommendations_starts_02
+    case v if v < 2.6 => R.drawable.recommendations_starts_02_5
+    case v if v < 3.1 => R.drawable.recommendations_starts_03
+    case v if v < 3.6 => R.drawable.recommendations_starts_03_5
+    case v if v < 4.1 => R.drawable.recommendations_starts_04
+    case v if v < 4.6 => R.drawable.recommendations_starts_04_5
+    case _ => R.drawable.recommendations_starts_05
+  }
 
 }

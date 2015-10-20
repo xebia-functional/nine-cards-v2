@@ -24,6 +24,10 @@
                 <LinearLayout
                     style="@style/RecommendationsItemHeaderTitleDataContent">
 
+                    <ImageView
+                        android:id="@+id/recommendation_item_stars"
+                        style="@style/RecommendationsItemHeaderStars"/>
+
                     <TextView
                         android:id="@+id/recommendation_item_downloads"
                         style="@style/RecommendationsItemHeaderDownloads"/>
@@ -58,6 +62,9 @@
         <TextView
             android:id="@+id/recommendation_item_description"
             style="@style/RecommendationsItemDescription"/>
+
+        <ImageView
+            style="@style/RecommendationsItemLine"/>
 
         <Button
             android:id="@+id/recommendation_item_install_now"
