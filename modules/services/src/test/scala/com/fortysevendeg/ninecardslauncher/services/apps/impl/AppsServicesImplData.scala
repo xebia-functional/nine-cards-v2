@@ -12,8 +12,8 @@ trait AppsServicesImplData {
     className = "ClassNameExample1",
     resourceIcon = 0,
     colorPrimary = "",
-    dateInstalled = 1d,
-    dateUpdate = 1d,
+    dateInstalled = 1L,
+    dateUpdate = 1L,
     version = "22",
     installedFromGooglePlay = true)
 
@@ -23,8 +23,8 @@ trait AppsServicesImplData {
     className = "ClassNameExample2",
     resourceIcon = 0,
     colorPrimary = "",
-    dateInstalled = 1d,
-    dateUpdate = 1d,
+    dateInstalled = 1L,
+    dateUpdate = 1L,
     version = "22",
     installedFromGooglePlay = true)
 

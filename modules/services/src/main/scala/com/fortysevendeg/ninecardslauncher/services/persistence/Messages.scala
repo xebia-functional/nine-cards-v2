@@ -9,8 +9,8 @@ case class AddAppRequest(
   category: String,
   imagePath: String,
   colorPrimary: String,
-  dateInstalled: Double,
-  dateUpdate: Double,
+  dateInstalled: Long,
+  dateUpdate: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 
@@ -22,8 +22,8 @@ case class UpdateAppRequest(
   category: String,
   imagePath: String,
   colorPrimary: String,
-  dateInstalled: Double,
-  dateUpdate: Double,
+  dateInstalled: Long,
+  dateUpdate: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 

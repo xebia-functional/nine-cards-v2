@@ -12,8 +12,8 @@ case class AppEntityData(
   category: String,
   imagePath: String,
   colorPrimary: String,
-  dateInstalled: Double,
-  dateUpdate: Double,
+  dateInstalled: Long,
+  dateUpdate: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 
@@ -53,8 +53,8 @@ object AppEntity {
         category = cursor.getString(cursor.getColumnIndex(category)),
         imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
         colorPrimary = cursor.getString(cursor.getColumnIndex(colorPrimary)),
-        dateInstalled = cursor.getDouble(cursor.getColumnIndex(dateInstalled)),
-        dateUpdate = cursor.getDouble(cursor.getColumnIndex(dateUpdate)),
+        dateInstalled = cursor.getLong(cursor.getColumnIndex(dateInstalled)),
+        dateUpdate = cursor.getLong(cursor.getColumnIndex(dateUpdate)),
         version = cursor.getString(cursor.getColumnIndex(version)),
         installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0))
 
@@ -67,8 +67,8 @@ object AppEntity {
        |${AppEntity.category} TEXT not null,
        |${AppEntity.imagePath} TEXT not null,
        |${AppEntity.colorPrimary} TEXT not null,
-       |${AppEntity.dateInstalled} DOUBLE,
-       |${AppEntity.dateUpdate} DOUBLE,
+       |${AppEntity.dateInstalled} INTEGER,
+       |${AppEntity.dateUpdate} INTEGER,
        |${AppEntity.version} TEXT not null,
        |${AppEntity.installedFromGooglePlay} INTEGER )""".stripMargin
 }
@@ -83,8 +83,8 @@ object AppEntityData {
       category = cursor.getString(cursor.getColumnIndex(category)),
       imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
       colorPrimary = cursor.getString(cursor.getColumnIndex(colorPrimary)),
-      dateInstalled = cursor.getDouble(cursor.getColumnIndex(dateInstalled)),
-      dateUpdate = cursor.getDouble(cursor.getColumnIndex(dateUpdate)),
+      dateInstalled = cursor.getLong(cursor.getColumnIndex(dateInstalled)),
+      dateUpdate = cursor.getLong(cursor.getColumnIndex(dateUpdate)),
       version = cursor.getString(cursor.getColumnIndex(version)),
       installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0)
 }
