@@ -2,6 +2,14 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
+sealed trait FetchAppOrder
+
+case object OrderByName extends FetchAppOrder
+
+case object OrderByUpdate extends FetchAppOrder
+
+case object OrderByCategory extends FetchAppOrder
+
 case class AddAppRequest(
   name: String,
   packageName: String,

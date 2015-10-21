@@ -83,7 +83,7 @@ trait DeviceProcessSpecification
 
     val mockPersistenceServices = mock[PersistenceServices]
 
-    mockPersistenceServices.fetchApps returns
+    mockPersistenceServices.fetchApps(any, any) returns
       Service(Task(Result.answer(appsPersistence)))
 
     mockPersistenceServices.addApp(any[AddAppRequest]) returns(
@@ -173,7 +173,7 @@ trait DeviceProcessSpecification
   trait ErrorPersistenceServicesProcessScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.fetchApps returns Service {
+    mockPersistenceServices.fetchApps(any, any) returns Service {
       Task(Errata(persistenceServiceException))
     }
 
@@ -480,7 +480,7 @@ class DeviceProcessImplSpec
 
     "get saved apps" in
       new DeviceProcessScope {
-        val result = deviceProcess.getSavedApps(contextSupport).run.run
+        val result = deviceProcess.getSavedApps(GetByName)(contextSupport).run.run
         result must beLike {
           case Answer(resultApps) =>
             resultApps shouldEqual apps
@@ -489,7 +489,7 @@ class DeviceProcessImplSpec
 
     "returns AppException when ContactsService fails getting contact" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getSavedApps(contextSupport).run.run
+        val result = deviceProcess.getSavedApps(GetByName)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]

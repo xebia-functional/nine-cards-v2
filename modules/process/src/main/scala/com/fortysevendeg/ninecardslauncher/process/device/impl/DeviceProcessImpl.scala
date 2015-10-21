@@ -13,7 +13,8 @@ import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence._
+//import com.fortysevendeg.ninecardslauncher.services.persistence._
+import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServices, ImplicitsPersistenceServiceExceptions, AddAppRequest, PersistenceServiceException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import rapture.core.Answer
@@ -36,9 +37,9 @@ class DeviceProcessImpl(
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  override def getSavedApps(implicit context: ContextSupport) =
+  override def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
-      apps <- persistenceServices.fetchApps
+      apps <- persistenceServices.fetchApps(toFetchAppOrder(orderBy), orderBy.ascending)
     } yield apps map toApp).resolve[AppException]
 
   override def saveInstalledApps(implicit context: ContextSupport) =

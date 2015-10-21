@@ -3,18 +3,24 @@ package com.fortysevendeg.ninecardslauncher.process.device
 import android.content.{Intent, ComponentName}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlaySimplePackage, GooglePlayPackage, GooglePlayApp}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayPackage, GooglePlayApp}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ContactServices, ContactInfo => ContactInfoServices,
   ContactEmail => ContactEmailServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateAppRequest, AddAppRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
 
 import scala.util.Try
 
 trait DeviceConversions {
+
+  def toFetchAppOrder(orderBy: GetAppOrder): FetchAppOrder = orderBy match {
+    case _: GetByName => OrderByName
+    case _: GetByUpdate => OrderByUpdate
+    case _: GetByCategory => OrderByCategory
+  }
 
   def toApp(app: AppPersistence): App =
     App(

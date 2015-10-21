@@ -71,13 +71,14 @@ class AppRepository(
       }
     }
 
-  def fetchApps: ServiceDef2[Seq[App], RepositoryException] =
+  def fetchApps(orderBy: String = ""): ServiceDef2[Seq[App], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = appUri,
-            projection = allFields)(getListFromCursor(appEntityFromCursor)) map toApp
+            projection = allFields,
+            orderBy = orderBy)(getListFromCursor(appEntityFromCursor)) map toApp
         }
       }
     }
