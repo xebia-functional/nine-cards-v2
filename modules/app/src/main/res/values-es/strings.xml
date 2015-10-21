@@ -89,6 +89,8 @@
 
     <!-- Recommendations Action -->
 
+    <string name="recommendationError">Esta colección no tiene aplicaciones así que no podemos encontrar recomendaciones</string>
+
     <string name="installNow">Instalar ahora</string>
     <string name="free">Gratis</string>
 

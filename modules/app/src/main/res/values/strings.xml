@@ -93,6 +93,8 @@
 
     <!-- Recommendations Action -->
 
+    <string name="recommendationError">This collection don\'t have applications and can\'t found recommendations</string>
+
     <string name="installNow">Install now</string>
     <string name="free">Free</string>
 
