@@ -3,10 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection.models
 import android.content.Intent
 import android.content.Intent._
 import android.net.Uri
-import android.os.Parcelable
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
-import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json._
 
 import scala.collection.JavaConversions._
@@ -107,7 +104,7 @@ object NineCardsIntentExtras {
   val nineCardExtraPackageName: String = "package_name"
   val nineCardExtraClassName: String = "class_name"
   val openApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_APP"
-  val openRecommendedApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_RECOMMENDED_APP"
+  val openNoInstalledApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_RECOMMENDED_APP"
   val openSms: String = "com.fortysevendeg.ninecardslauncher.OPEN_SMS"
   val openPhone: String = "com.fortysevendeg.ninecardslauncher.OPEN_PHONE"
   val openEmail: String = "com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"

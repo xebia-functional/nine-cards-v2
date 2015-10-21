@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{Ui, ActivityContextWrapper}
 import macroid.FullDsl._
 
-case class RecommendationsAdapter(recommendations: Seq[RecommendedApp], clickListener: (String) => Ui[_])
+case class RecommendationsAdapter(recommendations: Seq[RecommendedApp], clickListener: (RecommendedApp) => Ui[_])
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[ViewHolderRecommendationsLayoutAdapter] {
 

@@ -7,10 +7,14 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{NineCardIntentConversions, LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -18,7 +22,8 @@ import macroid.{ActivityContextWrapper, Ui}
 
 trait RecommendationsComposer
   extends Styles
-  with LauncherExecutor {
+  with LauncherExecutor
+  with NineCardIntentConversions {
 
   self: TypedFindView with BaseActionFragment =>
 
@@ -35,7 +40,7 @@ trait RecommendationsComposer
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def addRecommendations(recommendations: Seq[RecommendedApp], clickListener: (String) => Ui[_])(implicit uiContext: UiContext[_]) = {
+  def addRecommendations(recommendations: Seq[RecommendedApp], clickListener: (RecommendedApp) => Ui[_])(implicit uiContext: UiContext[_]) = {
     val adapter = new RecommendationsAdapter(recommendations, clickListener)
     (recycler <~
       vVisible <~
@@ -44,13 +49,23 @@ trait RecommendationsComposer
       (loading <~ vGone)
   }
 
-  def onInstallNowClick(packageName: String): Ui[_] =
-    Ui(launchGooglePlay(packageName)) ~
+  def onInstallNowClick(app: RecommendedApp): Ui[_] =
+    Ui {
+      launchGooglePlay(app.packageName)
+      val card = AddCardRequest(
+        term = app.title,
+        packageName = Option(app.packageName),
+        cardType = CardType.noInstalledApp,
+        intent = toNineCardIntent(app),
+        imagePath = ""
+      )
+      activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
+    } ~
       unreveal()
 
 }
 
-case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup, clickListener: (String) => Ui[_])(implicit context: ActivityContextWrapper)
+case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup, clickListener: (RecommendedApp) => Ui[_])(implicit context: ActivityContextWrapper)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -85,7 +100,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup, clickListe
       (tag <~ tvText(if (recommendedApp.free) resGetString(R.string.free) else "")) ~
       (content <~ vIntTag(position)) ~
       Ui.sequence(screensUi: _*) ~
-      (installNow <~ On.click(clickListener(recommendedApp.packageName)))
+      (installNow <~ On.click(clickListener(recommendedApp)))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

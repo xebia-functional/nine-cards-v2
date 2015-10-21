@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardIntent, NineCardIntentExtras, NineCardsIntentExtras}
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 
 trait NineCardIntentConversions {
 
@@ -12,6 +13,13 @@ trait NineCardIntentConversions {
       class_name = Option(app.className)))
     intent.setAction(NineCardsIntentExtras.openApp)
     intent.setClassName(app.packageName, app.className)
+    intent
+  }
+
+  def toNineCardIntent(app: RecommendedApp): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(app.packageName)))
+    intent.setAction(NineCardsIntentExtras.openNoInstalledApp)
     intent
   }
 

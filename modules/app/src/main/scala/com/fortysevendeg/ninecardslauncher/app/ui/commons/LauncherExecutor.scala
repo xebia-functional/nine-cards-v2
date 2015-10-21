@@ -28,7 +28,7 @@ trait LauncherExecutor {
         } yield {
             tryOrNineIntent(activity, newIntent, intent)
           }) getOrElse tryLaunchPackage(intent)
-      case `openRecommendedApp` => goToGooglePlay(intent)
+      case `openNoInstalledApp` => goToGooglePlay(intent)
       case `openSms` =>
         (for {
           phone <- intent.extractPhone()
