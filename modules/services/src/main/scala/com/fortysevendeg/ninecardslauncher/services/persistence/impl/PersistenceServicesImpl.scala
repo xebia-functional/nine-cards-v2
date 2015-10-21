@@ -89,6 +89,11 @@ class PersistenceServicesImpl(
       cards <- cardRepository.fetchCardsByCollection(request.collectionId)
     } yield cards map toCard).resolve[PersistenceServiceException]
 
+  override def fetchCards =
+    (for {
+      cards <- cardRepository.fetchCards
+    } yield cards map toCard).resolve[PersistenceServiceException]
+
   override def findCardById(request: FindCardByIdRequest) =
     (for {
       maybeCard <- cardRepository.findCardById(request.id)

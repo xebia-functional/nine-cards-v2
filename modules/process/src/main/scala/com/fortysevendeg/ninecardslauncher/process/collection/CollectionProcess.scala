@@ -97,4 +97,12 @@ trait CollectionProcess {
    * @throws CardException if there was an error finding the card or updating it
    */
   def editCard(collectionId: Int, cardId: Int, name: String): ServiceDef2[Card, CardException]
+
+  /**
+    * Convert cards not installed in card from a package name
+    * @param packageName package name of app that we want to convert
+    * @return [Unit]
+    * @throws CardException if there was an error finding the card or updating it
+    */
+  def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport): ServiceDef2[Unit, CardException]
 }

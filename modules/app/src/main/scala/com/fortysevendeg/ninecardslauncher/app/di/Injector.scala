@@ -110,7 +110,8 @@ class Injector(implicit contextSupport: ContextSupport) {
   lazy val collectionProcess = new CollectionProcessImpl(
     collectionProcessConfig = collectionProcessConfig,
     persistenceServices = persistenceServices,
-    contactsServices = contactsServices)
+    contactsServices = contactsServices,
+    appsServices = appsServices)
 
   lazy val userProcess = new UserProcessImpl(
     apiServices = apiServices,

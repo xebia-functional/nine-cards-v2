@@ -1,15 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
+import android.util.Log
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
+import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, _}
+import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import play.api.libs.json.Json
 
 trait Conversions {
+
+  val resourceUtils = new ResourceUtils
 
   def toCollectionSeq(servicesCollectionSeq: Seq[ServicesCollection]) = servicesCollectionSeq map toCollection
 
@@ -110,7 +116,7 @@ trait Conversions {
     term = card.term,
     packageName = card.packageName,
     cardType = card.cardType,
-    intent = card.intent.toString,
+    intent = nineCardIntentToJson(card.intent),
     imagePath = card.imagePath,
     starRating = card.starRating,
     numDownloads = card.numDownloads,
@@ -149,11 +155,27 @@ trait Conversions {
     term = card.term,
     packageName = card.packageName,
     cardType = card.cardType,
-    intent = card.intent.toString,
+    intent = nineCardIntentToJson(card.intent),
     imagePath = card.imagePath,
     starRating = card.starRating,
     numDownloads = card.numDownloads,
     notification = card.notification)
+
+  def toInstalledApp(cards: Seq[ServicesCard], app: Application)(implicit contextSupport: ContextSupport): Seq[ServicesCard] = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(app.packageName),
+      class_name = Option(app.className)))
+    intent.setAction(openApp)
+    intent.setClassName(app.packageName, app.className)
+    val json = nineCardIntentToJson(intent)
+    Log.d("9cards", json)
+    cards map (_.copy(
+      term = app.name,
+      cardType = CardType.app,
+      imagePath = resourceUtils.getPathPackage(app.packageName, app.className),
+      intent = json
+    ))
+  }
 
   def toNewPositionCard(card: Card, newPosition: Int) = Card(
     id = card.id,
@@ -180,7 +202,6 @@ trait Conversions {
     starRating = card.starRating,
     numDownloads = card.numDownloads,
     notification = card.notification)
-
 
   def toNineCardIntent(item: UnformedApp) = {
     val intent = NineCardIntent(NineCardIntentExtras(
