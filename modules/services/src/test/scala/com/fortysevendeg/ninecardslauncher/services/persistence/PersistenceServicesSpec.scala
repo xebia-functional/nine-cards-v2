@@ -76,6 +76,8 @@ trait PersistenceServicesSpecification
       mockCardRepository.fetchCardsByCollection(collectionId + index) returns Service(Task(Result.answer(seqRepoCard)))
     }
 
+    mockCardRepository.fetchCards returns Service(Task(Result.answer(seqRepoCard)))
+
     mockCardRepository.findCardById(cardId) returns Service(Task(Result.answer(Option(repoCard))))
 
     mockCardRepository.findCardById(nonExistentCardId) returns Service(Task(Result.answer(None)))
@@ -138,6 +140,8 @@ trait PersistenceServicesSpecification
     List.tabulate(5) { index =>
       mockCardRepository.fetchCardsByCollection(collectionId + index) returns Service(Task(Result.errata(exception)))
     }
+
+    mockCardRepository.fetchCards returns Service(Task(Result.errata(exception)))
 
     mockCardRepository.findCardById(cardId) returns Service(Task(Result.errata(exception)))
 
@@ -525,6 +529,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchCards" should {
+
+    "return a list of Card elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCards.run.run
+
+      result must beLike {
+        case Answer(cards) =>
+          cards.size shouldEqual seqCard.size
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCards.run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {

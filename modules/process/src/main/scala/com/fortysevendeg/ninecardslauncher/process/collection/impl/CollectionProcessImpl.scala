@@ -96,7 +96,7 @@ class CollectionProcessImpl(
       _ <- updateCard(updatedCard)
     } yield updatedCard).resolve[CardException]
 
-  def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport) =
+  override def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport) =
     (for {
       app <- appsServices.getApplication(packageName)
       cardList <- persistenceServices.fetchCards

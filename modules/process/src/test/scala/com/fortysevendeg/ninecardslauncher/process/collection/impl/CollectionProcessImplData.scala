@@ -5,6 +5,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardInt
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
+import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, PhoneHome, ContactPhone => ServiceContactPhone, ContactInfo => ServiceContactInfo}
 import play.api.libs.json.Json
@@ -30,6 +31,30 @@ trait CollectionProcessImplData {
   val sharedCollectionId: String = Random.nextString(5)
   val nonExistentSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
+
+  val name1 = "Scala Android"
+  val packageName1 = "com.fortysevendeg.scala.android"
+  val className1 = "ScalaAndroidActivity"
+  val path1 = "/example/path1"
+  val category1 = "category1"
+  val imagePath1 = "imagePath1"
+  val resourceIcon1 = 1
+  val colorPrimary1 = "colorPrimary"
+  val dateInstalled1 = 1d
+  val dateUpdate1 = 1d
+  val version1 = "22"
+  val installedFromGooglePlay1 = true
+
+  val application1 = Application(
+    name = name1,
+    packageName = packageName1,
+    className = className1,
+    resourceIcon = resourceIcon1,
+    colorPrimary = colorPrimary1,
+    dateInstalled = dateInstalled1,
+    dateUpdate = dateUpdate1,
+    version = version1,
+    installedFromGooglePlay = installedFromGooglePlay1)
 
   val cardId = Random.nextInt(10)
   val position: Int = Random.nextInt(10)

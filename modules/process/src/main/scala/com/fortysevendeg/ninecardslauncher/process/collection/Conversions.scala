@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
@@ -167,13 +166,11 @@ trait Conversions {
       class_name = Option(app.className)))
     intent.setAction(openApp)
     intent.setClassName(app.packageName, app.className)
-    val json = nineCardIntentToJson(intent)
-    Log.d("9cards", json)
     cards map (_.copy(
       term = app.name,
       cardType = CardType.app,
       imagePath = resourceUtils.getPathPackage(app.packageName, app.className),
-      intent = json
+      intent = nineCardIntentToJson(intent)
     ))
   }
 
