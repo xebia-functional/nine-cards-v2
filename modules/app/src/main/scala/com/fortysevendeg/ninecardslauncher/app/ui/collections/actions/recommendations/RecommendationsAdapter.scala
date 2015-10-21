@@ -5,16 +5,16 @@ import android.view.{LayoutInflater, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.ActivityContextWrapper
+import macroid.{Ui, ActivityContextWrapper}
 import macroid.FullDsl._
 
-case class RecommendationsAdapter(recommendations: Seq[RecommendedApp])
+case class RecommendationsAdapter(recommendations: Seq[RecommendedApp], clickListener: (String) => Ui[_])
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[ViewHolderRecommendationsLayoutAdapter] {
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderRecommendationsLayoutAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.recommendations_item, parent, false).asInstanceOf[ViewGroup]
-    new ViewHolderRecommendationsLayoutAdapter(view)
+    new ViewHolderRecommendationsLayoutAdapter(view, clickListener)
   }
 
   override def getItemCount: Int = recommendations.size

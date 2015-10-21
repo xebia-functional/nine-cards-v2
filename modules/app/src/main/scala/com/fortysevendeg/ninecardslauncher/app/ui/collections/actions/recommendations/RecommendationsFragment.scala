@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, NineCardIntentConversions, UiContext}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -37,7 +37,7 @@ class RecommendationsFragment
 
     Task.fork(task.run).resolveAsyncUi(
       onPreTask = () => showLoading,
-      onResult = (recommendations: Seq[RecommendedApp]) => addRecommendations(recommendations),
+      onResult = (recommendations: Seq[RecommendedApp]) => addRecommendations(recommendations, onInstallNowClick),
       onException = (ex: Throwable) => showGeneralError
     )
   }
