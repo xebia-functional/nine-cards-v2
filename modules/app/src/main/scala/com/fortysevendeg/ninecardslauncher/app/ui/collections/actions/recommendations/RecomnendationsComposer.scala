@@ -57,8 +57,7 @@ trait RecommendationsComposer
         packageName = Option(app.packageName),
         cardType = CardType.noInstalledApp,
         intent = toNineCardIntent(app),
-        imagePath = ""
-      )
+        imagePath = "")
       activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
     } ~
       unreveal()

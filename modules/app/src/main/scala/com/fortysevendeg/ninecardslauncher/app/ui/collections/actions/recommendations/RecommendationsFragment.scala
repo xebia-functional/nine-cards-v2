@@ -38,7 +38,7 @@ class RecommendationsFragment
     Task.fork(task.run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (recommendations: Seq[RecommendedApp]) => addRecommendations(recommendations, onInstallNowClick),
-      onException = (ex: Throwable) => showGeneralError
+      onException = (_) => showGeneralError
     )
   }
 }

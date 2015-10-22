@@ -27,7 +27,7 @@ class AppBroadcastReceiver
     (action, replacing) match {
       case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).run).resolveAsync(
         onResult = _ => {
-          // We can't use the BroadcastDispatcher trait because the Receivers aren't ContextWrapperm then
+          // We can't use the BroadcastDispatcher trait because the Receivers aren't a ContextWrapper then
           // we have to send the intent from the context parameter
           val intent = new Intent(AppInstalledActionFilter.action)
           intent.putExtra(BroadcastDispatcher.keyType, BroadcastDispatcher.commandType)
