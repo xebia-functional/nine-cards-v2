@@ -174,7 +174,7 @@ class PersistenceServicesSpec
           apps shouldEqual seqApp
       }
 
-      there was one(mockAppRepository).fetchApps(s"${AppEntity.name} ASC")
+      there was one(mockAppRepository).fetchApps(contain(AppEntity.name))
     }
 
     "return a sequence of the apps when pass OrderByName and descending order" in new ValidRepositoryServicesResponses {
@@ -185,7 +185,7 @@ class PersistenceServicesSpec
           apps shouldEqual seqApp
       }
 
-      there was one(mockAppRepository).fetchApps(s"${AppEntity.name} DESC")
+      there was one(mockAppRepository).fetchApps(contain(AppEntity.name).and(contain("DESC")))
     }
 
     "return a sequence of the apps when pass OrderByUpdate" in new ValidRepositoryServicesResponses {
@@ -196,7 +196,7 @@ class PersistenceServicesSpec
           apps shouldEqual seqApp
       }
 
-      there was one(mockAppRepository).fetchApps(s"${AppEntity.dateUpdate} ASC")
+      there was one(mockAppRepository).fetchApps(contain(AppEntity.dateUpdate))
     }
 
     "return a sequence of the apps when pass OrderByCategory" in new ValidRepositoryServicesResponses {
@@ -207,7 +207,7 @@ class PersistenceServicesSpec
           apps shouldEqual seqApp
       }
 
-      there was one(mockAppRepository).fetchApps(s"${AppEntity.category} ASC")
+      there was one(mockAppRepository).fetchApps(contain(AppEntity.category))
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
