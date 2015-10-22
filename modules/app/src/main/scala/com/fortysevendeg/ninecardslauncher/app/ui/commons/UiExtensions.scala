@@ -32,6 +32,9 @@ trait UiExtensions {
   def getSeqString(bundles: Seq[Bundle], key: String, default: Seq[String]) =
     getData(flat(bundles), (b, k) => b.getStringArray(k).toSeq, key, default)
 
+  def getSerialize[T](bundles: Seq[Bundle], key: String, default: T) =
+    getData(flat(bundles), (b, k) => b.getSerializable(k).asInstanceOf[T], key, default)
+
   private[this] def flat(bundles: Seq[Bundle]): Seq[Bundle] =
     bundles flatMap (b => Option(b))
 

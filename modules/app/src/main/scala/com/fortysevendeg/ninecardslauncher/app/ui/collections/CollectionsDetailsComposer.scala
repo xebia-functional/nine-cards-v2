@@ -225,6 +225,15 @@ trait CollectionsDetailsComposer
       fragment.removeCard(c)
     }
 
+  protected def reloadCardsToCurrentFragment(cards: Seq[Card]) = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    currentPosition <- adapter.getCurrentFragmentPosition
+  } yield {
+    adapter.updateCardFromCollection(currentPosition, cards)
+    fragment.reloadCards(cards)
+  }
+
   def exitTransition(implicit theme: NineCardsTheme) =
     ((toolbar <~ exitViews()) ~
       (tabs <~ exitViews()) ~

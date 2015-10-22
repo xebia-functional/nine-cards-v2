@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT
@@ -39,6 +39,11 @@ class CollectionProcessImpl(
   }.resolve[CollectionException]
 
   override def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
+
+  override def getCollectionById(id: Int) =
+    (for {
+      collection <- persistenceServices.findCollectionById(FindCollectionByIdRequest(id))
+    } yield collection map toCollection).resolve[CollectionException]
 
   override def addCollection(addCollectionRequest: AddCollectionRequest) =
     (for {

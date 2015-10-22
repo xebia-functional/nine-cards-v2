@@ -59,6 +59,11 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     notifyItemRangeRemoved(position, 1)
   }
 
+  def updateCards(cards: Seq[Card]) = {
+    collection = collection.copy(cards = cards)
+    notifyItemRangeChanged(0, cards.length)
+  }
+
 }
 
 

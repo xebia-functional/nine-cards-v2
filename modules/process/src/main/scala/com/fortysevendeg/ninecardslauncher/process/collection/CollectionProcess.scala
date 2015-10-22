@@ -31,6 +31,13 @@ trait CollectionProcess {
   def getCollections: ServiceDef2[Seq[Collection], CollectionException]
 
   /**
+    * Gets the existing collections
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+    * @throws CollectionException if there was an error getting the existing collections
+    */
+  def getCollectionById(id: Int): ServiceDef2[Option[Collection], CollectionException]
+
+  /**
    * Adds a new Collection after the last existing one
    * @param addCollectionRequest includes the necessary data to create a new collection (name, collectionType, icon, themedColorIndex and appsCategory(optional))
    * @return the [[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]]
