@@ -13,7 +13,6 @@ import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
-//import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServices, ImplicitsPersistenceServiceExceptions, AddAppRequest, PersistenceServiceException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices

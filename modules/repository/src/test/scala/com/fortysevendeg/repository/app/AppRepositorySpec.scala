@@ -52,33 +52,33 @@ trait AppRepositorySpecification
       uri = mockUri,
       id = testAppId,
       projection = allFields)(
-      f = getEntityFromCursor(appEntityFromCursor)) returns Some(appEntity)
+        f = getEntityFromCursor(appEntityFromCursor)) returns Some(appEntity)
 
     contentResolverWrapper.findById(
       uri = mockUri,
       id = testNonExistingAppId,
       projection = allFields)(
-      f = getEntityFromCursor(appEntityFromCursor)) returns None
+        f = getEntityFromCursor(appEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
       projection = allFields,
       orderBy = "")(
-      f = getListFromCursor(appEntityFromCursor)) returns appEntitySeq
+        f = getListFromCursor(appEntityFromCursor)) returns appEntitySeq
 
     contentResolverWrapper.fetch(
       uri = mockUri,
       projection = allFields,
       where = s"$packageName = ?",
       whereParams = Seq(testPackageName))(
-      f = getEntityFromCursor(appEntityFromCursor)) returns Some(appEntity)
+        f = getEntityFromCursor(appEntityFromCursor)) returns Some(appEntity)
 
     contentResolverWrapper.fetch(
       uri = mockUri,
       projection = allFields,
       where = s"$packageName = ?",
       whereParams = Seq(testNonExistingPackageName))(
-      f = getEntityFromCursor(appEntityFromCursor)) returns None
+        f = getEntityFromCursor(appEntityFromCursor)) returns None
 
     contentResolverWrapper.updateById(mockUri, testAppId, createAppValues) returns 1
   }
@@ -105,20 +105,20 @@ trait AppRepositorySpecification
       uri = mockUri,
       id = testAppId,
       projection = allFields)(
-      f = getEntityFromCursor(appEntityFromCursor)) throws contentResolverException
+        f = getEntityFromCursor(appEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
       projection = allFields,
       orderBy = "")(
-      f = getListFromCursor(appEntityFromCursor)) throws contentResolverException
+        f = getListFromCursor(appEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       uri = mockUri,
       projection = allFields,
       where = s"$packageName = ?",
       whereParams = Seq(testPackageName))(
-      f = getEntityFromCursor(appEntityFromCursor)) throws contentResolverException
+        f = getEntityFromCursor(appEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.updateById(mockUri, testAppId, createAppValues) throws contentResolverException
   }
