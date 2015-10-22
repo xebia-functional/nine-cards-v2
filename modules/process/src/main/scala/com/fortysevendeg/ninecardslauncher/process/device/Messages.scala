@@ -15,12 +15,12 @@ sealed trait GetAppOrder {
 
 case class GetByName(ascending: Boolean) extends GetAppOrder
 
-case object GetByName extends GetByName(true)
+object GetByName extends GetByName(true)
 
 case class GetByUpdate(ascending: Boolean) extends GetAppOrder
 
-case object GetByUpdate extends GetByUpdate(false)
+object GetByUpdate extends GetByUpdate(false)
 
 case class GetByCategory(ascending: Boolean) extends GetAppOrder
 
-case object GetByCategory extends GetByCategory(true)
+object GetByCategory extends GetByCategory(true)
