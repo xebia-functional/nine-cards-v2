@@ -17,9 +17,9 @@ import scala.util.Try
 trait DeviceConversions {
 
   def toFetchAppOrder(orderBy: GetAppOrder): FetchAppOrder = orderBy match {
-    case _: GetByName => OrderByName
-    case _: GetByUpdate => OrderByUpdate
-    case _: GetByCategory => OrderByCategory
+    case GetByName(_) => OrderByName
+    case GetByUpdate(_) => OrderByUpdate
+    case GetByCategory(_) => OrderByCategory
   }
 
   def toApp(app: AppPersistence): App =
