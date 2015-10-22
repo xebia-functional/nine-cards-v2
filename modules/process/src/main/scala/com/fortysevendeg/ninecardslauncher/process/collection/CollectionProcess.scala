@@ -31,8 +31,8 @@ trait CollectionProcess {
   def getCollections: ServiceDef2[Seq[Collection], CollectionException]
 
   /**
-    * Gets the existing collections
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+    * Get collections by collection id if exists
+    * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
     * @throws CollectionException if there was an error getting the existing collections
     */
   def getCollectionById(id: Int): ServiceDef2[Option[Collection], CollectionException]

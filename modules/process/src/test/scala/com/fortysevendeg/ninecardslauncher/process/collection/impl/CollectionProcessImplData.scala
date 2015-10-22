@@ -56,6 +56,24 @@ trait CollectionProcessImplData {
     version = version1,
     installedFromGooglePlay = installedFromGooglePlay1)
 
+  val collectionId1 = 1
+
+  val collectionId2 = 2
+
+  val collection1 = servicesModel.Collection(
+    id = collectionId1,
+    position = position,
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    constrains = Option(constrains),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = sharedCollectionSubscribed)
+
+
   val cardId = Random.nextInt(10)
   val position: Int = Random.nextInt(10)
   val newPosition: Int = Random.nextInt(10)

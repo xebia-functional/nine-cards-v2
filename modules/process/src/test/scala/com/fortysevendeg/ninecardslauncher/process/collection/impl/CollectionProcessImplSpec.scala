@@ -6,16 +6,16 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{FindCollectionByIdRequest, PersistenceServiceException, PersistenceServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Errata, Answer, Result}
+import rapture.core.{Answer, Errata, Result}
 
 import scalaz.concurrent.Task
 
@@ -79,6 +79,19 @@ trait CollectionProcessImplSpecification
 
   }
 
+  trait ValidGetCollectionByIdPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId1)) returns
+      Service(Task(Result.answer(Some(collection1))))
+
+    mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId2)) returns
+      Service(Task(Result.answer(None)))
+
+  }
+
   trait WithContactsResponses
     extends CollectionProcessImplData {
 
@@ -111,6 +124,16 @@ trait CollectionProcessImplSpecification
 
     mockPersistenceServices.fetchCollections returns Service(Task(Errata(persistenceServiceException)))
     mockPersistenceServices.addCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ErrorGetCollectionByIdPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId1)) returns
+      Service(Task(Errata(persistenceServiceException)))
 
   }
 
@@ -433,6 +456,37 @@ class CollectionProcessImplSpec
     "returns a CollectionException if the service throws a exception" in
       new CollectionProcessScope with ErrorCreateCollectionPersistenceServicesResponses {
         val result = collectionProcess.getCollections.run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+          }
+        }
+      }
+  }
+
+  "getCollectionById" should {
+
+    "returns a collection for a valid request" in
+      new CollectionProcessScope with ValidGetCollectionByIdPersistenceServicesResponses {
+        val result = collectionProcess.getCollectionById(collectionId1).run.run
+        result must beLike {
+          case Answer(resultCollection) => resultCollection must beSome.which { collection =>
+            collection.name shouldEqual collection1.name
+          }
+        }
+      }
+
+    "returns None for a valid request if the collection id don't exists" in
+      new CollectionProcessScope with ValidGetCollectionByIdPersistenceServicesResponses {
+        val result = collectionProcess.getCollectionById(collectionId2).run.run
+        result must beLike {
+          case Answer(resultCollection) => resultCollection shouldEqual None
+        }
+      }
+
+    "returns a CollectionException if the service throws a exception" in
+      new CollectionProcessScope with ErrorGetCollectionByIdPersistenceServicesResponses {
+        val result = collectionProcess.getCollectionById(collectionId1).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
