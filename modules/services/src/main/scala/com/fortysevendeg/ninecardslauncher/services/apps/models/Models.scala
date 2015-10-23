@@ -6,7 +6,7 @@ case class Application(
   className: String,
   resourceIcon: Int,
   colorPrimary: String,
-  dateInstalled: Double,
-  dateUpdate: Double,
+  dateInstalled: Long,
+  dateUpdate: Long,
   version: String,
   installedFromGooglePlay: Boolean)

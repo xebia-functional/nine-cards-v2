@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, PersistenceServiceException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -83,7 +83,7 @@ trait DeviceProcessSpecification
 
     val mockPersistenceServices = mock[PersistenceServices]
 
-    mockPersistenceServices.fetchApps returns
+    mockPersistenceServices.fetchApps(any, any) returns
       Service(Task(Result.answer(appsPersistence)))
 
     mockPersistenceServices.addApp(any[AddAppRequest]) returns(
@@ -173,7 +173,7 @@ trait DeviceProcessSpecification
   trait ErrorPersistenceServicesProcessScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.fetchApps returns Service {
+    mockPersistenceServices.fetchApps(any, any) returns Service {
       Task(Errata(persistenceServiceException))
     }
 
@@ -478,18 +478,39 @@ class DeviceProcessImplSpec
 
   "Get Saved Apps" should {
 
-    "get saved apps" in
+    "get saved apps by name" in
       new DeviceProcessScope {
-        val result = deviceProcess.getSavedApps(contextSupport).run.run
+        val result = deviceProcess.getSavedApps(GetByName)(contextSupport).run.run
         result must beLike {
           case Answer(resultApps) =>
             resultApps shouldEqual apps
         }
+        there was one(mockPersistenceServices).fetchApps(OrderByName, ascending = true)
+      }
+
+    "get saved apps by update date" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getSavedApps(GetByUpdate)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual apps
+        }
+        there was one(mockPersistenceServices).fetchApps(OrderByUpdate, ascending = false)
+      }
+
+    "get saved apps by category" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getSavedApps(GetByCategory)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual apps
+        }
+        there was one(mockPersistenceServices).fetchApps(OrderByCategory, ascending = true)
       }
 
     "returns AppException when ContactsService fails getting contact" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getSavedApps(contextSupport).run.run
+        val result = deviceProcess.getSavedApps(GetByName)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]

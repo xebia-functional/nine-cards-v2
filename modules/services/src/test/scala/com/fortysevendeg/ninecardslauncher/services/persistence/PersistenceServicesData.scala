@@ -12,8 +12,8 @@ trait PersistenceServicesData {
   val className: String = Random.nextString(5)
   val resourceIcon: Int = Random.nextInt(10)
   val colorPrimary: String = Random.nextString(5)
-  val dateInstalled: Double = Random.nextDouble()
-  val dateUpdate: Double = Random.nextDouble()
+  val dateInstalled: Long = Random.nextLong()
+  val dateUpdate: Long = Random.nextLong()
   val version: String = Random.nextString(5)
   val installedFromGooglePlay: Boolean = Random.nextBoolean()
 
@@ -68,8 +68,8 @@ trait PersistenceServicesData {
     category: String = category,
     imagePath: String = imagePath,
     colorPrimary: String = colorPrimary,
-    dateInstalled: Double = dateInstalled,
-    dateUpdate: Double = dateUpdate,
+    dateInstalled: Long = dateInstalled,
+    dateUpdate: Long = dateUpdate,
     version: String = version,
     installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[App] = List.tabulate(num)(
     item => App(
@@ -98,8 +98,8 @@ trait PersistenceServicesData {
     category: String = category,
     imagePath: String = imagePath,
     colorPrimary: String = colorPrimary,
-    dateInstalled: Double = dateInstalled,
-    dateUpdate: Double = dateUpdate,
+    dateInstalled: Long = dateInstalled,
+    dateUpdate: Long = dateUpdate,
     version: String = version,
     installedFromGooglePlay: Boolean = installedFromGooglePlay): repositoryModel.AppData = repositoryModel.AppData(
     name = name,
@@ -323,8 +323,8 @@ trait PersistenceServicesData {
     category: String = category,
     imagePath: String = imagePath,
     colorPrimary: String = colorPrimary,
-    dateInstalled: Double = dateInstalled,
-    dateUpdate: Double = dateUpdate,
+    dateInstalled: Long = dateInstalled,
+    dateUpdate: Long = dateUpdate,
     version: String = version,
     installedFromGooglePlay: Boolean = installedFromGooglePlay): AddAppRequest =
     AddAppRequest(
@@ -347,8 +347,8 @@ trait PersistenceServicesData {
     category: String = category,
     imagePath: String = imagePath,
     colorPrimary: String = colorPrimary,
-    dateInstalled: Double = dateInstalled,
-    dateUpdate: Double = dateUpdate,
+    dateInstalled: Long = dateInstalled,
+    dateUpdate: Long = dateUpdate,
     version: String = version,
     installedFromGooglePlay: Boolean = installedFromGooglePlay): UpdateAppRequest =
     UpdateAppRequest(

@@ -21,8 +21,8 @@ trait DeviceProcessData {
   val imagePath1 = "imagePath1"
   val resourceIcon1 = 1
   val colorPrimary1 = "colorPrimary"
-  val dateInstalled1 = 1d
-  val dateUpdate1 = 1d
+  val dateInstalled1 = 1L
+  val dateUpdate1 = 1L
   val version1 = "22"
   val installedFromGooglePlay1 = true
 
@@ -34,8 +34,8 @@ trait DeviceProcessData {
   val imagePath2 = "imagePath1"
   val resourceIcon2 = 2
   val colorPrimary2 = "colorPrimary"
-  val dateInstalled2 = 1d
-  val dateUpdate2 = 1d
+  val dateInstalled2 = 1L
+  val dateUpdate2 = 1L
   val version2 = "22"
   val installedFromGooglePlay2 = true
 
@@ -47,8 +47,8 @@ trait DeviceProcessData {
   val imagePath3 = "imagePath1"
   val resourceIcon3 = 3
   val colorPrimary3 = "colorPrimary"
-  val dateInstalled3 = 1d
-  val dateUpdate3 = 1d
+  val dateInstalled3 = 1L
+  val dateUpdate3 = 1L
   val version3 = "22"
   val installedFromGooglePlay3 = true
 
@@ -60,8 +60,8 @@ trait DeviceProcessData {
   val imagePath4 = "imagePath1"
   val resourceIcon4 = 4
   val colorPrimary4 = "colorPrimary"
-  val dateInstalled4 = 1d
-  val dateUpdate4 = 1d
+  val dateInstalled4 = 1L
+  val dateUpdate4 = 1L
   val version4 = "22"
   val installedFromGooglePlay4 = true
 

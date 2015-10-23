@@ -11,8 +11,8 @@ case class AppData(
   category: String,
   imagePath: String,
   colorPrimary: String,
-  dateInstalled: Double,
-  dateUpdate: Double,
+  dateInstalled: Long,
+  dateUpdate: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 
