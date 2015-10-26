@@ -40,8 +40,8 @@ trait CollectionProcessImplData {
   val imagePath1 = "imagePath1"
   val resourceIcon1 = 1
   val colorPrimary1 = "colorPrimary"
-  val dateInstalled1 = 1d
-  val dateUpdate1 = 1d
+  val dateInstalled1 = 1L
+  val dateUpdate1 = 1L
   val version1 = "22"
   val installedFromGooglePlay1 = true
 
