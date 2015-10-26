@@ -31,6 +31,7 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     bundle.putInt(CollectionFragment.keyPosition, position)
     bundle.putBoolean(CollectionFragment.keyAnimateCards,firstTimeInStartPosition(position))
     bundle.putSerializable(CollectionFragment.keyCollection, collections(position))
+    bundle.putInt(CollectionFragment.keyCollectionId, collections(position).id)
     bundle.putInt(CollectionFragment.keyScrollType, scrollType)
     fragment.setArguments(bundle)
     fragment
@@ -60,6 +61,12 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
   def removeCardFromCollection(positionCollection: Int, card: Card) = {
     val currentCollection = collections(positionCollection)
     val newCollection = currentCollection.copy(cards = currentCollection.cards.filterNot(c => card == c))
+    collections = collections.patch(positionCollection, Seq(newCollection), 1)
+  }
+
+  def updateCardFromCollection(positionCollection: Int, cards: Seq[Card]) = {
+    val currentCollection = collections(positionCollection)
+    val newCollection = currentCollection.copy(cards = cards)
     collections = collections.patch(positionCollection, Seq(newCollection), 1)
   }
 

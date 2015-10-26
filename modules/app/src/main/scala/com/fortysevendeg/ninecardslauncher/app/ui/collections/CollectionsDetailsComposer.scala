@@ -25,6 +25,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
@@ -154,8 +155,22 @@ trait CollectionsDetailsComposer
         val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         showAction(f[AppsFragment], view, map)
     }),
-    getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
-      uiShortToast("Recommendations")
+    getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
+      view: View =>
+        val collection = getCurrentCollection
+        val packages = collection map (_.cards flatMap (_.packageName match {
+          case Some("") => None // TODO Resolve in ticket 9C-257
+          case a => a
+        })) getOrElse Seq.empty
+        val category = collection flatMap (_.appsCategory)
+        // TODO Remove "if (cat == "")" when ticket 9C-257 is resolved
+        val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(RecommendationsFragment.categoryKey -> cat)) getOrElse Map.empty
+        val categoryEmpty = category map (cat => cat == "") getOrElse true
+        if (categoryEmpty && packages.isEmpty) {
+          showError(R.string.recommendationError)
+        } else {
+          showAction(f[RecommendationsFragment], view, map, packages)
+        }
     }),
     getUi(w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
       view: View => showAction(f[ContactsFragment], view)
@@ -209,6 +224,15 @@ trait CollectionsDetailsComposer
       adapter.removeCardFromCollection(currentPosition, c)
       fragment.removeCard(c)
     }
+
+  protected def reloadCardsToCurrentFragment(cards: Seq[Card]) = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    currentPosition <- adapter.getCurrentFragmentPosition
+  } yield {
+    adapter.updateCardFromCollection(currentPosition, cards)
+    fragment.reloadCards(cards)
+  }
 
   def exitTransition(implicit theme: NineCardsTheme) =
     ((toolbar <~ exitViews()) ~
@@ -325,7 +349,7 @@ trait CollectionsDetailsComposer
       updateStatusColor(color)
 
   private[this] def showAction[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, String] = Map.empty): Ui[_] = {
+  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, String] = Map.empty, packages: Seq[String] = Seq.empty): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
@@ -335,6 +359,7 @@ trait CollectionsDetailsComposer
     args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
     args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
+    args.putStringArray(BaseActionFragment.packages, packages.toArray)
     map foreach (item => args.putString(item._1, item._2))
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))

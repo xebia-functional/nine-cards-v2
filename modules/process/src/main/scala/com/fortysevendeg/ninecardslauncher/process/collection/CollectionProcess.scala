@@ -31,6 +31,13 @@ trait CollectionProcess {
   def getCollections: ServiceDef2[Seq[Collection], CollectionException]
 
   /**
+    * Get collections by collection id if exists
+    * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+    * @throws CollectionException if there was an error getting the existing collections
+    */
+  def getCollectionById(id: Int): ServiceDef2[Option[Collection], CollectionException]
+
+  /**
    * Adds a new Collection after the last existing one
    * @param addCollectionRequest includes the necessary data to create a new collection (name, collectionType, icon, themedColorIndex and appsCategory(optional))
    * @return the [[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]]
@@ -97,4 +104,12 @@ trait CollectionProcess {
    * @throws CardException if there was an error finding the card or updating it
    */
   def editCard(collectionId: Int, cardId: Int, name: String): ServiceDef2[Card, CardException]
+
+  /**
+    * Convert cards not installed in card from a package name
+    * @param packageName package name of app that we want to convert
+    * @return [Unit]
+    * @throws CardException if there was an error finding the card or updating it
+    */
+  def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport): ServiceDef2[Unit, CardException]
 }

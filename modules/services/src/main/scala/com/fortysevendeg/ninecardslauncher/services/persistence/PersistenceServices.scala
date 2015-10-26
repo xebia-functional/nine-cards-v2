@@ -53,6 +53,8 @@ trait PersistenceServices {
 
   def fetchCardsByCollection(request: FetchCardsByCollectionRequest): ServiceDef2[Seq[Card], PersistenceServiceException]
 
+  def fetchCards: ServiceDef2[Seq[Card], PersistenceServiceException]
+
   def findCardById(request: FindCardByIdRequest): ServiceDef2[Option[Card], PersistenceServiceException]
 
   def updateCard(request: UpdateCardRequest): ServiceDef2[Int, PersistenceServiceException]

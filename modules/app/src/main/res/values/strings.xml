@@ -91,6 +91,13 @@
     <string name="sms">SMS</string>
     <string name="emails">Email</string>
 
+    <!-- Recommendations Action -->
+
+    <string name="recommendationError">This collection don\'t have applications and can\'t found recommendations</string>
+
+    <string name="installNow">Install now</string>
+    <string name="free">Free</string>
+
     <!-- Drawer -->
     <string name="apps_alphabetical">Alphabetical</string>
     <string name="apps_categories">By categories</string>

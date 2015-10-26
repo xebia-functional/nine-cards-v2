@@ -11,11 +11,11 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiExtensions}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ActionsSnails._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
-import ActionsSnails._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -122,5 +122,6 @@ object BaseActionFragment {
   val startRevealPosY = "start_reveal_pos_y"
   val endRevealPosX = "end_reveal_pos_x"
   val endRevealPosY = "end_reveal_pos_y"
+  val packages = "packages"
   val colorPrimary = "color_primary"
 }

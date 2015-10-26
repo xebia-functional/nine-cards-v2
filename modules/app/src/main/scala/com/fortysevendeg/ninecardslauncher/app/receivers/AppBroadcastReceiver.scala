@@ -1,11 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.receivers
 
-import com.fortysevendeg.ninecardslauncher2.R
 import android.content.Intent._
 import android.content._
+import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.AppInstalledActionFilter
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher2.R
 
 import scalaz.concurrent.Task
 
@@ -23,7 +25,15 @@ class AppBroadcastReceiver
     implicit val di = new Injector
 
     (action, replacing) match {
-      case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).run).resolveAsync()
+      case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).run).resolveAsync(
+        onResult = _ => {
+          // We can't use the BroadcastDispatcher trait because the Receivers aren't a ContextWrapper then
+          // we have to send the intent from the context parameter
+          val intent = new Intent(AppInstalledActionFilter.action)
+          intent.putExtra(BroadcastDispatcher.keyType, BroadcastDispatcher.commandType)
+          context.sendBroadcast(intent)
+        }
+      )
       case (ACTION_PACKAGE_REMOVED, false) => Task.fork(deleteApp(packageName).run).resolveAsync()
       case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => Task.fork(updateApp(packageName).run).resolveAsync()
       case (_, _) =>

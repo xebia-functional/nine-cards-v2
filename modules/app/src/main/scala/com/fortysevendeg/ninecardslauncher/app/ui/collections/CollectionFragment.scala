@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.Contexts
@@ -20,6 +20,7 @@ class CollectionFragment
   extends Fragment
   with Contexts[Fragment]
   with ContextSupportProvider
+  with UiExtensions
   with CollectionFragmentComposer {
 
   lazy val di = new Injector
@@ -31,19 +32,21 @@ class CollectionFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
-  lazy val animateCards = getArguments.getBoolean(keyAnimateCards, false)
+  lazy val animateCards = getBoolean(Seq(getArguments), keyAnimateCards, default = false)
 
-  lazy val position = getArguments.getInt(keyPosition, 0)
+  lazy val position = getInt(Seq(getArguments), keyPosition, 0)
 
-  lazy val collection = getArguments.getSerializable(keyCollection).asInstanceOf[Collection]
+  lazy val collection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, null))
+
+  lazy val collectionId = getInt(Seq(getArguments), keyCollectionId, 0)
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View =
     layout(animateCards)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     sType = getArguments.getInt(keyScrollType, ScrollType.down)
-    canScroll = collection.cards.length > numSpaces
-    runUi(initUi(collection, animateCards))
+    canScroll = collection exists (_.cards.length > numSpaces)
+    collection foreach (c => runUi(initUi(c, animateCards)))
     super.onViewCreated(view, savedInstanceState)
   }
 
@@ -60,7 +63,7 @@ class CollectionFragment
     scrolledListener = None
   }
 
-  def bindAnimatedAdapter = if (animateCards) runUi(setAnimatedAdapter(collection))
+  def bindAnimatedAdapter = if (animateCards) collection foreach (c => runUi(setAnimatedAdapter(c)))
 
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)
@@ -75,11 +78,19 @@ class CollectionFragment
     canScroll = cardCount > numSpaces
     runUi(resetScroll(adapter.collection))
   }
+
+  def reloadCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
+    adapter.updateCards(cards)
+    val cardCount = adapter.collection.cards.length
+    canScroll = cardCount > numSpaces
+    runUi(resetScroll(adapter.collection))
+  }
 }
 
 object CollectionFragment {
   val keyPosition = "tab_position"
   val keyCollection = "collection"
+  val keyCollectionId = "collection_id"
   val keyScrollType = "scroll_type"
   val keyAnimateCards = "animate_cards"
 }

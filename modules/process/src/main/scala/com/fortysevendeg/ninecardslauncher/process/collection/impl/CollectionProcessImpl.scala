@@ -5,10 +5,11 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
+import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions,
-  PersistenceServiceException, PersistenceServices, DeleteCollectionRequest => ServicesDeleteCollectionRequest, DeleteCardRequest => ServicesDeleteCardRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT
@@ -18,7 +19,8 @@ import scalaz.concurrent.Task
 class CollectionProcessImpl(
   val collectionProcessConfig: CollectionProcessConfig,
   val persistenceServices: PersistenceServices,
-  val contactsServices: ContactsServices)
+  val contactsServices: ContactsServices,
+  val appsServices: AppsServices)
   extends CollectionProcess
   with ImplicitsPersistenceServiceExceptions
   with FormedCollectionConversions
@@ -38,6 +40,11 @@ class CollectionProcessImpl(
 
   override def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
 
+  override def getCollectionById(id: Int) =
+    (for {
+      collection <- persistenceServices.findCollectionById(FindCollectionByIdRequest(id))
+    } yield collection map toCollection).resolve[CollectionException]
+
   override def addCollection(addCollectionRequest: AddCollectionRequest) =
     (for {
       collectionList <- persistenceServices.fetchCollections
@@ -49,8 +56,7 @@ class CollectionProcessImpl(
       Some(collection) <- findCollectionById(collectionId)
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
       collectionList <- getCollections
-      // TODO This call have problems. We should fix in ticket 9C-258
-//      _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
+      _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
     } yield ()).resolve[CollectionException]
 
   override def reorderCollection(position: Int, newPosition: Int) =
@@ -78,8 +84,7 @@ class CollectionProcessImpl(
       Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
       cardList <- getCardsByCollectionId(collectionId)
       _ <- persistenceServices.deleteCard(ServicesDeleteCardRequest(card))
-      // TODO Update Cards don't work. Fix it in ticket 9C-258
-//      _ <- updateCardList(moveCardList(cardList, card.position))
+      _ <- updateCardList(moveCardList(cardList, card.position))
     } yield ()).resolve[CardException]
 
   override def reorderCard(collectionId: Int, cardId: Int, newPosition: Int) =
@@ -95,6 +100,15 @@ class CollectionProcessImpl(
       updatedCard = toUpdatedCard(toCard(card), name)
       _ <- updateCard(updatedCard)
     } yield updatedCard).resolve[CardException]
+
+  override def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport) =
+    (for {
+      app <- appsServices.getApplication(packageName)
+      cardList <- persistenceServices.fetchCards
+      cardsNoInstalled = cardList filter (card => card.cardType == CardType.noInstalledApp && card.packageName.contains(packageName))
+      card = toCardSeq(toInstalledApp(cardsNoInstalled, app))
+      _ <- updateCardList(toCardSeq(toInstalledApp(cardsNoInstalled, app)))
+    } yield ()).resolve[CardException]
 
   private[this] def getCardsByCollectionId(collectionId: Int) = (
     persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]

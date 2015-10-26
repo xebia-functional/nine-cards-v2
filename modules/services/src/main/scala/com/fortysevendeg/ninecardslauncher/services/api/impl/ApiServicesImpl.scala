@@ -160,9 +160,14 @@ class ApiServicesImpl(
       userConfig <- readOption(response.data, userConfigNotFoundMessage)
     } yield TesterResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
-  override def getRecommendedApps(categories: Seq[String], limit: Int)(implicit requestConfig: RequestConfig) =
+  override def getRecommendedApps(
+    categories: Seq[String],
+    likePackages: Seq[String],
+    excludePackages: Seq[String],
+    limit: Int)(implicit requestConfig: RequestConfig) =
     (for {
-      response <- recommendationService.getRecommendedApps(toRecommendationRequest(categories, limit), requestConfig.toHeader)
+      response <- recommendationService.getRecommendedApps(
+        toRecommendationRequest(categories, likePackages, excludePackages, limit), requestConfig.toHeader)
       recommendation <- readOption(response.data, categoryNotFoundMessage)
     } yield RecommendationResponse(response.statusCode, toPlayAppSeq(recommendation))).resolve[ApiServiceException]
 

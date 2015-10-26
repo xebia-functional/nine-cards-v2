@@ -81,6 +81,17 @@ class CardRepository(
       }
     }
 
+  def fetchCards: ServiceDef2[Seq[Card], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.fetchAll(
+            uri = cardUri,
+            projection = allFields)(getListFromCursor(cardEntityFromCursor)) map toCard
+        }
+      }
+    }
+
   def updateCard(card: Card): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {
