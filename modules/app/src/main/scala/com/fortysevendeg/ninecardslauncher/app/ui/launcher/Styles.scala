@@ -10,6 +10,7 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
@@ -18,7 +19,6 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 
 trait Styles {
 
@@ -54,19 +54,19 @@ trait Styles {
   }
 
   def fabButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    fabButton(R.string.create_new_collection,
+    fabButton(R.string.createNewCollection,
       R.drawable.fab_menu_icon_create_new_collection,
       R.color.collection_fab_button_item_create_new_collection,
       1)
 
   def fabButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    fabButton(R.string.my_collections,
+    fabButton(R.string.myCollections,
       R.drawable.fab_menu_icon_my_collections,
       R.color.collection_fab_button_item_my_collections,
       2)
 
   def fabButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    fabButton(R.string.public_collections,
+    fabButton(R.string.publicCollections,
       R.drawable.fab_menu_icon_public_collections,
       R.color.collection_fab_button_item_public_collection,
       3)

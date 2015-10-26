@@ -7,11 +7,12 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.drawer.{ContactsMenuOption, AppsMenuOption, DrawerComposer}
+import com.fortysevendeg.ninecardslauncher.app.ui.drawer.{AppsMenuOption, ContactsMenuOption}
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.process.device.AllContacts
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
@@ -28,6 +29,7 @@ class LauncherActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
+  with ActionsScreenListener
   with LauncherComposer
   with SystemBarsTint
   with NineCardIntentConversions
@@ -67,6 +69,10 @@ class LauncherActivity
       case _ =>
     }
   }
+
+  override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
+
+  override def onEndFinishAction(): Unit = removeActionFragment
 
   override def onBackPressed(): Unit = runUi(backByPriority)
 

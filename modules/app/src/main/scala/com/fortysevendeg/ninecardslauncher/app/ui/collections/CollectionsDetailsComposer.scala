@@ -32,7 +32,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
@@ -47,11 +47,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CollectionsDetailsComposer
   extends Styles
+  with ActionsBehaviours
   with FabButtonBehaviour {
 
   self: AppCompatActivity with SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] =>
-
-  val nameActionFragment = "action-fragment"
 
   val resistanceDisplacement = .2f
 
@@ -70,8 +69,6 @@ trait CollectionsDetailsComposer
   lazy val toolbar = Option(findView(TR.collections_toolbar))
 
   lazy val root = Option(findView(TR.collections_root))
-
-  lazy val fragmentContent = Option(findView(TR.collections_fragment_content))
 
   lazy val viewPager = Option(findView(TR.collections_view_pager))
 
@@ -210,6 +207,14 @@ trait CollectionsDetailsComposer
       fragment.removeCard(c)
     }
 
+  def backByPriority(implicit theme: NineCardsTheme): Ui[_] = if (fabMenuOpened) {
+    swapFabButton()
+  } else if (isActionShowed) {
+    unrevealActionFragment
+  } else {
+    exitTransition
+  }
+
   def exitTransition(implicit theme: NineCardsTheme) =
     ((toolbar <~ exitViews()) ~
       (tabs <~ exitViews()) ~
@@ -217,7 +222,6 @@ trait CollectionsDetailsComposer
       (root <~ vBackgroundColorResource(android.R.color.transparent))) ~
       (viewPager <~~ exitViews(up = false)) ~~
       Ui(finish())
-
 
   def configureEnterTransition(
     position: Int,
@@ -340,20 +344,8 @@ trait CollectionsDetailsComposer
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton(doUpdateBars = false) ~
       (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~
-      addFragment(fragmentBuilder.pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
+      addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
-
-  def turnOffFragmentContent: Ui[_] =
-    (fragmentContent <~
-      colorContentDialog(paint = false) <~
-      fragmentContentStyle(false)) ~ updateBarsInFabMenuHide
-
-  def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
-
-  def isActionShowed: Boolean = findFragmentByTag(nameActionFragment).isDefined
-
-  def unrevealActionFragment(): Ui[_] =
-    findFragmentByTag[BaseActionFragment](nameActionFragment) map (_.unreveal()) getOrElse Ui.nop
 
 }
 

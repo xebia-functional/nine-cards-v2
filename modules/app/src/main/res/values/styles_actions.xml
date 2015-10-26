@@ -64,4 +64,14 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
+    <!-- Fragment Content -->
+
+    <style name="ActionsFragmentContentParent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="ActionsFragmentContent" parent="ActionsFragmentContentParent" />
+
 </resources>

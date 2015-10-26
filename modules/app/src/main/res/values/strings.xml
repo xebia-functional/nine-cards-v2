@@ -40,7 +40,7 @@
 
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
     <string name="goTo9Cards">Dive in!</string>
-    <string name="workingNotificationTitle">Wait a moment...</string>
+    <string name="workingNotificationTitle">Wait a moment…</string>
 
     <string name="downloadingAppsInfoMessage">Categorizing your apps</string>
     <string name="loadingAppsInfoMessage">Configuring your apps</string>
@@ -64,9 +64,14 @@
 
     <!-- Collections -->
 
-    <string name="create_new_collection">Create new collection</string>
-    <string name="my_collections">My collections</string>
-    <string name="public_collections">Public collections</string>
+    <string name="createNewCollection">Create new collection</string>
+    <string name="myCollections">My collections</string>
+    <string name="publicCollections">Public collections</string>
+
+    <string name="newCollection">New collection</string>
+    <string name="collectionName">Collection name</string>
+    <string name="selectIcon">Select icon</string>
+    <string name="selectColor">Select color</string>
 
     <!-- Collections Detail -->
 

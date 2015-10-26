@@ -44,8 +44,6 @@
 
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/collections_fragment_content"
-        style="@style/CollectionsFragmentContent" />
+    <include layout="@layout/action_content_include" />
 
 </FrameLayout>

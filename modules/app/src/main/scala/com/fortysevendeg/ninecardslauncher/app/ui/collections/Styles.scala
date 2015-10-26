@@ -40,8 +40,6 @@ trait Styles {
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor))
 
-  def fragmentContentStyle(clickable: Boolean): Tweak[FrameLayout] = Tweak[View]( _.setClickable(clickable))
-
   def fabButtonApplicationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     fabButton(R.string.applications, R.drawable.fab_menu_icon_applications, 1)
 

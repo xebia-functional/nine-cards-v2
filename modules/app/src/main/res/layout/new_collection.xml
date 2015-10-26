@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/NewCollectionRoot">
+
+    <EditText
+        style="@style/NewCollectionName"
+        android:id="@+id/new_collection_name"
+        android:inputType="text"/>
+
+    <ImageView
+        style="@style/NewCollectionLine"/>
+
+    <TextView
+        android:id="@+id/new_collection_select_color_image"
+        android:text="@string/selectColor"
+        style="@style/NewCollectionSelectorTitle"/>
+
+    <ImageView
+        style="@style/NewCollectionLine"/>
+
+
+    <TextView
+        android:id="@+id/new_collection_select_icon_image"
+        android:text="@string/selectIcon"
+        style="@style/NewCollectionSelectorTitle"/>
+
+    <ImageView
+        style="@style/NewCollectionLine"/>
+
+</LinearLayout>

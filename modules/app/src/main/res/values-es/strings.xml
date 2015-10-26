@@ -60,9 +60,14 @@
 
     <!-- Collections -->
 
-    <string name="create_new_collection">Crear nueva colección</string>
-    <string name="my_collections">Mis colecciones</string>
-    <string name="public_collections">Colecciones Públicas</string>
+    <string name="createNewCollection">Crear nueva colección</string>
+    <string name="myCollections">Mis colecciones</string>
+    <string name="publicCollections">Colecciones Públicas</string>
+
+    <string name="newCollection">Nueva colección</string>
+    <string name="collectionName">Nombre de la colección</string>
+    <string name="selectIcon">Seleccionar icono</string>
+    <string name="selectColor">Seleccionar color</string>
 
     <!-- Collections Detail -->
 
