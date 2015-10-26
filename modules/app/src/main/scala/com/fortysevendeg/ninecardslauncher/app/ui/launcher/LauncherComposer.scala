@@ -164,16 +164,16 @@ trait LauncherComposer
       (micIcon <~ micButtonStyle <~ On.click(
         uiStartIntent(new Intent(RecognizerIntent.ACTION_WEB_SEARCH))
       )) ~
-      (appDrawer1 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 0) <~ FuncOn.click { view: View =>
+      (appDrawer1 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 0) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
-      (appDrawer2 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 1) <~ FuncOn.click { view: View =>
+      (appDrawer2 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 1) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
-      (appDrawer3 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 2) <~ FuncOn.click { view: View =>
+      (appDrawer3 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 2) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
-      (appDrawer4 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 3) <~ FuncOn.click { view: View =>
+      (appDrawer4 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 3) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       })
 

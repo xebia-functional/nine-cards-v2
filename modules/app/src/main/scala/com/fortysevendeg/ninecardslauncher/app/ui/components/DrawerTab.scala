@@ -45,8 +45,8 @@ object DrawerTab {
     menuItemId: Int,
     menuListener: (Int) => Unit = (_) => ()) = Tweak[DrawerTab] { view =>
     runUi((view <~
-      vIntTag(R.id.drawable_on, drawableOn) <~
-      vIntTag(R.id.drawable_off, drawableOff) <~
+      vTag2(R.id.drawable_on, drawableOn) <~
+      vTag2(R.id.drawable_off, drawableOff) <~
       (if (selected) dtSelect else dtUnselect)) <~
       loadPopupMenu(selected, menuResource, menuItemId, menuListener))
   }

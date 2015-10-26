@@ -78,7 +78,7 @@ trait Styles {
       fimSrc(icon) +
       vGone +
       vTag(R.id.`type`, fabButtonItem) +
-      vIntTag(R.id.fab_menu_position, tag)
+      vTag2(R.id.fab_menu_position, tag)
 
 }
 

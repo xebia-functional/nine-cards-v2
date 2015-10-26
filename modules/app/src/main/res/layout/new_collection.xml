@@ -11,19 +11,37 @@
     <ImageView
         style="@style/NewCollectionLine"/>
 
-    <TextView
-        android:id="@+id/new_collection_select_color_image"
-        android:text="@string/selectColor"
-        style="@style/NewCollectionSelectorTitle"/>
+    <LinearLayout
+        android:id="@+id/new_collection_select_color_content"
+        style="@style/NewCollectionSelectorContent">
+
+        <ImageView
+            android:id="@+id/new_collection_select_color_image"
+            style="@style/NewCollectionSelectorIcon"/>
+
+        <TextView
+            android:text="@string/selectColor"
+            style="@style/NewCollectionSelectorTitle"/>
+
+    </LinearLayout>
 
     <ImageView
         style="@style/NewCollectionLine"/>
 
 
-    <TextView
-        android:id="@+id/new_collection_select_icon_image"
-        android:text="@string/selectIcon"
-        style="@style/NewCollectionSelectorTitle"/>
+    <LinearLayout
+        android:id="@+id/new_collection_select_icon_content"
+        style="@style/NewCollectionSelectorContent">
+
+        <ImageView
+            android:id="@+id/new_collection_select_icon_image"
+            style="@style/NewCollectionSelectorIcon"/>
+
+        <TextView
+            android:text="@string/selectIcon"
+            style="@style/NewCollectionSelectorTitle"/>
+
+    </LinearLayout>
 
     <ImageView
         style="@style/NewCollectionLine"/>

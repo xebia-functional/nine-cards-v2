@@ -97,7 +97,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup, clickListe
       (downloads <~ tvText(recommendedApp.downloads)) ~
       (description <~ (recommendedApp.description map (d => tvText(d) + vVisible) getOrElse vGone)) ~
       (tag <~ tvText(if (recommendedApp.free) resGetString(R.string.free) else "")) ~
-      (content <~ vIntTag(position)) ~
+      (content <~ vTag2(position)) ~
       Ui.sequence(screensUi: _*) ~
       (installNow <~ On.click(clickListener(recommendedApp)))
   }

@@ -1,18 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.res.ColorStateList
-import android.graphics.{Color, PorterDuff}
 import android.graphics.drawable.Drawable
+import android.graphics.{Color, PorterDuff}
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
-import android.support.design.widget.{NavigationView, Snackbar, FloatingActionButton}
+import android.support.design.widget.{FloatingActionButton, NavigationView, Snackbar}
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v4.view.{TintableBackgroundView, GravityCompat}
+import android.support.v4.view.{GravityCompat, TintableBackgroundView}
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar, AppCompatSpinner}
-import android.view.{MenuItem, View}
+import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar}
 import android.view.View.OnClickListener
+import android.view.{MenuItem, View}
 import android.widget.CompoundButton.OnCheckedChangeListener
-import android.widget.{SpinnerAdapter, Spinner, CompoundButton, ProgressBar}
+import android.widget.{CompoundButton, ProgressBar, Spinner, SpinnerAdapter}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak, Ui}
@@ -24,9 +24,9 @@ object ExtraTweaks {
 
   def vEnabled(enabled: Boolean) = Tweak[View](_.setEnabled(enabled))
 
-  def vIntTag(tag: Int) = Tweak[View](_.setTag(tag))
+  def vTag2[T](tag: T) = Tweak[View](_.setTag(tag)) // We should use this in Macroid-Extras instead of vTag
 
-  def vIntTag(id: Int, tag: Int) = Tweak[View](_.setTag(id, tag))
+  def vTag2[T](id: Int, tag: T) = Tweak[View](_.setTag(id, tag))
 
   def vBackgroundTint(color: Int) = Tweak[View] {
      case t: TintableBackgroundView => t.setSupportBackgroundTintList(ColorStateList.valueOf(color))

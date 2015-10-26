@@ -137,7 +137,7 @@ case class ViewHolderAppLayoutAdapter(content: ViewGroup)(implicit context: Acti
       case Some(app) =>
         (icon <~ ivCardUri(app.imagePath, app.name)) ~
           (name <~ tvText(app.name)) ~
-          (content <~ vIntTag(position))
+          (content <~ vTag2(position))
       case _ => Ui.nop
     }
 
