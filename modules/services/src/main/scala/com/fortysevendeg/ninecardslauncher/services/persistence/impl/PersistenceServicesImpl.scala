@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.commons.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -44,10 +45,21 @@ class PersistenceServicesImpl(
 
   val FilenameInstallation = "__installation_entity__"
 
-  override def fetchApps =
-    (for {
-      apps <- appRepository.fetchApps
-    } yield apps map toApp).resolve[PersistenceServiceException]
+  override def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {
+    val orderByString = s"${toStringOrderBy(orderBy)} COLLATE NOCASE ${if (ascending) "ASC" else "DESC"}"
+
+    val appSeq = for {
+      apps <- appRepository.fetchApps(orderByString)
+    } yield apps map toApp
+
+    appSeq.resolve[PersistenceServiceException]
+  }
+
+  private[this] def toStringOrderBy(orderBy: FetchAppOrder): String = orderBy match {
+    case OrderByName => AppEntity.name
+    case OrderByUpdate => AppEntity.dateUpdate
+    case OrderByCategory => AppEntity.category
+  }
 
   override def findAppByPackage(packageName: String) =
     (for {
@@ -87,6 +99,11 @@ class PersistenceServicesImpl(
   override def fetchCardsByCollection(request: FetchCardsByCollectionRequest) =
     (for {
       cards <- cardRepository.fetchCardsByCollection(request.collectionId)
+    } yield cards map toCard).resolve[PersistenceServiceException]
+
+  override def fetchCards =
+    (for {
+      cards <- cardRepository.fetchCards
     } yield cards map toCard).resolve[PersistenceServiceException]
 
   override def findCardById(request: FindCardByIdRequest) =

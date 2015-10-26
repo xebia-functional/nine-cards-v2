@@ -6,7 +6,10 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 trait AppBroadcastReceiverTasks {
 
   def addApp(packageName: String)(implicit di: Injector, contextSupport: ContextSupport) =
-    di.deviceProcess.saveApp(packageName)
+    for {
+      _ <- di.deviceProcess.saveApp(packageName)
+      _ <- di.collectionProcess.updateNoInstalledCardsInCollections(packageName)
+    } yield (())
 
   def deleteApp(packageName: String)(implicit di: Injector, contextSupport: ContextSupport) =
     di.deviceProcess.deleteApp(packageName)

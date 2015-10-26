@@ -15,7 +15,9 @@ trait RecommendationsProcessData {
 
   val categories = Seq(category)
 
-  val limit = 10
+  val likePackages = Seq("com.fortysevendeg.package1", "com.fortysevendeg.package2", "com.fortysevendeg.package3")
+
+  val limit = 20
 
   def generateGooglePlayApps() = 1 to 10 map { i =>
     GooglePlayApp(

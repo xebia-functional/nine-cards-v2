@@ -318,13 +318,17 @@ trait Conversions {
       to = apiTimeSlot.to,
       days = apiTimeSlot.days)
 
-  def toRecommendationRequest(categories: Seq[String], limit: Int): apiModel.RecommendationRequest =
+  def toRecommendationRequest(
+    categories: Seq[String],
+    likePackages: Seq[String],
+    excludePackages: Seq[String],
+    limit: Int): apiModel.RecommendationRequest =
     apiModel.RecommendationRequest(
       collectionId = None,
       categories = categories,
       adPresenceRatio = 0.0,
-      likePackages = Seq.empty,
-      excludePackages = Seq.empty,
+      likePackages = likePackages,
+      excludePackages = excludePackages,
       limit = limit,
       adsRequest = None)
 

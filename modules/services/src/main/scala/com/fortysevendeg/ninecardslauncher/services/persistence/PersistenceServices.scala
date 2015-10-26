@@ -9,10 +9,12 @@ trait PersistenceServices {
 
   /**
    * Obtains all the apps from the repository
+   * @param orderBy indicates the field to order by
+   * @param ascending indicates if it will be in ascending order or not
    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
    * @throws PersistenceServiceException if exist some problem obtaining the app
    */
-  def fetchApps: ServiceDef2[Seq[App], PersistenceServiceException]
+  def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[Seq[App], PersistenceServiceException]
 
   /**
    * Obtains an app from the repository by the package name
@@ -50,6 +52,8 @@ trait PersistenceServices {
   def deleteCard(request: DeleteCardRequest): ServiceDef2[Int, PersistenceServiceException]
 
   def fetchCardsByCollection(request: FetchCardsByCollectionRequest): ServiceDef2[Seq[Card], PersistenceServiceException]
+
+  def fetchCards: ServiceDef2[Seq[Card], PersistenceServiceException]
 
   def findCardById(request: FindCardByIdRequest): ServiceDef2[Option[Card], PersistenceServiceException]
 

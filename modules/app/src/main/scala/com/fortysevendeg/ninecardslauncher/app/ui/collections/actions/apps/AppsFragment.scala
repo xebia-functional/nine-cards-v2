@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFrag
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiExtensions, FragmentUiContext, NineCardIntentConversions, UiContext}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
+import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -47,7 +48,7 @@ class AppsFragment
 
   private[this] def loadApps(
     filter: AppsFilter,
-    reload: Boolean = false) = Task.fork(di.deviceProcess.getSavedApps.run).resolveAsyncUi(
+    reload: Boolean = false) = Task.fork(di.deviceProcess.getSavedApps(GetByName).run).resolveAsyncUi(
     onPreTask = () => showLoading,
     onResult = (apps: Seq[App]) => if (reload) {
       reloadAppsAdapter(getAppsByFilter(apps, filter), filter, category)

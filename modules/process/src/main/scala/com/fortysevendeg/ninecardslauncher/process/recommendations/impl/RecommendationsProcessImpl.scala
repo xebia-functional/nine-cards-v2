@@ -14,12 +14,18 @@ class RecommendationsProcessImpl(apiServices: ApiServices, persistenceServices: 
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  val defaultRecommendedAppsLimit = 10
+  val defaultRecommendedAppsLimit = 20
 
-  override def getRecommendedAppsByCategory(category: String)(implicit context: ContextSupport) =
+  override def getRecommendedAppsByCategory(category: String, excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport) =
     (for {
       userConfig <- apiUtils.getRequestConfig
-      response <- apiServices.getRecommendedApps(Seq(category), defaultRecommendedAppsLimit)(userConfig)
+      response <- apiServices.getRecommendedApps(Seq(category), Seq.empty, excludePackages, defaultRecommendedAppsLimit)(userConfig)
+    } yield response.seq map toRecommendedApp).resolve[RecommendedAppsException]
+
+  override def getRecommendedAppsByPackages(packages: Seq[String], excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport) =
+    (for {
+      userConfig <- apiUtils.getRequestConfig
+      response <- apiServices.getRecommendedApps(Seq.empty, packages, excludePackages, defaultRecommendedAppsLimit)(userConfig)
     } yield response.seq map toRecommendedApp).resolve[RecommendedAppsException]
 
 }

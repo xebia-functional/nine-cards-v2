@@ -9,6 +9,11 @@ trait Conversions {
     RecommendedApp(
       packageName = googlePlayApp.docid,
       title = googlePlayApp.title,
-      icon = googlePlayApp.icon)
+      icon = googlePlayApp.icon,
+      downloads = googlePlayApp.details.appDetails.numDownloads,
+      stars = googlePlayApp.aggregateRating.starRating,
+      description = googlePlayApp.descriptionHtml,
+      free = googlePlayApp.offer.headOption exists (_.micros == 0),
+      screenshots = googlePlayApp.screenshots)
 
 }

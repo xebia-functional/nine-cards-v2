@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.content._
+import BroadcastDispatcher._
 
 trait BroadcastDispatcher {
 
@@ -47,12 +48,11 @@ trait BroadcastDispatcher {
 
   case class BroadAction(action: String, command: Option[String] = None)
 
-  private[this] val keyType = "broadcast-key-type"
+}
 
-  private[this] val questionType = "broadcast-question"
-
-  private[this] val commandType = "broadcast-command"
-
-  private[this] val keyCommand = "broadcast-key-command"
-
+object BroadcastDispatcher {
+  val keyType = "broadcast-key-type"
+  val questionType = "broadcast-question"
+  val commandType = "broadcast-command"
+  val keyCommand = "broadcast-key-command"
 }
