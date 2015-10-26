@@ -2,6 +2,14 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
+sealed trait FetchAppOrder
+
+case object OrderByName extends FetchAppOrder
+
+case object OrderByUpdate extends FetchAppOrder
+
+case object OrderByCategory extends FetchAppOrder
+
 case class AddAppRequest(
   name: String,
   packageName: String,
@@ -9,8 +17,8 @@ case class AddAppRequest(
   category: String,
   imagePath: String,
   colorPrimary: String,
-  dateInstalled: Double,
-  dateUpdate: Double,
+  dateInstalled: Long,
+  dateUpdate: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 
@@ -22,8 +30,8 @@ case class UpdateAppRequest(
   category: String,
   imagePath: String,
   colorPrimary: String,
-  dateInstalled: Double,
-  dateUpdate: Double,
+  dateInstalled: Long,
+  dateUpdate: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 

@@ -9,10 +9,11 @@ trait DeviceProcess {
 
   /**
    * Get the saved apps from the database
+   * @param orderBy indicates the order to fetch the apps
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.App]
    * @throws AppException if exist some problem to get the apps
    */
-  def getSavedApps(implicit context: ContextSupport): ServiceDef2[Seq[App], AppException]
+  def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[Seq[App], AppException]
 
   /**
    * Create the bitmaps from a sequence of packages

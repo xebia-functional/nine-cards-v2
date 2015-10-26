@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -38,7 +39,7 @@ trait PersistenceServicesSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 
-    mockAppRepository.fetchApps returns Service(Task(Result.answer(seqRepoApp)))
+    mockAppRepository.fetchApps(any) returns Service(Task(Result.answer(seqRepoApp)))
 
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.answer(Option(repoApp))))
 
@@ -109,7 +110,7 @@ trait PersistenceServicesSpecification
 
     val exception = RepositoryException("Irrelevant message")
 
-    mockAppRepository.fetchApps returns Service(Task(Result.errata(exception)))
+    mockAppRepository.fetchApps(any) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
@@ -169,17 +170,52 @@ class PersistenceServicesSpec
 
   "fetchApps" should {
 
-    "return a sequence of the apps " in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchApps.run.run
+    "return a sequence of the apps when pass OrderByName" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchApps(OrderByName, ascending = true).run.run
 
       result must beLike[Result[Seq[App], PersistenceServiceException]] {
         case Answer(apps) =>
           apps shouldEqual seqApp
       }
+
+      there was one(mockAppRepository).fetchApps(contain(AppEntity.name))
+    }
+
+    "return a sequence of the apps when pass OrderByName and descending order" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchApps(OrderByName, ascending = false).run.run
+
+      result must beLike[Result[Seq[App], PersistenceServiceException]] {
+        case Answer(apps) =>
+          apps shouldEqual seqApp
+      }
+
+      there was one(mockAppRepository).fetchApps(contain(AppEntity.name).and(contain("DESC")))
+    }
+
+    "return a sequence of the apps when pass OrderByUpdate" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchApps(OrderByUpdate, ascending = true).run.run
+
+      result must beLike[Result[Seq[App], PersistenceServiceException]] {
+        case Answer(apps) =>
+          apps shouldEqual seqApp
+      }
+
+      there was one(mockAppRepository).fetchApps(contain(AppEntity.dateUpdate))
+    }
+
+    "return a sequence of the apps when pass OrderByCategory" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchApps(OrderByCategory, ascending = true).run.run
+
+      result must beLike[Result[Seq[App], PersistenceServiceException]] {
+        case Answer(apps) =>
+          apps shouldEqual seqApp
+      }
+
+      there was one(mockAppRepository).fetchApps(contain(AppEntity.category))
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchApps.run.run
+      val result = persistenceServices.fetchApps(OrderByName).run.run
 
       result must beLike[Result[Seq[App], PersistenceServiceException]] {
         case Errata(e) => e.headOption must beSome.which {

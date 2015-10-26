@@ -11,9 +11,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.drawer.{ContactsMenuOption, AppsMenuOption, DrawerComposer}
+import com.fortysevendeg.ninecardslauncher.app.ui.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
-import com.fortysevendeg.ninecardslauncher.process.device.AllContacts
+import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
@@ -110,8 +110,7 @@ class LauncherActivity
   }
 
   private[this] def loadApps(appsMenuOption: AppsMenuOption): Unit =
-    // TODO - Take into account the `appsMenuOption` param
-    Task.fork(di.deviceProcess.getSavedApps.run).resolveAsyncUi(
+    Task.fork(di.deviceProcess.getSavedApps(toGetAppOrder(appsMenuOption)).run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
       onResult = (apps: Seq[App]) => addApps(apps, (app: App) => {
         execute(toNineCardIntent(app))
@@ -119,6 +118,12 @@ class LauncherActivity
         launchSettings(app.packageName)
       })
     )
+
+  private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
+    case AppsAlphabetical => GetByName
+    case AppsByCategories => GetByCategory
+    case AppsByLastInstall => GetByUpdate
+  }
 
   private[this] def loadContacts(contactsMenuOption: ContactsMenuOption): Unit =
     // TODO - Take into account the `contactsMenuOption` param
