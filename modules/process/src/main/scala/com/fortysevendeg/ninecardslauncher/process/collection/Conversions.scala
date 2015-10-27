@@ -39,10 +39,10 @@ trait Conversions {
     icon = addCollectionRequest.icon,
     themedColorIndex = addCollectionRequest.themedColorIndex,
     appsCategory = addCollectionRequest.appsCategory,
-    constrains = None,
-    originalSharedCollectionId = None,
-    sharedCollectionId = None,
-    sharedCollectionSubscribed = None,
+    constrains = addCollectionRequest.constrains,
+    originalSharedCollectionId = addCollectionRequest.originalSharedCollectionId,
+    sharedCollectionId = addCollectionRequest.sharedCollectionId,
+    sharedCollectionSubscribed = addCollectionRequest.sharedCollectionSubscribed,
     cards = Seq())
 
   def toFindCollectionByIdRequest(collectionId: Int) = FindCollectionByIdRequest(

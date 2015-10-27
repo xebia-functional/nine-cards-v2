@@ -16,10 +16,6 @@ case class AppData(
   version: String,
   installedFromGooglePlay: Boolean)
 
-
-
-
-
 case class Collection(
   id: Int,
   data: CollectionData)

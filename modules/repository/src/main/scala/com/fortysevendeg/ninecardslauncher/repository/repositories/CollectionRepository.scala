@@ -32,11 +32,11 @@ class CollectionRepository(
             collectionType -> data.collectionType,
             icon -> data.icon,
             themedColorIndex -> data.themedColorIndex,
-            appsCategory -> (data.appsCategory getOrElse ""),
-            constrains -> (data.constrains getOrElse ""),
-            originalSharedCollectionId -> (data.originalSharedCollectionId getOrElse ""),
-            sharedCollectionId -> (data.sharedCollectionId getOrElse ""),
-            sharedCollectionSubscribed -> (data.sharedCollectionSubscribed getOrElse false))
+            appsCategory -> (data.appsCategory orNull),
+            constrains -> (data.constrains orNull),
+            originalSharedCollectionId -> (data.originalSharedCollectionId orNull),
+            sharedCollectionId -> (data.sharedCollectionId orNull),
+            sharedCollectionSubscribed -> (data.sharedCollectionSubscribed orNull))
 
           val id = contentResolverWrapper.insert(
             uri = collectionUri,
@@ -109,11 +109,11 @@ class CollectionRepository(
             collectionType -> collection.data.collectionType,
             icon -> collection.data.icon,
             themedColorIndex -> collection.data.themedColorIndex,
-            appsCategory -> (collection.data.appsCategory getOrElse ""),
-            constrains -> (collection.data.constrains getOrElse ""),
-            originalSharedCollectionId -> (collection.data.originalSharedCollectionId getOrElse ""),
-            sharedCollectionId -> (collection.data.sharedCollectionId getOrElse ""),
-            sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed getOrElse false))
+            appsCategory -> (collection.data.appsCategory orNull),
+            constrains -> (collection.data.constrains orNull),
+            originalSharedCollectionId -> (collection.data.originalSharedCollectionId orNull),
+            sharedCollectionId -> (collection.data.sharedCollectionId orNull),
+            sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed orNull))
 
           contentResolverWrapper.updateById(
             uri = collectionUri,
