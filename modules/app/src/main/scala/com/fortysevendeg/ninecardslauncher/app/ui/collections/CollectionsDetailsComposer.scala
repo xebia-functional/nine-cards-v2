@@ -151,8 +151,7 @@ trait CollectionsDetailsComposer
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>
         val category = getCurrentCollection flatMap (_.appsCategory)
-        // TODO Remove "if (cat == "")" when ticket 9C-257 is resolved
-        val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
+        val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         showAction(f[AppsFragment], view, map)
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
