@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.new_collection
 
+import android.graphics.Color
 import android.os.Bundle
-import android.view.View
+import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
@@ -20,6 +21,16 @@ class NewCollectionFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
+  }
+
+  override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
+    runUi(tintIcons(Color.GRAY))
+    super.onCreateView(inflater, container, savedInstanceState)
+  }
+
+  override def onDestroy(): Unit = {
+    runUi(tintIcons(Color.TRANSPARENT))
+    super.onDestroy()
   }
 }
 

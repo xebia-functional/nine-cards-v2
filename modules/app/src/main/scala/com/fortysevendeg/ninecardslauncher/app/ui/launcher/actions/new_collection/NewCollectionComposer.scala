@@ -9,9 +9,9 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.Ui
@@ -45,13 +45,10 @@ trait NewCollectionComposer
         Ui.nop
       })
 
-  private[this] def setCategory(category: String): Ui[_] = {
-    val drawable = resGetDrawable(iconCollectionDetail(category))
-    DrawableCompat.setTint(drawable, Color.GRAY)
+  private[this] def setCategory(category: String): Ui[_] =
     iconImage <~
       vTag2(category) <~
-      ivSrc(drawable)
-  }
+      ivSrc(resGetDrawable(iconCollectionDetail(category)))
 
   private[this] def setIndexColor(index: Int): Ui[_] = {
     val color = resGetColor(getIndexColor(index))
@@ -68,5 +65,12 @@ trait NewCollectionComposer
   }
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
+
+  def tintIcons(color: Int) = Ui {
+    categories foreach { category =>
+      val drawable = resGetDrawable(iconCollectionDetail(category))
+      DrawableCompat.setTint(drawable, color)
+    }
+  }
 
 }
