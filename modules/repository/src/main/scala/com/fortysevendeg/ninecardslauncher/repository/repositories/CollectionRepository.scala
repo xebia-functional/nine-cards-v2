@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.{allFields, position, _}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
-
+import RepositoryUtils._
 import scalaz.concurrent.Task
 
 class CollectionRepository(
@@ -32,11 +32,11 @@ class CollectionRepository(
             collectionType -> data.collectionType,
             icon -> data.icon,
             themedColorIndex -> data.themedColorIndex,
-            appsCategory -> (data.appsCategory getOrElse ""),
-            constrains -> (data.constrains getOrElse ""),
-            originalSharedCollectionId -> (data.originalSharedCollectionId getOrElse ""),
-            sharedCollectionId -> (data.sharedCollectionId getOrElse ""),
-            sharedCollectionSubscribed -> (data.sharedCollectionSubscribed getOrElse false))
+            appsCategory -> flatOrNull(data.appsCategory),
+            constrains -> flatOrNull(data.constrains),
+            originalSharedCollectionId -> flatOrNull(data.originalSharedCollectionId),
+            sharedCollectionId -> flatOrNull(data.sharedCollectionId),
+            sharedCollectionSubscribed -> (data.sharedCollectionSubscribed orNull))
 
           val id = contentResolverWrapper.insert(
             uri = collectionUri,
@@ -109,11 +109,11 @@ class CollectionRepository(
             collectionType -> collection.data.collectionType,
             icon -> collection.data.icon,
             themedColorIndex -> collection.data.themedColorIndex,
-            appsCategory -> (collection.data.appsCategory getOrElse ""),
-            constrains -> (collection.data.constrains getOrElse ""),
-            originalSharedCollectionId -> (collection.data.originalSharedCollectionId getOrElse ""),
-            sharedCollectionId -> (collection.data.sharedCollectionId getOrElse ""),
-            sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed getOrElse false))
+            appsCategory -> (collection.data.appsCategory orNull),
+            constrains -> (collection.data.constrains orNull),
+            originalSharedCollectionId -> (collection.data.originalSharedCollectionId orNull),
+            sharedCollectionId -> (collection.data.sharedCollectionId orNull),
+            sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed orNull))
 
           contentResolverWrapper.updateById(
             uri = collectionUri,

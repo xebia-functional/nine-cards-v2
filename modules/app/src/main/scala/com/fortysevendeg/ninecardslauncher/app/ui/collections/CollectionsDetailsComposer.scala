@@ -151,22 +151,16 @@ trait CollectionsDetailsComposer
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>
         val category = getCurrentCollection flatMap (_.appsCategory)
-        // TODO Remove "if (cat == "")" when ticket 9C-257 is resolved
-        val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
+        val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         showAction(f[AppsFragment], view, map)
     }),
     getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
       view: View =>
         val collection = getCurrentCollection
-        val packages = collection map (_.cards flatMap (_.packageName match {
-          case Some("") => None // TODO Resolve in ticket 9C-257
-          case a => a
-        })) getOrElse Seq.empty
+        val packages = collection map (_.cards flatMap (_.packageName)) getOrElse Seq.empty
         val category = collection flatMap (_.appsCategory)
-        // TODO Remove "if (cat == "")" when ticket 9C-257 is resolved
-        val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(RecommendationsFragment.categoryKey -> cat)) getOrElse Map.empty
-        val categoryEmpty = category map (cat => cat == "") getOrElse true
-        if (categoryEmpty && packages.isEmpty) {
+        val map = category map (cat => Map(RecommendationsFragment.categoryKey -> cat)) getOrElse Map.empty
+        if (category.isEmpty && packages.isEmpty) {
           showError(R.string.recommendationError)
         } else {
           showAction(f[RecommendationsFragment], view, map, packages)

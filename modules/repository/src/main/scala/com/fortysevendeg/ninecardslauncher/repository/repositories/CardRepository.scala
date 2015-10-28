@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
-
+import RepositoryUtils._
 import scalaz.concurrent.Task
 
 class CardRepository(
@@ -29,14 +29,14 @@ class CardRepository(
             position -> data.position,
             CardEntity.collectionId -> collectionId,
             term -> data.term,
-            packageName -> (data.packageName getOrElse ""),
+            packageName -> flatOrNull(data.packageName),
             cardType -> data.cardType,
             intent -> data.intent,
             imagePath -> data.imagePath,
-            starRating -> (data.starRating getOrElse 0.0d),
+            starRating -> (data.starRating orNull),
             micros -> data.micros,
-            numDownloads -> (data.numDownloads getOrElse ""),
-            notification -> (data.notification getOrElse ""))
+            numDownloads -> flatOrNull(data.numDownloads),
+            notification -> flatOrNull(data.notification))
 
           val id = contentResolverWrapper.insert(
             uri = cardUri,
@@ -99,14 +99,14 @@ class CardRepository(
           val values = Map[String, Any](
             position -> card.data.position,
             term -> card.data.term,
-            packageName -> (card.data.packageName getOrElse ""),
+            packageName -> (card.data.packageName orNull),
             cardType -> card.data.cardType,
             intent -> card.data.intent,
             imagePath -> card.data.imagePath,
-            starRating -> (card.data.starRating getOrElse 0.0d),
+            starRating -> (card.data.starRating orNull),
             micros -> card.data.micros,
-            numDownloads -> (card.data.numDownloads getOrElse ""),
-            notification -> (card.data.notification getOrElse ""))
+            numDownloads -> (card.data.numDownloads orNull),
+            notification -> (card.data.notification orNull))
 
           contentResolverWrapper.updateById(
             uri = cardUri,

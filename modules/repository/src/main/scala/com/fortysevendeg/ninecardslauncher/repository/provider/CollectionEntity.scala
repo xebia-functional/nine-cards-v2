@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity._
 
 case class CollectionEntity(id: Int, data: CollectionEntityData)
 
@@ -71,20 +70,4 @@ object CollectionEntity {
        |${CollectionEntity.sharedCollectionId} TEXT,
        |${CollectionEntity.sharedCollectionSubscribed} INTEGER,
        |${CollectionEntity.constrains} TEXT )""".stripMargin
-}
-
-object CollectionEntityData {
-
-  def collectionEntityDataFromCursor(cursor: Cursor) =
-    CollectionEntityData(
-      position = cursor.getInt(cursor.getColumnIndex(position)),
-      name = cursor.getString(cursor.getColumnIndex(name)),
-      `type` = cursor.getString(cursor.getColumnIndex(collectionType)),
-      icon = cursor.getString(cursor.getColumnIndex(icon)),
-      themedColorIndex = cursor.getInt(cursor.getColumnIndex(themedColorIndex)),
-      appsCategory = cursor.getString(cursor.getColumnIndex(appsCategory)),
-      constrains = cursor.getString(cursor.getColumnIndex(constrains)),
-      originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(originalSharedCollectionId)),
-      sharedCollectionId = cursor.getString(cursor.getColumnIndex(sharedCollectionId)),
-      sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(sharedCollectionSubscribed)) > 0)
 }

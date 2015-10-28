@@ -68,10 +68,10 @@ trait CollectionRepositoryTestData {
     CollectionEntity.collectionType -> testCollectionType,
     CollectionEntity.icon -> testIcon,
     CollectionEntity.themedColorIndex -> testThemedColorIndex,
-    CollectionEntity.appsCategory -> (testAppsCategoryOption getOrElse ""),
-    CollectionEntity.constrains -> (testConstrainsOption getOrElse ""),
-    CollectionEntity.originalSharedCollectionId -> (testOriginalSharedCollectionIdOption getOrElse ""),
-    CollectionEntity.sharedCollectionId -> (testSharedCollectionIdOption getOrElse ""),
+    CollectionEntity.appsCategory -> (testAppsCategoryOption orNull),
+    CollectionEntity.constrains -> (testConstrainsOption orNull),
+    CollectionEntity.originalSharedCollectionId -> (testOriginalSharedCollectionIdOption orNull),
+    CollectionEntity.sharedCollectionId -> (testSharedCollectionIdOption orNull),
     CollectionEntity.sharedCollectionSubscribed -> (testSharedCollectionSubscribedOption getOrElse false))
 
   def createCollectionData = CollectionData(

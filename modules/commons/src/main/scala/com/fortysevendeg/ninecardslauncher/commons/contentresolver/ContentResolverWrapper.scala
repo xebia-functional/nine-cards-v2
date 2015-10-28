@@ -133,6 +133,7 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver) extends Conte
     val contentValues = new ContentValues()
 
     values foreach {
+      case (key, null) => contentValues.putNull(key)
       case (key, value: Array[Byte]) => contentValues.put(key, value)
       case (key, value: Byte) => contentValues.put(key, value.asInstanceOf[java.lang.Byte])
       case (key, value: Boolean) => contentValues.put(key, value)
