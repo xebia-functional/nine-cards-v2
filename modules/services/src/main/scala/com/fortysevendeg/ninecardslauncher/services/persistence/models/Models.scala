@@ -48,3 +48,13 @@ case class GeoInfo(
   latitude: Double,
   longitude: Double,
   system: Boolean)
+
+case class User(
+  id: Int,
+  userId: Option[String],
+  email: Option[String],
+  sessionToken: Option[String],
+  installationId: Option[String],
+  deviceToken: Option[String],
+  androidToken: Option[String],
+  androidPermission: Option[String])

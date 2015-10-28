@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.{repository => repo}
+import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
 import rapture.core.{Answer, Result}
 
 import scala.util.{Failure, Success}
@@ -26,7 +27,8 @@ class PersistenceServicesImpl(
   appRepository: AppRepository,
   cardRepository: CardRepository,
   collectionRepository: CollectionRepository,
-  geoInfoRepository: GeoInfoRepository)
+  geoInfoRepository: GeoInfoRepository,
+  userRepository: UserRepository)
   extends PersistenceServices
   with Conversions
   with ImplicitsPersistenceServiceExceptions {
@@ -187,6 +189,31 @@ class PersistenceServicesImpl(
   override def updateGeoInfo(request: UpdateGeoInfoRequest) =
     (for {
       updated <- geoInfoRepository.updateGeoInfo(toRepositoryGeoInfo(request))
+    } yield updated).resolve[PersistenceServiceException]
+
+  override def addUser(request: AddUserRequest) =
+    (for {
+      user <- userRepository.addUser(toRepositoryUserData(request))
+    } yield toUser(user)).resolve[PersistenceServiceException]
+
+  override def deleteUser(request: DeleteUserRequest) =
+    (for {
+      deleted <- userRepository.deleteUser(toRepositoryUser(request.user))
+    } yield deleted).resolve[PersistenceServiceException]
+
+  override def fetchUsers =
+    (for {
+      userItems <- userRepository.fetchUser
+    } yield userItems map toUser).resolve[PersistenceServiceException]
+
+  override def findUserById(request: FindUserByIdRequest) =
+    (for {
+      maybeUser <- userRepository.findUserById(request.id)
+    } yield maybeUser map toUser).resolve[PersistenceServiceException]
+
+  override def updateUser(request: UpdateUserRequest) =
+    (for {
+      updated <- userRepository.updateUser(toRepositoryUser(request))
     } yield updated).resolve[PersistenceServiceException]
 
   private[this] def addCards(cards: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException] = {

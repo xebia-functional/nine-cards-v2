@@ -172,3 +172,31 @@ case class UpdateGeoInfoRequest(
   system: Boolean)
 
 case class UpdateGeoInfoResponse(updated: Int)
+
+case class AddUserRequest(
+  userId: Option[String],
+  email: Option[String],
+  sessionToken: Option[String],
+  installationId: Option[String],
+  deviceToken: Option[String],
+  androidToken: Option[String],
+  androidPermission: Option[String])
+
+case class DeleteUserRequest(user: User)
+
+case class DeleteUserResponse(deleted: Int)
+
+case class FetchUserItemsResponse(userItems: Seq[User])
+
+case class FindUserByIdRequest(id: Int)
+
+case class UpdateUserRequest(
+  id: Int,
+  userId: Option[String],
+  email: Option[String],
+  sessionToken: Option[String],
+  installationId: Option[String],
+  deviceToken: Option[String],
+  androidToken: Option[String],
+  androidPermission: Option[String])
+

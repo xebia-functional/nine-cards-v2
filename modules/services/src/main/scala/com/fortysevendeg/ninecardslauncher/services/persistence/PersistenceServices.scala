@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User => ApiUser}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 trait PersistenceServices {
@@ -85,9 +85,9 @@ trait PersistenceServices {
 
   def updateGeoInfo(request: UpdateGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException]
 
-  def getUser(implicit context: ContextSupport): ServiceDef2[User, PersistenceServiceException]
+  def getUser(implicit context: ContextSupport): ServiceDef2[ApiUser, PersistenceServiceException]
 
-  def saveUser(user: User)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException]
+  def saveUser(user: ApiUser)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException]
 
   def resetUser(implicit context: ContextSupport): ServiceDef2[Boolean, PersistenceServiceException]
 
@@ -98,5 +98,15 @@ trait PersistenceServices {
   def existsInstallation(implicit context: ContextSupport): ServiceDef2[Boolean, PersistenceServiceException]
 
   def saveInstallation(installation: Installation)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException]
+
+  def addUser(request: AddUserRequest): ServiceDef2[User, PersistenceServiceException]
+
+  def deleteUser(request: DeleteUserRequest): ServiceDef2[Int, PersistenceServiceException]
+
+  def fetchUsers: ServiceDef2[Seq[User], PersistenceServiceException]
+
+  def findUserById(request: FindUserByIdRequest): ServiceDef2[Option[User], PersistenceServiceException]
+
+  def updateUser(request: UpdateUserRequest): ServiceDef2[Int, PersistenceServiceException]
 
 }

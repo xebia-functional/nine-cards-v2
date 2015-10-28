@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.commons
 
 sealed trait NineCardsUri
 
-
+case object AppUri extends NineCardsUri
 
 case object CardUri extends NineCardsUri
 
