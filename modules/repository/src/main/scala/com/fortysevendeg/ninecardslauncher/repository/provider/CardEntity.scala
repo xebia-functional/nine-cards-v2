@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 
 case class CardEntity(id: Int, data: CardEntityData)
 
@@ -76,21 +75,4 @@ object CardEntity {
        |${CardEntity.micros} INTEGER,
        |${CardEntity.notification} TEXT,
        |${CardEntity.numDownloads} TEXT )""".stripMargin
-}
-
-object CardEntityData {
-
-  def cardEntityDataFromCursor(cursor: Cursor) =
-    CardEntityData(
-      position = cursor.getInt(cursor.getColumnIndex(position)),
-      collectionId = cursor.getInt(cursor.getColumnIndex(collectionId)),
-      term = cursor.getString(cursor.getColumnIndex(term)),
-      packageName = cursor.getString(cursor.getColumnIndex(packageName)),
-      `type` = cursor.getString(cursor.getColumnIndex(cardType)),
-      intent = cursor.getString(cursor.getColumnIndex(intent)),
-      imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
-      starRating = cursor.getDouble(cursor.getColumnIndex(starRating)),
-      micros = cursor.getInt(cursor.getColumnIndex(micros)),
-      numDownloads = cursor.getString(cursor.getColumnIndex(numDownloads)),
-      notification = cursor.getString(cursor.getColumnIndex(notification)))
 }

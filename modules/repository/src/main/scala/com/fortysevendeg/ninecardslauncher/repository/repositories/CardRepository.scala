@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
-
+import RepositoryUtils._
 import scalaz.concurrent.Task
 
 class CardRepository(
@@ -29,14 +29,14 @@ class CardRepository(
             position -> data.position,
             CardEntity.collectionId -> collectionId,
             term -> data.term,
-            packageName -> (data.packageName orNull),
+            packageName -> flatOrNull(data.packageName),
             cardType -> data.cardType,
             intent -> data.intent,
             imagePath -> data.imagePath,
             starRating -> (data.starRating orNull),
             micros -> data.micros,
-            numDownloads -> (data.numDownloads orNull),
-            notification -> (data.notification orNull))
+            numDownloads -> flatOrNull(data.numDownloads),
+            notification -> flatOrNull(data.notification))
 
           val id = contentResolverWrapper.insert(
             uri = cardUri,
