@@ -1,7 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{AppData, CardData, CollectionData, GeoInfoData}
+import com.fortysevendeg.ninecardslauncher.repository.model._
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 import scala.util.Random
@@ -58,6 +63,16 @@ trait PersistenceServicesData {
   val intent: String = Random.nextString(5)
   val imagePath: String = Random.nextString(5)
   val notification: String = Random.nextString(5)
+
+  val uId: Int = Random.nextInt(10)
+  val nonExistentUserId: Int = Random.nextInt(10) + 100
+  val userId: String = Random.nextString(5)
+  val email: String = Random.nextString(5)
+  val sessionToken: String = Random.nextString(5)
+  val installationId: String = Random.nextString(5)
+  val deviceToken: String = Random.nextString(5)
+  val androidToken: String = Random.nextString(5)
+  val androidPermission: String = Random.nextString(5)
 
   def createSeqApp(
     num: Int = 5,
@@ -292,6 +307,50 @@ trait PersistenceServicesData {
       numDownloads = Option(numDownloads),
       notification = Option(notification))
 
+  def createSeqUser(
+    num: Int = 5,
+    id: Int = uId,
+    userId: String = userId,
+    email: String = email,
+    sessionToken: String = sessionToken,
+    installationId: String = installationId,
+    deviceToken: String = deviceToken,
+    androidToken: String = androidToken,
+    androidPermission: String = androidPermission): Seq[User] = List.tabulate(num)(
+    item =>
+      User(
+        id = id + item,
+        userId = Option(userId),
+        email = Option(email),
+        sessionToken = Option(sessionToken),
+        installationId = Option(installationId),
+        deviceToken = Option(deviceToken),
+        androidToken = Option(androidToken),
+        androidPermission = Option(androidPermission)))
+
+  def createSeqRepoUser(
+    num: Int = 5,
+    id: Int = uId,
+    data: repositoryModel.UserData = createRepoUserData()): Seq[repositoryModel.User] =
+    List.tabulate(num)(item => repositoryModel.User(id = id + item, data = data))
+
+  def createRepoUserData(
+    userId: String = userId,
+    email: String = email,
+    sessionToken: String = sessionToken,
+    installationId: String = installationId,
+    deviceToken: String = deviceToken,
+    androidToken: String = androidToken,
+    androidPermission: String = androidPermission): UserData =
+    repositoryModel.UserData(
+      userId = Option(userId),
+      email = Option(email),
+      sessionToken = Option(sessionToken),
+      installationId = Option(installationId),
+      deviceToken = Option(deviceToken),
+      androidToken = Option(androidToken),
+      androidPermission = Option(androidPermission))
+
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp.head
   val repoAppData: AppData = createRepoAppData()
@@ -315,6 +374,12 @@ trait PersistenceServicesData {
   val repoCollectionData: CollectionData = createRepoCollectionData()
   val seqRepoCollection: Seq[repositoryModel.Collection] = createSeqRepoCollection(data = repoCollectionData)
   val repoCollection: repositoryModel.Collection = seqRepoCollection.head
+
+  val seqUser: Seq[User] = createSeqUser()
+  val user: User = seqUser.head
+  val repoUserData: UserData = createRepoUserData()
+  val seqRepoUser: Seq[repositoryModel.User] = createSeqRepoUser(data = repoUserData)
+  val repoUser: repositoryModel.User = seqRepoUser.head
 
   def createAddAppRequest(
     name: String = name,
@@ -524,4 +589,46 @@ trait PersistenceServicesData {
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
       cards = seqCard)
+
+  def createAddUserRequest(
+    userId: String = userId,
+    email: String = email,
+    sessionToken: String = sessionToken,
+    installationId: String = installationId,
+    deviceToken: String = deviceToken,
+    androidToken: String = androidToken,
+    androidPermission: String = androidPermission): AddUserRequest =
+    AddUserRequest(
+      userId = Option(userId),
+      email = Option(email),
+      sessionToken = Option(sessionToken),
+      installationId = Option(installationId),
+      deviceToken = Option(deviceToken),
+      androidToken = Option(androidToken),
+      androidPermission = Option(androidPermission))
+
+  def createDeleteUserRequest(user: User): DeleteUserRequest =
+    DeleteUserRequest(user = user)
+
+  def createFindUserByIdRequest(id: Int): FindUserByIdRequest =
+    FindUserByIdRequest(id = id)
+
+  def createUpdateUserRequest(
+    id: Int = uId,
+    userId: String = userId,
+    email: String = email,
+    sessionToken: String = sessionToken,
+    installationId: String = installationId,
+    deviceToken: String = deviceToken,
+    androidToken: String = androidToken,
+    androidPermission: String = androidPermission): UpdateUserRequest =
+    UpdateUserRequest(
+      id = id,
+      userId = Option(userId),
+      email = Option(email),
+      sessionToken = Option(sessionToken),
+      installationId = Option(installationId),
+      deviceToken = Option(deviceToken),
+      androidToken = Option(androidToken),
+      androidPermission = Option(androidPermission))
 }

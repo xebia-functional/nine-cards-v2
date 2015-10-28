@@ -203,7 +203,7 @@ class PersistenceServicesImpl(
 
   override def fetchUsers =
     (for {
-      userItems <- userRepository.fetchUser
+      userItems <- userRepository.fetchUsers
     } yield userItems map toUser).resolve[PersistenceServiceException]
 
   override def findUserById(request: FindUserByIdRequest) =

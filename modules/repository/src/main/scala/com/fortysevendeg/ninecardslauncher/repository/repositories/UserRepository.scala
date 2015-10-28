@@ -65,7 +65,7 @@ class UserRepository(
       }
     }
 
-  def fetchUser: ServiceDef2[Seq[User], RepositoryException] =
+  def fetchUsers: ServiceDef2[Seq[User], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
