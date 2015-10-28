@@ -5,8 +5,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.net.Uri._
 
-import scala.xml.Null
-
 trait ContentResolverWrapper {
 
   def insert(
