@@ -10,7 +10,11 @@ case class AddCollectionRequest(
   collectionType: String,
   icon: String,
   themedColorIndex: Int,
-  appsCategory: Option[String] = None)
+  appsCategory: Option[String] = None,
+  constrains: Option[String] = None,
+  originalSharedCollectionId: Option[String] = None,
+  sharedCollectionId: Option[String] = None,
+  sharedCollectionSubscribed: Option[Boolean] = None)
 
 case class AddCardRequest(
   term: String,

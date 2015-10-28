@@ -134,14 +134,14 @@ trait CardMockCursor
     (position, 1, cardSeq map (_.data.position), IntDataType),
     (collectionId, 2, cardSeq map (_ => testCollectionId), IntDataType),
     (term, 3, cardSeq map (_.data.term), StringDataType),
-    (packageName, 4, cardSeq map (_.data.packageName getOrElse ""), StringDataType),
+    (packageName, 4, cardSeq map (_.data.packageName orNull), StringDataType),
     (cardType, 5, cardSeq map (_.data.cardType), StringDataType),
     (intent, 6, cardSeq map (_.data.intent), StringDataType),
     (imagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
     (starRating, 8, cardSeq map (_.data.starRating getOrElse 0.0d), DoubleDataType),
     (micros, 9, cardSeq map (_.data.micros), IntDataType),
-    (numDownloads, 10, cardSeq map (_.data.numDownloads getOrElse ""), StringDataType),
-    (notification, 11, cardSeq map (_.data.notification getOrElse ""), StringDataType)
+    (numDownloads, 10, cardSeq map (_.data.numDownloads orNull), StringDataType),
+    (notification, 11, cardSeq map (_.data.notification orNull), StringDataType)
   )
 
   prepareCursor[Card](cardSeq.size, cursorData)
