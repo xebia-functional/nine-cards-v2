@@ -1,18 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.new_collection
 
+import android.graphics.Color
 import android.graphics.Paint.Style
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.support.v4.graphics.drawable.DrawableCompat
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityResult, ColorsUtils}
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult
 import macroid.FullDsl._
 import macroid.Ui
 
@@ -41,23 +41,34 @@ trait NewCollectionComposer
       setCategory(communication) ~
       setIndexColor(0) ~
       (colorContent <~ On.click {
-        Ui.nop
+        Ui {
+          getColor map { color =>
+            val ft = getFragmentManager.beginTransaction()
+            Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+            ft.addToBackStack(null)
+            val dialog = new ColorDialogFragment(color)
+            dialog.setTargetFragment(this, ActivityResult.selectInfoColor)
+            dialog.show(ft, tagDialog)
+          }
+        }
       }) ~
       (iconContent <~ On.click {
         Ui {
-          val ft = getFragmentManager.beginTransaction()
-          Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-          ft.addToBackStack(null)
-          val dialog = new IconDialogFragment
-          dialog.setTargetFragment(this, ActivityResult.selectInfoIcon)
-          dialog.show(ft, tagDialog)
+          getCategory map { category =>
+            val ft = getFragmentManager.beginTransaction()
+            Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+            ft.addToBackStack(null)
+            val dialog = new IconDialogFragment(category)
+            dialog.setTargetFragment(this, ActivityResult.selectInfoIcon)
+            dialog.show(ft, tagDialog)
+          }
         }
       })
 
   def setCategory(category: String): Ui[_] =
     iconImage <~
       vTag2(category) <~
-      ivSrc(resGetDrawable(iconCollectionDetail(category)))
+      ivSrc(ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category)), Color.GRAY))
 
   def setIndexColor(index: Int): Ui[_] = {
     val color = resGetColor(getIndexColor(index))
@@ -73,13 +84,10 @@ trait NewCollectionComposer
       ivSrc(drawable)
   }
 
-  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
+  def getCategory = iconImage map (_.getTag.toString)
 
-  def tintIcons(color: Int) = Ui {
-    categories foreach { category =>
-      val drawable = resGetDrawable(iconCollectionDetail(category))
-      DrawableCompat.setTint(drawable, color)
-    }
-  }
+  def getColor = colorImage map (c => Int.unbox(c.getTag))
+
+  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
 }

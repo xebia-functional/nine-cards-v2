@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
@@ -42,6 +44,8 @@ object ActivityResult {
   val selectInfoContact = 3
 
   val selectInfoIcon = 4
+
+  val selectInfoColor = 5
 
 }
 
@@ -86,6 +90,12 @@ object AppUtils {
 }
 
 object ColorsUtils {
+
+  def colorizeDrawable(drawable: Drawable, color: Int) = {
+    val colorizeDrawable = DrawableCompat.wrap(drawable).mutate()
+    DrawableCompat.setTint(DrawableCompat.wrap(colorizeDrawable).mutate(), color)
+    colorizeDrawable
+  }
 
   def getColorLight(color: Int, ratio: Float = 0.1f) = {
     val colorHsv = Array(0f, 0f, 0f)

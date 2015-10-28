@@ -103,6 +103,8 @@
 
     <!-- Contact Info Dialog -->
     <color name="divider_color_info_dialog">#d6d6d6</color>
+    <color name="text_selected_color_dialog">#4285F4</color>
+    <color name="color_selected_color_dialog">#ffffff</color>
 
     <!-- Theme Light -->
     <color name="search_background_tint_light">#ffffff</color>

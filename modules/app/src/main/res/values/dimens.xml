@@ -101,6 +101,8 @@
 
     <dimen name="size_icon_select_new_collection">28dp</dimen>
 
+    <dimen name="size_icon_color_dialog">60dp</dimen>
+
     <!-- Fast Scroller -->
     <dimen name="fastscroller_text_size">40sp</dimen>
     <dimen name="fastscroller_signal_size">84dp</dimen>
