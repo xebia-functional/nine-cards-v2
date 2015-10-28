@@ -42,11 +42,13 @@ class UserRepository(
       }
     }
 
-  def deleteUser(id: Int): ServiceDef2[Int, RepositoryException] =
+  def deleteUser(user: User): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
-          contentResolverWrapper.deleteById(uri = userUri, id = id)
+          contentResolverWrapper.deleteById(
+            uri = userUri,
+            id = user.id)
         }
       }
     }
