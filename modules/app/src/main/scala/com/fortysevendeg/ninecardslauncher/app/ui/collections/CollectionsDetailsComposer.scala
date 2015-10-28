@@ -160,8 +160,7 @@ trait CollectionsDetailsComposer
         val packages = collection map (_.cards flatMap (_.packageName)) getOrElse Seq.empty
         val category = collection flatMap (_.appsCategory)
         val map = category map (cat => Map(RecommendationsFragment.categoryKey -> cat)) getOrElse Map.empty
-        val categoryEmpty = category map (cat => cat == "") getOrElse true
-        if (categoryEmpty && packages.isEmpty) {
+        if (category.isEmpty && packages.isEmpty) {
           showError(R.string.recommendationError)
         } else {
           showAction(f[RecommendationsFragment], view, map, packages)

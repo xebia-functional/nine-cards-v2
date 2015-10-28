@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
 
 case class GeoInfoEntity(id: Int, data: GeoInfoEntityData)
 
@@ -51,16 +50,4 @@ object GeoInfoEntity {
        |${GeoInfoEntity.latitude} DOUBLE,
        |${GeoInfoEntity.longitude} DOUBLE,
        |${GeoInfoEntity.system} INTEGER )""".stripMargin
-}
-
-object GeoInfoEntityData {
-
-  def geoInfoEntityDataFromCursor(cursor: Cursor) =
-    GeoInfoEntityData(
-      constrain = cursor.getString(cursor.getColumnIndex(constrain)),
-      occurrence = cursor.getString(cursor.getColumnIndex(occurrence)),
-      wifi = cursor.getString(cursor.getColumnIndex(wifi)),
-      latitude = cursor.getDouble(cursor.getColumnIndex(latitude)),
-      longitude = cursor.getDouble(cursor.getColumnIndex(longitude)),
-      system = cursor.getInt(cursor.getColumnIndex(system)) > 0)
 }
