@@ -46,4 +46,29 @@
         <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
+    <!-- Dialog Contact Info -->
+
+    <style name="DialogIconInfoRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="DialogIconInfoName">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:drawablePadding">@dimen/padding_default</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="DialogIconInfoSelect">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
 </resources>

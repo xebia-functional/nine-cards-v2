@@ -41,6 +41,8 @@ object ActivityResult {
 
   val selectInfoContact = 3
 
+  val selectInfoIcon = 4
+
 }
 
 object WizardState {

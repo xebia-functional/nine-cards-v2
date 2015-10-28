@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/DialogIconInfoRoot">
+
+    <TextView
+        style="@style/DialogIconInfoName"
+        android:id="@+id/icon_dialog_name"/>
+
+    <ImageView
+        android:id="@+id/icon_dialog_select"
+        style="@style/DialogIconInfoSelect"/>
+
+</LinearLayout>

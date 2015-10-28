@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.new_collection
 
-import android.graphics.Color
 import android.graphics.Paint.Style
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -13,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult
 import macroid.FullDsl._
 import macroid.Ui
 
@@ -20,6 +20,8 @@ trait NewCollectionComposer
   extends Styles {
 
   self: TypedFindView with BaseActionFragment =>
+
+  val tagDialog = "dialog"
 
   lazy val name = Option(findView(TR.new_collection_name))
 
@@ -42,15 +44,22 @@ trait NewCollectionComposer
         Ui.nop
       }) ~
       (iconContent <~ On.click {
-        Ui.nop
+        Ui {
+          val ft = getFragmentManager.beginTransaction()
+          Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+          ft.addToBackStack(null)
+          val dialog = new IconDialogFragment
+          dialog.setTargetFragment(this, ActivityResult.selectInfoIcon)
+          dialog.show(ft, tagDialog)
+        }
       })
 
-  private[this] def setCategory(category: String): Ui[_] =
+  def setCategory(category: String): Ui[_] =
     iconImage <~
       vTag2(category) <~
       ivSrc(resGetDrawable(iconCollectionDetail(category)))
 
-  private[this] def setIndexColor(index: Int): Ui[_] = {
+  def setIndexColor(index: Int): Ui[_] = {
     val color = resGetColor(getIndexColor(index))
     val size = resGetDimensionPixelSize(R.dimen.size_icon_select_new_collection)
     val drawable = new ShapeDrawable(new OvalShape)
