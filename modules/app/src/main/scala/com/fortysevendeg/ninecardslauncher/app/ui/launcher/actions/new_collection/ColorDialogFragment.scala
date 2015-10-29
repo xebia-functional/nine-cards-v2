@@ -9,8 +9,9 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.View.OnClickListener
-import android.view.{LayoutInflater, View}
-import android.widget.{ImageView, LinearLayout, ScrollView}
+import android.view.ViewGroup.LayoutParams._
+import android.view.{Gravity, LayoutInflater, View}
+import android.widget.{ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -28,23 +29,20 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
     def createRow(from: Int, to: Int): LinearLayout = {
       val layout = new LinearLayout(getActivity)
       layout.setOrientation(LinearLayout.HORIZONTAL)
+      val params = new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1)
       val views = from to to map (i => createViewItem(i, select = index == i))
-      runUi(layout <~ vgAddViews(views))
+      runUi(layout <~ vgAddViews(views, params))
       layout
     }
-    val rootView = new ScrollView(getActivity)
-    val contentView = new LinearLayout(getActivity)
-    contentView.setOrientation(LinearLayout.VERTICAL)
+    val rootView = new LinearLayout(getActivity)
+    rootView.setOrientation(LinearLayout.VERTICAL)
 
-    val views = Seq(
-      createRow(0, 2),
-      createRow(3, 5),
-      createRow(6, 8)
-    )
+    val views = Seq(createRow(0, 2), createRow(3, 5), createRow(6, 8))
 
-    runUi(
-      (rootView <~ vgAddView(contentView)) ~
-        (contentView <~ vgAddViews(views)))
+    val params = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+    params.gravity = Gravity.CENTER
+
+    runUi(rootView <~ vgAddViews(views, params))
 
     new AlertDialog.Builder(getActivity).setView(rootView).create()
   }
@@ -56,8 +54,9 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
         if (select) {
           val icon = new PathMorphDrawable(
             defaultIcon = IconTypes.CHECK,
-            defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
-            defaultColor = resGetColor(R.color.color_selected_color_dialog))
+            defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_large),
+            defaultColor = resGetColor(R.color.color_selected_color_dialog),
+            padding = resGetDimensionPixelSize(R.dimen.padding_large))
           i.setImageDrawable(icon)
         }
         i.setBackground(getDrawable(index))

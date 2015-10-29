@@ -52,7 +52,7 @@ case class IconDialogFragment(categorySelected: String)(implicit contextWrapper:
         case i: ImageView =>
           val icon = new PathMorphDrawable(
             defaultIcon = IconTypes.CHECK,
-            defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
+            defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
             defaultColor = resGetColor(R.color.text_selected_color_dialog))
           i.setImageDrawable(icon)
       }

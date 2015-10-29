@@ -140,7 +140,7 @@ trait FabButtonStyle {
   def fabButtonMenuStyle(implicit context: ContextWrapper): Tweak[FloatingActionButton] = {
     val iconFabButton = new PathMorphDrawable(
       defaultIcon = IconTypes.ADD,
-      defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke))
+      defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default))
     ivSrc(iconFabButton) +
       vTag(R.id.fab_menu_opened, close) +
       vGone

@@ -30,7 +30,9 @@
     <dimen name="margin_vertical_fab_button_item">12dp</dimen>
     <dimen name="size_fab_menu_item">40dp</dimen>
 
-    <dimen name="default_stroke">2dp</dimen>
+    <dimen name="stroke_default">2dp</dimen>
+
+    <dimen name="stroke_large">4dp</dimen>
 
     <dimen name="shadow_displacement_default">1dp</dimen>
     <dimen name="shadow_radius_default">1dp</dimen>

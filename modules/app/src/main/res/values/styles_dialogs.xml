@@ -74,7 +74,8 @@
     <!-- Dialog Color Info -->
 
     <style name="DialogColorInfoRoot">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:background">?attr/selectableItemBackground</item>
@@ -83,6 +84,7 @@
     <style name="DialogColorInfoImage">
         <item name="android:layout_width">@dimen/size_icon_color_dialog</item>
         <item name="android:layout_height">@dimen/size_icon_color_dialog</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
 </resources>

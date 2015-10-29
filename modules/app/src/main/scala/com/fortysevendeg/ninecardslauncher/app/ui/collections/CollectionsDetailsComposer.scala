@@ -58,7 +58,7 @@ trait CollectionsDetailsComposer
   val resistanceScale = .05f
 
   lazy val iconIndicatorDrawable = new PathMorphDrawable(
-    defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
+    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
