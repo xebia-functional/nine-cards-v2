@@ -179,8 +179,7 @@ case class AddUserRequest(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String],
-  androidPermission: Option[String])
+  androidToken: Option[String])
 
 case class DeleteUserRequest(user: User)
 
@@ -197,6 +196,5 @@ case class UpdateUserRequest(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String],
-  androidPermission: Option[String])
+  androidToken: Option[String])
 

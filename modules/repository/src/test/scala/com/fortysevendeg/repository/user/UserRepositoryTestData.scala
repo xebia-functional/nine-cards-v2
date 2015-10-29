@@ -15,7 +15,6 @@ trait UserRepositoryTestData {
   val testInstallationId= Random.nextString(10)
   val testDeviceToken = Random.nextString(10)
   val testAndroidToken = Random.nextString(10)
-  val testAndroidPermission = Random.nextString(10)
 
   val testUserIdOption = Option(testUserId)
   val testEmailOption = Option(testEmail)
@@ -23,7 +22,6 @@ trait UserRepositoryTestData {
   val testInstallationIdOption = Option(testInstallationId)
   val testDeviceTokenOption = Option(testDeviceToken)
   val testAndroidTokenOption = Option(testAndroidToken)
-  val testAndroidPermissionOption = Option(testAndroidPermission)
 
   val userEntitySeq = createUserEntitySeq(5)
   val userEntity = userEntitySeq.head
@@ -39,8 +37,7 @@ trait UserRepositoryTestData {
         sessionToken = testSessionToken,
         installationId = testInstallationId,
         deviceToken = testDeviceToken,
-        androidToken = testAndroidToken,
-        androidPermission = testAndroidPermission)))
+        androidToken = testAndroidToken)))
 
   def createUserSeq(num: Int) = List.tabulate(num)(
     i => User(
@@ -51,8 +48,7 @@ trait UserRepositoryTestData {
         sessionToken = testSessionTokenOption,
         installationId = testInstallationIdOption,
         deviceToken = testDeviceTokenOption,
-        androidToken = testAndroidTokenOption,
-        androidPermission = testAndroidPermissionOption)))
+        androidToken = testAndroidTokenOption)))
 
   def createUserValues = Map[String, Any](
     UserEntity.userId -> (testUserIdOption orNull),
@@ -60,8 +56,7 @@ trait UserRepositoryTestData {
     UserEntity.sessionToken -> (testSessionTokenOption orNull),
     UserEntity.installationId -> (testInstallationIdOption orNull),
     UserEntity.deviceToken -> (testDeviceTokenOption orNull),
-    UserEntity.androidToken -> (testAndroidTokenOption orNull),
-    UserEntity.androidPermission -> (testAndroidPermissionOption orNull))
+    UserEntity.androidToken -> (testAndroidTokenOption orNull))
 
   def createUserData = UserData(
     userId = testUserIdOption,
@@ -69,6 +64,5 @@ trait UserRepositoryTestData {
     sessionToken = testSessionTokenOption,
     installationId = testInstallationIdOption,
     deviceToken = testDeviceTokenOption,
-    androidToken = testAndroidTokenOption,
-    androidPermission = testAndroidPermissionOption)
+    androidToken = testAndroidTokenOption)
 }

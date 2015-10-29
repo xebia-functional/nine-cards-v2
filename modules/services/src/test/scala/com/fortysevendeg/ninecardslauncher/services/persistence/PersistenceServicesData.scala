@@ -72,7 +72,6 @@ trait PersistenceServicesData {
   val installationId: String = Random.nextString(5)
   val deviceToken: String = Random.nextString(5)
   val androidToken: String = Random.nextString(5)
-  val androidPermission: String = Random.nextString(5)
 
   def createSeqApp(
     num: Int = 5,
@@ -315,8 +314,7 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken,
-    androidPermission: String = androidPermission): Seq[User] = List.tabulate(num)(
+    androidToken: String = androidToken): Seq[User] = List.tabulate(num)(
     item =>
       User(
         id = id + item,
@@ -325,8 +323,7 @@ trait PersistenceServicesData {
         sessionToken = Option(sessionToken),
         installationId = Option(installationId),
         deviceToken = Option(deviceToken),
-        androidToken = Option(androidToken),
-        androidPermission = Option(androidPermission)))
+        androidToken = Option(androidToken)))
 
   def createSeqRepoUser(
     num: Int = 5,
@@ -340,16 +337,14 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken,
-    androidPermission: String = androidPermission): UserData =
+    androidToken: String = androidToken): UserData =
     repositoryModel.UserData(
       userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken),
-      androidPermission = Option(androidPermission))
+      androidToken = Option(androidToken))
 
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp.head
@@ -596,16 +591,14 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken,
-    androidPermission: String = androidPermission): AddUserRequest =
+    androidToken: String = androidToken): AddUserRequest =
     AddUserRequest(
       userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken),
-      androidPermission = Option(androidPermission))
+      androidToken = Option(androidToken))
 
   def createDeleteUserRequest(user: User): DeleteUserRequest =
     DeleteUserRequest(user = user)
@@ -620,8 +613,7 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken,
-    androidPermission: String = androidPermission): UpdateUserRequest =
+    androidToken: String = androidToken): UpdateUserRequest =
     UpdateUserRequest(
       id = id,
       userId = Option(userId),
@@ -629,6 +621,5 @@ trait PersistenceServicesData {
       sessionToken = Option(sessionToken),
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken),
-      androidPermission = Option(androidPermission))
+      androidToken = Option(androidToken))
 }

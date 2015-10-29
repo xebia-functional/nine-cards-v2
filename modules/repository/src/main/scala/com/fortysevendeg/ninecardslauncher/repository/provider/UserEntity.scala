@@ -11,8 +11,7 @@ case class UserEntityData(
   sessionToken: String,
   installationId: String,
   deviceToken: String,
-  androidToken: String,
-  androidPermission: String)
+  androidToken: String)
 
 object UserEntity {
   val table = "User"
@@ -22,7 +21,6 @@ object UserEntity {
   val installationId = "installationId"
   val deviceToken = "deviceToken"
   val androidToken = "androidToken"
-  val androidPermission = "androidPermission"
 
   val allFields = Seq[String](
     NineCardsSqlHelper.id,
@@ -31,8 +29,7 @@ object UserEntity {
     sessionToken,
     installationId,
     deviceToken,
-    androidToken,
-    androidPermission)
+    androidToken)
 
   def userEntityFromCursor(cursor: Cursor) =
     UserEntity(
@@ -43,8 +40,7 @@ object UserEntity {
         sessionToken = cursor.getString(cursor.getColumnIndex(sessionToken)),
         installationId = cursor.getString(cursor.getColumnIndex(installationId)),
         deviceToken = cursor.getString(cursor.getColumnIndex(deviceToken)),
-        androidToken = cursor.getString(cursor.getColumnIndex(androidToken)),
-        androidPermission = cursor.getString(cursor.getColumnIndex(androidPermission))))
+        androidToken = cursor.getString(cursor.getColumnIndex(androidToken))))
 
   def createTableSQL = "CREATE TABLE " + UserEntity.table +
     "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -53,8 +49,7 @@ object UserEntity {
     UserEntity.sessionToken + " TEXT, " +
     UserEntity.installationId + " TEXT, " +
     UserEntity.deviceToken + " TEXT, " +
-    UserEntity.androidToken + " TEXT, " +
-    UserEntity.androidPermission + " TEXT )"
+    UserEntity.androidToken + " TEXT )"
 }
 
 object UserEntityData {
@@ -66,6 +61,5 @@ object UserEntityData {
       sessionToken = cursor.getString(cursor.getColumnIndex(sessionToken)),
       installationId = cursor.getString(cursor.getColumnIndex(installationId)),
       deviceToken = cursor.getString(cursor.getColumnIndex(deviceToken)),
-      androidToken = cursor.getString(cursor.getColumnIndex(androidToken)),
-      androidPermission = cursor.getString(cursor.getColumnIndex(androidPermission)))
+      androidToken = cursor.getString(cursor.getColumnIndex(androidToken)))
 }

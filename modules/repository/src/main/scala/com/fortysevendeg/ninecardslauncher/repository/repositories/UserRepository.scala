@@ -30,8 +30,7 @@ class UserRepository(
             sessionToken -> (data.sessionToken orNull),
             installationId -> (data.installationId orNull),
             deviceToken -> (data.deviceToken orNull),
-            androidToken -> (data.androidToken orNull),
-            androidPermission -> (data.androidPermission orNull))
+            androidToken -> (data.androidToken orNull))
 
           val id = contentResolverWrapper.insert(
             uri = userUri,
@@ -86,8 +85,7 @@ class UserRepository(
             sessionToken -> (item.data.sessionToken orNull),
             installationId -> (item.data.installationId orNull),
             deviceToken -> (item.data.deviceToken orNull),
-            androidToken -> (item.data.androidToken orNull),
-            androidPermission -> (item.data.androidPermission orNull))
+            androidToken -> (item.data.androidToken orNull))
 
           contentResolverWrapper.updateById(
             uri = userUri,

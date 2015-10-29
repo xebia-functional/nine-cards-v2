@@ -56,5 +56,4 @@ case class User(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String],
-  androidPermission: Option[String])
+  androidToken: Option[String])
