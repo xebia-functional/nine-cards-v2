@@ -6,6 +6,7 @@ import android.speech.RecognizerIntent
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -149,8 +150,11 @@ trait LauncherComposer
             endScroll = () => {
               val collectionScreen = workspaces exists (_.isCollectionScreen)
               if (collectionScreen) runUi(showFabButton())
-            }
-          ))))) ~
+            },
+            onClick = () => {
+              val collectionScreen = workspaces exists (_.isCollectionScreen)
+              if (collectionScreen) runUi(showFabButton())
+            }))))) ~
       (searchPanel <~ searchContentStyle) ~
       (menuAvatar <~ menuAvatarStyle) ~
       initFabButton ~

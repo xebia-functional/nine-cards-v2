@@ -4,6 +4,7 @@ import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, Val
 import android.content.Context
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
+import android.view.MotionEvent._
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.view._
@@ -133,11 +134,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       n <- nextParentView
       f <- frontParentView
     } yield {
-        p.addView(previous, params)
-        n.addView(next, params)
-        f.addView(front, params)
-        self <~ vgAddViews(Seq(p, n, f), params)
-      }) getOrElse (throw new InstantiationException("parent views can't be added"))
+      p.addView(previous, params)
+      n.addView(next, params)
+      f.addView(front, params)
+      self <~ vgAddViews(Seq(p, n, f), params)
+    }) getOrElse (throw new InstantiationException("parent views can't be added"))
     runUi(ui ~ reset())
   }
 
@@ -239,18 +240,18 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     next <- nextView
     previous <- previousView
   } yield {
-      frontParentView = Some(nextParent)
-      nextParentView = Some(previousParent)
-      previousParentView = Some(frontParent)
-      frontView = Some(next)
-      nextView = Some(previous)
-      previousView = Some(front)
-      val auxFront = frontViewType
-      frontViewType = nextViewType
-      nextViewType = previewViewType
-      previewViewType = auxFront
-      currentItem = goToItem()
-    }
+    frontParentView = Some(nextParent)
+    nextParentView = Some(previousParent)
+    previousParentView = Some(frontParent)
+    frontView = Some(next)
+    nextView = Some(previous)
+    previousView = Some(front)
+    val auxFront = frontViewType
+    frontViewType = nextViewType
+    nextViewType = previewViewType
+    previewViewType = auxFront
+    currentItem = goToItem()
+  }
 
 
   private[this] def previous(): Unit = for {
@@ -261,18 +262,18 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     next <- nextView
     previous <- previousView
   } yield {
-      frontParentView = Some(previousParent)
-      nextParentView = Some(frontParent)
-      previousParentView = Some(nextParent)
-      frontView = Some(previous)
-      nextView = Some(front)
-      previousView = Some(next)
-      val auxFront = frontViewType
-      frontViewType = previewViewType
-      previewViewType = nextViewType
-      nextViewType = auxFront
-      currentItem = goToItem()
-    }
+    frontParentView = Some(previousParent)
+    nextParentView = Some(frontParent)
+    previousParentView = Some(nextParent)
+    frontView = Some(previous)
+    nextView = Some(front)
+    previousView = Some(next)
+    val auxFront = frontViewType
+    frontViewType = previewViewType
+    previewViewType = nextViewType
+    nextViewType = auxFront
+    currentItem = goToItem()
+  }
 
 
   private[this] def swapViews(): Unit = {
@@ -352,7 +353,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
     super.onInterceptTouchEvent(event)
     if (!enabled) return false
-    import android.view.MotionEvent._
     val action = MotionEventCompat.getActionMasked(event)
     if (action == ACTION_MOVE && touchState != stopped) {
       requestDisallowInterceptTouchEvent(true)
@@ -364,8 +364,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     val y = MotionEventCompat.getY(event, 0)
     action match {
       case ACTION_MOVE => setStateIfNeeded(x, y)
-      case ACTION_DOWN => lastMotionX = x; lastMotionY = y
-      case ACTION_CANCEL | ACTION_UP => computeFling(); touchState = stopped
+      case ACTION_DOWN =>
+        lastMotionX = x
+        lastMotionY = y
+      case ACTION_CANCEL | ACTION_UP =>
+        computeFling()
+        touchState = stopped
       case _ =>
     }
     touchState != stopped
@@ -374,30 +378,35 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   override def onTouchEvent(event: MotionEvent): Boolean = {
     super.onTouchEvent(event)
     if (!enabled) return false
-    import android.view.MotionEvent._
     val action = MotionEventCompat.getActionMasked(event)
     if (velocityTracker.isEmpty) velocityTracker = Some(VelocityTracker.obtain())
     velocityTracker foreach (_.addMovement(event))
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
     action match {
-      case ACTION_MOVE =>
-        touchState match {
-          case `scrolling` =>
-            requestDisallowInterceptTouchEvent(true)
-            val deltaX = lastMotionX - x
-            val deltaY = lastMotionY - y
-            lastMotionX = x
-            lastMotionY = y
-            if (overScroll(deltaX, deltaY)) {
-              runUi(applyTranslation(frontParentView, 0))
-            } else {
-              runUi(performScroll(if (horizontalGallery) deltaX else deltaY))
-            }
-          case _ => setStateIfNeeded(x, y)
+      case ACTION_MOVE => touchState match {
+        case `scrolling` =>
+          requestDisallowInterceptTouchEvent(true)
+          val deltaX = lastMotionX - x
+          val deltaY = lastMotionY - y
+          lastMotionX = x
+          lastMotionY = y
+          if (overScroll(deltaX, deltaY)) {
+            runUi(applyTranslation(frontParentView, 0))
+          } else {
+            runUi(performScroll(if (horizontalGallery) deltaX else deltaY))
+          }
+        case _ => setStateIfNeeded(x, y)
+      }
+      case ACTION_DOWN =>
+        lastMotionX = x
+        lastMotionY = y
+      case ACTION_CANCEL | ACTION_UP =>
+        if (touchState == stopped) {
+          listener.onClick()
         }
-      case ACTION_DOWN => lastMotionX = x; lastMotionY = y
-      case ACTION_CANCEL | ACTION_UP => computeFling(); touchState = stopped
+        computeFling()
+        touchState = stopped
       case _ =>
     }
     true
@@ -462,7 +471,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
 case class AnimatedWorkSpacesListener(
   var startScroll: (Boolean) => Unit = (b: Boolean) => (),
-  var endScroll: () => Unit = () => ())
+  var endScroll: () => Unit = () => (),
+  var onClick: () => Unit = () => ())
 
 case class Dimen(var width: Int = 0, var height: Int = 0)
 
@@ -473,13 +483,14 @@ object TouchState {
 
 object AnimatedWorkSpacesTweaks {
 
-  type W = AnimatedWorkSpaces[_,_]
+  type W = AnimatedWorkSpaces[_, _]
 
-  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W]{ view =>
+  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] { view =>
     view.listener.startScroll = listener.startScroll
     view.listener.endScroll = listener.endScroll
+    view.listener.onClick = listener.onClick
   }
 
-  def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W] (_.addPageChangedObservers(observer))
+  def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
 
 }
