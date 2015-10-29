@@ -19,6 +19,8 @@ class NewCollectionFragment
 
   override def getLayoutId: Int = R.layout.new_collection
 
+  override def useFab: Boolean = true
+
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)

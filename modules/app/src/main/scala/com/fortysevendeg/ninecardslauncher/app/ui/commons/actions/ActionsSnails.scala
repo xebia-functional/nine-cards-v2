@@ -98,6 +98,32 @@ object ActionsSnails {
       animPromise.future
   }
 
+  def showFab()(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+    view =>
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      val animPromise = Promise[Unit]()
+      val duration = resGetInteger(R.integer.anim_duration_normal)
+      view.setVisibility(View.VISIBLE)
+      view.setScaleX(0)
+      view.setScaleY(0)
+      view
+        .animate
+        .setStartDelay(duration)
+        .setDuration(duration)
+        .setInterpolator(new DecelerateInterpolator())
+        .scaleX(1f)
+        .scaleY(1f)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator): Unit = {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            animPromise.success()
+          }
+        }).start()
+      animPromise.future
+  }
+
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private[this] def circularReveal(
     view: View,

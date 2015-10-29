@@ -1,7 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
 
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -28,6 +30,14 @@ trait Styles {
       vPadding(padding, padding, padding, padding) +
       vgClipToPadding(false) +
       vOverScrollMode(View.OVER_SCROLL_NEVER)
+  }
+
+  def fabButtonMenuStyle(color: Int)(implicit context: ContextWrapper): Tweak[FloatingActionButton] = {
+    val iconFabButton = new PathMorphDrawable(
+      defaultIcon = IconTypes.CHECK,
+      defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default))
+    ivSrc(iconFabButton) +
+      fbaColor(color)
   }
 
 }

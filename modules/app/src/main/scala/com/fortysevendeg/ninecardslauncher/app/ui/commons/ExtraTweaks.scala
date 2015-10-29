@@ -67,9 +67,14 @@ object ExtraTweaks {
 
   def pbColor(color: Int) = Tweak[ProgressBar](_.getIndeterminateDrawable.setColorFilter(color, PorterDuff.Mode.MULTIPLY))
 
-  def fbaColor(id: Int)(implicit contextWrapper: ContextWrapper) = Tweak[FloatingActionButton] { view =>
+  def fbaColorResource(id: Int)(implicit contextWrapper: ContextWrapper) = Tweak[FloatingActionButton] { view =>
     view.setBackgroundTintList(contextWrapper.application.getResources.getColorStateList(id))
     view.setRippleColor(ColorsUtils.getColorDark(resGetColor(id)))
+  }
+
+  def fbaColor(color: Int)(implicit contextWrapper: ContextWrapper) = Tweak[FloatingActionButton] { view =>
+    view.setBackgroundTintList(ColorStateList.valueOf(color))
+    view.setRippleColor(ColorsUtils.getColorDark(color))
   }
 
   def scColor(color: Int)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat] { view =>

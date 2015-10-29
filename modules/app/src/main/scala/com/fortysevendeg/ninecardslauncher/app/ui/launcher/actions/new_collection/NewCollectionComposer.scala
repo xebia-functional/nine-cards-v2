@@ -38,6 +38,11 @@ trait NewCollectionComposer
       tbTitle(R.string.newCollection) <~
       toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
+      (fab <~
+        fabButtonMenuStyle(colorPrimary) <~
+        On.click {
+          Ui.nop
+        }) ~
       setCategory(communication) ~
       setIndexColor(0) ~
       (colorContent <~ On.click {

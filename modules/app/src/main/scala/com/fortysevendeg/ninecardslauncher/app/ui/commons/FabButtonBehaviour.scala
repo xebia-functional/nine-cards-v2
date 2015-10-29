@@ -94,7 +94,7 @@ trait FabButtonBehaviour
 
   def showFabButton(color: Int = 0)(implicit context: ActivityContextWrapper): Ui[_] = if (!isFabMenuVisible) {
     postDelayedHideFabButton ~
-      (fabButton <~ (if (color != 0) fbaColor(color) else Tweak.blank) <~ showFabMenu) ~
+      (fabButton <~ (if (color != 0) fbaColorResource(color) else Tweak.blank) <~ showFabMenu) ~
       (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)
   } else {
     resetDelayedHide

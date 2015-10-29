@@ -2,4 +2,6 @@
 <resources>
     <dimen name="margin_fab_button">16dp</dimen>
     <dimen name="margin_horizontal_fab_button_item">23dp</dimen>
+
+    <dimen name="margin_top_fab_button">24dp</dimen>
 </resources>

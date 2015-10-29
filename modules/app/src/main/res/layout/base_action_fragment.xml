@@ -27,4 +27,8 @@
 
     </LinearLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        style="@style/BaseActionsFabButton"
+        android:id="@+id/action_content_fab"/>
+
 </FrameLayout>
