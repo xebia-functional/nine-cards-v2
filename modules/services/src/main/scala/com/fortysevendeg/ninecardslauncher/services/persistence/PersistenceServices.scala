@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User => ApiUser}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 trait PersistenceServices {
@@ -85,9 +85,9 @@ trait PersistenceServices {
 
   def updateGeoInfo(request: UpdateGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException]
 
-  def getUser(implicit context: ContextSupport): ServiceDef2[User, PersistenceServiceException]
+  def getUser(implicit context: ContextSupport): ServiceDef2[ApiUser, PersistenceServiceException]
 
-  def saveUser(user: User)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException]
+  def saveUser(user: ApiUser)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException]
 
   def resetUser(implicit context: ContextSupport): ServiceDef2[Boolean, PersistenceServiceException]
 
@@ -98,5 +98,43 @@ trait PersistenceServices {
   def existsInstallation(implicit context: ContextSupport): ServiceDef2[Boolean, PersistenceServiceException]
 
   def saveInstallation(installation: Installation)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException]
+
+  /**
+   * Adds an user to the repository
+   * @param request includes the necessary data to create a new user in the repository
+   * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+   * @throws PersistenceServiceException if exist some problem creating the user
+   */
+  def addUser(request: AddUserRequest): ServiceDef2[User, PersistenceServiceException]
+
+  /**
+   * Deletes an user from the repository by the user
+   * @param request includes the user to delete
+   * @return an Int if the user has been deleted correctly
+   * @throws PersistenceServiceException if exist some problem deleting the user
+   */
+  def deleteUser(request: DeleteUserRequest): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+   * Obtains all the users from the repository
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.User]
+   * @throws PersistenceServiceException if exist some problem obtaining the users
+   */
+  def fetchUsers: ServiceDef2[Seq[User], PersistenceServiceException]
+
+  /**
+   * Obtains an user from the repository by the id
+   * @param request includes the user id  of the user to get
+   * @throws PersistenceServiceException if exist some problem obtaining the user
+   */
+  def findUserById(request: FindUserByIdRequest): ServiceDef2[Option[User], PersistenceServiceException]
+
+  /**
+   * Updates the data of an user from the repository
+   * @param request includes the data to update the user
+   * @return an Int if the user has been updated correctly
+   * @throws PersistenceServiceException if exist some problem updating the user
+   */
+  def updateUser(request: UpdateUserRequest): ServiceDef2[Int, PersistenceServiceException]
 
 }

@@ -20,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
 import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
+import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.squareup.{okhttp => okHttp}
@@ -64,7 +65,8 @@ class Injector(implicit contextSupport: ContextSupport) {
     appRepository = new AppRepository(contentResolverWrapper, uriCreator),
     cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
     collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
-    geoInfoRepository = new GeoInfoRepository(contentResolverWrapper, uriCreator))
+    geoInfoRepository = new GeoInfoRepository(contentResolverWrapper, uriCreator),
+    userRepository = new UserRepository(contentResolverWrapper, uriCreator))
 
   private[this] lazy val appsServices = new AppsServicesImpl()
 

@@ -6,6 +6,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
+import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -30,11 +31,14 @@ trait PersistenceServicesSpecification
 
     val mockGeoInfoRepository = mock[GeoInfoRepository]
 
+    val mockUserRepository = mock[UserRepository]
+
     val persistenceServices = new PersistenceServicesImpl(
       appRepository = mockAppRepository,
       cardRepository = mockCardRepository,
       collectionRepository = mockCollectionRepository,
-      geoInfoRepository = mockGeoInfoRepository)
+      geoInfoRepository = mockGeoInfoRepository,
+      userRepository = mockUserRepository)
   }
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
@@ -104,6 +108,18 @@ trait PersistenceServicesSpecification
     mockCollectionRepository.findCollectionById(nonExistentCollectionId) returns Service(Task(Result.answer(None)))
 
     mockCollectionRepository.updateCollection(repoCollection) returns Service(Task(Result.answer(1)))
+
+    mockUserRepository.addUser(repoUserData) returns Service(Task(Result.answer(repoUser)))
+
+    mockUserRepository.deleteUser(repoUser) returns Service(Task(Result.answer(1)))
+
+    mockUserRepository.fetchUsers returns Service(Task(Result.answer(seqRepoUser)))
+
+    mockUserRepository.findUserById(uId) returns Service(Task(Result.answer(Option(repoUser))))
+
+    mockUserRepository.findUserById(nonExistentUserId) returns Service(Task(Result.answer(None)))
+
+    mockUserRepository.updateUser(repoUser) returns Service(Task(Result.answer(1)))
   }
 
   trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
@@ -161,6 +177,18 @@ trait PersistenceServicesSpecification
     mockCollectionRepository.findCollectionById(collectionId) returns Service(Task(Result.errata(exception)))
 
     mockCollectionRepository.updateCollection(repoCollection) returns Service(Task(Result.errata(exception)))
+
+    mockUserRepository.addUser(repoUserData) returns Service(Task(Result.errata(exception)))
+
+    mockUserRepository.deleteUser(repoUser) returns Service(Task(Result.errata(exception)))
+
+    mockUserRepository.fetchUsers returns Service(Task(Result.errata(exception)))
+
+    mockUserRepository.findUserById(uId) returns Service(Task(Result.errata(exception)))
+
+    mockUserRepository.findUserById(nonExistentUserId) returns Service(Task(Result.errata(exception)))
+
+    mockUserRepository.updateUser(repoUser) returns Service(Task(Result.errata(exception)))
   }
 
 }
@@ -852,6 +880,138 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "addUser" should {
+
+    "return a User value for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addUser(createAddUserRequest()).run.run
+
+      result must beLike {
+        case Answer(user) =>
+          user.id shouldEqual uId
+          user.userId shouldEqual Some(userId)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addUser(createAddUserRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteUser" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteUser(createDeleteUserRequest(user = user)).run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 1
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteUser(createDeleteUserRequest(user = user)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchUsers" should {
+
+    "return a list of User elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchUsers.run.run
+
+      result must beLike {
+        case Answer(userItems) =>
+          userItems.size shouldEqual seqUser.size
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchUsers.run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "findUserById" should {
+
+    "return a User for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findUserById(createFindUserByIdRequest(id = uId)).run.run
+
+      result must beLike {
+        case Answer(maybeUser) =>
+          maybeUser must beSome[User].which { user =>
+            user.id shouldEqual uId
+          }
+      }
+    }
+
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findUserById(createFindUserByIdRequest(id = nonExistentUserId)).run.run
+
+      result must beLike {
+        case Answer(maybeUser) =>
+          maybeUser must beNone
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findUserById(createFindUserByIdRequest(id = uId)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "updateUser" should {
+
+    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.updateUser(createUpdateUserRequest()).run.run
+
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual 1
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateUser(createUpdateUserRequest()).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {

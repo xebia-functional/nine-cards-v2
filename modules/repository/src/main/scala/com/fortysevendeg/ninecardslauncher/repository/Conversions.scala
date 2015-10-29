@@ -56,4 +56,14 @@ object Conversions {
       latitude = geoInfoEntity.data.latitude,
       longitude = geoInfoEntity.data.longitude,
       system = geoInfoEntity.data.system))
+
+  def toUser(userEntity: UserEntity): User = User(
+    id = userEntity.id,
+    data = UserData(
+      userId = Option[String](userEntity.data.userId),
+      email = Option[String](userEntity.data.email),
+      sessionToken = Option[String](userEntity.data.sessionToken),
+      installationId = Option[String](userEntity.data.installationId),
+      deviceToken = Option[String](userEntity.data.deviceToken),
+      androidToken = Option[String](userEntity.data.androidToken)))
 }
