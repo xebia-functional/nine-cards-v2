@@ -6,7 +6,6 @@ import android.speech.RecognizerIntent
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -204,6 +203,10 @@ trait LauncherComposer
     (menuName <~ tvText(userInfo.email)) ~
       (menuAvatar <~ ivUri(userInfo.imageUrl))
 
+  def addCollection(collection: Collection)
+    (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+    (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
+
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
 
   def isMenuVisible: Boolean = drawerLayout exists (_.isDrawerOpen(GravityCompat.START))
@@ -264,6 +267,17 @@ trait LauncherComposer
         view
       }
       paginationPanel <~ vgAddViews(pagerViews)
+    } getOrElse Ui.nop
+
+  private[this] def reloadPagerAndActiveLast(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+    workspaces map { ws =>
+      val count = ws.getWorksSpacesCount
+      val pagerViews = 0 until count map { position =>
+        val view = pagination(position)
+        view.setActivated(count - 1 == position)
+        view
+      }
+      paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
   private[this] def fillAppDrawer(collections: Seq[Collection])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = Transformer {

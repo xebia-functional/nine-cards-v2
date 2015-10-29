@@ -3,12 +3,14 @@
         xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">9 Cards</string>
+
+    <!-- General -->
     <string name="edit">Edit</string>
     <string name="make_public">Make Public</string>
     <string name="share">Share</string>
     <string name="loading">Loading</string>
     <string name="contactUsError">Oops! Please contact us if this problem persists</string>
-
+    <string name="formFieldError">Is it possible to miss something in the form?</string><!-- Pending review language -->
     <string name="todo">TODO. Sorry. We are working in that</string>
 
     <!-- Menu -->

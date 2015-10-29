@@ -33,16 +33,22 @@ trait NewCollectionComposer
 
   lazy val iconImage = Option(findView(TR.new_collection_select_icon_image))
 
-  def initUi: Ui[_] =
+  def showMessage(message: Int): Ui[_] = content <~ uiSnackbarShort(message)
+
+  def initUi(storeCollection: (String, String, Int) => Unit): Ui[_] =
     (toolbar <~
       tbTitle(R.string.newCollection) <~
       toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
-        On.click {
-          Ui.nop
-        }) ~
+        On.click(
+          (for {
+            name <- getName
+            category <- getCategory
+            index <- getColor
+          } yield Ui(storeCollection(name, category, index))) getOrElse showMessage(R.string.formFieldError)
+        )) ~
       setCategory(communication) ~
       setIndexColor(0) ~
       (colorContent <~ On.click {
@@ -70,6 +76,8 @@ trait NewCollectionComposer
         }
       })
 
+  def hideKeyboard: Ui[_] = name <~ etHideKeyboard
+
   def setCategory(category: String): Ui[_] =
     iconImage <~
       vTag2(category) <~
@@ -89,9 +97,14 @@ trait NewCollectionComposer
       ivSrc(drawable)
   }
 
-  def getCategory = iconImage map (_.getTag.toString)
+  private[this] def getName: Option[String] = (for {
+    n <- name
+    text <- Option(n.getText)
+  } yield if (text.toString.isEmpty) None else Some(text.toString)).flatten
 
-  def getColor = colorImage map (c => Int.unbox(c.getTag))
+  private[this] def getCategory = iconImage map (_.getTag.toString)
+
+  private[this] def getColor = colorImage map (c => Int.unbox(c.getTag))
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 

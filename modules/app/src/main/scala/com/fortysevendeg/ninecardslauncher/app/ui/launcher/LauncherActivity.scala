@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
+import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -93,6 +94,8 @@ class LauncherActivity
     case (KeyEvent.ACTION_DOWN | KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HOME) => true
     case _ => super.dispatchKeyEvent(event)
   }
+
+  def addNewCollection(collection: Collection) = runUi(addCollection(collection))
 
   private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
     onResult = {

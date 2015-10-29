@@ -253,7 +253,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     currentItem = goToItem()
   }
 
-
   private[this] def previous(): Unit = for {
     frontParent <- frontParentView
     nextParent <- nextParentView
@@ -275,13 +274,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     currentItem = goToItem()
   }
 
-
   private[this] def swapViews(): Unit = {
     if (displacement < 0) next() else previous()
     runUi(reset())
   }
 
-  private[this] def reset(): Ui[_] = {
+  def reset(): Ui[_] = {
     // TODO Shouldn't create views directly from here
 
     val auxFrontViewType = getItemViewType(data(currentItem), currentItem)
