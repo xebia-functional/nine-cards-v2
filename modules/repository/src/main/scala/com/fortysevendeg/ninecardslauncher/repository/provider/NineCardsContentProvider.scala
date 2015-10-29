@@ -23,6 +23,8 @@ class NineCardsContentProvider extends ContentProvider {
       case `codeGeoInfoSingleItem` => (GeoInfoEntity.table, MimeTypeSingleItem)
       case `codeAppAllItems` => (AppEntity.table, MimeTypeAllItems)
       case `codeAppSingleItem` => (AppEntity.table, MimeTypeSingleItem)
+      case `codeUserAllItems` => (UserEntity.table, MimeTypeAllItems)
+      case `codeUserSingleItem` => (UserEntity.table, MimeTypeSingleItem)
       case _ => throw new IllegalArgumentException(invalidUri + uri)
     }
 
@@ -126,6 +128,8 @@ object NineCardsContentProvider {
   val codeGeoInfoSingleItem = 8
   val codeAppAllItems = 9
   val codeAppSingleItem = 10
+  val codeUserAllItems = 11
+  val codeUserSingleItem = 12
   val mimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.com.fortysevendeg.ninecardslauncher"
   val mimeTypeSingleItemValue = "vnd.android.cursor.item/vnd.com.fortysevendeg.ninecardslauncher"
 
@@ -138,7 +142,8 @@ object NineCardsContentProvider {
   uriMatcher.addURI(authorityPart, s"${CollectionEntity.table}/#", codeCollectionSingleItem)
   uriMatcher.addURI(authorityPart, GeoInfoEntity.table, codeGeoInfoAllItems)
   uriMatcher.addURI(authorityPart, s"${GeoInfoEntity.table}/#", codeGeoInfoSingleItem)
-
+  uriMatcher.addURI(authorityPart, UserEntity.table, codeUserAllItems)
+  uriMatcher.addURI(authorityPart, s"${UserEntity.table}/#", codeUserSingleItem)
 }
 
 sealed trait MimeType
