@@ -53,4 +53,20 @@ class ContextSupportReceiverImpl(context: Context) extends ContextSupport {
   override def getAppIconsDir = context.getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE)
   override def getAssets = context.getAssets
   override def getPackageName = context.getPackageName
+  override def getSharedPreferences =
+    context.getSharedPreferences(getResources.getString(R.string.shared_preferences_key), Context.MODE_PRIVATE)
+  override def getActiveUserId: Option[Int] = {
+    val key = getResources.getString(R.string.user_id_key)
+    val pref = getSharedPreferences
+    if (pref.contains(key)) {
+      None
+    } else {
+      Some(getSharedPreferences.getInt(key, 0))
+    }
+  }
+  override def setActiveUserId(id: Int): Unit = {
+    val editor = getSharedPreferences.edit()
+    editor.putInt(getResources.getString(R.string.user_id_key), id)
+    editor.apply()
+  }
 }
