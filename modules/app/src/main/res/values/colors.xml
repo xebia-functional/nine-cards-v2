@@ -77,6 +77,9 @@
     <color name="collection_detail_fab_button_item">#3F51B5</color>
     <color name="collection_detail_fab_button_item_ripple">#ff1a2346</color>
 
+    <!-- Collections -->
+    <color name="hint_collection_name">#898989</color>
+
     <!-- Collections detail -->
     <color name="background_icon_collection_detail">#4bffffff</color>
     <color name="text_tab_color_default">#77ffffff</color>
@@ -99,8 +102,9 @@
     <color name="drawer_content">#ffffff</color>
 
     <!-- Contact Info Dialog -->
-    <color name="divider_color_info_dialog">#4bffffff</color>
-    <color name="divider_color_recommendation_dialog">#d6d6d6</color>
+    <color name="divider_color_info_dialog">#d6d6d6</color>
+    <color name="text_selected_color_dialog">#4285F4</color>
+    <color name="color_selected_color_dialog">#ffffff</color>
 
     <!-- Theme Light -->
     <color name="search_background_tint_light">#ffffff</color>

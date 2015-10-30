@@ -112,7 +112,7 @@ case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: 
         val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
         (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
           (name <~ tvText(contactName)) ~
-          (content <~ vIntTag(position))
+          (content <~ vTag2(position))
       case _ => Ui.nop
     }
 

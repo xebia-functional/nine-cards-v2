@@ -173,7 +173,7 @@
     <style name="RecommendationsItemLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_recommendation_dialog</item>
+        <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
     <style name="RecommendationsItemInstallNow">

@@ -179,11 +179,7 @@ class CollectionsDetailsActivity
 
   override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
 
-  override def onBackPressed(): Unit = (fabMenuOpened, isActionShowed) match {
-    case (true, _) => runUi(swapFabButton())
-    case (_, true) => runUi(unrevealActionFragment())
-    case _ => runUi(exitTransition)
-  }
+  override def onBackPressed(): Unit = runUi(backByPriority)
 
   override def pullToClose(scroll: Int, scrollType: Int, close: Boolean): Unit =
     runUi(pullCloseScrollY(scroll, scrollType, close))
@@ -197,7 +193,7 @@ class CollectionsDetailsActivity
 
   override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
 
-  override def onEndFinishAction(): Unit = removeActionFragment()
+  override def onEndFinishAction(): Unit = removeActionFragment
 
   def addCards(cards: Seq[AddCardRequest]): Unit =
     getCurrentCollection foreach { collection =>

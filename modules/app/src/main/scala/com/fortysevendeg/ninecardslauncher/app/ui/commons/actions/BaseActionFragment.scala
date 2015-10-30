@@ -58,9 +58,13 @@ trait BaseActionFragment
 
   protected lazy val rootContent = Option(findView(TR.action_content_root))
 
+  protected lazy val fab = Option(findView(TR.action_content_fab))
+
   protected var rootView: Option[FrameLayout] = None
 
   def getLayoutId: Int
+
+  def useFab: Boolean = false
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, container, false).asInstanceOf[FrameLayout]
@@ -87,13 +91,15 @@ trait BaseActionFragment
     val ratioScaleToolbar = toolbar map (tb => tb.getHeight.toFloat / height.toFloat) getOrElse 0f
     (rootView <~~ revealIn(projection._1, projection._2, width, height)) ~~
       (transitionView <~~ scaleToToolbar(ratioScaleToolbar)) ~~
-      (rootContent <~~ showContent())
+      (rootContent <~~ showContent()) ~~
+      (if (useFab) fab <~~ showFab() else Ui.nop)
   }
 
   def unreveal(): Ui[_] = {
     val projection = rootView map (projectionScreenPositionInView(_, endPosX, endPosY)) getOrElse(defaultPosition, defaultPosition)
     onStartFinishAction ~ (rootView <~~ revealOut(projection._1, projection._2, width, height)) ~~ onEndFinishAction
   }
+
   override def onAttach(activity: Activity): Unit = {
     super.onAttach(activity)
     activity match {

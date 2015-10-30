@@ -105,7 +105,7 @@ object NineRecyclerViewTweaks {
           0 until recyclerView.getChildCount foreach { position =>
             val newPosition = position + firstVisiblePosition
             val v = recyclerView.getChildAt(position)
-            runUi(v <~ vIntTag(newPosition))
+            runUi(v <~ vTag2(newPosition))
           }
       }
 

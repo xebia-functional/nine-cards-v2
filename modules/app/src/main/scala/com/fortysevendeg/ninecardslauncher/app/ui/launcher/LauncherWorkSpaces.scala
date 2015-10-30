@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.WorkSpaceType._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import macroid.{ActivityContextWrapper, Tweak, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 
 import scala.annotation.tailrec
 
@@ -81,6 +82,24 @@ object LauncherWorkSpacesTweaks {
       workspaces.init(pageSelected)
   }
 
-  def lwsSelect(position: Int) = Tweak[W] (_.selectPosition(position))
+  def lwsAddCollection(collection: Collection) = Tweak[W] {
+    workspaces =>
+      workspaces.data.lastOption foreach { data =>
+        val lastWorkspaceHasSpace = data.collections.size < numSpaces
+        if (lastWorkspaceHasSpace) {
+          workspaces.data = workspaces.data map { d =>
+            if (d == data) {
+              d.copy(collections = d.collections :+ collection)
+            } else d
+          }
+        } else {
+          workspaces.data = workspaces.data :+ LauncherData(widgets = false, Seq(collection))
+        }
+        workspaces.selectPosition(workspaces.data.size - 1)
+        workspaces.reset()
+      }
+  }
+
+  def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
 
 }
