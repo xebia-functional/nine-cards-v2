@@ -2,6 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.user.impl
 
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.services.api.models.{AndroidDevice, GoogleDevice, Installation, User}
+import com.fortysevendeg.ninecardslauncher.services.persistence.FindUserByIdRequest
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => PersistenceUser}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
@@ -13,6 +15,8 @@ trait UserProcessData
 
   val statusCodeOk = 200
 
+  val userDBId = 1
+
   val userId = "fake-user-id"
 
   val userToken = "fake-user-token"
@@ -20,22 +24,32 @@ trait UserProcessData
   val email = "example@47deg.com"
 
   val device = Device(
-    "Nexus X",
-    "",
-    "",
-    Seq.empty)
+    name = "Nexus X",
+    deviceId = "",
+    secretToken = "",
+    permissions = Seq.empty)
 
   val googleDevice = GoogleDevice(
-    device.name,
-    device.deviceId,
-    device.secretToken,
-    device.permissions)
+    name = device.name,
+    deviceId = device.deviceId,
+    secretToken = device.secretToken,
+    permissions = device.permissions)
 
   val user = User(
-    Option(userId),
-    Option(userToken),
-    Option(email),
-    Seq(googleDevice))
+    id = Option(userId),
+    sessionToken = Option(userToken),
+    email = Option(email),
+    devices = Seq(googleDevice))
+
+  val persistenceUser = PersistenceUser(
+    id = userDBId,
+    userId = None,
+    email = None,
+    sessionToken = None,
+    installationId = None,
+    deviceToken = None,
+    androidToken = None
+  )
 
   val installationStatusCode = 102
 
@@ -46,12 +60,14 @@ trait UserProcessData
   val initialInstallation = Installation(None, deviceType, None, None)
 
   val installation = Installation(
-    Option(installationId),
-    deviceType,
-    Option(installationToken),
-    Option(userId)
+    id = Option(installationId),
+    deviceType = deviceType,
+    deviceToken = Option(installationToken),
+    userId = Option(userId)
   )
 
   val fileFolder = "/file/example"
+
+  val findUserByIdRequest = FindUserByIdRequest(userDBId)
 
 }
