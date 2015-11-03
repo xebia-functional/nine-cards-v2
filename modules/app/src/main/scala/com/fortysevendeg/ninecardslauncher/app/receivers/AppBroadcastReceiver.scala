@@ -45,7 +45,8 @@ class AppBroadcastReceiver
   }
 }
 
-class ContextSupportReceiverImpl(context: Context) extends ContextSupport {
+class ContextSupportReceiverImpl(ctx: Context) extends ContextSupport {
+  override def context = ctx
   override def getPackageManager = context.getPackageManager
   override def getResources = context.getResources
   override def getContentResolver = context.getContentResolver

@@ -8,13 +8,14 @@ import macroid.ContextWrapper
 trait ContextSupportProvider {
 
   implicit def contextSupport(implicit ctx : ContextWrapper): ContextSupport = new ContextSupport {
-    override def getContentResolver = ctx.application.getContentResolver
-    override def getPackageManager = ctx.application.getPackageManager
-    override def getResources = ctx.application.getResources
-    override def getFilesDir = ctx.application.getFilesDir
-    override def getAppIconsDir = ctx.application.getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE)
-    override def getAssets = ctx.application.getAssets
-    override def getPackageName = ctx.application.getPackageName
+    override def context = ctx.application
+    override def getContentResolver = context.getContentResolver
+    override def getPackageManager = context.getPackageManager
+    override def getResources = context.getResources
+    override def getFilesDir = context.getFilesDir
+    override def getAppIconsDir = context.getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE)
+    override def getAssets = context.getAssets
+    override def getPackageName = context.getPackageName
   }
 
 }
