@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.receivers
 
 import android.content.Intent._
 import android.content._
-import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
+import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportPreferences, BroadcastDispatcher}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.AppInstalledActionFilter
@@ -45,28 +45,20 @@ class AppBroadcastReceiver
   }
 }
 
-class ContextSupportReceiverImpl(context: Context) extends ContextSupport {
+class ContextSupportReceiverImpl(ctx: Context)
+  extends ContextSupport
+  with ContextSupportPreferences {
   override def getPackageManager = context.getPackageManager
+
   override def getResources = context.getResources
+
   override def getContentResolver = context.getContentResolver
+
   override def getFilesDir = context.getFilesDir
-  override def getAppIconsDir = context.getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE)
+
   override def getAssets = context.getAssets
+
   override def getPackageName = context.getPackageName
-  override def getSharedPreferences =
-    context.getSharedPreferences(getResources.getString(R.string.shared_preferences_key), Context.MODE_PRIVATE)
-  override def getActiveUserId: Option[Int] = {
-    val key = getResources.getString(R.string.user_id_key)
-    val pref = getSharedPreferences
-    if (pref.contains(key)) {
-      None
-    } else {
-      Some(getSharedPreferences.getInt(key, 0))
-    }
-  }
-  override def setActiveUserId(id: Int): Unit = {
-    val editor = getSharedPreferences.edit()
-    editor.putInt(getResources.getString(R.string.user_id_key), id)
-    editor.apply()
-  }
+
+  override def context: Context = ctx
 }
