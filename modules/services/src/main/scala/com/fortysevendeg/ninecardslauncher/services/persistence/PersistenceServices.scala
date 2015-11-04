@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User => ApiUser}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 trait PersistenceServices {
@@ -85,19 +84,7 @@ trait PersistenceServices {
 
   def updateGeoInfo(request: UpdateGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException]
 
-  def getUser(implicit context: ContextSupport): ServiceDef2[ApiUser, PersistenceServiceException]
-
-  def saveUser(user: ApiUser)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException]
-
-  def resetUser(implicit context: ContextSupport): ServiceDef2[Boolean, PersistenceServiceException]
-
   def getAndroidId(implicit context: ContextSupport): ServiceDef2[String, AndroidIdNotFoundException]
-
-  def getInstallation(implicit context: ContextSupport): ServiceDef2[Installation, InstallationNotFoundException]
-
-  def existsInstallation(implicit context: ContextSupport): ServiceDef2[Boolean, PersistenceServiceException]
-
-  def saveInstallation(installation: Installation)(implicit context: ContextSupport): ServiceDef2[Unit, PersistenceServiceException]
 
   /**
    * Adds an user to the repository

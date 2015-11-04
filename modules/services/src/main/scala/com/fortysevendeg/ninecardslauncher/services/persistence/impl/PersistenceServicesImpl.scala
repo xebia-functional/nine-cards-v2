@@ -1,17 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import java.io.File
-
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.commons.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
-import com.fortysevendeg.ninecardslauncher.services.api.models.{Installation, User}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -19,8 +15,6 @@ import com.fortysevendeg.ninecardslauncher.{repository => repo}
 import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
 import rapture.core.{Answer, Result}
 
-import scala.util.{Failure, Success}
-import scalaz.Scalaz._
 import scalaz.concurrent.Task
 
 class PersistenceServicesImpl(
@@ -33,19 +27,9 @@ class PersistenceServicesImpl(
   with Conversions
   with ImplicitsPersistenceServiceExceptions {
 
-  val fileUtils = new FileUtils()
+  val androidId = "android_id"
 
-  // TODO These contants don't should be here
-
-  val AccountType = "com.google"
-
-  val AndroidId = "android_id"
-
-  val ContentGServices = "content://com.google.android.gsf.gservices"
-
-  val FilenameUser = "__user_entity__"
-
-  val FilenameInstallation = "__installation_entity__"
+  val contentGServices = "content://com.google.android.gsf.gservices"
 
   override def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {
     val orderByString = s"${toStringOrderBy(orderBy)} COLLATE NOCASE ${if (ascending) "ASC" else "DESC"}"
@@ -216,6 +200,18 @@ class PersistenceServicesImpl(
       updated <- userRepository.updateUser(toRepositoryUser(request))
     } yield updated).resolve[PersistenceServiceException]
 
+  override def getAndroidId(implicit context: ContextSupport) =
+    Service {
+      Task {
+        val cursor = Option(context.getContentResolver.query(Uri.parse(contentGServices), null, null, Array(androidId), null))
+        val result = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+        cursor foreach (_.close())
+        result map {
+          Result.answer[String, AndroidIdNotFoundException]
+        } getOrElse Result.errata[String, AndroidIdNotFoundException](AndroidIdNotFoundException(message = "Android Id not found"))
+      }
+    }
+
   private[this] def addCards(cards: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException] = {
     val addedCards = cards map {
       addCard(_).run
@@ -260,71 +256,4 @@ class PersistenceServicesImpl(
           CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => collection })))
   }
 
-  override def getUser(implicit context: ContextSupport) =
-    Service(
-      Task(fileUtils.loadFile[User](getFileUser) match {
-        case Success(user) => Result.answer(user)
-        case Failure(ex) => Result.errata(UserNotFoundException(message = "User not found", cause = ex.some))
-      }))
-
-  override def saveUser(user: User)(implicit context: ContextSupport) =
-    Service {
-      Task {
-        fileUtils.writeFile[User](getFileUser, user) match {
-          case Success(result) => Result.answer(result)
-          case Failure(ex) => Result.errata(PersistenceServiceException(message = "User not saved", cause = ex.some))
-        }
-      }
-    }
-
-  override def resetUser(implicit context: ContextSupport) =
-    Service {
-      Task {
-        CatchAll[PersistenceServiceException] {
-          val fileUser = getFileUser
-          fileUser.exists() && fileUser.delete()
-        }
-      }
-    }
-
-  override def getAndroidId(implicit context: ContextSupport) =
-    Service {
-      Task {
-        val cursor = Option(context.getContentResolver.query(Uri.parse(ContentGServices), null, null, Array(AndroidId), null))
-        val result = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
-        cursor foreach (_.close())
-        result map {
-          Result.answer[String, AndroidIdNotFoundException]
-        } getOrElse Result.errata[String, AndroidIdNotFoundException](AndroidIdNotFoundException(message = "Android Id not found"))
-      }
-    }
-
-  override def getInstallation(implicit context: ContextSupport) =
-    Service(
-      Task(
-        fileUtils.loadFile[Installation](getFileInstallation) match {
-          case Success(installation) => Result.answer(installation)
-          case Failure(ex) => Result.errata(InstallationNotFoundException(message = "Installation not found", cause = ex.some))
-        }))
-
-  override def existsInstallation(implicit context: ContextSupport) =
-    Service {
-      Task {
-        CatchAll[PersistenceServiceException](getFileInstallation.exists())
-      }
-    }
-
-  override def saveInstallation(installation: Installation)(implicit context: ContextSupport) =
-    Service {
-      Task {
-        fileUtils.writeFile[Installation](getFileInstallation, installation) match {
-          case Success(result) => Result.answer(result)
-          case Failure(ex) => Result.errata(PersistenceServiceException(message = "Installation not saved", cause = ex.some))
-        }
-      }
-    }
-
-  private def getFileInstallation(implicit context: ContextSupport) = new File(context.getFilesDir, FilenameInstallation)
-
-  private def getFileUser(implicit context: ContextSupport) = new File(context.getFilesDir, FilenameUser)
 }
