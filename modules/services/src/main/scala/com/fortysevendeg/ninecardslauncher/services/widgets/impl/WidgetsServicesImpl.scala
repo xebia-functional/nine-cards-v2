@@ -22,7 +22,7 @@ class WidgetsServicesImpl
     }
   }
 
-  private[this] def getAppWidgetManager(implicit context: ContextSupport) = {
+  protected def getAppWidgetManager(implicit context: ContextSupport) = {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) new AppWidgetManagerImplLollipop
     else new AppWidgetManagerImplDefault
   }
