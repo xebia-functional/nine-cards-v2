@@ -2,12 +2,9 @@ package com.fortysevendeg.ninecardslauncher.commons.contexts
 
 import java.io.File
 
-import android.app.ActivityManager
-import android.appwidget.AppWidgetManager
-import android.content.{Context, ContentResolver}
+import android.content.{Context, SharedPreferences, ContentResolver}
 import android.content.pm.PackageManager
 import android.content.res.{AssetManager, Resources}
-import android.os.UserManager
 
 trait ContextSupport {
   def context: Context
@@ -18,4 +15,7 @@ trait ContextSupport {
   def getAppIconsDir: File
   def getAssets: AssetManager
   def getPackageName: String
+  def getSharedPreferences: SharedPreferences
+  def getActiveUserId: Option[Int]
+  def setActiveUserId(id: Int): Unit
 }

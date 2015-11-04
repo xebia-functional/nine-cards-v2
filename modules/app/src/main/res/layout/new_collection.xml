@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/NewCollectionRoot">
+
+    <EditText
+        style="@style/NewCollectionName"
+        android:id="@+id/new_collection_name"
+        android:inputType="text"/>
+
+    <ImageView
+        style="@style/NewCollectionLine"/>
+
+    <LinearLayout
+        android:id="@+id/new_collection_select_color_content"
+        style="@style/NewCollectionSelectorContent">
+
+        <ImageView
+            android:id="@+id/new_collection_select_color_image"
+            style="@style/NewCollectionSelectorIcon"/>
+
+        <TextView
+            android:text="@string/selectColor"
+            style="@style/NewCollectionSelectorTitle"/>
+
+    </LinearLayout>
+
+    <ImageView
+        style="@style/NewCollectionLine"/>
+
+
+    <LinearLayout
+        android:id="@+id/new_collection_select_icon_content"
+        style="@style/NewCollectionSelectorContent">
+
+        <ImageView
+            android:id="@+id/new_collection_select_icon_image"
+            style="@style/NewCollectionSelectorIcon"/>
+
+        <TextView
+            android:text="@string/selectIcon"
+            style="@style/NewCollectionSelectorTitle"/>
+
+    </LinearLayout>
+
+    <ImageView
+        style="@style/NewCollectionLine"/>
+
+</LinearLayout>

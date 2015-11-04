@@ -48,6 +48,8 @@
 
         <include layout="@layout/app_drawer_layout"/>
 
+        <include layout="@layout/action_content_include" />
+
     </FrameLayout>
 
     <android.support.design.widget.NavigationView

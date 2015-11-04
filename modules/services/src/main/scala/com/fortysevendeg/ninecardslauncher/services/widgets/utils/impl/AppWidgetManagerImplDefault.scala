@@ -12,11 +12,11 @@ import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManag
 
 import scala.collection.JavaConversions._
 
-class AppWidgetManagerImplDefault(implicit context: ContextSupport)
+class AppWidgetManagerImplDefault(implicit contextSupport: ContextSupport)
   extends AppWidgetManagerCompat
   with Conversions{
 
-  lazy val packageManager: PackageManager = context.getPackageManager
+  lazy val packageManager: PackageManager = contextSupport.getPackageManager
 
   override def getAllProviders = {
     for {
@@ -46,11 +46,11 @@ class AppWidgetManagerImplDefault(implicit context: ContextSupport)
       getDrawableForDensity(iconId, getActivityManager.getLauncherLargeIconDensity)
   }
 
-  private[this] def getAppWidgetManager = AppWidgetManager.getInstance(context.context)
+  private[this] def getAppWidgetManager = AppWidgetManager.getInstance(contextSupport.context)
 
   private[this] def getPreviewImage(info: AppWidgetProviderInfo): Drawable = {
     packageManager.getDrawable(info.provider.getPackageName, info.previewImage, null)
   }
 
-  private[this] def getActivityManager = context.context.getSystemService(Context.ACTIVITY_SERVICE).asInstanceOf[ActivityManager]
+  private[this] def getActivityManager = contextSupport.context.getSystemService(Context.ACTIVITY_SERVICE).asInstanceOf[ActivityManager]
 }

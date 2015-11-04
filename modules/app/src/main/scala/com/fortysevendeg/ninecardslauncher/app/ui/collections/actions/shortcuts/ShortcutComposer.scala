@@ -58,7 +58,7 @@ case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context:
   def bind(shortcut: Shortcut, position: Int): Ui[_] =
     (icon <~ (shortcut.icon map ivSrc getOrElse Tweak.blank)) ~
       (name <~ tvText(shortcut.title)) ~
-      (content <~ vIntTag(position))
+      (content <~ vTag2(position))
 
   override def findViewById(id: Int): View = content.findViewById(id)
 

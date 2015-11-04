@@ -5,3 +5,4 @@ trait Conversions
   with CardConversions
   with CollectionConversions
   with GeoInfoConversions
+  with UserConversions

@@ -173,7 +173,7 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
   def bind(card: Card, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     (icon <~ iconCardTransform(card)) ~
       (name <~ tvText(card.term)) ~
-      (content <~ vIntTag(position)) ~
+      (content <~ vTag2(position)) ~
       (badge <~ (getBadge(card.cardType) map {
         ivSrc(_) + vVisible
       } getOrElse vGone))

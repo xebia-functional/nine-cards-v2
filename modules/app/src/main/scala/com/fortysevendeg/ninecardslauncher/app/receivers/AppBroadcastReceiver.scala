@@ -2,12 +2,11 @@ package com.fortysevendeg.ninecardslauncher.app.receivers
 
 import android.content.Intent._
 import android.content._
-import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
+import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportPreferences, BroadcastDispatcher}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.AppInstalledActionFilter
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher2.R
 
 import scalaz.concurrent.Task
 
@@ -45,13 +44,20 @@ class AppBroadcastReceiver
   }
 }
 
-class ContextSupportReceiverImpl(ctx: Context) extends ContextSupport {
-  override def context = ctx
+class ContextSupportReceiverImpl(ctx: Context)
+  extends ContextSupport
+  with ContextSupportPreferences {
   override def getPackageManager = context.getPackageManager
+
   override def getResources = context.getResources
+
   override def getContentResolver = context.getContentResolver
+
   override def getFilesDir = context.getFilesDir
-  override def getAppIconsDir = context.getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE)
+
   override def getAssets = context.getAssets
+
   override def getPackageName = context.getPackageName
+
+  override def context: Context = ctx
 }

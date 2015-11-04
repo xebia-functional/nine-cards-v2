@@ -1,24 +1,31 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.content.{Context, Intent}
+import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ImageView
+import com.fortysevendeg.macroid.extras.FragmentExtras._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, LauncherExecutor, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.new_collection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -32,6 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait LauncherComposer
   extends Styles
   with DrawerComposer
+  with ActionsBehaviours
   with FabButtonBehaviour
   with LauncherExecutor {
 
@@ -120,7 +128,7 @@ trait LauncherComposer
 
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
-  def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
         runUi(goToMenuOption(itemId))
@@ -141,8 +149,11 @@ trait LauncherComposer
             endScroll = () => {
               val collectionScreen = workspaces exists (_.isCollectionScreen)
               if (collectionScreen) runUi(showFabButton())
-            }
-          ))))) ~
+            },
+            onClick = () => {
+              val collectionScreen = workspaces exists (_.isCollectionScreen)
+              if (collectionScreen) runUi(showFabButton())
+            }))))) ~
       (searchPanel <~ searchContentStyle) ~
       (menuAvatar <~ menuAvatarStyle) ~
       initFabButton ~
@@ -156,16 +167,16 @@ trait LauncherComposer
       (micIcon <~ micButtonStyle <~ On.click(
         uiStartIntent(new Intent(RecognizerIntent.ACTION_WEB_SEARCH))
       )) ~
-      (appDrawer1 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 0) <~ FuncOn.click { view: View =>
+      (appDrawer1 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 0) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
-      (appDrawer2 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 1) <~ FuncOn.click { view: View =>
+      (appDrawer2 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 1) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
-      (appDrawer3 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 2) <~ FuncOn.click { view: View =>
+      (appDrawer3 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 2) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
-      (appDrawer4 <~ drawerItemStyle <~ vIntTag(R.id.app_drawer_position, 3) <~ FuncOn.click { view: View =>
+      (appDrawer4 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 3) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       })
 
@@ -192,6 +203,10 @@ trait LauncherComposer
     (menuName <~ tvText(userInfo.email)) ~
       (menuAvatar <~ ivUri(userInfo.imageUrl))
 
+  def addCollection(collection: Collection)
+    (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+    (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
+
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
 
   def isMenuVisible: Boolean = drawerLayout exists (_.isDrawerOpen(GravityCompat.START))
@@ -201,12 +216,14 @@ trait LauncherComposer
       (paginationPanel <~ reloadPager(page)) ~
       closeMenu()
 
-  def backByPriority(implicit context: ActivityContextWrapper): Ui[_] = if (isMenuVisible) {
+  def backByPriority(implicit context: ActivityContextWrapper, manager: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] = if (isMenuVisible) {
     closeMenu()
   } else if (fabMenuOpened) {
     swapFabButton()
   } else if (isDrawerVisible) {
     revealOutDrawer
+  } else if (isActionShowed) {
+    unrevealActionFragment
   } else {
     Ui.nop
   }
@@ -229,9 +246,10 @@ trait LauncherComposer
     execute(card.intent)
   }
 
-  private[this] def getItemsForFabMenu(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Seq(
-    getUi(w[FabItemMenu] <~ fabButtonCreateCollectionStyle <~ On.click {
-      uiShortToast("Create Collection")
+  private[this] def getItemsForFabMenu(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]) = Seq(
+    getUi(w[FabItemMenu] <~ fabButtonCreateCollectionStyle <~ FuncOn.click {
+      view: View =>
+        showAction(f[NewCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection))
     }),
     getUi(w[FabItemMenu] <~ fabButtonMyCollectionsStyle <~ On.click {
       uiShortToast("My Collections")
@@ -251,6 +269,17 @@ trait LauncherComposer
       paginationPanel <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
+  private[this] def reloadPagerAndActiveLast(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+    workspaces map { ws =>
+      val count = ws.getWorksSpacesCount
+      val pagerViews = 0 until count map { position =>
+        val view = pagination(position)
+        view.setActivated(count - 1 == position)
+        view
+      }
+      paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
+    } getOrElse Ui.nop
+
   private[this] def fillAppDrawer(collections: Seq[Collection])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = Transformer {
     case i: ImageView if tagEquals(i, R.id.`type`, LauncherTags.app) => {
       val position = Int.unbox(i.getTag(R.id.app_drawer_position))
@@ -267,5 +296,24 @@ trait LauncherComposer
   private[this] def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
     w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
+
+  private[this] def showAction[F <: BaseActionFragment]
+  (fragmentBuilder: FragmentBuilder[F], view: View, color: Int, map: Map[String, String] = Map.empty)
+    (implicit context: ActivityContextWrapper, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] = {
+    val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
+    val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
+    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
+    val (endX: Int, endY: Int) = fabButton map calculateAnchorViewPosition getOrElse(0, 0)
+    val args = new Bundle()
+    args.putInt(BaseActionFragment.startRevealPosX, startX + (sizeIconFabMenuItem / 2))
+    args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
+    args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
+    args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
+    map foreach (item => args.putString(item._1, item._2))
+    args.putInt(BaseActionFragment.colorPrimary, color)
+    swapFabButton(doUpdateBars = false) ~
+      (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~
+      addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
+  }
 
 }

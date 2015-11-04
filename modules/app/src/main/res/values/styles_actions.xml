@@ -41,6 +41,18 @@
         <item name="android:layout_weight">1</item>
     </style>
 
+    <style name="BaseActionsFabButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_top_fab_button</item>
+        <item name="android:layout_marginRight">@dimen/margin_fab_button</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="borderWidth">0dp</item>
+        <item name="elevation">@dimen/elevation_fab_button</item>
+        <item name="pressedTranslationZ">@dimen/elevation_fab_button_pressed</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
     <!-- Content -->
 
     <style name="ActionsListContent">
@@ -63,5 +75,15 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
     </style>
+
+    <!-- Fragment Content -->
+
+    <style name="ActionsFragmentContentParent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="ActionsFragmentContent" parent="ActionsFragmentContentParent" />
 
 </resources>

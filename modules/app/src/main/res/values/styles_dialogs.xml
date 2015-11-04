@@ -46,4 +46,45 @@
         <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
+    <!-- Dialog Icon Info -->
+
+    <style name="DialogIconInfoRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="DialogIconInfoName">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:drawablePadding">@dimen/padding_large</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="DialogIconInfoSelect">
+        <item name="android:layout_width">@dimen/size_icon_select_new_collection</item>
+        <item name="android:layout_height">@dimen/size_icon_select_new_collection</item>
+    </style>
+
+    <!-- Dialog Color Info -->
+
+    <style name="DialogColorInfoRoot">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="DialogColorInfoImage">
+        <item name="android:layout_width">@dimen/size_icon_color_dialog</item>
+        <item name="android:layout_height">@dimen/size_icon_color_dialog</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
 </resources>

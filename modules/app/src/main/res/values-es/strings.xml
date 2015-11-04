@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- General -->
     <string name="edit">Editar</string>
     <string name="make_public">Hacer Pública</string>
     <string name="share">Compartir</string>
     <string name="loading">Cargando</string>
     <string name="contactUsError">Opps! Por favor contacta con nosotros si este problema persiste</string>
+    <string name="formFieldError">¿Es posible que falte algo en el formulario?</string>
 
     <!-- Menu -->
     <string name="collectionsTitle">Colecciones</string>
@@ -60,9 +62,14 @@
 
     <!-- Collections -->
 
-    <string name="create_new_collection">Crear nueva colección</string>
-    <string name="my_collections">Mis colecciones</string>
-    <string name="public_collections">Colecciones Públicas</string>
+    <string name="createNewCollection">Crear nueva colección</string>
+    <string name="myCollections">Mis colecciones</string>
+    <string name="publicCollections">Colecciones Públicas</string>
+
+    <string name="newCollection">Nueva colección</string>
+    <string name="collectionName">Nombre de la colección</string>
+    <string name="selectIcon">Seleccionar icono</string>
+    <string name="selectColor">Seleccionar color</string>
 
     <!-- Collections Detail -->
 
