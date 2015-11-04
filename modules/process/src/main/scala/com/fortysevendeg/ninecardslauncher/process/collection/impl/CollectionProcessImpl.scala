@@ -3,11 +3,13 @@ package com.fortysevendeg.ninecardslauncher.process.collection.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
+import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
@@ -33,10 +35,11 @@ class CollectionProcessImpl(
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
   }.resolve[CollectionException]
 
-  override def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) = Service {
-    val tasks = toAddCollectionRequestByFormedCollection(fillImageUri(items)) map (persistenceServices.addCollection(_).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
-  }.resolve[CollectionException]
+  override def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
+    (for {
+      apps <- appsServices.getInstalledApplications
+      collections <- createCollectionsAndFillData(items, apps)
+    } yield collections).resolve[CollectionException]
 
   override def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
 
@@ -109,6 +112,12 @@ class CollectionProcessImpl(
       card = toCardSeq(toInstalledApp(cardsNoInstalled, app))
       _ <- updateCardList(toCardSeq(toInstalledApp(cardsNoInstalled, app)))
     } yield ()).resolve[CardException]
+
+  private[this] def createCollectionsAndFillData(items: Seq[FormedCollection], apps: Seq[Application])
+    (implicit context: ContextSupport): ServiceDef2[List[Collection], PersistenceServiceException] = Service {
+    val tasks = toAddCollectionRequestByFormedCollection(fillImageUri(items, apps)) map (persistenceServices.addCollection(_).run)
+    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
+  }
 
   private[this] def getCardsByCollectionId(collectionId: Int) = (
     persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]
