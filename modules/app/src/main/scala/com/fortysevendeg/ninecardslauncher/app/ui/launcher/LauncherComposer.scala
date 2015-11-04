@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.content.{Context, Intent}
 import android.os.Bundle
-import android.speech.RecognizerIntent
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
@@ -161,12 +160,8 @@ trait LauncherComposer
       (burgerIcon <~ burgerButtonStyle <~ On.click(
         drawerLayout <~ dlOpenDrawer
       )) ~
-      (googleIcon <~ googleButtonStyle <~ On.click(
-        uiStartIntent(new Intent(Intent.ACTION_WEB_SEARCH))
-      )) ~
-      (micIcon <~ micButtonStyle <~ On.click(
-        uiStartIntent(new Intent(RecognizerIntent.ACTION_WEB_SEARCH))
-      )) ~
+      (googleIcon <~ googleButtonStyle <~ On.click(Ui(launchSearch))) ~
+      (micIcon <~ micButtonStyle <~ On.click(Ui(launchVoiceSearch))) ~
       (appDrawer1 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 0) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
