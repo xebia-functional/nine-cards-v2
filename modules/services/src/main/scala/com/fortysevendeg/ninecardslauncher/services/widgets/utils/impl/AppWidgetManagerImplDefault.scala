@@ -18,39 +18,28 @@ class AppWidgetManagerImplDefault(implicit contextSupport: ContextSupport)
 
   lazy val packageManager: PackageManager = contextSupport.getPackageManager
 
-  override def getAllProviders = {
-    for {
-      appWidgetProviderInfo <- getAppWidgetManager.getInstalledProviders.toSeq
-      label = getLabel(appWidgetProviderInfo)
-      iconImage = getIconImage(appWidgetProviderInfo)
-      previewImageView = getPreviewImage(appWidgetProviderInfo)
-      userProfile = getUser(appWidgetProviderInfo)
-    } yield toWidget(appWidgetProviderInfo, label, previewImageView, previewImageView, userProfile)
+  override def getAllProviders = getAppWidgetProviderInfo map { appWidgetProviderInfo =>
+    val label = getLabel(appWidgetProviderInfo)
+    val iconImage = getIconImage(appWidgetProviderInfo)
+    val previewImageView = getPreviewImage(appWidgetProviderInfo)
+    val userHashCode = getUser(appWidgetProviderInfo)
+    toWidget(appWidgetProviderInfo, label, iconImage, previewImageView, userHashCode)
   }
 
-  override def getUser(info: AppWidgetProviderInfo) = {
+  protected def getAppWidgetProviderInfo = AppWidgetManager.getInstance(contextSupport.context).getInstalledProviders.toSeq
+
+  protected def getLabel(info: AppWidgetProviderInfo) = info.label.trim
+
+  protected def getIconImage(info: AppWidgetProviderInfo) = getFullResIcon(info.provider.getPackageName, info.icon)
+
+  protected def getPreviewImage(info: AppWidgetProviderInfo) = Option(packageManager.getDrawable(info.provider.getPackageName, info.previewImage, null))
+
+  protected def getUser(info: AppWidgetProviderInfo) =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) Option(android.os.Process.myUserHandle.hashCode)
     else None
-  }
 
-  private[this] def getLabel(info: AppWidgetProviderInfo): String = {
-    info.label.trim
-  }
-
-  private[this] def getIconImage(info: AppWidgetProviderInfo): Drawable = {
-    getFullResIcon(info.provider.getPackageName, info.icon)
-  }
-
-  private[this] def getFullResIcon(packageName: String, iconId: Int): Drawable = {
-    packageManager.getResourcesForApplication(packageName).
+  private[this] def getFullResIcon(packageName: String, iconId: Int) = packageManager.getResourcesForApplication(packageName).
       getDrawableForDensity(iconId, getActivityManager.getLauncherLargeIconDensity)
-  }
-
-  private[this] def getAppWidgetManager = AppWidgetManager.getInstance(contextSupport.context)
-
-  private[this] def getPreviewImage(info: AppWidgetProviderInfo): Drawable = {
-    packageManager.getDrawable(info.provider.getPackageName, info.previewImage, null)
-  }
 
   private[this] def getActivityManager = contextSupport.context.getSystemService(Context.ACTIVITY_SERVICE).asInstanceOf[ActivityManager]
 }

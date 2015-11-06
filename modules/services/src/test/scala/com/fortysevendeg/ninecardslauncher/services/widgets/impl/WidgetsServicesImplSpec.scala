@@ -17,10 +17,10 @@ trait WidgetsImplSpecification
     extends Scope
     with WidgetsServicesImplData {
 
-    val contextSupport = mock[ContextSupport]
-    val packageManager = mock[PackageManager]
+    val mockContextSupport = mock[ContextSupport]
+    val mockPackageManager = mock[PackageManager]
 
-    contextSupport.getPackageManager returns packageManager
+    mockContextSupport.getPackageManager returns mockPackageManager
 
     val mockAppWidgetManager = mock[AppWidgetManagerImplDefault]
     mockAppWidgetManager.getAllProviders returns seqWidget
@@ -49,7 +49,7 @@ class WidgetsServicesImplSpec
 
   "returns the list of widgets" in
     new WidgetsImplScope {
-      val result = widgetsServicesImpl.getWidgets(contextSupport).run.run
+      val result = widgetsServicesImpl.getWidgets(mockContextSupport).run.run
       result must beLike {
         case Answer(resultWidgetsList) => resultWidgetsList shouldEqual seqWidget
       }
@@ -57,7 +57,7 @@ class WidgetsServicesImplSpec
 
   "returns an WidgetException when no widgets exist" in
     new WidgetsImplScope with WidgetsErrorScope {
-      val result = widgetsServicesImpl.getWidgets(contextSupport).run.run
+      val result = widgetsServicesImpl.getWidgets(mockContextSupport).run.run
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
           case (_, (_, widgetsException)) => widgetsException must beLike {

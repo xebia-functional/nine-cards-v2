@@ -4,7 +4,7 @@ import android.appwidget.{AppWidgetManager, AppWidgetProviderInfo}
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable. Drawable
-import android.os.UserManager
+import android.os.{UserHandle, UserManager}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Conversions, Widget}
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
@@ -19,31 +19,27 @@ class AppWidgetManagerImplLollipop(implicit contextSupport: ContextSupport)
 
   override def getAllProviders: Seq[Widget] = {
     for {
-      user <- getUserManager.getUserProfiles.toSeq
-      appWidgetProviderInfo <- getAppWidgetManager.getInstalledProvidersForProfile(user).toSeq
-      label = getLabel(appWidgetProviderInfo)
-      iconImage = getIconImage(appWidgetProviderInfo)
-      previewImageView = getPreviewImage(appWidgetProviderInfo)
-      userProfile = getUser(appWidgetProviderInfo)
-    } yield toWidget(appWidgetProviderInfo, label, iconImage, previewImageView, userProfile)
+      userHandle <- getUserHandle
+      appWidgetProviderInfo <- getAppWidgetProviderInfo(userHandle)
+    } yield {
+      val label = getLabel(appWidgetProviderInfo)
+      val iconImage = getIconImage(appWidgetProviderInfo)
+      val previewImageView = getPreviewImage(appWidgetProviderInfo)
+      val userHashCode = getUser(appWidgetProviderInfo)
+      toWidget(appWidgetProviderInfo, label, iconImage, previewImageView, userHashCode)
+    }
   }
 
-  override def getUser(info: AppWidgetProviderInfo) = Option(android.os.Process.myUserHandle.hashCode)
+  protected def getUserHandle = contextSupport.context.getSystemService(Context.USER_SERVICE).asInstanceOf[UserManager].getUserProfiles.toSeq
 
-  private[this] def getLabel(info: AppWidgetProviderInfo): String = {
-    info.loadLabel(packageManager)
-  }
+  protected def getAppWidgetProviderInfo(userHandle: UserHandle) = AppWidgetManager.getInstance(contextSupport.context).getInstalledProvidersForProfile(userHandle).toSeq
 
-  private[this] def getIconImage(info: AppWidgetProviderInfo): Drawable = {
-    info.loadIcon(contextSupport.context, 0)
-  }
+  protected def getLabel(implicit info: AppWidgetProviderInfo) = info.loadLabel(packageManager)
 
-  private[this] def getPreviewImage(info: AppWidgetProviderInfo): Drawable = {
-    info.loadPreviewImage(contextSupport.context, 0)
-  }
+  protected def getIconImage(implicit info: AppWidgetProviderInfo) = info.loadIcon(contextSupport.context, 0)
 
-  private[this] def getAppWidgetManager = AppWidgetManager.getInstance(contextSupport.context)
+  protected def getPreviewImage(implicit info: AppWidgetProviderInfo) = Option(info.loadPreviewImage(contextSupport.context, 0))
 
-  private[this] def getUserManager = contextSupport.context.getSystemService(Context.USER_SERVICE).asInstanceOf[UserManager]
+  protected def getUser(implicit info: AppWidgetProviderInfo) = Option(android.os.Process.myUserHandle.hashCode)
 
 }

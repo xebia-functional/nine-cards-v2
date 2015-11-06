@@ -1,11 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.services.widgets.impl
+package com.fortysevendeg.ninecardslauncher.services.widgets.impl.utils.impl
 
 import android.graphics.drawable.Drawable
+import com.fortysevendeg.ninecardslauncher.services.widgets.impl.TestDrawable
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Widget
 
 import scala.util.Random
 
-trait WidgetsServicesImplData {
+trait AppWidgetManagerData {
 
   val userHashCode: Int = Random.nextInt(10)
   val autoAdvanceViewId: Int = Random.nextInt(10)
@@ -47,7 +48,7 @@ trait WidgetsServicesImplData {
       initialLayout = initialLayout,
       minHeight = minHeight,
       minResizeHeight = minResizeHeight,
-      minResizeWidth = minResizeHeight,
+      minResizeWidth = minResizeWidth,
       minWidth = minWidth,
       className = className,
       packageName = packageName,

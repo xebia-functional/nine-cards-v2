@@ -16,7 +16,7 @@ case class Widget (
   updatePeriodMillis: Int,
   label: String,
   icon: Drawable,
-  preview: Drawable)
+  preview: Option[Drawable])
 
 
 

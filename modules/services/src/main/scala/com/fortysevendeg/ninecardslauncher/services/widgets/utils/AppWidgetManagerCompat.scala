@@ -10,6 +10,4 @@ trait AppWidgetManagerCompat {
 
   def getAllProviders: Seq[Widget]
 
-  def getUser(info: AndroidAppWidgetProviderInfo): Option[Int]
-
 }

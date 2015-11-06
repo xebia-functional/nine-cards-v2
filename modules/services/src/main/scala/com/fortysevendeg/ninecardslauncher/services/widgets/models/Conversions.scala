@@ -5,21 +5,25 @@ import android.graphics.drawable.Drawable
 
 trait Conversions {
 
-  def toWidget(androidAppWidgetProviderInfo: AndroidAppWidgetProviderInfo, label: String, iconImage: Drawable,
-    previewImageView: Drawable, userProfile: Option[Int]): Widget =
-    Widget(
-      userHashCode = Option(userProfile.hashCode),
-      autoAdvanceViewId = androidAppWidgetProviderInfo.autoAdvanceViewId,
-      initialLayout = androidAppWidgetProviderInfo.initialLayout,
-      minHeight = androidAppWidgetProviderInfo.minHeight,
-      minResizeHeight = androidAppWidgetProviderInfo.minResizeHeight,
-      minResizeWidth = androidAppWidgetProviderInfo.minResizeWidth,
-      minWidth = androidAppWidgetProviderInfo.minWidth,
-      className = androidAppWidgetProviderInfo.provider.getClassName,
-      packageName = androidAppWidgetProviderInfo.provider.getPackageName,
-      resizeMode = androidAppWidgetProviderInfo.autoAdvanceViewId,
-      updatePeriodMillis = androidAppWidgetProviderInfo.autoAdvanceViewId,
-      label = label,
-      icon = iconImage,
-      preview = previewImageView)
+  def toWidget(androidAppWidgetProviderInfo: AndroidAppWidgetProviderInfo, widgetLabel: String, iconImage: Drawable,
+    previewImageView: Option[Drawable], userHashCode: Option[Int]): Widget = {
+
+      import androidAppWidgetProviderInfo._
+
+      Widget(
+        userHashCode = userHashCode,
+        autoAdvanceViewId = autoAdvanceViewId,
+        initialLayout = initialLayout,
+        minHeight = minHeight,
+        minResizeHeight = minResizeHeight,
+        minResizeWidth = minResizeWidth,
+        minWidth = minWidth,
+        className = provider.getClassName,
+        packageName = provider.getPackageName,
+        resizeMode = resizeMode,
+        updatePeriodMillis = updatePeriodMillis,
+        label = widgetLabel,
+        icon = iconImage,
+        preview = previewImageView)
+    }
 }
