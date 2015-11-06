@@ -1,12 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.device._
+import com.fortysevendeg.ninecardslauncher.process.device.models.Widget
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
@@ -16,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServices, ImplicitsPersistenceServiceExceptions, AddAppRequest, PersistenceServiceException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
+import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetsServices
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -26,7 +29,8 @@ class DeviceProcessImpl(
   persistenceServices: PersistenceServices,
   shortcutsServices: ShortcutsServices,
   contactsServices: ContactsServices,
-  imageServices: ImageServices)
+  imageServices: ImageServices,
+  widgetsServices: WidgetsServices)
   extends DeviceProcess
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
@@ -115,6 +119,11 @@ class DeviceProcessImpl(
     (for {
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
+
+  override def getWidgets(implicit context: ContextSupport) =
+    (for {
+      widgets <- widgetsServices.getWidgets
+    } yield widgets map toWidget).resolve[WidgetException]
 
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
