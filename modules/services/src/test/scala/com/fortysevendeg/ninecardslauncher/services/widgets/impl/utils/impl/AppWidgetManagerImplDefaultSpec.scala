@@ -83,19 +83,22 @@ trait AppWidgetManagerDefaultImplSpecification
 
 }
 
-class AppWidgetManagerDefaultServicesImplSpec
+class AppWidgetManagerDefaultImplSpec
   extends  AppWidgetManagerDefaultImplSpecification {
 
-  "returns the list of widgets" in
-    new AppWidgetManagerDefaultImplScope {
-      val result = appWidgetManagerImplDefault.getAllProviders
-      result shouldEqual seqWidget
-    }
+  "Get All Providers" should {
 
-  "returns an empty list when no AppWidgetProviderInfo is found" in
-    new AppWidgetManagerDefaultImplScope with AppWidgetManagerDefaultErrorScope {
-      val result = appWidgetManagerImplDefault.getAllProviders
-      result shouldEqual Nil
-    }
+    "returns the list of widgets" in
+      new AppWidgetManagerDefaultImplScope {
+        val result = appWidgetManagerImplDefault.getAllProviders
+        result shouldEqual seqWidget
+      }
+
+    "returns an empty list when no AppWidgetProviderInfo is found" in
+      new AppWidgetManagerDefaultImplScope with AppWidgetManagerDefaultErrorScope {
+        val result = appWidgetManagerImplDefault.getAllProviders
+        result shouldEqual Nil
+      }
+  }
 
 }
