@@ -1,12 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
+import android.graphics.drawable.Drawable
+import com.fortysevendeg.ninecardslauncher.process.device.WidgetResizeMode
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{WidgetDimensions, Widget, App}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 
 trait DeviceProcessData {
@@ -64,6 +67,57 @@ trait DeviceProcessData {
   val dateUpdate4 = 1L
   val version4 = "22"
   val installedFromGooglePlay4 = true
+
+  val userHashCode1 = 1
+  val autoAdvanceViewId1 = 1
+  val initialLayout1 = 1
+  val minHeight1 = 40
+  val minResizeHeight1 = 40
+  val minResizeWidth1 = 40
+  val minWidth1 = 40
+  val numCells1 = 1
+  val resizeMode1 = 1
+  val updatePeriodMillis1 = 1
+  val label1 = "label1"
+  val icon1: Drawable = new TestDrawable
+  val preview1: Drawable = new TestDrawable
+
+  val userHashCodeOption1 = Option(userHashCode1)
+  val previewOption1 = Option(preview1)
+
+  val userHashCode2 = 2
+  val autoAdvanceViewId2 = 2
+  val initialLayout2 = 2
+  val minHeight2 = 110
+  val minResizeHeight2 = 110
+  val minResizeWidth2 = 110
+  val minWidth2 = 110
+  val numCells2 = 2
+  val resizeMode2 = 2
+  val updatePeriodMillis2 = 2
+  val label2 = "label2"
+  val icon2: Drawable = new TestDrawable
+  val preview2: Drawable = new TestDrawable
+
+  val userHashCodeOption2 = Option(userHashCode2)
+  val previewOption2 = Option(preview2)
+
+  val userHashCode3 = 3
+  val autoAdvanceViewId3 = 3
+  val initialLayout3 = 3
+  val minHeight3 = 180
+  val minResizeHeight3 = 180
+  val minResizeWidth3 = 180
+  val minWidth3 = 180
+  val numCells3 = 3
+  val resizeMode3 = 3
+  val updatePeriodMillis3 = 3
+  val label3 = "label3"
+  val icon3: Drawable = new TestDrawable
+  val preview3: Drawable = new TestDrawable
+
+  val userHashCodeOption3 = Option(userHashCode3)
+  val previewOption3 = Option(preview3)
 
   val applicationNoCached = Application(
     name = name4,
@@ -314,4 +368,105 @@ trait DeviceProcessData {
       )
     ))
 
+  val widgetsServices: Seq[WidgetServices] = Seq(
+    WidgetServices(
+      userHashCode = userHashCodeOption1,
+      autoAdvanceViewId = autoAdvanceViewId1,
+      initialLayout = initialLayout1,
+      minHeight = minHeight1,
+      minResizeHeight = minResizeHeight1,
+      minResizeWidth = minResizeWidth1,
+      minWidth = minWidth1,
+      className = className1,
+      packageName = packageName1,
+      resizeMode = resizeMode1,
+      updatePeriodMillis = updatePeriodMillis1,
+      label = label1,
+      icon = icon1,
+      preview = previewOption1),
+    WidgetServices(
+      userHashCode = userHashCodeOption2,
+      autoAdvanceViewId = autoAdvanceViewId2,
+      initialLayout = initialLayout2,
+      minHeight = minHeight2,
+      minResizeHeight = minResizeHeight2,
+      minResizeWidth = minResizeWidth2,
+      minWidth = minWidth2,
+      className = className2,
+      packageName = packageName2,
+      resizeMode = resizeMode2,
+      updatePeriodMillis = updatePeriodMillis2,
+      label = label2,
+      icon = icon2,
+      preview = previewOption2),
+    WidgetServices(
+      userHashCode = userHashCodeOption3,
+      autoAdvanceViewId = autoAdvanceViewId3,
+      initialLayout = initialLayout3,
+      minHeight = minHeight3,
+      minResizeHeight = minResizeHeight3,
+      minResizeWidth = minResizeWidth3,
+      minWidth = minWidth3,
+      className = className3,
+      packageName = packageName3,
+      resizeMode = resizeMode3,
+      updatePeriodMillis = updatePeriodMillis3,
+      label = label3,
+      icon = icon3,
+      preview = previewOption3)
+  )
+
+  val widgets: Seq[Widget] = Seq(
+    Widget(
+      userHashCode = userHashCodeOption1,
+      autoAdvanceViewId = autoAdvanceViewId1,
+      initialLayout = initialLayout1,
+      dimensions = WidgetDimensions(
+        minHeight = numCells1,
+        minResizeHeight = numCells1,
+        minResizeWidth = numCells1,
+        minWidth = numCells1
+      ),
+      className = className1,
+      packageName = packageName1,
+      resizeMode = WidgetResizeMode(resizeMode1),
+      updatePeriodMillis = updatePeriodMillis1,
+      label = label1,
+      icon = icon1,
+      preview = previewOption1),
+    Widget(
+      userHashCode = userHashCodeOption2,
+      autoAdvanceViewId = autoAdvanceViewId2,
+      initialLayout = initialLayout2,
+      dimensions = WidgetDimensions(
+        minHeight = numCells2,
+        minResizeHeight = numCells2,
+        minResizeWidth = numCells2,
+        minWidth = numCells2
+      ),
+      className = className2,
+      packageName = packageName2,
+      resizeMode = WidgetResizeMode(resizeMode2),
+      updatePeriodMillis = updatePeriodMillis2,
+      label = label2,
+      icon = icon2,
+      preview = previewOption2),
+    Widget(
+      userHashCode = userHashCodeOption3,
+      autoAdvanceViewId = autoAdvanceViewId3,
+      initialLayout = initialLayout3,
+      dimensions = WidgetDimensions(
+        minHeight = numCells3,
+        minResizeHeight = numCells3,
+        minResizeWidth = numCells3,
+        minWidth = numCells3
+      ),
+      className = className3,
+      packageName = packageName3,
+      resizeMode = WidgetResizeMode(resizeMode3),
+      updatePeriodMillis = updatePeriodMillis3,
+      label = label3,
+      icon = icon3,
+      preview = previewOption3)
+  )
 }
