@@ -714,7 +714,7 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns AppException if WidgetServices fail getting the Widgets " in
+    "returns WidgetException if WidgetServices fail getting the Widgets " in
       new DeviceProcessScope with WidgetsErrorScope {
         val result = deviceProcess.getWidgets(contextSupport).run.run
         result must beLike {
