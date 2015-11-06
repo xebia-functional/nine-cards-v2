@@ -4,7 +4,6 @@ import android.app.ActivityManager
 import android.appwidget.{AppWidgetManager, AppWidgetProviderInfo}
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.os.Build
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions

@@ -3,7 +3,8 @@ package com.fortysevendeg.ninecardslauncher.services.widgets.impl
 import android.content.pm.PackageManager
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetServicesException
-import com.fortysevendeg.ninecardslauncher.services.widgets.utils.impl.{AppWidgetManagerImplLollipop, AppWidgetManagerImplDefault}
+import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
+import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -22,7 +23,7 @@ trait WidgetsImplSpecification
 
     mockContextSupport.getPackageManager returns mockPackageManager
 
-    val mockAppWidgetManager = mock[AppWidgetManagerImplDefault]
+    val mockAppWidgetManager = mock[AppWidgetManagerCompat with Conversions]
     mockAppWidgetManager.getAllProviders returns seqWidget
 
     val widgetsServicesImpl = new WidgetsServicesImpl {
