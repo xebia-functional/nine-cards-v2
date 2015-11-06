@@ -53,9 +53,9 @@ case class Widget (
   preview: Option[Drawable])
 
 case class WidgetDimensions(
-  minHeight: Int,
-  minResizeHeight: Int,
-  minResizeWidth: Int,
-  minWidth: Int)
+  minCellHeight: Int,
+  minResizeCellHeight: Int,
+  minResizeCellWidth: Int,
+  minCellWidth: Int)
 
 

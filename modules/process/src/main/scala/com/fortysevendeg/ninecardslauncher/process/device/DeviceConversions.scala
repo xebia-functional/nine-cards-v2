@@ -128,12 +128,12 @@ trait DeviceConversions {
     icon = item.icon,
     preview = item.preview)
 
-  def toWidgetDimensions(minHeight: Int, minResizeHeight: Int, minResizeWidth: Int, minWidth: Int): WidgetDimensions =
+  def toWidgetDimensions(minDPHeight: Int, minResizeDPHeight: Int, minResizeDPWidth: Int, minDPWidth: Int): WidgetDimensions =
     WidgetDimensions(
-      minHeight = toCell(minHeight),
-      minResizeHeight = toCell(minHeight),
-      minResizeWidth = toCell(minHeight),
-      minWidth = toCell(minHeight))
+      minCellHeight = toCell(minDPHeight),
+      minResizeCellHeight = toCell(minResizeDPHeight),
+      minResizeCellWidth = toCell(minResizeDPWidth),
+      minCellWidth = toCell(minDPWidth))
 
   private[this] def toCell(size: Int): Int = (size + margins) / cellSize
 

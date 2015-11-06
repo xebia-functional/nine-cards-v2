@@ -422,10 +422,10 @@ trait DeviceProcessData {
       autoAdvanceViewId = autoAdvanceViewId1,
       initialLayout = initialLayout1,
       dimensions = WidgetDimensions(
-        minHeight = numCells1,
-        minResizeHeight = numCells1,
-        minResizeWidth = numCells1,
-        minWidth = numCells1
+        minCellHeight = numCells1,
+        minResizeCellHeight = numCells1,
+        minResizeCellWidth = numCells1,
+        minCellWidth = numCells1
       ),
       className = className1,
       packageName = packageName1,
@@ -439,10 +439,10 @@ trait DeviceProcessData {
       autoAdvanceViewId = autoAdvanceViewId2,
       initialLayout = initialLayout2,
       dimensions = WidgetDimensions(
-        minHeight = numCells2,
-        minResizeHeight = numCells2,
-        minResizeWidth = numCells2,
-        minWidth = numCells2
+        minCellHeight = numCells2,
+        minResizeCellHeight = numCells2,
+        minResizeCellWidth = numCells2,
+        minCellWidth = numCells2
       ),
       className = className2,
       packageName = packageName2,
@@ -456,10 +456,10 @@ trait DeviceProcessData {
       autoAdvanceViewId = autoAdvanceViewId3,
       initialLayout = initialLayout3,
       dimensions = WidgetDimensions(
-        minHeight = numCells3,
-        minResizeHeight = numCells3,
-        minResizeWidth = numCells3,
-        minWidth = numCells3
+        minCellHeight = numCells3,
+        minResizeCellHeight = numCells3,
+        minResizeCellWidth = numCells3,
+        minCellWidth = numCells3
       ),
       className = className3,
       packageName = packageName3,
