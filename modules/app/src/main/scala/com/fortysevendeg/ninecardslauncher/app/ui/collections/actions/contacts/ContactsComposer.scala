@@ -13,8 +13,8 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.ContactHeadered._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, HeaderUtils}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -25,7 +25,7 @@ import macroid.{Tweak, ActivityContextWrapper, Ui}
 
 trait ContactsComposer
   extends Styles
-  with HeaderUtils {
+  with HeaderGenerator {
 
   self: TypedFindView with BaseActionFragment =>
 

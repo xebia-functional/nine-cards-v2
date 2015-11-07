@@ -109,15 +109,17 @@ class LauncherActivity
     startActivityForResult(wizardIntent, wizard)
   }
 
-  private[this] def loadApps(appsMenuOption: AppsMenuOption): Unit =
-    Task.fork(di.deviceProcess.getSavedApps(toGetAppOrder(appsMenuOption)).run).resolveAsyncUi(
+  private[this] def loadApps(appsMenuOption: AppsMenuOption): Unit = {
+    val getAppOrder = toGetAppOrder(appsMenuOption)
+    Task.fork(di.deviceProcess.getSavedApps(getAppOrder).run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
-      onResult = (apps: Seq[App]) => addApps(apps, (app: App) => {
+      onResult = (apps: Seq[App]) => addApps(apps, getAppOrder, (app: App) => {
         execute(toNineCardIntent(app))
       }, (app: App) => {
         launchSettings(app.packageName)
       })
     )
+  }
 
   private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
     case AppsAlphabetical => GetByName

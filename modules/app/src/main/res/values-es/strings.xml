@@ -94,6 +94,10 @@
     <string name="contacts_alphabetical">Alfabético</string>
     <string name="contacts_favorites">Favoritos</string>
     <string name="contacts_last">Últimas llamadas</string>
+    <string name="apps_header_updated_1">Hoy</string>
+    <string name="apps_header_updated_2">Esta semana</string>
+    <string name="apps_header_updated_3">Este mes</string>
+    <string name="apps_header_updated_4">Más antiguas</string>
 
     <!-- Categories -->
 

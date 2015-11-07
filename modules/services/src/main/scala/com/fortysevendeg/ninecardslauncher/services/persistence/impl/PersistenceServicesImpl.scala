@@ -46,7 +46,7 @@ class PersistenceServicesImpl(
   val FilenameInstallation = "__installation_entity__"
 
   override def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {
-    val orderByString = s"${toStringOrderBy(orderBy)} COLLATE NOCASE ${if (ascending) "ASC" else "DESC"}"
+    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
 
     val appSeq = for {
       apps <- appRepository.fetchApps(orderByString)
@@ -56,9 +56,17 @@ class PersistenceServicesImpl(
   }
 
   private[this] def toStringOrderBy(orderBy: FetchAppOrder): String = orderBy match {
-    case OrderByName => AppEntity.name
+    case OrderByName => s"${AppEntity.name} COLLATE NOCASE"
     case OrderByUpdate => AppEntity.dateUpdate
     case OrderByCategory => AppEntity.category
+  }
+
+  private[this] def toStringDirection(ascending: Boolean): String =
+    if (ascending) "ASC" else "DESC"
+
+  private[this] def toSecondaryOrderBy(orderBy: FetchAppOrder): String = orderBy match {
+    case OrderByName => ""
+    case _ => s", ${AppEntity.name} COLLATE NOCASE ASC"
   }
 
   override def findAppByPackage(packageName: String) =
