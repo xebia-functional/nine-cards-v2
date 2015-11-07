@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessC
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigProcessImpl
@@ -19,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
 import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
+import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.squareup.{okhttp => okHttp}
@@ -63,7 +65,8 @@ class Injector(implicit contextSupport: ContextSupport) {
     appRepository = new AppRepository(contentResolverWrapper, uriCreator),
     cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
     collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
-    geoInfoRepository = new GeoInfoRepository(contentResolverWrapper, uriCreator))
+    geoInfoRepository = new GeoInfoRepository(contentResolverWrapper, uriCreator),
+    userRepository = new UserRepository(contentResolverWrapper, uriCreator))
 
   private[this] lazy val appsServices = new AppsServicesImpl()
 
@@ -85,6 +88,10 @@ class Injector(implicit contextSupport: ContextSupport) {
 
   // Process
 
+  lazy val recommendationsProcess = new RecommendationsProcessImpl(
+    apiServices = apiServices,
+    persistenceServices = persistenceServices)
+
   lazy val deviceProcess = new DeviceProcessImpl(
     appsService = appsServices,
     apiServices = apiServices,
@@ -105,7 +112,8 @@ class Injector(implicit contextSupport: ContextSupport) {
   lazy val collectionProcess = new CollectionProcessImpl(
     collectionProcessConfig = collectionProcessConfig,
     persistenceServices = persistenceServices,
-    contactsServices = contactsServices)
+    contactsServices = contactsServices,
+    appsServices = appsServices)
 
   lazy val userProcess = new UserProcessImpl(
     apiServices = apiServices,

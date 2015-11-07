@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 
 case class AppEntity(id: Int, data: AppEntityData)
 
@@ -71,20 +70,4 @@ object AppEntity {
        |${AppEntity.dateUpdate} INTEGER,
        |${AppEntity.version} TEXT not null,
        |${AppEntity.installedFromGooglePlay} INTEGER )""".stripMargin
-}
-
-object AppEntityData {
-
-  def appEntityDataFromCursor(cursor: Cursor) =
-    AppEntityData(
-      name = cursor.getString(cursor.getColumnIndex(name)),
-      packageName = cursor.getString(cursor.getColumnIndex(packageName)),
-      className = cursor.getString(cursor.getColumnIndex(className)),
-      category = cursor.getString(cursor.getColumnIndex(category)),
-      imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
-      colorPrimary = cursor.getString(cursor.getColumnIndex(colorPrimary)),
-      dateInstalled = cursor.getLong(cursor.getColumnIndex(dateInstalled)),
-      dateUpdate = cursor.getLong(cursor.getColumnIndex(dateUpdate)),
-      version = cursor.getString(cursor.getColumnIndex(version)),
-      installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0)
 }

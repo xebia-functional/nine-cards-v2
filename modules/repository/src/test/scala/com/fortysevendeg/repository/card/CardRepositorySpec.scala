@@ -6,7 +6,6 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.repository._
@@ -73,6 +72,17 @@ trait CardRepositorySpecification
     contentResolverWrapper.updateById(uri = mockUri, id = card.id, values = createUpdateCardValues) returns 1
   }
 
+  trait ValidAllCardsRepositoryResponses
+    extends ValidCardRepositoryResponses {
+
+    self: CardRepositoryScope =>
+
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields)(
+      f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
+  }
+
   trait ErrorCardRepositoryResponses
     extends CardRepositoryTestData {
 
@@ -102,6 +112,17 @@ trait CardRepositorySpecification
     contentResolverWrapper.updateById(uri = mockUri, id = card.id, values = createUpdateCardValues) throws contentResolverException
   }
 
+  trait ErrorAllCardsRepositoryResponses
+    extends ErrorCardRepositoryResponses {
+
+    self: CardRepositoryScope =>
+
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields)(
+      f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
+  }
+
 }
 
 trait CardMockCursor
@@ -113,14 +134,14 @@ trait CardMockCursor
     (position, 1, cardSeq map (_.data.position), IntDataType),
     (collectionId, 2, cardSeq map (_ => testCollectionId), IntDataType),
     (term, 3, cardSeq map (_.data.term), StringDataType),
-    (packageName, 4, cardSeq map (_.data.packageName getOrElse ""), StringDataType),
+    (packageName, 4, cardSeq map (_.data.packageName orNull), StringDataType),
     (cardType, 5, cardSeq map (_.data.cardType), StringDataType),
     (intent, 6, cardSeq map (_.data.intent), StringDataType),
     (imagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
     (starRating, 8, cardSeq map (_.data.starRating getOrElse 0.0d), DoubleDataType),
     (micros, 9, cardSeq map (_.data.micros), IntDataType),
-    (numDownloads, 10, cardSeq map (_.data.numDownloads getOrElse ""), StringDataType),
-    (notification, 11, cardSeq map (_.data.notification getOrElse ""), StringDataType)
+    (numDownloads, 10, cardSeq map (_.data.numDownloads orNull), StringDataType),
+    (notification, 11, cardSeq map (_.data.notification orNull), StringDataType)
   )
 
   prepareCursor[Card](cardSeq.size, cursorData)
@@ -290,6 +311,36 @@ class CardRepositorySpec
           with ErrorCardRepositoryResponses {
 
           val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "fetchCards" should {
+
+      "return all Cards" in
+        new CardRepositoryScope
+          with ValidAllCardsRepositoryResponses {
+
+          val result = cardRepository.fetchCards.run.run
+
+          result must beLike {
+            case Answer(cards) =>
+              cards shouldEqual cardSeq
+          }
+        }
+
+      "return a NineCardsException when a exception is thrown" in
+        new CardRepositoryScope
+          with ErrorAllCardsRepositoryResponses {
+
+          val result = cardRepository.fetchCards.run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

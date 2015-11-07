@@ -25,12 +25,14 @@
     <dimen name="elevation_pressed">4dp</dimen>
     <dimen name="elevation_fab_button">6dp</dimen>
     <dimen name="elevation_fab_button_pressed">12dp</dimen>
+
     <dimen name="margin_fab_button">0dp</dimen>
     <dimen name="margin_horizontal_fab_button_item">7dp</dimen>
     <dimen name="margin_vertical_fab_button_item">12dp</dimen>
     <dimen name="size_fab_menu_item">40dp</dimen>
 
-    <dimen name="default_stroke">2dp</dimen>
+    <dimen name="stroke_default">2dp</dimen>
+    <dimen name="stroke_large">4dp</dimen>
 
     <dimen name="shadow_displacement_default">1dp</dimen>
     <dimen name="shadow_radius_default">1dp</dimen>
@@ -92,6 +94,18 @@
     <dimen name="height_simple_item">112dp</dimen>
 
     <dimen name="size_icon_app">52dp</dimen>
+
+    <dimen name="size_icon_recommendation">42dp</dimen>
+
+    <dimen name="height_screenshot">180dp</dimen>
+
+    <dimen name="height_select_new_collection">54dp</dimen>
+
+    <dimen name="size_icon_select_new_collection">28dp</dimen>
+
+    <dimen name="size_icon_color_dialog">60dp</dimen>
+
+    <dimen name="margin_top_fab_button">8dp</dimen>
 
     <!-- Fast Scroller -->
     <dimen name="fastscroller_text_size">40sp</dimen>

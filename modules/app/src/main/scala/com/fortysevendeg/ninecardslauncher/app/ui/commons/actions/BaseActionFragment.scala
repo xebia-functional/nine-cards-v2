@@ -11,11 +11,11 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiExtensions}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ActionsSnails._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
-import ActionsSnails._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -58,9 +58,13 @@ trait BaseActionFragment
 
   protected lazy val rootContent = Option(findView(TR.action_content_root))
 
+  protected lazy val fab = Option(findView(TR.action_content_fab))
+
   protected var rootView: Option[FrameLayout] = None
 
   def getLayoutId: Int
+
+  def useFab: Boolean = false
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, container, false).asInstanceOf[FrameLayout]
@@ -87,13 +91,15 @@ trait BaseActionFragment
     val ratioScaleToolbar = toolbar map (tb => tb.getHeight.toFloat / height.toFloat) getOrElse 0f
     (rootView <~~ revealIn(projection._1, projection._2, width, height)) ~~
       (transitionView <~~ scaleToToolbar(ratioScaleToolbar)) ~~
-      (rootContent <~~ showContent())
+      (rootContent <~~ showContent()) ~~
+      (if (useFab) fab <~~ showFab() else Ui.nop)
   }
 
   def unreveal(): Ui[_] = {
     val projection = rootView map (projectionScreenPositionInView(_, endPosX, endPosY)) getOrElse(defaultPosition, defaultPosition)
     onStartFinishAction ~ (rootView <~~ revealOut(projection._1, projection._2, width, height)) ~~ onEndFinishAction
   }
+
   override def onAttach(activity: Activity): Unit = {
     super.onAttach(activity)
     activity match {
@@ -122,5 +128,6 @@ object BaseActionFragment {
   val startRevealPosY = "start_reveal_pos_y"
   val endRevealPosX = "end_reveal_pos_x"
   val endRevealPosY = "end_reveal_pos_y"
+  val packages = "packages"
   val colorPrimary = "color_primary"
 }

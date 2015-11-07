@@ -3,12 +3,14 @@
         xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">9 Cards</string>
+
+    <!-- General -->
     <string name="edit">Edit</string>
     <string name="make_public">Make Public</string>
     <string name="share">Share</string>
     <string name="loading">Loading</string>
     <string name="contactUsError">Oops! Please contact us if this problem persists</string>
-
+    <string name="formFieldError">Is it possible to miss something in the form?</string><!-- Pending review language -->
     <string name="todo">TODO. Sorry. We are working in that</string>
 
     <!-- Menu -->
@@ -40,7 +42,7 @@
 
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
     <string name="goTo9Cards">Dive in!</string>
-    <string name="workingNotificationTitle">Wait a moment...</string>
+    <string name="workingNotificationTitle">Wait a moment…</string>
 
     <string name="downloadingAppsInfoMessage">Categorizing your apps</string>
     <string name="loadingAppsInfoMessage">Configuring your apps</string>
@@ -64,9 +66,14 @@
 
     <!-- Collections -->
 
-    <string name="create_new_collection">Create new collection</string>
-    <string name="my_collections">My collections</string>
-    <string name="public_collections">Public collections</string>
+    <string name="createNewCollection">Create new collection</string>
+    <string name="myCollections">My collections</string>
+    <string name="publicCollections">Public collections</string>
+
+    <string name="newCollection">New collection</string>
+    <string name="collectionName">Collection name</string>
+    <string name="selectIcon">Select icon</string>
+    <string name="selectColor">Select color</string>
 
     <!-- Collections Detail -->
 
@@ -90,6 +97,13 @@
     <string name="phones">Phone</string>
     <string name="sms">SMS</string>
     <string name="emails">Email</string>
+
+    <!-- Recommendations Action -->
+
+    <string name="recommendationError">This collection don\'t have applications and can\'t found recommendations</string>
+
+    <string name="installNow">Install now</string>
+    <string name="free">Free</string>
 
     <!-- Drawer -->
     <string name="apps_alphabetical">Alphabetical</string>

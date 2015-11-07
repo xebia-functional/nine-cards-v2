@@ -8,12 +8,13 @@ import android.support.v7.app.AppCompatActivity
 import android.view._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
@@ -36,6 +37,7 @@ class CollectionsDetailsActivity
   with ScrolledListener
   with ActionsScreenListener
   with SystemBarsTint
+  with BroadcastDispatcher
   with CollectionDetailsTasks {
 
   val tagDialog = "dialog"
@@ -53,6 +55,13 @@ class CollectionsDetailsActivity
   implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
     case Answer(t) => t
     case _ => getDefaultTheme
+  }
+
+  override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
+
+  override def manageCommand(action: String, data: Option[String]): Unit = (AppsActionFilter(action), data) match {
+    case (AppInstalledActionFilter, _) => reloadCards()
+    case _ =>
   }
 
   override def onCreate(bundle: Bundle) = {
@@ -101,11 +110,17 @@ class CollectionsDetailsActivity
       )
     }
 
+    registerDispatchers
   }
 
   override def onPause(): Unit = {
     super.onPause()
     overridePendingTransition(0, 0)
+  }
+
+  override def onDestroy(): Unit = {
+    super.onDestroy()
+    unregisterDispatcher
   }
 
   def ensureDrawCollection(position: Int): Ui[_] = if (collections.isEmpty) {
@@ -164,11 +179,7 @@ class CollectionsDetailsActivity
 
   override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
 
-  override def onBackPressed(): Unit = (fabMenuOpened, isActionShowed) match {
-    case (true, _) => runUi(swapFabButton())
-    case (_, true) => runUi(unrevealActionFragment())
-    case _ => runUi(exitTransition)
-  }
+  override def onBackPressed(): Unit = runUi(backByPriority)
 
   override def pullToClose(scroll: Int, scrollType: Int, close: Boolean): Unit =
     runUi(pullCloseScrollY(scroll, scrollType, close))
@@ -182,7 +193,7 @@ class CollectionsDetailsActivity
 
   override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
 
-  override def onEndFinishAction(): Unit = removeActionFragment()
+  override def onEndFinishAction(): Unit = removeActionFragment
 
   def addCards(cards: Seq[AddCardRequest]): Unit =
     getCurrentCollection foreach { collection =>
@@ -204,6 +215,15 @@ class CollectionsDetailsActivity
     })
     dialog.show(ft, tagDialog)
   }
+
+  def reloadCards(): Unit =
+    getCurrentCollection foreach { currentCollection =>
+      Task.fork(di.collectionProcess.getCollectionById(currentCollection.id).run).resolveAsync(
+        onResult = (c) => c map (newCollection => if (newCollection.cards != currentCollection.cards) {
+          reloadCardsToCurrentFragment(newCollection.cards)
+        })
+      )
+    }
 
   private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
     case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>

@@ -66,26 +66,26 @@ trait CardRepositoryTestData {
     CardEntity.position -> testPosition,
     CardEntity.collectionId -> testCollectionId,
     CardEntity.term -> testTerm,
-    CardEntity.packageName -> (testPackageNameOption getOrElse ""),
+    CardEntity.packageName -> (testPackageNameOption orNull),
     CardEntity.cardType -> testType,
     CardEntity.intent -> testIntent,
     CardEntity.imagePath -> testImagePath,
     CardEntity.starRating -> (testStarRatingOption getOrElse 0.0d),
     CardEntity.micros -> testMicros,
-    CardEntity.numDownloads -> (testNumDownloadsOption getOrElse ""),
-    CardEntity.notification -> (testNotificationOption getOrElse ""))
+    CardEntity.numDownloads -> (testNumDownloadsOption orNull),
+    CardEntity.notification -> (testNotificationOption orNull))
 
   def createUpdateCardValues = Map[String, Any](
     CardEntity.position -> testPosition,
     CardEntity.term -> testTerm,
-    CardEntity.packageName -> (testPackageNameOption getOrElse ""),
+    CardEntity.packageName -> (testPackageNameOption orNull),
     CardEntity.cardType -> testType,
     CardEntity.intent -> testIntent,
     CardEntity.imagePath -> testImagePath,
     CardEntity.starRating -> (testStarRatingOption getOrElse 0.0d),
     CardEntity.micros -> testMicros,
-    CardEntity.numDownloads -> (testNumDownloadsOption getOrElse ""),
-    CardEntity.notification -> (testNotificationOption getOrElse ""))
+    CardEntity.numDownloads -> (testNumDownloadsOption orNull),
+    CardEntity.notification -> (testNotificationOption orNull))
 
   def createCardData = CardData(
     position = testPosition,

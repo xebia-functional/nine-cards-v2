@@ -157,10 +157,10 @@ trait CollectionMockCursor
     (collectionType, 3, collectionSeq map (_.data.collectionType), StringDataType),
     (icon, 4, collectionSeq map (_.data.icon), StringDataType),
     (themedColorIndex, 5, collectionSeq map (_.data.themedColorIndex), IntDataType),
-    (appsCategory, 6, collectionSeq map (_.data.appsCategory getOrElse ""), StringDataType),
-    (constrains, 7, collectionSeq map (_.data.constrains getOrElse ""), StringDataType),
-    (originalSharedCollectionId, 8, collectionSeq map (_.data.originalSharedCollectionId getOrElse ""), StringDataType),
-    (sharedCollectionId, 9, collectionSeq map (_.data.sharedCollectionId getOrElse ""), StringDataType),
+    (appsCategory, 6, collectionSeq map (_.data.appsCategory orNull), StringDataType),
+    (constrains, 7, collectionSeq map (_.data.constrains orNull), StringDataType),
+    (originalSharedCollectionId, 8, collectionSeq map (_.data.originalSharedCollectionId orNull), StringDataType),
+    (sharedCollectionId, 9, collectionSeq map (_.data.sharedCollectionId orNull), StringDataType),
     (sharedCollectionSubscribed, 10, collectionSeq map (item => if (item.data.sharedCollectionSubscribed getOrElse false) 1 else 0), IntDataType)
   )
 
@@ -226,7 +226,7 @@ class CollectionRepositorySpec
 
     "deleteCollection" should {
 
-      "return a successful result when a valid cache category id is given" in
+      "return a successful result when a valid collection id is given" in
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 

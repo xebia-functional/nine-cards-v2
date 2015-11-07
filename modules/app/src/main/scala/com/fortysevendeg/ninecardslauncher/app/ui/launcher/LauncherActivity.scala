@@ -7,12 +7,14 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
+import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -28,6 +30,7 @@ class LauncherActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
+  with ActionsScreenListener
   with LauncherComposer
   with SystemBarsTint
   with NineCardIntentConversions
@@ -68,6 +71,10 @@ class LauncherActivity
     }
   }
 
+  override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
+
+  override def onEndFinishAction(): Unit = removeActionFragment
+
   override def onBackPressed(): Unit = runUi(backByPriority)
 
   override def onWindowFocusChanged(hasFocus: Boolean): Unit = {
@@ -87,6 +94,8 @@ class LauncherActivity
     case (KeyEvent.ACTION_DOWN | KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HOME) => true
     case _ => super.dispatchKeyEvent(event)
   }
+
+  def addNewCollection(collection: Collection) = runUi(addCollection(collection))
 
   private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
     onResult = {

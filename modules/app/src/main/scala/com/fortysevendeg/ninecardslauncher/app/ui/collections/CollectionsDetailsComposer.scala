@@ -25,6 +25,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
@@ -32,7 +33,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
@@ -47,18 +48,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CollectionsDetailsComposer
   extends Styles
+  with ActionsBehaviours
   with FabButtonBehaviour {
 
   self: AppCompatActivity with SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] =>
-
-  val nameActionFragment = "action-fragment"
 
   val resistanceDisplacement = .2f
 
   val resistanceScale = .05f
 
   lazy val iconIndicatorDrawable = new PathMorphDrawable(
-    defaultStroke = resGetDimensionPixelSize(R.dimen.default_stroke),
+    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
@@ -70,8 +70,6 @@ trait CollectionsDetailsComposer
   lazy val toolbar = Option(findView(TR.collections_toolbar))
 
   lazy val root = Option(findView(TR.collections_root))
-
-  lazy val fragmentContent = Option(findView(TR.collections_fragment_content))
 
   lazy val viewPager = Option(findView(TR.collections_view_pager))
 
@@ -150,12 +148,20 @@ trait CollectionsDetailsComposer
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>
         val category = getCurrentCollection flatMap (_.appsCategory)
-        // TODO Remove "if (cat == "")" when ticket 9C-257 is resolved
-        val map = category map (cat => if (cat == "") Map.empty[String, String] else Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
+        val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         showAction(f[AppsFragment], view, map)
     }),
-    getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
-      uiShortToast("Recommendations")
+    getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
+      view: View =>
+        val collection = getCurrentCollection
+        val packages = collection map (_.cards flatMap (_.packageName)) getOrElse Seq.empty
+        val category = collection flatMap (_.appsCategory)
+        val map = category map (cat => Map(RecommendationsFragment.categoryKey -> cat)) getOrElse Map.empty
+        if (category.isEmpty && packages.isEmpty) {
+          showError(R.string.recommendationError)
+        } else {
+          showAction(f[RecommendationsFragment], view, map, packages)
+        }
     }),
     getUi(w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
       view: View => showAction(f[ContactsFragment], view)
@@ -210,6 +216,23 @@ trait CollectionsDetailsComposer
       fragment.removeCard(c)
     }
 
+  protected def reloadCardsToCurrentFragment(cards: Seq[Card]) = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    currentPosition <- adapter.getCurrentFragmentPosition
+  } yield {
+    adapter.updateCardFromCollection(currentPosition, cards)
+    fragment.reloadCards(cards)
+  }
+
+  def backByPriority(implicit theme: NineCardsTheme): Ui[_] = if (fabMenuOpened) {
+    swapFabButton()
+  } else if (isActionShowed) {
+    unrevealActionFragment
+  } else {
+    exitTransition
+  }
+
   def exitTransition(implicit theme: NineCardsTheme) =
     ((toolbar <~ exitViews()) ~
       (tabs <~ exitViews()) ~
@@ -217,7 +240,6 @@ trait CollectionsDetailsComposer
       (root <~ vBackgroundColorResource(android.R.color.transparent))) ~
       (viewPager <~~ exitViews(up = false)) ~~
       Ui(finish())
-
 
   def configureEnterTransition(
     position: Int,
@@ -325,7 +347,7 @@ trait CollectionsDetailsComposer
       updateStatusColor(color)
 
   private[this] def showAction[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, String] = Map.empty): Ui[_] = {
+  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, String] = Map.empty, packages: Seq[String] = Seq.empty): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
@@ -335,25 +357,14 @@ trait CollectionsDetailsComposer
     args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
     args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
+    args.putStringArray(BaseActionFragment.packages, packages.toArray)
     map foreach (item => args.putString(item._1, item._2))
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton(doUpdateBars = false) ~
       (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~
-      addFragment(fragmentBuilder.pass(args), Option(R.id.collections_fragment_content), Option(nameActionFragment))
+      addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
-
-  def turnOffFragmentContent: Ui[_] =
-    (fragmentContent <~
-      colorContentDialog(paint = false) <~
-      fragmentContentStyle(false)) ~ updateBarsInFabMenuHide
-
-  def removeActionFragment(): Unit = findFragmentByTag(nameActionFragment) map removeFragment
-
-  def isActionShowed: Boolean = findFragmentByTag(nameActionFragment).isDefined
-
-  def unrevealActionFragment(): Ui[_] =
-    findFragmentByTag[BaseActionFragment](nameActionFragment) map (_.unreveal()) getOrElse Ui.nop
 
 }
 

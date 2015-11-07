@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
@@ -26,10 +28,10 @@ object Constants {
 object ImageResourceNamed {
 
   def iconCollectionWorkspace(category: String)(implicit context: ContextWrapper): Int =
-    resGetDrawableIdentifier(s"icon_collection_$category") getOrElse R.drawable.icon_collection_default
+    resGetDrawableIdentifier(s"icon_collection_${category.toLowerCase}") getOrElse R.drawable.icon_collection_default
 
   def iconCollectionDetail(category: String)(implicit context: ContextWrapper): Int =
-    resGetDrawableIdentifier(s"icon_collection_${category}_detail") getOrElse R.drawable.icon_collection_default_detail
+    resGetDrawableIdentifier(s"icon_collection_${category.toLowerCase}_detail") getOrElse R.drawable.icon_collection_default_detail
 
 }
 
@@ -40,6 +42,10 @@ object ActivityResult {
   val shortcutAdded = 2
 
   val selectInfoContact = 3
+
+  val selectInfoIcon = 4
+
+  val selectInfoColor = 5
 
 }
 
@@ -84,6 +90,12 @@ object AppUtils {
 }
 
 object ColorsUtils {
+
+  def colorizeDrawable(drawable: Drawable, color: Int) = {
+    val colorizeDrawable = DrawableCompat.wrap(drawable).mutate()
+    DrawableCompat.setTint(DrawableCompat.wrap(colorizeDrawable).mutate(), color)
+    colorizeDrawable
+  }
 
   def getColorLight(color: Int, ratio: Float = 0.1f) = {
     val colorHsv = Array(0f, 0f, 0f)

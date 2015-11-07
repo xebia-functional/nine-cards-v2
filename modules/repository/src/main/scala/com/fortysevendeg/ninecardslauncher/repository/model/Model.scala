@@ -16,10 +16,6 @@ case class AppData(
   version: String,
   installedFromGooglePlay: Boolean)
 
-
-
-
-
 case class Collection(
   id: Int,
   data: CollectionData)
@@ -63,3 +59,15 @@ case class GeoInfoData(
   latitude: Double,
   longitude: Double,
   system: Boolean)
+
+case class User(
+  id: Int,
+  data: UserData)
+
+case class UserData(
+  userId: Option[String],
+  email: Option[String],
+  sessionToken: Option[String],
+  installationId: Option[String],
+  deviceToken: Option[String],
+  androidToken: Option[String])
