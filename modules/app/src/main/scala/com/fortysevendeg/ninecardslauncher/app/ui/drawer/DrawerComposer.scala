@@ -17,9 +17,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
-import com.fortysevendeg.ninecardslauncher.process.device.GetAppOrder
+import com.fortysevendeg.ninecardslauncher.process.device.{GetByUpdate, GetAppOrder}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -122,8 +123,13 @@ trait DrawerComposer
     swipeAdapter(new AppsAdapter(
       initialSeq = generateHeaderList(apps, getAppOrder),
       clickListener = clickListener,
-      longClickListener = Option(longClickListener)))
+      longClickListener = Option(longClickListener)),
+      isScrollerLayoutVisible(getAppOrder))
 
+  private[this] def isScrollerLayoutVisible(getAppOrder: GetAppOrder) = getAppOrder match {
+    case v: GetByUpdate => false
+    case _ => true
+  }
 
   def addContacts(contacts: Seq[Contact], clickListener: (Contact) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
@@ -132,15 +138,23 @@ trait DrawerComposer
       clickListener = clickListener,
       longClickListener = None))
 
-  private[this] def swipeAdapter(adapter: HeaderedItemAdapter[_]) =
+  private[this] def swipeAdapter(
+    adapter: HeaderedItemAdapter[_],
+    fastScrollerVisible: Boolean = false) =
     showDrawerData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter) <~
         rvScrollToTop) ~
-      (scrollerLayout <~
-        fslLinkRecycler <~
-        fslReset)
+      scrollerLayoutUi(fastScrollerVisible)
+
+  def scrollerLayoutUi(fastScrollerVisible: Boolean): Ui[_] =
+    if (fastScrollerVisible) {
+      scrollerLayout <~ fslVisible <~ fslLinkRecycler <~ fslReset
+    } else {
+      scrollerLayout <~ fslInvisible
+    }
+
 
   private[this] def appsTabClicked(listener: (AppsMenuOption) => Unit): Ui[_] =
     drawerTabApp map (t => (t.isSelected, t.getSelectedMenuItem)) match {

@@ -56,7 +56,7 @@ trait HeaderGenerator extends HeaderUtils {
   private[this] def generateAppHeader(app: App, getAppOrder: GetAppOrder)(implicit cw: ContextWrapper): String =
     getAppOrder match {
       case GetByName(_) => getCurrentChar(app.name)
-      case GetByCategory(_) => resGetString(app.category.toLowerCase()) getOrElse app.category.toLowerCase()
+      case GetByCategory(_) => resGetString(app.category.toLowerCase) getOrElse app.category.toLowerCase()
       case GetByUpdate(_) =>
         val diff = System.currentTimeMillis() - app.dateUpdate
         resGetString(findStringForDiff(diff))
