@@ -43,7 +43,7 @@ class PersistenceServicesImpl(
 
   private[this] def toStringOrderBy(orderBy: FetchAppOrder): String = orderBy match {
     case OrderByName => s"${AppEntity.name} COLLATE NOCASE"
-    case OrderByUpdate => AppEntity.dateUpdate
+    case OrderByInstallDate => AppEntity.dateInstalled
     case OrderByCategory => AppEntity.category
   }
 

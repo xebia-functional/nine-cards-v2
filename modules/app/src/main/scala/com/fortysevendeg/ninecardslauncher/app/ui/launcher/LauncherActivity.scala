@@ -133,7 +133,7 @@ class LauncherActivity
   private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
     case AppsAlphabetical => GetByName
     case AppsByCategories => GetByCategory
-    case AppsByLastInstall => GetByUpdate
+    case AppsByLastInstall => GetByInstallDate
   }
 
   private[this] def loadContacts(contactsMenuOption: ContactsMenuOption): Unit =

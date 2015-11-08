@@ -221,7 +221,7 @@ class PersistenceServicesSpec
     }
 
     "return a sequence of the apps when pass OrderByUpdate" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchApps(OrderByUpdate, ascending = true).run.run
+      val result = persistenceServices.fetchApps(OrderByInstallDate, ascending = true).run.run
 
       result must beLike[Result[Seq[App], PersistenceServiceException]] {
         case Answer(apps) =>

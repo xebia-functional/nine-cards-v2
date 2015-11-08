@@ -4,7 +4,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.{AppHeadered, ContactHeadered}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
-import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByCategory, GetByName, GetByUpdate}
+import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByCategory, GetByName, GetByInstallDate}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
@@ -57,7 +57,7 @@ trait HeaderGenerator extends HeaderUtils {
     getAppOrder match {
       case GetByName(_) => getCurrentChar(app.name)
       case GetByCategory(_) => resGetString(app.category.toLowerCase) getOrElse app.category.toLowerCase()
-      case GetByUpdate(_) =>
+      case GetByInstallDate(_) =>
         val diff = System.currentTimeMillis() - app.dateUpdate
         resGetString(findStringForDiff(diff))
     }

@@ -17,10 +17,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
-import com.fortysevendeg.ninecardslauncher.process.device.{GetByUpdate, GetAppOrder}
+import com.fortysevendeg.ninecardslauncher.process.device.{GetByInstallDate, GetAppOrder}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -127,7 +126,7 @@ trait DrawerComposer
       isScrollerLayoutVisible(getAppOrder))
 
   private[this] def isScrollerLayoutVisible(getAppOrder: GetAppOrder) = getAppOrder match {
-    case v: GetByUpdate => false
+    case v: GetByInstallDate => false
     case _ => true
   }
 

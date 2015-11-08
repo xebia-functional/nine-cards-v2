@@ -490,12 +490,12 @@ class DeviceProcessImplSpec
 
     "get saved apps by update date" in
       new DeviceProcessScope {
-        val result = deviceProcess.getSavedApps(GetByUpdate)(contextSupport).run.run
+        val result = deviceProcess.getSavedApps(GetByInstallDate)(contextSupport).run.run
         result must beLike {
           case Answer(resultApps) =>
             resultApps shouldEqual apps
         }
-        there was one(mockPersistenceServices).fetchApps(OrderByUpdate, ascending = false)
+        there was one(mockPersistenceServices).fetchApps(OrderByInstallDate, ascending = false)
       }
 
     "get saved apps by category" in
