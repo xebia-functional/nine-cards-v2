@@ -220,7 +220,7 @@ class PersistenceServicesSpec
       there was one(mockAppRepository).fetchApps(contain(AppEntity.name).and(contain("DESC")))
     }
 
-    "return a sequence of the apps when pass OrderByUpdate" in new ValidRepositoryServicesResponses {
+    "return a sequence of the apps when pass OrderByInstallDate" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchApps(OrderByInstallDate, ascending = true).run.run
 
       result must beLike[Result[Seq[App], PersistenceServiceException]] {
@@ -228,7 +228,7 @@ class PersistenceServicesSpec
           apps shouldEqual seqApp
       }
 
-      there was one(mockAppRepository).fetchApps(contain(AppEntity.dateUpdate))
+      there was one(mockAppRepository).fetchApps(contain(AppEntity.dateInstalled))
     }
 
     "return a sequence of the apps when pass OrderByCategory" in new ValidRepositoryServicesResponses {
