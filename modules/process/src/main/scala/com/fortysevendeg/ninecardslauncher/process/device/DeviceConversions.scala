@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.device
 
 import android.content.{Intent, ComponentName}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.process.commons.Dimensions._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayPackage, GooglePlayApp}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
@@ -11,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsit
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
+import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
 
 import scala.util.Try
 
@@ -112,5 +114,27 @@ trait DeviceConversions {
   def toContactPhone(item: ContactPhoneServices): ContactPhone = ContactPhone(
     number = item.number,
     category = item.category.toString)
+
+  def toWidget(item: WidgetServices): Widget = Widget(
+    userHashCode = item.userHashCode,
+    autoAdvanceViewId = item.autoAdvanceViewId,
+    initialLayout = item.initialLayout,
+    dimensions = toWidgetDimensions(item.minHeight, item.minResizeHeight, item.minResizeWidth, item.minWidth),
+    className = item.className,
+    packageName = item.packageName,
+    resizeMode = WidgetResizeMode(item.resizeMode),
+    updatePeriodMillis = item.updatePeriodMillis,
+    label = item.label,
+    icon = item.icon,
+    preview = item.preview)
+
+  def toWidgetDimensions(minDPHeight: Int, minResizeDPHeight: Int, minResizeDPWidth: Int, minDPWidth: Int): WidgetDimensions =
+    WidgetDimensions(
+      minCellHeight = toCell(minDPHeight),
+      minResizeCellHeight = toCell(minResizeDPHeight),
+      minResizeCellWidth = toCell(minResizeDPWidth),
+      minCellWidth = toCell(minDPWidth))
+
+  private[this] def toCell(size: Int): Int = (size + margins) / cellSize
 
 }

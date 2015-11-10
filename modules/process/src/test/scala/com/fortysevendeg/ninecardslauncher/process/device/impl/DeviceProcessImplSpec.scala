@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceExc
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
+import com.fortysevendeg.ninecardslauncher.services.widgets.{WidgetServicesException, WidgetsServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -40,6 +41,8 @@ trait DeviceProcessSpecification
   val contactsServicesException = ContactsServiceException("")
 
   val fileServicesException = FileExceptionImpl("")
+
+  val widgetsServicesException = WidgetServicesException("")
 
   trait DeviceProcessScope
     extends Scope
@@ -128,13 +131,19 @@ trait DeviceProcessSpecification
     mockImageServices.saveAppIcon(any[AppWebsite])(any) returns
       Service(Task(Result.answer(appWebsitePath)))
 
+    val mockWidgetsServices = mock[WidgetsServices]
+
+    mockWidgetsServices.getWidgets(any) returns
+      Service(Task(Result.answer(widgetsServices)))
+
     val deviceProcess = new DeviceProcessImpl(
       mockAppsServices,
       mockApiServices,
       mockPersistenceServices,
       mockShortcutsServices,
       mockContactsServices,
-      mockImageServices) {
+      mockImageServices,
+      mockWidgetsServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
       apiUtils.getRequestConfig(contextSupport) returns
@@ -311,6 +320,14 @@ trait DeviceProcessSpecification
 
     mockContactsServices.findContactByLookupKey(anyString) returns Service {
       Task(Errata(contactsServicesException))
+    }
+  }
+
+  trait WidgetsErrorScope {
+    self: DeviceProcessScope =>
+
+    mockWidgetsServices.getWidgets(any) returns Service {
+      Task(Errata(widgetsServicesException))
     }
   }
 }
@@ -508,7 +525,7 @@ class DeviceProcessImplSpec
         there was one(mockPersistenceServices).fetchApps(OrderByCategory, ascending = true)
       }
 
-    "returns AppException when ContactsService fails getting contact" in
+    "returns AppException if persistence service fails " in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.getSavedApps(GetByName)(contextSupport).run.run
         result must beLike {
@@ -680,6 +697,29 @@ class DeviceProcessImplSpec
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+  }
+
+  "Get Widgets" should {
+
+    "get widgets" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getWidgets(contextSupport).run.run
+        result must beLike {
+          case Answer(resultWidgets) =>
+            resultWidgets shouldEqual widgets
+        }
+      }
+
+    "returns WidgetException if WidgetServices fail getting the Widgets " in
+      new DeviceProcessScope with WidgetsErrorScope {
+        val result = deviceProcess.getWidgets(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetException]
           }
         }
       }
