@@ -72,13 +72,16 @@ object Settings {
   }
   lazy val customS3Settings = s3Settings ++ Seq(
     host in upload := hostName,
+    host in generateLink := hostName,
     progress in upload := true,
     credentials += Credentials(
       "Amazon S3",
       hostName,
       sys.env.getOrElse("AWS_ACCESS_KEY_ID", ""),
       sys.env.getOrElse("AWS_SECRET_KEY", "")),
-    mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-debug.apk", apkName))
+    expirationDate in generateLink := new java.util.Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 30),
+    mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-debug.apk", apkName)),
+    keys in generateLink := Seq(apkName)
   )
 
   lazy val duplicatedFiles = Set(
