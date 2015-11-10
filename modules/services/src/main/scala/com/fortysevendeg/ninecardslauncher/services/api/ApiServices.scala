@@ -184,7 +184,7 @@ trait ApiServices {
     *         of the response and the sequence of recommended [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
-  def getShareCollectionsByCategory(
+  def getSharedCollectionsByCategory(
     category: String,
     collectionType: String,
     offset: Int,

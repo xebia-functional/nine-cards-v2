@@ -175,7 +175,7 @@ class ApiServicesImpl(
       recommendation <- readOption(response.data, categoryNotFoundMessage)
     } yield RecommendationResponse(response.statusCode, toPlayAppSeq(recommendation))).resolve[ApiServiceException]
 
-  override def getShareCollectionsByCategory(
+  override def getSharedCollectionsByCategory(
     category: String,
     collectionType: String,
     offset: Int,

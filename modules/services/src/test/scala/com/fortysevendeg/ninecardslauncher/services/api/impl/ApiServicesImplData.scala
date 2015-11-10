@@ -163,4 +163,59 @@ trait ApiServicesImplData {
       googlePlayApps.size,
       googlePlayApps map (app => GooglePlayRecommendationItems(app.docid, app, None))
     )
+
+  def generateSharedCollectionList =
+    SharedCollectionList(
+      items = generateSharedCollection()
+    )
+
+  def generateSharedCollection(num: Int = 10): Seq[SharedCollection] =
+    1 to num map { _ =>
+      SharedCollection(
+        _id = Random.nextString(10),
+        sharedCollectionId = Random.nextString(10),
+        publishedOn = 0,
+        description = Random.nextString(10),
+        screenshots = Seq.empty,
+        author = Random.nextString(10),
+        tags = Seq.empty,
+        name = Random.nextString(10),
+        shareLink = Random.nextString(10),
+        packages = Seq.empty,
+        resolvedPackages = Seq.empty,
+        occurrence = Seq.empty,
+        lat = 0,
+        lng = 0,
+        alt = 0,
+        views = 0,
+        category = Random.nextString(10),
+        icon = Random.nextString(10),
+        community = true
+      )
+    }
+
+  val offset = 0
+
+  val limit = 20
+
+  val category = "COMMUNICATION"
+
+  val collectionType = "TOP"
+
+  val user = generateUser
+
+  val installation = generateInstallation
+
+  val googlePlayPackages = generateGooglePlayPackages
+
+  val googlePlaySimplePackages = generateGooglePlaySimplePackages
+
+  val googlePlayApps = 1 to 10 map (_ => generateGooglePlayApp)
+
+  val googlePlayRecommendation = generateGooglePlayRecommendation(googlePlayApps)
+
+  val userConfig = generateUserConfig
+
+  val sharedCollectionList = generateSharedCollectionList
+
 }
