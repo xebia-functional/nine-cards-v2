@@ -2,11 +2,12 @@ package com.fortysevendeg.ninecardslauncher.commons.contexts
 
 import java.io.File
 
-import android.content.{SharedPreferences, ContentResolver}
+import android.content.{Context, SharedPreferences, ContentResolver}
 import android.content.pm.PackageManager
 import android.content.res.{AssetManager, Resources}
 
 trait ContextSupport {
+  def context: Context
   def getPackageManager: PackageManager
   def getResources: Resources
   def getContentResolver: ContentResolver

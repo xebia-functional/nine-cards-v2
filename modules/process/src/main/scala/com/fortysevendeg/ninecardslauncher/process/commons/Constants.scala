@@ -98,3 +98,8 @@ object Spaces {
   val numInLine = 3
   val minAppsToAdd = 4
 }
+
+object Dimensions {
+  val cellSize = 70
+  val margins = 30
+}

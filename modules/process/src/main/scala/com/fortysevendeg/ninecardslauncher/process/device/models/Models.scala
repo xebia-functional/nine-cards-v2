@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.device.models
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import com.fortysevendeg.ninecardslauncher.process.device.WidgetResizeMode
 
 case class App(
   name: String,
@@ -37,3 +38,24 @@ case class ContactEmail(
 case class ContactPhone(
   number: String,
   category: String)
+
+case class Widget (
+  userHashCode: Option[Int],
+  autoAdvanceViewId: Int,
+  initialLayout: Int,
+  dimensions: WidgetDimensions,
+  className: String,
+  packageName: String,
+  resizeMode: WidgetResizeMode,
+  updatePeriodMillis: Int,
+  label: String,
+  icon: Drawable,
+  preview: Option[Drawable])
+
+case class WidgetDimensions(
+  minCellHeight: Int,
+  minResizeCellHeight: Int,
+  minResizeCellWidth: Int,
+  minCellWidth: Int)
+
+
