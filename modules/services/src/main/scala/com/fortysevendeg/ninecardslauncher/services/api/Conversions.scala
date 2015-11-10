@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
-import com.fortysevendeg.ninecardslauncher.api.model.GooglePlayRecommendation
+import com.fortysevendeg.ninecardslauncher.api.model.{SharedCollectionPackage, SharedCollection, GooglePlayRecommendation}
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json._
@@ -334,5 +334,42 @@ trait Conversions {
 
   def toPlayAppSeq(recommendation: GooglePlayRecommendation): Seq[GooglePlayApp] =
     recommendation.items map (item => toGooglePlayApp(item.app))
+
+  def toSharedCollectionResponseSeq(sharedCollections: Seq[SharedCollection]): Seq[SharedCollectionResponse] =
+    sharedCollections map toSharedCollectionResponse
+
+  def toSharedCollectionResponse(sharedCollection: SharedCollection) =
+    SharedCollectionResponse(
+      id = sharedCollection._id,
+      sharedCollectionId = sharedCollection.sharedCollectionId,
+      publishedOn = sharedCollection.publishedOn,
+      description = sharedCollection.description,
+      screenshots = sharedCollection.screenshots map (_.uri),
+      author = sharedCollection.author,
+      tags = sharedCollection.tags,
+      name = sharedCollection.name,
+      shareLink = sharedCollection.shareLink,
+      packages = sharedCollection.packages,
+      resolvedPackages = toSharedCollectionPackageResponseSeq(sharedCollection.resolvedPackages),
+      views = sharedCollection.views,
+      category = sharedCollection.category,
+      icon = sharedCollection.icon,
+      community = sharedCollection.community
+    )
+
+  def toSharedCollectionPackageResponseSeq(packages: Seq[SharedCollectionPackage]): Seq[SharedCollectionPackageResponse] =
+    packages map toSharedCollectionPackageResponse
+
+  def toSharedCollectionPackageResponse(item: SharedCollectionPackage): SharedCollectionPackageResponse =
+    SharedCollectionPackageResponse(
+      packageName = item.packageName,
+      title = item.title,
+      description = item.description,
+      icon = item.icon,
+      stars = item.stars,
+      downloads = item.downloads,
+      free = item.free
+    )
+
 
 }

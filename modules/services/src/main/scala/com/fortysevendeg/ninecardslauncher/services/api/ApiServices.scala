@@ -173,4 +173,20 @@ trait ApiServices {
     likePackages: Seq[String],
     excludePackages: Seq[String],
     limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[RecommendationResponse, ApiServiceException]
+
+  /**
+    * Fetches the public collections based on some request params
+    * @param category category of collections
+    * @param collectionType type [top or latest]
+    * @param offset offset of list
+    * @param limit the maximum number of collection returned
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
+    *         of the response and the sequence of recommended [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def getShareCollectionsByCategory(
+    category: String,
+    collectionType: String,
+    offset: Int,
+    limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[SharedCollectionResponseList, ApiServiceException]
 }
