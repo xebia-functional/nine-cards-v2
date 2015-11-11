@@ -1,3 +1,5 @@
+import java.util.{Date, Calendar, TimeZone, GregorianCalendar}
+
 import Libraries.android._
 import Libraries.graphics._
 import Libraries.json._
@@ -70,15 +72,25 @@ object Settings {
     case "false" => s"nine-cards-v2-latest.apk"
     case number => s"nine-cards-v2-$number.apk"
   }
+
+  def getExpirationDate: Date = {
+    val c = new GregorianCalendar(TimeZone.getTimeZone("UTC"))
+    c.add(Calendar.DAY_OF_YEAR, 30)
+    c.getTime
+  }
+
   lazy val customS3Settings = s3Settings ++ Seq(
     host in upload := hostName,
+    host in generateLink := hostName,
     progress in upload := true,
     credentials += Credentials(
       "Amazon S3",
       hostName,
       sys.env.getOrElse("AWS_ACCESS_KEY_ID", ""),
       sys.env.getOrElse("AWS_SECRET_KEY", "")),
-    mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-debug.apk", apkName))
+    expirationDate in generateLink := getExpirationDate,
+    mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-debug.apk", apkName)),
+    keys in generateLink := Seq(apkName)
   )
 
   lazy val duplicatedFiles = Set(
