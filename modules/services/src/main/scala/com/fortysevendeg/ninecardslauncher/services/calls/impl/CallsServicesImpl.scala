@@ -11,8 +11,7 @@ import com.fortysevendeg.ninecardslauncher.services.calls.CallsContentProvider.{
 import scalaz.concurrent.Task
 
 class CallsServicesImpl(
-  contentResolverWrapper: ContentResolverWrapper,
-  uriCreator: UriCreator = new UriCreator)
+  contentResolverWrapper: ContentResolverWrapper)
   extends CallsServices
   with ImplicitsCallsExceptions {
 
