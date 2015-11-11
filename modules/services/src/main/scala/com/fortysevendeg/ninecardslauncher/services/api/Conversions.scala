@@ -354,8 +354,7 @@ trait Conversions {
       views = sharedCollection.views,
       category = sharedCollection.category,
       icon = sharedCollection.icon,
-      community = sharedCollection.community
-    )
+      community = sharedCollection.community)
 
   def toSharedCollectionPackageResponseSeq(packages: Seq[SharedCollectionPackage]): Seq[SharedCollectionPackageResponse] =
     packages map toSharedCollectionPackageResponse
@@ -368,8 +367,6 @@ trait Conversions {
       icon = item.icon,
       stars = item.stars,
       downloads = item.downloads,
-      free = item.free
-    )
-
+      free = item.free)
 
 }

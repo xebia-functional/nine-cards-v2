@@ -190,8 +190,7 @@ trait ApiServicesImplData {
         views = 0,
         category = Random.nextString(10),
         icon = Random.nextString(10),
-        community = true
-      )
+        community = true)
     }
 
   val offset = 0

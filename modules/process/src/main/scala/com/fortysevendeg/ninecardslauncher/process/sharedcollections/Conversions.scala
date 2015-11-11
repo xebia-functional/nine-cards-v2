@@ -21,8 +21,7 @@ trait Conversions {
       views = item.views,
       category = item.category,
       icon = item.icon,
-      community = item.community
-    )
+      community = item.community)
 
   def toSharedCollectionPackage(item: SharedCollectionPackageResponse): SharedCollectionPackage =
     SharedCollectionPackage(
@@ -32,7 +31,6 @@ trait Conversions {
       icon = item.icon,
       stars = item.stars,
       downloads = item.downloads,
-      free = item.free
-    )
+      free = item.free)
 
 }

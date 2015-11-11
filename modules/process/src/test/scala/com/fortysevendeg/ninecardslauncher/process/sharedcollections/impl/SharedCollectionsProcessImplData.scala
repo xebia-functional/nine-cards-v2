@@ -39,7 +39,6 @@ trait SharedCollectionsProcessImplData {
 
   val shareCollectionList = SharedCollectionResponseList(
     statusCode = statusCodeOk,
-    items = generateSharedCollectionResponse()
-  )
+    items = generateSharedCollectionResponse())
 
 }
