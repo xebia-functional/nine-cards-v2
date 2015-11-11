@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable._
+import android.graphics.drawable.shapes.OvalShape
 import android.support.v7.widget.CardView
 import android.view.View
 import android.view.ViewGroup.LayoutParams._
@@ -20,7 +21,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
@@ -83,6 +84,8 @@ trait CollectionAdapterStyles {
 
   val alphaDefault = .1f
 
+  val colorAllNotInstalled = ColorsUtils.setAlpha(Color.BLACK, .2f)
+
   def rootStyle(heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     Tweak[CardView] { view =>
       view.getLayoutParams.height = heightCard
@@ -110,19 +113,34 @@ trait CollectionAdapterStyles {
       view.getLayoutParams.height = (heightCard * iconContentHeightRatio).toInt
     }
 
-  def nameStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
-    tvColor(theme.get(CollectionDetailTextCardColor))
+  def nameStyle(cardType: String)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
+    cardType match {
+      case `noInstalledApp` =>
+        tvColor(colorAllNotInstalled)
+      case _ =>
+        tvColor(theme.get(CollectionDetailTextCardColor))
+    }
 
-  def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) = card.cardType match {
-    case `phone` | `sms` | `email` =>
-      ivUriContact(card.imagePath, card.term) +
-        expandLayout +
-        ivScaleType(ScaleType.CENTER_CROP)
-    case _ =>
-      ivCardUri(card.imagePath, card.term, circular = true) +
-        reduceLayout +
-        ivScaleType(ScaleType.FIT_CENTER)
-  }
+  def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) =
+    card.cardType match {
+      case `phone` | `sms` | `email` =>
+        ivUriContact(card.imagePath, card.term) +
+          vBackground(null) +
+          expandLayout +
+          ivScaleType(ScaleType.CENTER_CROP)
+      case `noInstalledApp` =>
+        val shape = new ShapeDrawable(new OvalShape)
+        shape.getPaint.setColor(colorAllNotInstalled)
+        ivSrc(R.drawable.icon_card_not_installed) +
+          vBackground(shape) +
+          reduceLayout +
+          ivScaleType(ScaleType.CENTER_INSIDE)
+      case _ =>
+        ivCardUri(card.imagePath, card.term, circular = true) +
+          vBackground(null) +
+          reduceLayout +
+          ivScaleType(ScaleType.FIT_CENTER)
+    }
 
   private[this] def expandLayout(implicit context: ContextWrapper): Tweak[View] = Tweak[View] {
     view =>

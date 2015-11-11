@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
-import java.io.InputStream
+import java.io.{File, InputStream}
 
 import android.content.{ContentResolver, UriMatcher}
 import android.graphics.drawable.Drawable
@@ -15,7 +15,7 @@ import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.CharDrawable
-import macroid.{ActivityContextWrapper, Tweak}
+import macroid.{Snail, ActivityContextWrapper, Tweak}
 import macroid.FullDsl._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 
@@ -31,12 +31,12 @@ object AsyncImageTweaks {
     }
   )
 
-
   def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      makeRequest(
-        request = glide().load(uri),
+      loadCardUri(
         imageView = imageView,
+        request = glide().load(uri),
+        uri = uri,
         char = name.substring(0, 1),
         circular = circular)
     })
@@ -47,7 +47,8 @@ object AsyncImageTweaks {
         request = glide().using(new ContactPhotoLoader(context.application.getContentResolver)).load(Uri.parse(uri)),
         imageView = imageView,
         char = name.substring(0, 1),
-        circular = circular)
+        circular = circular,
+        fadeInFailed = false)
     })
 
   private[this] def glide()(implicit uiContext: UiContext[_]) = uiContext match {
@@ -56,21 +57,38 @@ object AsyncImageTweaks {
     case c: FragmentUiContext => Glide.`with`(c.value)
   }
 
+  private[this] def loadCardUri(
+    imageView: ImageView,
+    request: DrawableTypeRequest[_],
+    uri: String,
+    char: String,
+    circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) = {
+    if (new File(uri).exists()) {
+      makeRequest(
+        request = request,
+        imageView = imageView,
+        char = char,
+        circular = circular)
+    } else {
+      runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)))
+    }
+  }
+
   private[this] def makeRequest(
     request: DrawableTypeRequest[_],
     imageView: ImageView,
     char: String,
-    circular: Boolean = false)(implicit context: ActivityContextWrapper) = {
+    circular: Boolean = false,
+    fadeInFailed: Boolean = true)(implicit context: ActivityContextWrapper) = {
     request
       .crossFade()
       .into(new ViewTarget[ImageView, GlideDrawable](imageView) {
         override def onLoadStarted(placeholder: Drawable): Unit =
           imageView.setImageDrawable(null)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ fadeIn(200))
-        override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit = {
+          runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
+        override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
-        }
       })
   }
 
