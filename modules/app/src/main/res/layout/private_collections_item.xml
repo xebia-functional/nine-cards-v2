@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MyCollectionsItemRoot">
+
+    <LinearLayout
+        style="@style/MyCollectionsItemContent">
+
+        <LinearLayout
+            style="@style/MyCollectionsItemHeader">
+
+            <ImageView
+                android:id="@+id/private_collections_item_icon"
+                style="@style/MyCollectionsItemHeaderIcon"/>
+
+            <TextView
+                android:id="@+id/private_collections_item_name"
+                style="@style/MyCollectionsItemHeaderName"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/private_collections_item_row1"
+            style="@style/MyCollectionsItemIconsRow" />
+
+        <LinearLayout
+            android:id="@+id/private_collections_item_row2"
+            style="@style/MyCollectionsItemIconsRow" />
+
+        <ImageView
+            style="@style/MyCollectionsItemLine"/>
+
+        <Button
+            android:id="@+id/private_collections_item_add_collection"
+            style="@style/MyCollectionsItemInstallNow"/>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

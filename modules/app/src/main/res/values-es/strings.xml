@@ -71,6 +71,8 @@
     <string name="selectIcon">Seleccionar icono</string>
     <string name="selectColor">Seleccionar color</string>
 
+    <string name="addMyCollection">Añadir a mis collecciones</string>
+
     <!-- Collections Detail -->
 
     <string name="applications">Aplicaciones</string>

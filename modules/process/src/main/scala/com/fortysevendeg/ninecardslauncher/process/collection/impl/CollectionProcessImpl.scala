@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardReque
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT
+import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 
 import scalaz.concurrent.Task
 
@@ -30,8 +31,10 @@ class CollectionProcessImpl(
 
   override val resourceUtils: ResourceUtils = new ResourceUtils
 
+  val minAppsGenerateCollections = 1
+
   override def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = Service {
-    val tasks = createCollections(apps, contacts, categories) map (persistenceServices.addCollection(_).run)
+    val tasks = createCollections(apps, contacts, categories, minAppsToAdd) map (persistenceServices.addCollection(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
   }.resolve[CollectionException]
 
@@ -40,6 +43,14 @@ class CollectionProcessImpl(
       apps <- appsServices.getInstalledApplications
       collections <- createCollectionsAndFillData(items, apps)
     } yield collections).resolve[CollectionException]
+
+  override def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = Service {
+    Task {
+      CatchAll[CollectionException] {
+        createPrivateCollections(apps, categories, minAppsGenerateCollections)
+      }
+    }
+  }
 
   override def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
 

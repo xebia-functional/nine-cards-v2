@@ -5,7 +5,7 @@ import java.io.File
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
+import com.fortysevendeg.ninecardslauncher.process.collection.{PrivateCollection, CollectionProcessConfig, Conversions, ImplicitsCollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionType, NineCardCategories}
@@ -64,12 +64,44 @@ trait FormedCollectionConversions
     )
   }
 
+  def createPrivateCollections(
+    apps: Seq[UnformedApp],
+    categories: Seq[String],
+    minApps: Int): Seq[PrivateCollection] = generatePrivateCollections(apps, categories, Seq.empty)
+
+  @tailrec
+  private[this] def generatePrivateCollections(
+    items: Seq[UnformedApp],
+    categories: Seq[String],
+    acc: Seq[PrivateCollection]): Seq[PrivateCollection] = categories match {
+      case Nil => acc
+      case h :: t =>
+        val insert = generatePrivateCollection(items, h, acc.length)
+        val a = if (insert.cards.length >= minAppsToAdd) acc :+ insert else acc
+        generatePrivateCollections(items, t, a)
+    }
+
+  private[this] def generatePrivateCollection(items: Seq[UnformedApp], category: String, position: Int): PrivateCollection = {
+    // TODO We should sort the application using an endpoint in the new sever
+    val appsByCategory = items.filter(_.category.contains(category)).take(numSpaces)
+    val themeIndex = if (position >= numSpaces) position % numSpaces else position
+    PrivateCollection(
+      name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
+      collectionType = CollectionType.apps,
+      icon = category.toLowerCase,
+      themedColorIndex = themeIndex,
+      appsCategory = Some(category),
+      cards = appsByCategory map toPrivateCard
+    )
+  }
+
   def createCollections(
     apps: Seq[UnformedApp],
     contacts: Seq[UnformedContact],
-    categories: Seq[String]) = {
+    categories: Seq[String],
+    minApps: Int) = {
     val collections = generateAddCollections(apps, categories, Seq.empty)
-    if (contacts.length > minAppsToAdd) collections :+ toAddCollectionRequestByContact(contacts.take(numSpaces), collections.length)
+    if (contacts.length > minApps) collections :+ toAddCollectionRequestByContact(contacts.take(numSpaces), collections.length)
     else collections
   }
 
@@ -77,15 +109,13 @@ trait FormedCollectionConversions
   private[this] def generateAddCollections(
     items: Seq[UnformedApp],
     categories: Seq[String],
-    acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
-    categories match {
+    acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = categories match {
       case Nil => acc
       case h :: t =>
         val insert = generateAddCollection(items, h, acc.length)
         val a = if (insert.cards.length >= minAppsToAdd) acc :+ insert else acc
         generateAddCollections(items, t, a)
     }
-  }
 
   private[this] def generateAddCollection(items: Seq[UnformedApp], category: String, position: Int): AddCollectionRequest = {
     // TODO We should sort the application using an endpoint in the new sever
