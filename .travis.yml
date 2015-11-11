@@ -20,6 +20,8 @@ before_install:
   - echo yes | android update sdk --all --filter extra-android-support --no-ui
   - echo yes | android update sdk --all --filter extra-android-m2repository --no-ui
   - echo yes | android update sdk --all --filter extra-google-m2repository --no-ui
+  - "git clone -b generate-link-version https://github.com/47deg/sbt-s3.git"
+  - "cd sbt-s3 && sbt publishLocal && cd .."
   - export GIT_BRANCH=${TRAVIS_BRANCH}
   - export GIT_PR=${TRAVIS_PULL_REQUEST}
 script:
@@ -34,3 +36,4 @@ after_success:
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" android:package
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
+  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-generateLink
