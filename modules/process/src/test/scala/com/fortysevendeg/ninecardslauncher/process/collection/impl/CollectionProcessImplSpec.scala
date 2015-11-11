@@ -44,6 +44,7 @@ trait CollectionProcessImplSpecification
     val mockNineCardIntent = mock[NineCardIntent]
 
     val mockAppsServices = mock[AppsServices]
+    mockAppsServices.getInstalledApplications(contextSupport) returns Service(Task(Result.answer(Seq.empty)))
 
     val mockContactsServices = mock[ContactsServices]
     mockContactsServices.getFavoriteContacts returns Service(Task(Result.answer(Seq.empty)))

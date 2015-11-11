@@ -41,7 +41,7 @@ trait DeviceConversions {
       AddAppRequest(
         name = item.name,
         packageName = item.packageName,
-        className = item.packageName,
+        className = item.className,
         category = category,
         imagePath = imagePath,
         colorPrimary = item.colorPrimary,
@@ -55,7 +55,7 @@ trait DeviceConversions {
         id = id,
         name = item.name,
         packageName = item.packageName,
-        className = item.packageName,
+        className = item.className,
         category = category,
         imagePath = imagePath,
         colorPrimary = item.colorPrimary,
