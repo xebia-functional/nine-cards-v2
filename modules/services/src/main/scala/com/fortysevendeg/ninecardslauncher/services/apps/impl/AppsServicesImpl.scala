@@ -42,18 +42,19 @@ class AppsServicesImpl
 
     val packageManager = context.getPackageManager
     val packageName = resolveInfo.activityInfo.applicationInfo.packageName
+    val className = resolveInfo.activityInfo.name
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
 
     Application(
       name = resolveInfo.loadLabel(packageManager).toString,
       packageName = packageName,
-      className = resolveInfo.activityInfo.name,
+      className = className,
       resourceIcon = resolveInfo.activityInfo.icon,
       colorPrimary = "", // TODO Implement in ticket 9C-272
       dateInstalled = packageInfo.firstInstallTime,
       dateUpdate = packageInfo.lastUpdateTime,
       version = packageInfo.versionCode.toString,
-      installedFromGooglePlay = isFromGooglePlay(packageManager, packageInfo.packageName))
+      installedFromGooglePlay = isFromGooglePlay(packageManager, packageName))
   }
 
   private[this] def isFromGooglePlay(packageManager: PackageManager, packageName: String) = {

@@ -1,9 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
-import android.app.Activity
+import android.app.{SearchManager, Activity}
 import android.content.{ComponentName, Intent}
 import android.net.Uri
 import android.provider.ContactsContract
+import android.speech.RecognizerIntent
 import android.widget.Toast
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
@@ -18,6 +19,10 @@ trait LauncherExecutor {
   val typeEmail = "message/rfc822"
 
   val titleDialogEmail = "Send Email"
+
+  val packageNameSearch = "com.google.android.googlequicksearchbox"
+
+  val classNameSearch = "com.google.android.googlequicksearchbox.SearchActivity"
 
   def execute(intent: NineCardIntent)(implicit activityContext: ActivityContextWrapper) = {
     intent.getAction match {
@@ -71,6 +76,27 @@ trait LauncherExecutor {
       case _ => showError
     }
   }
+
+  def launchSearch(implicit activityContext: ActivityContextWrapper) =
+    for {
+      activity <- activityContext.original.get
+    } yield {
+      val intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH)
+      val componentName = new ComponentName(packageNameSearch, classNameSearch)
+      intent.setComponent(componentName)
+      if (Try(activity.startActivity(intent)).isFailure) {
+        val intent = new Intent(Intent.ACTION_WEB_SEARCH)
+        tryOrError(activity, intent)
+      }
+    }
+
+  def launchVoiceSearch(implicit activityContext: ActivityContextWrapper) =
+    for {
+      activity <- activityContext.original.get
+    } yield {
+      val intent = new Intent(RecognizerIntent.ACTION_WEB_SEARCH)
+      tryOrError(activity, intent)
+    }
 
   def launchSettings(packageName: String)(implicit activityContext: ActivityContextWrapper) =
     for {
