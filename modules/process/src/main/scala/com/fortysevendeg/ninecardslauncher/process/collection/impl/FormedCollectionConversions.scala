@@ -157,7 +157,7 @@ trait FormedCollectionConversions
                   item.copy(itemType = app)
                 }
               } getOrElse item.copy(itemType = noInstalledApp)
-            }) getOrElse item.copy(itemType = app)
+            }) getOrElse item.copy(itemType = noInstalledApp)
           case _ => item
         }
 

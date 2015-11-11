@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
+import java.io.File
+
 import android.content.{Context, Intent}
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
@@ -46,30 +48,58 @@ trait LauncherComposer
 
   // TODO For now, we always use 4 applications in app drawer panel
   lazy val packagesForAppsDrawer = Seq(
-    ("com.google.android.talk", "com.google.android.talk.SigningInActivity"),
-    ("com.google.android.apps.inbox", "com.google.android.apps.bigtop.activities.InitActivity"),
-    ("com.android.chrome", "com.google.android.apps.chrome.Main"),
-    ("com.google.android.GoogleCamera", "com.android.camera.CameraLauncher")
+    Seq(("com.google.android.talk", "com.google.android.talk.SigningInActivity")),
+    Seq(("com.google.android.gm", "com.google.android.gm.ConversationListActivityGmail")),
+    Seq(("com.android.chrome", "com.google.android.apps.chrome.Main")),
+    Seq(
+      ("com.google.android.GoogleCamera", "com.android.camera.CameraLauncher"),
+      ("com.oneplus.camera", "com.oneplus.camera.OPCameraActivity"))
   )
 
-  lazy val cardsForAppsDrawer = packagesForAppsDrawer map { app =>
-    val (packageName, className) = app
+  lazy val cardsForAppsDrawer = packagesForAppsDrawer map { apps =>
     val dirPath = getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE).getPath
-    val imagePath = s"$dirPath/${packageName.toLowerCase.replace(".", "_")}_${className.toLowerCase.replace(".", "_")}"
-    val intent = NineCardIntent(NineCardIntentExtras(
-      package_name = Option(packageName),
-      class_name = Option(className)))
-    intent.setAction(NineCardsIntentExtras.openApp)
-    intent.setClassName(packageName, className)
-    Card(
-      id = 0,
-      position = 0,
-      term = "Doesn't matter",
-      packageName = Option(packageName),
-      cardType = CardType.app,
-      intent = intent,
-      imagePath = imagePath
-    )
+    val maybeApp = apps find { app =>
+      val (packageName, className) = app
+      val imagePath = s"$dirPath/${packageName.toLowerCase.replace(".", "_")}_${className.toLowerCase.replace(".", "_")}"
+      new File(imagePath).exists()
+    }
+    maybeApp map { app =>
+      val (packageName, className) = app
+      val imagePath = s"$dirPath/${packageName.toLowerCase.replace(".", "_")}_${className.toLowerCase.replace(".", "_")}"
+      val intent = NineCardIntent(NineCardIntentExtras(
+        package_name = Option(packageName),
+        class_name = Option(className)))
+      intent.setAction(NineCardsIntentExtras.openApp)
+      intent.setClassName(packageName, className)
+      Card(
+        id = 0,
+        position = 0,
+        term = "Doesn't matter",
+        packageName = Option(packageName),
+        cardType = CardType.app,
+        intent = intent,
+        imagePath = imagePath
+      )
+    } getOrElse {
+      val packageName = "com.fortysevendeg.ninecardslauncher2"
+      val className = "com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity"
+      val intent = NineCardIntent(NineCardIntentExtras(
+        package_name = Option(packageName),
+        class_name = Option(className)))
+      intent.setAction(NineCardsIntentExtras.openApp)
+      intent.setClassName(packageName, className)
+      val imagePath = s"$dirPath/${packageName.toLowerCase.replace(".", "_")}_${className.toLowerCase.replace(".", "_")}"
+      Card(
+        id = 0,
+        position = 0,
+        term = "Doesn't matter",
+        packageName = Option(packageName),
+        cardType = CardType.app,
+        intent = intent,
+        imagePath = imagePath
+      )
+    }
+
   }
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
