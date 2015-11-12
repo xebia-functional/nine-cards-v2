@@ -5,10 +5,10 @@ import android.view.{LayoutInflater, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.process.collection.PrivateCollection
 import com.fortysevendeg.ninecardslauncher2.R
+import macroid.ActivityContextWrapper
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
 
-case class PrivateCollectionsAdapter(privateCollections: Seq[PrivateCollection], clickListener: (PrivateCollection) => Ui[_])
+case class PrivateCollectionsAdapter(privateCollections: Seq[PrivateCollection], clickListener: (PrivateCollection) => Unit)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[ViewHolderPrivateCollectionsLayoutAdapter] {
 

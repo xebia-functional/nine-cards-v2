@@ -193,7 +193,7 @@
 
     <!-- MyCollections Items -->
 
-    <style name="MyCollectionsItemRoot">
+    <style name="PrivateCollectionsItemRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginLeft">@dimen/padding_small</item>
@@ -202,13 +202,13 @@
         <item name="android:layout_marginBottom">@dimen/padding_default</item>
     </style>
 
-    <style name="MyCollectionsItemContent">
+    <style name="PrivateCollectionsItemContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="MyCollectionsItemHeader">
+    <style name="PrivateCollectionsItemHeader">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
@@ -216,14 +216,14 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
-    <style name="MyCollectionsItemHeaderIcon">
-        <item name="android:layout_width">@dimen/size_icon_recommendation</item>
-        <item name="android:layout_height">@dimen/size_icon_recommendation</item>
+    <style name="PrivateCollectionsItemHeaderIcon">
+        <item name="android:layout_width">@dimen/size_icon_private_collections</item>
+        <item name="android:layout_height">@dimen/size_icon_private_collections</item>
         <item name="android:layout_marginRight">@dimen/padding_default</item>
         <item name="android:scaleType">centerInside</item>
     </style>
 
-    <style name="MyCollectionsItemHeaderName">
+    <style name="PrivateCollectionsItemHeaderName">
         <item name="android:layout_width">0px</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_height">wrap_content</item>
@@ -231,23 +231,24 @@
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textColor">@color/text_default_title</item>
+        <item name="android:layout_marginLeft">@dimen/padding_default</item>
     </style>
 
-    <style name="MyCollectionsItemIconsRow">
+    <style name="PrivateCollectionsItemIconsRow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:layout_marginLeft">@dimen/padding_large</item>
-        <item name="android:layout_marginRight">@dimen/padding_large</item>
+        <item name="android:layout_marginLeft">@dimen/padding_default</item>
+        <item name="android:layout_marginRight">@dimen/padding_default</item>
     </style>
 
-    <style name="MyCollectionsItemLine">
+    <style name="PrivateCollectionsItemLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
         <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
-    <style name="MyCollectionsItemInstallNow">
+    <style name="PrivateCollectionsItemAddCollection">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
