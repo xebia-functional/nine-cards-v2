@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiRecommendationService, ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice
@@ -42,12 +42,15 @@ trait ApiServicesSpecification
 
     val apiRecommendationService = mock[ApiRecommendationService]
 
+    val apiSharedCollectionsService = mock[ApiSharedCollectionsService]
+
     val apiServices = new ApiServicesImpl(
       apiServicesConfig, 
       apiUserService, 
       googlePlayService, 
       userConfigService, 
-      apiRecommendationService)
+      apiRecommendationService,
+      apiSharedCollectionsService)
 
   }
 
@@ -56,20 +59,6 @@ trait ApiServicesSpecification
     with Conversions {
 
     self: ApiServicesScope =>
-
-    val user = generateUser
-
-    val installation = generateInstallation
-
-    val googlePlayPackages = generateGooglePlayPackages
-
-    val googlePlaySimplePackages = generateGooglePlaySimplePackages
-
-    val googlePlayApps = 1 to 10 map (_ => generateGooglePlayApp)
-    
-    val googlePlayRecommendation = generateGooglePlayRecommendation(googlePlayApps)
-
-    val userConfig = generateUserConfig
 
     apiUserService.login(any, any)(any, any) returns
       Service {
@@ -146,6 +135,11 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[apiModel.GooglePlayRecommendation](statusCode, Some(googlePlayRecommendation))))
       }
 
+    apiSharedCollectionsService.getSharedCollectionListByCategory(any, any, any, any, any)(any) returns
+      Service {
+        Task(Answer(ServiceClientResponse[apiModel.SharedCollectionList](statusCode, Some(sharedCollectionList))))
+      }
+
   }
 
   trait ErrorApiServicesImplResponses
@@ -220,6 +214,12 @@ trait ApiServicesSpecification
     apiRecommendationService.getRecommendedApps(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
+
+    apiSharedCollectionsService.getSharedCollectionListByCategory(any, any, any, any, any)(any) returns
+      Service {
+        Task(Errata(exception))
+      }
+
   }
 
 }
@@ -594,7 +594,7 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, 20).run.run
+        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, limit).run.run
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
@@ -604,7 +604,33 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, 20).run.run
+        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, limit).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, apiException)) => apiException must beLike {
+              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
+            }
+          }
+        }
+      }
+
+  }
+
+  "getSharedCollectionsByCategory" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.getSharedCollectionsByCategory(category, collectionType, offset, limit).run.run
+        result must beLike {
+          case Answer(response) =>
+            response.statusCode shouldEqual statusCode
+            response.items shouldEqual response.items
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.getSharedCollectionsByCategory(category, collectionType, offset, limit).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
