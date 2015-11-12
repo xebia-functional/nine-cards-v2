@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigPro
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.calls.impl.CallsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.contacts.impl.ContactsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
@@ -89,6 +90,8 @@ class Injector(implicit contextSupport: ContextSupport) {
 
   private[this] lazy val widgetsServices = new WidgetsServicesImpl()
 
+  private[this] lazy val callsServices = new CallsServicesImpl(contentResolverWrapper)
+
   // Process
 
   lazy val recommendationsProcess = new RecommendationsProcessImpl(
@@ -102,7 +105,8 @@ class Injector(implicit contextSupport: ContextSupport) {
     shortcutsServices = shortcutsServices,
     contactsServices = contactsServices,
     imageServices = imageServices,
-    widgetsServices = widgetsServices
+    widgetsServices = widgetsServices,
+    callsServices = callsServices
   )
 
   private[this] lazy val nameCategories: Map[String, String] = (categories map {

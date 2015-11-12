@@ -68,8 +68,4 @@ public interface Fields {
     String CALL_DATE= CallLog.Calls.DATE;
     String CALL_TYPE = CallLog.Calls.TYPE;
 
-    int CALL_INCOMING_TYPE = CallLog.Calls.INCOMING_TYPE;
-    int CALL_OUTGOING_TYPE = CallLog.Calls.OUTGOING_TYPE;
-    int CALL_MISSED_TYPE = CallLog.Calls.MISSED_TYPE;
-
 }

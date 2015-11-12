@@ -4,8 +4,10 @@ import android.content.{Intent, ComponentName}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.commons.Dimensions._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
+import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayPackage, GooglePlayApp}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ContactServices, ContactInfo => ContactInfoServices,
   ContactEmail => ContactEmailServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
@@ -17,6 +19,8 @@ import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => Wi
 import scala.util.Try
 
 trait DeviceConversions {
+
+  val defaultDate = 0L
 
   def toFetchAppOrder(orderBy: GetAppOrder): FetchAppOrder = orderBy match {
     case GetByName(_) => OrderByName
@@ -94,6 +98,24 @@ trait DeviceConversions {
       icon = drawable,
       intent = intent)
   }
+
+  def toSimpleLastCallsContact(number: String, calls: Seq[CallServices]): LastCallsContact = {
+    val (hasContact, name, date) = calls.headOption map { call =>
+      (call.name.isDefined, call.name getOrElse number, call.date)
+    } getOrElse (false, number, defaultDate)
+    LastCallsContact(
+      hasContact = hasContact,
+      number = number,
+      title = name,
+      lastCallDate = date,
+      calls = calls map toCallData)
+  }
+
+  def toCallData(item: CallServices): CallData =
+    CallData(
+      date = item.date,
+      callType = CallType(item.callType)
+    )
 
   def toContactSeq(items: Seq[ContactServices]): Seq[Contact] = items map toContact
 

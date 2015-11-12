@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.drawable.Drawable
-import com.fortysevendeg.ninecardslauncher.process.device.WidgetResizeMode
+import com.fortysevendeg.ninecardslauncher.process.device.types.WidgetResizeMode
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
