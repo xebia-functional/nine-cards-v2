@@ -155,14 +155,14 @@ class DeviceProcessImpl(
     } yield (lastCallsContact, contact map toContact)
 
   private[this] def fillCombinedContacts(combinedContacts: Seq[(LastCallsContact, Option[Contact])]): Seq[LastCallsContact] =
-    combinedContacts map { combinedContact =>
+    (combinedContacts map { combinedContact =>
       combinedContact._2 map { contact =>
         combinedContact._1.copy(
           lookupKey = Some(contact.lookupKey),
           photoUri = Some(contact.photoUri)
         )
       } getOrElse combinedContact._1
-    }
+    }).sortWith(_.lastCallDate > _.lastCallDate)
 
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {

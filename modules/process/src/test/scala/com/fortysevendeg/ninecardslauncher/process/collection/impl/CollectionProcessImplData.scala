@@ -6,8 +6,9 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
 import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, PhoneHome, ContactPhone => ServiceContactPhone, ContactInfo => ServiceContactInfo}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, ContactPhone => ServiceContactPhone, ContactInfo => ServiceContactInfo}
 import play.api.libs.json.Json
 
 import scala.util.Random
