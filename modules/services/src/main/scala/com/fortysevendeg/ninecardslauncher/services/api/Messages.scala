@@ -64,3 +64,33 @@ case class TesterResponse(
 case class RecommendationResponse(
   statusCode: Int,
   seq: Seq[GooglePlayApp])
+
+case class SharedCollectionResponseList(
+  statusCode: Int,
+  items: Seq[SharedCollectionResponse])
+
+case class SharedCollectionResponse(
+  id: String,
+  sharedCollectionId: String,
+  publishedOn: Long,
+  description: String,
+  screenshots: Seq[String],
+  author: String,
+  tags: Seq[String],
+  name: String,
+  shareLink: String,
+  packages: Seq[String],
+  resolvedPackages: Seq[SharedCollectionPackageResponse],
+  views: Int,
+  category: String,
+  icon: String,
+  community: Boolean)
+
+case class SharedCollectionPackageResponse(
+  packageName: String,
+  title: String,
+  description: String,
+  icon: String,
+  stars: Double,
+  downloads: String,
+  free: Boolean)
