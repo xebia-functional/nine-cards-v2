@@ -26,7 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.new_collection.NewCollectionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.mycollections
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
 
 import android.os.Bundle
 import android.support.v4.app.Fragment

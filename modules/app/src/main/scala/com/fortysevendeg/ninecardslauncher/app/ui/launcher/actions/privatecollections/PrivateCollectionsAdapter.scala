@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.mycollections
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
 
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, ViewGroup}
