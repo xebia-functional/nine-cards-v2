@@ -100,15 +100,21 @@ class LauncherActivity
   def addNewCollection(collection: Collection) = runUi(uiAddCollection(collection))
 
   def removeCollection(collection: Collection) = {
-    val ft = getSupportFragmentManager.beginTransaction()
-    Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(null)
-    val dialog = new RemoveCollectionDialogFragment(() => {
-      Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
-        onResult = (_) => uiRemoveCollection(collection)
-      )
-    })
-    dialog.show(ft, tagDialog)
+    val overOneCollection = workspaces.exists(_.data.filter(_.widgets == false).headOption.exists(_.collections.length!=1))
+    if (overOneCollection) {
+      val ft = getSupportFragmentManager.beginTransaction()
+      Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+      ft.addToBackStack(null)
+      val dialog = new RemoveCollectionDialogFragment(() => {
+        Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
+          onResult = (_) => uiRemoveCollection(collection),
+          onException = (_) => showMessage(R.string.contactUsError)
+        )
+      })
+      dialog.show(ft, tagDialog)
+    } else {
+      runUi(showMessage(R.string.minimumOneCollectionMessage))
+    }
   }
 
   private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(

@@ -99,9 +99,7 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
         for {
           c <- collection
           activity <- activity[LauncherActivity]
-        } yield {
-          activity.removeCollection(c)
-        }
+        } yield activity.removeCollection(c)
         Ui(true)
       } <~ vTag(R.id.use_layer_hardware, "")))
 

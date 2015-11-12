@@ -73,6 +73,10 @@
 
     <string name="addMyCollection">Añadir a mis collecciones</string>
 
+    <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
+
+    <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
+
     <!-- Collections Detail -->
 
     <string name="applications">Aplicaciones</string>

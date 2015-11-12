@@ -41,9 +41,7 @@ class PrivateCollectionsFragment
   private[this] def saveCollection(privateCollection: PrivateCollection) =
     Task.fork(addCollection(privateCollection).run).resolveAsyncUi(
       onResult = (c) => {
-        activity[LauncherActivity] map { launcherActivity =>
-          launcherActivity.addNewCollection(c)
-        }
+        activity[LauncherActivity] map (_.addNewCollection(c))
         unreveal()
       },
       onException = (ex) => showGeneralError)

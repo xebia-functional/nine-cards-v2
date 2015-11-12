@@ -79,6 +79,8 @@
 
     <string name="removeCollectionMessage">Are you sure that you want remove this collection?</string>
 
+    <string name="minimumOneCollectionMessage">You can\'t remove the last collection</string><!-- Pending review language -->
+
     <!-- Collections Detail -->
 
     <string name="applications">Applications</string>
