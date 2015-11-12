@@ -229,9 +229,13 @@ trait LauncherComposer
     (menuName <~ tvText(userInfo.email)) ~
       (menuAvatar <~ ivUri(userInfo.imageUrl))
 
-  def addCollection(collection: Collection)
+  def uiAddCollection(collection: Collection)
     (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
+
+  def uiRemoveCollection(collection: Collection)
+    (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+    (workspaces <~ lwsRemoveCollection(collection)) ~ reloadPagerAndActiveLast
 
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
 

@@ -52,15 +52,14 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityCo
       row <- 0 until numInLine
       column <- 0 until numInLine
     } yield {
-        val position = (row * numInLine) + column
-        val view = grid map (_.getChildAt(position) match {
-          case item: CollectionItem => item
-        })
-        collections.lift(position) map {
-          collection =>
-            view <~ vVisible <~ ciPopulate(collection)
-        } getOrElse view <~ vGone
-      }
+      val position = (row * numInLine) + column
+      val view = grid map (_.getChildAt(position) match {
+        case item: CollectionItem => item
+      })
+      collections.lift(position) map { collection =>
+        view <~ vVisible <~ ciPopulate(collection)
+      } getOrElse view <~ vGone
+    }
     Ui.sequence(uiSeq: _*)
   }
 
@@ -86,20 +85,25 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
         w[ImageView] <~ wire(icon) <~ iconStyle,
         w[TextView] <~ wire(name) <~ nameStyle
       ) <~ collectionItemStyle <~ On.click {
-        collection map {
-          c =>
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-              activityContext.getOriginal,
-              new Pair[View, String](icon.get, getContentTransitionName(c.position)))
-            val intent = createIntent[CollectionsDetailsActivity]
-            intent.putExtra(startPosition, c.position)
-            intent.putExtra(indexColorToolbar, c.themedColorIndex)
-            intent.putExtra(iconToolbar, c.icon)
-            uiStartIntentWithOptions(intent, options)
+        collection map { c =>
+          val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            activityContext.getOriginal,
+            new Pair[View, String](icon.get, getContentTransitionName(c.position)))
+          val intent = createIntent[CollectionsDetailsActivity]
+          intent.putExtra(startPosition, c.position)
+          intent.putExtra(indexColorToolbar, c.themedColorIndex)
+          intent.putExtra(iconToolbar, c.icon)
+          uiStartIntentWithOptions(intent, options)
         } getOrElse Ui.nop
-      } <~ vTag(R.id.use_layer_hardware, "")
-    )
-  )
+      } <~ On.longClick {
+        for {
+          c <- collection
+          activity <- activity[LauncherActivity]
+        } yield {
+          activity.removeCollection(c)
+        }
+        Ui(true)
+      } <~ vTag(R.id.use_layer_hardware, "")))
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)

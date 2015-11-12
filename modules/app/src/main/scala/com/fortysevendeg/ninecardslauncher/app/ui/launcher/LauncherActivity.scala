@@ -7,14 +7,14 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.{RemoveCardDialogFragment, ActionsScreenListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -44,6 +44,8 @@ class LauncherActivity
     case Answer(t) => t
     case _ => getDefaultTheme
   }
+
+  val tagDialog = "dialog"
 
   val playStorePackage = "com.android.vending"
 
@@ -95,7 +97,19 @@ class LauncherActivity
     case _ => super.dispatchKeyEvent(event)
   }
 
-  def addNewCollection(collection: Collection) = runUi(addCollection(collection))
+  def addNewCollection(collection: Collection) = runUi(uiAddCollection(collection))
+
+  def removeCollection(collection: Collection) = {
+    val ft = getSupportFragmentManager.beginTransaction()
+    Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(null)
+    val dialog = new RemoveCollectionDialogFragment(() => {
+      Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
+        onResult = (_) => uiRemoveCollection(collection)
+      )
+    })
+    dialog.show(ft, tagDialog)
+  }
 
   private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
     onResult = {

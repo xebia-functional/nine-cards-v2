@@ -77,6 +77,8 @@
 
     <string name="addMyCollection">Add My Collections</string>
 
+    <string name="removeCollectionMessage">Are you sure that you want remove this collection?</string>
+
     <!-- Collections Detail -->
 
     <string name="applications">Applications</string>
