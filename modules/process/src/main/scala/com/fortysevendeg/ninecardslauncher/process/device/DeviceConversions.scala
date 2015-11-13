@@ -114,8 +114,7 @@ trait DeviceConversions {
   def toCallData(item: CallServices): CallData =
     CallData(
       date = item.date,
-      callType = CallType(item.callType)
-    )
+      callType = CallType(item.callType))
 
   def toContactSeq(items: Seq[ContactServices]): Seq[Contact] = items map toContact
 
