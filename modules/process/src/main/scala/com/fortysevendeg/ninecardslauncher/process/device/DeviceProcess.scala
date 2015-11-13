@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.device
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Shortcut, App, Contact}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Widget, Shortcut, App, Contact}
 
 trait DeviceProcess {
 
@@ -87,4 +87,11 @@ trait DeviceProcess {
    * @throws AppException if exist some problem to get the app or updating it
    */
   def updateApp(packageName: String)(implicit context: ContextSupport): ServiceDef2[Unit, AppException]
+
+  /**
+   * Get the widgets availabla on the phone
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Widget]
+   * @throws WidgetException if exist some problem to get the widgets
+   */
+  def getWidgets(implicit context: ContextSupport): ServiceDef2[Seq[Widget], WidgetException]
 }

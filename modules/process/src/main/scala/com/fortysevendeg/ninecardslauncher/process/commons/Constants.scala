@@ -83,6 +83,7 @@ object CardType {
   val email = "EMAIL"
   val sms = "SMS"
   val shortcut = "SHORTCUT"
+  val recommendedApp = "RECOMMENDED_APP" // DON'T USE this type. Only for compatibility with 9cards 1.0
 }
 
 object NineCardsMoments {
@@ -96,4 +97,9 @@ object Spaces {
   val numSpaces = 9
   val numInLine = 3
   val minAppsToAdd = 4
+}
+
+object Dimensions {
+  val cellSize = 70
+  val margins = 30
 }

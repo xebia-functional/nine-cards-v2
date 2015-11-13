@@ -8,8 +8,6 @@ trait ContextSupportPreferences {
 
   self: ContextSupport =>
 
-  def context: Context
-
   override def getAppIconsDir =
     context.getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE)
 

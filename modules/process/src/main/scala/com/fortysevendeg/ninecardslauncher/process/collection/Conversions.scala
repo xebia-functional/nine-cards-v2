@@ -161,11 +161,7 @@ trait Conversions {
     notification = card.notification)
 
   def toInstalledApp(cards: Seq[ServicesCard], app: Application)(implicit contextSupport: ContextSupport): Seq[ServicesCard] = {
-    val intent = NineCardIntent(NineCardIntentExtras(
-      package_name = Option(app.packageName),
-      class_name = Option(app.className)))
-    intent.setAction(openApp)
-    intent.setClassName(app.packageName, app.className)
+    val intent = toNineCardIntent(app)
     cards map (_.copy(
       term = app.name,
       cardType = CardType.app,
@@ -209,6 +205,15 @@ trait Conversions {
     intent
   }
 
+  def toNineCardIntent(app: Application) = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(app.packageName),
+      class_name = Option(app.className)))
+    intent.setAction(openApp)
+    intent.setClassName(app.packageName, app.className)
+    intent
+  }
+
   def toAddCardRequestByContacts(items: Seq[UnformedContact]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestByContact(zipped._1, zipped._2))
 
@@ -239,8 +244,8 @@ trait Conversions {
       (intent, CardType.app)
   }
 
-  private[this] def jsonToNineCardIntent(json: String) = Json.parse(json).as[NineCardIntent]
+  def jsonToNineCardIntent(json: String) = Json.parse(json).as[NineCardIntent]
 
-  private[this] def nineCardIntentToJson(intent: NineCardIntent) = Json.toJson(intent).toString()
+  def nineCardIntentToJson(intent: NineCardIntent) = Json.toJson(intent).toString()
 
 }

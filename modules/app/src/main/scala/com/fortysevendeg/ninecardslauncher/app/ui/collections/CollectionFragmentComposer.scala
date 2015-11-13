@@ -167,8 +167,7 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
 
   runUi(
     (content <~ rootStyle(heightCard)) ~
-      (iconContent <~ iconContentStyle(heightCard)) ~
-      (name <~ nameStyle))
+      (iconContent <~ iconContentStyle(heightCard)))
 
   def bind(card: Card, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     (icon <~ iconCardTransform(card)) ~
@@ -176,7 +175,8 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
       (content <~ vTag2(position)) ~
       (badge <~ (getBadge(card.cardType) map {
         ivSrc(_) + vVisible
-      } getOrElse vGone))
+      } getOrElse vGone)) ~
+      (name <~ nameStyle(card.cardType))
 
   private[this] def getBadge(cardType: String): Option[Int] = cardType match {
     case CardType.phone => Option(R.drawable.badge_phone)

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiRecommendationService, ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
@@ -18,7 +18,8 @@ class ApiServicesImpl(
   apiUserService: ApiUserService,
   googlePlayService: ApiGooglePlayService,
   userConfigService: ApiUserConfigService,
-  recommendationService: ApiRecommendationService)
+  recommendationService: ApiRecommendationService,
+  sharedCollectionsService: ApiSharedCollectionsService)
   extends ApiServices
   with Conversions
   with ImplicitsApiServiceExceptions {
@@ -48,10 +49,13 @@ class ApiServicesImpl(
 
   val categoryNotFoundMessage = "Google Play Category not found"
 
+  val shareCollectionNotFoundMessage = "Shared Collections not found"
+
   import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
   import com.fortysevendeg.ninecardslauncher.api.reads.RecommendationImplicits._
+  import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits._
 
   override def login(
     email: String,
@@ -170,6 +174,17 @@ class ApiServicesImpl(
         toRecommendationRequest(categories, likePackages, excludePackages, limit), requestConfig.toHeader)
       recommendation <- readOption(response.data, categoryNotFoundMessage)
     } yield RecommendationResponse(response.statusCode, toPlayAppSeq(recommendation))).resolve[ApiServiceException]
+
+  override def getSharedCollectionsByCategory(
+    category: String,
+    collectionType: String,
+    offset: Int,
+    limit: Int)(implicit requestConfig: RequestConfig) =
+    (for {
+      response <- sharedCollectionsService.getSharedCollectionListByCategory(
+        collectionType, category, offset, limit, requestConfig.toHeader)
+      sharedCollections <- readOption(response.data, shareCollectionNotFoundMessage)
+    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(sharedCollections.items))).resolve[ApiServiceException]
 
   implicit class RequestHeaderHeader(request: RequestConfig) {
     def toHeader: Seq[(String, String)] =

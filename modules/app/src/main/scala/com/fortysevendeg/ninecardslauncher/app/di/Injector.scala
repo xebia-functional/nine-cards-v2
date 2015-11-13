@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.di
 
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiRecommendationService, ApiGooglePlayService, ApiUserConfigService, ApiUserService}
+import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
 import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
 import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
 import com.fortysevendeg.rest.client.ServiceClient
@@ -54,7 +55,8 @@ class Injector(implicit contextSupport: ContextSupport) {
     apiUserService = new ApiUserService(serviceClient),
     googlePlayService = new ApiGooglePlayService(serviceClient),
     userConfigService = new ApiUserConfigService(serviceClient),
-    recommendationService = new ApiRecommendationService(serviceClient))
+    recommendationService = new ApiRecommendationService(serviceClient),
+    sharedCollectionsService = new ApiSharedCollectionsService(serviceClient))
 
   private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
     contextSupport.getContentResolver)
@@ -86,6 +88,8 @@ class Injector(implicit contextSupport: ContextSupport) {
   private[this] lazy val imageServices = new ImageServicesImpl(
     config = imageServicesConfig)
 
+  private[this] lazy val widgetsServices = new WidgetsServicesImpl()
+
   // Process
 
   lazy val recommendationsProcess = new RecommendationsProcessImpl(
@@ -98,7 +102,9 @@ class Injector(implicit contextSupport: ContextSupport) {
     persistenceServices = persistenceServices,
     shortcutsServices = shortcutsServices,
     contactsServices = contactsServices,
-    imageServices = imageServices)
+    imageServices = imageServices,
+    widgetsServices = widgetsServices
+  )
 
   private[this] lazy val nameCategories: Map[String, String] = (categories map {
     category =>
@@ -123,6 +129,8 @@ class Injector(implicit contextSupport: ContextSupport) {
     apiServices = apiServices,
     persistenceServices = persistenceServices
   )
+
+
 
   lazy val themeProcess = new ThemeProcessImpl()
 

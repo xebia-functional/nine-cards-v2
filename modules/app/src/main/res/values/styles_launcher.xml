@@ -41,14 +41,14 @@
     <style name="LauncherBurgerButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:src">@drawable/icon_menu_search</item>
+        <item name="android:src">@drawable/search_bar_icon_light</item>
     </style>
 
     <style name="LauncherGoogleButton">
         <item name="android:layout_width">0px</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:src">@drawable/logo_google</item>
+        <item name="android:src">@drawable/search_bar_logo_google_light</item>
         <item name="android:scaleType">fitStart</item>
         <item name="android:paddingLeft">@dimen/padding_large</item>
         <item name="android:paddingRight">@dimen/padding_large</item>
