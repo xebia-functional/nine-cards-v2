@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -66,9 +67,9 @@ trait AppsComposer
   def generateAppsAdapter(
     apps: Seq[App],
     filter: AppsFilter,
-    category: String,
+    category: NineCardCategory,
     clickListener: (App) => Unit)(implicit uiContext: UiContext[_]) = {
-    val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
+    val categoryName = resGetString(category.name.toLowerCase()) getOrElse category.name.toLowerCase()
     val adapter = new AppsAdapter(
       initialSeq = generateAppsHeadered(apps, filter, categoryName),
       clickListener = clickListener,
@@ -88,8 +89,8 @@ trait AppsComposer
   def reloadAppsAdapter(
     apps: Seq[App],
     filter: AppsFilter,
-    category: String)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
+    category: NineCardCategory)(implicit uiContext: UiContext[_]): Ui[_] = {
+    val categoryName = resGetString(category.name.toLowerCase()) getOrElse category.name.toLowerCase()
     val appsHeadered = generateAppsHeadered(apps, filter, categoryName)
     showData ~
       (getAdapter map { adapter =>

@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFrag
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityResult, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.types.{FreeCollectionType, CollectionType}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -39,7 +40,7 @@ class NewCollectionFragment
       case (ActivityResult.selectInfoIcon, Activity.RESULT_OK) =>
         Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(NewCollectionFragment.iconRequest) =>
-            runUi(setCategory(extras.getString(NewCollectionFragment.iconRequest)))
+            runUi(setCategory(NineCardCategory(extras.getString(NewCollectionFragment.iconRequest))))
         } getOrElse runUi(showGeneralError)
       case (ActivityResult.selectInfoColor, Activity.RESULT_OK) =>
         Option(data) flatMap (d => Option(d.getExtras)) map {

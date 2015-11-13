@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons.models
 
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.ItemHeadered
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 
 import scala.annotation.tailrec

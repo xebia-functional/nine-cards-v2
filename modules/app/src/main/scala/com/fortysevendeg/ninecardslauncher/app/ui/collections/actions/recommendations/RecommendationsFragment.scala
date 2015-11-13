@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, NineCardIntentConversions, UiContext}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -32,7 +33,7 @@ class RecommendationsFragment
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
     val task = maybeCategory map { category =>
-      di.recommendationsProcess.getRecommendedAppsByCategory(category, packages)
+      di.recommendationsProcess.getRecommendedAppsByCategory(NineCardCategory(category), packages)
     } getOrElse di.recommendationsProcess.getRecommendedAppsByPackages(packages, packages)
 
     Task.fork(task.run).resolveAsyncUi(
