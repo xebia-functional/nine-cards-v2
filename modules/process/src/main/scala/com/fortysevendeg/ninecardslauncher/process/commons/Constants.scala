@@ -66,7 +66,7 @@ object NineCardCategories {
 
 }
 
-object CollectionType {
+object CollectionTypes {
   val apps = "APPS"
   val contacts = "CONTACTS"
   val homeMorning = "HOME_MORNING"

@@ -10,8 +10,8 @@ import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, TextView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
+import com.fortysevendeg.ninecardslauncher.process.types.{SmsCardType, EmailCardType, PhoneCardType, CardType}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import macroid.ContextWrapper
@@ -28,9 +28,9 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     rootView.setOrientation(LinearLayout.VERTICAL)
 
     val views = contact.info map { info =>
-      generateItemsViews(info.phones map (_.number), Seq.empty, CardType.phone, R.string.phones) ++
-        generateItemsViews(info.emails map (_.address), Seq.empty, CardType.email, R.string.emails) ++
-        generateItemsViews(info.phones map (_.number), Seq.empty, CardType.sms, R.string.sms)
+      generateItemsViews(info.phones map (_.number), Seq.empty, PhoneCardType, R.string.phones) ++
+        generateItemsViews(info.emails map (_.address), Seq.empty, EmailCardType, R.string.emails) ++
+        generateItemsViews(info.phones map (_.number), Seq.empty, SmsCardType, R.string.sms)
     } getOrElse Seq.empty
 
     runUi(rootView <~ vgAddViews(views))
@@ -46,7 +46,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     view
   }
 
-  private[this] def createViewItem(data: String, cardType: String) = {
+  private[this] def createViewItem(data: String, cardType: CardType) = {
     val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_item_dialog, null)
     view.findViewById(R.id.contact_dialog_item_text) match {
       case t: TextView => t.setText(data)
@@ -54,9 +54,9 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
         val intent = cardType match {
-          case CardType.email => emailToNineCardIntent(data)
-          case CardType.sms => smsToNineCardIntent(data)
-          case CardType.phone => phoneToNineCardIntent(data)
+          case EmailCardType => emailToNineCardIntent(data)
+          case SmsCardType => smsToNineCardIntent(data)
+          case PhoneCardType => phoneToNineCardIntent(data)
         }
         val card = AddCardRequest(
           term = contact.name,
@@ -78,7 +78,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   private[this] def generateItemsViews(
     items: Seq[String],
     acc: Seq[View],
-    cardType: String,
+    cardType: CardType,
     resHead: Int): Seq[View] = items match {
     case Nil => acc
     case h :: t =>

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.Intent._
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
+import com.fortysevendeg.ninecardslauncher.process.types.CollectionType
 import play.api.libs.json._
 
 import scala.collection.JavaConversions._
@@ -40,7 +41,7 @@ case class FormedCollection(
   sharedCollectionId: Option[String],
   sharedCollectionSubscribed: Option[Boolean],
   items: Seq[FormedItem],
-  collectionType: String,
+  collectionType: CollectionType,
   constrains: Seq[String],
   icon: String,
   category: Option[String])

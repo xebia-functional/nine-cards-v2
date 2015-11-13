@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFrag
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityResult, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.CollectionType
+import com.fortysevendeg.ninecardslauncher.process.types.{FreeCollectionType, CollectionType}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
@@ -53,7 +53,7 @@ class NewCollectionFragment
   private[this] def saveCollection(name: String, icon: String, index: Int) = {
     val request = AddCollectionRequest(
       name = name,
-      collectionType = CollectionType.free,
+      collectionType = FreeCollectionType,
       icon = icon,
       themedColorIndex = index,
       appsCategory = None

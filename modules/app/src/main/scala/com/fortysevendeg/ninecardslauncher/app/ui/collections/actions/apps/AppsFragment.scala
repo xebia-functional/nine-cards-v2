@@ -10,9 +10,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiExtensions, FragmentUiContext, NineCardIntentConversions, UiContext}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import com.fortysevendeg.ninecardslauncher.process.types.{AppCardType, CardType}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
@@ -57,7 +57,7 @@ class AppsFragment
         val card = AddCardRequest(
           term = app.name,
           packageName = Option(app.packageName),
-          cardType = CardType.app,
+          cardType = AppCardType,
           intent = toNineCardIntent(app),
           imagePath = app.imagePath
         )

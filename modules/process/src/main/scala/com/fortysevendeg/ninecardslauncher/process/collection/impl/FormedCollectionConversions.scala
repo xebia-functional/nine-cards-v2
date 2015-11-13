@@ -6,9 +6,10 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
+import com.fortysevendeg.ninecardslauncher.process.types._
+import CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionType, NineCardCategories}
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
@@ -38,7 +39,7 @@ trait FormedCollectionConversions
   def toAddCollectionRequestByFormedCollection(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport) = AddCollectionRequest(
     position = position,
     name = formedCollection.name,
-    collectionType = formedCollection.collectionType,
+    collectionType = formedCollection.collectionType.name,
     icon = formedCollection.icon,
     themedColorIndex = position % numSpaces,
     appsCategory = formedCollection.category,
@@ -94,7 +95,7 @@ trait FormedCollectionConversions
     AddCollectionRequest(
       position = position,
       name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
-      collectionType = CollectionType.apps,
+      collectionType = AppsCollectionType.name,
       icon = category.toLowerCase,
       themedColorIndex = themeIndex,
       appsCategory = Some(category),
@@ -109,7 +110,7 @@ trait FormedCollectionConversions
     AddCollectionRequest(
       position = position,
       name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
-      collectionType = CollectionType.contacts,
+      collectionType = ContactsCollectionType.name,
       icon = category.toLowerCase,
       themedColorIndex = themeIndex,
       appsCategory = None,
@@ -141,8 +142,8 @@ trait FormedCollectionConversions
         val nineCardIntent = jsonToNineCardIntent(item.intent)
 
         // We need adapt items to apps installed in cell phone
-        val itemAdapted: FormedItem = item.itemType match {
-          case `app` | `recommendedApp` =>
+        val itemAdapted: FormedItem = CardType(item.itemType) match {
+          case AppCardType | RecommendedAppCardType =>
             (for {
               packageName <- nineCardIntent.extractPackageName()
               className <- nineCardIntent.extractClassName()
@@ -152,19 +153,19 @@ trait FormedCollectionConversions
                 val classChanged = !(appInstalled.className == className)
                 if (classChanged) {
                   val json = nineCardIntentToJson(toNineCardIntent(appInstalled))
-                  item.copy(intent = json, itemType = app)
+                  item.copy(intent = json, itemType = AppCardType.name)
                 } else {
-                  item.copy(itemType = app)
+                  item.copy(itemType = AppCardType.name)
                 }
-              } getOrElse item.copy(itemType = noInstalledApp)
-            }) getOrElse item.copy(itemType = noInstalledApp)
+              } getOrElse item.copy(itemType = NoInstalledAppCardType.name)
+            }) getOrElse item.copy(itemType = NoInstalledAppCardType.name)
           case _ => item
         }
 
         val nineCardIntentAdapted = jsonToNineCardIntent(itemAdapted.intent)
 
-        val path = itemAdapted.itemType match {
-          case `app` =>
+        val path = CardType(itemAdapted.itemType) match {
+          case AppCardType =>
             for {
               packageName <- nineCardIntentAdapted.extractPackageName()
               className <- nineCardIntentAdapted.extractClassName()
@@ -173,9 +174,9 @@ trait FormedCollectionConversions
               // If the path using ClassName don't exist, we use a path using only packagename
               if (new File(pathWithClassName).exists) pathWithClassName else resourceUtils.getPath(packageName)
             }
-          case `phone` | `sms` =>
+          case PhoneCardType | SmsCardType =>
             fetchPhotoUri(nineCardIntentAdapted.extractPhone(), contactsServices.fetchContactByPhoneNumber)
-          case `email` =>
+          case EmailCardType =>
             fetchPhotoUri(nineCardIntentAdapted.extractEmail(), contactsServices.fetchContactByEmail)
           case _ => None
         }

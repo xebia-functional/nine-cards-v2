@@ -6,13 +6,13 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
+import com.fortysevendeg.ninecardslauncher.process.types.{CardType, NoInstalledAppCardType}
 import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT
 
@@ -108,7 +108,7 @@ class CollectionProcessImpl(
     (for {
       app <- appsServices.getApplication(packageName)
       cardList <- persistenceServices.fetchCards
-      cardsNoInstalled = cardList filter (card => card.cardType == CardType.noInstalledApp && card.packageName.contains(packageName))
+      cardsNoInstalled = cardList filter (card => CardType(card.cardType) == NoInstalledAppCardType && card.packageName.contains(packageName))
       card = toCardSeq(toInstalledApp(cardsNoInstalled, app))
       _ <- updateCardList(toCardSeq(toInstalledApp(cardsNoInstalled, app)))
     } yield ()).resolve[CardException]

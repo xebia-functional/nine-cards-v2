@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.userconfig
 
+import com.fortysevendeg.ninecardslauncher.process.types.CollectionType
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfigCollectionItem, UserConfigCollection, UserConfigDevice, UserConfig}
 
@@ -24,7 +25,7 @@ trait UserConfigConversions {
     sharedCollectionId = userConfigCollection.sharedCollectionId,
     sharedCollectionSubscribed = userConfigCollection.sharedCollectionSubscribed,
     items = userConfigCollection.items map toUserCollectionItem,
-    collectionType = userConfigCollection.collectionType,
+    collectionType = CollectionType(userConfigCollection.collectionType),
     constrains = userConfigCollection.constrains,
     wifi = userConfigCollection.wifi,
     occurrence = userConfigCollection.occurrence,
