@@ -14,9 +14,15 @@ trait PrivateCollectionsTasks
   def getPrivateCollections(implicit di: Injector, contextSupport: ContextSupport):
   ServiceDef2[Seq[PrivateCollection], AppException with CollectionException] =
     for {
+      collections <- di.collectionProcess.getCollections
       apps <- di.deviceProcess.getSavedApps(GetByName)
-      collections <- di.collectionProcess.generatePrivateCollections(toSeqUnformedApp(apps))
-    } yield collections
+      newCollections <- di.collectionProcess.generatePrivateCollections(toSeqUnformedApp(apps))
+    } yield newCollections filterNot { newCollection =>
+      newCollection.appsCategory match {
+        case Some(category) => (collections flatMap (_.appsCategory)) contains category
+        case _ => false
+      }
+    }
 
   def addCollection(privateCollection: PrivateCollection)(implicit di: Injector, contextSupport: ContextSupport):
   ServiceDef2[Collection, CollectionException with CardException] =
