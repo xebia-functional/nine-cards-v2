@@ -1,17 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.types.{CollectionType, CardType}
 
 case class CollectionProcessConfig(
-  namesCategories: Map[String, String])
+  namesCategories: Map[NineCardCategory, String])
 
 case class AddCollectionRequest(
   name: String,
   collectionType: CollectionType,
   icon: String,
   themedColorIndex: Int,
-  appsCategory: Option[String] = None,
+  appsCategory: Option[NineCardCategory] = None,
   constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
@@ -28,4 +29,4 @@ case class EditCollectionRequest(
   name: String,
   icon: String,
   themedColorIndex: Int,
-  appsCategory: Option[String] = None)
+  appsCategory: Option[NineCardCategory] = None)

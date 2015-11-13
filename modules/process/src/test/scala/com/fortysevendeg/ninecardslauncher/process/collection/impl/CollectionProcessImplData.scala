@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection.impl
 import com.fortysevendeg.ninecardslauncher.process.collection.{EditCollectionRequest, AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
@@ -14,11 +14,6 @@ import play.api.libs.json.Json
 import scala.util.Random
 
 trait CollectionProcessImplData {
-
-  val categories = Seq(game, booksAndReference, business, comics, communication, education,
-    entertainment, finance, healthAndFitness, librariesAndDemo, lifestyle, appWallpaper,
-    mediaAndVideo, medical, musicAndAudio, newsAndMagazines, personalization, photography,
-    productivity, shopping, social, sports, tools, transportation, travelAndLocal, weather, appWidgets)
 
   val collectionId = Random.nextInt(10)
   val nonExistentCollectionId = Random.nextInt(10) + 100

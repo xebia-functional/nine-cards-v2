@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.userconfig
 
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.types.CollectionType
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models._
 import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfigCollectionItem, UserConfigCollection, UserConfigDevice, UserConfig}
@@ -30,14 +31,14 @@ trait UserConfigConversions {
     wifi = userConfigCollection.wifi,
     occurrence = userConfigCollection.occurrence,
     icon = userConfigCollection.icon,
-    category = userConfigCollection.category
+    category = userConfigCollection.category map(NineCardCategory(_))
   )
 
   def toUserCollectionItem(item: UserConfigCollectionItem): UserCollectionItem = UserCollectionItem(
     itemType = item.itemType,
     title = item.title,
     intent = item.metadata.toString(),
-    categories = item.categories
+    categories = Option(item.categories.getOrElse(Nil) map(NineCardCategory(_)))
   )
 
 }

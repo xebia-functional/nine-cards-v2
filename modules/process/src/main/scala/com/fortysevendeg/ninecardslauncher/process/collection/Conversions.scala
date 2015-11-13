@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.types._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
@@ -24,7 +25,7 @@ trait Conversions {
     collectionType = CollectionType(servicesCollection.collectionType),
     icon = servicesCollection.icon,
     themedColorIndex = servicesCollection.themedColorIndex,
-    appsCategory = servicesCollection.appsCategory,
+    appsCategory = servicesCollection.appsCategory map(NineCardCategory(_)),
     constrains = servicesCollection.constrains,
     originalSharedCollectionId = servicesCollection.originalSharedCollectionId,
     sharedCollectionId = servicesCollection.sharedCollectionId,
@@ -37,7 +38,7 @@ trait Conversions {
     collectionType = addCollectionRequest.collectionType.name,
     icon = addCollectionRequest.icon,
     themedColorIndex = addCollectionRequest.themedColorIndex,
-    appsCategory = addCollectionRequest.appsCategory,
+    appsCategory = addCollectionRequest.appsCategory map(_.name),
     constrains = addCollectionRequest.constrains,
     originalSharedCollectionId = addCollectionRequest.originalSharedCollectionId,
     sharedCollectionId = addCollectionRequest.sharedCollectionId,
@@ -54,7 +55,7 @@ trait Conversions {
     collectionType = collection.collectionType.name,
     icon = collection.icon,
     themedColorIndex = collection.themedColorIndex,
-    appsCategory = collection.appsCategory,
+    appsCategory = collection.appsCategory map(_.name),
     constrains = collection.constrains,
     originalSharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionId = collection.sharedCollectionId,

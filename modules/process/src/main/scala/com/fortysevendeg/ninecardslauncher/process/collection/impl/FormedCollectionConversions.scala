@@ -6,10 +6,9 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.types._
-import CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
@@ -42,7 +41,7 @@ trait FormedCollectionConversions
     collectionType = formedCollection.collectionType.name,
     icon = formedCollection.icon,
     themedColorIndex = position % numSpaces,
-    appsCategory = formedCollection.category,
+    appsCategory = formedCollection.category map(_.name),
     constrains = None,
     originalSharedCollectionId = formedCollection.sharedCollectionId,
     sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
@@ -68,7 +67,7 @@ trait FormedCollectionConversions
   def createCollections(
     apps: Seq[UnformedApp],
     contacts: Seq[UnformedContact],
-    categories: Seq[String]) = {
+    categories: Seq[NineCardCategory]) = {
     val collections = generateAddCollections(apps, categories, Seq.empty)
     if (contacts.length > minAppsToAdd) collections :+ toAddCollectionRequestByContact(contacts.take(numSpaces), collections.length)
     else collections
@@ -77,7 +76,7 @@ trait FormedCollectionConversions
   @tailrec
   private[this] def generateAddCollections(
     items: Seq[UnformedApp],
-    categories: Seq[String],
+    categories: Seq[NineCardCategory],
     acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = {
     categories match {
       case Nil => acc
@@ -88,30 +87,30 @@ trait FormedCollectionConversions
     }
   }
 
-  private[this] def generateAddCollection(items: Seq[UnformedApp], category: String, position: Int): AddCollectionRequest = {
+  private[this] def generateAddCollection(items: Seq[UnformedApp], category: NineCardCategory, position: Int): AddCollectionRequest = {
     // TODO We should sort the application using an endpoint in the new sever
-    val appsCategory = items.filter(_.category.contains(category)).take(numSpaces)
+    val appsCategory = items.filter(_.category.name.contains(category.name)).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
-      name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
+      name = collectionProcessConfig.namesCategories.getOrElse(category, category.name.toLowerCase),
       collectionType = AppsCollectionType.name,
-      icon = category.toLowerCase,
+      icon = category.name.toLowerCase,
       themedColorIndex = themeIndex,
-      appsCategory = Some(category),
+      appsCategory = Some(category.name),
       sharedCollectionSubscribed = Option(false),
       cards = toAddCardRequestSeq(appsCategory)
     )
   }
 
   def toAddCollectionRequestByContact(contacts: Seq[UnformedContact], position: Int): AddCollectionRequest = {
-    val category = NineCardCategories.contacts
+    val category = ContactsCategory
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
-      name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
+      name = collectionProcessConfig.namesCategories.getOrElse(category, category.name.toLowerCase),
       collectionType = ContactsCollectionType.name,
-      icon = category.toLowerCase,
+      icon = category.name.toLowerCase,
       themedColorIndex = themeIndex,
       appsCategory = None,
       sharedCollectionSubscribed = Option(false),

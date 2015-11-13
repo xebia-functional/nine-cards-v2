@@ -2,13 +2,14 @@ package com.fortysevendeg.ninecardslauncher.process.device.models
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
 
 case class App(
   name: String,
   packageName: String,
   className: String,
-  category: String,
+  category: NineCardCategory,
   imagePath: String,
   colorPrimary: String,
   dateInstalled: Double,

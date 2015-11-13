@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
@@ -31,7 +31,7 @@ class CollectionProcessImpl(
   override val resourceUtils: ResourceUtils = new ResourceUtils
 
   override def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = Service {
-    val tasks = createCollections(apps, contacts, categories) map (persistenceServices.addCollection(_).run)
+    val tasks = createCollections(apps, contacts, allCategories) map (persistenceServices.addCollection(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
   }.resolve[CollectionException]
 

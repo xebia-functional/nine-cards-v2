@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.device
 import android.content.{Intent, ComponentName}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.commons.Dimensions._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayPackage, GooglePlayApp}
@@ -33,7 +34,7 @@ trait DeviceConversions {
       name = app.name,
       packageName = app.packageName,
       className = app.className,
-      category = app.category,
+      category = NineCardCategory(app.category),
       imagePath = app.imagePath,
       colorPrimary = app.colorPrimary,
       dateInstalled = app.dateInstalled,
@@ -41,12 +42,12 @@ trait DeviceConversions {
       version = app.version,
       installedFromGooglePlay = app.installedFromGooglePlay)
 
-  def toAddAppRequest(item: Application, category: String, imagePath: String): AddAppRequest =
+  def toAddAppRequest(item: Application, category: NineCardCategory, imagePath: String): AddAppRequest =
       AddAppRequest(
         name = item.name,
         packageName = item.packageName,
         className = item.className,
-        category = category,
+        category = category.name,
         imagePath = imagePath,
         colorPrimary = item.colorPrimary,
         dateInstalled = item.dateInstalled,
@@ -54,13 +55,13 @@ trait DeviceConversions {
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
 
-  def toUpdateAppRequest(id: Int, item: Application, category: String, imagePath: String): UpdateAppRequest =
+  def toUpdateAppRequest(id: Int, item: Application, category: NineCardCategory, imagePath: String): UpdateAppRequest =
       UpdateAppRequest(
         id = id,
         name = item.name,
         packageName = item.packageName,
         className = item.className,
-        category = category,
+        category = category.name,
         imagePath = imagePath,
         colorPrimary = item.colorPrimary,
         dateInstalled = item.dateInstalled,
