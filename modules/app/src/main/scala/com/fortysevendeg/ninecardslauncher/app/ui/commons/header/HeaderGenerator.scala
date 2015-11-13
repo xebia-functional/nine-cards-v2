@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons.header
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.HeaderUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.{AppHeadered, ContactHeadered}
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByCategory, GetByName, GetByInstallDate}
 import com.fortysevendeg.ninecardslauncher2.R
@@ -56,9 +57,11 @@ trait HeaderGenerator extends HeaderUtils {
   private[this] def generateAppHeader(app: App, getAppOrder: GetAppOrder)(implicit cw: ContextWrapper): String =
     getAppOrder match {
       case GetByName(_) => getCurrentChar(app.name)
-      case GetByCategory(_) => resGetString(app.category.toLowerCase) getOrElse app.category.toLowerCase()
+      case GetByCategory(_) =>
+        val appCategory = gamesCategories.find(_ == app.category) getOrElse app.category
+        resGetString(appCategory.toLowerCase) getOrElse appCategory.toLowerCase()
       case GetByInstallDate(_) =>
-        val diff = System.currentTimeMillis() - app.dateUpdate
+        val diff = System.currentTimeMillis() - app.dateInstalled
         resGetString(findStringForDiff(diff))
     }
 
