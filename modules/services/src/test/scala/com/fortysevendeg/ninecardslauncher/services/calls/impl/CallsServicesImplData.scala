@@ -12,7 +12,6 @@ trait CallsServicesImplData {
 
   val seqPhones = Seq(phoneHome, phoneWork, phoneMobile, phoneOther)
   val seqPhoneCategory = Seq(PhoneHome, PhoneWork, PhoneMobile, PhoneOther)
-  val seqCallType = Seq("IncomingType", "OutgoingType", "MissedType", "OtherType")
 
   val calls = generateCalls
 
@@ -22,8 +21,8 @@ trait CallsServicesImplData {
         seqPhones(i),
         Option(s"contact$i"),
         seqPhoneCategory(i),
-        i.toString,
-        seqCallType(i))
+        1L,
+        i)
     }
 
 }
