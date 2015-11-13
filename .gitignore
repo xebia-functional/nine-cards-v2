@@ -8,6 +8,7 @@ dist
 /.ivy*
 debug.properties
 release.properties
+/fabric.properties
 
 # sbt specific
 /.sbt

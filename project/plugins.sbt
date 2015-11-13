@@ -11,3 +11,5 @@ resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releas
 addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "1.1.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-s3" % "0.8-link")
+
+addSbtPlugin("de.johoop" % "ant4sbt" % "1.1.2")
