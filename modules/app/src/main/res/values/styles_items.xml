@@ -240,6 +240,7 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
         <item name="android:layout_marginRight">@dimen/padding_default</item>
+        <item name="android:paddingLeft">@dimen/padding_small</item>
     </style>
 
     <style name="PrivateCollectionsItemLine">
