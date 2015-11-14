@@ -22,8 +22,8 @@ trait CallsServicesImplData {
         seqPhones(i),
         Option(s"contact$i"),
         seqPhoneCategory(i),
-        i.toString,
-        seqCallType(i))
+        1L,
+        i)
     }
 
 }

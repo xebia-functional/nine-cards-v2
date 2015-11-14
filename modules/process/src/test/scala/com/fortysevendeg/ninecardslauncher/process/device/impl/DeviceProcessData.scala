@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.drawable.Drawable
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.types._
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
@@ -26,7 +27,7 @@ trait DeviceProcessData {
   val packageName1 = "com.fortysevendeg.scala.android"
   val className1 = "ScalaAndroidActivity"
   val path1 = "/example/path1"
-  val category1 = "category1"
+  val category1 = Game
   val imagePath1 = "imagePath1"
   val resourceIcon1 = 1
   val colorPrimary1 = "colorPrimary"
@@ -39,7 +40,7 @@ trait DeviceProcessData {
   val packageName2 = "com.fortysevendeg.example"
   val className2 = "ExampleActivity"
   val path2 = "/example/path2"
-  val category2 = "category1"
+  val category2 = BooksAndReference
   val imagePath2 = "imagePath1"
   val resourceIcon2 = 2
   val colorPrimary2 = "colorPrimary"
@@ -52,7 +53,7 @@ trait DeviceProcessData {
   val packageName3 = "com.fortysevendeg.scala.api"
   val className3 = "ScalaApiActivity"
   val path3 = "/example/path3"
-  val category3 = "category1"
+  val category3 = Business
   val imagePath3 = "imagePath1"
   val resourceIcon3 = 3
   val colorPrimary3 = "colorPrimary"
@@ -65,7 +66,7 @@ trait DeviceProcessData {
   val packageName4 = "com.fortysevendeg.scala.last"
   val className4 = "LastAppActivity"
   val path4 = "/example/path4"
-  val category4 = "category1"
+  val category4 = Comics
   val imagePath4 = "imagePath1"
   val resourceIcon4 = 4
   val colorPrimary4 = "colorPrimary"
@@ -209,7 +210,7 @@ trait DeviceProcessData {
       name = name2,
       packageName = packageName2,
       className = className2,
-      category = category1,
+      category = category2,
       imagePath = imagePath2,
       colorPrimary = colorPrimary2,
       dateInstalled = dateInstalled2,
@@ -220,7 +221,7 @@ trait DeviceProcessData {
       name = name3,
       packageName = packageName3,
       className = className3,
-      category = category1,
+      category = category3,
       imagePath = imagePath3,
       colorPrimary = colorPrimary3,
       dateInstalled = dateInstalled3,
@@ -235,7 +236,7 @@ trait DeviceProcessData {
       name = name1,
       packageName = packageName1,
       className = className1,
-      category = category1,
+      category = category1.name,
       imagePath = imagePath1,
       colorPrimary = colorPrimary1,
       dateInstalled = dateInstalled1,
@@ -247,7 +248,7 @@ trait DeviceProcessData {
       name = name2,
       packageName = packageName2,
       className = className2,
-      category = category1,
+      category = category2.name,
       imagePath = imagePath2,
       colorPrimary = colorPrimary2,
       dateInstalled = dateInstalled2,
@@ -259,7 +260,7 @@ trait DeviceProcessData {
       name = name3,
       packageName = packageName3,
       className = className3,
-      category = category1,
+      category = category3.name,
       imagePath = imagePath3,
       colorPrimary = colorPrimary3,
       dateInstalled = dateInstalled3,

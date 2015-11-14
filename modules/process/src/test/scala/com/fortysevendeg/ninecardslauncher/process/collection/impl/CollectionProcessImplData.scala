@@ -3,8 +3,12 @@ package com.fortysevendeg.ninecardslauncher.process.collection.impl
 import com.fortysevendeg.ninecardslauncher.process.collection.{EditCollectionRequest, AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
+import com.fortysevendeg.ninecardslauncher.process.types.{CardType, CollectionType}
+import com.fortysevendeg.ninecardslauncher.process.types.CardType._
+import com.fortysevendeg.ninecardslauncher.process.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
 import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
@@ -18,10 +22,11 @@ trait CollectionProcessImplData {
   val collectionId = Random.nextInt(10)
   val nonExistentCollectionId = Random.nextInt(10) + 100
   val name: String = Random.nextString(5)
-  val collectionType: String = Random.nextString(5)
+  val collectionType: CollectionType = collectionTypes(Random.nextInt(collectionTypes.length))
   val icon: String = Random.nextString(5)
   val themedColorIndex: Int = Random.nextInt(10)
-  val appsCategory: String = Random.nextString(5)
+  val appsCategory: NineCardCategory = appsCategories(Random.nextInt(appsCategories.length))
+  val appsCategoryName = appsCategory.name
   val constrains: String = Random.nextString(5)
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
@@ -40,6 +45,27 @@ trait CollectionProcessImplData {
   val dateUpdate1 = 1L
   val version1 = "22"
   val installedFromGooglePlay1 = true
+
+  val cardId = Random.nextInt(10)
+  val position: Int = Random.nextInt(10)
+  val newPosition: Int = Random.nextInt(10)
+  val oldPosition: Int = Random.nextInt(10)
+  val micros: Int = Random.nextInt(10)
+  val term: String = Random.nextString(5)
+  val packageName = Random.nextString(5)
+  val className = Random.nextString(5)
+  val cardType: CardType = cardTypes(Random.nextInt(cardTypes.length))
+  val imagePath: String = Random.nextString(5)
+  val starRating = Random.nextDouble()
+  val numDownloads = Random.nextString(5)
+  val ratingsCount = Random.nextInt()
+  val commentCount = Random.nextInt()
+  val notification: String = Random.nextString(5)
+  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+
+  val lookupKey: String = Random.nextString(5)
+  val photoUri: String = Random.nextString(10)
+  val phoneNumber: String = Random.nextString(5)
 
   val application1 = Application(
     name = name1,
@@ -60,46 +86,24 @@ trait CollectionProcessImplData {
     id = collectionId1,
     position = position,
     name = name,
-    collectionType = collectionType,
+    collectionType = collectionType.name,
     icon = icon,
     themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory),
+    appsCategory = Option(appsCategory.name),
     constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
-
-
-  val cardId = Random.nextInt(10)
-  val position: Int = Random.nextInt(10)
-  val newPosition: Int = Random.nextInt(10)
-  val oldPosition: Int = Random.nextInt(10)
-  val micros: Int = Random.nextInt(10)
-  val term: String = Random.nextString(5)
-  val packageName = Random.nextString(5)
-  val className = Random.nextString(5)
-  val cardType: String = Random.nextString(5)
-  val imagePath: String = Random.nextString(5)
-  val starRating = Random.nextDouble()
-  val numDownloads = Random.nextString(5)
-  val ratingsCount = Random.nextInt()
-  val commentCount = Random.nextInt()
-  val notification: String = Random.nextString(5)
-  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-
-  val lookupKey: String = Random.nextString(5)
-  val photoUri: String = Random.nextString(10)
-  val phoneNumber: String = Random.nextString(5)
 
   def createSeqCollection(
     num: Int = 5,
     id: Int = collectionId,
     position: Int = position,
     name: String = name,
-    collectionType: String = collectionType,
+    collectionType: CollectionType = collectionType,
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
-    appsCategory: String = appsCategory,
+    appsCategory: NineCardCategory = appsCategory,
     constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
@@ -126,10 +130,10 @@ trait CollectionProcessImplData {
     id: Int = collectionId,
     position: Int = position,
     name: String = name,
-    collectionType: String = collectionType,
+    collectionType: CollectionType = collectionType,
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
-    appsCategory: String = appsCategory,
+    appsCategory: NineCardCategory = appsCategory,
     constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
@@ -139,10 +143,10 @@ trait CollectionProcessImplData {
         id = id + item,
         position = position,
         name = name,
-        collectionType = collectionType,
+        collectionType = collectionType.name,
         icon = icon,
         themedColorIndex = themedColorIndex,
-        appsCategory = Option(appsCategory),
+        appsCategory = Option(appsCategory.name),
         constrains = Option(constrains),
         originalSharedCollectionId = Option(originalSharedCollectionId),
         sharedCollectionId = Option(sharedCollectionId),
@@ -155,7 +159,7 @@ trait CollectionProcessImplData {
     micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
-    cardType: String = cardType,
+    cardType: CardType = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
     starRating: Double = starRating,
@@ -182,7 +186,7 @@ trait CollectionProcessImplData {
     micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
-    cardType: String = cardType,
+    cardType: CardType = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
     starRating: Double = starRating,
@@ -195,7 +199,7 @@ trait CollectionProcessImplData {
         micros = micros,
         term = term,
         packageName = Option(packageName),
-        cardType = cardType,
+        cardType = cardType.name,
         intent = intent,
         imagePath = imagePath,
         starRating = Option(starRating),
@@ -209,7 +213,7 @@ trait CollectionProcessImplData {
         packageName = packageName,
         className = className,
         imagePath = imagePath,
-        category = categories(Random.nextInt(categories.length)))
+        category = appsCategory)
     }
 
   def createSeqUnformedContacs(num: Int = 15) =
@@ -234,24 +238,24 @@ trait CollectionProcessImplData {
   val unformedApps = createSeqUnformedApps()
   val unformedContacts = createSeqUnformedContacs()
 
-  val categoriesUnformedApps: Seq[String] = categories flatMap { category =>
+  val categoriesUnformedApps: Seq[NineCardCategory] = allCategories flatMap { category =>
     val count = unformedApps.count(_.category == category)
     if (count >= minAppsToAdd) Option(category) else None
   }
 
-  val categoriesUnformedItems: Seq[String] = {
+  val categoriesUnformedItems: Seq[NineCardCategory] = {
     val count = unformedContacts.size
-    if (count >= minAppsToAdd) categoriesUnformedApps :+ contacts else categoriesUnformedApps
+    if (count >= minAppsToAdd) categoriesUnformedApps :+ ContactsCategory else categoriesUnformedApps
   }
 
   val collectionForUnformedItem = servicesModel.Collection(
     id = position,
     position = position,
     name = name,
-    collectionType = collectionType,
+    collectionType = collectionType.name,
     icon = icon,
     themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory),
+    appsCategory = Option(appsCategory.name),
     constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
@@ -268,7 +272,7 @@ trait CollectionProcessImplData {
         collectionType = collectionType,
         constrains = Seq(constrains),
         icon = icon,
-        category = Option(categories(Random.nextInt(categories.length))))
+        category = Option(appsCategory))
     }
 
   val seqFormedCollection = createSeqFormedCollection()
@@ -299,10 +303,10 @@ trait CollectionProcessImplData {
     id = seqServicesCollection.size,
     position = seqServicesCollection.size,
     name = name,
-    collectionType = collectionType,
+    collectionType = collectionType.name,
     icon = icon,
     themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory),
+    appsCategory = Option(appsCategoryName),
     constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
@@ -361,7 +365,7 @@ trait CollectionProcessImplData {
     micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
-    cardType: String = cardType,
+    cardType: CardType = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
     starRating: Double = starRating,

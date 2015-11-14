@@ -36,9 +36,9 @@ case object FreeCollectionType extends CollectionType {
 
 object CollectionType {
 
-  val cases = Seq(AppsCollectionType, ContactsCollectionType, HomeMorningCollectionType, HomeNightCollectionType, WorkCollectionType, TransitCollectionType, FreeCollectionType)
+  val collectionTypes = Seq(AppsCollectionType, ContactsCollectionType, HomeMorningCollectionType, HomeNightCollectionType, WorkCollectionType, TransitCollectionType, FreeCollectionType)
 
-  def apply(name: String): CollectionType = cases find (_.name == name) getOrElse
+  def apply(name: String): CollectionType = collectionTypes find (_.name == name) getOrElse
     (throw new IllegalArgumentException(s"$name not found"))
 
 }

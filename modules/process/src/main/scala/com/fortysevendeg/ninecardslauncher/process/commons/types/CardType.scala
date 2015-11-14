@@ -36,9 +36,9 @@ case object RecommendedAppCardType extends CardType {
 
 object CardType {
 
-  val cases = Seq(AppCardType, NoInstalledAppCardType, PhoneCardType, EmailCardType, SmsCardType, ShortcutCardType, RecommendedAppCardType)
+  val cardTypes = Seq(AppCardType, NoInstalledAppCardType, PhoneCardType, EmailCardType, SmsCardType, ShortcutCardType, RecommendedAppCardType)
 
-  def apply(name: String): CardType = cases find (_.name == name) getOrElse
+  def apply(name: String): CardType = cardTypes find (_.name == name) getOrElse
     (throw new IllegalArgumentException(s"$name not found"))
 
 }

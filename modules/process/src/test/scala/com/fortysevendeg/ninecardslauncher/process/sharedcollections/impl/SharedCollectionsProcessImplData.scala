@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 
+import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
 import com.fortysevendeg.ninecardslauncher.services.api.{RequestConfig, SharedCollectionResponseList, SharedCollectionResponse}
 import scala.util.Random
@@ -8,7 +9,7 @@ trait SharedCollectionsProcessImplData {
 
   val requestConfig = RequestConfig("fake-device-id", "fake-token")
 
-  val category = "COMMUNICATION"
+  val category = Communication
 
   val typeShareCollection = TopSharedCollection
 
@@ -33,7 +34,7 @@ trait SharedCollectionsProcessImplData {
       packages = Seq.empty,
       resolvedPackages = Seq.empty,
       views = Random.nextInt(),
-      category = Random.nextString(10),
+      category = Communication.name,
       community = Random.nextBoolean())
   }
 
