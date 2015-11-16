@@ -30,6 +30,8 @@ class NineCardsApplication
           .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
           .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
           .build())
+    } else {
+//      Crashlytics.start(this)
     }
   }
 

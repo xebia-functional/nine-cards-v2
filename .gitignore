@@ -8,7 +8,10 @@ dist
 /.ivy*
 debug.properties
 release.properties
-/fabric.properties
+
+# Crashlytics
+fabric.properties
+com_crashlytics_export_strings.xml
 
 # sbt specific
 /.sbt
