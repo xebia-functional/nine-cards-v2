@@ -229,7 +229,9 @@ object NineCardCategory {
 
   val allCategories = nineCardsCategories ++ gamesCategories ++ appsCategories
 
-  def apply(name: String): NineCardCategory = allCategories find (_.name == name) getOrElse
+  def apply(name: String): Option[NineCardCategory] = allCategories find (_.name == name)
+  
+  def ensure(name: String): NineCardCategory = apply(name) getOrElse
     (throw new IllegalArgumentException(s"$name not found"))
 
 }

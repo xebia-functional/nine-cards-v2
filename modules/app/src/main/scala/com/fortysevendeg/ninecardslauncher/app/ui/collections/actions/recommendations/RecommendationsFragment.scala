@@ -32,9 +32,11 @@ class RecommendationsFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
-    val task = maybeCategory map { category =>
-      di.recommendationsProcess.getRecommendedAppsByCategory(NineCardCategory(category), packages)
-    } getOrElse di.recommendationsProcess.getRecommendedAppsByPackages(packages, packages)
+    val task = (for {
+      category <- maybeCategory
+      nineCardCategory <- NineCardCategory(category)
+    } yield di.recommendationsProcess.getRecommendedAppsByCategory(nineCardCategory, packages)
+      ) getOrElse di.recommendationsProcess.getRecommendedAppsByPackages(packages, packages)
 
     Task.fork(task.run).resolveAsyncUi(
       onPreTask = () => showLoading,

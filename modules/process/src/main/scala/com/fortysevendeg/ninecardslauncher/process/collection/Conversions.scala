@@ -25,7 +25,7 @@ trait Conversions {
     collectionType = CollectionType(servicesCollection.collectionType),
     icon = servicesCollection.icon,
     themedColorIndex = servicesCollection.themedColorIndex,
-    appsCategory = servicesCollection.appsCategory map(NineCardCategory(_)),
+    appsCategory = servicesCollection.appsCategory flatMap (NineCardCategory(_)),
     constrains = servicesCollection.constrains,
     originalSharedCollectionId = servicesCollection.originalSharedCollectionId,
     sharedCollectionId = servicesCollection.sharedCollectionId,

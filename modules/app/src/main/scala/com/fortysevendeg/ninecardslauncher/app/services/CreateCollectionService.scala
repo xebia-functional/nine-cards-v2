@@ -4,6 +4,7 @@ import android.app.{NotificationManager, PendingIntent, Service}
 import android.content.{Context, Intent}
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
@@ -86,6 +87,7 @@ class CreateCollectionService
   }
 
   protected def setProcess(process: CreateCollectionsProcess) = {
+    Log.d("9cards", s"${process.progress} -- ${getTextByProcess(process)}")
     getTextByProcess(process) foreach builder.setContentText
     builder.setProgress(maxProgress, process.progress, false)
     notifyManager.notify(notificationId, builder.build())

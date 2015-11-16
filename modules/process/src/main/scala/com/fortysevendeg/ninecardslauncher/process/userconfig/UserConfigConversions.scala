@@ -29,12 +29,12 @@ trait UserConfigConversions {
     wifi = userConfigCollection.wifi,
     occurrence = userConfigCollection.occurrence,
     icon = userConfigCollection.icon,
-    category = userConfigCollection.category map(NineCardCategory(_)))
+    category = userConfigCollection.category flatMap (NineCardCategory(_)))
 
   def toUserCollectionItem(item: UserConfigCollectionItem): UserCollectionItem = UserCollectionItem(
     itemType = item.itemType,
     title = item.title,
     intent = item.metadata.toString(),
-    categories = item.categories map (_ map (NineCardCategory(_))))
+    categories = item.categories map (_ flatMap (NineCardCategory(_))))
 
 }

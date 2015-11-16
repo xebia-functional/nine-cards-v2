@@ -40,7 +40,9 @@ class NewCollectionFragment
       case (ActivityResult.selectInfoIcon, Activity.RESULT_OK) =>
         Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(NewCollectionFragment.iconRequest) =>
-            runUi(setCategory(NineCardCategory(extras.getString(NewCollectionFragment.iconRequest))))
+            NineCardCategory(extras.getString(NewCollectionFragment.iconRequest)) map { category =>
+              runUi(setCategory(category))
+            }
         } getOrElse runUi(showGeneralError)
       case (ActivityResult.selectInfoColor, Activity.RESULT_OK) =>
         Option(data) flatMap (d => Option(d.getExtras)) map {

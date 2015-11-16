@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactInfo => DeviceContactInfo,
   ContactEmail => DeviceContactEmail, ContactPhone => DeviceContactPhone}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollectionItem, UserCollection}

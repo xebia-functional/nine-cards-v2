@@ -51,20 +51,24 @@ class AppsFragment
     filter: AppsFilter,
     reload: Boolean = false) = Task.fork(di.deviceProcess.getSavedApps(GetByName).run).resolveAsyncUi(
     onPreTask = () => showLoading,
-    onResult = (apps: Seq[App]) => if (reload) {
-      reloadAppsAdapter(getAppsByFilter(apps, filter), filter, NineCardCategory(category))
-    } else {
-      generateAppsAdapter(getAppsByFilter(apps, filter), filter, NineCardCategory(category), (app: App) => {
-        val card = AddCardRequest(
-          term = app.name,
-          packageName = Option(app.packageName),
-          cardType = AppCardType,
-          intent = toNineCardIntent(app),
-          imagePath = app.imagePath
-        )
-        activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
-        runUi(unreveal())
-      })
+    onResult = (apps: Seq[App]) => {
+      NineCardCategory(category) map { category =>
+        if (reload) {
+          reloadAppsAdapter(getAppsByFilter(apps, filter), filter, category)
+        } else {
+          generateAppsAdapter(getAppsByFilter(apps, filter), filter, category, (app: App) => {
+            val card = AddCardRequest(
+              term = app.name,
+              packageName = Option(app.packageName),
+              cardType = AppCardType,
+              intent = toNineCardIntent(app),
+              imagePath = app.imagePath
+            )
+            activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
+            runUi(unreveal())
+          })
+        }
+      } getOrElse showGeneralError
     },
     onException = (ex: Throwable) => showGeneralError
   )
