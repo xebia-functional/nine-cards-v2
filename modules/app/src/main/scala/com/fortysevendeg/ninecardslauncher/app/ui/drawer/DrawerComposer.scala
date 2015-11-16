@@ -123,7 +123,7 @@ trait DrawerComposer
       initialSeq = generateHeaderList(apps, getAppOrder),
       clickListener = clickListener,
       longClickListener = Option(longClickListener)),
-      isScrollerLayoutVisible(getAppOrder))
+      fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
 
   private[this] def isScrollerLayoutVisible(getAppOrder: GetAppOrder) = getAppOrder match {
     case v: GetByInstallDate => false
@@ -139,7 +139,7 @@ trait DrawerComposer
 
   private[this] def swipeAdapter(
     adapter: HeaderedItemAdapter[_],
-    fastScrollerVisible: Boolean = false) =
+    fastScrollerVisible: Boolean = true) =
     showDrawerData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
