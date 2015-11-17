@@ -13,10 +13,10 @@ object Crashlytics {
         "crashlytics-post-package") ++
       Seq(
         antBuildFile := baseDirectory.value / "crashlytics_build_base.xml",
-        packageDebug <<= (packageDebug in Android) dependsOn antTaskKey("crashlytics-pre-build"),
-        packageRelease <<= (packageRelease in Android) dependsOn antTaskKey("crashlytics-pre-build"),
-        packageResources <<= (packageResources in Android) dependsOn antTaskKey("crashlytics-code-gen"),
-        apkbuild <<= (apkbuild in Android) map { result =>
+        packageDebug in Android <<= (packageDebug in Android) dependsOn antTaskKey("crashlytics-pre-build"),
+        packageRelease in Android <<= (packageRelease in Android) dependsOn antTaskKey("crashlytics-pre-build"),
+        packageResources in Android <<= (packageResources in Android) dependsOn antTaskKey("crashlytics-code-gen"),
+        apkbuild in Android <<= (apkbuild in Android) map { result =>
           antTaskKey("crashlytics-post-package")
           result
         }

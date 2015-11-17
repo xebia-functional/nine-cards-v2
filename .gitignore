@@ -10,7 +10,7 @@ debug.properties
 release.properties
 
 # Crashlytics
-fabric.properties
+/modules/app/fabric.properties
 com_crashlytics_export_strings.xml
 
 # sbt specific
