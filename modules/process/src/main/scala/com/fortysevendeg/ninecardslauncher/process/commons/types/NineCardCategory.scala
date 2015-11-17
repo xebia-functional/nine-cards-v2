@@ -7,11 +7,12 @@ sealed trait NineCardCategory {
 
   def getStringResource : String = name.toLowerCase
   def getIconResource : String = name.toLowerCase
-  def getIconCollectionWorkspace: String =s"icon_collection_$getIconResource"
-  def getIconCollectionDetail: String = s"icon_collection_${getIconResource}_detail"
+  def isAppCategory = NineCardCategory.appsCategories contains this
+  def isNineCardCategory = NineCardCategory.nineCardsCategories contains this
+  def isGameCategory = NineCardCategory.gamesCategories contains this
 }
 
-case object AllApps extends NineCardCategory {
+case object AllAppsCategory extends NineCardCategory {
   override val name: String = allApps
 }
 
@@ -221,12 +222,12 @@ case object GameWidgets extends NineCardCategory {
 
 object NineCardCategory {
 
-  val nineCardsCategories = Seq(AllApps, AllCategories, Custom, Misc)
+  val nineCardsCategories = Seq(AllAppsCategory, AllCategories, Custom, Misc)
 
   val appsCategories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
     Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
     MediaAndVideo, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
-    Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgetsCategory, ContactsCategory)
+    Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgetsCategory)
 
   val gamesCategories = Seq(GameAction, GameAdventure, GameRacing, GameCard, GameCasino, GameCasual, GameFamily,
     GameSports, GameEducational, GameStrategy, GameWallpaper, GameTrivia, GameBoard, GameRolePlaying, GameMusic,
@@ -234,10 +235,7 @@ object NineCardCategory {
 
   val allCategories = nineCardsCategories ++ gamesCategories ++ appsCategories
 
-  def apply(name: String): Option[NineCardCategory] = allCategories find (_.name == name)
-
-  def ensure(name: String): NineCardCategory = apply(name) getOrElse
-    (throw new IllegalArgumentException(s"$name not found"))
+  def apply(name: String): NineCardCategory = allCategories find (_.name == name) getOrElse Misc
 
 }
 

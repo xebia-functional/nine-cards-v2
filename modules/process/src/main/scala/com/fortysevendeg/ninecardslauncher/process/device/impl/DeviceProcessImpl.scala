@@ -58,7 +58,7 @@ class DeviceProcessImpl(
           path.packageName.equals(app.packageName) && path.className.equals(app.className)
         } map (_.path)
         val category = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
-        toAddAppRequest(app, (category flatMap(NineCardCategory(_))).getOrElse(Misc), path.getOrElse(""))
+        toAddAppRequest(app, (category map (NineCardCategory(_))).getOrElse(Misc), path.getOrElse(""))
       }
       _ <- addApps(apps)
     } yield ()).resolve[AppException]
@@ -168,7 +168,7 @@ class DeviceProcessImpl(
     for {
       requestConfig <- apiUtils.getRequestConfig
       appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).run.run match {
-        case Answer(g) => (g.app.details.appDetails.appCategory.flatMap(NineCardCategory(_))).headOption.getOrElse(Misc)
+        case Answer(g) => (g.app.details.appDetails.appCategory map (NineCardCategory(_))).headOption.getOrElse(Misc)
         case _ => Misc
       }
     } yield appCategory

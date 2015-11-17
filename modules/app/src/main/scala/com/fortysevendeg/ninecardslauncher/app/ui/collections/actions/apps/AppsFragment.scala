@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiExtensions, FragmentUiContext, NineCardIntentConversions, UiContext}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, Game}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, NineCardCategory, Game}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
@@ -26,13 +26,13 @@ class AppsFragment
   with UiExtensions
   with NineCardIntentConversions {
 
-  val allApps = "ALL"
+  val allApps = AllAppsCategory
 
   implicit lazy val di: Injector = new Injector
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
-  lazy val category = getString(Seq(getArguments), AppsFragment.categoryKey, allApps)
+  lazy val category = NineCardCategory(getString(Seq(getArguments), AppsFragment.categoryKey, AllAppsCategory.name))
 
   override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
 
@@ -51,24 +51,20 @@ class AppsFragment
     filter: AppsFilter,
     reload: Boolean = false) = Task.fork(di.deviceProcess.getSavedApps(GetByName).run).resolveAsyncUi(
     onPreTask = () => showLoading,
-    onResult = (apps: Seq[App]) => {
-      NineCardCategory(category) map { category =>
-        if (reload) {
-          reloadAppsAdapter(getAppsByFilter(apps, filter), filter, category)
-        } else {
-          generateAppsAdapter(getAppsByFilter(apps, filter), filter, category, (app: App) => {
-            val card = AddCardRequest(
-              term = app.name,
-              packageName = Option(app.packageName),
-              cardType = AppCardType,
-              intent = toNineCardIntent(app),
-              imagePath = app.imagePath
-            )
-            activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
-            runUi(unreveal())
-          })
-        }
-      } getOrElse showGeneralError
+    onResult = (apps: Seq[App]) => if (reload) {
+      reloadAppsAdapter(getAppsByFilter(apps, filter), filter, category)
+    } else {
+      generateAppsAdapter(getAppsByFilter(apps, filter), filter, category, (app: App) => {
+        val card = AddCardRequest(
+          term = app.name,
+          packageName = Option(app.packageName),
+          cardType = AppCardType,
+          intent = toNineCardIntent(app),
+          imagePath = app.imagePath
+        )
+        activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
+        runUi(unreveal())
+      })
     },
     onException = (ex: Throwable) => showGeneralError
   )
@@ -77,7 +73,7 @@ class AppsFragment
     case AllApps => apps
     case AppsByCategory =>
       category match {
-        case Game.name => apps filter(app => gamesCategories contains app.category)
+        case Game => apps filter(app => gamesCategories contains app.category)
         case c => apps filter(_.category.name.contains(c))
       }
   }

@@ -26,7 +26,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.Dimen
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.CollectionItemTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
@@ -104,7 +103,7 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)
-    runUi(populateIcon(collection, iconCollectionWorkspace(NineCardCategory.ensure(collection.icon))))
+    runUi(populateIcon(collection, iconCollectionWorkspace(collection.icon)))
   }
 
   private def populateIcon(collection: Collection, resIcon: Int): Ui[_] =

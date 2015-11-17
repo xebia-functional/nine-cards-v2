@@ -90,7 +90,7 @@ trait CollectionsDetailsComposer
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
-      (icon <~ ivSrc(iconCollectionDetail(NineCardCategory.ensure(iconCollection))))
+      (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
 
   def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ uiSnackbarShort(error)
 
@@ -336,9 +336,9 @@ trait CollectionsDetailsComposer
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[_] = getAdapter map {
     adapter =>
       (pageMovement match {
-        case Start | Idle => icon <~ ivSrc(iconCollectionDetail(NineCardCategory.ensure(collection.icon)))
-        case Left => icon <~ changeIcon(iconCollectionDetail(NineCardCategory.ensure(collection.icon)), fromLeft = true)
-        case Right | Jump => icon <~ changeIcon(iconCollectionDetail(NineCardCategory.ensure(collection.icon)), fromLeft = false)
+        case Start | Idle => icon <~ ivSrc(iconCollectionDetail(collection.icon))
+        case Left => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = true)
+        case Right | Jump => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = false)
         case _ => Ui.nop
       }) ~ adapter.notifyChanged(position) ~ hideFabButton
   } getOrElse Ui.nop

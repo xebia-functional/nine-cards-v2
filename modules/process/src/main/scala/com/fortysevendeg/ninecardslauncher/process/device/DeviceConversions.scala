@@ -34,7 +34,7 @@ trait DeviceConversions {
       name = app.name,
       packageName = app.packageName,
       className = app.className,
-      category = NineCardCategory.ensure(app.category),
+      category = NineCardCategory(app.category),
       imagePath = app.imagePath,
       colorPrimary = app.colorPrimary,
       dateInstalled = app.dateInstalled,
