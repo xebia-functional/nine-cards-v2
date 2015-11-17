@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
+import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 
 trait ContactsServicesImplData {

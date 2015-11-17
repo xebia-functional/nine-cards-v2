@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.contacts
 
 import android.database.Cursor
 import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 
 object ContactsContentProvider {

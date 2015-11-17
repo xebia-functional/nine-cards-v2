@@ -1,15 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.drawable.Drawable
-import com.fortysevendeg.ninecardslauncher.process.device.WidgetResizeMode
+import com.fortysevendeg.ninecardslauncher.process.device.types._
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import com.fortysevendeg.ninecardslauncher.services.commons._
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactEmail
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactInfo
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactPhone
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
-import com.fortysevendeg.ninecardslauncher.process.device.models.{WidgetDimensions, Widget, App}
+import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallServices}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{WidgetDimensions, Widget, App, LastCallsContact, CallData}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 
 trait DeviceProcessData {
@@ -118,6 +124,30 @@ trait DeviceProcessData {
 
   val userHashCodeOption3 = Option(userHashCode3)
   val previewOption3 = Option(preview3)
+
+  val phoneNumber1 = "+00 111 222 333"
+  val contactName1 = "Contact 1"
+  val numberType1 = PhoneHome
+  val date1 = 3L
+  val callType1 = 1
+  val lookupKey1 = "lookupKey 1"
+  val photoUri1 = "photoUri 1"
+
+  val phoneNumber2 = "+00 444 555 666"
+  val contactName2 = "Contact 2"
+  val numberType2 = PhoneWork
+  val date2 = 2L
+  val callType2 = 2
+  val lookupKey2 = "lookupKey 2"
+  val photoUri2 = "photoUri 2"
+
+  val phoneNumber3 = "+00 777 888 999"
+  val contactName3 = "Contact 3"
+  val numberType3 = PhoneOther
+  val date3 = 1L
+  val callType3 = 3
+  val lookupKey3 = "lookupKey 3"
+  val photoUri3 = "photoUri 3"
 
   val applicationNoCached = Application(
     name = name4,
@@ -312,23 +342,23 @@ trait DeviceProcessData {
 
   val contacts: Seq[Contact] = Seq(
     Contact(
-      name = "Contact 1",
-      lookupKey = "lookupKey 1",
-      photoUri = "photoUri 2",
+      name = contactName1,
+      lookupKey = lookupKey1,
+      photoUri = photoUri1,
       hasPhone = false,
       favorite = false,
       info = None),
     Contact(
-      name = "Contact 2",
-      lookupKey = "lookupKey 2",
-      photoUri = "photoUri 2",
+      name = contactName2,
+      lookupKey = lookupKey2,
+      photoUri = photoUri2,
       hasPhone = false,
       favorite = false,
       info = None),
     Contact(
-      name = "Contact 3",
-      lookupKey = "lookupKey 3",
-      photoUri = "photoUri 3",
+      name = contactName3,
+      lookupKey = lookupKey3,
+      photoUri = photoUri3,
       hasPhone = false,
       favorite = false,
       info = None))
@@ -344,7 +374,7 @@ trait DeviceProcessData {
   val contact = Contact(
     name = "Simple Contact",
     lookupKey = lookupKey,
-    photoUri = "photoUri 1",
+    photoUri = photoUri1,
     hasPhone = true,
     favorite = false,
     info = Some(
@@ -357,11 +387,11 @@ trait DeviceProcessData {
         ),
         phones = Seq(
           ContactPhone(
-            number = "+00 111 222 333",
+            number = phoneNumber1,
             category = PhoneHome
           ),
           ContactPhone(
-            number = "+00 444 555 666",
+            number = phoneNumber2,
             category = PhoneMobile
           )
         )
@@ -469,4 +499,89 @@ trait DeviceProcessData {
       icon = icon3,
       preview = previewOption3)
   )
+
+  val callsServices: Seq[CallServices] = Seq(
+    CallServices(
+      number = phoneNumber1,
+      name = Some(contactName1),
+      numberType = PhoneMobile,
+      date = date1,
+      callType = callType1),
+    CallServices(
+      number = phoneNumber2,
+      name = Some(contactName2),
+      numberType = numberType2,
+      date = date2,
+      callType = callType2),
+    CallServices(
+      number = phoneNumber3,
+      name = Some(contactName3),
+      numberType = numberType3,
+      date = date3,
+      callType = callType3))
+
+  val callsContacts: Seq[Contact] = Seq(
+    Contact(
+      name = contactName1,
+      lookupKey = lookupKey1,
+      photoUri = photoUri1,
+      hasPhone = false,
+      favorite = false,
+      info = None),
+    Contact(
+      name = contactName2,
+      lookupKey = lookupKey2,
+      photoUri = photoUri2,
+      hasPhone = false,
+      favorite = false,
+      info = None),
+    Contact(
+      name = contactName3,
+      lookupKey = lookupKey3,
+      photoUri = photoUri3,
+      hasPhone = false,
+      favorite = false,
+      info = None))
+
+  val callsData1: Seq[CallData] = Seq(
+    CallData(
+      date = date1,
+      callType = IncomingType))
+
+  val callsData2: Seq[CallData] = Seq(
+    CallData(
+      date = date2,
+      callType = OutgoingType))
+
+  val callsData3: Seq[CallData] = Seq(
+    CallData(
+      date = date3,
+      callType = MissedType))
+
+  val lastCallsContacts: Seq[LastCallsContact] = Seq(
+    LastCallsContact(
+      hasContact = true,
+      number = phoneNumber1,
+      title = contactName1,
+      photoUri = Some(photoUri1),
+      lookupKey = Some(lookupKey1),
+      lastCallDate = date1,
+      calls = callsData1),
+    LastCallsContact(
+      hasContact = true,
+      number = phoneNumber2,
+      title = contactName2,
+      photoUri = Some(photoUri2),
+      lookupKey = Some(lookupKey2),
+      lastCallDate = date2,
+      calls = callsData2),
+    LastCallsContact(
+      hasContact = true,
+      number = phoneNumber3,
+      title = contactName3,
+      photoUri = Some(photoUri3),
+      lookupKey = Some(lookupKey3),
+      lastCallDate = date3,
+      calls = callsData3))
+
 }

@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.contacts;
 import android.annotation.TargetApi;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.CallLog;
 import android.provider.ContactsContract;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -57,5 +58,14 @@ public interface Fields {
     int PHONE_TYPE_MOBILE = ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
 
     String PHONE_CONTACT_SELECTION = ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " = ? ";
+
+    // -- Calls -- //
+    Uri CALL_CONTENT_URI = CallLog.Calls.CONTENT_URI;
+
+    String CALL_NUMBER = CallLog.Calls.NUMBER;
+    String CALL_NAME = CallLog.Calls.CACHED_NAME;
+    String CALL_NUMBER_TYPE = CallLog.Calls.CACHED_NUMBER_TYPE;
+    String CALL_DATE= CallLog.Calls.DATE;
+    String CALL_TYPE = CallLog.Calls.TYPE;
 
 }

@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.models
 
+import com.fortysevendeg.ninecardslauncher.services.commons.PhoneCategory
+
 case class Contact(
   name: String,
   lookupKey: String,
@@ -27,13 +29,3 @@ case object EmailHome extends EmailCategory
 case object EmailWork extends EmailCategory
 
 case object EmailOther extends EmailCategory
-
-sealed trait PhoneCategory
-
-case object PhoneHome extends PhoneCategory
-
-case object PhoneWork extends PhoneCategory
-
-case object PhoneMobile extends PhoneCategory
-
-case object PhoneOther extends PhoneCategory
