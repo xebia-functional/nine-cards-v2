@@ -7,10 +7,12 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.Widget
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
+import com.fortysevendeg.ninecardslauncher.services.calls.CallsServices
+import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
@@ -29,7 +31,8 @@ class DeviceProcessImpl(
   shortcutsServices: ShortcutsServices,
   contactsServices: ContactsServices,
   imageServices: ImageServices,
-  widgetsServices: WidgetsServices)
+  widgetsServices: WidgetsServices,
+  callsServices: CallsServices)
   extends DeviceProcess
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
@@ -123,6 +126,43 @@ class DeviceProcessImpl(
     (for {
       widgets <- widgetsServices.getWidgets
     } yield widgets map toWidget).resolve[WidgetException]
+
+  override def getLastCalls(implicit context: ContextSupport) =
+    (for {
+      lastCalls <- callsServices.getLastCalls
+      simpleGroupCalls <- simpleGroupCalls(lastCalls)
+      combinedContacts <- getCombinedContacts(simpleGroupCalls)
+    } yield fillCombinedContacts(combinedContacts)).resolve[CallException]
+
+  private[this] def simpleGroupCalls(lastCalls: Seq[Call]): ServiceDef2[Seq[LastCallsContact], CallException] = Service {
+    Task {
+      CatchAll[CallException] {
+        (lastCalls groupBy (_.number) map { case (k, v) => toSimpleLastCallsContact(k, v) }).toSeq
+      }
+    }
+  }
+
+  private[this] def getCombinedContacts(items: Seq[LastCallsContact]):
+  ServiceDef2[Seq[(LastCallsContact, Option[Contact])], ContactsServiceException] = Service {
+    val tasks = items map (item => combineContact(item).run)
+    Task.gatherUnordered(tasks) map (list => CatchAll[ContactsServiceException](list.collect { case Answer(combinedContact) => combinedContact }))
+  }
+
+  private[this] def combineContact(lastCallsContact: LastCallsContact):
+  ServiceDef2[(LastCallsContact, Option[Contact]), ContactsServiceException] =
+    for {
+      contact <- contactsServices.fetchContactByPhoneNumber(lastCallsContact.number)
+    } yield (lastCallsContact, contact map toContact)
+
+  private[this] def fillCombinedContacts(combinedContacts: Seq[(LastCallsContact, Option[Contact])]): Seq[LastCallsContact] =
+    (combinedContacts map { combinedContact =>
+      combinedContact._2 map { contact =>
+        combinedContact._1.copy(
+          lookupKey = Some(contact.lookupKey),
+          photoUri = Some(contact.photoUri)
+        )
+      } getOrElse combinedContact._1
+    }).sortWith(_.lastCallDate > _.lastCallDate)
 
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
