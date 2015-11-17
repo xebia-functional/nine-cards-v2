@@ -17,9 +17,9 @@ case class GetByName(ascending: Boolean) extends GetAppOrder
 
 object GetByName extends GetByName(true)
 
-case class GetByUpdate(ascending: Boolean) extends GetAppOrder
+case class GetByInstallDate(ascending: Boolean) extends GetAppOrder
 
-object GetByUpdate extends GetByUpdate(false)
+object GetByInstallDate extends GetByInstallDate(false)
 
 case class GetByCategory(ascending: Boolean) extends GetAppOrder
 

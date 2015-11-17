@@ -180,7 +180,10 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
         case Some(listener: FastScrollerListener) => listener.getElement(position)
         case _ => None
       }
-      val ui = element map (e => (text <~ tvText(e)) ~ (signal <~ vVisible)) getOrElse signal <~ vGone
+      val ui = element map { e =>
+        val tag = if (e.length > 1) e.substring(0, 1) else e
+        (text <~ tvText(tag)) ~ (signal <~ vVisible)
+      } getOrElse signal <~ vGone
       runUi(ui)
     }
   }

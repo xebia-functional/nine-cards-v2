@@ -14,15 +14,17 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.process.device.{GetByCategory, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, ActivityContextWrapper, Ui}
 
 trait AppsComposer
-  extends Styles {
+  extends Styles
+  with HeaderGenerator {
 
   self: TypedFindView with BaseActionFragment =>
 
@@ -68,9 +70,8 @@ trait AppsComposer
     filter: AppsFilter,
     category: String,
     clickListener: (App) => Unit)(implicit uiContext: UiContext[_]) = {
-    val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
     val adapter = new AppsAdapter(
-      initialSeq = generateAppsHeadered(apps, filter, categoryName),
+      initialSeq = generateAppsHeadered(apps, filter),
       clickListener = clickListener,
       longClickListener = None)
     showData ~
@@ -90,7 +91,7 @@ trait AppsComposer
     filter: AppsFilter,
     category: String)(implicit uiContext: UiContext[_]): Ui[_] = {
     val categoryName = resGetString(category.toLowerCase()) getOrElse category.toLowerCase()
-    val appsHeadered = generateAppsHeadered(apps, filter, categoryName)
+    val appsHeadered = generateAppsHeadered(apps, filter)
     showData ~
       (getAdapter map { adapter =>
         Ui(adapter.loadItems(appsHeadered)) ~
@@ -108,10 +109,10 @@ trait AppsComposer
       } getOrElse showGeneralError)
   }
 
-  private[this] def generateAppsHeadered(apps: Seq[App], filter: AppsFilter, category: String) =
+  private[this] def generateAppsHeadered(apps: Seq[App], filter: AppsFilter) =
     filter match {
-      case AllApps => generateAppHeaderedList(apps)
-      case AppsByCategory => generateAppHeaderedListByCategory(category, apps)
+      case AllApps => generateHeaderList(apps, GetByName)
+      case AppsByCategory => generateHeaderList(apps, GetByCategory)
     }
 
   private[this] def getAdapter: Option[AppsAdapter] = recycler flatMap { rv =>
