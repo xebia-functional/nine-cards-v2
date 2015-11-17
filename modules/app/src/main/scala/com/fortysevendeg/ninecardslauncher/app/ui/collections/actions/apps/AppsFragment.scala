@@ -74,7 +74,7 @@ class AppsFragment
     case AppsByCategory =>
       category match {
         case Game => apps filter(app => gamesCategories contains app.category)
-        case c => apps filter(_.category.name.contains(c))
+        case c => apps filter(_.category.equals(c))
       }
   }
 
