@@ -7,10 +7,6 @@ import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.commons._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactEmail
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactInfo
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactPhone
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}

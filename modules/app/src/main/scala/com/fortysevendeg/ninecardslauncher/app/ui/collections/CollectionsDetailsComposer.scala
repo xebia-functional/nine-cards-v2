@@ -359,7 +359,10 @@ trait CollectionsDetailsComposer
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
     args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
     args.putStringArray(BaseActionFragment.packages, packages.toArray)
-    map foreach (item => args.putString(item._1, item._2.name))
+    map foreach (item => {
+      val (categoryKey, category) = item
+      args.putString(categoryKey, category.name)
+    })
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton(doUpdateBars = false) ~
