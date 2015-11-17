@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
-import android.graphics.{Color, PorterDuff}
+import android.graphics.{Color, Outline, PorterDuff}
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
 import android.support.design.widget.{FloatingActionButton, NavigationView, Snackbar}
 import android.support.v4.graphics.drawable.DrawableCompat
@@ -12,17 +12,29 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar}
 import android.view.View.OnClickListener
 import android.view.inputmethod.InputMethodManager
-import android.view.{MenuItem, View}
+import android.view.{MenuItem, View, ViewOutlineProvider}
 import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget._
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak, Ui}
 
 /**
- * This tweaks should be moved to Macroid-Extras
- */
+  * This tweaks should be moved to Macroid-Extras
+  */
 object ExtraTweaks {
+
+  def vClipBackground(radius: Int, padding: Int = 0): Tweak[View] = Tweak[View] {
+    view =>
+      view.setOutlineProvider(new ViewOutlineProvider() {
+        override def getOutline(view: View, outline: Outline): Unit =
+          outline.setRoundRect(padding, padding, view.getWidth - padding, view.getHeight - padding, radius)
+      })
+      view.setClipToOutline(true)
+  }
 
   def vEnabled(enabled: Boolean) = Tweak[View](_.setEnabled(enabled))
 
@@ -31,7 +43,7 @@ object ExtraTweaks {
   def vTag2[T](id: Int, tag: T) = Tweak[View](_.setTag(id, tag))
 
   def vBackgroundTint(color: Int) = Tweak[View] {
-     case t: TintableBackgroundView => t.setSupportBackgroundTintList(ColorStateList.valueOf(color))
+    case t: TintableBackgroundView => t.setSupportBackgroundTintList(ColorStateList.valueOf(color))
   }
 
   def vSelected(selected: Boolean) = Tweak[View](_.setSelected(selected))
@@ -112,7 +124,7 @@ object ExtraTweaks {
 
   def scChecked(checked: Boolean)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat](_.setChecked(checked))
 
-  def scCheckedChangeListener(onCheckedChange: (Boolean) => Unit)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat] (
+  def scCheckedChangeListener(onCheckedChange: (Boolean) => Unit)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat](
     _.setOnCheckedChangeListener(new OnCheckedChangeListener {
       override def onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean): Unit = onCheckedChange(isChecked)
     })
@@ -146,5 +158,15 @@ object ExtraTweaks {
   def uiSnackbarIndefinite(message: String) = Tweak[View] { view =>
     runUi(Ui(Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).show()))
   }
+
+}
+
+object CommonsTweak {
+
+  def vBackgroundBoxWorkspace(implicit contextWrapper: ContextWrapper): Tweak[View] =
+    Lollipop.ifSupportedThen {
+      ExtraTweaks.vClipBackground(resGetDimensionPixelSize(R.dimen.radius_default)) +
+        vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
+    } getOrElse Tweak.blank
 
 }

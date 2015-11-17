@@ -78,7 +78,7 @@ trait HeaderedItemAdapter[T]
     runUi(viewHolder.bind(seq(position), position))
 
   def getLayoutManager: GridLayoutManager = {
-    val manager = new GridLayoutManager(activityContext.application, numInLine)
+    val manager = new GridLayoutManager(activityContext.application, columnsLists)
     manager.setSpanSizeLookup(new SpanSizeLookup {
       override def getSpanSize(position: Int): Int = if (seq(position).header.isDefined) manager.getSpanCount else 1
     })
@@ -97,8 +97,8 @@ trait HeaderedItemAdapter[T]
       (itemHeadered.header, counter._1, counter._2) match {
         case (Some(_), _, count) => (0, count)
         case (None, 0, count) => (1, count + 1)
-        case (None, columns, count) if columns < numInLine =>
-          val newColumn = if (columns == numInLine - 1) 0 else columns + 1
+        case (None, columns, count) if columns < columnsLists =>
+          val newColumn = if (columns == columnsLists - 1) 0 else columns + 1
           (newColumn, count)
         case (None, columns, count) => (0, count)
       })

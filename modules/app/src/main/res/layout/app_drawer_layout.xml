@@ -2,23 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/launcher_drawer_content"
-    style="@style/LauncherDrawerContent"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
-        android:id="@+id/launcher_drawer_toolbar"
-        style="@style/LauncherDrawerToolbar">
-
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab
-            android:id="@+id/launcher_drawer_tab_app"
-            style="@style/LauncherDrawerTab"/>
-
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab
-            android:id="@+id/launcher_drawer_tab_contact"
-            style="@style/LauncherDrawerTab"/>
-
-    </LinearLayout>
+    style="@style/LauncherDrawerContent">
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
         android:id="@+id/launcher_drawer_scroller_layout"
@@ -32,11 +16,6 @@
             android:id="@+id/launcher_drawer_loading"
             style="@style/LauncherDrawerLoading"/>
 
-
     </com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/launcher_drawer_button"
-        style="@style/LauncherDrawerFabButton"/>
 
 </FrameLayout>

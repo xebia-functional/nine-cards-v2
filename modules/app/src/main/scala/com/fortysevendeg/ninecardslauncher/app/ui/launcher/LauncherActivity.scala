@@ -54,8 +54,6 @@ class LauncherActivity
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
     runUi(initUi ~ initDrawerUi(
-      launchStore = () => launchApp(playStorePackage),
-      launchDial = () => launchDial(None),
       onAppMenuClickListener = loadApps,
       onContactMenuClickListener = loadContacts))
     initAllSystemBarsTint

@@ -25,7 +25,6 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_margin">@dimen/padding_default</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:background">@drawable/search</item>
         <item name="android:paddingLeft">@dimen/padding_large</item>
         <item name="android:paddingRight">@dimen/padding_large</item>
         <item name="android:paddingTop">0dp</item>

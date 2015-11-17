@@ -9,6 +9,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Snail}
 
@@ -49,20 +50,21 @@ object DrawerSnails {
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private[this] def reveal(source: View, view: View, in: Boolean = true)(animationEnd: => Unit = ())(implicit context: ContextWrapper): Unit = {
     val sb = resGetDimensionPixelSize("status_bar_height") getOrElse 25 dp
+    val marginTop = resGetDimensionPixelSize(R.dimen.height_search_box)
     val (cx, cy) = calculateAnchorViewPosition(source)
     val fromRadius = source.getWidth / 2
-    val toRadius = SnailsUtils.calculateRadius(width = cx + fromRadius, height = cy + fromRadius - sb)
+    val toRadius = SnailsUtils.calculateRadius(width = cx + fromRadius, height = cy + fromRadius - sb - marginTop)
 
     val (startRadius, endRadius) = if (in) (fromRadius, toRadius) else (toRadius, fromRadius)
 
-    val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx + fromRadius, cy + fromRadius - sb, startRadius, endRadius)
+    val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx + fromRadius, cy + fromRadius - sb - marginTop, startRadius, endRadius)
     reveal.addListener(new AnimatorListenerAdapter {
       override def onAnimationStart(animation: Animator): Unit = {
         super.onAnimationStart(animation)
         if (in) view.setVisibility(View.VISIBLE)
       }
 
-      override def onAnimationEnd(animation: Animator) {
+      override def onAnimationEnd(animation: Animator) = {
         super.onAnimationEnd(animation)
         if (!in) view.setVisibility(View.GONE)
         view.setLayerType(View.LAYER_TYPE_NONE, null)
@@ -84,7 +86,7 @@ object DrawerSnails {
         view.setVisibility(View.VISIBLE)
       }
 
-      override def onAnimationEnd(animation: Animator) {
+      override def onAnimationEnd(animation: Animator) = {
         super.onAnimationEnd(animation)
         view.setLayerType(View.LAYER_TYPE_NONE, null)
         animationEnd
