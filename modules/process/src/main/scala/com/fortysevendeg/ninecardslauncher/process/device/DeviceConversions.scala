@@ -25,7 +25,7 @@ trait DeviceConversions {
 
   def toFetchAppOrder(orderBy: GetAppOrder): FetchAppOrder = orderBy match {
     case GetByName(_) => OrderByName
-    case GetByUpdate(_) => OrderByUpdate
+    case GetByInstallDate(_) => OrderByInstallDate
     case GetByCategory(_) => OrderByCategory
   }
 
@@ -115,8 +115,7 @@ trait DeviceConversions {
   def toCallData(item: CallServices): CallData =
     CallData(
       date = item.date,
-      callType = CallType(item.callType)
-    )
+      callType = CallType(item.callType))
 
   def toContactSeq(items: Seq[ContactServices]): Seq[Contact] = items map toContact
 
