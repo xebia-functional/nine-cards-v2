@@ -65,7 +65,7 @@ trait HeaderGenerator extends HeaderUtils {
       case GetByName(_) => getCurrentChar(app.name)
       case GetByCategory(_) =>
         val appCategory = if (gamesCategories.contains(app.category)) Game else app.category
-        resGetString(appCategory.name) getOrElse appCategory.getStringResource
+        resGetString(appCategory.getStringResource) getOrElse appCategory.getStringResource
       case GetByInstallDate(_) =>
         val diff = System.currentTimeMillis() - app.dateInstalled
         resGetString(findStringForDiff(diff, previousHeaders.isEmpty))

@@ -29,7 +29,7 @@ case class IconDialogFragment(categorySelected: String)(implicit contextWrapper:
     val contentView = new LinearLayout(getActivity)
     contentView.setOrientation(LinearLayout.VERTICAL)
 
-    val views = allCategories map (cat => createViewItem(cat, select = cat == categorySelected))
+    val views = appsCategories map (cat => createViewItem(cat, select = cat == categorySelected))
 
     runUi(
       (rootView <~ vgAddView(contentView)) ~
@@ -39,7 +39,7 @@ case class IconDialogFragment(categorySelected: String)(implicit contextWrapper:
   }
 
   private[this] def createViewItem(category: NineCardCategory, select: Boolean) = {
-    val name = resGetString(category.name).getOrElse(category.getStringResource)
+    val name = resGetString(category.getStringResource).getOrElse(category.getStringResource)
     val view = LayoutInflater.from(getActivity).inflate(R.layout.icon_info_item_dialog, null)
     view.findViewById(R.id.icon_dialog_name) match {
       case t: TextView =>
