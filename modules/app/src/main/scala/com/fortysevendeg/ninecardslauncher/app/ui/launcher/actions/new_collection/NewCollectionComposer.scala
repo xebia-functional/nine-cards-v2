@@ -81,7 +81,7 @@ trait NewCollectionComposer
   def setCategory(category: NineCardCategory): Ui[_] =
     iconImage <~
       vTag2(category) <~
-      ivSrc(ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category.name)), Color.GRAY))
+      ivSrc(ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category)), Color.GRAY))
 
   def setIndexColor(index: Int): Ui[_] = {
     val color = resGetColor(getIndexColor(index))

@@ -69,7 +69,7 @@ trait AppsComposer
     filter: AppsFilter,
     category: NineCardCategory,
     clickListener: (App) => Unit)(implicit uiContext: UiContext[_]) = {
-    val categoryName = resGetString(category.name.toLowerCase()) getOrElse category.name.toLowerCase()
+    val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
     val adapter = new AppsAdapter(
       initialSeq = generateAppsHeadered(apps, filter, categoryName),
       clickListener = clickListener,
@@ -90,7 +90,7 @@ trait AppsComposer
     apps: Seq[App],
     filter: AppsFilter,
     category: NineCardCategory)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val categoryName = resGetString(category.name.toLowerCase()) getOrElse category.name.toLowerCase()
+    val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
     val appsHeadered = generateAppsHeadered(apps, filter, categoryName)
     showData ~
       (getAdapter map { adapter =>

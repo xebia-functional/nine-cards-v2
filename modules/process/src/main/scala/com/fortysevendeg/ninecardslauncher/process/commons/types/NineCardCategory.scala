@@ -4,6 +4,11 @@ import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 
 sealed trait NineCardCategory {
   val name: String
+
+  def getStringResource : String = name.toLowerCase
+  def getIconResource : String = name.toLowerCase
+  def getIconCollectionWorkspace: String =s"icon_collection_$getIconResource"
+  def getIconCollectionDetail: String = s"icon_collection_${getIconResource}_detail"
 }
 
 case object AllApps extends NineCardCategory {
@@ -230,7 +235,7 @@ object NineCardCategory {
   val allCategories = nineCardsCategories ++ gamesCategories ++ appsCategories
 
   def apply(name: String): Option[NineCardCategory] = allCategories find (_.name == name)
-  
+
   def ensure(name: String): NineCardCategory = apply(name) getOrElse
     (throw new IllegalArgumentException(s"$name not found"))
 

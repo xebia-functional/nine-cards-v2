@@ -89,13 +89,13 @@ trait FormedCollectionConversions
 
   private[this] def generateAddCollection(items: Seq[UnformedApp], category: NineCardCategory, position: Int): AddCollectionRequest = {
     // TODO We should sort the application using an endpoint in the new sever
-    val appsCategory = items.filter(_.category.name.contains(category.name)).take(numSpaces)
+    val appsCategory = items.filter(_.category.equals(category)).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
-      name = collectionProcessConfig.namesCategories.getOrElse(category, category.name.toLowerCase),
+      name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
       collectionType = AppsCollectionType.name,
-      icon = category.name.toLowerCase,
+      icon = category.getIconResource,
       themedColorIndex = themeIndex,
       appsCategory = Some(category.name),
       sharedCollectionSubscribed = Option(false),
@@ -108,9 +108,9 @@ trait FormedCollectionConversions
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
-      name = collectionProcessConfig.namesCategories.getOrElse(category, category.name.toLowerCase),
+      name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
       collectionType = ContactsCollectionType.name,
-      icon = category.name.toLowerCase,
+      icon = category.getIconResource,
       themedColorIndex = themeIndex,
       appsCategory = None,
       sharedCollectionSubscribed = Option(false),

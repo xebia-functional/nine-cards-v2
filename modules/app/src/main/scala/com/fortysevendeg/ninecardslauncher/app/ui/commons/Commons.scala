@@ -28,11 +28,11 @@ object Constants {
 
 object ImageResourceNamed {
 
-  def iconCollectionWorkspace(category: String)(implicit context: ContextWrapper): Int =
-    resGetDrawableIdentifier(s"icon_collection_${category.toLowerCase}") getOrElse R.drawable.icon_collection_default
+  def iconCollectionWorkspace(category: NineCardCategory)(implicit context: ContextWrapper): Int =
+    resGetDrawableIdentifier(category.getIconCollectionWorkspace) getOrElse R.drawable.icon_collection_default
 
-  def iconCollectionDetail(category: String)(implicit context: ContextWrapper): Int =
-    resGetDrawableIdentifier(s"icon_collection_${category.toLowerCase}_detail") getOrElse R.drawable.icon_collection_default_detail
+  def iconCollectionDetail(category: NineCardCategory)(implicit context: ContextWrapper): Int =
+    resGetDrawableIdentifier(category.getIconCollectionDetail) getOrElse R.drawable.icon_collection_default_detail
 
 }
 

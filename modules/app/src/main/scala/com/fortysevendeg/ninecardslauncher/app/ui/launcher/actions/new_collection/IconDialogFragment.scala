@@ -39,13 +39,13 @@ case class IconDialogFragment(categorySelected: String)(implicit contextWrapper:
   }
 
   private[this] def createViewItem(category: NineCardCategory, select: Boolean) = {
-    val name = resGetString(category.name.toLowerCase).getOrElse(category.name.toLowerCase)
+    val name = category.getStringResource
     val view = LayoutInflater.from(getActivity).inflate(R.layout.icon_info_item_dialog, null)
     view.findViewById(R.id.icon_dialog_name) match {
       case t: TextView =>
         if (select) t.setTextColor(R.color.text_selected_color_dialog)
         t.setText(name)
-        val colorizeDrawable = ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category.name)), Color.GRAY)
+        val colorizeDrawable = ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category)), Color.GRAY)
         t.setCompoundDrawablesWithIntrinsicBounds(colorizeDrawable, null, null, null)
     }
     if (select) {
