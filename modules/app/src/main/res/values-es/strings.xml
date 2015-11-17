@@ -104,10 +104,14 @@
     <!-- Drawer -->
     <string name="apps_alphabetical">Alfabético</string>
     <string name="apps_categories">Por categorías</string>
-    <string name="apps_date">Por fecha</string>
+    <string name="apps_date">Por fecha de instalación</string>
     <string name="contacts_alphabetical">Alfabético</string>
     <string name="contacts_favorites">Favoritos</string>
     <string name="contacts_last">Últimas llamadas</string>
+    <string name="apps_header_updated_1">Hoy</string>
+    <string name="apps_header_updated_2">Menos de 7 días</string>
+    <string name="apps_header_updated_3">Menos de 30 días</string>
+    <string name="apps_header_updated_4">Más de 30 días</string>
 
     <!-- Categories -->
 
