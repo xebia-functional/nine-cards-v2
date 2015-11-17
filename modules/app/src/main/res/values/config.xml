@@ -19,7 +19,7 @@
     <string name="user_id_key">ninecards-user-id</string>
 
     <!-- Crashlytics -->
-    <string name="crashlytics_api_key">${crashlytics.apykey}</string>
+    <string name="crashlytics_api_key">${crashlytics.apikey}</string>
 
 
 </resources>
