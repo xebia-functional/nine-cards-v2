@@ -8,15 +8,18 @@ object Crashlytics {
   lazy val crashlyticsSettings =
     antSettings ++
       addAntTasks(
-        "test1",
         "crashlytics-pre-build",
         "crashlytics-code-gen",
         "crashlytics-post-package") ++
       Seq(
         antBuildFile := baseDirectory.value / "crashlytics_build_base.xml",
-        apkbuild <<= (apkbuild in Android) dependsOn antTaskKey("crashlytics-pre-build"),
-        compile <<= (compile in Compile) dependsOn antTaskKey("crashlytics-code-gen"),
-        zipalign <<= (zipalign in Android) dependsOn antTaskKey("crashlytics-post-package")
+        packageDebug <<= (packageDebug in Android) dependsOn antTaskKey("crashlytics-pre-build"),
+        packageRelease <<= (packageRelease in Android) dependsOn antTaskKey("crashlytics-pre-build"),
+        packageResources <<= (packageResources in Android) dependsOn antTaskKey("crashlytics-code-gen"),
+        apkbuild <<= (apkbuild in Android) map { result =>
+          antTaskKey("crashlytics-post-package")
+          result
+        }
       )
 
 }

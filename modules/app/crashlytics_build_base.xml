@@ -53,7 +53,7 @@
 	<property name="crashlytics.obfuscate.mapping.file" location="${crashlytics.project.path}/../../proguard-sbt.txt"/>
 
 	<dirname property="crashlytics.home" file="${ant.file.crashlytics_targets_base}"/>
-	<property name="crashlytics.devtools.jar" location="${crashlytics.project.path}/../../lib/crashlytics-devtools.jar" />
+	<property name="crashlytics.devtools.jar" location="${crashlytics.project.path}/crashlytics/crashlytics-devtools.jar" />
 	<property name="tool.name" value="com.crashlytics.tools.ant" />
 	<property name="tool.version" value="1.20.0" />
 

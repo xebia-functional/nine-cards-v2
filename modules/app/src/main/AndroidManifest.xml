@@ -12,6 +12,8 @@
         android:icon="@drawable/ic_launcher"
         android:name="com.fortysevendeg.ninecardslauncher.app.NineCardsApplication">
 
+        <meta-data android:name="io.fabric.ApiKey" android:value="@string/crashlytics_api_key"/>
+
         <activity
             android:theme="@style/AppThemeWallpaper"
             android:launchMode="singleTask"

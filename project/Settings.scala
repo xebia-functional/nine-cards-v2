@@ -91,6 +91,7 @@ object Settings {
     aar(androidDesign),
     aar(playServicesBase),
     aar(multiDexLib),
+    aar("com.crashlytics.sdk.android" % "crashlytics" % "2.5.2"),
     glide,
     okHttp,
     stetho,
@@ -136,7 +137,8 @@ object Settings {
     Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots"),
     Resolver.defaultLocal,
-    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
+    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
+    "crashlytics" at "https://maven.fabric.io/public"
   )
 
   lazy val proguardCommons = Seq(
