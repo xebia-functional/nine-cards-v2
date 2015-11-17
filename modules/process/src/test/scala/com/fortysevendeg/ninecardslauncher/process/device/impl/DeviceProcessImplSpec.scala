@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
+import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServicesException, CallsServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -43,6 +44,8 @@ trait DeviceProcessSpecification
   val fileServicesException = FileExceptionImpl("")
 
   val widgetsServicesException = WidgetServicesException("")
+
+  val callsServicesException = CallsServicesException("")
 
   trait DeviceProcessScope
     extends Scope
@@ -136,6 +139,20 @@ trait DeviceProcessSpecification
     mockWidgetsServices.getWidgets(any) returns
       Service(Task(Result.answer(widgetsServices)))
 
+    val mockCallsServices = mock[CallsServices]
+
+    mockCallsServices.getLastCalls returns
+      Service(Task(Result.answer(callsServices)))
+
+    mockContactsServices.fetchContactByPhoneNumber(phoneNumber1) returns
+      Service(Task(Result.answer(Some(callsContacts(0)))))
+
+    mockContactsServices.fetchContactByPhoneNumber(phoneNumber2) returns
+      Service(Task(Result.answer(Some(callsContacts(1)))))
+
+    mockContactsServices.fetchContactByPhoneNumber(phoneNumber3) returns
+      Service(Task(Result.answer(Some(callsContacts(2)))))
+
     val deviceProcess = new DeviceProcessImpl(
       mockAppsServices,
       mockApiServices,
@@ -143,7 +160,8 @@ trait DeviceProcessSpecification
       mockShortcutsServices,
       mockContactsServices,
       mockImageServices,
-      mockWidgetsServices) {
+      mockWidgetsServices,
+      mockCallsServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
       apiUtils.getRequestConfig(contextSupport) returns
@@ -328,6 +346,25 @@ trait DeviceProcessSpecification
 
     mockWidgetsServices.getWidgets(any) returns Service {
       Task(Errata(widgetsServicesException))
+    }
+  }
+
+  trait CallsErrorScope {
+    self: DeviceProcessScope =>
+
+    mockCallsServices.getLastCalls returns Service {
+      Task(Errata(callsServicesException))
+    }
+  }
+
+  trait CallsContactsErrorScope {
+    self: DeviceProcessScope =>
+
+    mockCallsServices.getLastCalls returns
+      Service(Task(Result.answer(callsServices)))
+
+    mockContactsServices.fetchContactByPhoneNumber(any) returns Service {
+      Task(Errata(contactsServicesException))
     }
   }
 }
@@ -691,7 +728,7 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns an empty Answer if persistence service fails" in
+    "returns an AppException if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
         result must beLike {
@@ -721,6 +758,38 @@ class DeviceProcessImplSpec
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[WidgetException]
           }
+        }
+      }
+
+  }
+
+  "Get Last Calls" should {
+
+    "get last calls" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getLastCalls(contextSupport).run.run
+        result must beLike {
+          case Answer(resultLastCalls) =>
+            resultLastCalls shouldEqual lastCallsContacts
+        }
+      }
+
+    "returns CallsException if CallsServices fail getting the calls " in
+      new DeviceProcessScope with CallsErrorScope {
+        val result = deviceProcess.getLastCalls(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CallException]
+          }
+        }
+      }
+
+    "returns an empty List if ContactsServices fail getting the contacts " in
+      new DeviceProcessScope with CallsContactsErrorScope {
+        val result = deviceProcess.getLastCalls(contextSupport).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual Seq()
         }
       }
 

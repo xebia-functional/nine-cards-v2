@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.device
+package com.fortysevendeg.ninecardslauncher.process.device.types
 
 import android.appwidget.AppWidgetProviderInfo
 
