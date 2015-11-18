@@ -89,7 +89,7 @@ trait FormedCollectionConversions
 
   private[this] def generateAddCollection(items: Seq[UnformedApp], category: NineCardCategory, position: Int): AddCollectionRequest = {
     // TODO We should sort the application using an endpoint in the new sever
-    val appsCategory = items.filter(_.category.equals(category)).take(numSpaces)
+    val appsCategory: Seq[UnformedApp] = items.filter(_.category.toAppCategory == category).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,

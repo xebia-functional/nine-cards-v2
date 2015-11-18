@@ -7,9 +7,14 @@ sealed trait NineCardCategory {
 
   def getStringResource : String = name.toLowerCase
   def getIconResource : String = name.toLowerCase
+  def isCustomCategory = NineCardCategory.customCategories contains this
   def isAppCategory = NineCardCategory.appsCategories contains this
-  def isNineCardCategory = NineCardCategory.nineCardsCategories contains this
   def isGameCategory = NineCardCategory.gamesCategories contains this
+
+  def toAppCategory: NineCardCategory = this match {
+    case c if c.isGameCategory => Game
+    case c => c
+  }
 }
 
 case object AllAppsCategory extends NineCardCategory {
@@ -222,7 +227,7 @@ case object GameWidgets extends NineCardCategory {
 
 object NineCardCategory {
 
-  val nineCardsCategories = Seq(AllAppsCategory, AllCategories, Custom, Misc)
+  val customCategories = Seq(AllAppsCategory, AllCategories, Custom, Misc)
 
   val appsCategories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
     Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
@@ -233,7 +238,7 @@ object NineCardCategory {
     GameSports, GameEducational, GameStrategy, GameWallpaper, GameTrivia, GameBoard, GameRolePlaying, GameMusic,
     GameWord, GamePuzzle, GameArcade, GameSimulation, GameWidgets)
 
-  val allCategories = nineCardsCategories ++ gamesCategories ++ appsCategories
+  val allCategories = customCategories ++ gamesCategories ++ appsCategories
 
   def apply(name: String): NineCardCategory = allCategories find (_.name == name) getOrElse Misc
 
