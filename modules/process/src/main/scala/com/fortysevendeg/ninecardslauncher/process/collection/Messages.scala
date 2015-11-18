@@ -28,3 +28,18 @@ case class EditCollectionRequest(
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[String] = None)
+
+case class PrivateCollection(
+  name: String,
+  collectionType: String,
+  icon: String,
+  themedColorIndex: Int,
+  appsCategory: Option[String] = None,
+  cards: Seq[PrivateCard])
+
+case class PrivateCard(
+  term: String,
+  packageName: Option[String],
+  cardType: String,
+  intent: NineCardIntent,
+  imagePath: String)

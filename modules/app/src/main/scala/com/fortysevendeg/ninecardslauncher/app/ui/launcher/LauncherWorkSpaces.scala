@@ -62,6 +62,8 @@ case class LauncherData(widgets: Boolean, collections: Seq[Collection] = Seq.emp
 object LauncherWorkSpacesTweaks {
   type W = LauncherWorkSpaces
 
+  val defaultPage = 1
+
   // We create a new page every 9 collections
   @tailrec
   private def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
@@ -98,6 +100,22 @@ object LauncherWorkSpacesTweaks {
         workspaces.selectPosition(workspaces.data.size - 1)
         workspaces.reset()
       }
+  }
+
+  def lwsRemoveCollection(collection: Collection) = Tweak[W] {
+    workspaces =>
+      val collections = workspaces.data flatMap (_.collections.filterNot(_ == collection))
+      val maybeWorkspaceCollection = workspaces.data find (_.collections contains collection)
+      val maybePage = maybeWorkspaceCollection map { workspace =>
+        workspaces.data.indexOf(workspace)
+      }
+      workspaces.data = LauncherData(widgets = true) +: getCollectionsItems(collections, Seq.empty, LauncherData(widgets = false))
+      val page = maybePage map { page =>
+        if (workspaces.data.isDefinedAt(page)) page else workspaces.data.length - 1
+      } getOrElse defaultPage
+      workspaces.selectPosition(page)
+      workspaces.reset()
+
   }
 
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))

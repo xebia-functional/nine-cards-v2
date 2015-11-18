@@ -13,8 +13,10 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
 import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT
+import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 
 import scalaz.concurrent.Task
 
@@ -30,8 +32,10 @@ class CollectionProcessImpl(
 
   override val resourceUtils: ResourceUtils = new ResourceUtils
 
+  val minAppsGenerateCollections = 1
+
   override def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = Service {
-    val tasks = createCollections(apps, contacts, categories) map (persistenceServices.addCollection(_).run)
+    val tasks = createCollections(apps, contacts, categories, minAppsToAdd) map (persistenceServices.addCollection(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
   }.resolve[CollectionException]
 
@@ -40,6 +44,14 @@ class CollectionProcessImpl(
       apps <- appsServices.getInstalledApplications
       collections <- createCollectionsAndFillData(items, apps)
     } yield collections).resolve[CollectionException]
+
+  override def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = Service {
+    Task {
+      CatchAll[CollectionException] {
+        createPrivateCollections(apps, categories, minAppsGenerateCollections)
+      }
+    }
+  }
 
   override def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
 
@@ -58,6 +70,7 @@ class CollectionProcessImpl(
     (for {
       Some(collection) <- findCollectionById(collectionId)
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
+      _ <- removeCards(collection.cards)
       collectionList <- getCollections
       _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
     } yield ()).resolve[CollectionException]
@@ -181,6 +194,11 @@ class CollectionProcessImpl(
 
   private[this] def updateCardList(cardList: Seq[Card]) = Service {
     val tasks = cardList map (card => updateCard(card).run)
+    Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
+  }
+
+  private[this] def removeCards(cards: Seq[ServicesCard]) = Service {
+    val tasks = cards map (card => persistenceServices.deleteCard(ServicesDeleteCardRequest(card)).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
   }
 
