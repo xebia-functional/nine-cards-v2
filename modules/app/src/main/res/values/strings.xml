@@ -118,6 +118,10 @@
     <string name="contacts_alphabetical">Alphabetical</string>
     <string name="contacts_favorites">Favorites</string>
     <string name="contacts_last">Last calls</string>
+    <string name="apps_header_updated_1">Today</string>
+    <string name="apps_header_updated_2">Less than 7 days</string>
+    <string name="apps_header_updated_3">Less than 30 days</string>
+    <string name="apps_header_updated_4">More than 30 days</string>
 
     <!-- Categories -->
 

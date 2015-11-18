@@ -24,7 +24,7 @@ trait DeviceConversions {
 
   def toFetchAppOrder(orderBy: GetAppOrder): FetchAppOrder = orderBy match {
     case GetByName(_) => OrderByName
-    case GetByUpdate(_) => OrderByUpdate
+    case GetByInstallDate(_) => OrderByInstallDate
     case GetByCategory(_) => OrderByCategory
   }
 
