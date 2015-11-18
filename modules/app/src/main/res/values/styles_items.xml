@@ -191,4 +191,82 @@
         <item name="android:textColor">@color/text_default_subtitle</item>
     </style>
 
+    <!-- MyCollections Items -->
+
+    <style name="PrivateCollectionsItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/padding_small</item>
+        <item name="android:layout_marginRight">@dimen/padding_small</item>
+        <item name="android:layout_marginTop">@dimen/padding_small</item>
+        <item name="android:layout_marginBottom">@dimen/padding_default</item>
+    </style>
+
+    <style name="PrivateCollectionsItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="PrivateCollectionsItemHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_margin">@dimen/padding_large</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="PrivateCollectionsItemHeaderIconContent">
+        <item name="android:layout_width">@dimen/size_icon_private_collections_content</item>
+        <item name="android:layout_height">@dimen/size_icon_private_collections_content</item>
+        <item name="android:layout_marginRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="PrivateCollectionsItemHeaderIcon">
+        <item name="android:layout_width">@dimen/size_icon_private_collections</item>
+        <item name="android:layout_height">@dimen/size_icon_private_collections</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="PrivateCollectionsItemHeaderName">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/text_default_title</item>
+        <item name="android:layout_marginLeft">@dimen/padding_default</item>
+    </style>
+
+    <style name="PrivateCollectionsItemIconsRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginLeft">@dimen/padding_large</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+        <item name="android:layout_marginBottom">@dimen/padding_large</item>
+    </style>
+
+    <style name="PrivateCollectionsItemLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_default</item>
+        <item name="android:background">@color/divider_color_info_dialog</item>
+    </style>
+
+    <style name="PrivateCollectionsItemAddCollection">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:paddingRight">@dimen/padding_large</item>
+        <item name="android:paddingTop">@dimen/padding_small</item>
+        <item name="android:paddingBottom">@dimen/padding_small</item>
+        <item name="android:text">@string/addMyCollection</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
 </resources>

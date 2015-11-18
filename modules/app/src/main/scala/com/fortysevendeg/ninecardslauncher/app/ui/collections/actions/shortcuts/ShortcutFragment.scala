@@ -1,16 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 
 import scalaz.concurrent.Task
 
