@@ -22,6 +22,10 @@ case class WidgetException(message: String, cause: Option[Throwable] = None) ext
   cause map initCause
 }
 
+case class CallException(message: String, cause: Option[Throwable] = None) extends RuntimeException(message) {
+  cause map initCause
+}
+
 trait ImplicitsDeviceException {
   implicit def appException = (t: Throwable) => AppException(t.getMessage, t.some)
 
@@ -32,4 +36,6 @@ trait ImplicitsDeviceException {
   implicit def contactException = (t: Throwable) => ContactException(t.getMessage, t.some)
 
   implicit def widgetException = (t: Throwable) => WidgetException(t.getMessage, t.some)
+
+  implicit def callException = (t: Throwable) => CallException(t.getMessage, t.some)
 }
