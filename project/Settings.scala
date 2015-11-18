@@ -91,7 +91,7 @@ object Settings {
     aar(androidDesign),
     aar(playServicesBase),
     aar(multiDexLib),
-    aar("com.crashlytics.sdk.android" % "crashlytics" % "2.5.2"),
+    aar(crashlytics),
     glide,
     okHttp,
     stetho,
