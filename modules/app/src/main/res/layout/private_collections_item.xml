@@ -10,9 +10,15 @@
         <LinearLayout
             style="@style/PrivateCollectionsItemHeader">
 
-            <ImageView
-                android:id="@+id/private_collections_item_icon"
-                style="@style/PrivateCollectionsItemHeaderIcon"/>
+            <FrameLayout
+                style="@style/PrivateCollectionsItemHeaderIconContent"
+                android:id="@+id/private_collections_item_content">
+
+                <ImageView
+                    android:id="@+id/private_collections_item_icon"
+                    style="@style/PrivateCollectionsItemHeaderIcon"/>
+
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/private_collections_item_name"
@@ -22,11 +28,11 @@
 
         <LinearLayout
             android:id="@+id/private_collections_item_row1"
-            style="@style/PrivateCollectionsItemIconsRow" />
+            style="@style/PrivateCollectionsItemIconsRow"/>
 
         <LinearLayout
             android:id="@+id/private_collections_item_row2"
-            style="@style/PrivateCollectionsItemIconsRow" />
+            style="@style/PrivateCollectionsItemIconsRow"/>
 
         <ImageView
             style="@style/PrivateCollectionsItemLine"/>

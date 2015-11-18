@@ -4,11 +4,12 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
-import android.widget.ImageView
+import android.widget.{LinearLayout, ImageView}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
@@ -20,7 +21,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{PrivateCard, Priv
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid.{Tweak, ActivityContextWrapper, Ui}
 
 trait PrivateCollectionsComposer
   extends Styles
@@ -63,6 +64,8 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
 
   val appsByRow = 5
 
+  lazy val iconContent = Option(findView(TR.private_collections_item_content))
+
   lazy val icon = Option(findView(TR.private_collections_item_icon))
 
   lazy val name = Option(findView(TR.private_collections_item_name))
@@ -78,13 +81,14 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     d.getPaint.setColor(resGetColor(getIndexColor(privateCollection.themedColorIndex)))
     val cardsRow1 = privateCollection.cards slice(0, appsByRow)
     val cardsRow2 = privateCollection.cards slice(appsByRow, appsByRow * 2)
-    val uisRow1 = getViewsByCards(cardsRow1)
-    val uisRow2 = getViewsByCards(cardsRow2)
-    (icon <~
-      ivSrc(iconCollectionDetail(privateCollection.icon)) <~
-      vBackground(d)) ~
-      (appsRow1 <~ vgRemoveAllViews <~ vgAddViews(uisRow1)) ~
-      (appsRow2 <~ vgRemoveAllViews <~ vgAddViews(uisRow2)) ~
+    (iconContent <~ vBackground(d)) ~
+      (icon <~ ivSrc(iconCollectionDetail(privateCollection.icon))) ~
+      (appsRow1 <~
+        vgRemoveAllViews <~
+        automaticAlignment(appsRow1, cardsRow1)) ~
+      (appsRow2 <~
+        vgRemoveAllViews <~
+        automaticAlignment(appsRow2, cardsRow2)) ~
       (name <~ tvText(privateCollection.name)) ~
       (content <~ vTag2(position)) ~
       (addCollection <~ On.click(Ui(clickListener(privateCollection))))
@@ -92,15 +96,29 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
-  private[this] def getViewsByCards(cards: Seq[PrivateCard]) = {
-    val size = resGetDimensionPixelSize(R.dimen.size_app_private_collections)
-    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-    cards map { card =>
-      getUi(
-        w[ImageView] <~
-          lp[ViewGroup](size, size) <~
-          vPaddings(padding) <~
-          ivUri(card.imagePath))
+  private[this] def automaticAlignment(view: Option[LinearLayout], cards: Seq[PrivateCard]): Tweak[LinearLayout] = {
+    val width = view.map(_.getWidth) getOrElse 0
+    if (width > 0) {
+      val uisRow1 = getViewsByCards(cards, width)
+      vgAddViews(uisRow1)
+    } else {
+      vGlobalLayoutListener { v => {
+        val uisRow1 = getViewsByCards(cards, v.getWidth)
+        appsRow1 <~ vgAddViews(uisRow1)
+      }}
+    }
+  }
+
+  private[this] def getViewsByCards(cards: Seq[PrivateCard], width: Int) = {
+    val size = resGetDimensionPixelSize(R.dimen.size_icon_private_collections_content)
+    val padding = (width - (size * appsByRow)) / (appsByRow - 1)
+    cards.zipWithIndex map {
+      case (card, index) =>
+        getUi(
+          w[ImageView] <~
+            lp[ViewGroup](size, size) <~
+            (if (index < appsByRow - 1) llLayoutMargin(0, 0, padding, 0) else Tweak.blank) <~
+            ivUri(card.imagePath))
     }
   }
 }

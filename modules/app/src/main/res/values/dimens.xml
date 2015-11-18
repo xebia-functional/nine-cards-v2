@@ -107,9 +107,9 @@
 
     <dimen name="margin_top_fab_button">8dp</dimen>
 
-    <dimen name="size_icon_private_collections">42dp</dimen>
+    <dimen name="size_icon_private_collections_content">40dp</dimen>
 
-    <dimen name="size_app_private_collections">62dp</dimen>
+    <dimen name="size_icon_private_collections">20dp</dimen>
 
     <!-- Fast Scroller -->
     <dimen name="fastscroller_text_size">40sp</dimen>
