@@ -49,15 +49,13 @@ object DrawerSnails {
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private[this] def reveal(source: View, view: View, in: Boolean = true)(animationEnd: => Unit = ())(implicit context: ContextWrapper): Unit = {
-    val sb = resGetDimensionPixelSize("status_bar_height") getOrElse 25 dp
-    val marginTop = resGetDimensionPixelSize(R.dimen.height_search_box)
     val (cx, cy) = calculateAnchorViewPosition(source)
     val fromRadius = source.getWidth / 2
-    val toRadius = SnailsUtils.calculateRadius(width = cx + fromRadius, height = cy + fromRadius - sb - marginTop)
+    val toRadius = SnailsUtils.calculateRadius(width = cx + fromRadius, height = cy + fromRadius)
 
     val (startRadius, endRadius) = if (in) (fromRadius, toRadius) else (toRadius, fromRadius)
 
-    val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx + fromRadius, cy + fromRadius - sb - marginTop, startRadius, endRadius)
+    val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx + fromRadius, cy + fromRadius, startRadius, endRadius)
     reveal.addListener(new AnimatorListenerAdapter {
       override def onAnimationStart(animation: Animator): Unit = {
         super.onAnimationStart(animation)

@@ -106,6 +106,9 @@
     <string name="free">Free</string>
 
     <!-- Drawer -->
+    <string name="searchApps">Search apps…</string>
+    <string name="searchContacts">Search contacts…</string>
+
     <string name="apps_alphabetical">Alphabetical</string>
     <string name="apps_categories">By categories</string>
     <string name="apps_date">By installation date</string>

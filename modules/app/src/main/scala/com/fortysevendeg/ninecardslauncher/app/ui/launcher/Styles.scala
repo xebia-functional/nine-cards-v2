@@ -24,8 +24,7 @@ import macroid.{ContextWrapper, Tweak}
 trait Styles {
 
   def searchContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =
-    vBackgroundColor(theme.get(SearchBackgroundColor)) +
-      vBackgroundBoxWorkspace
+    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
 
   def burgerButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
     tivDefaultColor(theme.get(SearchIconsColor)) +

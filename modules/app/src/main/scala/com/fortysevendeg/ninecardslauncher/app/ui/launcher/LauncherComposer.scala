@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.View
+import android.util.Log
+import android.view.{WindowManager, View}
 import android.widget.ImageView
+import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -147,18 +149,15 @@ trait LauncherComposer
 
   def showMessage(message: Int): Ui[_] = drawerLayout <~ uiSnackbarShort(message)
 
-  def updateBarsInFabMenuShow: Ui[_] = {
-    val color = getResources.getColor(R.color.background_dialog)
-    updateNavigationColor(color) ~
-      updateStatusColor(color)
-  }
+  def updateBarsInFabMenuShow: Ui[_] = Ui.nop
 
-  def updateBarsInFabMenuHide: Ui[_] = updateNavigationToTransparent ~ updateStatusToTransparent
+  def updateBarsInFabMenuHide: Ui[_] = Ui.nop
 
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
-    (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
+    prepareBars ~
+      (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
         runUi(goToMenuOption(itemId))
         true
@@ -340,5 +339,13 @@ trait LauncherComposer
       (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
+
+  private[this] def prepareBars(implicit context: ActivityContextWrapper) =
+    KitKat.ifSupportedThen {
+      Ui(getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
+        (content <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
+        (drawerContent <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
+        (drawerLayout <~ vBackground(R.drawable.background_workspace))
+    } getOrElse Ui.nop
 
 }

@@ -53,6 +53,10 @@ trait DrawerComposer
 
   lazy val recycler = Option(findView(TR.launcher_drawer_recycler))
 
+  lazy val searchBoxPanel = Option(findView(TR.launcher_search_box_panel))
+
+  lazy val  searchBoxIcon = Option(findView(TR.launcher_search_box_icon))
+
   def showDrawerLoading: Ui[_] = (loadingDrawer <~ vVisible) ~
     (recycler <~ vGone) ~
     (scrollerLayout <~ fslInvisible)
@@ -66,25 +70,26 @@ trait DrawerComposer
   def initDrawerUi(
     onAppMenuClickListener: (AppsMenuOption) => Unit,
     onContactMenuClickListener: (ContactsMenuOption) => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-    (appDrawerMain <~ drawerAppStyle <~ On.click {
-      revealInDrawer ~ Ui(onAppMenuClickListener(AppsAlphabetical))
-    }) ~
-      (loadingDrawer <~ pbColor(resGetColor(R.color.drawer_toolbar))) ~
+    (searchBoxPanel <~ searchBoxContentStyle) ~
+      (searchBoxIcon <~ searchBoxButtonStyle) ~
+      (appDrawerMain <~ appDrawerMainStyle <~ On.click {
+        revealInDrawer ~ Ui(onAppMenuClickListener(AppsAlphabetical))
+      }) ~
+      (loadingDrawer <~ loadingDrawerStyle) ~
       (recycler <~ recyclerStyle) ~
-      (scrollerLayout <~
-        fslColor(resGetColor(R.color.drawer_toolbar)) <~
-        vBackgroundColor(theme.get(SearchBackgroundColor)) <~
-        vBackgroundBoxWorkspace) ~
+      (scrollerLayout <~ drawerContentStyle) ~
       (drawerContent <~ vGone)
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
   def revealInDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-    appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source))
+    (drawerContent <~ colorContentDialog(paint = true)) ~
+      (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
 
   def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-    (recycler <~
-      rvAdapter(emptyAdapter)) ~
+    (drawerContent <~ colorContentDialog(paint = true)) ~
+      (recycler <~
+        rvAdapter(emptyAdapter)) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealOutAppDrawer(source)))
 
   def addApps(apps: Seq[App], getAppOrder: GetAppOrder, clickListener: (App) => Unit, longClickListener: (App) => Unit)
@@ -94,6 +99,9 @@ trait DrawerComposer
       clickListener = clickListener,
       longClickListener = Option(longClickListener)),
       fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
+
+  private[this] def colorContentDialog(paint: Boolean)(implicit context: ActivityContextWrapper) =
+    vBackgroundColorResource(if (paint) R.color.background_dialog else android.R.color.transparent)
 
   private[this] def isScrollerLayoutVisible(getAppOrder: GetAppOrder) = getAppOrder match {
     case v: GetByInstallDate => false

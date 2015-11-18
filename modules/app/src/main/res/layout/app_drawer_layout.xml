@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/launcher_drawer_content"
     style="@style/LauncherDrawerContent">
+
+    <include layout="@layout/search_box_panel"/>
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
         android:id="@+id/launcher_drawer_scroller_layout"
@@ -18,4 +20,4 @@
 
     </com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout>
 
-</FrameLayout>
+</LinearLayout>

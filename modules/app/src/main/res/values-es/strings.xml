@@ -102,6 +102,9 @@
     <string name="free">Gratis</string>
 
     <!-- Drawer -->
+    <string name="searchApps">Buscar aplicaciones…</string>
+    <string name="searchContacts">Buscar contactos…</string>
+
     <string name="apps_alphabetical">Alfabético</string>
     <string name="apps_categories">Por categorías</string>
     <string name="apps_date">Por fecha de instalación</string>

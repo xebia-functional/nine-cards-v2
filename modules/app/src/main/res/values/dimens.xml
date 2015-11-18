@@ -21,7 +21,7 @@
 
     <dimen name="divider_default">1px</dimen>
 
-    <dimen name="elevation_box_workspaces">8dp</dimen>
+    <dimen name="elevation_box_workspaces">6dp</dimen>
     <dimen name="elevation_toolbar">4dp</dimen>
     <dimen name="elevation_default">2dp</dimen>
     <dimen name="elevation_pressed">4dp</dimen>

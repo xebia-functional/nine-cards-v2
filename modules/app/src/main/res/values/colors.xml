@@ -102,6 +102,9 @@
     <color name="drawer_fab_button_ripple">#ff0e1550</color>
     <color name="drawer_tab_bottom">#ffffff</color>
 
+    <color name="drawer_search_box">#88000000</color>
+    <color name="drawer_search_box_hint">#50000000</color>
+
     <!-- Contact Info Dialog -->
     <color name="divider_color_info_dialog">#d6d6d6</color>
     <color name="text_selected_color_dialog">#4285F4</color>

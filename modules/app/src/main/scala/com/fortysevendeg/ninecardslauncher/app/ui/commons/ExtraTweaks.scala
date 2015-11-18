@@ -2,7 +2,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
+import android.graphics.drawable.shapes.{RoundRectShape, OvalShape}
+import android.graphics.drawable.{ShapeDrawable, Drawable}
 import android.graphics.{Color, Outline, PorterDuff}
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
 import android.support.design.widget.{FloatingActionButton, NavigationView, Snackbar}
@@ -163,10 +164,18 @@ object ExtraTweaks {
 
 object CommonsTweak {
 
-  def vBackgroundBoxWorkspace(implicit contextWrapper: ContextWrapper): Tweak[View] =
+  def vBackgroundBoxWorkspace(color: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
+    val radius = resGetDimensionPixelSize(R.dimen.radius_default)
     Lollipop.ifSupportedThen {
-      ExtraTweaks.vClipBackground(resGetDimensionPixelSize(R.dimen.radius_default)) +
+      vBackgroundColor(color) +
+        ExtraTweaks.vClipBackground(radius) +
         vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
-    } getOrElse Tweak.blank
+    } getOrElse {
+      val s = 0 until 8 map (_ => radius.toFloat)
+      val d = new ShapeDrawable(new RoundRectShape(s.toArray, null, null))
+      d.getPaint.setColor(color)
+      vBackground(d)
+    }
+  }
 
 }

@@ -5,7 +5,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:clickable">true</item>
-        <item name="android:layout_marginTop">@dimen/height_search_box</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="LauncherDrawerToolbarParent">
@@ -21,7 +22,6 @@
     <style name="LauncherDrawerInnerContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginTop">@dimen/padding_large</item>
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
         <item name="android:layout_marginRight">@dimen/padding_default</item>
         <item name="android:layout_marginBottom">@dimen/padding_default</item>
