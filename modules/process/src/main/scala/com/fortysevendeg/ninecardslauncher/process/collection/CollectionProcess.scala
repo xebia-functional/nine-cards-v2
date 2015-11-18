@@ -16,6 +16,14 @@ trait CollectionProcess {
   def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport): ServiceDef2[List[Collection], CollectionException]
 
   /**
+    * Generate Private Collections with the apps installed in the device and their categories
+    * @param apps the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedApp] with the apps' data
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.PrivateCollection]
+    * @throws CollectionException if there was an error creating the existing collections
+    */
+  def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport): ServiceDef2[Seq[PrivateCollection], CollectionException]
+
+  /**
    * Creates Collections from some already formed and given Collections
    * @param items the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.FormedCollection] of Collections
    * @return the List[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]

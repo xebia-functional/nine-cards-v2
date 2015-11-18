@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/PrivateCollectionsItemRoot">
+
+    <LinearLayout
+        style="@style/PrivateCollectionsItemContent">
+
+        <LinearLayout
+            style="@style/PrivateCollectionsItemHeader">
+
+            <FrameLayout
+                style="@style/PrivateCollectionsItemHeaderIconContent"
+                android:id="@+id/private_collections_item_content">
+
+                <ImageView
+                    android:id="@+id/private_collections_item_icon"
+                    style="@style/PrivateCollectionsItemHeaderIcon"/>
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/private_collections_item_name"
+                style="@style/PrivateCollectionsItemHeaderName"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/private_collections_item_row1"
+            style="@style/PrivateCollectionsItemIconsRow"/>
+
+        <LinearLayout
+            android:id="@+id/private_collections_item_row2"
+            style="@style/PrivateCollectionsItemIconsRow"/>
+
+        <ImageView
+            style="@style/PrivateCollectionsItemLine"/>
+
+        <Button
+            android:id="@+id/private_collections_item_add_collection"
+            style="@style/PrivateCollectionsItemAddCollection"/>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

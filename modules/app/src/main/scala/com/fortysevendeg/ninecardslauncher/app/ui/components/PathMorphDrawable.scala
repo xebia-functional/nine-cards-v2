@@ -64,8 +64,8 @@ case class PathMorphDrawable(
   )
 
   lazy val closeIcon = List(
-    new Segment().fromRatios(0.712f, 0.288f, 0.288f, 0.712f),
-    new Segment().fromRatios(0.288f, 0.288f, 0.712f, 0.712f)
+    new Segment().fromRatios(0.662f, 0.338f, 0.338f, 0.662f),
+    new Segment().fromRatios(0.338f, 0.338f, 0.662f, 0.662f)
   )
 
   val noIcon = List.empty
