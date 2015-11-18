@@ -51,6 +51,8 @@ object ReplacePropertiesGenerator {
   }
 
   def replaceValuesTask = Def.task[Seq[File]] {
+    val log = streams.value.log
+    println("Replacing values")
     try {
       val dir: (File, File) = (collectResources in Android).value
       val valuesFile: File =  new File(dir._2, "/values/values.xml")
@@ -58,7 +60,6 @@ object ReplacePropertiesGenerator {
       Seq(valuesFile)
     } catch {
       case e: Throwable =>
-        val log = streams.value.log
         log.error("An error occurred replacing values")
         throw e
     }
