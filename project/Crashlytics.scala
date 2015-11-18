@@ -1,7 +1,10 @@
+import java.io.File
+
 import android.Keys._
 import de.johoop.ant4sbt.Ant4Sbt._
 import sbt.Keys._
 import sbt._
+import ReplacePropertiesGenerator._
 
 object Crashlytics {
 
@@ -12,14 +15,36 @@ object Crashlytics {
         "crashlytics-code-gen",
         "crashlytics-post-package") ++
       Seq(
-        antBuildFile := baseDirectory.value / "crashlytics_build_base.xml",
-        packageDebug in Android <<= (packageDebug in Android) dependsOn antTaskKey("crashlytics-pre-build"),
-        packageRelease in Android <<= (packageRelease in Android) dependsOn antTaskKey("crashlytics-pre-build"),
-        packageResources in Android <<= (packageResources in Android) dependsOn antTaskKey("crashlytics-code-gen"),
-        apkbuild in Android <<= (apkbuild in Android) map { result =>
+        antBuildFile := baseDirectory.value / "crashlytics" / "crashlytics_build.xml",
+        packageResources in Android <<= (packageResources in Android)
+          dependsOn antTaskKey("crashlytics-code-gen")
+          dependsOn createFiles
+          dependsOn antTaskKey("crashlytics-pre-build"),
+        zipalign in Android <<= (zipalign in Android) map { result =>
           antTaskKey("crashlytics-post-package")
           result
         }
       )
+
+  def createFiles = Def.task[Seq[File]] {
+    val log = streams.value.log
+    log.info("Creating crashlytics files")
+    try {
+      val templates = loadTemplates(baseDirectory.value / "crashlytics" / "templates")
+      templates map { file =>
+        val target = baseDirectory.value / "crashlytics" / file.getName
+        replaceContent(file, target)
+        target
+      }
+    } catch {
+      case e: Throwable =>
+        log.error("An error occurred loading creating files")
+        throw e
+    }
+  }
+
+  private[this] def loadTemplates(folder: File): Seq[File] = {
+    folder.listFiles().toSeq
+  }
 
 }

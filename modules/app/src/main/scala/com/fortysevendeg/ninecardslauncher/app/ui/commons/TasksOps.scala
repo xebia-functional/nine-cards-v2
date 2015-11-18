@@ -1,12 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
-import android.util.Log
 import macroid.Ui
 import macroid.FullDsl._
 import rapture.core.{Unforeseen, Errata, Answer, Result}
 
 import scalaz.{\/-, -\/, \/}
 import scalaz.concurrent.Task
+
+import AppLog._
 
 object TasksOps {
 
@@ -22,14 +23,14 @@ object TasksOps {
       onPreTask()
       t.runAsync {
         case -\/(ex) =>
-          printMessage("=> EXCEPTION Disjunction <=", Seq(ex))
+          printErrorTaskMessage("=> EXCEPTION Disjunction <=", Seq(ex))
           onException(ex)
         case \/-(Answer(response)) => onResult(response)
         case \/-(e@Errata(_)) =>
-          printMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
+          printErrorTaskMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
           e.exceptions foreach onException
         case \/-(Unforeseen(ex)) =>
-          printMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
+          printErrorTaskMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
           onException(ex)
       }
     }
@@ -41,14 +42,14 @@ object TasksOps {
       runUi(onPreTask())
       t.runAsync {
         case -\/(ex) =>
-          printMessage("=> EXCEPTION Disjunction <=", Seq(ex))
+          printErrorTaskMessage("=> EXCEPTION Disjunction <=", Seq(ex))
           runUi(onException(ex))
         case \/-(Answer(response)) => runUi(onResult(response))
         case \/-(e@Errata(_)) =>
-          printMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
+          printErrorTaskMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
           e.exceptions foreach (ex => runUi(onException(ex)))
         case \/-(Unforeseen(ex)) =>
-          printMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
+          printErrorTaskMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
           runUi(onException(ex))
       }
     }
@@ -59,10 +60,10 @@ object TasksOps {
       t.map {
         case Answer(response) => onResult(response)
         case e@Errata(_) =>
-          printMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
+          printErrorTaskMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
           e.exceptions foreach onException
         case Unforeseen(ex) =>
-          printMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
+          printErrorTaskMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
           onException(ex)
       }.attemptRun
     }
@@ -73,17 +74,12 @@ object TasksOps {
       t.map {
         case Answer(response) => runUi(onResult(response))
         case e@Errata(_) =>
-          printMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
+          printErrorTaskMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
           e.exceptions foreach (ex => runUi(onException(ex)))
         case Unforeseen(ex) =>
-          printMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
+          printErrorTaskMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
           runUi(onException(ex))
       }.attemptRun
-    }
-
-    private[this] def printMessage(header: String, exs: Seq[Throwable]) = {
-      Log.d(tag, header)
-      exs foreach (ex => Log.d(tag, Option(ex.getMessage) getOrElse ex.getClass.toString))
     }
 
   }

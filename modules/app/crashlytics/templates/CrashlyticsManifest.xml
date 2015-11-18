@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.fortysevendeg.ninecardslauncher2"
+          android:versionCode="1"
+          android:versionName="1.0">
+
+    <application
+        android:label="@string/app_name"
+        android:icon="@drawable/ic_launcher">
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="${crashlytics.apikey}"/>
+
+    </application>
+
+</manifest>

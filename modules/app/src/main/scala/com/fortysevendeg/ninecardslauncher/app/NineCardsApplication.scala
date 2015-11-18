@@ -32,9 +32,8 @@ class NineCardsApplication
           .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
           .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
           .build())
-    } //else {
-      Fabric.`with`(this, new Crashlytics())
-    //}
+    }
+    Fabric.`with`(this, new Crashlytics())
   }
 
   override def attachBaseContext(base: Context): Unit = {
