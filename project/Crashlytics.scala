@@ -18,8 +18,8 @@ object Crashlytics {
         antBuildFile := baseDirectory.value / "crashlytics" / "crashlytics_build.xml",
         typedResourcesGenerator in Android <<= (typedResourcesGenerator in Android)
           dependsOn antTaskKey("crashlytics-code-gen")
-          dependsOn createFiles
-          dependsOn antTaskKey("crashlytics-pre-build"),
+          dependsOn antTaskKey("crashlytics-pre-build")
+          dependsOn createFiles,
         zipalign in Android <<= (zipalign in Android) map { result =>
           antTaskKey("crashlytics-post-package")
           result
