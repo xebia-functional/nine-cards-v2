@@ -35,8 +35,6 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION "project process" coverage test
   - sbt ++$TRAVIS_SCALA_VERSION "project app" coverage test
 after_success:
-  - ls -lA $PWD
-  - ls -lA ~/
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" android:package
