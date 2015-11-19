@@ -45,6 +45,8 @@ class LauncherActivity
     case _ => getDefaultTheme
   }
 
+  val tagDialog = "dialog"
+
   val playStorePackage = "com.android.vending"
 
   var hasFocus = false
@@ -95,7 +97,25 @@ class LauncherActivity
     case _ => super.dispatchKeyEvent(event)
   }
 
-  def addNewCollection(collection: Collection) = runUi(addCollection(collection))
+  def addNewCollection(collection: Collection) = runUi(uiAddCollection(collection))
+
+  def removeCollection(collection: Collection) = {
+    val overOneCollection = workspaces.exists(_.data.filter(_.widgets == false).headOption.exists(_.collections.length!=1))
+    if (overOneCollection) {
+      val ft = getSupportFragmentManager.beginTransaction()
+      Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+      ft.addToBackStack(null)
+      val dialog = new RemoveCollectionDialogFragment(() => {
+        Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
+          onResult = (_) => uiRemoveCollection(collection),
+          onException = (_) => showMessage(R.string.contactUsError)
+        )
+      })
+      dialog.show(ft, tagDialog)
+    } else {
+      runUi(showMessage(R.string.minimumOneCollectionMessage))
+    }
+  }
 
   private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
     onResult = {

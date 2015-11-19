@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.new_collection
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection
 
 import android.graphics.Color
 import android.graphics.Paint.Style

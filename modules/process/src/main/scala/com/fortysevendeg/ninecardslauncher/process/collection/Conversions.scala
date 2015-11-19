@@ -228,6 +228,14 @@ trait Conversions {
       imagePath = item.photoUri)
   }
 
+  def toPrivateCard(unformedApp: UnformedApp) =
+    PrivateCard(
+      term = unformedApp.name,
+      packageName = Some(unformedApp.packageName),
+      cardType = AppCardType,
+      intent = toNineCardIntent(unformedApp),
+      imagePath = unformedApp.imagePath)
+
   def toNineCardIntent(item: UnformedContact): (NineCardIntent, String) = item match {
     case UnformedContact(_, _, _, Some(info)) if info.phones.nonEmpty =>
       val phone = info.phones.headOption map (_.number)

@@ -16,6 +16,8 @@ sealed trait NineCardCategory {
     case c => c
   }
 }
+  }
+}
 
 case object AllAppsCategory extends NineCardCategory {
   override val name: String = allApps

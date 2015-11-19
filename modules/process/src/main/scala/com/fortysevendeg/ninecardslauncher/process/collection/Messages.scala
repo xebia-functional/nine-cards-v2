@@ -30,3 +30,18 @@ case class EditCollectionRequest(
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[NineCardCategory] = None)
+
+case class PrivateCollection(
+  name: String,
+  collectionType: CollectionType,
+  icon: String,
+  themedColorIndex: Int,
+  appsCategory: Option[NineCardCategory] = None,
+  cards: Seq[PrivateCard])
+
+case class PrivateCard(
+  term: String,
+  packageName: Option[String],
+  cardType: CardType,
+  intent: NineCardIntent,
+  imagePath: String)
