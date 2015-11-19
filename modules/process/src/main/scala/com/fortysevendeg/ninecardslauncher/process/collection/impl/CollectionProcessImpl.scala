@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
