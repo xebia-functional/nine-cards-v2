@@ -4,8 +4,10 @@ import android.app.Application
 import android.content.Context
 import android.os.StrictMode
 import android.support.multidex.MultiDex
+import com.crashlytics.android.Crashlytics
 import com.facebook.stetho.Stetho
 import com.fortysevendeg.ninecardslauncher2.BuildConfig
+import io.fabric.sdk.android.Fabric
 
 class NineCardsApplication
   extends Application {
@@ -31,6 +33,7 @@ class NineCardsApplication
           .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
           .build())
     }
+    Fabric.`with`(this, new Crashlytics())
   }
 
   override def attachBaseContext(base: Context): Unit = {

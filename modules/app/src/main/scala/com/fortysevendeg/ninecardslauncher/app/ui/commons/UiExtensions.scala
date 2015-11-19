@@ -8,7 +8,7 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scala.annotation.tailrec
 import scala.ref.WeakReference
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 trait UiExtensions {
 
@@ -52,23 +52,19 @@ object SafeUi {
     new Intent(c.application, m.runtimeClass)
 
   def uiStartIntent(intent: Intent)(implicit c: ActivityContextWrapper): Ui[Unit] =
-    Ui {
-      Try {
-        c.original.get foreach (_.startActivity(intent))
-      }
-    }
+    startIntent(_.startActivity(intent))
 
   def uiStartIntentWithOptions(intent: Intent, options: ActivityOptionsCompat)(implicit c: ActivityContextWrapper): Ui[Unit] =
-    Ui {
-      Try {
-        c.original.get foreach (_.startActivity(intent, options.toBundle))
-      }
-    }
+    startIntent(_.startActivity(intent, options.toBundle))
 
   def uiStartIntentForResult(intent: Intent, result: Int)(implicit c: ActivityContextWrapper): Ui[Unit] =
+    startIntent(_.startActivityForResult(intent, result))
+
+  private[this] def startIntent(f: (Activity) => Unit)(implicit c: ActivityContextWrapper): Ui[Unit] =
     Ui {
-      Try {
-        c.original.get foreach (_.startActivityForResult(intent, result))
+      Try(c.original.get foreach f) match {
+        case Failure(e) => AppLog.printErrorMessage(e)
+        case _ =>
       }
     }
 

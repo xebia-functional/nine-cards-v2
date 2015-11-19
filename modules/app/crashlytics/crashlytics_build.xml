@@ -1,0 +1,395 @@
+<!--
+	Crashlytics ant targets for Android 
+
+	*****
+
+	If you use the build targets supplied by Android, see crashlytics_build.xml.
+
+	*****
+	Features:
+	- Adds required Crashlytics Build ID in a string resource file res/values/
+
+	- Automatically uploads ProGuard deobfuscation (aka mapping) files to Crashlytics servers, which
+	  enables viewing of deobfuscated stack traces on crashlytics.com with no manual action required.
+
+
+	How to use:
+	- Add the following line to your ant build script, replacing CRASHLYTICS_HOME with the 
+	  absolute or relative path to this build file:
+
+		<import file="CRASHLYTICS_HOME/crashlytics_build_base.xml"/>
+
+	- Add the "crashlytics-pre-build" target to the depends list of your build task to ensure cached 
+	  deobfuscation files that failed to upload on previous attempts are uploaded to Crashlytics.
+
+	- Add the "crashlytics-code-gen" target to the start of the depends list for your Android resource 
+          generation task to autogenerate Crashlytics-required resources for your app.
+
+	- Add the "crashlytics-post-package" target to the depends list for your post-package task to
+	  upload your ProGuard mappings file and clean up the Crashlytics-generated resources.
+
+	- The project root directory is assumed to be colocated with build.xml. You can optionally specify
+	  an alternate paths to the project root, AndroidManifest.xml, and res directories by declaring:
+
+		<property name="crashlytics.project.path" location="PROJECT.ROOT"/>
+		<property name="crashlytics.manifest.path" location="MANIFEST.PARENT/AndroidManifest.xml"/>
+		<property name="crashlytics.res.path" location="RES.PARENT/res"/>
+
+	- If the ProGuard mapping file is NOT written the standard location (proguard/mapping.txt), 
+	  this line is also required:
+
+	 	<property name="crashlytics.obfuscate.mapping.file" location="YOUR_MAPPING_FILE"/>
+
+	- If you are using an obfuscator other than ProGuard, please contact support@crashlytics.com
+
+-->
+
+<project name="crashlytics_targets_base">
+
+	<property name="crashlytics.script.path" location="./crashlytics"/>
+	<property name="crashlytics.project.path" location="."/>
+	<property name="crashlytics.manifest.path" location="${crashlytics.script.path}/CrashlyticsManifest.xml"/>
+	<property name="crashlytics.res.path" location="${crashlytics.project.path}/src/main/res"/>
+	<property name="crashlytics.assets.path" location="${crashlytics.project.path}/src/main/assets"/>
+
+	<property name="crashlytics.obfuscate.mapping.file" location="${crashlytics.project.path}/../../proguard-sbt.txt"/>
+
+	<dirname property="crashlytics.home" file="${ant.file.crashlytics_targets_base}"/>
+
+	<property name="crashlytics.devtools.jar" location="${crashlytics.script.path}/crashlytics-devtools.jar" />
+	<property name="tool.name" value="com.crashlytics.tools.ant" />
+	<property name="tool.version" value="1.20.0" />
+
+	<target name="crashlytics-pre-build" depends="crashlytics-cleanup-resources"
+		description="Crashlytics target to be invoked prior to building any Android artifacts. Cleans up stale Crashlytics resource files and attempts to upload any cached deobfuscation files" >
+		<!-- always attempt to upload any cached files. -->
+		<echo>----------* crashlytics-pre-build *----------</echo>
+		<antcall target="crashlytics-upload-deobs" />
+	</target>
+
+	<target name="crashlytics-code-gen" depends="crashlytics-generate-resources"
+		description="Crashlytics target to be invoked prior to compiling Android artifacts. Generates Crashlytics-required resources." >
+		<echo>----------* crashlytics-code-gen *----------</echo>
+	</target>
+
+	<target name="crashlytics-post-package" depends="crashlytics-store-deobs, crashlytics-upload-deobs"
+		description="Crashlytics target to be invoked after the packaging task is complete. Cleans up Crashlytics-generated resource files. Caches and uploads deobfuscation files to Crashlytics servers." >
+		<!-- must be invoked via antcall rather than as a dependency because it was already called once. -->
+		<echo>----------* crashlytics-post-package *----------</echo>
+		<antcall target="crashlytics-cleanup-resources" />
+	</target>
+
+	<target name="crashlytics-upload-distribution" depends="crashlytics-init" description="Uploads the newly-built package as a new beta distribution.">
+		<property file="${fabric.properties.path}"/>
+
+		<if>
+			<condition>
+				<not><isset property="apiSecret" /></not>
+			</condition>
+			<then>
+				<fail message="API Secret is not set. Make sure fabric.properties file exists." />
+			</then>
+		</if>
+
+		<if>
+			<condition>
+				<not><isset property="out.final.file" /></not>
+			</condition>
+			<then>
+				<echo>Distribution file not specified.</echo>
+				<echo> </echo>
+				<echo>'ant crashlytics-upload-distribution' requires the build target to be specified as well.</echo>
+				<echo> </echo>
+				<echo> </echo>
+				<echo>    ant debug crashlytics-upload-distribution</echo>
+				<echo>    ant release crashlytics-upload-distribution</echo>
+				<echo>This will build the given package and upload it.</echo>
+				<fail />
+			</then>
+		</if>
+
+		<if>
+			<condition>
+				<not><resourceexists><file file="${out.final.file}"/></resourceexists></not>
+			</condition>
+			<then>
+				<fail message="File ${out.final.file} does not exist." />
+			</then>
+		</if>
+
+		<echo level="info">Uploading ${out.final.file} to Crashlytics...</echo>
+		<java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true" spawn="false">
+			<arg value="-projectPath"/> 
+			<arg path="${crashlytics.project.path}"/>
+			<arg value="-androidManifest"/> 
+			<arg path="${crashlytics.manifest.path}"/>
+			<arg value="-androidRes"/> 
+			<arg path="${crashlytics.res.path}"/>
+			<arg value="-androidAssets"/> 
+			<arg path="${crashlytics.assets.path}"/>
+			<arg value="-uploadDist" />
+			<arg path="${out.final.file}" />
+			<arg value="-betaDistributionEmails" />
+			<arg value="${betaDistributionEmails}" />
+			<arg value="-betaDistributionGroupAliases" />
+			<arg value="${betaDistributionGroupAliases}" />
+			<arg value="-betaDistributionReleaseNotes" />
+			<arg value="${betaDistributionReleaseNotes}" />
+			<arg value="-betaDistributionEmailsFilePath" />
+			<arg value="${betaDistributionEmailsFilePath}" />
+			<arg value="-betaDistributionGroupAliasesFilePath" />
+			<arg value="${betaDistributionGroupAliasesFilePath}" />
+			<arg value="-betaDistributionReleaseNotesFilePath" />
+			<arg value="${betaDistributionReleaseNotesFilePath}" />
+			<arg value="-betaDistributionNotifications" />
+			<arg value="${betaDistributionNotifications}" />
+			<arg value="${crashlytics.verbose}"/>
+			<arg value="-properties" />
+			<arg value="${fabric.properties.path}" />
+		</java>
+	</target>
+
+<!-- You should not need to explicitly invoke tasks below this comment! -->
+
+	<target name="crashlytics-generate-resources" depends="crashlytics-init">
+		<java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true">
+
+			<arg value="-projectPath"/> 
+			<arg path="${crashlytics.project.path}"/>
+			<arg value="-androidManifest"/> 
+			<arg path="${crashlytics.manifest.path}"/>
+			<arg value="-androidRes"/> 
+			<arg path="${crashlytics.res.path}"/>
+			<arg value="-androidAssets"/> 
+			<arg path="${crashlytics.assets.path}"/>
+			<arg value="-generateResourceFile"/>
+			<arg value="${crashlytics.verbose}"/>
+			<arg value="-properties" />
+			<arg value="${fabric.properties.path}" />
+			<arg value="-buildEvent"/>
+			<arg value="-tool"/>
+			<arg value="${tool.name}"/>
+			<arg value="-version"/>
+			<arg value="${tool.version}"/>
+		</java>
+	</target>
+
+	<target name="crashlytics-cleanup-resources" depends="crashlytics-init">
+		<java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true">
+
+			<arg value="-projectPath"/> 
+			<arg path="${crashlytics.project.path}"/>
+			<arg value="-androidManifest"/> 
+			<arg path="${crashlytics.manifest.path}"/>
+			<arg value="-androidRes"/> 
+			<arg path="${crashlytics.res.path}"/>
+			<arg value="-androidAssets"/> 
+			<arg path="${crashlytics.assets.path}"/>
+			<arg value="-cleanupResourceFile"/>
+			<arg value="${crashlytics.verbose}"/>
+			<arg value="-properties" />
+			<arg value="${fabric.properties.path}" />
+		</java>
+	</target>
+
+	<target name="crashlytics-store-deobs" depends="crashlytics-init"> 
+		<property name="mapping.absolute" location="${crashlytics.obfuscate.mapping.file}"/>
+		<property name="crashlytics.obfuscator.id" value="proguard" />
+		<property name="crashlytics.obfuscator.version" value="4.7" />
+
+			<echo>Crashlytics: Store deobs disabled</echo>
+		<!--<if condition="${proguard.enabled}">-->
+			<!--<then>-->
+				<!--<java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true" spawn="false">-->
+					<!--<arg value="-projectPath"/> -->
+					<!--<arg path="${crashlytics.project.path}"/>-->
+					<!--<arg value="-androidManifest"/> -->
+					<!--<arg path="${crashlytics.manifest.path}"/>-->
+					<!--<arg value="-androidRes"/> -->
+					<!--<arg path="${crashlytics.res.path}"/>-->
+					<!--<arg value="-androidAssets"/> -->
+					<!--<arg path="${crashlytics.assets.path}"/>-->
+					<!--<arg value="-storeDeobs" />-->
+					<!--<arg file="${mapping.absolute}" />-->
+					<!--<arg value="-obfuscating" />-->
+					<!--<arg value="-obfuscator" />-->
+					<!--<arg value="${crashlytics.obfuscator.id}" />-->
+					<!--<arg value="-obVer" />-->
+					<!--<arg value="${crashlytics.obfuscator.version}" />-->
+					<!--<arg value="${crashlytics.verbose}"/>-->
+					<!--<arg value="-properties" />-->
+					<!--<arg value="${fabric.properties.path}" />-->
+				<!--</java>-->
+			<!--</then>-->
+		<!--</if>-->
+	</target>
+
+	<target name="crashlytics-upload-deobs" depends="crashlytics-init" description="Uploads stored deobfuscation files to Crashlytics.">
+		<echo>Crashlytics: Upload deobs disabled</echo>
+		<!--<java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true" spawn="false">-->
+			<!--<arg value="-projectPath"/> -->
+			<!--<arg path="${crashlytics.project.path}"/>-->
+			<!--<arg value="-androidManifest"/> -->
+			<!--<arg path="${crashlytics.manifest.path}"/>-->
+			<!--<arg value="-androidRes"/> -->
+			<!--<arg path="${crashlytics.res.path}"/>-->
+			<!--<arg value="-androidAssets"/> -->
+			<!--<arg path="${crashlytics.assets.path}"/>-->
+			<!--<arg value="-uploadDeobs" />-->
+			<!--<arg value="${crashlytics.verbose}"/>-->
+			<!--<arg value="-properties" />-->
+			<!--<arg value="${fabric.properties.path}" />-->
+		<!--</java>-->
+	</target>
+
+	<target name="crashlytics-symbols" depends="crashlytics-generate-symbols,crashlytics-upload-symbols" description="Generate and upload NDK symbol files to Crashlytics. Interested in this feature? Contact support@crashlytics.com">
+	</target>
+
+	<target name="crashlytics-update-dependencies" depends="crashlytics-init" description="Retrieve necessary artifacts from a remote repository">
+	        <java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true" spawn="false">
+		        <arg value="-properties"/>
+			<arg value="${fabric.properties.path}"/>
+			<arg value="-resolveDependencies"/>
+		</java>
+	</target>
+
+	<target name="crashlytics-updates" depends="crashlytics-init" description="Check whether new versions of the specified artifacts exist">
+	        <java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true" spawn="false">
+		        <arg value="-properties"/>
+			<arg value="${fabric.properties.path}"/>
+			<arg value="-checkForUpdates"/>
+		</java>
+	</target>
+
+	<target name="crashlytics-generate-symbols" depends="crashlytics-init" description="Generates Crashlytics symbol files from NDK shared libraries. Interested in this feature? Contact support@crashlytics.com">
+		<java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true" spawn="false">
+			<arg value="-projectPath"/>
+			<arg path="${crashlytics.project.path}"/>
+			<arg value="-androidManifest"/>
+			<arg path="${crashlytics.manifest.path}"/>
+			<arg value="-androidRes"/>
+			<arg path="${crashlytics.res.path}/.."/>
+			<arg value="-androidAssets"/>
+			<arg path="${crashlytics.assets.path}"/>
+			<arg value="${crashlytics.verbose}"/>
+			<arg value="-properties" />
+			<arg value="${fabric.properties.path}" />
+			<arg value="-generateCSyms"/>
+			<arg value="-cSymGen"/>
+			<arg value="${fabric.build.output.path}/csyms"/>
+		</java>
+	</target>
+
+	<target name="crashlytics-cache-symbols" depends="crashlytics-init" description="Caches generated Crashlytics symbol files for upload. Interested in this feature? Contact support@crashlytics.com">
+		<java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true" spawn="false">
+			<arg value="-projectPath"/>
+			<arg path="${crashlytics.project.path}"/>
+			<arg value="-androidManifest"/>
+			<arg path="${crashlytics.manifest.path}"/>
+			<arg value="-androidRes"/>
+			<arg path="${crashlytics.res.path}/.."/>
+			<arg value="-androidAssets"/>
+			<arg path="${crashlytics.assets.path}"/>
+			<arg value="${crashlytics.verbose}"/>
+			<arg value="-properties" />
+			<arg value="${fabric.properties.path}" />
+			<arg value="-cacheCSyms"/>
+			<arg value="-cSymGen"/>
+			<arg value="${fabric.build.output.path}/csyms"/>
+		</java>
+	</target>
+
+	<target name="crashlytics-upload-symbols" depends="crashlytics-init,crashlytics-cache-symbols" description="Uploads cached Crashlytics symbol files to Crashlytics. Interested in this feature? Contact support@crashlytics.com">
+		<java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true" spawn="false">
+			<arg value="-projectPath"/>
+			<arg path="${crashlytics.project.path}"/>
+			<arg value="-androidManifest"/>
+			<arg path="${crashlytics.manifest.path}"/>
+			<arg value="-androidRes"/>
+			<arg path="${crashlytics.res.path}/.."/>
+			<arg value="-androidAssets"/>
+			<arg path="${crashlytics.assets.path}"/>
+			<arg value="${crashlytics.verbose}"/>
+			<arg value="-properties" />
+			<arg value="${fabric.properties.path}" />
+			<arg value="-uploadCSyms"/>
+		</java>
+	</target>
+
+	<target name="crashlytics-init" description="Set up internal properties used by Crashlytics ant tasks.">
+		<!-- Stock android build scripts assume the PWD is the project location. -->
+		<!--<property name="crashlytics.project.path" location="."/>-->
+
+		<property name="fabric.properties.path" location="${crashlytics.project.path}/crashlytics/fabric.properties"/>
+
+		<!-- Use fabric.properties unless crashlytics.properties is the only properties file available -->
+		<!--<if>-->
+		    <!--<condition>-->
+		        <!--<or>-->
+		            <!--<available file="${crashlytics.project.path}/fabric.properties"/>-->
+		            <!--<not>-->
+		                <!--<available file="${crashlytics.project.path}/crashlytics.properties"/>-->
+		            <!--</not>-->
+		        <!--</or>-->
+		    <!--</condition>-->
+		    <!--<then>-->
+		        <!--<property name="fabric.properties.path" location="${crashlytics.project.path}/fabric.properties"/>-->
+		    <!--</then>-->
+		    <!--<else>-->
+		        <!--<property name="fabric.properties.path" location="${crashlytics.project.path}/crashlytics.properties"/>-->
+		    <!--</else>-->
+		<!--</if>-->
+
+		<!--<property name="crashlytics.manifest.path" location="${crashlytics.project.path}/src/main/AndroidManifest.xml"/>-->
+		<!--<property name="crashlytics.res.path" location="${crashlytics.project.path}/src/main/res"/>-->
+		<!--<property name="crashlytics.assets.path" location="${crashlytics.project.path}/src/main/assets"/>-->
+		<!-- This does nothing if the property is already set, because Ant props are immutable: -->
+		<!-- out.absolute.dir is defined by standard Android build script. -->
+		<property name="crashlytics.obfuscate.mapping.file" location="${out.absolute.dir}/proguard/mapping.txt"/>
+		<property name="fabric.build.output.path" location="${out.absolute.dir}/fabric"/>
+		<!-- Uncomment for verbose output to STDOUT by the Crashlytics Tools
+		     or set value to "-quiet" for no STDOUT logging. -->
+		<!-- <property name="crashlytics.verbose" value="-verbose"/> -->
+		<property name="betaDistributionEmails" value=""/>
+		<property name="betaDistributionGroupAliases" value=""/>
+		<property name="betaDistributionReleaseNotes" value=""/>
+		<property name="betaDistributionEmailsFilePath" value=""/>
+		<property name="betaDistributionGroupAliasesFilePath" value=""/>
+		<property name="betaDistributionReleaseNotesFilePath" value=""/>
+		<property name="betaDistributionNotifications" value=""/>
+	</target>
+
+	<target name="ant-version-check">
+	    <fail>
+	        <condition>
+		    <not>
+		        <antversion atleast="1.8.4" />
+		    </not>
+		</condition>
+		Looks like you're using an older version of Ant than we support. Please upgrade to at least 1.8.4 and try again!
+	    </fail>
+	</target>
+
+	<target name="crashlytics-get-credentials" depends="ant-version-check">
+		<echo>Please enter your Fabric Credentials:</echo>
+		<input message="email: " addproperty="fabric.email"/>
+		<input message="password: " addproperty="fabric.password">
+			<handler type="secure"/>
+		</input>
+	</target>
+
+	<target name="crashlytics-onboard" depends="crashlytics-init,crashlytics-get-credentials" description="Onboard a new app">
+		<java jar="${crashlytics.devtools.jar}" fork="true" failonerror="true" spawn="false">
+			<arg value="-onboard"/>
+			<arg value="-fabricEmail"/>
+			<arg value="${fabric.email}"/>
+			<arg value="-fabricPassword"/>
+			<arg value="${fabric.password}"/>
+			<arg value="-androidRes"/>
+			<arg value="${crashlytics.res.path}"/>
+			<arg value="-androidManifest"/>
+			<arg value="${crashlytics.manifest.path}"/>
+		</java>
+		<antcall target="crashlytics-update-dependencies" />
+	</target>
+</project>

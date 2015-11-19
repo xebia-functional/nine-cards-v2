@@ -9,6 +9,12 @@ dist
 debug.properties
 release.properties
 
+# Crashlytics
+/modules/app/crashlytics/fabric.properties
+/modules/app/crashlytics/CrashlyticsManifest.xml
+/modules/app/src/main/assets/crashlytics-build.properties
+/modules/app/src/main/res/values/com_crashlytics_export_strings.xml
+
 # sbt specific
 /.sbt
 .cache/

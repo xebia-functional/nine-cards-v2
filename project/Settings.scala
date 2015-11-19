@@ -1,5 +1,3 @@
-import java.util.{Date, Calendar, TimeZone, GregorianCalendar}
-
 import Libraries.android._
 import Libraries.graphics._
 import Libraries.json._
@@ -10,15 +8,15 @@ import Libraries.scala._
 import Libraries.test._
 import Libraries.debug._
 import android.Keys._
-import com.typesafe.sbt.S3Plugin._
-import com.typesafe.sbt.S3Plugin.S3._
+import S3._
+import Crashlytics._
 import sbt.Keys._
 import sbt._
 
 object Settings {
 
   // App Module
-  lazy val appSettings = basicSettings ++ multiDex ++ customS3Settings ++
+  lazy val appSettings = basicSettings ++ multiDex ++ customS3Settings ++ crashlyticsSettings ++
     Seq(
       name := "nine-cards-v2",
       run <<= run in Android,
@@ -65,34 +63,6 @@ object Settings {
     libraryDependencies ++= Seq(scalaz, scalazConcurrent)
   )
 
-  val bucketName = sys.env.getOrElse("AWS_BUCKET", "")
-  val pullRequest = sys.env.getOrElse("GIT_PR", "false")
-  val hostName = s"$bucketName.s3.amazonaws.com"
-  val apkName = pullRequest match {
-    case "false" => s"nine-cards-v2-latest.apk"
-    case number => s"nine-cards-v2-$number.apk"
-  }
-
-  def getExpirationDate: Date = {
-    val c = new GregorianCalendar(TimeZone.getTimeZone("UTC"))
-    c.add(Calendar.DAY_OF_YEAR, 30)
-    c.getTime
-  }
-
-  lazy val customS3Settings = s3Settings ++ Seq(
-    host in upload := hostName,
-    host in generateLink := hostName,
-    progress in upload := true,
-    credentials += Credentials(
-      "Amazon S3",
-      hostName,
-      sys.env.getOrElse("AWS_ACCESS_KEY_ID", ""),
-      sys.env.getOrElse("AWS_SECRET_KEY", "")),
-    expirationDate in generateLink := getExpirationDate,
-    mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-debug.apk", apkName)),
-    keys in generateLink := Seq(apkName)
-  )
-
   lazy val duplicatedFiles = Set(
     "AndroidManifest.xml",
     "theme_dark.json",
@@ -121,6 +91,7 @@ object Settings {
     aar(androidDesign),
     aar(playServicesBase),
     aar(multiDexLib),
+    aar(crashlytics),
     glide,
     okHttp,
     stetho,
@@ -166,7 +137,8 @@ object Settings {
     Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots"),
     Resolver.defaultLocal,
-    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
+    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
+    "crashlytics" at "https://maven.fabric.io/public"
   )
 
   lazy val proguardCommons = Seq(
@@ -181,7 +153,9 @@ object Settings {
     "-keep class com.fortysevendeg.** { *; }",
     "-keep class android.** { *; }",
     "-keep class com.google.** { *; }",
-    "-keep class com.facebook.stetho.** { *; }")
+    "-keep class com.facebook.stetho.** { *; }",
+    "-keep class com.crashlytics.** { *; }",
+    "-dontwarn com.crashlytics.**")
 
   lazy val multiDex = Seq(
     dexMulti in Android := true,
