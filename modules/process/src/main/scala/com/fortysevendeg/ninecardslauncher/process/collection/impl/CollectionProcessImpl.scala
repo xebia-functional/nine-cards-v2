@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.process.types.{CardType, NoInstalledA
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
 import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT
+import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 
 import scalaz.concurrent.Task
 
@@ -34,7 +35,7 @@ class CollectionProcessImpl(
   val minAppsGenerateCollections = 1
 
   override def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = Service {
-    val tasks = createCollections(apps, contacts, appsCategories, minAppsGenerateCollections) map (persistenceServices.addCollection(_).run)
+    val tasks = createCollections(apps, contacts, appsCategories, minAppsToAdd) map (persistenceServices.addCollection(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
   }.resolve[CollectionException]
 

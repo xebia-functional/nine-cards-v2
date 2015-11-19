@@ -7,14 +7,14 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.{RemoveCardDialogFragment, ActionsScreenListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
