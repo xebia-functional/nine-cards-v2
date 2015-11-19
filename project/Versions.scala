@@ -19,4 +19,5 @@ object Versions {
   val akkaActorV = "2.3.9"
   val mockServerV = "3.9.2"
   val stethoV = "1.2.0"
+  val crashlyticsV = "2.5.2"
 }

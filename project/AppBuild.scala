@@ -29,7 +29,7 @@ object AppBuild extends Build {
     .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
     .settings(
       outputLayout in Android <<= (outputLayout in Android),
-        packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask)
+      packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask)
     )
     .settings(appSettings: _*)
 
