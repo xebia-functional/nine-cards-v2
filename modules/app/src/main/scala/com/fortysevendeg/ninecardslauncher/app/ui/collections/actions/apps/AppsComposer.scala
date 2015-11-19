@@ -9,11 +9,12 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ItemHeaderedViewHolder, ItemHeadered}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.{GetByCategory, GetByName}

@@ -9,11 +9,11 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.HeaderedItemAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.HeaderedItemAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._

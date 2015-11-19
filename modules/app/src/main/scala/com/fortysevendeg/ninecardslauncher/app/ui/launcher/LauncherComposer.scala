@@ -148,6 +148,8 @@ trait LauncherComposer
 
   lazy val micIcon = Option(findView(TR.launcher_mic_icon))
 
+  lazy val actionFragmentContent = Option(findView(TR.action_fragment_content))
+
   def showMessage(message: Int): Ui[_] = drawerLayout <~ uiSnackbarShort(message)
 
   def updateBarsInFabMenuShow: Ui[_] = Ui.nop
@@ -349,6 +351,7 @@ trait LauncherComposer
       Ui(getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
         (content <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
         (drawerContent <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
+        (actionFragmentContent <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
         (drawerLayout <~ vBackground(R.drawable.background_workspace))
     } getOrElse Ui.nop
 
