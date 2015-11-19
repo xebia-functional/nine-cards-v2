@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.userconfig.impl
 
+import com.fortysevendeg.ninecardslauncher.process.commons.types.Game
+import com.fortysevendeg.ninecardslauncher.process.types.{AppCardType, AppsCollectionType}
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json.JsString
@@ -28,17 +30,17 @@ trait UserConfigProcessData {
 
   val collectionIcon = "GAME"
 
-  val collectionType = "APPS"
+  val collectionType = AppsCollectionType
 
-  val collectionCategory = "GAMES"
+  val collectionCategory = Game
 
-  val itemType = "APP"
+  val itemType = AppCardType
 
   def createUserConfigCollectionItem(count: Int = 8): Seq[UserConfigCollectionItem] =
     (0 until count) map {
       item =>
         UserConfigCollectionItem(
-          itemType = itemType,
+          itemType = itemType.name,
           title = s"Item $item",
           metadata = JsString(""),
           categories = Option(Seq.empty)
@@ -54,7 +56,7 @@ trait UserConfigProcessData {
           sharedCollectionId = None,
           sharedCollectionSubscribed = Option(true),
           items = createUserConfigCollectionItem(),
-          collectionType = collectionType,
+          collectionType = collectionType.name,
           constrains = Seq.empty,
           wifi = Seq.empty,
           occurrence = Seq.empty,
@@ -63,7 +65,7 @@ trait UserConfigProcessData {
           lat = 0,
           lng = 0,
           alt = 0,
-          category = Option(collectionCategory)
+          category = Option(collectionCategory.name)
         )
     }
 

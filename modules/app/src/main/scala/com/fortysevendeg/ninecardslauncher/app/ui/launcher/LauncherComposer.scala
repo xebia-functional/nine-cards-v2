@@ -29,9 +29,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
+import com.fortysevendeg.ninecardslauncher.process.types.{AppCardType, CardType}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -77,7 +77,7 @@ trait LauncherComposer
         position = 0,
         term = "Doesn't matter",
         packageName = Option(packageName),
-        cardType = CardType.app,
+        cardType = AppCardType,
         intent = intent,
         imagePath = imagePath
       )
@@ -95,7 +95,7 @@ trait LauncherComposer
         position = 0,
         term = "Doesn't matter",
         packageName = Option(packageName),
-        cardType = CardType.app,
+        cardType = AppCardType,
         intent = intent,
         imagePath = imagePath
       )

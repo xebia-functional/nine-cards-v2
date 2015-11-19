@@ -4,8 +4,8 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.types._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, _}
@@ -22,10 +22,10 @@ trait Conversions {
     id = servicesCollection.id,
     position = servicesCollection.position,
     name = servicesCollection.name,
-    collectionType = servicesCollection.collectionType,
+    collectionType = CollectionType(servicesCollection.collectionType),
     icon = servicesCollection.icon,
     themedColorIndex = servicesCollection.themedColorIndex,
-    appsCategory = servicesCollection.appsCategory,
+    appsCategory = servicesCollection.appsCategory map (NineCardCategory(_)),
     constrains = servicesCollection.constrains,
     originalSharedCollectionId = servicesCollection.originalSharedCollectionId,
     sharedCollectionId = servicesCollection.sharedCollectionId,
@@ -35,10 +35,10 @@ trait Conversions {
   def toAddCollectionRequest(addCollectionRequest: AddCollectionRequest, position: Int) = ServicesAddCollectionRequest(
     position = position,
     name = addCollectionRequest.name,
-    collectionType = addCollectionRequest.collectionType,
+    collectionType = addCollectionRequest.collectionType.name,
     icon = addCollectionRequest.icon,
     themedColorIndex = addCollectionRequest.themedColorIndex,
-    appsCategory = addCollectionRequest.appsCategory,
+    appsCategory = addCollectionRequest.appsCategory map(_.name),
     constrains = addCollectionRequest.constrains,
     originalSharedCollectionId = addCollectionRequest.originalSharedCollectionId,
     sharedCollectionId = addCollectionRequest.sharedCollectionId,
@@ -52,10 +52,10 @@ trait Conversions {
     id = collection.id,
     position = collection.position,
     name = collection.name,
-    collectionType = collection.collectionType,
+    collectionType = collection.collectionType.name,
     icon = collection.icon,
     themedColorIndex = collection.themedColorIndex,
-    appsCategory = collection.appsCategory,
+    appsCategory = collection.appsCategory map(_.name),
     constrains = collection.constrains,
     originalSharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionId = collection.sharedCollectionId,
@@ -101,7 +101,7 @@ trait Conversions {
     micros = servicesCard.micros,
     term = servicesCard.term,
     packageName = servicesCard.packageName,
-    cardType = servicesCard.cardType,
+    cardType = CardType(servicesCard.cardType),
     intent = jsonToNineCardIntent(servicesCard.intent),
     imagePath = servicesCard.imagePath,
     starRating = servicesCard.starRating,
@@ -114,7 +114,7 @@ trait Conversions {
     micros = card.micros,
     term = card.term,
     packageName = card.packageName,
-    cardType = card.cardType,
+    cardType = card.cardType.name,
     intent = nineCardIntentToJson(card.intent),
     imagePath = card.imagePath,
     starRating = card.starRating,
@@ -128,7 +128,7 @@ trait Conversions {
     position = position,
     term = item.name,
     packageName = Option(item.packageName),
-    cardType = app,
+    cardType = AppCardType.name,
     intent = nineCardIntentToJson(toNineCardIntent(item)),
     imagePath = item.imagePath)
 
@@ -140,7 +140,7 @@ trait Conversions {
     position = position,
     term = addCardRequest.term,
     packageName = addCardRequest.packageName,
-    cardType = addCardRequest.cardType,
+    cardType = addCardRequest.cardType.name,
     intent = nineCardIntentToJson(addCardRequest.intent),
     imagePath = addCardRequest.imagePath)
 
@@ -153,7 +153,7 @@ trait Conversions {
     micros = card.micros,
     term = card.term,
     packageName = card.packageName,
-    cardType = card.cardType,
+    cardType = card.cardType.name,
     intent = nineCardIntentToJson(card.intent),
     imagePath = card.imagePath,
     starRating = card.starRating,
@@ -164,7 +164,7 @@ trait Conversions {
     val intent = toNineCardIntent(app)
     cards map (_.copy(
       term = app.name,
-      cardType = CardType.app,
+      cardType = AppCardType.name,
       imagePath = resourceUtils.getPathPackage(app.packageName, app.className),
       intent = nineCardIntentToJson(intent)
     ))
@@ -232,7 +232,7 @@ trait Conversions {
     PrivateCard(
       term = unformedApp.name,
       packageName = Some(unformedApp.packageName),
-      cardType = app,
+      cardType = AppCardType,
       intent = toNineCardIntent(unformedApp),
       imagePath = unformedApp.imagePath)
 
@@ -241,15 +241,15 @@ trait Conversions {
       val phone = info.phones.headOption map (_.number)
       val intent = NineCardIntent(NineCardIntentExtras(tel = phone))
       intent.setAction(openPhone)
-      (intent, CardType.phone)
+      (intent, PhoneCardType.name)
     case UnformedContact(_, _, _, Some(info)) if info.emails.nonEmpty =>
       val address = info.emails.headOption map (_.address)
       val intent = NineCardIntent(NineCardIntentExtras(email = address))
       intent.setAction(openEmail)
-      (intent, CardType.email)
+      (intent, EmailCardType.name)
     case _ => // TODO 9C-234 - We should create a new action for open contact and use it here
       val intent = NineCardIntent(NineCardIntentExtras())
-      (intent, CardType.app)
+      (intent, AppCardType.name)
   }
 
   def jsonToNineCardIntent(json: String) = Json.parse(json).as[NineCardIntent]

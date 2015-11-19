@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, Misc}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
@@ -58,7 +58,7 @@ class DeviceProcessImpl(
           path.packageName.equals(app.packageName) && path.className.equals(app.className)
         } map (_.path)
         val category = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
-        toAddAppRequest(app, category.getOrElse(misc), path.getOrElse(""))
+        toAddAppRequest(app, (category map (NineCardCategory(_))).getOrElse(Misc), path.getOrElse(""))
       }
       _ <- addApps(apps)
     } yield ()).resolve[AppException]
@@ -156,20 +156,21 @@ class DeviceProcessImpl(
 
   private[this] def fillCombinedContacts(combinedContacts: Seq[(LastCallsContact, Option[Contact])]): Seq[LastCallsContact] =
     (combinedContacts map { combinedContact =>
-      combinedContact._2 map { contact =>
-        combinedContact._1.copy(
+      val (lastCallsContact, maybeContact) = combinedContact
+      maybeContact map { contact =>
+        lastCallsContact.copy(
           lookupKey = Some(contact.lookupKey),
           photoUri = Some(contact.photoUri)
         )
-      } getOrElse combinedContact._1
+      } getOrElse lastCallsContact
     }).sortWith(_.lastCallDate > _.lastCallDate)
 
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
       requestConfig <- apiUtils.getRequestConfig
       appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).run.run match {
-        case Answer(g) => g.app.details.appDetails.appCategory.headOption.getOrElse(misc)
-        case _ => misc
+        case Answer(g) => (g.app.details.appDetails.appCategory map (NineCardCategory(_))).headOption.getOrElse(Misc)
+        case _ => Misc
       }
     } yield appCategory
 

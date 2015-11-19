@@ -6,13 +6,13 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
+import com.fortysevendeg.ninecardslauncher.process.types.{CardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
 import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT
@@ -35,7 +35,7 @@ class CollectionProcessImpl(
   val minAppsGenerateCollections = 1
 
   override def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = Service {
-    val tasks = createCollections(apps, contacts, categories, minAppsToAdd) map (persistenceServices.addCollection(_).run)
+    val tasks = createCollections(apps, contacts, appsCategories, minAppsToAdd) map (persistenceServices.addCollection(_).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
   }.resolve[CollectionException]
 
@@ -48,7 +48,7 @@ class CollectionProcessImpl(
   override def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[CollectionException] {
-        createPrivateCollections(apps, categories, minAppsGenerateCollections)
+        createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
       }
     }
   }
@@ -121,7 +121,7 @@ class CollectionProcessImpl(
     (for {
       app <- appsServices.getApplication(packageName)
       cardList <- persistenceServices.fetchCards
-      cardsNoInstalled = cardList filter (card => card.cardType == CardType.noInstalledApp && card.packageName.contains(packageName))
+      cardsNoInstalled = cardList filter (card => CardType(card.cardType) == NoInstalledAppCardType && card.packageName.contains(packageName))
       card = toCardSeq(toInstalledApp(cardsNoInstalled, app))
       _ <- updateCardList(toCardSeq(toInstalledApp(cardsNoInstalled, app)))
     } yield ()).resolve[CardException]

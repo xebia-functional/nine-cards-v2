@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.sharedcollections.models
 
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+
 case class SharedCollection(
   id: String,
   sharedCollectionId: String,
@@ -13,7 +15,7 @@ case class SharedCollection(
   packages: Seq[String],
   resolvedPackages: Seq[SharedCollectionPackage],
   views: Int,
-  category: String,
+  category: NineCardCategory,
   icon: String,
   community: Boolean)
 

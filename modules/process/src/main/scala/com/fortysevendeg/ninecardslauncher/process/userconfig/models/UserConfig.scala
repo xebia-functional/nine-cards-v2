@@ -1,5 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.userconfig.models
 
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.types.CollectionType
+
 case class UserInfo(
   email: String,
   name: String,
@@ -17,15 +20,15 @@ case class UserCollection(
   sharedCollectionId: Option[String],
   sharedCollectionSubscribed: Option[Boolean],
   items: Seq[UserCollectionItem],
-  collectionType: String,
+  collectionType: CollectionType,
   constrains: Seq[String],
   wifi: Seq[String],
   occurrence: Seq[String],
   icon: String,
-  category: Option[String])
+  category: Option[NineCardCategory])
 
 case class UserCollectionItem(
   itemType: String,
   title: String,
   intent: String,
-  categories: Option[Seq[String]])
+  categories: Option[Seq[NineCardCategory]])
