@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -137,17 +138,20 @@ class CollectionProcessImpl(
 
   private[this] def moveCollectionList(collectionList: Seq[Collection], position: Int) =
     collectionList map { collection =>
-      if (collection.position > position) toNewPositionCollection(collection, position - 1) else collection
+      if (collection.position > position) {
+        val p = collection.position
+        collection.copy(position = p - 1)
+      } else collection
     }
 
   private[this] def reorderCollectionList(collectionList: Seq[Collection], newPosition: Int, oldPosition: Int): Seq[Collection] =
     collectionList map { collection =>
       val position = collection.position
       (newPosition, oldPosition, position) match {
-        case (n, o, p) if n < o && p > n && p < o => toNewPositionCollection(collection, p + 1)
-        case (n, o, p) if n > o && p < n && p > o => toNewPositionCollection(collection, p - 1)
+        case (n, o, p) if n < o && p > n && p < o => collection.copy(position = p + 1)
+        case (n, o, p) if n > o && p < n && p > o => collection.copy(position = p - 1)
         case (n, o, _) if n < o || n > o => collection
-        case _ => toNewPositionCollection(collection, newPosition)
+        case _ => collection.copy(position = newPosition)
       }
     }
 
