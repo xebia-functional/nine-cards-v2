@@ -1,7 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components
 
+import java.util.logging.Handler
+
 import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, ValueAnimator}
 import android.content.Context
+import android.os
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
 import android.view.MotionEvent._
@@ -29,7 +32,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  val listener = new AnimatedWorkSpacesListener
+  var listener = new AnimatedWorkSpacesListener
 
   val dimen: Dimen = Dimen()
 
@@ -97,6 +100,14 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
   var displacement: Float = 0
 
   var currentItem = 0
+
+  val handler = new os.Handler()
+
+  val runnable = new Runnable {
+    override def run(): Unit = {
+      listener.onClick()
+    }
+  }
 
   def getHorizontalGallery: Boolean = true
 
@@ -399,10 +410,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       case ACTION_DOWN =>
         lastMotionX = x
         lastMotionY = y
+        handler.postDelayed(runnable, 1000)
       case ACTION_CANCEL | ACTION_UP =>
-        if (touchState == stopped) {
-          listener.onClick()
-        }
+        handler.removeCallbacks(runnable)
         computeFling()
         touchState = stopped
       case _ =>
@@ -468,9 +478,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 }
 
 case class AnimatedWorkSpacesListener(
-  var startScroll: (Boolean) => Unit = (b: Boolean) => (),
-  var endScroll: () => Unit = () => (),
-  var onClick: () => Unit = () => ())
+  startScroll: (Boolean) => Unit = (b: Boolean) => (),
+  endScroll: () => Unit = () => (),
+  onClick: () => Unit = () => (),
+  onLongClick: () => Unit = () => ())
 
 case class Dimen(var width: Int = 0, var height: Int = 0)
 
@@ -484,9 +495,7 @@ object AnimatedWorkSpacesTweaks {
   type W = AnimatedWorkSpaces[_, _]
 
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] { view =>
-    view.listener.startScroll = listener.startScroll
-    view.listener.endScroll = listener.endScroll
-    view.listener.onClick = listener.onClick
+    view.listener = listener
   }
 
   def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))

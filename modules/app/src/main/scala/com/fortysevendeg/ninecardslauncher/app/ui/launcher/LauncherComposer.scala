@@ -180,10 +180,11 @@ trait LauncherComposer
               val collectionScreen = workspaces exists (_.isCollectionScreen)
               if (collectionScreen) runUi(showFabButton())
             },
-            onClick = () => {
+            onLongClick = () => {
               val collectionScreen = workspaces exists (_.isCollectionScreen)
               if (collectionScreen) runUi(showFabButton())
-            }))))) ~
+            })
+          )))) ~
       (searchPanel <~ searchContentStyle) ~
       (menuAvatar <~ menuAvatarStyle) ~
       initFabButton ~
