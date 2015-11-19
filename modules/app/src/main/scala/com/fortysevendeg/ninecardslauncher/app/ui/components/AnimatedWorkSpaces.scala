@@ -101,12 +101,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
   var currentItem = 0
 
+  val longClickMilis = 1000
+
   val handler = new os.Handler()
 
   val runnable = new Runnable {
-    override def run(): Unit = {
-      listener.onClick()
-    }
+    override def run(): Unit = listener.onLongClick()
   }
 
   def getHorizontalGallery: Boolean = true
@@ -393,24 +393,26 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
     action match {
-      case ACTION_MOVE => touchState match {
-        case `scrolling` =>
-          requestDisallowInterceptTouchEvent(true)
-          val deltaX = lastMotionX - x
-          val deltaY = lastMotionY - y
-          lastMotionX = x
-          lastMotionY = y
-          if (overScroll(deltaX, deltaY)) {
-            runUi(applyTranslation(frontParentView, 0))
-          } else {
-            runUi(performScroll(if (horizontalGallery) deltaX else deltaY))
-          }
-        case _ => setStateIfNeeded(x, y)
-      }
+      case ACTION_MOVE =>
+        touchState match {
+          case `scrolling` =>
+            requestDisallowInterceptTouchEvent(true)
+            val deltaX = lastMotionX - x
+            val deltaY = lastMotionY - y
+            lastMotionX = x
+            lastMotionY = y
+            if (overScroll(deltaX, deltaY)) {
+              runUi(applyTranslation(frontParentView, 0))
+            } else {
+              runUi(performScroll(if (horizontalGallery) deltaX else deltaY))
+            }
+          case _ => setStateIfNeeded(x, y)
+        }
+        handler.removeCallbacks(runnable)
       case ACTION_DOWN =>
         lastMotionX = x
         lastMotionY = y
-        handler.postDelayed(runnable, 1000)
+        handler.postDelayed(runnable, longClickMilis)
       case ACTION_CANCEL | ACTION_UP =>
         handler.removeCallbacks(runnable)
         computeFling()
