@@ -137,10 +137,7 @@ class CollectionProcessImpl(
 
   private[this] def moveCollectionList(collectionList: Seq[Collection], position: Int) =
     collectionList map { collection =>
-      if (collection.position > position) {
-        val p = collection.position
-        collection.copy(position = p - 1)
-      } else collection
+      if (collection.position > position) collection.copy(position = collection.position - 1) else collection
     }
 
   private[this] def reorderCollectionList(collectionList: Seq[Collection], newPosition: Int, oldPosition: Int): Seq[Collection] =
