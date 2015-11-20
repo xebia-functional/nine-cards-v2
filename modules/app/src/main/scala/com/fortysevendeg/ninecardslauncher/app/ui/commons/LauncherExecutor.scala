@@ -24,6 +24,8 @@ trait LauncherExecutor {
 
   val classNameSearch = "com.google.android.googlequicksearchbox.SearchActivity"
 
+  val playStorePackage = "com.android.vending"
+
   def execute(intent: NineCardIntent)(implicit activityContext: ActivityContextWrapper) = {
     intent.getAction match {
       case `openApp` =>
@@ -112,7 +114,7 @@ trait LauncherExecutor {
       }
     }
 
-  def launchDial(phoneNumber: Option[String])(implicit activityContext: ActivityContextWrapper) = {
+  def launchDial(phoneNumber: Option[String] = None)(implicit activityContext: ActivityContextWrapper) = {
     val intent = new Intent(Intent.ACTION_DIAL)
     phoneNumber foreach (number => intent.setData(Uri.parse(s"tel:$number")))
     activityContext.original.get match {
@@ -120,6 +122,8 @@ trait LauncherExecutor {
       case _ => showError
     }
   }
+
+  def launchPlayStore(implicit activityContext: ActivityContextWrapper) = launchApp(playStorePackage)
 
   def launchApp(packageName: String)(implicit activityContext: ActivityContextWrapper) =
     (for {

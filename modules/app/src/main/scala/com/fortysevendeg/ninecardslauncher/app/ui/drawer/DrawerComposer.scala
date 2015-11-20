@@ -4,9 +4,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.{View, ViewGroup}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -17,13 +16,15 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.Cont
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.SearchBoxesAnimatedView
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.{GetByInstallDate, GetAppOrder}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{SearchBackgroundColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.SearchBoxesAnimatedViewTweak._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -53,9 +54,9 @@ trait DrawerComposer
 
   lazy val recycler = Option(findView(TR.launcher_drawer_recycler))
 
-  lazy val searchBoxPanel = Option(findView(TR.launcher_search_box_panel))
+  lazy val searchBoxContentPanel = Option(findView(TR.launcher_search_box_content_panel))
 
-  lazy val  searchBoxIcon = Option(findView(TR.launcher_search_box_icon))
+  var searchBoxView: Option[SearchBoxesAnimatedView] = None
 
   def showDrawerLoading: Ui[_] = (loadingDrawer <~ vVisible) ~
     (recycler <~ vGone) ~
@@ -70,8 +71,8 @@ trait DrawerComposer
   def initDrawerUi(
     onAppMenuClickListener: (AppsMenuOption) => Unit,
     onContactMenuClickListener: (ContactsMenuOption) => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-    (searchBoxPanel <~ searchBoxContentStyle) ~
-      (searchBoxIcon <~ searchBoxButtonStyle) ~
+    (searchBoxContentPanel <~
+      vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView)))) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         revealInDrawer ~ Ui(onAppMenuClickListener(AppsAlphabetical))
       }) ~
@@ -83,6 +84,7 @@ trait DrawerComposer
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
   def revealInDrawer(implicit context: ActivityContextWrapper): Ui[_] =
+    (searchBoxView <~ sbavReset) ~
     (drawerContent <~ colorContentDialog(paint = true)) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
 

@@ -4,7 +4,10 @@
     android:id="@+id/launcher_drawer_content"
     style="@style/LauncherDrawerContent">
 
-    <include layout="@layout/search_box_panel"/>
+    <FrameLayout
+        style="@style/LauncherSearchAnimatedContentPanel"
+        android:id="@+id/launcher_search_box_content_panel"
+    />
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
         android:id="@+id/launcher_drawer_scroller_layout"

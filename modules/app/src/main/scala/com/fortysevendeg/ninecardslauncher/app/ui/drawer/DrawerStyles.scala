@@ -19,13 +19,6 @@ import macroid.{Tweak, ContextWrapper}
 
 trait DrawerStyles {
 
-  def searchBoxContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =
-    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
-
-  def searchBoxButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    tivDefaultColor(theme.get(SearchIconsColor)) +
-      tivPressedColor(theme.get(SearchPressedColor))
-
   def appDrawerMainStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] = {
     val elevation = resGetDimensionPixelSize(R.dimen.elevation_pressed)
     Lollipop ifSupportedThen {

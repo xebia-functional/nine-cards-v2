@@ -19,6 +19,11 @@
         <item name="android:clipToPadding">false</item>
     </style>
 
+    <style name="LauncherSearchAnimatedContentPanel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <style name="LauncherSearchPanel">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_search_box</item>
@@ -39,8 +44,12 @@
         <item name="android:textColor">@color/drawer_search_box</item>
         <item name="android:textColorHint">@color/drawer_search_box_hint</item>
         <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:hint">@string/searchApps</item>
         <item name="android:lines">1</item>
+    </style>
+
+    <style name="LauncherSearchIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="LauncherWorkSpacesContent">
