@@ -54,7 +54,7 @@ case class DockApp(
 
 case class DockAppData(
   name: String,
-  cardType: String,
+  dockType: String,
   intent: String,
   imagePath: String,
   position: Int)

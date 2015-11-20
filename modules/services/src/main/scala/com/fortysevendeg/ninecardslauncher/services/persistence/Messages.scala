@@ -200,7 +200,7 @@ case class UpdateUserRequest(
 
 case class AddDockAppRequest(
   name: String,
-  cardType: String,
+  dockType: String,
   intent: String,
   imagePath: String,
   position: Int)
@@ -216,7 +216,7 @@ case class FindDockAppByIdRequest(id: Int)
 case class UpdateDockAppRequest(
   id: Int,
   name: String,
-  cardType: String,
+  dockType: String,
   intent: String,
   imagePath: String,
   position: Int)

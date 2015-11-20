@@ -23,7 +23,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.impl.Persistence
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
 import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
-import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.squareup.{okhttp => okHttp}

@@ -26,7 +26,7 @@ class DockAppRepository(
         CatchAll[RepositoryException] {
           val values = Map[String, Any](
             name -> data.name,
-            cardType -> data.cardType,
+            dockType -> data.dockType,
             intent -> data.intent,
             imagePath -> data.imagePath,
             position -> data.position)
@@ -80,7 +80,7 @@ class DockAppRepository(
         CatchAll[RepositoryException] {
           val values = Map[String, Any](
             name -> item.data.name,
-            cardType -> item.data.cardType,
+            dockType -> item.data.dockType,
             intent -> item.data.intent,
             imagePath -> item.data.imagePath,
             position -> item.data.position)

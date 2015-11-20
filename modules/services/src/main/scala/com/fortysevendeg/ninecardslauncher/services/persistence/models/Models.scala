@@ -61,7 +61,7 @@ case class User(
 case class DockApp(
   id: Int,
   name: String,
-  cardType: String,
+  dockType: String,
   intent: String,
   imagePath: String,
   position: Int)

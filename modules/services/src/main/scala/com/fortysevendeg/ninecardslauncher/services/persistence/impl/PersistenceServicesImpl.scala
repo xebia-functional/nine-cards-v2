@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.{repository => repo}
-import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
+import com.fortysevendeg.ninecardslauncher.repository.repositories.UserRepository
 import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
@@ -245,7 +245,6 @@ class PersistenceServicesImpl(
     (for {
       updated <- dockAppRepository.updateDockApp(toRepositoryDockApp(request))
     } yield updated).resolve[PersistenceServiceException]
-
 
   private[this] def addCards(cards: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException] = {
     val addedCards = cards map {

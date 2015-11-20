@@ -16,16 +16,16 @@ trait DockAppRepositoryTestData {
   val testPosition = Random.nextInt(5)
 
   val dockAppEntitySeq = createDockAppEntitySeq(5)
-  val dockAppEntity = dockAppEntitySeq.head
+  val dockAppEntity = dockAppEntitySeq(0)
   val dockAppSeq = createDockAppSeq(5)
-  val dockApp = dockAppSeq.head
+  val dockApp = dockAppSeq(0)
 
   def createDockAppEntitySeq(num: Int) = List.tabulate(num)(
     i => DockAppEntity(
       id = testId + i,
       data = DockAppEntityData(
         name = testName,
-        cardType = testCardType,
+        dockType = testCardType,
         intent = testIntent,
         imagePath = testImagePath,
         position = testPosition)))
@@ -35,21 +35,21 @@ trait DockAppRepositoryTestData {
       id = testId + i,
       data = DockAppData(
         name = testName,
-        cardType = testCardType,
+        dockType = testCardType,
         intent = testIntent,
         imagePath = testImagePath,
         position = testPosition)))
 
   def createDockAppValues = Map[String, Any](
-    DockAppEntity.name ->  testName,
-    DockAppEntity.cardType ->  testCardType,
+    DockAppEntity.name -> testName,
+    DockAppEntity.dockType -> testCardType,
     DockAppEntity.intent -> testIntent,
     DockAppEntity.imagePath -> testImagePath,
     DockAppEntity.position -> testPosition)
 
   def createDockAppData = DockAppData(
-    name =  testName,
-    cardType =  testCardType,
+    name = testName,
+    dockType = testCardType,
     intent = testIntent,
     imagePath = testImagePath,
     position = testPosition)

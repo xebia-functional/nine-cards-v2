@@ -89,7 +89,7 @@ trait DockAppMockCursor
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, dockAppSeq map (_.id), IntDataType),
     (name, 1, dockAppSeq map (_.data.name), StringDataType),
-    (cardType, 2, dockAppSeq map (_.data.cardType), StringDataType),
+    (dockType, 2, dockAppSeq map (_.data.dockType), StringDataType),
     (intent, 4, dockAppSeq map (_.data.intent), StringDataType),
     (imagePath, 5, dockAppSeq map (_.data.imagePath), StringDataType),
     (position, 6, dockAppSeq map (_.data.position), IntDataType))
@@ -104,7 +104,7 @@ trait EmptyDockAppMockCursor
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
     (name, 1, Seq.empty, StringDataType),
-    (cardType, 2, Seq.empty, StringDataType),
+    (dockType, 2, Seq.empty, StringDataType),
     (intent, 4, Seq.empty, StringDataType),
     (imagePath, 5, Seq.empty, StringDataType),
     (position, 6, Seq.empty, IntDataType))

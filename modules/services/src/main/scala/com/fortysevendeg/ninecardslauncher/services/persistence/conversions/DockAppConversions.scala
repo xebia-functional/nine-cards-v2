@@ -12,7 +12,7 @@ trait DockAppConversions {
     DockApp(
       id = dockApp.id,
       name = dockApp.data.name,
-      cardType = dockApp.data.cardType,
+      dockType = dockApp.data.dockType,
       intent = dockApp.data.intent,
       imagePath = dockApp.data.imagePath,
       position = dockApp.data.position)
@@ -22,7 +22,7 @@ trait DockAppConversions {
       id = dockApp.id,
       data = RepoDockAppData(
         name = dockApp.name,
-        cardType = dockApp.cardType,
+        dockType = dockApp.dockType,
         intent = dockApp.intent,
         imagePath = dockApp.imagePath,
         position = dockApp.position))
@@ -32,7 +32,7 @@ trait DockAppConversions {
       id = request.id,
       data = RepoDockAppData(
         name = request.name,
-        cardType = request.cardType,
+        dockType = request.dockType,
         intent = request.intent,
         imagePath = request.imagePath,
         position = request.position))
@@ -40,7 +40,7 @@ trait DockAppConversions {
   def toRepositoryDockAppData(request: AddDockAppRequest): RepoDockAppData =
     RepoDockAppData(
       name = request.name,
-      cardType = request.cardType,
+      dockType = request.dockType,
       intent = request.intent,
       imagePath = request.imagePath,
       position = request.position)
