@@ -69,6 +69,7 @@ class Injector(implicit contextSupport: ContextSupport) {
     appRepository = new AppRepository(contentResolverWrapper, uriCreator),
     cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
     collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
+    dockAppRepository = new DockAppRepository(contentResolverWrapper, uriCreator),
     geoInfoRepository = new GeoInfoRepository(contentResolverWrapper, uriCreator),
     userRepository = new UserRepository(contentResolverWrapper, uriCreator))
 

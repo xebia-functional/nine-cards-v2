@@ -198,3 +198,29 @@ case class UpdateUserRequest(
   deviceToken: Option[String],
   androidToken: Option[String])
 
+case class AddDockAppRequest(
+  name: String,
+  cardType: String,
+  collectionId: Option[Int],
+  intent: String,
+  imagePath: String,
+  position: Int)
+
+case class DeleteDockAppRequest(dockApp: DockApp)
+
+case class DeleteDockAppResponse(deleted: Int)
+
+case class FetchDockAppItemsResponse(dockAppItems: Seq[DockApp])
+
+case class FindDockAppByIdRequest(id: Int)
+
+case class UpdateDockAppRequest(
+  id: Int,
+  name: String,
+  cardType: String,
+  collectionId: Option[Int],
+  intent: String,
+  imagePath: String,
+  position: Int)
+
+

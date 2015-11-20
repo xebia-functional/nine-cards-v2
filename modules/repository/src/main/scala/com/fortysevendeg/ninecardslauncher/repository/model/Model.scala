@@ -48,6 +48,18 @@ case class CardData(
   numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
+case class DockApp(
+  id: Int,
+  data: DockAppData)
+
+case class DockAppData(
+  name: String,
+  cardType: String,
+  collectionId: Option[Int],
+  intent: String,
+  imagePath: String,
+  position: Int)
+
 case class GeoInfo(
   id: Int,
   data: GeoInfoData)
@@ -71,3 +83,4 @@ case class UserData(
   installationId: Option[String],
   deviceToken: Option[String],
   androidToken: Option[String])
+

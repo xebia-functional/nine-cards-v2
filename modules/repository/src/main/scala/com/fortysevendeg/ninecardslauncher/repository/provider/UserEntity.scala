@@ -42,14 +42,16 @@ object UserEntity {
         deviceToken = cursor.getString(cursor.getColumnIndex(deviceToken)),
         androidToken = cursor.getString(cursor.getColumnIndex(androidToken))))
 
-  def createTableSQL = "CREATE TABLE " + UserEntity.table +
-    "(" + NineCardsSqlHelper.id + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-    UserEntity.userId + " TEXT, " +
-    UserEntity.email + " TEXT, " +
-    UserEntity.sessionToken + " TEXT, " +
-    UserEntity.installationId + " TEXT, " +
-    UserEntity.deviceToken + " TEXT, " +
-    UserEntity.androidToken + " TEXT )"
+  def createTableSQL =
+    s"""CREATE TABLE ${UserEntity.table}
+        |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+        |${UserEntity.userId} TEXT,
+        |${UserEntity.email} TEXT,
+        |${UserEntity.sessionToken} INTEGER,
+        |${UserEntity.installationId} TEXT,
+        |${UserEntity.deviceToken} TEXT,
+        |${UserEntity.androidToken} INTEGER)""".stripMargin
+
 }
 
 object UserEntityData {
