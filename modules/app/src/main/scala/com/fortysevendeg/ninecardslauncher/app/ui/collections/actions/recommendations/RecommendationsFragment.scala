@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, NineCardIntentConversions, UiContext}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -22,7 +23,7 @@ class RecommendationsFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
-  lazy val maybeCategory = Option(getString(Seq(getArguments), RecommendationsFragment.categoryKey, null))
+  lazy val nineCardCategory = NineCardCategory(getString(Seq(getArguments), RecommendationsFragment.categoryKey, ""))
 
   lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
 
@@ -31,10 +32,11 @@ class RecommendationsFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
-    val task = maybeCategory map { category =>
-      di.recommendationsProcess.getRecommendedAppsByCategory(category, packages)
-    } getOrElse di.recommendationsProcess.getRecommendedAppsByPackages(packages, packages)
-
+    val task = if (nineCardCategory.isAppCategory) {
+      di.recommendationsProcess.getRecommendedAppsByCategory(nineCardCategory, packages)
+    } else {
+      di.recommendationsProcess.getRecommendedAppsByPackages(packages, packages)
+    }
     Task.fork(task.run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (recommendations: Seq[RecommendedApp]) => addRecommendations(recommendations, onInstallNowClick),

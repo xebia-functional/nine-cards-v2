@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.recommendations
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 
 trait RecommendationsProcess {
@@ -12,7 +13,7 @@ trait RecommendationsProcess {
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
    * @throws RecommendedAppsException if there was an error fetching the recommended apps
    */
-  def getRecommendedAppsByCategory(category: String, excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): ServiceDef2[Seq[RecommendedApp], RecommendedAppsException]
+  def getRecommendedAppsByCategory(category: NineCardCategory, excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): ServiceDef2[Seq[RecommendedApp], RecommendedAppsException]
 
   /**
    * Get recommended apps based on a category

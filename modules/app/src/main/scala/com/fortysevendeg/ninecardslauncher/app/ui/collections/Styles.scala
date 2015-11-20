@@ -27,7 +27,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTwe
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, NineRecyclerView, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
+import com.fortysevendeg.ninecardslauncher.process.types._
+import CardType._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
@@ -113,9 +114,9 @@ trait CollectionAdapterStyles {
       view.getLayoutParams.height = (heightCard * iconContentHeightRatio).toInt
     }
 
-  def nameStyle(cardType: String)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
+  def nameStyle(cardType: CardType)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
     cardType match {
-      case `noInstalledApp` =>
+      case NoInstalledAppCardType =>
         tvColor(colorAllNotInstalled)
       case _ =>
         tvColor(theme.get(CollectionDetailTextCardColor))
@@ -123,12 +124,12 @@ trait CollectionAdapterStyles {
 
   def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) =
     card.cardType match {
-      case `phone` | `sms` | `email` =>
+      case PhoneCardType | SmsCardType | EmailCardType =>
         ivUriContact(card.imagePath, card.term) +
           vBackground(null) +
           expandLayout +
           ivScaleType(ScaleType.CENTER_CROP)
-      case `noInstalledApp` =>
+      case NoInstalledAppCardType =>
         val shape = new ShapeDrawable(new OvalShape)
         shape.getPaint.setColor(colorAllNotInstalled)
         ivSrc(R.drawable.icon_card_not_installed) +

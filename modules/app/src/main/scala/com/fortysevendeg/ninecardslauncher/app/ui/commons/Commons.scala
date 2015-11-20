@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper

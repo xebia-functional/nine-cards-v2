@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityResult, ColorsUtils}
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.Ui
@@ -49,7 +49,7 @@ trait NewCollectionComposer
             index <- getColor
           } yield Ui(storeCollection(name, category, index))) getOrElse showMessage(R.string.formFieldError)
         )) ~
-      setCategory(communication) ~
+      setCategory(Communication) ~
       setIndexColor(0) ~
       (colorContent <~ On.click {
         Ui {
@@ -78,10 +78,10 @@ trait NewCollectionComposer
 
   def hideKeyboard: Ui[_] = name <~ etHideKeyboard
 
-  def setCategory(category: String): Ui[_] =
+  def setCategory(category: NineCardCategory): Ui[_] =
     iconImage <~
       vTag2(category) <~
-      ivSrc(ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category)), Color.GRAY))
+      ivSrc(ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category.name)), Color.GRAY))
 
   def setIndexColor(index: Int): Ui[_] = {
     val color = resGetColor(getIndexColor(index))

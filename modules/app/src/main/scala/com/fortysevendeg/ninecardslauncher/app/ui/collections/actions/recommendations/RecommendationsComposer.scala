@@ -14,8 +14,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{NineCardIntentConversions, LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
+import com.fortysevendeg.ninecardslauncher.process.types.{NoInstalledAppCardType, CardType}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
@@ -55,7 +55,7 @@ trait RecommendationsComposer
       val card = AddCardRequest(
         term = app.title,
         packageName = Option(app.packageName),
-        cardType = CardType.noInstalledApp,
+        cardType = NoInstalledAppCardType,
         intent = toNineCardIntent(app),
         imagePath = "")
       activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))

@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollectionPackage, SharedCollection}
 import com.fortysevendeg.ninecardslauncher.services.api.{SharedCollectionPackageResponse, SharedCollectionResponse}
 
@@ -19,7 +20,7 @@ trait Conversions {
       packages = item.packages,
       resolvedPackages = item.resolvedPackages map toSharedCollectionPackage,
       views = item.views,
-      category = item.category,
+      category = NineCardCategory(item.category),
       icon = item.icon,
       community = item.community)
 

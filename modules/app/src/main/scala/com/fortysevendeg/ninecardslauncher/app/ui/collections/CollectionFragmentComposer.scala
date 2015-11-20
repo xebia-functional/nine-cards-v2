@@ -15,8 +15,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTwe
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{NineRecyclerView, PullToCloseListener, PullToCloseView}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, _}
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.types.{EmailCardType, SmsCardType, PhoneCardType, CardType}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -178,10 +178,10 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
       } getOrElse vGone)) ~
       (name <~ nameStyle(card.cardType))
 
-  private[this] def getBadge(cardType: String): Option[Int] = cardType match {
-    case CardType.phone => Option(R.drawable.badge_phone)
-    case CardType.sms => Option(R.drawable.badge_sms)
-    case CardType.email => Option(R.drawable.badge_email)
+  private[this] def getBadge(cardType: CardType): Option[Int] = cardType match {
+    case PhoneCardType => Option(R.drawable.badge_phone)
+    case SmsCardType => Option(R.drawable.badge_sms)
+    case EmailCardType => Option(R.drawable.badge_email)
     case _ => None
   }
 
