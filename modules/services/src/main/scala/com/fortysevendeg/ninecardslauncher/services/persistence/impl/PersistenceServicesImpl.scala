@@ -12,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.{repository => repo}
-import com.fortysevendeg.ninecardslauncher.repository.repositories.UserRepository
 import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
