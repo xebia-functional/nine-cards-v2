@@ -62,7 +62,6 @@ case class DockApp(
   id: Int,
   name: String,
   cardType: String,
-  collectionId: Option[Int],
   intent: String,
   imagePath: String,
   position: Int)

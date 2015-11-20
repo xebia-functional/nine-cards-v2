@@ -72,7 +72,6 @@ object Conversions {
     data = DockAppData(
       name = dockAppEntity.data.name,
       cardType = dockAppEntity.data.cardType,
-      collectionId = Option[Int](dockAppEntity.data.collectionId),
       intent = dockAppEntity.data.intent,
       imagePath = dockAppEntity.data.imagePath,
       position = dockAppEntity.data.position))

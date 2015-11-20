@@ -8,7 +8,6 @@ case class DockAppEntity(id: Int, data: DockAppEntityData)
 case class DockAppEntityData(
   name: String,
   cardType: String,
-  collectionId: Int,
   intent: String,
   imagePath: String,
   position: Int)
@@ -17,7 +16,6 @@ object DockAppEntity {
   val table = "DockApp"
   val name = "name"
   val cardType = "cardType"
-  val collectionId = "collectionId"
   val intent = "intent"
   val imagePath = "imagePath"
   val position = "position"
@@ -26,7 +24,6 @@ object DockAppEntity {
     NineCardsSqlHelper.id,
     name,
     cardType,
-    collectionId,
     intent,
     imagePath,
     position)
@@ -37,7 +34,6 @@ object DockAppEntity {
       data = DockAppEntityData(
         name = cursor.getString(cursor.getColumnIndex(name)),
         cardType = cursor.getString(cursor.getColumnIndex(cardType)),
-        collectionId = cursor.getInt(cursor.getColumnIndex(collectionId)),
         intent = cursor.getString(cursor.getColumnIndex(intent)),
         imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
         position = cursor.getInt(cursor.getColumnIndex(position))))
@@ -47,7 +43,6 @@ object DockAppEntity {
         |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
         |${DockAppEntity.name} TEXT not null,
         |${DockAppEntity.cardType} TEXT not null,
-        |${DockAppEntity.collectionId} INTEGER,
         |${DockAppEntity.intent} TEXT not null,
         |${DockAppEntity.imagePath} TEXT not null,
         |${DockAppEntity.position} INTEGER not null)""".stripMargin
@@ -59,7 +54,6 @@ object DockAppEntityData {
     DockAppEntityData(
       name = cursor.getString(cursor.getColumnIndex(name)),
       cardType = cursor.getString(cursor.getColumnIndex(cardType)),
-      collectionId = cursor.getInt(cursor.getColumnIndex(collectionId)),
       intent = cursor.getString(cursor.getColumnIndex(intent)),
       imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
       position = cursor.getInt(cursor.getColumnIndex(position)))

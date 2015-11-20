@@ -201,7 +201,6 @@ case class UpdateUserRequest(
 case class AddDockAppRequest(
   name: String,
   cardType: String,
-  collectionId: Option[Int],
   intent: String,
   imagePath: String,
   position: Int)
@@ -218,7 +217,6 @@ case class UpdateDockAppRequest(
   id: Int,
   name: String,
   cardType: String,
-  collectionId: Option[Int],
   intent: String,
   imagePath: String,
   position: Int)

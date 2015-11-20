@@ -27,7 +27,6 @@ class DockAppRepository(
           val values = Map[String, Any](
             name -> data.name,
             cardType -> data.cardType,
-            collectionId -> (data.collectionId orNull),
             intent -> data.intent,
             imagePath -> data.imagePath,
             position -> data.position)
@@ -82,7 +81,6 @@ class DockAppRepository(
           val values = Map[String, Any](
             name -> item.data.name,
             cardType -> item.data.cardType,
-            collectionId -> (item.data.collectionId orNull),
             intent -> item.data.intent,
             imagePath -> item.data.imagePath,
             position -> item.data.position)

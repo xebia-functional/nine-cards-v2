@@ -1,4 +1,4 @@
-package com.fortysevendeg.nineuserslauncher.repository.repositories
+package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
