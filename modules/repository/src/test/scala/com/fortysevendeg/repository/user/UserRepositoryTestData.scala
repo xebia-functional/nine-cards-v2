@@ -24,9 +24,9 @@ trait UserRepositoryTestData {
   val testAndroidTokenOption = Option(testAndroidToken)
 
   val userEntitySeq = createUserEntitySeq(5)
-  val userEntity = userEntitySeq.head
+  val userEntity = userEntitySeq(0)
   val userSeq = createUserSeq(5)
-  val user = userSeq.head
+  val user = userSeq(0)
 
   def createUserEntitySeq(num: Int) = List.tabulate(num)(
     i => UserEntity(

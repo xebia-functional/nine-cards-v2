@@ -28,9 +28,9 @@ trait CollectionRepositoryTestData {
   val testSharedCollectionSubscribedOption = Option(testSharedCollectionSubscribed)
 
   val collectionEntitySeq = createCollectionEntitySeq(5)
-  val collectionEntity = collectionEntitySeq.head
+  val collectionEntity = collectionEntitySeq(0)
   val collectionSeq = createCollectionSeq(5)
-  val collection = collectionSeq.head
+  val collection = collectionSeq(0)
 
   def createCollectionEntitySeq(num: Int) = List.tabulate(num)(
     i => CollectionEntity(
