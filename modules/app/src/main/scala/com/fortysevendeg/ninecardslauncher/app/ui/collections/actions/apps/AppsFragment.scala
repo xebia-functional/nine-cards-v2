@@ -10,12 +10,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiExtensions, FragmentUiContext, NineCardIntentConversions, UiContext}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, NineCardCategory, Game}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import com.fortysevendeg.ninecardslauncher.process.types.AppCardType
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
 
 import scalaz.concurrent.Task
 
@@ -25,13 +26,13 @@ class AppsFragment
   with UiExtensions
   with NineCardIntentConversions {
 
-  val allApps = "ALL"
+  val allApps = AllAppsCategory
 
   implicit lazy val di: Injector = new Injector
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
-  lazy val category = getString(Seq(getArguments), AppsFragment.categoryKey, allApps)
+  lazy val category = NineCardCategory(getString(Seq(getArguments), AppsFragment.categoryKey, AllAppsCategory.name))
 
   override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
 
@@ -57,7 +58,7 @@ class AppsFragment
         val card = AddCardRequest(
           term = app.name,
           packageName = Option(app.packageName),
-          cardType = CardType.app,
+          cardType = AppCardType,
           intent = toNineCardIntent(app),
           imagePath = app.imagePath
         )
@@ -72,8 +73,8 @@ class AppsFragment
     case AllApps => apps
     case AppsByCategory =>
       category match {
-        case `game` => apps filter(app => gamesCategories contains app.category)
-        case c => apps filter(_.category.contains(c))
+        case Game => apps filter(app => gamesCategories contains app.category)
+        case c => apps filter(_.category.equals(c))
       }
   }
 

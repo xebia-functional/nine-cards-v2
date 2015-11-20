@@ -5,7 +5,8 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardCategories._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
@@ -110,10 +111,10 @@ class Injector(implicit contextSupport: ContextSupport) {
     callsServices = callsServices
   )
 
-  private[this] lazy val nameCategories: Map[String, String] = (categories map {
+  private[this] lazy val nameCategories: Map[NineCardCategory, String] = (allCategories map {
     category =>
-      val identifier = resources.getIdentifier(category.toLowerCase, "string", contextSupport.getPackageName)
-      (category, if (identifier != 0) resources.getString(identifier) else category)
+      val identifier = resources.getIdentifier(category.getIconResource, "string", contextSupport.getPackageName)
+      (category, if (identifier != 0) resources.getString(identifier) else category.name)
   }).toMap
 
   private[this] lazy val collectionProcessConfig = CollectionProcessConfig(

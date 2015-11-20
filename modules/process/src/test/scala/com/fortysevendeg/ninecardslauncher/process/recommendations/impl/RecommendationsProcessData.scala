@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.recommendations.impl
 
+import com.fortysevendeg.ninecardslauncher.process.commons.types.Social
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
@@ -11,9 +12,9 @@ trait RecommendationsProcessData {
 
   val statusCodeOk = 200
 
-  val category = "SOCIAL"
+  val category = Social
 
-  val categories = Seq(category)
+  val categories = Seq(Social.name)
 
   val likePackages = Seq("com.fortysevendeg.package1", "com.fortysevendeg.package2", "com.fortysevendeg.package3")
 

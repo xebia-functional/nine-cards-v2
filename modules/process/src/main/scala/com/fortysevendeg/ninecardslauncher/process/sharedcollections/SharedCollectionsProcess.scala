@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 
 trait SharedCollectionsProcess {
@@ -16,7 +17,7 @@ trait SharedCollectionsProcess {
     * @throws SharedCollectionsExceptions if there was an error fetching the recommended apps
     */
   def getSharedCollectionsByCategory(
-    category: String,
+    category: NineCardCategory,
     typeShareCollection: TypeSharedCollection,
     offset: Int,
     limit: Int)(implicit context: ContextSupport): ServiceDef2[Seq[SharedCollection], SharedCollectionsExceptions]

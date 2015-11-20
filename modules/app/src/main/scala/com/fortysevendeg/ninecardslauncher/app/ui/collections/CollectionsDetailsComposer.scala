@@ -38,6 +38,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, S
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -347,7 +348,7 @@ trait CollectionsDetailsComposer
       updateStatusColor(color)
 
   private[this] def showAction[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, String] = Map.empty, packages: Seq[String] = Seq.empty): Ui[_] = {
+  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, NineCardCategory] = Map.empty, packages: Seq[String] = Seq.empty): Ui[_] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
@@ -358,7 +359,10 @@ trait CollectionsDetailsComposer
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
     args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
     args.putStringArray(BaseActionFragment.packages, packages.toArray)
-    map foreach (item => args.putString(item._1, item._2))
+    map foreach (item => {
+      val (categoryKey, category) = item
+      args.putString(categoryKey, category.name)
+    })
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton(doUpdateBars = false) ~

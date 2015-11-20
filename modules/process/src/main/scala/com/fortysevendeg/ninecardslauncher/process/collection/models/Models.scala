@@ -1,13 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.models
 
+import com.fortysevendeg.ninecardslauncher.process.types.{CollectionType, CardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+
 case class Collection(
   id: Int,
   position: Int,
   name: String,
-  collectionType: String,
+  collectionType: CollectionType,
   icon: String,
   themedColorIndex: Int,
-  appsCategory: Option[String] = None,
+  appsCategory: Option[NineCardCategory] = None,
   constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
@@ -20,7 +23,7 @@ case class Card(
   micros: Int = 0,
   term: String,
   packageName: Option[String],
-  cardType: String,
+  cardType: CardType,
   intent: NineCardIntent,
   imagePath: String,
   starRating: Option[Double] = None,

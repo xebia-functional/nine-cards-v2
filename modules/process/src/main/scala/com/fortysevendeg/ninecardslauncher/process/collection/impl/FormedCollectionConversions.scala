@@ -5,10 +5,10 @@ import java.io.File
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.types._
 import com.fortysevendeg.ninecardslauncher.process.collection.{PrivateCollection, CollectionProcessConfig, Conversions, ImplicitsCollectionException}
-import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionType, NineCardCategories}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
@@ -38,10 +38,10 @@ trait FormedCollectionConversions
   def toAddCollectionRequestByFormedCollection(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport) = AddCollectionRequest(
     position = position,
     name = formedCollection.name,
-    collectionType = formedCollection.collectionType,
+    collectionType = formedCollection.collectionType.name,
     icon = formedCollection.icon,
     themedColorIndex = position % numSpaces,
-    appsCategory = formedCollection.category,
+    appsCategory = formedCollection.category map(_.name),
     constrains = None,
     originalSharedCollectionId = formedCollection.sharedCollectionId,
     sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
@@ -66,13 +66,13 @@ trait FormedCollectionConversions
 
   def createPrivateCollections(
     apps: Seq[UnformedApp],
-    categories: Seq[String],
+    categories: Seq[NineCardCategory],
     minApps: Int): Seq[PrivateCollection] = generatePrivateCollections(apps, categories, Seq.empty)
 
   @tailrec
   private[this] def generatePrivateCollections(
     items: Seq[UnformedApp],
-    categories: Seq[String],
+    categories: Seq[NineCardCategory],
     acc: Seq[PrivateCollection]): Seq[PrivateCollection] = categories match {
       case Nil => acc
       case h :: t =>
@@ -81,14 +81,14 @@ trait FormedCollectionConversions
         generatePrivateCollections(items, t, a)
     }
 
-  private[this] def generatePrivateCollection(items: Seq[UnformedApp], category: String, position: Int): PrivateCollection = {
+  private[this] def generatePrivateCollection(items: Seq[UnformedApp], category: NineCardCategory, position: Int): PrivateCollection = {
     // TODO We should sort the application using an endpoint in the new sever
-    val appsByCategory = items.filter(_.category.contains(category)).take(numSpaces)
+    val appsByCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     PrivateCollection(
-      name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
-      collectionType = CollectionType.apps,
-      icon = category.toLowerCase,
+      name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
+      collectionType = AppsCollectionType,
+      icon = category.getStringResource,
       themedColorIndex = themeIndex,
       appsCategory = Some(category),
       cards = appsByCategory map toPrivateCard
@@ -98,7 +98,7 @@ trait FormedCollectionConversions
   def createCollections(
     apps: Seq[UnformedApp],
     contacts: Seq[UnformedContact],
-    categories: Seq[String],
+    categories: Seq[NineCardCategory],
     minApps: Int) = {
     val collections = generateAddCollections(apps, categories, Seq.empty)
     if (contacts.length > minApps) collections :+ toAddCollectionRequestByContact(contacts.take(numSpaces), collections.length)
@@ -108,7 +108,7 @@ trait FormedCollectionConversions
   @tailrec
   private[this] def generateAddCollections(
     items: Seq[UnformedApp],
-    categories: Seq[String],
+    categories: Seq[NineCardCategory],
     acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = categories match {
       case Nil => acc
       case h :: t =>
@@ -117,30 +117,30 @@ trait FormedCollectionConversions
         generateAddCollections(items, t, a)
     }
 
-  private[this] def generateAddCollection(items: Seq[UnformedApp], category: String, position: Int): AddCollectionRequest = {
+  private[this] def generateAddCollection(items: Seq[UnformedApp], category: NineCardCategory, position: Int): AddCollectionRequest = {
     // TODO We should sort the application using an endpoint in the new sever
-    val appsCategory = items.filter(_.category.contains(category)).take(numSpaces)
+    val appsCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
-      name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
-      collectionType = CollectionType.apps,
-      icon = category.toLowerCase,
+      name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
+      collectionType = AppsCollectionType.name,
+      icon = category.getIconResource,
       themedColorIndex = themeIndex,
-      appsCategory = Some(category),
+      appsCategory = Some(category.name),
       sharedCollectionSubscribed = Option(false),
       cards = toAddCardRequestSeq(appsCategory)
     )
   }
 
   def toAddCollectionRequestByContact(contacts: Seq[UnformedContact], position: Int): AddCollectionRequest = {
-    val category = NineCardCategories.contacts
+    val category = ContactsCategory
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
-      name = collectionProcessConfig.namesCategories.getOrElse(category, category.toLowerCase),
-      collectionType = CollectionType.contacts,
-      icon = category.toLowerCase,
+      name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
+      collectionType = ContactsCollectionType.name,
+      icon = category.getIconResource,
       themedColorIndex = themeIndex,
       appsCategory = None,
       sharedCollectionSubscribed = Option(false),
@@ -171,8 +171,8 @@ trait FormedCollectionConversions
         val nineCardIntent = jsonToNineCardIntent(item.intent)
 
         // We need adapt items to apps installed in cell phone
-        val itemAdapted: FormedItem = item.itemType match {
-          case `app` | `recommendedApp` =>
+        val itemAdapted: FormedItem = CardType(item.itemType) match {
+          case AppCardType | RecommendedAppCardType =>
             (for {
               packageName <- nineCardIntent.extractPackageName()
               className <- nineCardIntent.extractClassName()
@@ -182,19 +182,19 @@ trait FormedCollectionConversions
                 val classChanged = !(appInstalled.className == className)
                 if (classChanged) {
                   val json = nineCardIntentToJson(toNineCardIntent(appInstalled))
-                  item.copy(intent = json, itemType = app)
+                  item.copy(intent = json, itemType = AppCardType.name)
                 } else {
-                  item.copy(itemType = app)
+                  item.copy(itemType = AppCardType.name)
                 }
-              } getOrElse item.copy(itemType = noInstalledApp)
-            }) getOrElse item.copy(itemType = noInstalledApp)
+              } getOrElse item.copy(itemType = NoInstalledAppCardType.name)
+            }) getOrElse item.copy(itemType = NoInstalledAppCardType.name)
           case _ => item
         }
 
         val nineCardIntentAdapted = jsonToNineCardIntent(itemAdapted.intent)
 
-        val path = itemAdapted.itemType match {
-          case `app` =>
+        val path = CardType(itemAdapted.itemType) match {
+          case AppCardType =>
             for {
               packageName <- nineCardIntentAdapted.extractPackageName()
               className <- nineCardIntentAdapted.extractClassName()
@@ -203,9 +203,9 @@ trait FormedCollectionConversions
               // If the path using ClassName don't exist, we use a path using only packagename
               if (new File(pathWithClassName).exists) pathWithClassName else resourceUtils.getPath(packageName)
             }
-          case `phone` | `sms` =>
+          case PhoneCardType | SmsCardType =>
             fetchPhotoUri(nineCardIntentAdapted.extractPhone(), contactsServices.fetchContactByPhoneNumber)
-          case `email` =>
+          case EmailCardType =>
             fetchPhotoUri(nineCardIntentAdapted.extractEmail(), contactsServices.fetchContactByEmail)
           case _ => None
         }
