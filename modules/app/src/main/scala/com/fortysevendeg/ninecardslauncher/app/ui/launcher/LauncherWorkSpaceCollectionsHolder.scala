@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.widget._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -101,7 +102,7 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
           activity <- activity[LauncherActivity]
         } yield activity.removeCollection(c)
         Ui(true)
-      } <~ vTag(R.id.use_layer_hardware, "")))
+      } <~ vUseLayerHardware))
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)

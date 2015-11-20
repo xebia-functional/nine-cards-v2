@@ -13,6 +13,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
@@ -38,7 +39,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
 
     override def onAnimationEnd(animation: Animator) = {
       if (swap) indicator.swapViews
-      runUi((self <~ layerHardware(false)) ~ reset ~ finishMovement)
+      runUi((self <~ vLayerHardware(activate = false)) ~ reset ~ finishMovement)
       super.onAnimationEnd(animation)
     }
   }
@@ -165,18 +166,13 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   }
 
   private[this] def startMovement =
-    (self <~ layerHardware(true)) ~
+    (self <~ vLayerHardware(activate = true)) ~
       (getInactiveView <~ vVisible) ~
       applyTranslation(getInactiveView, initialPositionInactiveView)
 
   private[this] def finishMovement =
-    (self <~ layerHardware(false)) ~
+    (self <~ vLayerHardware(activate = false)) ~
       (getInactiveView <~ vGone)
-
-  // TODO Add to common place
-  private[this] def layerHardware(activate: Boolean) = Transformer {
-    case v: View if Option(v.getTag(R.id.use_layer_hardware)).isDefined => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
-  }
 
   private[this] def computeFling() = indicator.velocityTracker foreach { tracker =>
     tracker.computeCurrentVelocity(1000, maximumVelocity)

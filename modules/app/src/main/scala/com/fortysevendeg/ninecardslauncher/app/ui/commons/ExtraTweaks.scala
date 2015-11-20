@@ -21,7 +21,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak, Ui}
+import macroid.{Transformer, ContextWrapper, Tweak, Ui}
 
 /**
   * This tweaks should be moved to Macroid-Extras
@@ -176,6 +176,12 @@ object CommonsTweak {
       d.getPaint.setColor(color)
       vBackground(d)
     }
+  }
+
+  def vUseLayerHardware = vTag(R.id.use_layer_hardware, "")
+
+  def vLayerHardware(activate: Boolean) = Transformer {
+    case v: View if Option(v.getTag(R.id.use_layer_hardware)).isDefined => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
   }
 
 }
