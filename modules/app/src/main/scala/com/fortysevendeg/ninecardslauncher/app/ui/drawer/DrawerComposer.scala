@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.Cont
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.SearchBoxesAnimatedView
+import com.fortysevendeg.ninecardslauncher.app.ui.components._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.{GetByInstallDate, GetAppOrder}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
@@ -31,9 +31,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait DrawerComposer
   extends DrawerStyles
   with ContextSupportProvider
-  with HeaderGenerator {
+  with HeaderGenerator
+  with SearchBoxAnimatedListener {
 
-  self: AppCompatActivity with TypedFindView with SystemBarsTint =>
+  self: AppCompatActivity with TypedFindView with SystemBarsTint with DrawerListeners =>
 
   lazy val emptyAdapter = new RecyclerView.Adapter[RecyclerView.ViewHolder]() {
 
@@ -58,6 +59,11 @@ trait DrawerComposer
 
   var searchBoxView: Option[SearchBoxesAnimatedView] = None
 
+  override def onChangeBoxView(boxView: BoxView): Unit = boxView match {
+    case AppsView => runUi(Ui(loadApps(AppsAlphabetical)))
+    case ContactView => runUi(Ui(loadContacts(ContactsAlphabetical)))
+  }
+
   def showDrawerLoading: Ui[_] = (loadingDrawer <~ vVisible) ~
     (recycler <~ vGone) ~
     (scrollerLayout <~ fslInvisible)
@@ -68,13 +74,11 @@ trait DrawerComposer
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def initDrawerUi(
-    onAppMenuClickListener: (AppsMenuOption) => Unit,
-    onContactMenuClickListener: (ContactsMenuOption) => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (searchBoxContentPanel <~
-      vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView)))) ~
+      vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView) <~ sbavChangeListener(self)))) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
-        revealInDrawer ~ Ui(onAppMenuClickListener(AppsAlphabetical))
+        revealInDrawer ~ Ui(loadApps(AppsAlphabetical))
       }) ~
       (loadingDrawer <~ loadingDrawerStyle) ~
       (recycler <~ recyclerStyle) ~

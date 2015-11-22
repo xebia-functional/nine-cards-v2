@@ -14,15 +14,14 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TouchState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.app.ui.components.TouchState._
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Transformer, Tweak, Ui}
+import macroid.{ContextWrapper, Tweak, Ui}
 
-abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(context, attr, defStyleAttr) {
-  self =>
+abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
+  (context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
+  extends FrameLayout(context, attr, defStyleAttr) { self =>
 
   type PageChangedObserver = (Int => Unit)
 

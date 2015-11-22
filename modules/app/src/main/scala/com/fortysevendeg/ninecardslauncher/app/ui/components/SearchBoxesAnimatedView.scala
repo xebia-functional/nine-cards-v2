@@ -38,7 +38,10 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     var swap = false
 
     override def onAnimationEnd(animation: Animator) = {
-      if (swap) indicator.swapViews
+      if (swap) {
+        indicator.swapViews()
+        listener foreach(_.onChangeBoxView(indicator.currentItem))
+      }
       runUi((self <~ vLayerHardware(activate = false)) ~ reset ~ finishMovement)
       super.onAnimationEnd(animation)
     }
@@ -54,6 +57,8 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
       runUi(transformPanelCanvas())
     }
   })
+
+  var listener: Option[SearchBoxAnimatedListener] = None
 
   val durationAnimation = resGetInteger(android.R.integer.config_shortAnimTime)
 
@@ -235,10 +240,18 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
 
 }
 
+trait SearchBoxAnimatedListener {
+  def onChangeBoxView(state: BoxView): Unit
+}
+
 object SearchBoxesAnimatedViewTweak {
 
   def sbavReset(implicit contextWrapper: ContextWrapper) = Tweak[SearchBoxesAnimatedView] { view =>
     runUi(view.reset)
+  }
+
+  def sbavChangeListener(listener: SearchBoxAnimatedListener)= Tweak[SearchBoxesAnimatedView] { view =>
+    view.listener = Some(listener)
   }
 
 }
@@ -251,7 +264,7 @@ case class SearchBoxesIndicator(
   var displacement: Float = 0,
   var touchState: ViewState = Stopped)(implicit contextWrapper: ContextWrapper) {
 
-  def swapViews = currentItem = currentItem match {
+  def swapViews() = currentItem = currentItem match {
     case AppsView => ContactView
     case ContactView => AppsView
   }

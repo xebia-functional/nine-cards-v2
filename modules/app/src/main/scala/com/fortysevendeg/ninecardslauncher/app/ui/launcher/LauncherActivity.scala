@@ -33,7 +33,8 @@ class LauncherActivity
   with ActionsScreenListener
   with LauncherComposer
   with SystemBarsTint
-  with NineCardIntentConversions {
+  with NineCardIntentConversions
+  with DrawerListeners {
 
   implicit lazy val di: Injector = new Injector
 
@@ -48,13 +49,15 @@ class LauncherActivity
 
   var hasFocus = false
 
+//  override val onAppMenuClickListener: (AppsMenuOption) => Unit = loadApps
+//
+//  override val onContactMenuClickListener: (ContactsMenuOption) => Unit = loadContacts
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
-    runUi(initUi ~ initDrawerUi(
-      onAppMenuClickListener = loadApps,
-      onContactMenuClickListener = loadContacts))
+    runUi(initUi ~ initDrawerUi)
     initAllSystemBarsTint
     generateCollections()
   }
@@ -133,7 +136,13 @@ class LauncherActivity
     startActivityForResult(wizardIntent, wizard)
   }
 
-  private[this] def loadApps(appsMenuOption: AppsMenuOption): Unit = {
+  private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
+    case AppsAlphabetical => GetByName
+    case AppsByCategories => GetByCategory
+    case AppsByLastInstall => GetByInstallDate
+  }
+
+  override def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     Task.fork(di.deviceProcess.getSavedApps(getAppOrder).run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
@@ -145,13 +154,7 @@ class LauncherActivity
     )
   }
 
-  private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
-    case AppsAlphabetical => GetByName
-    case AppsByCategories => GetByCategory
-    case AppsByLastInstall => GetByInstallDate
-  }
-
-  private[this] def loadContacts(contactsMenuOption: ContactsMenuOption): Unit =
+  override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit =
     // TODO - Take into account the `contactsMenuOption` param
     Task.fork(di.deviceProcess.getContacts(filter = AllContacts).run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,

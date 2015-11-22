@@ -25,7 +25,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehavi
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, LauncherExecutor, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
-import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerComposer
+import com.fortysevendeg.ninecardslauncher.app.ui.drawer.{DrawerListeners, DrawerComposer}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
@@ -47,7 +47,7 @@ trait LauncherComposer
   with FabButtonBehaviour
   with LauncherExecutor {
 
-  self: AppCompatActivity with TypedFindView with SystemBarsTint =>
+  self: AppCompatActivity with TypedFindView with SystemBarsTint with DrawerListeners =>
 
   // TODO For now, we always use 4 applications in app drawer panel
   lazy val packagesForAppsDrawer = Seq(
