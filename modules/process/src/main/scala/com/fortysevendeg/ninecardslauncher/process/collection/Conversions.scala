@@ -62,20 +62,6 @@ trait Conversions {
     sharedCollectionSubscribed = Option(collection.sharedCollectionSubscribed),
     cards = collection.cards map toServicesCard)
 
-  def toNewPositionCollection(collection: Collection, newPosition: Int) =  Collection(
-    id = collection.id,
-    position = newPosition,
-    name = collection.name,
-    collectionType = collection.collectionType,
-    icon = collection.icon,
-    themedColorIndex = collection.themedColorIndex,
-    appsCategory = collection.appsCategory,
-    constrains = collection.constrains,
-    originalSharedCollectionId = collection.originalSharedCollectionId,
-    sharedCollectionId = collection.sharedCollectionId,
-    sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-    cards = collection.cards)
-
   def toUpdatedCollection(collection: Collection, editCollectionRequest: EditCollectionRequest) =  Collection(
     id = collection.id,
     position = collection.position,

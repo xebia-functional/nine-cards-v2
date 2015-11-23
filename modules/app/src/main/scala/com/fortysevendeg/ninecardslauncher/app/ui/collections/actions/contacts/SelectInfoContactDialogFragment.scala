@@ -10,6 +10,7 @@ import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, TextView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.types.{SmsCardType, EmailCardType, PhoneCardType, CardType}
 import com.fortysevendeg.ninecardslauncher2.R
@@ -53,21 +54,24 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     }
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
-        val intent = cardType match {
-          case EmailCardType => emailToNineCardIntent(data)
-          case SmsCardType => smsToNineCardIntent(data)
-          case PhoneCardType => phoneToNineCardIntent(data)
+        val maybeIntent: Option[NineCardIntent] = cardType match {
+          case EmailCardType => Some(emailToNineCardIntent(data))
+          case SmsCardType => Some(smsToNineCardIntent(data))
+          case PhoneCardType => Some(phoneToNineCardIntent(data))
+          case _ => None
         }
-        val card = AddCardRequest(
-          term = contact.name,
-          packageName = None,
-          cardType = cardType,
-          intent = intent,
-          imagePath = contact.photoUri
-        )
-        val responseIntent = new Intent
-        responseIntent.putExtra(ContactsFragment.addCardRequest, card)
-        getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+        maybeIntent foreach { intent =>
+          val card = AddCardRequest(
+            term = contact.name,
+            packageName = None,
+            cardType = cardType,
+            intent = intent,
+            imagePath = contact.photoUri
+          )
+          val responseIntent = new Intent
+          responseIntent.putExtra(ContactsFragment.addCardRequest, card)
+          getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+        }
         dismiss()
       }
     })
