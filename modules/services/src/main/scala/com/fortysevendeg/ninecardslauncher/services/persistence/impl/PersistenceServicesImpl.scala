@@ -12,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.{repository => repo}
-import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
 import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
@@ -21,6 +20,7 @@ class PersistenceServicesImpl(
   appRepository: AppRepository,
   cardRepository: CardRepository,
   collectionRepository: CollectionRepository,
+  dockAppRepository: DockAppRepository,
   geoInfoRepository: GeoInfoRepository,
   userRepository: UserRepository)
   extends PersistenceServices
@@ -219,6 +219,31 @@ class PersistenceServicesImpl(
         } getOrElse Result.errata[String, AndroidIdNotFoundException](AndroidIdNotFoundException(message = "Android Id not found"))
       }
     }
+
+  override def addDockApp(request: AddDockAppRequest) =
+    (for {
+      dockApp <- dockAppRepository.addDockApp(toRepositoryDockAppData(request))
+    } yield toDockApp(dockApp)).resolve[PersistenceServiceException]
+
+  override def deleteDockApp(request: DeleteDockAppRequest) =
+    (for {
+      deleted <- dockAppRepository.deleteDockApp(toRepositoryDockApp(request.dockApp))
+    } yield deleted).resolve[PersistenceServiceException]
+
+  override def fetchDockApps =
+    (for {
+      dockAppItems <- dockAppRepository.fetchDockApps
+    } yield dockAppItems map toDockApp).resolve[PersistenceServiceException]
+
+  override def findDockAppById(request: FindDockAppByIdRequest) =
+    (for {
+      maybeDockApp <- dockAppRepository.findDockAppById(request.id)
+    } yield maybeDockApp map toDockApp).resolve[PersistenceServiceException]
+
+  override def updateDockApp(request: UpdateDockAppRequest) =
+    (for {
+      updated <- dockAppRepository.updateDockApp(toRepositoryDockApp(request))
+    } yield updated).resolve[PersistenceServiceException]
 
   private[this] def addCards(cards: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException] = {
     val addedCards = cards map {

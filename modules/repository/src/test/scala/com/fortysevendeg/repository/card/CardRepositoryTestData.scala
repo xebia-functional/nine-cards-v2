@@ -27,9 +27,9 @@ trait CardRepositoryTestData {
   val testNotificationOption = Option(testNotification)
 
   val cardEntitySeq = createCardEntitySeq(5)
-  val cardEntity = cardEntitySeq.head
+  val cardEntity = cardEntitySeq(0)
   val cardSeq = createCardSeq(5)
-  val card = cardSeq.head
+  val card = cardSeq(0)
 
   def createCardEntitySeq(num: Int) = List.tabulate(num)(
     i => CardEntity(

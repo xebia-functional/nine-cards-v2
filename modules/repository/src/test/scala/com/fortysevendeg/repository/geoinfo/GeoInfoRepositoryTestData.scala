@@ -18,9 +18,9 @@ trait GeoInfoRepositoryTestData {
   val testSystem = Random.nextInt(10) < 5
 
   val geoInfoEntitySeq = createGeoInfoEntitySeq(5)
-  val geoInfoEntity = geoInfoEntitySeq.head
+  val geoInfoEntity = geoInfoEntitySeq(0)
   val geoInfoSeq = createGeoInfoSeq(5)
-  val geoInfo = geoInfoSeq.head
+  val geoInfo = geoInfoSeq(0)
 
   def createGeoInfoEntitySeq(num: Int) = List.tabulate(num)(
     i => GeoInfoEntity(

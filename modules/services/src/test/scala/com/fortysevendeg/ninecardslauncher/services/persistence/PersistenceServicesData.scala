@@ -2,12 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.repository.model._
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
-import com.fortysevendeg.ninecardslauncher.services.persistence.models._
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User}
 
 import scala.util.Random
 
@@ -72,6 +67,10 @@ trait PersistenceServicesData {
   val installationId: String = Random.nextString(5)
   val deviceToken: String = Random.nextString(5)
   val androidToken: String = Random.nextString(5)
+
+  val dockAppId: Int = Random.nextInt(10)
+  val nonExistentDockAppId: Int = Random.nextInt(10) + 100
+  val dockType: String = Random.nextString(5)
 
   def createSeqApp(
     num: Int = 5,
@@ -346,35 +345,77 @@ trait PersistenceServicesData {
       deviceToken = Option(deviceToken),
       androidToken = Option(androidToken))
 
+  def createSeqDockApp(
+    num: Int = 5,
+    id: Int = dockAppId,
+    name: String = name,
+    dockType: String = dockType,
+    intent: String = intent,
+    imagePath: String = imagePath,
+    position: Int = position): Seq[DockApp] = List.tabulate(num)(
+    item =>
+      DockApp(
+        id = id + item,
+        name =name,
+        dockType =dockType,
+        intent =intent,
+        imagePath =imagePath,
+        position =position))
+
+  def createSeqRepoDockApp(
+    num: Int = 5,
+    id: Int = dockAppId,
+    data: repositoryModel.DockAppData = createRepoDockAppData()): Seq[repositoryModel.DockApp] =
+    List.tabulate(num)(item => repositoryModel.DockApp(id = id + item, data = data))
+
+  def createRepoDockAppData(
+    name: String = name,
+    dockType: String = dockType,
+    intent: String = intent,
+    imagePath: String = imagePath,
+    position: Int = position): DockAppData =
+    repositoryModel.DockAppData(
+      name =name,
+      dockType =dockType,
+      intent =intent,
+      imagePath =imagePath,
+      position =position)
+
   val seqApp: Seq[App] = createSeqApp()
-  val app: App = seqApp.head
+  val app: App = seqApp(0)
   val repoAppData: AppData = createRepoAppData()
   val seqRepoApp: Seq[repositoryModel.App] = createSeqRepoApp(data = repoAppData)
-  val repoApp: repositoryModel.App = seqRepoApp.head
+  val repoApp: repositoryModel.App = seqRepoApp(0)
 
   val seqGeoInfo: Seq[GeoInfo] = createSeqGeoInfo()
-  val geoInfo: GeoInfo = seqGeoInfo.head
+  val geoInfo: GeoInfo = seqGeoInfo(0)
   val repoGeoInfoData: GeoInfoData = createRepoGeoInfoData()
   val seqRepoGeoInfo: Seq[repositoryModel.GeoInfo] = createSeqRepoGeoInfo(data = repoGeoInfoData)
-  val repoGeoInfo: repositoryModel.GeoInfo = seqRepoGeoInfo.head
+  val repoGeoInfo: repositoryModel.GeoInfo = seqRepoGeoInfo(0)
 
   val seqCard: Seq[Card] = createSeqCard()
-  val card: Card = seqCard.head
+  val card: Card = seqCard(0)
   val repoCardData: CardData = createRepoCardData()
   val seqRepoCard: Seq[repositoryModel.Card] = createSeqRepoCard(data = repoCardData)
-  val repoCard: repositoryModel.Card = seqRepoCard.head
+  val repoCard: repositoryModel.Card = seqRepoCard(0)
 
   val seqCollection: Seq[Collection] = createSeqCollection()
-  val collection: Collection = seqCollection.head
+  val collection: Collection = seqCollection(0)
   val repoCollectionData: CollectionData = createRepoCollectionData()
   val seqRepoCollection: Seq[repositoryModel.Collection] = createSeqRepoCollection(data = repoCollectionData)
-  val repoCollection: repositoryModel.Collection = seqRepoCollection.head
+  val repoCollection: repositoryModel.Collection = seqRepoCollection(0)
 
   val seqUser: Seq[User] = createSeqUser()
-  val user: User = seqUser.head
+  val user: User = seqUser(0)
   val repoUserData: UserData = createRepoUserData()
   val seqRepoUser: Seq[repositoryModel.User] = createSeqRepoUser(data = repoUserData)
-  val repoUser: repositoryModel.User = seqRepoUser.head
+  val repoUser: repositoryModel.User = seqRepoUser(0)
+
+  val seqDockApp: Seq[DockApp] = createSeqDockApp()
+  val dockApp: DockApp = seqDockApp(0)
+  val repoDockAppData: DockAppData = createRepoDockAppData()
+  val seqRepoDockApp: Seq[repositoryModel.DockApp] = createSeqRepoDockApp(data = repoDockAppData)
+  val repoDockApp: repositoryModel.DockApp = seqRepoDockApp(0)
 
   def createAddAppRequest(
     name: String = name,
@@ -622,4 +663,38 @@ trait PersistenceServicesData {
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
       androidToken = Option(androidToken))
+
+  def createAddDockAppRequest(
+    name: String = name,
+    dockType: String = dockType,
+    intent: String = intent,
+    imagePath: String = imagePath,
+    position: Int = position): AddDockAppRequest =
+    AddDockAppRequest(
+      name = name,
+      dockType = dockType,
+      intent = intent,
+      imagePath = imagePath,
+      position = position)
+
+  def createDeleteDockAppRequest(dockApp: DockApp): DeleteDockAppRequest =
+    DeleteDockAppRequest(dockApp = dockApp)
+
+  def createFindDockAppByIdRequest(id: Int): FindDockAppByIdRequest =
+    FindDockAppByIdRequest(id = id)
+
+  def createUpdateDockAppRequest(
+    id: Int = dockAppId,
+    name: String = name,
+    dockType: String = dockType,
+    intent: String = intent,
+    imagePath: String = imagePath,
+    position: Int = position): UpdateDockAppRequest =
+    UpdateDockAppRequest(
+      id = id,
+      name = name,
+      dockType = dockType,
+      intent = intent,
+      imagePath = imagePath,
+      position = position)
 }

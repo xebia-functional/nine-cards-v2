@@ -6,7 +6,6 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
-import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -29,6 +28,8 @@ trait PersistenceServicesSpecification
 
     val mockCollectionRepository = mock[CollectionRepository]
 
+    val mockDockAppRepository = mock[DockAppRepository]
+
     val mockGeoInfoRepository = mock[GeoInfoRepository]
 
     val mockUserRepository = mock[UserRepository]
@@ -37,6 +38,7 @@ trait PersistenceServicesSpecification
       appRepository = mockAppRepository,
       cardRepository = mockCardRepository,
       collectionRepository = mockCollectionRepository,
+      dockAppRepository = mockDockAppRepository,
       geoInfoRepository = mockGeoInfoRepository,
       userRepository = mockUserRepository)
   }
@@ -120,6 +122,18 @@ trait PersistenceServicesSpecification
     mockUserRepository.findUserById(nonExistentUserId) returns Service(Task(Result.answer(None)))
 
     mockUserRepository.updateUser(repoUser) returns Service(Task(Result.answer(1)))
+
+    mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.answer(repoDockApp)))
+
+    mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.answer(1)))
+
+    mockDockAppRepository.fetchDockApps returns Service(Task(Result.answer(seqRepoDockApp)))
+
+    mockDockAppRepository.findDockAppById(dockAppId) returns Service(Task(Result.answer(Option(repoDockApp))))
+
+    mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.answer(None)))
+
+    mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.answer(1)))
   }
 
   trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
@@ -189,6 +203,18 @@ trait PersistenceServicesSpecification
     mockUserRepository.findUserById(nonExistentUserId) returns Service(Task(Result.errata(exception)))
 
     mockUserRepository.updateUser(repoUser) returns Service(Task(Result.errata(exception)))
+
+    mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.errata(exception)))
+
+    mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
+
+    mockDockAppRepository.fetchDockApps returns Service(Task(Result.errata(exception)))
+
+    mockDockAppRepository.findDockAppById(dockAppId) returns Service(Task(Result.errata(exception)))
+
+    mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.errata(exception)))
+
+    mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
   }
 
 }
@@ -1012,6 +1038,138 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateUser(createUpdateUserRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "addDockApp" should {
+
+    "return a DockApp value for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addDockApp(createAddDockAppRequest()).run.run
+
+      result must beLike {
+        case Answer(dockApp) =>
+          dockApp.id shouldEqual dockAppId
+          dockApp.name shouldEqual name
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addDockApp(createAddDockAppRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteDockApp" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteDockApp(createDeleteDockAppRequest(dockApp = dockApp)).run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 1
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteDockApp(createDeleteDockAppRequest(dockApp = dockApp)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchDockApps" should {
+
+    "return a list of DockApp elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchDockApps.run.run
+
+      result must beLike {
+        case Answer(dockAppItems) =>
+          dockAppItems.size shouldEqual seqDockApp.size
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchDockApps.run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "findDockAppById" should {
+
+    "return a DockApp for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findDockAppById(createFindDockAppByIdRequest(id = dockAppId)).run.run
+
+      result must beLike {
+        case Answer(maybeDockApp) =>
+          maybeDockApp must beSome[DockApp].which { dockApp =>
+            dockApp.id shouldEqual dockAppId
+          }
+      }
+    }
+
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findDockAppById(createFindDockAppByIdRequest(id = nonExistentDockAppId)).run.run
+
+      result must beLike {
+        case Answer(maybeDockApp) =>
+          maybeDockApp must beNone
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findDockAppById(createFindDockAppByIdRequest(id = dockAppId)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "updateDockApp" should {
+
+    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.updateDockApp(createUpdateDockAppRequest()).run.run
+
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual 1
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateDockApp(createUpdateDockAppRequest()).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
