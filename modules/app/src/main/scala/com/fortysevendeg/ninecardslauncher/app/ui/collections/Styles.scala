@@ -23,9 +23,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, NineRecyclerView, SlidingTabLayout}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, CollectionRecyclerView, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.types._
 import CardType._
@@ -67,7 +67,7 @@ trait Styles {
 
 trait CollectionFragmentStyles {
 
-  def recyclerStyle(animateCards: Boolean)(implicit context: ContextWrapper): Tweak[NineRecyclerView] = {
+  def recyclerStyle(animateCards: Boolean)(implicit context: ContextWrapper): Tweak[CollectionRecyclerView] = {
     val paddingTop = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     vMatchParent +

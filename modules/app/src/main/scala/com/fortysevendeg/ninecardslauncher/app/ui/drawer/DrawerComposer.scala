@@ -24,17 +24,18 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid.{Tweak, ActivityContextWrapper, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SearchBoxesAnimatedViewTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerRecyclerViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait DrawerComposer
   extends DrawerStyles
-  with ContextSupportProvider
-  with HeaderGenerator
-  with SearchBoxAnimatedListener {
+    with ContextSupportProvider
+    with HeaderGenerator
+    with SearchBoxAnimatedListener {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
 
@@ -46,7 +47,7 @@ trait DrawerComposer
 
   lazy val scrollerLayout = findView(TR.launcher_drawer_scroller_layout)
 
-  lazy val recycler = Option(findView(TR.launcher_drawer_recycler))
+  var recycler: Option[DrawerRecyclerView] = None
 
   lazy val searchBoxContentPanel = Option(findView(TR.launcher_search_box_content_panel))
 
@@ -80,8 +81,9 @@ trait DrawerComposer
         revealInDrawer ~~ (searchPanel <~ vGone)
       }) ~
       (loadingDrawer <~ loadingDrawerStyle) ~
-      (recycler <~ recyclerStyle) ~
-      (scrollerLayout <~ drawerContentStyle) ~
+      (scrollerLayout <~ drawerContentStyle <~ vgAddViewByIndex(getUi(
+        w[DrawerRecyclerView] <~ recyclerStyle <~ wire(recycler) <~ (searchBoxView map drvAddController getOrElse Tweak.blank)
+      ), 0)) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical))
 
@@ -132,12 +134,11 @@ trait DrawerComposer
         rvScrollToTop) ~
       scrollerLayoutUi(fastScrollerVisible)
 
-  def scrollerLayoutUi(fastScrollerVisible: Boolean): Ui[_] =
-    if (fastScrollerVisible) {
-      scrollerLayout <~ fslVisible <~ fslLinkRecycler <~ fslReset
-    } else {
-      scrollerLayout <~ fslInvisible
-    }
+  def scrollerLayoutUi(fastScrollerVisible: Boolean): Ui[_] = if (fastScrollerVisible) {
+    scrollerLayout <~ fslVisible <~ fslLinkRecycler <~ fslReset
+  } else {
+    scrollerLayout <~ fslInvisible
+  }
 
 
 }

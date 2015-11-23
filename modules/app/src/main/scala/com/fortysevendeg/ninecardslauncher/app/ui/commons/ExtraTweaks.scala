@@ -13,7 +13,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar}
 import android.view.View.OnClickListener
 import android.view.inputmethod.InputMethodManager
-import android.view.{MenuItem, View, ViewOutlineProvider}
+import android.view.{ViewGroup, MenuItem, View, ViewOutlineProvider}
 import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -42,6 +42,8 @@ object ExtraTweaks {
   def vTag2[T](tag: T) = Tweak[View](_.setTag(tag)) // We should use this in Macroid-Extras instead of vTag
 
   def vTag2[T](id: Int, tag: T) = Tweak[View](_.setTag(id, tag))
+
+  def vgAddViewByIndex[V <: View](view: V, index: Int): Tweak[ViewGroup] = Tweak[ViewGroup](_.addView(view, index))
 
   def vBackgroundTint(color: Int) = Tweak[View] {
     case t: TintableBackgroundView => t.setSupportBackgroundTintList(ColorStateList.valueOf(color))

@@ -6,7 +6,7 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ViewHolderContactLayoutAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{HeaderedItemAdapter, ItemHeaderedViewHolder}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ScrollableManager, HeaderedItemAdapter, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.ContactHeadered
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -19,7 +19,7 @@ case class ContactsAdapter(
   longClickListener: Option[(Contact) => Unit])
   (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_])
   extends HeaderedItemAdapter[Contact]
-  with FastScrollerListener {
+    with FastScrollerListener {
 
   val heightItem = resGetDimensionPixelSize(R.dimen.height_contact_item)
 
@@ -41,7 +41,10 @@ case class ContactsAdapter(
     new ViewHolderContactLayoutAdapter(view)
   }
 
-  override def getLayoutManager: LinearLayoutManager = new LinearLayoutManager(activityContext.application)
+  override def getLayoutManager: LinearLayoutManager =
+    new LinearLayoutManager(activityContext.application) with ScrollableManager {
+      override def canScrollVertically: Boolean = if (blockScroll) false else super.canScrollVertically
+    }
 
   override def getHeight: Int = {
     val heightHeaders = (seq count (_.header.isDefined)) * heightHeader

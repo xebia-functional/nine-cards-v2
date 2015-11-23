@@ -26,7 +26,8 @@ import com.fortysevendeg.ninecardslauncher2.TypedResource._
 
 class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: Int)
   (implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme)
-  extends FrameLayout(context, attrs, defStyle) { self =>
+  extends FrameLayout(context, attrs, defStyle)
+  with SearchBoxAnimatedController { self =>
 
   def this(context: Context)(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme) =
     this(context, null, 0)
@@ -52,7 +53,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   mainAnimator.setPropertyName("translationX")
   mainAnimator.addListener(resetAfterAnimationListener)
   mainAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-    override def onAnimationUpdate(value: ValueAnimator) {
+    override def onAnimationUpdate(value: ValueAnimator) = {
       indicator.displacement = value.getAnimatedValue.asInstanceOf[Float]
       runUi(transformPanelCanvas())
     }
@@ -86,7 +87,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
       requestDisallowInterceptTouchEvent(true)
       return true
     }
-    indicator.initVelocityTracker(event)
+    initVelocityTracker(event)
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
     action match {
@@ -96,7 +97,6 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
         indicator.lastMotionY = y
       case ACTION_CANCEL | ACTION_UP =>
         computeFling()
-        indicator.touchState = Stopped
       case _ =>
     }
     indicator.touchState != Stopped
@@ -105,7 +105,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   override def onTouchEvent(event: MotionEvent): Boolean = {
     super.onTouchEvent(event)
     val action = MotionEventCompat.getActionMasked(event)
-    indicator.initVelocityTracker(event)
+    initVelocityTracker(event)
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
     action match {
@@ -115,11 +115,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
           val delta = indicator.deltaX(x)
           indicator.lastMotionX = x
           indicator.lastMotionY = y
-          if (overScroll(delta)) {
-            runUi(applyTranslation(getActiveView, 0))
-          } else {
-            runUi(performScroll(delta))
-          }
+          runUi(movementByOverScroll(delta))
         case Stopped => setStateIfNeeded(x, y)
       }
       case ACTION_DOWN =>
@@ -127,10 +123,15 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
         indicator.lastMotionY = y
       case ACTION_CANCEL | ACTION_UP =>
         computeFling()
-        indicator.touchState = Stopped
       case _ =>
     }
     true
+  }
+
+  def movementByOverScroll(delta: Float): Ui[_] = if (overScroll(delta)) {
+    applyTranslation(getActiveView, 0)
+  } else {
+    performScroll(delta)
   }
 
   private[this] def performScroll(delta: Float): Ui[_] = {
@@ -154,7 +155,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   private[this] def applyTranslation(view: View, translate: Float): Ui[_] =
     view <~ vTranslationX(translate)
 
-  private[this] def setStateIfNeeded(x: Float, y: Float) = {
+  def setStateIfNeeded(x: Float, y: Float) = {
     val xDiff = math.abs(x - indicator.lastMotionX)
     val yDiff = math.abs(y - indicator.lastMotionY)
 
@@ -163,16 +164,19 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
 
     if (xMoved || yMoved) {
       val isScrolling = xDiff > yDiff
-      if (isScrolling) {
-        indicator.touchState = Scrolling
-        runUi(startMovement)
-      }
+      if (isScrolling) runUi(startMovement)
       indicator.lastMotionX = x
       indicator.lastMotionY = y
     }
   }
 
-  private[this] def startMovement =
+  def initVelocityTracker(event: MotionEvent): Unit = {
+    if (indicator.velocityTracker.isEmpty) indicator.velocityTracker = Some(VelocityTracker.obtain())
+    indicator.velocityTracker foreach (_.addMovement(event))
+  }
+
+  def startMovement: Ui[_] =
+    Ui(indicator.touchState = Scrolling) ~
     (self <~ vLayerHardware(activate = true)) ~
       (getInactiveView <~ vVisible) ~
       applyTranslation(getInactiveView, initialPositionInactiveView)
@@ -181,17 +185,20 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     (self <~ vLayerHardware(activate = false)) ~
       (getInactiveView <~ vGone)
 
-  private[this] def computeFling() = indicator.velocityTracker foreach { tracker =>
-    tracker.computeCurrentVelocity(1000, maximumVelocity)
-    if (indicator.touchState == Scrolling && !overScroll(-tracker.getXVelocity)) {
-      val velocity = tracker.getXVelocity
-      if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()
+  def computeFling() = {
+    indicator.velocityTracker foreach { tracker =>
+      tracker.computeCurrentVelocity(1000, maximumVelocity)
+      if (indicator.touchState == Scrolling && !overScroll(-tracker.getXVelocity)) {
+        val velocity = tracker.getXVelocity
+        if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()
+      }
+      tracker.recycle()
+      indicator.velocityTracker = None
     }
-    tracker.recycle()
-    indicator.velocityTracker = None
+    indicator.touchState = Stopped
   }
 
-  def overScroll(deltaX: Float): Boolean = (indicator.currentItem, getActiveView.getTranslationX, deltaX) match {
+  private[this] def overScroll(deltaX: Float): Boolean = (indicator.currentItem, getActiveView.getTranslationX, deltaX) match {
     case (AppsView, x, d) if x < 0 || (x == 0 && d > 0) => false
     case (ContactView, x, d) if x > 0 || (x == 0 && d < 0) => false
     case _ => true
@@ -242,6 +249,13 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
 
 }
 
+trait SearchBoxAnimatedController {
+  def initVelocityTracker(event: MotionEvent): Unit
+  def computeFling(): Unit
+  def startMovement: Ui[_]
+  def movementByOverScroll(delta: Float): Ui[_]
+}
+
 trait SearchBoxAnimatedListener {
   def onChangeBoxView(state: BoxView): Unit
 }
@@ -274,11 +288,6 @@ case class SearchBoxesIndicator(
   def deltaX(x: Float): Float = lastMotionX - x
 
   def deltaY(y: Float): Float = lastMotionY - y
-
-  def initVelocityTracker(event: MotionEvent) = {
-    if (velocityTracker.isEmpty) velocityTracker = Some(VelocityTracker.obtain())
-    velocityTracker foreach (_.addMovement(event))
-  }
 
   def calculateDisplacement(width: Int, delta: Float) = displacement = math.max(-width, Math.min(width, displacement - delta))
 

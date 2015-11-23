@@ -11,9 +11,9 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{NineRecyclerView, PullToCloseListener, PullToCloseView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.{CollectionRecyclerView, PullToCloseListener, PullToCloseView}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, _}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.process.types.{EmailCardType, SmsCardType, PhoneCardType, CardType}
@@ -32,13 +32,13 @@ trait CollectionFragmentComposer
 
   var scrolledListener: Option[ScrolledListener] = None
 
-  var recyclerView = slot[NineRecyclerView]
+  var recyclerView = slot[CollectionRecyclerView]
 
   var pullToCloseView = slot[PullToCloseView]
 
   def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = getUi(
     l[PullToCloseView](
-      w[NineRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards)
+      w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards)
     ) <~ wire(pullToCloseView) <~ pcvListener(PullToCloseListener(
       startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
       endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),

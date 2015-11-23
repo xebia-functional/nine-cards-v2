@@ -30,9 +30,6 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   lazy val fastScroller = Option(new FastScrollerView(context))
 
   override def onFinishInflate(): Unit = {
-    if (!getChildAt(0).isInstanceOf[RecyclerView]) {
-      throw new IllegalStateException("FastScrollerLayout must contain a RecyclerView")
-    }
     fastScroller map { fs =>
       val ll = new LayoutParams(WRAP_CONTENT, MATCH_PARENT)
       ll.gravity = Gravity.RIGHT

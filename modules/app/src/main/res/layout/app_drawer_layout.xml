@@ -13,10 +13,6 @@
         android:id="@+id/launcher_drawer_scroller_layout"
         style="@style/LauncherDrawerInnerContent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/launcher_drawer_recycler"
-            style="@style/LauncherDrawerRecycler"/>
-
         <ProgressBar
             android:id="@+id/launcher_drawer_loading"
             style="@style/LauncherDrawerLoading"/>

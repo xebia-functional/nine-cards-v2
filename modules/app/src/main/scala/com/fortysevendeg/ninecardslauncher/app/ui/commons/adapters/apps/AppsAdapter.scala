@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.ViewHolderAppLayoutAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{HeaderedItemAdapter, ItemHeaderedViewHolder}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ScrollableManager, HeaderedItemAdapter, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.models.AppHeadered
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
@@ -44,7 +44,9 @@ case class AppsAdapter(
   }
 
   override def getLayoutManager: GridLayoutManager = {
-    val manager = new GridLayoutManager(activityContext.application, columnsLists)
+    val manager = new GridLayoutManager(activityContext.application, columnsLists) with ScrollableManager {
+      override def canScrollVertically: Boolean = if (blockScroll) false else super.canScrollVertically
+    }
     manager.setSpanSizeLookup(new SpanSizeLookup {
       override def getSpanSize(position: Int): Int = if (seq(position).header.isDefined) manager.getSpanCount else 1
     })

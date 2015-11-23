@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import macroid.FullDsl._
 import macroid.{Tweak, ContextWrapper}
 
-class NineRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
+class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends RecyclerView(context, attr, defStyleAttr) {
 
   def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0)
@@ -78,8 +78,8 @@ class NineRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(
 
 }
 
-object NineRecyclerViewTweaks {
-  type W = NineRecyclerView
+object CollectionRecyclerViewTweaks {
+  type W = CollectionRecyclerView
 
   def nrvDisableScroll(disable: Boolean) = Tweak[W](_.disableScroll = disable)
 
