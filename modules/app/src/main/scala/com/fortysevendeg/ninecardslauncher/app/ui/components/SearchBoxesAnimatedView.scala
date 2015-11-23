@@ -143,6 +143,8 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     applyTranslation(getActiveView, indicator.displacement) ~
       applyTranslation(getInactiveView, initialPositionInactiveView + indicator.displacement)
 
+  def forceAppsView = Ui (indicator.currentItem = AppsView) ~ (getActiveView <~ vVisible)
+
   def reset: Ui[_] =
     Ui(indicator.displacement = 0) ~
       applyTranslation(getActiveView, 0) ~
@@ -247,7 +249,7 @@ trait SearchBoxAnimatedListener {
 object SearchBoxesAnimatedViewTweak {
 
   def sbavReset(implicit contextWrapper: ContextWrapper) = Tweak[SearchBoxesAnimatedView] { view =>
-    runUi(view.reset)
+    runUi(view.forceAppsView ~ view.reset)
   }
 
   def sbavChangeListener(listener: SearchBoxAnimatedListener)= Tweak[SearchBoxesAnimatedView] { view =>

@@ -7,6 +7,7 @@
         <item name="android:clickable">true</item>
         <item name="android:clipToPadding">false</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/background_dialog</item>
     </style>
 
     <style name="LauncherDrawerToolbarParent">

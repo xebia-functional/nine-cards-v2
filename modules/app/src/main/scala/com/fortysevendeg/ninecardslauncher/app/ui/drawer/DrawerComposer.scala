@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiCon
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.process.device.{GetByInstallDate, GetAppOrder}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -27,6 +28,7 @@ import macroid.{ActivityContextWrapper, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.SearchBoxesAnimatedViewTweak._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait DrawerComposer
   extends DrawerStyles
@@ -34,16 +36,7 @@ trait DrawerComposer
   with HeaderGenerator
   with SearchBoxAnimatedListener {
 
-  self: AppCompatActivity with TypedFindView with SystemBarsTint with DrawerListeners =>
-
-  lazy val emptyAdapter = new RecyclerView.Adapter[RecyclerView.ViewHolder]() {
-
-    override def getItemCount: Int = 0
-
-    override def onBindViewHolder(vh: ViewHolder, i: Int): Unit = {}
-
-    override def onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder = new RecyclerView.ViewHolder(viewGroup) {}
-  }
+  self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
 
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
@@ -59,9 +52,15 @@ trait DrawerComposer
 
   var searchBoxView: Option[SearchBoxesAnimatedView] = None
 
+  var isShowingAppsAlphabetical = true
+
   override def onChangeBoxView(boxView: BoxView): Unit = boxView match {
-    case AppsView => runUi(Ui(loadApps(AppsAlphabetical)))
-    case ContactView => runUi(Ui(loadContacts(ContactsAlphabetical)))
+    case AppsView =>
+      isShowingAppsAlphabetical = true
+      runUi(Ui(loadApps(AppsAlphabetical)))
+    case ContactView =>
+      isShowingAppsAlphabetical = false
+      runUi(Ui(loadContacts(ContactsAlphabetical)))
   }
 
   def showDrawerLoading: Ui[_] = (loadingDrawer <~ vVisible) ~
@@ -78,25 +77,23 @@ trait DrawerComposer
     (searchBoxContentPanel <~
       vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView) <~ sbavChangeListener(self)))) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
-        revealInDrawer ~ Ui(loadApps(AppsAlphabetical))
+        revealInDrawer ~~ (searchPanel <~ vGone)
       }) ~
       (loadingDrawer <~ loadingDrawerStyle) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ drawerContentStyle) ~
-      (drawerContent <~ vGone)
+      (drawerContent <~ vGone) ~
+      Ui(loadApps(AppsAlphabetical))
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
-  def revealInDrawer(implicit context: ActivityContextWrapper): Ui[_] =
+  def revealInDrawer(implicit context: ActivityContextWrapper): Ui[Future[_]] =
     (searchBoxView <~ sbavReset) ~
-    (drawerContent <~ colorContentDialog(paint = true)) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
 
   def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
-    (drawerContent <~ colorContentDialog(paint = true)) ~
-      (recycler <~
-        rvAdapter(emptyAdapter)) ~
-      (appDrawerMain mapUiF (source => drawerContent <~~ revealOutAppDrawer(source)))
+    (searchPanel <~ vVisible) ~
+      (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ showAppsIfNecessary))
 
   def addApps(apps: Seq[App], getAppOrder: GetAppOrder, clickListener: (App) => Unit, longClickListener: (App) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
@@ -106,8 +103,12 @@ trait DrawerComposer
       longClickListener = Option(longClickListener)),
       fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
 
-  private[this] def colorContentDialog(paint: Boolean)(implicit context: ActivityContextWrapper) =
-    vBackgroundColorResource(if (paint) R.color.background_dialog else android.R.color.transparent)
+  private[this] def showAppsIfNecessary() = if (isShowingAppsAlphabetical) {
+    Ui.nop
+  } else {
+    isShowingAppsAlphabetical = true
+    Ui(loadApps(AppsAlphabetical))
+  }
 
   private[this] def isScrollerLayoutVisible(getAppOrder: GetAppOrder) = getAppOrder match {
     case v: GetByInstallDate => false

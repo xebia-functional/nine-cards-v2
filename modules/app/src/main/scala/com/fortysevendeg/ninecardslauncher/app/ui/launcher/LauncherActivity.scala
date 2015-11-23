@@ -49,10 +49,6 @@ class LauncherActivity
 
   var hasFocus = false
 
-//  override val onAppMenuClickListener: (AppsMenuOption) => Unit = loadApps
-//
-//  override val onContactMenuClickListener: (ContactsMenuOption) => Unit = loadContacts
-
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
@@ -154,7 +150,7 @@ class LauncherActivity
     )
   }
 
-  override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit =
+  override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
     // TODO - Take into account the `contactsMenuOption` param
     Task.fork(di.deviceProcess.getContacts(filter = AllContacts).run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
@@ -162,5 +158,6 @@ class LauncherActivity
         execute(contact)
       })
     )
+  }
 
 }
