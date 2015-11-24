@@ -2,18 +2,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components
 
 import android.content.Context
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
-import android.support.v7.widget.RecyclerView.OnScrollListener
-import android.support.v7.widget.{LinearLayoutManager, GridLayoutManager, RecyclerView}
+import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.MotionEvent._
-import android.view.ViewGroup.{OnHierarchyChangeListener, LayoutParams}
-import android.view.animation.AnimationUtils
-import android.view.animation.GridLayoutAnimationController.AnimationParameters
-import android.view.{VelocityTracker, ViewConfiguration, View, MotionEvent}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import android.view.{MotionEvent, ViewConfiguration}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.ScrollableManager
 import macroid.FullDsl._
-import macroid.{Tweak, ContextWrapper}
+import macroid.{ContextWrapper, Tweak}
 
 class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends RecyclerView(context, attr, defStyleAttr) {
@@ -35,6 +30,30 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     true
   } else {
     super.dispatchTouchEvent(ev)
+  }
+
+  override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
+    super.onInterceptTouchEvent(event)
+    val action = MotionEventCompat.getActionMasked(event)
+    if (action == ACTION_MOVE && indicator.touchState != Stopped) {
+      requestDisallowInterceptTouchEvent(true)
+      return true
+    }
+    animatedController foreach (_.initVelocityTracker(event))
+    val x = MotionEventCompat.getX(event, 0)
+    val y = MotionEventCompat.getY(event, 0)
+    action match {
+      case ACTION_MOVE => setStateIfNeeded(x, y)
+      case ACTION_DOWN =>
+        indicator.lastMotionX = x
+        indicator.lastMotionY = y
+      case ACTION_CANCEL | ACTION_UP =>
+        animatedController foreach (_.computeFling())
+        indicator.touchState = Stopped
+        blockScroll(false)
+      case _ =>
+    }
+    true
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {

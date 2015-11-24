@@ -1,9 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.drawer
 
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.ViewHolder
-import android.view.{View, ViewGroup}
+import android.view.View
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -15,18 +13,18 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdap
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.SearchBoxesAnimatedViewTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
-import com.fortysevendeg.ninecardslauncher.process.device.{GetByInstallDate, GetAppOrder}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
+import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByInstallDate}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{Tweak, ActivityContextWrapper, Ui}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.SearchBoxesAnimatedViewTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerRecyclerViewTweaks._
+import macroid.{ActivityContextWrapper, Tweak, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
