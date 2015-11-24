@@ -11,12 +11,10 @@
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
         android:id="@+id/launcher_drawer_scroller_layout"
-        style="@style/LauncherDrawerInnerContent">
+        style="@style/LauncherDrawerInnerContent" />
 
-        <ProgressBar
-            android:id="@+id/launcher_drawer_loading"
-            style="@style/LauncherDrawerLoading"/>
-
-    </com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout>
+    <LinearLayout
+        style="@style/LauncherPaginationPanel"
+        android:id="@+id/launcher_drawer_pagination_panel"/>
 
 </LinearLayout>

@@ -22,10 +22,10 @@
 
     <style name="LauncherDrawerInnerContent">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">0px</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
         <item name="android:layout_marginRight">@dimen/padding_default</item>
-        <item name="android:layout_marginBottom">@dimen/padding_default</item>
         <item name="android:clipToPadding">false</item>
     </style>
 

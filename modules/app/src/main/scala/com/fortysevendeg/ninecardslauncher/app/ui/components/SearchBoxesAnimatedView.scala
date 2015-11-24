@@ -257,7 +257,7 @@ trait SearchBoxAnimatedController {
 }
 
 trait SearchBoxAnimatedListener {
-  def onChangeBoxView(state: BoxView): Unit
+  def onChangeBoxView(state: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit
 }
 
 object SearchBoxesAnimatedViewTweak {

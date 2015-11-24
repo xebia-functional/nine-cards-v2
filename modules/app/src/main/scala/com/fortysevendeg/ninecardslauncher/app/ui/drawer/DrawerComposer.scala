@@ -41,9 +41,9 @@ trait DrawerComposer
 
   lazy val drawerContent = Option(findView(TR.launcher_drawer_content))
 
-  lazy val loadingDrawer = Option(findView(TR.launcher_drawer_loading))
-
   lazy val scrollerLayout = findView(TR.launcher_drawer_scroller_layout)
+
+  lazy val paginationDrawerPanel = Option(findView(TR.launcher_drawer_pagination_panel))
 
   var recycler: Option[DrawerRecyclerView] = None
 
@@ -53,22 +53,23 @@ trait DrawerComposer
 
   var isShowingAppsAlphabetical = true
 
-  override def onChangeBoxView(boxView: BoxView): Unit = boxView match {
-    case AppsView =>
-      isShowingAppsAlphabetical = true
-      runUi(Ui(loadApps(AppsAlphabetical)))
-    case ContactView =>
-      isShowingAppsAlphabetical = false
-      runUi(Ui(loadContacts(ContactsAlphabetical)))
-  }
+  override def onChangeBoxView(boxView: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit =
+    boxView match {
+      case AppsView =>
+        isShowingAppsAlphabetical = true
+        runUi(Ui(loadApps(AppsAlphabetical)) ~ (paginationDrawerPanel <~ reloadPager(0)))
+      case ContactView =>
+        isShowingAppsAlphabetical = false
+        runUi(Ui(loadContacts(ContactsAlphabetical)) ~ (paginationDrawerPanel <~ reloadPager(1)))
+    }
 
-  def showDrawerLoading: Ui[_] = (loadingDrawer <~ vVisible) ~
+  def showDrawerLoading: Ui[_] =
     (recycler <~ vGone) ~
-    (scrollerLayout <~ fslInvisible)
+      (scrollerLayout <~ fslInvisible)
 
-  def showDrawerData: Ui[_] = (loadingDrawer <~ vGone) ~
+  def showDrawerData: Ui[_] =
     (recycler <~ vVisible) ~
-    (scrollerLayout <~ fslVisible)
+      (scrollerLayout <~ fslVisible)
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
@@ -78,17 +79,18 @@ trait DrawerComposer
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         revealInDrawer ~~ (searchPanel <~ vGone)
       }) ~
-      (loadingDrawer <~ loadingDrawerStyle) ~
       (scrollerLayout <~ drawerContentStyle <~ vgAddViewByIndex(getUi(
         w[DrawerRecyclerView] <~ recyclerStyle <~ wire(recycler) <~ (searchBoxView map drvAddController getOrElse Tweak.blank)
       ), 0)) ~
       (drawerContent <~ vGone) ~
-      Ui(loadApps(AppsAlphabetical))
+      Ui(loadApps(AppsAlphabetical)) ~
+      createDrawerPagers
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
-  def revealInDrawer(implicit context: ActivityContextWrapper): Ui[Future[_]] =
+  def revealInDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Future[_]] =
     (searchBoxView <~ sbavReset) ~
+      (paginationDrawerPanel <~ reloadPager(0)) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
 
   def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
@@ -102,6 +104,11 @@ trait DrawerComposer
       clickListener = clickListener,
       longClickListener = Option(longClickListener)),
       fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
+
+  private[this] def createDrawerPagers(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = {
+    val pagerViews = 0 until 2 map pagination
+    paginationDrawerPanel <~ vgAddViews(pagerViews)
+  }
 
   private[this] def showAppsIfNecessary() = if (isShowingAppsAlphabetical) {
     Ui.nop
