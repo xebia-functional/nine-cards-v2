@@ -192,7 +192,7 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ValidGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.deleteGeoInfos().run.run
+          val result = geoInfoRepository.deleteGeoInfoItems().run.run
 
           result must beLike {
             case Answer(deleted) =>
@@ -204,7 +204,7 @@ class GeoInfoRepositorySpec
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
-          val result = geoInfoRepository.deleteGeoInfos().run.run
+          val result = geoInfoRepository.deleteGeoInfoItems().run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

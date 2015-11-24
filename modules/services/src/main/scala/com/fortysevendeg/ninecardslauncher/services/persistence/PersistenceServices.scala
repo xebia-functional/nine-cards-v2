@@ -187,7 +187,7 @@ trait PersistenceServices {
     * @return an Int if the geoInfo items has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the geoInfo items
     */
-  def deleteGeoInfoItems(request: DeleteGeoInfosRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteGeoInfoItems(request: DeleteGeoInfoItemsRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
     * Deletes a geoInfo item from the repository by the geoInfo item

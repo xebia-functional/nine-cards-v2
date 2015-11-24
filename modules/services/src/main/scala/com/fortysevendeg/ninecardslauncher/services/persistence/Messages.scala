@@ -128,7 +128,7 @@ case class AddGeoInfoRequest(
   longitude: Double,
   system: Boolean)
 
-case class DeleteGeoInfosRequest(where: String)
+case class DeleteGeoInfoItemsRequest(where: String)
 
 case class DeleteGeoInfoRequest(geoInfo: GeoInfo)
 

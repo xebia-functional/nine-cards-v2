@@ -42,7 +42,7 @@ class GeoInfoRepository(
       }
     }
 
-  def deleteGeoInfos(where: String = ""): ServiceDef2[Int, RepositoryException] =
+  def deleteGeoInfoItems(where: String = ""): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
