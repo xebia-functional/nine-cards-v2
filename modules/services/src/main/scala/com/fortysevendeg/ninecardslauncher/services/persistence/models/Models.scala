@@ -57,3 +57,11 @@ case class User(
   installationId: Option[String],
   deviceToken: Option[String],
   androidToken: Option[String])
+
+case class DockApp(
+  id: Int,
+  name: String,
+  dockType: String,
+  intent: String,
+  imagePath: String,
+  position: Int)

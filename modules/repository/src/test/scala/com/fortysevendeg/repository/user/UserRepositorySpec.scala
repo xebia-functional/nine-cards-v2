@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.User
 import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
-import com.fortysevendeg.nineuserslauncher.repository.repositories.UserRepository
+import com.fortysevendeg.ninecardslauncher.repository.repositories.UserRepository
 import com.fortysevendeg.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
@@ -108,7 +108,7 @@ trait EmptyUserMockCursor
     (email, 2, Seq.empty, StringDataType),
     (sessionToken, 3, Seq.empty, StringDataType),
     (installationId, 4, Seq.empty, StringDataType),
-    (deviceToken, 5, Seq.empty, IntDataType),
+    (deviceToken, 5, Seq.empty, StringDataType),
     (androidToken, 6, Seq.empty, StringDataType))
 
   prepareCursor[User](0, cursorData)

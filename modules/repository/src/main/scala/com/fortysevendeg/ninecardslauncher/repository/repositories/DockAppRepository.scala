@@ -5,90 +5,88 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.repository.Conversions.toUser
-import com.fortysevendeg.ninecardslauncher.repository.model.{User, UserData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
+import com.fortysevendeg.ninecardslauncher.repository.Conversions.toDockApp
+import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp, DockAppData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
+import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scalaz.concurrent.Task
 
-class UserRepository(
+class DockAppRepository(
   contentResolverWrapper: ContentResolverWrapper,
   uriCreator: UriCreator)
   extends ImplicitsRepositoryExceptions {
 
-  val userUri = uriCreator.parse(userUriString)
+  val dockAppUri = uriCreator.parse(dockAppUriString)
 
-  def addUser(data: UserData): ServiceDef2[User, RepositoryException] =
+  def addDockApp(data: DockAppData): ServiceDef2[DockApp, RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
           val values = Map[String, Any](
-            userId -> (data.userId orNull),
-            email -> (data.email orNull),
-            sessionToken -> (data.sessionToken orNull),
-            installationId -> (data.installationId orNull),
-            deviceToken -> (data.deviceToken orNull),
-            androidToken -> (data.androidToken orNull))
+            name -> data.name,
+            dockType -> data.dockType,
+            intent -> data.intent,
+            imagePath -> data.imagePath,
+            position -> data.position)
 
           val id = contentResolverWrapper.insert(
-            uri = userUri,
+            uri = dockAppUri,
             values = values)
 
-          User(id = id, data = data)
+          DockApp(id = id, data = data)
         }
       }
     }
 
-  def deleteUser(user: User): ServiceDef2[Int, RepositoryException] =
+  def deleteDockApp(dockApp: DockApp): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
-            uri = userUri,
-            id = user.id)
+            uri = dockAppUri,
+            id = dockApp.id)
         }
       }
     }
 
-  def findUserById(id: Int): ServiceDef2[Option[User], RepositoryException] =
+  def findDockAppById(id: Int): ServiceDef2[Option[DockApp], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.findById(
-            uri = userUri,
+            uri = dockAppUri,
             id = id,
-            projection = allFields)(getEntityFromCursor(userEntityFromCursor)) map toUser
+            projection = allFields)(getEntityFromCursor(dockAppEntityFromCursor)) map toDockApp
         }
       }
     }
 
-  def fetchUsers: ServiceDef2[Seq[User], RepositoryException] =
+  def fetchDockApps: ServiceDef2[Seq[DockApp], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
-            uri = userUri,
-            projection = allFields)(getListFromCursor(userEntityFromCursor)) map toUser
+            uri = dockAppUri,
+            projection = allFields)(getListFromCursor(dockAppEntityFromCursor)) map toDockApp
         }
       }
     }
 
-  def updateUser(item: User): ServiceDef2[Int, RepositoryException] =
+  def updateDockApp(item: DockApp): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
           val values = Map[String, Any](
-            userId -> (item.data.userId orNull),
-            email -> (item.data.email orNull),
-            sessionToken -> (item.data.sessionToken orNull),
-            installationId -> (item.data.installationId orNull),
-            deviceToken -> (item.data.deviceToken orNull),
-            androidToken -> (item.data.androidToken orNull))
+            name -> item.data.name,
+            dockType -> item.data.dockType,
+            intent -> item.data.intent,
+            imagePath -> item.data.imagePath,
+            position -> item.data.position)
 
           contentResolverWrapper.updateById(
-            uri = userUri,
+            uri = dockAppUri,
             id = item.id,
             values = values)
         }
