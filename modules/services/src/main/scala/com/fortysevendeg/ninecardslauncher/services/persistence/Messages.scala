@@ -22,6 +22,8 @@ case class AddAppRequest(
   version: String,
   installedFromGooglePlay: Boolean)
 
+case class DeleteAppsRequest(where: String)
+
 case class UpdateAppRequest(
   id: Int,
   name: String,
@@ -49,6 +51,8 @@ case class AddCardRequest(
   notification: Option[String] = None)
 
 case class AddCardResponse(card: Card)
+
+case class DeleteCardsRequest(where: String)
 
 case class DeleteCardRequest(card: Card)
 
@@ -104,6 +108,8 @@ case class AddCollectionRequest(
 
 case class AddCollectionResponse(success: Boolean)
 
+case class DeleteCollectionsRequest(where: String)
+
 case class DeleteCollectionRequest(collection: Collection)
 
 case class DeleteCollectionResponse(deleted: Int)
@@ -148,6 +154,8 @@ case class AddGeoInfoRequest(
 
 case class AddGeoInfoResponse(geoInfo: GeoInfo)
 
+case class DeleteGeoInfosRequest(where: String)
+
 case class DeleteGeoInfoRequest(geoInfo: GeoInfo)
 
 case class DeleteGeoInfoResponse(deleted: Int)
@@ -181,6 +189,8 @@ case class AddUserRequest(
   deviceToken: Option[String],
   androidToken: Option[String])
 
+case class DeleteUsersRequest(where: String)
+
 case class DeleteUserRequest(user: User)
 
 case class DeleteUserResponse(deleted: Int)
@@ -204,6 +214,8 @@ case class AddDockAppRequest(
   intent: String,
   imagePath: String,
   position: Int)
+
+case class DeleteDockAppsRequest(where: String)
 
 case class DeleteDockAppRequest(dockApp: DockApp)
 

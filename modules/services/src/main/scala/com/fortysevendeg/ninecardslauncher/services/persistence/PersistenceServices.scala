@@ -31,6 +31,14 @@ trait PersistenceServices {
   def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]
 
   /**
+    * Deletes all apps from the repository by the where clause
+    * @param request includes the where clause of the apps to delete
+    * @return an Int if the apps has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the apps
+    */
+  def deleteApps(request: DeleteAppsRequest): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
    * Deletes an app from the repository by the package name
    * @param packageName the package name of the app to delete
    * @return an Int if the app has been deleted correctly
@@ -48,6 +56,14 @@ trait PersistenceServices {
 
   def addCard(request: AddCardRequest): ServiceDef2[Card, PersistenceServiceException]
 
+  /**
+    * Deletes all cards from the repository by the where clause
+    * @param request includes the where clause of the cards to delete
+    * @return an Int if the cards has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the cards
+    */
+  def deleteCards(request: DeleteCardsRequest): ServiceDef2[Int, PersistenceServiceException]
+
   def deleteCard(request: DeleteCardRequest): ServiceDef2[Int, PersistenceServiceException]
 
   def fetchCardsByCollection(request: FetchCardsByCollectionRequest): ServiceDef2[Seq[Card], PersistenceServiceException]
@@ -59,6 +75,14 @@ trait PersistenceServices {
   def updateCard(request: UpdateCardRequest): ServiceDef2[Int, PersistenceServiceException]
 
   def addCollection(request: AddCollectionRequest): ServiceDef2[Collection, PersistenceServiceException]
+
+  /**
+    * Deletes all collections from the repository by the where clause
+    * @param request includes the where clause of the collections to delete
+    * @return an Int if the collections has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the collections
+    */
+  def deleteCollections(request: DeleteCollectionsRequest): ServiceDef2[Int, PersistenceServiceException]
 
   def deleteCollection(request: DeleteCollectionRequest): ServiceDef2[Int, PersistenceServiceException]
 
@@ -73,6 +97,14 @@ trait PersistenceServices {
   def updateCollection(request: UpdateCollectionRequest): ServiceDef2[Int, PersistenceServiceException]
 
   def addGeoInfo(request: AddGeoInfoRequest): ServiceDef2[GeoInfo, PersistenceServiceException]
+
+  /**
+    * Deletes all geoinfos from the repository by the where clause
+    * @param request includes the where clause of the geoinfos to delete
+    * @return an Int if the geoinfos has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the geoinfos
+    */
+  def deleteGeoInfos(request: DeleteGeoInfosRequest): ServiceDef2[Int, PersistenceServiceException]
 
   def deleteGeoInfo(request: DeleteGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException]
 
@@ -93,6 +125,14 @@ trait PersistenceServices {
    * @throws PersistenceServiceException if exist some problem creating the user
    */
   def addUser(request: AddUserRequest): ServiceDef2[User, PersistenceServiceException]
+
+  /**
+    * Deletes all users from the repository by the where clause
+    * @param request includes the where clause of the users to delete
+    * @return an Int if the users has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the users
+    */
+  def deleteUsers(request: DeleteUsersRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
    * Deletes an user from the repository by the user
@@ -131,6 +171,14 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem creating the dock app
     */
   def addDockApp(request: AddDockAppRequest): ServiceDef2[DockApp, PersistenceServiceException]
+
+  /**
+    * Deletes all dock apps from the repository by the where clause
+    * @param request includes the where clause of the dock apps to delete
+    * @return an Int if the dock apps has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the dock apps
+    */
+  def deleteDockApps(request: DeleteDockAppsRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
     * Deletes an dock app from the repository by the dock app

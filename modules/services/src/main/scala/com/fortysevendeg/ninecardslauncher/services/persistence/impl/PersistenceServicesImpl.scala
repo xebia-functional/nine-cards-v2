@@ -65,6 +65,11 @@ class PersistenceServicesImpl(
       app <- appRepository.addApp(toRepositoryAppData(request))
     } yield toApp(app)).resolve[PersistenceServiceException]
 
+  override def deleteApps(request: DeleteAppsRequest) =
+    (for {
+      deleted <- appRepository.deleteApps(request.where)
+    } yield deleted).resolve[PersistenceServiceException]
+
   override def deleteAppByPackage(packageName: String) =
     (for {
       deleted <- appRepository.deleteAppByPackage(packageName)
@@ -84,6 +89,11 @@ class PersistenceServicesImpl(
       case None =>
         Service(Task(Result.errata(PersistenceServiceException("CollectionId can't be empty"))))
     }
+
+  override def deleteCards(request: DeleteCardsRequest) =
+    (for {
+      deleted <- cardRepository.deleteCards(request.where)
+    } yield deleted).resolve[PersistenceServiceException]
 
   override def deleteCard(request: DeleteCardRequest) =
     (for {
@@ -115,6 +125,11 @@ class PersistenceServicesImpl(
       collection <- collectionRepository.addCollection(toRepositoryCollectionData(request))
       addedCards <- addCards(request.cards map (_.copy(collectionId = Option(collection.id))))
     } yield toCollection(collection).copy(cards = addedCards)).resolve[PersistenceServiceException]
+
+  override def deleteCollections(request: DeleteCollectionsRequest) =
+    (for {
+      deleted <- collectionRepository.deleteCollections(request.where)
+    } yield deleted).resolve[PersistenceServiceException]
 
   override def deleteCollection(request: DeleteCollectionRequest) = {
     (for {
@@ -158,6 +173,11 @@ class PersistenceServicesImpl(
       geoInfo <- geoInfoRepository.addGeoInfo(toRepositoryGeoInfoData(request))
     } yield toGeoInfo(geoInfo)).resolve[PersistenceServiceException]
 
+  override def deleteGeoInfos(request: DeleteGeoInfosRequest) =
+    (for {
+      deleted <- geoInfoRepository.deleteGeoInfos(request.where)
+    } yield deleted).resolve[PersistenceServiceException]
+
   override def deleteGeoInfo(request: DeleteGeoInfoRequest) =
     (for {
       deleted <- geoInfoRepository.deleteGeoInfo(toRepositoryGeoInfo(request.geoInfo))
@@ -187,6 +207,11 @@ class PersistenceServicesImpl(
     (for {
       user <- userRepository.addUser(toRepositoryUserData(request))
     } yield toUser(user)).resolve[PersistenceServiceException]
+
+  override def deleteUsers(request: DeleteUsersRequest) =
+    (for {
+      deleted <- userRepository.deleteUsers(request.where)
+    } yield deleted).resolve[PersistenceServiceException]
 
   override def deleteUser(request: DeleteUserRequest) =
     (for {
@@ -224,6 +249,11 @@ class PersistenceServicesImpl(
     (for {
       dockApp <- dockAppRepository.addDockApp(toRepositoryDockAppData(request))
     } yield toDockApp(dockApp)).resolve[PersistenceServiceException]
+
+  override def deleteDockApps(request: DeleteDockAppsRequest) =
+    (for {
+      deleted <- dockAppRepository.deleteDockApps(request.where)
+    } yield deleted).resolve[PersistenceServiceException]
 
   override def deleteDockApp(request: DeleteDockAppRequest) =
     (for {
