@@ -45,6 +45,10 @@ trait AppRepositorySpecification
 
     contentResolverWrapper.delete(
       uri = mockUri,
+      where = "") returns 1
+
+    contentResolverWrapper.delete(
+      uri = mockUri,
       where = s"$packageName = ?",
       whereParams = Seq(testPackageName)) returns 1
 
@@ -95,6 +99,10 @@ trait AppRepositorySpecification
     contentResolverWrapper.insert(uri = mockUri, values = createAppValues) throws contentResolverException
 
     contentResolverWrapper.deleteById(uri = mockUri, id = testAppId) throws contentResolverException
+
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "") throws contentResolverException
 
     contentResolverWrapper.delete(
       uri = mockUri,
@@ -190,6 +198,36 @@ class AppRepositorySpec
           with ErrorAppRepositoryResponses {
 
           val result = appRepository.addApp(data = createAppData).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "deleteApps" should {
+
+      "return a successful response when all the apps are deleted" in
+        new AppRepositoryScope
+          with ValidAppRepositoryResponses {
+
+          val result = appRepository.deleteApps().run.run
+
+          result must beLike {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new AppRepositoryScope
+          with ErrorAppRepositoryResponses {
+
+          val result = appRepository.deleteApps().run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

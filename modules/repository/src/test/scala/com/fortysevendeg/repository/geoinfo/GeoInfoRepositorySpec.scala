@@ -41,6 +41,8 @@ trait GeoInfoRepositorySpecification
 
     contentResolverWrapper.insert(mockUri, createGeoInfoValues) returns testGeoInfoId
 
+    contentResolverWrapper.delete(mockUri, where = "") returns 1
+
     contentResolverWrapper.deleteById(mockUri, testGeoInfoId) returns 1
 
     contentResolverWrapper.findById(
@@ -87,6 +89,8 @@ trait GeoInfoRepositorySpecification
     uriCreator.parse(any) returns mockUri
 
     contentResolverWrapper.insert(mockUri, createGeoInfoValues) throws contentResolverException
+
+    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
 
     contentResolverWrapper.deleteById(mockUri, testGeoInfoId) throws contentResolverException
 
@@ -171,6 +175,36 @@ class GeoInfoRepositorySpec
           with ErrorGeoInfoRepositoryResponses {
 
           val result = geoInfoRepository.addGeoInfo(createGeoInfoData).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "deleteGeoInfos" should {
+
+      "return a successful result when all the geoInfos are deleted" in
+        new GeoInfoRepositoryScope
+          with ValidGeoInfoRepositoryResponses {
+
+          val result = geoInfoRepository.deleteGeoInfos().run.run
+
+          result must beLike {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
+        }
+
+      "return a NineCardsException when a exception is thrown" in
+        new GeoInfoRepositoryScope
+          with ErrorGeoInfoRepositoryResponses {
+
+          val result = geoInfoRepository.deleteGeoInfos().run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

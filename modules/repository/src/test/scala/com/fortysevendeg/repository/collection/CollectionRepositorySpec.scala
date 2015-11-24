@@ -41,6 +41,8 @@ trait CollectionRepositorySpecification
 
     contentResolverWrapper.insert(mockUri, createCollectionValues) returns testCollectionId
 
+    contentResolverWrapper.delete(mockUri, where = "") returns 1
+
     contentResolverWrapper.deleteById(mockUri, testCollectionId) returns 1
 
     contentResolverWrapper.findById(
@@ -108,6 +110,8 @@ trait CollectionRepositorySpecification
     uriCreator.parse(any) returns mockUri
 
     contentResolverWrapper.insert(mockUri, createCollectionValues) throws contentResolverException
+
+    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
 
     contentResolverWrapper.deleteById(mockUri, testCollectionId) throws contentResolverException
 
@@ -213,6 +217,36 @@ class CollectionRepositorySpec
           with ErrorCollectionRepositoryResponses {
 
           val result = collectionRepository.addCollection(data = createCollectionData).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "deleteCollections" should {
+
+      "return a successful result when all collections are deleted" in
+        new CollectionRepositoryScope
+          with ValidCollectionRepositoryResponses {
+
+          val result = collectionRepository.deleteCollections().run.run
+
+          result must beLike {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
+        }
+
+      "return a NineCardsException when a exception is thrown" in
+        new CollectionRepositoryScope
+          with ErrorCollectionRepositoryResponses {
+
+          val result = collectionRepository.deleteCollections().run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

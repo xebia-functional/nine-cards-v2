@@ -41,6 +41,8 @@ trait CardRepositorySpecification
 
     contentResolverWrapper.insert(mockUri, createInsertCardValues) returns testCardId
 
+    contentResolverWrapper.delete(mockUri, where = "") returns 1
+
     contentResolverWrapper.deleteById(mockUri, testCardId) returns 1
 
     contentResolverWrapper.findById(
@@ -93,6 +95,8 @@ trait CardRepositorySpecification
     uriCreator.parse(any) returns mockUri
 
     contentResolverWrapper.insert(mockUri, createInsertCardValues) throws contentResolverException
+
+    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
 
     contentResolverWrapper.deleteById(mockUri, testCardId) throws contentResolverException
 
@@ -194,6 +198,36 @@ class CardRepositorySpec
           with ErrorCardRepositoryResponses {
 
           val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "deleteCards" should {
+
+      "return a successful result when all the cards are deleted" in
+        new CardRepositoryScope
+          with ValidCardRepositoryResponses {
+
+          val result = cardRepository.deleteCards().run.run
+
+          result must beLike {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
+        }
+
+      "return a NineCardsException when a exception is thrown" in
+        new CardRepositoryScope
+          with ErrorCardRepositoryResponses {
+
+          val result = cardRepository.deleteCards().run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
