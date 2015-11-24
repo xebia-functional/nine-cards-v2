@@ -19,12 +19,17 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="FastScrollerBarContent">
+        <item name="android:layout_width">@dimen/fastscroller_bar_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/fastscroller_bar_background</item>
+        <item name="android:layout_marginLeft">@dimen/padding_large</item>
+    </style>
+
     <style name="FastScrollerBar">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:src">@drawable/fastscroller_bar_off</item>
-        <item name="android:layout_marginRight">@dimen/padding_small</item>
-        <item name="android:layout_marginLeft">@dimen/padding_small</item>
     </style>
 
 </resources>

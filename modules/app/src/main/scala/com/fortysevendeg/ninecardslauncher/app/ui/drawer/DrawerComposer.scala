@@ -95,7 +95,7 @@ trait DrawerComposer
 
   def revealOutDrawer(implicit context: ActivityContextWrapper): Ui[_] =
     (searchPanel <~ vVisible) ~
-      (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ showAppsIfNecessary))
+      (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData))
 
   def addApps(apps: Seq[App], getAppOrder: GetAppOrder, clickListener: (App) => Unit, longClickListener: (App) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
@@ -110,8 +110,8 @@ trait DrawerComposer
     paginationDrawerPanel <~ vgAddViews(pagerViews)
   }
 
-  private[this] def showAppsIfNecessary() = if (isShowingAppsAlphabetical) {
-    Ui.nop
+  private[this] def resetData() = if (isShowingAppsAlphabetical) {
+    (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
   } else {
     isShowingAppsAlphabetical = true
     Ui(loadApps(AppsAlphabetical))

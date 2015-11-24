@@ -92,7 +92,8 @@
 
     <!-- Fast Scroller -->
     <color name="fastscroller_text">#ffffff</color>
-    <color name="fastscroller_bar_off">#999999</color>
+    <color name="fastscroller_bar_background">#D8D8D8</color>
+    <color name="fastscroller_bar_off">#4b000000</color>
     <color name="fastscroller_bar_on">#3F51B5</color>
 
     <!-- Drawer -->
