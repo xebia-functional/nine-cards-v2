@@ -173,7 +173,7 @@ class PersistenceServicesImpl(
       geoInfo <- geoInfoRepository.addGeoInfo(toRepositoryGeoInfoData(request))
     } yield toGeoInfo(geoInfo)).resolve[PersistenceServiceException]
 
-  override def deleteGeoInfos(request: DeleteGeoInfosRequest) =
+  override def deleteGeoInfoItems(request: DeleteGeoInfosRequest) =
     (for {
       deleted <- geoInfoRepository.deleteGeoInfos(request.where)
     } yield deleted).resolve[PersistenceServiceException]
