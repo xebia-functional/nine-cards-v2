@@ -1,11 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters
 
+import android.content.Context
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
-import android.view.{LayoutInflater, ViewGroup}
+import android.view.View.{OnLongClickListener, OnClickListener}
+import android.view.{View, LayoutInflater, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ViewHolderCategoryLayoutAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.HeaderedItemAdapter._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
@@ -23,7 +26,8 @@ trait ItemHeaderedViewHolder[T] extends RecyclerView.ViewHolder {
 }
 
 trait HeaderedItemAdapter[T]
-  extends RecyclerView.Adapter[ItemHeaderedViewHolder[T]] {
+  extends RecyclerView.Adapter[ItemHeaderedViewHolder[T]]
+  with FastScrollerListener {
 
   implicit val activityContext: ActivityContextWrapper
 
@@ -39,7 +43,9 @@ trait HeaderedItemAdapter[T]
 
   var seq: Seq[ItemHeadered[T]] = initialSeq
 
-  def createViewHolder(parent: ViewGroup): ItemHeaderedViewHolder[T]
+  def inflateView(parent: ViewGroup): ViewGroup
+
+  def createViewHolder(view: ViewGroup): ItemHeaderedViewHolder[T]
 
   def getLayoutManager: LinearLayoutManager
 
@@ -48,7 +54,21 @@ trait HeaderedItemAdapter[T]
       val view = LayoutInflater.from(parent.getContext).inflate(R.layout.header_list_item, parent, false).asInstanceOf[ViewGroup]
       new ViewHolderCategoryLayoutAdapter(view)
     case `itemViewTypeContent` =>
-      createViewHolder(parent)
+      val view = inflateView(parent)
+      view.setOnClickListener(new OnClickListener {
+        override def onClick(v: View): Unit = {
+          Option(v.getTag) foreach (tag => seq(Int.unbox(tag)).item foreach clickListener)
+        }
+      })
+      longClickListener foreach { listener =>
+        view.setOnLongClickListener(new OnLongClickListener {
+          override def onLongClick(v: View): Boolean = {
+            Option(v.getTag) foreach (tag => seq(Int.unbox(tag)).item foreach listener)
+            true
+          }
+        })
+      }
+      createViewHolder(view)
   }
 
   override def getItemCount: Int = seq.size
@@ -62,6 +82,19 @@ trait HeaderedItemAdapter[T]
     seq = newSeq
     notifyDataSetChanged()
   }
+
+  val defaultElement: Option[String] = None
+
+  override def getElement(position: Int): Option[String] = seq.foldLeft((defaultElement, false))((info, itemHeadered) =>
+    if (itemHeadered == seq(position)) {
+      (info._1, true)
+    } else {
+      (info._1, info._2) match {
+        case (_, false) => itemHeadered.header map (header => (Option(header), info._2)) getOrElse info
+        case _ => info
+      }
+    }
+  )._1
 
 }
 
