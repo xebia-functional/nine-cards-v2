@@ -19,41 +19,35 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   var animatedController: Option[SearchBoxAnimatedController] = None
 
-  val indicator = DrawerRecyclerIndicator()
+  var states = DrawerRecyclerStates()
 
   val touchSlop = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
     ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
   }
 
-  override def dispatchTouchEvent(ev: MotionEvent): Boolean = if (indicator.disableScroll) {
-    true
-  } else {
-    super.dispatchTouchEvent(ev)
-  }
+  override def dispatchTouchEvent(ev: MotionEvent): Boolean = states.disableScroll || super.dispatchTouchEvent(ev)
 
   addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
     override def onTouchEvent(recyclerView: RecyclerView, event: MotionEvent): Unit = {
       val x = MotionEventCompat.getX(event, 0)
       val y = MotionEventCompat.getY(event, 0)
       animatedController foreach (_.initVelocityTracker(event))
-      (MotionEventCompat.getActionMasked(event), indicator.touchState) match {
+      (MotionEventCompat.getActionMasked(event), states.touchState) match {
         case (ACTION_MOVE, Scrolling) =>
           requestDisallowInterceptTouchEvent(true)
-          val delta = indicator.deltaX(x)
-          indicator.lastMotionX = x
-          indicator.lastMotionY = y
+          val delta = states.deltaX(x)
+          states = states.copy(lastMotionX = x, lastMotionY = y)
           animatedController foreach { controller =>
             runUi(controller.movementByOverScroll(delta))
           }
         case (ACTION_MOVE, Stopped) =>
           setStateIfNeeded(x, y)
         case (ACTION_DOWN, _) =>
-          indicator.lastMotionX = x
-          indicator.lastMotionY = y
+          states = states.copy(lastMotionX = x, lastMotionY = y)
         case (ACTION_CANCEL | ACTION_UP, _) =>
           animatedController foreach (_.computeFling())
-          indicator.touchState = Stopped
+          states = states.copy(touchState = Stopped)
           blockScroll(false)
         case _ =>
       }
@@ -63,23 +57,22 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       animatedController foreach (_.initVelocityTracker(event))
       val x = MotionEventCompat.getX(event, 0)
       val y = MotionEventCompat.getY(event, 0)
-      (MotionEventCompat.getActionMasked(event), indicator.touchState) match {
+      (MotionEventCompat.getActionMasked(event), states.touchState) match {
         case (ACTION_MOVE, Scrolling) =>
           requestDisallowInterceptTouchEvent(true)
           true
         case (ACTION_MOVE, _) =>
           setStateIfNeeded(x, y)
-          indicator.touchState != Stopped
+          states.touchState != Stopped
         case (ACTION_DOWN, _) =>
-          indicator.lastMotionX = x
-          indicator.lastMotionY = y
+          states = states.copy(lastMotionX = x, lastMotionY = y)
           false
         case (ACTION_CANCEL | ACTION_UP, _) =>
           animatedController foreach (_.computeFling())
-          indicator.touchState = Stopped
+          states = states.copy(touchState = Stopped)
           blockScroll(false)
-          indicator.touchState != Stopped
-        case _ => indicator.touchState != Stopped
+          states.touchState != Stopped
+        case _ => states.touchState != Stopped
       }
     }
 
@@ -89,8 +82,8 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
   })
 
   private[this] def setStateIfNeeded(x: Float, y: Float) = {
-    val xDiff = math.abs(x - indicator.lastMotionX)
-    val yDiff = math.abs(y - indicator.lastMotionY)
+    val xDiff = math.abs(x - states.lastMotionX)
+    val yDiff = math.abs(y - states.lastMotionY)
 
     val xMoved = xDiff > touchSlop
 
@@ -98,11 +91,10 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       val isScrolling = xDiff > yDiff
       if (isScrolling) {
         animatedController foreach (controller => runUi(controller.startMovement))
-        indicator.touchState = Scrolling
+        states = states.copy(touchState = Scrolling)
         blockScroll(true)
       }
-      indicator.lastMotionX = x
-      indicator.lastMotionY = y
+      states = states.copy(lastMotionX = x, lastMotionY = y)
     }
   }
 
@@ -116,17 +108,17 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 object DrawerRecyclerViewTweaks {
   type W = DrawerRecyclerView
 
-  def drvDisableScroll(disable: Boolean) = Tweak[W](_.indicator.disableScroll = disable)
+  def drvDisableScroll(disable: Boolean) = Tweak[W](view => view.states = view.states.copy(disableScroll = disable))
 
   def drvAddController(controller: SearchBoxAnimatedController) = Tweak[W](_.animatedController = Some(controller))
 
 }
 
-case class DrawerRecyclerIndicator(
-  var disableScroll: Boolean = false,
-  var lastMotionX: Float = 0,
-  var lastMotionY: Float = 0,
-  var touchState: ViewState = Stopped) {
+case class DrawerRecyclerStates(
+  disableScroll: Boolean = false,
+  lastMotionX: Float = 0,
+  lastMotionY: Float = 0,
+  touchState: ViewState = Stopped) {
 
   def deltaX(x: Float): Float = lastMotionX - x
 

@@ -37,6 +37,8 @@ trait DrawerComposer
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
 
+  val pages = 2
+
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
   lazy val drawerContent = Option(findView(TR.launcher_drawer_content))
@@ -106,7 +108,7 @@ trait DrawerComposer
       fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
 
   private[this] def createDrawerPagers(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = {
-    val pagerViews = 0 until 2 map pagination
+    val pagerViews = 0 until pages map pagination
     paginationDrawerPanel <~ vgAddViews(pagerViews)
   }
 

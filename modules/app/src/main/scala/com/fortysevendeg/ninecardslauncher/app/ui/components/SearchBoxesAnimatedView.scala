@@ -35,13 +35,15 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   def this(context: Context, attrs: AttributeSet)(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme) =
     this(context, attrs, 0)
 
+  val computeUnitsTracker = 1000
+
   val resetAfterAnimationListener = new AnimatorListenerAdapter() {
     var swap = false
 
     override def onAnimationEnd(animation: Animator) = {
       if (swap) {
-        indicator.swapViews()
-        listener foreach(_.onChangeBoxView(indicator.currentItem))
+        states = states.swapViews()
+        listener foreach(_.onChangeBoxView(states.currentItem))
       }
       runUi((self <~ vLayerHardware(activate = false)) ~ reset ~ finishMovement)
       super.onAnimationEnd(animation)
@@ -54,7 +56,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   mainAnimator.addListener(resetAfterAnimationListener)
   mainAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
     override def onAnimationUpdate(value: ValueAnimator) = {
-      indicator.displacement = value.getAnimatedValue.asInstanceOf[Float]
+      states = states.copy(displacement = value.getAnimatedValue.asInstanceOf[Float])
       runUi(transformPanelCanvas())
     }
   })
@@ -63,7 +65,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
 
   val durationAnimation = resGetInteger(android.R.integer.config_shortAnimTime)
 
-  lazy val indicator = SearchBoxesIndicator()
+  var states = SearchBoxesStates()
 
   val (touchSlop, maximumVelocity, minimumVelocity) = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
@@ -85,21 +87,20 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     initVelocityTracker(event)
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
-    (MotionEventCompat.getActionMasked(event), indicator.touchState) match {
+    (MotionEventCompat.getActionMasked(event), states.touchState) match {
       case (ACTION_MOVE, Scrolling) =>
         requestDisallowInterceptTouchEvent(true)
         true
       case (ACTION_MOVE, _) =>
         setStateIfNeeded(x, y)
-        indicator.touchState != Stopped
+        states.touchState != Stopped
       case (ACTION_DOWN, _) =>
-        indicator.lastMotionX = x
-        indicator.lastMotionY = y
-        indicator.touchState != Stopped
+        states = states.copy(lastMotionX = x, lastMotionY = y)
+        states.touchState != Stopped
       case (ACTION_CANCEL | ACTION_UP, _) =>
         computeFling()
-        indicator.touchState != Stopped
-      case _ => indicator.touchState != Stopped
+        states.touchState != Stopped
+      case _ => states.touchState != Stopped
     }
   }
 
@@ -108,18 +109,16 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     initVelocityTracker(event)
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
-    (MotionEventCompat.getActionMasked(event), indicator.touchState) match {
+    (MotionEventCompat.getActionMasked(event), states.touchState) match {
       case (ACTION_MOVE, Scrolling) =>
         requestDisallowInterceptTouchEvent(true)
-        val delta = indicator.deltaX(x)
-        indicator.lastMotionX = x
-        indicator.lastMotionY = y
+        val delta = states.deltaX(x)
+        states = states.copy(lastMotionX = x, lastMotionY = y)
         runUi(movementByOverScroll(delta))
       case (ACTION_MOVE, Stopped) =>
         setStateIfNeeded(x, y)
       case (ACTION_DOWN, _) =>
-        indicator.lastMotionX = x
-        indicator.lastMotionY = y
+        states = states.copy(lastMotionX = x, lastMotionY = y)
       case (ACTION_CANCEL | ACTION_UP, _) =>
         computeFling()
       case _ =>
@@ -135,18 +134,18 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
 
   private[this] def performScroll(delta: Float): Ui[_] = {
     mainAnimator.cancel()
-    indicator.calculateDisplacement(getWidth, delta)
+    states = states.copy(displacement = states.calculateDisplacement(getWidth, delta))
     transformPanelCanvas()
   }
 
   private[this] def transformPanelCanvas(): Ui[_] =
-    applyTranslation(getActiveView, indicator.displacement) ~
-      applyTranslation(getInactiveView, initialPositionInactiveView + indicator.displacement)
+    applyTranslation(getActiveView, states.displacement) ~
+      applyTranslation(getInactiveView, initialPositionInactiveView + states.displacement)
 
-  def forceAppsView = Ui (indicator.currentItem = AppsView) ~ (getActiveView <~ vVisible)
+  def forceAppsView = Ui (states = states.copy(currentItem = AppsView)) ~ (getActiveView <~ vVisible)
 
   def reset: Ui[_] =
-    Ui(indicator.displacement = 0) ~
+    Ui(states = states.copy(displacement = 0)) ~
       applyTranslation(getActiveView, 0) ~
       applyTranslation(getInactiveView, 0) ~
       (getInactiveView <~ vGone)
@@ -155,8 +154,8 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     view <~ vTranslationX(translate)
 
   def setStateIfNeeded(x: Float, y: Float) = {
-    val xDiff = math.abs(x - indicator.lastMotionX)
-    val yDiff = math.abs(y - indicator.lastMotionY)
+    val xDiff = math.abs(x - states.lastMotionX)
+    val yDiff = math.abs(y - states.lastMotionY)
 
     val xMoved = xDiff > touchSlop
     val yMoved = yDiff > touchSlop
@@ -164,18 +163,17 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     if (xMoved || yMoved) {
       val isScrolling = xDiff > yDiff
       if (isScrolling) runUi(startMovement)
-      indicator.lastMotionX = x
-      indicator.lastMotionY = y
+      states = states.copy(lastMotionX = x, lastMotionY = y)
     }
   }
 
   def initVelocityTracker(event: MotionEvent): Unit = {
-    if (indicator.velocityTracker.isEmpty) indicator.velocityTracker = Some(VelocityTracker.obtain())
-    indicator.velocityTracker foreach (_.addMovement(event))
+    if (states.velocityTracker.isEmpty) states = states.copy(velocityTracker = Some(VelocityTracker.obtain()))
+    states.velocityTracker foreach (_.addMovement(event))
   }
 
   def startMovement: Ui[_] =
-    Ui(indicator.touchState = Scrolling) ~
+    Ui(states = states.copy(touchState = Scrolling)) ~
     (self <~ vLayerHardware(activate = true)) ~
       (getInactiveView <~ vVisible) ~
       applyTranslation(getInactiveView, initialPositionInactiveView)
@@ -185,27 +183,30 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
       (getInactiveView <~ vGone)
 
   def computeFling() = {
-    indicator.velocityTracker foreach { tracker =>
-      tracker.computeCurrentVelocity(1000, maximumVelocity)
-      if (indicator.touchState == Scrolling && !overScroll(-tracker.getXVelocity)) {
+    states.velocityTracker foreach { tracker =>
+      tracker.computeCurrentVelocity(computeUnitsTracker, maximumVelocity)
+      if (states.touchState == Scrolling && !overScroll(-tracker.getXVelocity)) {
         val velocity = tracker.getXVelocity
         if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()
       }
       tracker.recycle()
-      indicator.velocityTracker = None
+      states = states.copy(velocityTracker = None)
     }
-    indicator.touchState = Stopped
+    states = states.copy(touchState = Stopped)
   }
 
-  private[this] def overScroll(deltaX: Float): Boolean = (indicator.currentItem, getActiveView.getTranslationX, deltaX) match {
-    case (AppsView, x, d) if x < 0 || (x == 0 && d > 0) => false
-    case (ContactView, x, d) if x > 0 || (x == 0 && d < 0) => false
+  private[this] def overScroll(deltaX: Float): Boolean = (states.currentItem, getActiveView.getTranslationX, deltaX) match {
+    case (AppsView, x, d) if positiveTranslation(x, d) => false
+    case (ContactView, x, d) if !positiveTranslation(x, d) => false
     case _ => true
   }
 
+  private[this] def positiveTranslation(translation: Float, delta: Float): Boolean =
+    translation < 0 || (translation == 0 && delta > 0)
+
   private[this] def snap(velocity: Float) = {
     mainAnimator.cancel()
-    val destiny = (velocity, indicator.displacement) match {
+    val destiny = (velocity, states.displacement) match {
       case (v, d) if v > 0 && d > 0 => getWidth
       case (v, d) if v <= 0 && d < 0 => -getWidth
       case _ => 0
@@ -214,7 +215,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   }
 
   private[this] def snapDestination() = {
-    val destiny = indicator.displacement match {
+    val destiny = states.displacement match {
       case d if d > getWidth * .6f => getWidth
       case d if d < -getWidth * .6f => -getWidth
       case _ => 0
@@ -226,22 +227,22 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   private[this] def animateViews(dest: Int, duration: Int) = {
     val swap = dest != 0
     resetAfterAnimationListener.swap = swap
-    mainAnimator.setFloatValues(indicator.displacement, dest)
+    mainAnimator.setFloatValues(states.displacement, dest)
     mainAnimator.setDuration(duration)
     mainAnimator.start()
   }
 
-  private[this] def getActiveView = indicator.currentItem match {
+  private[this] def getActiveView = states.currentItem match {
     case AppsView => appBox.content
     case ContactView => contactBox.content
   }
 
-  private[this] def getInactiveView = indicator.currentItem match {
+  private[this] def getInactiveView = states.currentItem match {
     case AppsView => contactBox.content
     case ContactView => appBox.content
   }
 
-  private[this] def initialPositionInactiveView = indicator.currentItem match {
+  private[this] def initialPositionInactiveView = states.currentItem match {
     case AppsView => getWidth
     case ContactView => -getWidth
   }
@@ -271,24 +272,24 @@ object SearchBoxesAnimatedViewTweak {
 
 }
 
-case class SearchBoxesIndicator(
-  var currentItem: BoxView = AppsView,
-  var lastMotionX: Float = 0,
-  var lastMotionY: Float = 0,
-  var velocityTracker: Option[VelocityTracker] = None,
-  var displacement: Float = 0,
-  var touchState: ViewState = Stopped)(implicit contextWrapper: ContextWrapper) {
+case class SearchBoxesStates(
+  currentItem: BoxView = AppsView,
+  lastMotionX: Float = 0,
+  lastMotionY: Float = 0,
+  velocityTracker: Option[VelocityTracker] = None,
+  displacement: Float = 0,
+  touchState: ViewState = Stopped)(implicit contextWrapper: ContextWrapper) {
 
-  def swapViews() = currentItem = currentItem match {
+  def swapViews(): SearchBoxesStates = copy(currentItem match {
     case AppsView => ContactView
     case ContactView => AppsView
-  }
+  })
 
   def deltaX(x: Float): Float = lastMotionX - x
 
   def deltaY(y: Float): Float = lastMotionY - y
 
-  def calculateDisplacement(width: Int, delta: Float) = displacement = math.max(-width, Math.min(width, displacement - delta))
+  def calculateDisplacement(width: Int, delta: Float): Float = math.max(-width, Math.min(width, displacement - delta))
 
   def calculatePercent(width: Int) = math.abs(displacement) / width
 }
