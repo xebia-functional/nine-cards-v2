@@ -100,6 +100,11 @@ class PersistenceServicesImpl(
       deleted <- cardRepository.deleteCard(toRepositoryCard(request.card))
     } yield deleted).resolve[PersistenceServiceException]
 
+  override def deleteCardsByCollection(collectionId: Int) =
+    (for {
+      deleted <- cardRepository.deleteCards(where = s"collection_id = $collectionId")
+    } yield deleted).resolve[PersistenceServiceException]
+
   override def fetchCardsByCollection(request: FetchCardsByCollectionRequest) =
     (for {
       cards <- cardRepository.fetchCardsByCollection(request.collectionId)

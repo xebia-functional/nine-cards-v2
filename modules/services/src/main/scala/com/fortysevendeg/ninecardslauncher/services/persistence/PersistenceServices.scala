@@ -78,6 +78,14 @@ trait PersistenceServices {
   def deleteCard(request: DeleteCardRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
+    * Deletes the cards from the repository by the collection id
+    * @param collectionId the id of the collection that contains the cards
+    * @return an Int if the cards have been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the cards
+    */
+  def deleteCardsByCollection(collectionId: Int): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
     * Obtains all the cards from the repository by the collection id
     * @param request includes the id of the collection
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Card]
