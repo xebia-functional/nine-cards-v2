@@ -17,7 +17,7 @@ trait CreateCollectionsTasks
 
   def createNewConfiguration: ServiceDef2[Seq[Collection], AppException with ContactException with CollectionException] =
     for {
-      - <- di.deviceProcess.deleteSavedItems
+      - <- di.deviceProcess.deleteItems
       _ <- di.deviceProcess.saveInstalledApps
       _ = setProcess(GettingAppsProcess)
       apps <- di.deviceProcess.getSavedApps(GetByName)
@@ -29,7 +29,7 @@ trait CreateCollectionsTasks
 
    def loadConfiguration(deviceId: String): ServiceDef2[Seq[Collection], AppException with CreateBitmapException with UserConfigException with CollectionException] =
     for {
-      - <- di.deviceProcess.deleteSavedItems
+      - <- di.deviceProcess.deleteItems
       _ <- di.deviceProcess.saveInstalledApps
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ = setProcess(GettingAppsProcess)
