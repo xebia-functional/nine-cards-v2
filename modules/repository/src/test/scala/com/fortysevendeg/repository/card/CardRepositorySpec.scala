@@ -193,7 +193,7 @@ class CardRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
@@ -223,7 +223,7 @@ class CardRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
@@ -253,7 +253,7 @@ class CardRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
@@ -298,7 +298,7 @@ class CardRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
@@ -340,7 +340,7 @@ class CardRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
@@ -370,7 +370,7 @@ class CardRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorAllCardsRepositoryResponses {
 
@@ -400,7 +400,7 @@ class CardRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 

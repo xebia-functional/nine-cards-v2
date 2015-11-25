@@ -138,7 +138,7 @@ class UserRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope
           with ErrorUserRepositoryResponses {
 
@@ -168,7 +168,7 @@ class UserRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope
           with ErrorUserRepositoryResponses {
 
@@ -198,7 +198,7 @@ class UserRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope
           with ErrorUserRepositoryResponses {
 
@@ -242,7 +242,7 @@ class UserRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope
           with ErrorUserRepositoryResponses {
 
@@ -272,7 +272,7 @@ class UserRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope
           with ErrorUserRepositoryResponses {
 
