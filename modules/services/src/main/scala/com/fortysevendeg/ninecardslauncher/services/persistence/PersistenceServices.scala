@@ -33,11 +33,10 @@ trait PersistenceServices {
 
   /**
     * Deletes all apps from the repository by the where clause
-    * @param request includes the where clause of the apps to delete
     * @return an Int if the apps has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the apps
     */
-  def deleteApps(request: DeleteAppsRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllApps(): ServiceDef2[Int, PersistenceServiceException]
 
   /**
    * Deletes an app from the repository by the package name
@@ -65,11 +64,10 @@ trait PersistenceServices {
 
   /**
     * Deletes all cards from the repository by the where clause
-    * @param request includes the where clause of the cards to delete
     * @return an Int if the cards has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the cards
     */
-  def deleteCards(request: DeleteCardsRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllCards(): ServiceDef2[Int, PersistenceServiceException]
 
   /**
     * Deletes a card from the repository by the card
@@ -120,11 +118,10 @@ trait PersistenceServices {
 
   /**
     * Deletes all collections from the repository by the where clause
-    * @param request includes the where clause of the collections to delete
     * @return an Int if the collections has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the collections
     */
-  def deleteCollections(request: DeleteCollectionsRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllCollections(): ServiceDef2[Int, PersistenceServiceException]
 
   /**
     * Deletes a collection from the repository by the collection
@@ -183,11 +180,10 @@ trait PersistenceServices {
 
   /**
     * Deletes all geoInfo items from the repository by the where clause
-    * @param request includes the where clause of the geoInfo items to delete
     * @return an Int if the geoInfo items has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the geoInfo items
     */
-  def deleteGeoInfoItems(request: DeleteGeoInfoItemsRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllGeoInfoItems(): ServiceDef2[Int, PersistenceServiceException]
 
   /**
     * Deletes a geoInfo item from the repository by the geoInfo item
@@ -245,11 +241,10 @@ trait PersistenceServices {
 
   /**
     * Deletes all users from the repository by the where clause
-    * @param request includes the where clause of the users to delete
     * @return an Int if the users has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the users
     */
-  def deleteUsers(request: DeleteUsersRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllUsers(): ServiceDef2[Int, PersistenceServiceException]
 
   /**
    * Deletes an user from the repository by the user
@@ -292,11 +287,10 @@ trait PersistenceServices {
 
   /**
     * Deletes all dock apps from the repository by the where clause
-    * @param request includes the where clause of the dock apps to delete
     * @return an Int if the dock apps has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the dock apps
     */
-  def deleteDockApps(request: DeleteDockAppsRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllDockApps(): ServiceDef2[Int, PersistenceServiceException]
 
   /**
     * Deletes an dock app from the repository by the dock app

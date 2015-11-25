@@ -442,9 +442,6 @@ trait PersistenceServicesData {
       version = version,
       installedFromGooglePlay = installedFromGooglePlay)
 
-  def createDeleteAppsRequest(where: String): DeleteAppsRequest =
-    DeleteAppsRequest(where = where)
-
   def createUpdateAppRequest(
     id: Int = appId,
     name: String = name,
@@ -484,9 +481,6 @@ trait PersistenceServicesData {
       longitude = longitude,
       latitude = latitude,
       system = system)
-
-  def createDeleteGeoInfoItemsRequest(where: String): DeleteGeoInfoItemsRequest =
-    DeleteGeoInfoItemsRequest(where = where)
 
   def createDeleteGeoInfoRequest(geoInfo: GeoInfo): DeleteGeoInfoRequest =
     DeleteGeoInfoRequest(geoInfo = geoInfo)
@@ -538,8 +532,6 @@ trait PersistenceServicesData {
       starRating = Option(starRating),
       numDownloads = Option(numDownloads),
       notification = Option(notification))
-
-  def createDeleteCardsRequest(where: String): DeleteCardsRequest = DeleteCardsRequest(where = where)
 
   def createDeleteCardRequest(card: Card): DeleteCardRequest = DeleteCardRequest(card = card)
 
@@ -598,9 +590,6 @@ trait PersistenceServicesData {
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
       cards = createSeqAddCardRequest())
 
-  def createDeleteCollectionsRequest(where: String): DeleteCollectionsRequest =
-    DeleteCollectionsRequest(where = where)
-
   def createDeleteCollectionRequest(collection: Collection): DeleteCollectionRequest =
     DeleteCollectionRequest(collection = collection)
 
@@ -654,9 +643,6 @@ trait PersistenceServicesData {
       deviceToken = Option(deviceToken),
       androidToken = Option(androidToken))
 
-  def createDeleteUsersRequest(where: String): DeleteUsersRequest =
-    DeleteUsersRequest(where = where)
-
   def createDeleteUserRequest(user: User): DeleteUserRequest =
     DeleteUserRequest(user = user)
 
@@ -692,9 +678,6 @@ trait PersistenceServicesData {
       intent = intent,
       imagePath = imagePath,
       position = position)
-
-  def createDeleteDockAppsRequest(where: String): DeleteDockAppsRequest =
-    DeleteDockAppsRequest(where = where)
 
   def createDeleteDockAppRequest(dockApp: DockApp): DeleteDockAppRequest =
     DeleteDockAppRequest(dockApp = dockApp)
