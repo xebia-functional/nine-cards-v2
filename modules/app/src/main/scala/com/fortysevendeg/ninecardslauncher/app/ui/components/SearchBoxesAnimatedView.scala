@@ -82,46 +82,45 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
     super.onInterceptTouchEvent(event)
-    val action = MotionEventCompat.getActionMasked(event)
-    if (action == ACTION_MOVE && indicator.touchState != Stopped) {
-      requestDisallowInterceptTouchEvent(true)
-      return true
-    }
     initVelocityTracker(event)
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
-    action match {
-      case ACTION_MOVE => setStateIfNeeded(x, y)
-      case ACTION_DOWN =>
+    (MotionEventCompat.getActionMasked(event), indicator.touchState) match {
+      case (ACTION_MOVE, Scrolling) =>
+        requestDisallowInterceptTouchEvent(true)
+        true
+      case (ACTION_MOVE, _) =>
+        setStateIfNeeded(x, y)
+        indicator.touchState != Stopped
+      case (ACTION_DOWN, _) =>
         indicator.lastMotionX = x
         indicator.lastMotionY = y
-      case ACTION_CANCEL | ACTION_UP =>
+        indicator.touchState != Stopped
+      case (ACTION_CANCEL | ACTION_UP, _) =>
         computeFling()
-      case _ =>
+        indicator.touchState != Stopped
+      case _ => indicator.touchState != Stopped
     }
-    indicator.touchState != Stopped
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
     super.onTouchEvent(event)
-    val action = MotionEventCompat.getActionMasked(event)
     initVelocityTracker(event)
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
-    action match {
-      case ACTION_MOVE => indicator.touchState match {
-        case Scrolling =>
-          requestDisallowInterceptTouchEvent(true)
-          val delta = indicator.deltaX(x)
-          indicator.lastMotionX = x
-          indicator.lastMotionY = y
-          runUi(movementByOverScroll(delta))
-        case Stopped => setStateIfNeeded(x, y)
-      }
-      case ACTION_DOWN =>
+    (MotionEventCompat.getActionMasked(event), indicator.touchState) match {
+      case (ACTION_MOVE, Scrolling) =>
+        requestDisallowInterceptTouchEvent(true)
+        val delta = indicator.deltaX(x)
         indicator.lastMotionX = x
         indicator.lastMotionY = y
-      case ACTION_CANCEL | ACTION_UP =>
+        runUi(movementByOverScroll(delta))
+      case (ACTION_MOVE, Stopped) =>
+        setStateIfNeeded(x, y)
+      case (ACTION_DOWN, _) =>
+        indicator.lastMotionX = x
+        indicator.lastMotionY = y
+      case (ACTION_CANCEL | ACTION_UP, _) =>
         computeFling()
       case _ =>
     }

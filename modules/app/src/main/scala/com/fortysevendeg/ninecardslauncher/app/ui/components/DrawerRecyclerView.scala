@@ -32,39 +32,13 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     super.dispatchTouchEvent(ev)
   }
 
-  override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
-    super.onInterceptTouchEvent(event)
-    val action = MotionEventCompat.getActionMasked(event)
-    if (action == ACTION_MOVE && indicator.touchState != Stopped) {
-      requestDisallowInterceptTouchEvent(true)
-      return true
-    }
-    animatedController foreach (_.initVelocityTracker(event))
-    val x = MotionEventCompat.getX(event, 0)
-    val y = MotionEventCompat.getY(event, 0)
-    action match {
-      case ACTION_MOVE => setStateIfNeeded(x, y)
-      case ACTION_DOWN =>
-        indicator.lastMotionX = x
-        indicator.lastMotionY = y
-      case ACTION_CANCEL | ACTION_UP =>
-        animatedController foreach (_.computeFling())
-        indicator.touchState = Stopped
-        blockScroll(false)
-      case _ =>
-    }
-    true
-  }
-
-  override def onTouchEvent(event: MotionEvent): Boolean = {
-    super.onTouchEvent(event)
-    val action = MotionEventCompat.getActionMasked(event)
-    val x = MotionEventCompat.getX(event, 0)
-    val y = MotionEventCompat.getY(event, 0)
-    animatedController foreach (_.initVelocityTracker(event))
-    action match {
-      case ACTION_MOVE => indicator.touchState match {
-        case Scrolling =>
+  addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+    override def onTouchEvent(recyclerView: RecyclerView, event: MotionEvent): Unit = {
+      val x = MotionEventCompat.getX(event, 0)
+      val y = MotionEventCompat.getY(event, 0)
+      animatedController foreach (_.initVelocityTracker(event))
+      (MotionEventCompat.getActionMasked(event), indicator.touchState) match {
+        case (ACTION_MOVE, Scrolling) =>
           requestDisallowInterceptTouchEvent(true)
           val delta = indicator.deltaX(x)
           indicator.lastMotionX = x
@@ -72,19 +46,47 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
           animatedController foreach { controller =>
             runUi(controller.movementByOverScroll(delta))
           }
-        case Stopped => setStateIfNeeded(x, y)
+        case (ACTION_MOVE, Stopped) =>
+          setStateIfNeeded(x, y)
+        case (ACTION_DOWN, _) =>
+          indicator.lastMotionX = x
+          indicator.lastMotionY = y
+        case (ACTION_CANCEL | ACTION_UP, _) =>
+          animatedController foreach (_.computeFling())
+          indicator.touchState = Stopped
+          blockScroll(false)
+        case _ =>
       }
-      case ACTION_DOWN =>
-        indicator.lastMotionX = x
-        indicator.lastMotionY = y
-      case ACTION_CANCEL | ACTION_UP =>
-        animatedController foreach (_.computeFling())
-        indicator.touchState = Stopped
-        blockScroll(false)
-      case _ =>
     }
-    true
-  }
+
+    override def onInterceptTouchEvent(recyclerView: RecyclerView, event: MotionEvent): Boolean = {
+      animatedController foreach (_.initVelocityTracker(event))
+      val x = MotionEventCompat.getX(event, 0)
+      val y = MotionEventCompat.getY(event, 0)
+      (MotionEventCompat.getActionMasked(event), indicator.touchState) match {
+        case (ACTION_MOVE, Scrolling) =>
+          requestDisallowInterceptTouchEvent(true)
+          true
+        case (ACTION_MOVE, _) =>
+          setStateIfNeeded(x, y)
+          indicator.touchState != Stopped
+        case (ACTION_DOWN, _) =>
+          indicator.lastMotionX = x
+          indicator.lastMotionY = y
+          false
+        case (ACTION_CANCEL | ACTION_UP, _) =>
+          animatedController foreach (_.computeFling())
+          indicator.touchState = Stopped
+          blockScroll(false)
+          indicator.touchState != Stopped
+        case _ => indicator.touchState != Stopped
+      }
+    }
+
+    override def onRequestDisallowInterceptTouchEvent(b: Boolean): Unit = {
+
+    }
+  })
 
   private[this] def setStateIfNeeded(x: Float, y: Float) = {
     val xDiff = math.abs(x - indicator.lastMotionX)

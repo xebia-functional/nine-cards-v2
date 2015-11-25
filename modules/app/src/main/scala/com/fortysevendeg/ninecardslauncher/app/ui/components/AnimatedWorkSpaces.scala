@@ -350,23 +350,24 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     val action = MotionEventCompat.getActionMasked(event)
     if (action == ACTION_MOVE && touchState != stopped) {
       requestDisallowInterceptTouchEvent(true)
-      return true
+      true
+    } else {
+      if (velocityTracker.isEmpty) velocityTracker = Some(VelocityTracker.obtain())
+      velocityTracker foreach (_.addMovement(event))
+      val x = MotionEventCompat.getX(event, 0)
+      val y = MotionEventCompat.getY(event, 0)
+      action match {
+        case ACTION_MOVE => setStateIfNeeded(x, y)
+        case ACTION_DOWN =>
+          lastMotionX = x
+          lastMotionY = y
+        case ACTION_CANCEL | ACTION_UP =>
+          computeFling()
+          touchState = stopped
+        case _ =>
+      }
+      touchState != stopped
     }
-    if (velocityTracker.isEmpty) velocityTracker = Some(VelocityTracker.obtain())
-    velocityTracker foreach (_.addMovement(event))
-    val x = MotionEventCompat.getX(event, 0)
-    val y = MotionEventCompat.getY(event, 0)
-    action match {
-      case ACTION_MOVE => setStateIfNeeded(x, y)
-      case ACTION_DOWN =>
-        lastMotionX = x
-        lastMotionY = y
-      case ACTION_CANCEL | ACTION_UP =>
-        computeFling()
-        touchState = stopped
-      case _ =>
-    }
-    touchState != stopped
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
