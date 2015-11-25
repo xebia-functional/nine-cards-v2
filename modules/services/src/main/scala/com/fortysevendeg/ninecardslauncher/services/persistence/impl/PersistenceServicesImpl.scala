@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, AppEntity}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
@@ -102,7 +102,7 @@ class PersistenceServicesImpl(
 
   override def deleteCardsByCollection(collectionId: Int) =
     (for {
-      deleted <- cardRepository.deleteCards(where = s"collection_id = $collectionId")
+      deleted <- cardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId")
     } yield deleted).resolve[PersistenceServiceException]
 
   override def fetchCardsByCollection(request: FetchCardsByCollectionRequest) =

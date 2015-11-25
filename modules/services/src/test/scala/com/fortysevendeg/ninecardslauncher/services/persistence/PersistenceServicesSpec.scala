@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, AppEntity}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -80,6 +80,8 @@ trait PersistenceServicesSpecification
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.answer(repoCard)))
 
     mockCardRepository.deleteCards() returns Service(Task(Result.answer(5)))
+
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(5)))
 
     seqRepoCard foreach { repoCard =>
       mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.answer(1)))
@@ -181,6 +183,8 @@ trait PersistenceServicesSpecification
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.errata(exception)))
 
     mockCardRepository.deleteCards() returns Service(Task(Result.errata(exception)))
+
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.errata(exception)))
 
     seqRepoCard foreach { repoCard =>
       mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.errata(exception)))
@@ -691,6 +695,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteCardsByCollection" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteCardsByCollection(collectionId).run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 5
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteCardsByCollection(collectionId).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
