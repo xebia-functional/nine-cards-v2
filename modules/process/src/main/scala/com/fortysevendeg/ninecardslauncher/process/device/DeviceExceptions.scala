@@ -2,6 +2,10 @@ package com.fortysevendeg.ninecardslauncher.process.device
 
 import scalaz.Scalaz._
 
+case class DeleteItemsException(message: String, cause: Option[Throwable] = None) extends RuntimeException(message) {
+  cause map initCause
+}
+
 case class AppException(message: String, cause: Option[Throwable] = None) extends RuntimeException(message) {
   cause map initCause
 }
@@ -27,6 +31,8 @@ case class CallException(message: String, cause: Option[Throwable] = None) exten
 }
 
 trait ImplicitsDeviceException {
+  implicit def deleteItemsException = (t: Throwable) => DeleteItemsException(t.getMessage, t.some)
+
   implicit def appException = (t: Throwable) => AppException(t.getMessage, t.some)
 
   implicit def createBitmapException = (t: Throwable) => CreateBitmapException(t.getMessage, t.some)

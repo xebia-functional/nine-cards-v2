@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServices, ImplicitsPersistenceServiceExceptions, AddAppRequest, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetsServices
@@ -41,6 +41,14 @@ class DeviceProcessImpl(
   with DeviceConversions {
 
   val apiUtils = new ApiUtils(persistenceServices)
+
+  override def deleteItems =
+    (for {
+      _ <- persistenceServices.deleteApps(DeleteAppsRequest(""))
+      _ <- persistenceServices.deleteCollections(DeleteCollectionsRequest(""))
+      _ <- persistenceServices.deleteCards(DeleteCardsRequest(""))
+      _ <- persistenceServices.deleteDockApps(DeleteDockAppsRequest(""))
+    } yield ()).resolve[DeleteItemsException]
 
   override def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
