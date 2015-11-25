@@ -89,6 +89,18 @@ trait DeviceProcessSpecification
 
     val mockPersistenceServices = mock[PersistenceServices]
 
+    mockPersistenceServices.deleteApps(any) returns
+      Service(Task(Result.answer(any)))
+
+    mockPersistenceServices.deleteCollections(any) returns
+      Service(Task(Result.answer(any)))
+
+    mockPersistenceServices.deleteCards(any) returns
+      Service(Task(Result.answer(any)))
+
+    mockPersistenceServices.deleteDockApps(any) returns
+      Service(Task(Result.answer(any)))
+
     mockPersistenceServices.fetchApps(any, any) returns
       Service(Task(Result.answer(appsPersistence)))
 
@@ -195,6 +207,58 @@ trait DeviceProcessSpecification
       Task(Errata(apiServiceException))
     }
 
+  }
+
+  trait ErrorPersistenceServicesDeleteAppsProcessScope {
+    self: DeviceProcessScope =>
+
+    mockPersistenceServices.deleteApps(any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+  }
+
+  trait ErrorPersistenceServicesDeleteCollectionsProcessScope {
+    self: DeviceProcessScope =>
+
+    mockPersistenceServices.deleteApps(any) returns
+      Service(Task(Result.answer(any)))
+
+    mockPersistenceServices.deleteCollections(any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+  }
+
+  trait ErrorPersistenceServicesDeleteCardsProcessScope {
+    self: DeviceProcessScope =>
+
+    mockPersistenceServices.deleteApps(any) returns
+      Service(Task(Result.answer(any)))
+
+    mockPersistenceServices.deleteCollections(any) returns
+      Service(Task(Result.answer(any)))
+
+    mockPersistenceServices.deleteCards(any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+  }
+
+  trait ErrorPersistenceServicesDeleteDockAppsProcessScope {
+    self: DeviceProcessScope =>
+
+    mockPersistenceServices.deleteApps(any) returns
+      Service(Task(Result.answer(any)))
+
+    mockPersistenceServices.deleteCollections(any) returns
+      Service(Task(Result.answer(any)))
+
+    mockPersistenceServices.deleteCards(any) returns
+      Service(Task(Result.answer(any)))
+
+    mockPersistenceServices.deleteDockApps(any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
   }
 
   trait ErrorPersistenceServicesProcessScope {
@@ -371,6 +435,60 @@ trait DeviceProcessSpecification
 
 class DeviceProcessImplSpec
   extends DeviceProcessSpecification {
+
+
+  "Delete saved items" should {
+
+    "deletes all apps, cards, collections and dockApps" in
+      new DeviceProcessScope {
+        val result = deviceProcess.deleteItems.run.run
+        result must beLike {
+          case Answer(result) =>
+            result shouldEqual ((): Unit)
+        }
+      }
+
+    "returns DeleteItemsException when persistence service fails deleting the apps" in
+      new DeviceProcessScope with ErrorPersistenceServicesDeleteAppsProcessScope {
+        val result = deviceProcess.deleteItems.run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DeleteItemsException]
+          }
+        }
+      }
+
+    "returns DeleteItemsException when persistence service fails deleting the collections" in
+      new DeviceProcessScope with ErrorPersistenceServicesDeleteCollectionsProcessScope {
+        val result = deviceProcess.deleteItems.run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DeleteItemsException]
+          }
+        }
+      }
+
+    "returns DeleteItemsException when persistence service fails deleting the cards" in
+      new DeviceProcessScope with ErrorPersistenceServicesDeleteCardsProcessScope {
+        val result = deviceProcess.deleteItems.run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DeleteItemsException]
+          }
+        }
+      }
+
+    "returns DeleteItemsException when persistence service fails deleting the dock apps" in
+      new DeviceProcessScope with ErrorPersistenceServicesDeleteDockAppsProcessScope {
+        val result = deviceProcess.deleteItems.run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DeleteItemsException]
+          }
+        }
+      }
+
+  }
 
   "Create bitmaps for no packages installed" should {
 
