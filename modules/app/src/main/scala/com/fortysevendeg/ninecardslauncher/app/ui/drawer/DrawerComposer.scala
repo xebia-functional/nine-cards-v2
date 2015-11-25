@@ -65,13 +65,9 @@ trait DrawerComposer
         runUi(Ui(loadContacts(ContactsAlphabetical)) ~ (paginationDrawerPanel <~ reloadPager(1)))
     }
 
-  def showDrawerLoading: Ui[_] =
-    (recycler <~ vGone) ~
-      (scrollerLayout <~ fslInvisible)
+  def showDrawerLoading: Ui[_] = scrollerLayout <~ fslInvisible
 
-  def showDrawerData: Ui[_] =
-    (recycler <~ vVisible) ~
-      (scrollerLayout <~ fslVisible)
+  def showDrawerData: Ui[_] = scrollerLayout <~ fslVisible
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
@@ -79,11 +75,20 @@ trait DrawerComposer
     (searchBoxContentPanel <~
       vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView) <~ sbavChangeListener(self)))) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
-        revealInDrawer ~~ (searchPanel <~ vGone)
+        (if (getItemsCount == 0) {
+          Ui(loadApps(AppsAlphabetical))
+        } else {
+          Ui.nop
+        }) ~ revealInDrawer ~~ (searchPanel <~ vGone)
       }) ~
-      (scrollerLayout <~ drawerContentStyle <~ vgAddViewByIndex(getUi(
-        w[DrawerRecyclerView] <~ recyclerStyle <~ wire(recycler) <~ (searchBoxView map drvAddController getOrElse Tweak.blank)
-      ), 0)) ~
+      (scrollerLayout <~
+        drawerContentStyle <~
+        vgAddViewByIndex(getUi(
+          w[DrawerRecyclerView] <~
+            recyclerStyle <~
+            wire(recycler) <~
+            (searchBoxView map drvAddController getOrElse Tweak.blank)
+        ), 0)) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical)) ~
       createDrawerPagers
@@ -106,6 +111,11 @@ trait DrawerComposer
       clickListener = clickListener,
       longClickListener = Option(longClickListener)),
       fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
+
+  private[this] def getItemsCount: Int = (for {
+    rv <- recycler
+    adapter <- Option(rv.getAdapter)
+  } yield adapter.getItemCount) getOrElse 0
 
   private[this] def createDrawerPagers(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = {
     val pagerViews = 0 until pages map pagination
