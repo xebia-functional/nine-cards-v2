@@ -42,13 +42,13 @@ class DeviceProcessImpl(
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  override def deleteItems =
+  override def resetSavedItems() =
     (for {
-      _ <- persistenceServices.deleteApps(DeleteAppsRequest(""))
-      _ <- persistenceServices.deleteCollections(DeleteCollectionsRequest(""))
-      _ <- persistenceServices.deleteCards(DeleteCardsRequest(""))
-      _ <- persistenceServices.deleteDockApps(DeleteDockAppsRequest(""))
-    } yield ()).resolve[DeleteItemsException]
+      _ <- persistenceServices.deleteAllApps()
+      _ <- persistenceServices.deleteAllCollections()
+      _ <- persistenceServices.deleteAllCards()
+      _ <- persistenceServices.deleteAllDockApps()
+    } yield ()).resolve[ResetSavedItemsException]
 
   override def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {

@@ -70,7 +70,7 @@ class CollectionProcessImpl(
     (for {
       Some(collection) <- findCollectionById(collectionId)
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
-      _ <- removeCards(collection.cards)
+      _ <- persistenceServices.deleteCardsByCollection(collectionId)
       collectionList <- getCollections
       _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
     } yield ()).resolve[CollectionException]
@@ -194,11 +194,6 @@ class CollectionProcessImpl(
 
   private[this] def updateCardList(cardList: Seq[Card]) = Service {
     val tasks = cardList map (card => updateCard(card).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
-  }
-
-  private[this] def removeCards(cards: Seq[ServicesCard]) = Service {
-    val tasks = cards map (card => persistenceServices.deleteCard(ServicesDeleteCardRequest(card)).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
   }
 

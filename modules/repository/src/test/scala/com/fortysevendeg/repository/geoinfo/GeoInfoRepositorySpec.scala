@@ -186,7 +186,7 @@ class GeoInfoRepositorySpec
         }
     }
 
-    "deleteGeoInfos" should {
+    "deleteGeoInfosItems" should {
 
       "return a successful result when all the geoInfos are deleted" in
         new GeoInfoRepositoryScope
