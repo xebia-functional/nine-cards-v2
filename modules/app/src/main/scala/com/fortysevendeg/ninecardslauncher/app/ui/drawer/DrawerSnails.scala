@@ -6,11 +6,8 @@ import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
