@@ -136,7 +136,7 @@ class DockAppRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
@@ -166,7 +166,7 @@ class DockAppRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
@@ -196,7 +196,7 @@ class DockAppRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
@@ -240,7 +240,7 @@ class DockAppRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
@@ -270,7 +270,7 @@ class DockAppRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 

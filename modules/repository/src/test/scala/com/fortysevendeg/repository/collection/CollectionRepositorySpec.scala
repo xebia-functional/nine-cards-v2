@@ -212,7 +212,7 @@ class CollectionRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
@@ -242,7 +242,7 @@ class CollectionRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
@@ -272,7 +272,7 @@ class CollectionRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
@@ -316,7 +316,7 @@ class CollectionRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
@@ -361,7 +361,7 @@ class CollectionRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
@@ -405,7 +405,7 @@ class CollectionRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
@@ -435,7 +435,7 @@ class CollectionRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
@@ -465,7 +465,7 @@ class CollectionRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 

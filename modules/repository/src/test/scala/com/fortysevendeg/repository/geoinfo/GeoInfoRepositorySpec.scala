@@ -170,7 +170,7 @@ class GeoInfoRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
@@ -200,7 +200,7 @@ class GeoInfoRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
@@ -230,7 +230,7 @@ class GeoInfoRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
@@ -260,7 +260,7 @@ class GeoInfoRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
@@ -305,7 +305,7 @@ class GeoInfoRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
@@ -350,7 +350,7 @@ class GeoInfoRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
@@ -380,7 +380,7 @@ class GeoInfoRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new GeoInfoRepositoryScope
           with ErrorGeoInfoRepositoryResponses {
 
