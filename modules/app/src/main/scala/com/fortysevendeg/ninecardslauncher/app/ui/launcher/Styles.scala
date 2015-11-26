@@ -13,9 +13,13 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, TintableImageView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks
+import FabItemMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks
+import TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._

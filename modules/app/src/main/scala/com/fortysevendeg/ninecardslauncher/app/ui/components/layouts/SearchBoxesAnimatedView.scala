@@ -1,28 +1,29 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
-import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator, ObjectAnimator}
+import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, ValueAnimator}
 import android.content.Context
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view._
 import android.view.animation.DecelerateInterpolator
-import android.widget.{EditText, LinearLayout, FrameLayout}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import android.widget.{EditText, FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{SearchPressedColor, SearchIconsColor, SearchBackgroundColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
-import macroid._
-import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, ViewState}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchIconsColor, SearchPressedColor}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import macroid.FullDsl._
+import macroid._
 
 class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: Int)
   (implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme)
@@ -260,17 +261,7 @@ trait SearchBoxAnimatedListener {
   def onChangeBoxView(state: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit
 }
 
-object SearchBoxesAnimatedViewTweak {
 
-  def sbavReset(implicit contextWrapper: ContextWrapper) = Tweak[SearchBoxesAnimatedView] { view =>
-    runUi(view.forceAppsView ~ view.reset)
-  }
-
-  def sbavChangeListener(listener: SearchBoxAnimatedListener)= Tweak[SearchBoxesAnimatedView] { view =>
-    view.listener = Some(listener)
-  }
-
-}
 
 case class SearchBoxesStates(
   currentItem: BoxView = AppsView,
@@ -336,12 +327,6 @@ trait Styles {
       tivDefaultColor(theme.get(SearchIconsColor)) +
       tivPressedColor(theme.get(SearchPressedColor))
 }
-
-sealed trait ViewState
-
-case object Stopped extends ViewState
-
-case object Scrolling extends ViewState
 
 sealed trait BoxView
 

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
@@ -10,7 +10,7 @@ import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
 import android.view.{MotionEvent, ViewConfiguration, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{ContextWrapper, Tweak}
+import macroid.ContextWrapper
 
 class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(implicit contextWrapper: ContextWrapper)
   extends ViewGroup(context, attrs, defStyle) {
@@ -248,17 +248,5 @@ case class PullToCloseIndicator(
   def willOverTop(to: Int): Boolean = to < posStart
 
   def shouldClose(): Boolean = currentPosY > distanceToValidClose
-
-}
-
-object PullToCloseViewTweaks {
-
-  def pcvListener(pullToCloseListener: PullToCloseListener) = Tweak[PullToCloseView] {
-    view =>
-      view.listeners.startPulling = pullToCloseListener.startPulling
-      view.listeners.endPulling = pullToCloseListener.endPulling
-      view.listeners.scroll = pullToCloseListener.scroll
-      view.listeners.close = pullToCloseListener.close
-  }
 
 }

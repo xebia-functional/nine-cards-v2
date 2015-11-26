@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.drawables
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
@@ -7,8 +7,8 @@ import android.graphics._
 import android.graphics.drawable.{Animatable, Drawable}
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.IconTypes._
 import macroid.{ContextWrapper, Tweak}
-import IconTypes._
 
 import scala.util.Try
 

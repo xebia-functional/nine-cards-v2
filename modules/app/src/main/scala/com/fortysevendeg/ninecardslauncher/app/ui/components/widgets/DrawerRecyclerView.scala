@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
@@ -7,8 +7,10 @@ import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.{MotionEvent, ViewConfiguration}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.ScrollableManager
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, ViewState}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
+import macroid.ContextWrapper
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak}
 
 class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends RecyclerView(context, attr, defStyleAttr) {
@@ -105,14 +107,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
 }
 
-object DrawerRecyclerViewTweaks {
-  type W = DrawerRecyclerView
 
-  def drvDisableScroll(disable: Boolean) = Tweak[W](view => view.states = view.states.copy(disableScroll = disable))
-
-  def drvAddController(controller: SearchBoxAnimatedController) = Tweak[W](_.animatedController = Some(controller))
-
-}
 
 case class DrawerRecyclerStates(
   disableScroll: Boolean = false,

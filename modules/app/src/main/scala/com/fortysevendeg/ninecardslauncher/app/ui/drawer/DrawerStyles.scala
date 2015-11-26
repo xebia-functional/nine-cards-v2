@@ -10,9 +10,13 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{FastScrollerLayout, TintableImageView}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak
+import FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks
+import TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{Tweak, ContextWrapper}

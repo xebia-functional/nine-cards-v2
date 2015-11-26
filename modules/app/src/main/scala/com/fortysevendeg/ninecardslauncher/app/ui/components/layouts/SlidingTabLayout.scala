@@ -1,20 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
-import android.graphics.Color
+import android.graphics.{Canvas, Color, Paint}
 import android.support.v4.view.ViewPager
-import android.util.{AttributeSet, TypedValue}
+import android.util.AttributeSet
 import android.view.View.OnClickListener
 import android.view.ViewGroup.LayoutParams._
-import android.view.{LayoutInflater, Gravity, View}
-import android.widget.{FrameLayout, HorizontalScrollView, TextView}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import android.view.{Gravity, LayoutInflater, View}
+import android.widget.{LinearLayout, FrameLayout, HorizontalScrollView, TextView}
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Transformer, ActivityContextWrapper, Tweak}
-import macroid.FullDsl._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
 
 /**
  * Inspired in https://developer.android.com/samples/SlidingTabsBasic/index.html
@@ -146,16 +140,48 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
 }
 
-object SlidingTabLayoutTweaks {
-  type W = SlidingTabLayout
+class SlidingTabStrip(context: Context, attr: AttributeSet, defStyleAttr: Int)
+  extends LinearLayout(context, attr, defStyleAttr) {
 
-  def stlViewPager(viewPager: Option[ViewPager]): Tweak[W] = Tweak[W](viewPager foreach _.setViewPager)
+  def this(context: Context) = this(context, null, 0)
 
-  def stlDefaultTextColor(color: Int): Tweak[W] = Tweak[W](_.setDefaultTextColor(color))
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  def stlSelectedTextColor(color: Int): Tweak[W] = Tweak[W](_.setSelectedTextColor(color))
+  private var selectedPosition: Int = 0
+  private var selectionOffset: Float = .0f
 
-  def stlTabStripColor(color: Int): Tweak[W] = Tweak[W](_.setTabStripColor(color))
+  setWillNotDraw(false)
 
-  def stlOnPageChangeListener(listener: ViewPager.OnPageChangeListener): Tweak[W] = Tweak[W](_.setOnPageChangeListener(listener))
+  val selectedIndicatorThickness = context.getResources.getDimensionPixelOffset(R.dimen.height_selected_tab)
+  val selectedIndicatorPaint = new Paint
+  setColor(Color.WHITE)
+
+  def setColor(color: Int) = selectedIndicatorPaint.setColor(color)
+
+  def onViewPagerPageChanged(position: Int, positionOffset: Float) {
+    selectedPosition = position
+    selectionOffset = positionOffset
+    invalidate()
+  }
+
+  protected override def onDraw(canvas: Canvas) {
+    val height: Int = getHeight
+    val childCount: Int = getChildCount
+
+    if (childCount > 0) {
+      val selectedTitle: View = getChildAt(selectedPosition)
+      var left: Int = selectedTitle.getLeft
+      var right: Int = selectedTitle.getRight
+
+      if (selectionOffset > 0f && selectedPosition < (getChildCount - 1)) {
+        val nextTitle = getChildAt(selectedPosition + 1)
+        left = (selectionOffset * nextTitle.getLeft + (1.0f - selectionOffset) * left).toInt
+        right = (selectionOffset * nextTitle.getRight + (1.0f - selectionOffset) * right).toInt
+      }
+      canvas.drawRect(left, height - selectedIndicatorThickness, right, height, selectedIndicatorPaint)
+    }
+
+  }
+
+
 }

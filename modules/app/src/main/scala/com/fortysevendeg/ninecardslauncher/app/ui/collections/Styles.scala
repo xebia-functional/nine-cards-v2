@@ -22,10 +22,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.CollectionRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, CollectionRecyclerView, SlidingTabLayout}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{SlidingTabLayout, FabItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.{SlidingTabLayoutTweaks, FabItemMenuTweaks}
+import FabItemMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks
+import CollectionRecyclerViewTweaks._
+import SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.types._
 import CardType._

@@ -24,7 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.Dimen
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{LauncherWorkSpaceHolder, Dimen}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.CollectionItemTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R

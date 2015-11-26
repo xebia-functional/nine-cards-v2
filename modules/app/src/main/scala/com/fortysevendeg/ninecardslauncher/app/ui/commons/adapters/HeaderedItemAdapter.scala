@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ViewHolderCategoryLayoutAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.HeaderedItemAdapter._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerListener
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}

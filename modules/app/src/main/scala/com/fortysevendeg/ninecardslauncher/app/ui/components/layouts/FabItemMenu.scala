@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.graphics.drawable.ShapeDrawable
@@ -41,24 +41,3 @@ trait FabItemMenuStyles {
 
 }
 
-object FabItemMenuTweaks {
-  type W = FabItemMenu
-
-  def fimBackgroundColor(color: Int) = Tweak[W](_.icon foreach {
-    ic =>
-      Lollipop ifSupportedThen {
-        ic.setBackgroundColor(color)
-      } getOrElse {
-        val d = new ShapeDrawable(new OvalShape)
-        d.getPaint.setColor(color)
-        ic.setBackground(d)
-      }
-  })
-
-  def fimSrc(res: Int) = Tweak[W](_.icon foreach (_.setImageResource(res)))
-
-  def fimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
-
-  def fimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
-
-}

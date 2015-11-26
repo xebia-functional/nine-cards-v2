@@ -1,16 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.util.AttributeSet
-import android.view.ViewGroup.{OnHierarchyChangeListener, LayoutParams}
+import android.view.ViewGroup.{LayoutParams, OnHierarchyChangeListener}
 import android.view.animation.AnimationUtils
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
-import android.view.{View, MotionEvent}
+import android.view.{MotionEvent, View}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import macroid.FullDsl._
-import macroid.{Tweak, ContextWrapper}
+import macroid.{ContextWrapper, Tweak}
 
 class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends RecyclerView(context, attr, defStyleAttr) {
@@ -78,38 +78,3 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
 }
 
-object CollectionRecyclerViewTweaks {
-  type W = CollectionRecyclerView
-
-  def nrvDisableScroll(disable: Boolean) = Tweak[W](_.disableScroll = disable)
-
-  def nrvEnableAnimation(res: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W]{ view =>
-    view.enableAnimation = true
-    view.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(contextWrapper.application, res))
-  }
-
-  def nrvScheduleLayoutAnimation = Tweak[W](_.scheduleLayoutAnimation())
-
-  def nrvCollectionScrollListener(
-    scrolled: (Int, Int, Int) => Int,
-    scrollStateChanged: (Int, RecyclerView, Int) => Unit
-  )(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.createScrollListener(scrolled, scrollStateChanged))
-
-  def nrvResetPositions(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { recyclerView =>
-    recyclerView.setOnHierarchyChangeListener(new OnHierarchyChangeListener {
-      override def onChildViewAdded(parent: View, child: View): Unit = reset
-      override def onChildViewRemoved(parent: View, child: View): Unit = reset
-      private[this] def reset = recyclerView.getLayoutManager match {
-        case layoutManager: GridLayoutManager =>
-          val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
-          0 until recyclerView.getChildCount foreach { position =>
-            val newPosition = position + firstVisiblePosition
-            val v = recyclerView.getChildAt(position)
-            runUi(v <~ vTag2(newPosition))
-          }
-      }
-
-    })
-  }
-
-}

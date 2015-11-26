@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.drawables
 
 import android.graphics._
 import android.graphics.drawable.Drawable
-import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
 case class CharDrawable(char: String, circle: Boolean = false)(implicit contextWrapper: ContextWrapper)

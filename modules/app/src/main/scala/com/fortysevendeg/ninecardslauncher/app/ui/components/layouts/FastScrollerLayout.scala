@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.graphics.drawable.{Drawable, GradientDrawable}
@@ -9,17 +9,17 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.util.AttributeSet
 import android.view.MotionEvent._
+import android.view.{View, MotionEvent, LayoutInflater, Gravity}
 import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, LayoutInflater, MotionEvent, View}
+import android.widget.{LinearLayout, FrameLayout}
 import android.widget.FrameLayout.LayoutParams
-import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{Tweak, Ui}
+import macroid.{Ui, Tweak}
 
 class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr) {
@@ -74,7 +74,7 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 
 class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attr, defStyleAttr)
-  with TypedFindView {
+    with TypedFindView {
 
   def this(context: Context) = this(context, null, 0)
 
@@ -236,22 +236,3 @@ trait FastScrollerListener {
   def getElement(position: Int): Option[String]
 
 }
-
-object FastScrollerLayoutTweak {
-  // We should launch this tweak when the adapter has been added
-  def fslLinkRecycler = Tweak[FastScrollerLayout](_.linkRecycler())
-
-  def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
-
-  def fslInvisible = Tweak[FastScrollerLayout]{ view =>
-    runUi(view.fastScroller map (fs => fs.hide) getOrElse Ui.nop)
-  }
-
-  def fslVisible = Tweak[FastScrollerLayout]{ view =>
-    runUi(view.fastScroller map (fs => fs.show) getOrElse Ui.nop)
-  }
-
-  def fslReset = Tweak[FastScrollerLayout](_.reset)
-
-}
-

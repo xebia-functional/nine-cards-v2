@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.widget.TextView
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherWorkSpaceHolder
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper}
 

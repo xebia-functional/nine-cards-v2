@@ -13,9 +13,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdap
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.SearchBoxesAnimatedViewTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.{FastScrollerLayoutTweak, SearchBoxesAnimatedViewTweak}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.DrawerRecyclerView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
+import FastScrollerLayoutTweak._
+import SearchBoxesAnimatedViewTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer

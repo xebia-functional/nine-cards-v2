@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, ValueAnimator}
 import android.content.Context
@@ -15,9 +15,9 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TouchState._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak, Ui}
+import TouchState._
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   (context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
@@ -476,16 +476,3 @@ object TouchState {
   val scrolling = 1
 }
 
-object AnimatedWorkSpacesTweaks {
-
-  type W = AnimatedWorkSpaces[_, _]
-
-  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] { view =>
-    view.listener.startScroll = listener.startScroll
-    view.listener.endScroll = listener.endScroll
-    view.listener.onClick = listener.onClick
-  }
-
-  def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
-
-}

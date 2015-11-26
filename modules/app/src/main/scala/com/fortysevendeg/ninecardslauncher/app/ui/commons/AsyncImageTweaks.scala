@@ -14,7 +14,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.CharDrawable
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import macroid.{Snail, ActivityContextWrapper, Tweak}
 import macroid.FullDsl._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
