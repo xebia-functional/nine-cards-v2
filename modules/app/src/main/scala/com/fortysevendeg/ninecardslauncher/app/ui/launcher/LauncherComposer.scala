@@ -7,8 +7,9 @@ import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.View
+import android.view.{View, WindowManager}
 import android.widget.ImageView
+import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -23,15 +24,15 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehavi
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, LauncherExecutor, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.{AnimatedWorkSpacesListener, FabItemMenu}
-import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerComposer
+import com.fortysevendeg.ninecardslauncher.app.ui.drawer.{DrawerComposer, DrawerListeners}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
-import com.fortysevendeg.ninecardslauncher.process.types.{AppCardType, CardType}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -45,7 +46,7 @@ trait LauncherComposer
   with FabButtonBehaviour
   with LauncherExecutor {
 
-  self: AppCompatActivity with TypedFindView with SystemBarsTint =>
+  self: AppCompatActivity with TypedFindView with SystemBarsTint with DrawerListeners =>
 
   // TODO For now, we always use 4 applications in app drawer panel
   lazy val packagesForAppsDrawer = Seq(
@@ -146,20 +147,19 @@ trait LauncherComposer
 
   lazy val micIcon = Option(findView(TR.launcher_mic_icon))
 
+  lazy val actionFragmentContent = Option(findView(TR.action_fragment_content))
+
   def showMessage(message: Int): Ui[_] = drawerLayout <~ uiSnackbarShort(message)
 
-  def updateBarsInFabMenuShow: Ui[_] = {
-    val color = getResources.getColor(R.color.background_dialog)
-    updateNavigationColor(color) ~
-      updateStatusColor(color)
-  }
+  def updateBarsInFabMenuShow: Ui[_] = Ui.nop
 
-  def updateBarsInFabMenuHide: Ui[_] = updateNavigationToTransparent ~ updateStatusToTransparent
+  def updateBarsInFabMenuHide: Ui[_] = Ui.nop
 
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
-    (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
+    prepareBars ~
+      (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
         runUi(goToMenuOption(itemId))
         true
@@ -317,12 +317,12 @@ trait LauncherComposer
     }
   }
 
-  private[this] def reloadPager(currentPage: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {
+  def reloadPager(currentPage: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {
     case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true) <~~ pagerAppear
     case i: ImageView => i <~ vActivated(false)
   }
 
-  private[this] def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
+  def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
     w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
 
@@ -344,5 +344,14 @@ trait LauncherComposer
       (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
+
+  private[this] def prepareBars(implicit context: ActivityContextWrapper) =
+    KitKat.ifSupportedThen {
+      Ui(getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
+        (content <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
+        (drawerContent <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
+        (actionFragmentContent <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
+        (drawerLayout <~ vBackground(R.drawable.background_workspace))
+    } getOrElse Ui.nop
 
 }

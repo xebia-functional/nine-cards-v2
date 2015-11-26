@@ -10,9 +10,10 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ItemHeaderedViewHolder, ItemHeadered}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
@@ -100,9 +101,9 @@ case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: 
   with ItemHeaderedViewHolder[Contact]
   with TypedFindView {
 
-  lazy val icon = Option(findView(TR.simple_item_icon))
+  lazy val icon = Option(findView(TR.contact_item_icon))
 
-  lazy val name = Option(findView(TR.simple_item_name))
+  lazy val name = Option(findView(TR.contact_item_name))
 
   runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
 

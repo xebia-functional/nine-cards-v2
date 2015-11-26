@@ -13,7 +13,7 @@ case class ShortcutAdapter(shortcuts: Seq[Shortcut], clickListener: (Shortcut) =
   extends RecyclerView.Adapter[ViewHolderShortcutLayoutAdapter] {
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderShortcutLayoutAdapter = {
-    val view = LayoutInflater.from(parent.getContext).inflate(R.layout.simple_item_horizontal, parent, false).asInstanceOf[ViewGroup]
+    val view = LayoutInflater.from(parent.getContext).inflate(R.layout.shortcut_item, parent, false).asInstanceOf[ViewGroup]
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = Option(v.getTag) foreach (tag => clickListener(shortcuts(Int.unbox(tag))))
     })

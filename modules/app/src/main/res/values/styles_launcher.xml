@@ -4,7 +4,6 @@
     <style name="LauncherRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:fitsSystemWindows">true</item>
     </style>
 
     <style name="LauncherLoading">
@@ -17,6 +16,12 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+    <style name="LauncherSearchAnimatedContentPanel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="LauncherSearchPanel">
@@ -25,11 +30,26 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_margin">@dimen/padding_default</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:background">@drawable/search</item>
         <item name="android:paddingLeft">@dimen/padding_large</item>
         <item name="android:paddingRight">@dimen/padding_large</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <style name="LauncherSearchEditText">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@null</item>
+        <item name="android:textColor">@color/drawer_search_box</item>
+        <item name="android:textColorHint">@color/drawer_search_box_hint</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:lines">1</item>
+    </style>
+
+    <style name="LauncherSearchIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="LauncherWorkSpacesContent">

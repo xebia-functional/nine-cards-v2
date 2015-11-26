@@ -15,27 +15,29 @@ class AppBroadcastReceiver
   with AppBroadcastReceiverTasks {
 
   override def onReceive(context: Context, intent: Intent): Unit = {
-
-    val action = intent.getAction
-    val replacing = intent.getBooleanExtra(EXTRA_REPLACING, false)
     val packageName = getPackageName(intent)
+    // We don't want to change 9Cards App
+    if (!context.getPackageName.equals(packageName)) {
+      val action = intent.getAction
+      val replacing = intent.getBooleanExtra(EXTRA_REPLACING, false)
 
-    implicit val contextSupport = new ContextSupportReceiverImpl(context)
-    implicit val di = new Injector
+      implicit val contextSupport = new ContextSupportReceiverImpl(context)
+      implicit val di = new Injector
 
-    (action, replacing) match {
-      case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).run).resolveAsync(
-        onResult = _ => {
-          // We can't use the BroadcastDispatcher trait because the Receivers aren't a ContextWrapper then
-          // we have to send the intent from the context parameter
-          val intent = new Intent(AppInstalledActionFilter.action)
-          intent.putExtra(BroadcastDispatcher.keyType, BroadcastDispatcher.commandType)
-          context.sendBroadcast(intent)
-        }
-      )
-      case (ACTION_PACKAGE_REMOVED, false) => Task.fork(deleteApp(packageName).run).resolveAsync()
-      case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => Task.fork(updateApp(packageName).run).resolveAsync()
-      case (_, _) =>
+      (action, replacing) match {
+        case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).run).resolveAsync(
+          onResult = _ => {
+            // We can't use the BroadcastDispatcher trait because the Receivers aren't a ContextWrapper then
+            // we have to send the intent from the context parameter
+            val intent = new Intent(AppInstalledActionFilter.action)
+            intent.putExtra(BroadcastDispatcher.keyType, BroadcastDispatcher.commandType)
+            context.sendBroadcast(intent)
+          }
+        )
+        case (ACTION_PACKAGE_REMOVED, false) => Task.fork(deleteApp(packageName).run).resolveAsync()
+        case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => Task.fork(updateApp(packageName).run).resolveAsync()
+        case (_, _) =>
+      }
     }
   }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LauncherSearchPanel"
+    android:id="@+id/launcher_search_box_panel">
+
+    <EditText
+        style="@style/LauncherSearchEditText"
+        android:id="@+id/launcher_search_box_text"/>
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+        style="@style/LauncherSearchIcon"
+        android:id="@+id/launcher_search_box_icon"/>
+
+</LinearLayout>

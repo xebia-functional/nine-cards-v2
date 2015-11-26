@@ -14,14 +14,14 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.TouchState._
-import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Transformer, Tweak, Ui}
+import macroid.{ContextWrapper, Tweak, Ui}
 
-abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(context, attr, defStyleAttr) {
-  self =>
+abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
+  (context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
+  extends FrameLayout(context, attr, defStyleAttr) { self =>
 
   type PageChangedObserver = (Int => Unit)
 
@@ -65,7 +65,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
 
     override def onAnimationEnd(animation: Animator) {
       if (swap) swapViews()
-      runUi(self <~ layerHardware(false))
+      runUi(self <~ vLayerHardware(activate = false))
       super.onAnimationEnd(animation)
     }
   }
@@ -140,10 +140,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       self <~ vgAddViews(Seq(p, n, f), params)
     }) getOrElse (throw new InstantiationException("parent views can't be added"))
     runUi(ui ~ reset())
-  }
-
-  private[this] def layerHardware(activate: Boolean) = Transformer {
-    case v: View if Option(v.getTag(R.id.use_layer_hardware)).isDefined => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
   }
 
   def goToItem(): Int = (displacement, currentItem) match {
@@ -354,23 +350,24 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
     val action = MotionEventCompat.getActionMasked(event)
     if (action == ACTION_MOVE && touchState != stopped) {
       requestDisallowInterceptTouchEvent(true)
-      return true
+      true
+    } else {
+      if (velocityTracker.isEmpty) velocityTracker = Some(VelocityTracker.obtain())
+      velocityTracker foreach (_.addMovement(event))
+      val x = MotionEventCompat.getX(event, 0)
+      val y = MotionEventCompat.getY(event, 0)
+      action match {
+        case ACTION_MOVE => setStateIfNeeded(x, y)
+        case ACTION_DOWN =>
+          lastMotionX = x
+          lastMotionY = y
+        case ACTION_CANCEL | ACTION_UP =>
+          computeFling()
+          touchState = stopped
+        case _ =>
+      }
+      touchState != stopped
     }
-    if (velocityTracker.isEmpty) velocityTracker = Some(VelocityTracker.obtain())
-    velocityTracker foreach (_.addMovement(event))
-    val x = MotionEventCompat.getX(event, 0)
-    val y = MotionEventCompat.getY(event, 0)
-    action match {
-      case ACTION_MOVE => setStateIfNeeded(x, y)
-      case ACTION_DOWN =>
-        lastMotionX = x
-        lastMotionY = y
-      case ACTION_CANCEL | ACTION_UP =>
-        computeFling()
-        touchState = stopped
-      case _ =>
-    }
-    touchState != stopped
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
@@ -447,7 +444,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data](context: Context, a
       if (isScrolling) {
         listener.startScroll(x - lastMotionX > 0)
         touchState = scrolling
-        runUi(self <~ layerHardware(true))
+        runUi(self <~ vLayerHardware(activate = true))
       }
       lastMotionX = x
       lastMotionY = y

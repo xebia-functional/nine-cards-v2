@@ -34,11 +34,14 @@ case object RecommendedAppCardType extends CardType {
   override val name: String = recommendedApp
 }
 
+case object NotFoundCardType extends CardType {
+  override val name: String = recommendedApp
+}
+
 object CardType {
 
   val cardTypes = Seq(AppCardType, NoInstalledAppCardType, PhoneCardType, EmailCardType, SmsCardType, ShortcutCardType, RecommendedAppCardType)
 
-  def apply(name: String): CardType = cardTypes find (_.name == name) getOrElse
-    (throw new IllegalArgumentException(s"$name not found"))
+  def apply(name: String): CardType = cardTypes find (_.name == name) getOrElse NotFoundCardType
 
 }

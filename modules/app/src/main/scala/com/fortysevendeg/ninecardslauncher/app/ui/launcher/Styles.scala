@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 import android.text.TextUtils.TruncateAt
 import android.view.{Gravity, ViewGroup}
 import android.widget._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -23,7 +24,7 @@ import macroid.{ContextWrapper, Tweak}
 trait Styles {
 
   def searchContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =
-    vBackgroundColorFilter(theme.get(SearchBackgroundColor))
+    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
 
   def burgerButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
     tivDefaultColor(theme.get(SearchIconsColor)) +

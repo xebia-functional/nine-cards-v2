@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ItemHeaderedViewHolder, ItemHeadered}
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 import macroid.{Ui, ActivityContextWrapper}
 import macroid.FullDsl._

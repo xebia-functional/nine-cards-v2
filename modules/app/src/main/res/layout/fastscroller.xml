@@ -13,8 +13,13 @@
 
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/fastscroller_bar"
-        style="@style/FastScrollerBar" />
+    <FrameLayout
+        style="@style/FastScrollerBarContent">
+
+        <ImageView
+            android:id="@+id/fastscroller_bar"
+            style="@style/FastScrollerBar" />
+
+    </FrameLayout>
 
 </merge>

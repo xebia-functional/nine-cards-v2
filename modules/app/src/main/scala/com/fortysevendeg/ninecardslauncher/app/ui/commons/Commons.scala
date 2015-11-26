@@ -16,6 +16,8 @@ object Constants {
 
   val numInLine = 3
 
+  val columnsLists = 4
+
   val minVelocity: Int = 250
 
   val maxRatioVelocity: Int = 3000

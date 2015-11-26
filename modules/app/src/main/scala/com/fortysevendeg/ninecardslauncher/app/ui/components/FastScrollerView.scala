@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.{Drawable, GradientDrawable}
 import android.os.Build.VERSION._
 import android.os.Build.VERSION_CODES._
+import android.support.v4.view.MotionEventCompat
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.util.AttributeSet
@@ -30,9 +31,6 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   lazy val fastScroller = Option(new FastScrollerView(context))
 
   override def onFinishInflate(): Unit = {
-    if (!getChildAt(0).isInstanceOf[RecyclerView]) {
-      throw new IllegalStateException("FastScrollerLayout must contain a RecyclerView")
-    }
     fastScroller map { fs =>
       val ll = new LayoutParams(WRAP_CONTENT, MATCH_PARENT)
       ll.gravity = Gravity.RIGHT
@@ -117,21 +115,26 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     indicator.height = h
   }
 
-  override def onTouchEvent(event: MotionEvent): Boolean = event.getAction match {
-    case ACTION_DOWN | ACTION_MOVE =>
-      indicator.startScroll()
-      val y = event.getY
-      runUi(changePosition(y) ~
-        showSignal ~
-        (recyclerView <~ rvScrollToPosition(y)))
-      true
-    case ACTION_UP | ACTION_CANCEL =>
-      indicator.resetScroll()
-      runUi(hideSignal)
-      // Update scroll position in ScrollListener
-      scrollListener foreach (_.y = indicator.projectToRecycler(event.getY))
-      true
-    case _ => super.onTouchEvent(event)
+  override def onTouchEvent(event: MotionEvent): Boolean = {
+    val action = MotionEventCompat.getActionMasked(event)
+    val y = MotionEventCompat.getY(event, 0)
+    action match {
+      case ACTION_DOWN =>
+        indicator.startScroll()
+        true
+      case ACTION_MOVE =>
+        runUi(changePosition(y) ~
+          showSignal ~
+          (recyclerView <~ rvScrollToPosition(y)))
+        true
+      case ACTION_UP | ACTION_CANCEL =>
+        indicator.resetScroll()
+        runUi(hideSignal)
+        // Update scroll position in ScrollListener
+        scrollListener foreach (_.y = indicator.projectToRecycler(event.getY))
+        true
+      case _ => super.onTouchEvent(event)
+    }
   }
 
   def show: Ui[_] = (signal <~ vGone) ~ (bar <~ vVisible)
