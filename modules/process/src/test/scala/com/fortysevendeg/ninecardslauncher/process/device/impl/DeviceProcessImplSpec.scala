@@ -90,16 +90,16 @@ trait DeviceProcessSpecification
     val mockPersistenceServices = mock[PersistenceServices]
 
     mockPersistenceServices.deleteAllApps() returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections() returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCards() returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllDockApps() returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.fetchApps(any, any) returns
       Service(Task(Result.answer(appsPersistence)))
@@ -110,13 +110,13 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(appsPersistence(2)))))
 
     mockPersistenceServices.deleteAppByPackage(any) returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.findAppByPackage(any) returns
       Service(Task(Result.answer(appsPersistence.headOption)))
 
     mockPersistenceServices.updateApp(any) returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     val mockContactsServices = mock[ContactsServices]
 
@@ -221,7 +221,7 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections returns Service {
       Task(Errata(persistenceServiceException))
@@ -233,10 +233,10 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCards returns Service {
       Task(Errata(persistenceServiceException))
@@ -248,13 +248,13 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps() returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections() returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCards() returns
-      Service(Task(Result.answer(5)))
+      Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllDockApps() returns Service {
       Task(Errata(persistenceServiceException))
@@ -453,7 +453,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ResetSavedItemsException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
           }
         }
       }
@@ -463,7 +463,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ResetSavedItemsException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
           }
         }
       }
@@ -473,7 +473,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ResetSavedItemsException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
           }
         }
       }
@@ -483,7 +483,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ResetSavedItemsException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
           }
         }
       }

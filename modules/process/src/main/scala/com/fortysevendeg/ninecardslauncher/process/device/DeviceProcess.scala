@@ -9,9 +9,9 @@ trait DeviceProcess {
 
   /**
     * Delete all apps, cards, collections and dockApps from the repository
-    * @throws ResetSavedItemsException if exist some problem deleting the apps, cards, collections and dockApps
+    * @throws ResetException if exist some problem deleting the apps, cards, collections and dockApps
     */
-  def resetSavedItems(): ServiceDef2[Unit, ResetSavedItemsException]
+  def resetSavedItems(): ServiceDef2[Unit, ResetException]
 
   /**
    * Get the saved apps from the database

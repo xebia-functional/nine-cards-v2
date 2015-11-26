@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.device
 
 import scalaz.Scalaz._
 
-case class ResetSavedItemsException(message: String, cause: Option[Throwable] = None) extends RuntimeException(message) {
+case class ResetException(message: String, cause: Option[Throwable] = None) extends RuntimeException(message) {
   cause map initCause
 }
 
@@ -31,7 +31,7 @@ case class CallException(message: String, cause: Option[Throwable] = None) exten
 }
 
 trait ImplicitsDeviceException {
-  implicit def resetSavedItemsException = (t: Throwable) => ResetSavedItemsException(t.getMessage, t.some)
+  implicit def resetException = (t: Throwable) => ResetException(t.getMessage, t.some)
 
   implicit def appException = (t: Throwable) => AppException(t.getMessage, t.some)
 

@@ -15,7 +15,7 @@ trait CreateCollectionsTasks
 
   self: CreateCollectionService =>
 
-  def createNewConfiguration: ServiceDef2[Seq[Collection], ResetSavedItemsException with AppException with ContactException with CollectionException] =
+  def createNewConfiguration: ServiceDef2[Seq[Collection], ResetException with AppException with ContactException with CollectionException] =
     for {
       - <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
@@ -27,7 +27,7 @@ trait CreateCollectionsTasks
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
     } yield collections
 
-   def loadConfiguration(deviceId: String): ServiceDef2[Seq[Collection], ResetSavedItemsException with AppException with CreateBitmapException with UserConfigException with CollectionException] =
+   def loadConfiguration(deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with UserConfigException with CollectionException] =
     for {
       - <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps

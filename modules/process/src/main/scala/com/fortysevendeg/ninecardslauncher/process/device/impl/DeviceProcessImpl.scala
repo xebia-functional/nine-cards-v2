@@ -48,7 +48,7 @@ class DeviceProcessImpl(
       _ <- persistenceServices.deleteAllCollections()
       _ <- persistenceServices.deleteAllCards()
       _ <- persistenceServices.deleteAllDockApps()
-    } yield ()).resolve[ResetSavedItemsException]
+    } yield ()).resolve[ResetException]
 
   override def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
