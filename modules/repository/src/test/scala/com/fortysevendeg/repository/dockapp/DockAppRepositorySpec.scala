@@ -41,6 +41,8 @@ trait DockAppRepositorySpecification
 
     contentResolverWrapper.insert(mockUri, createDockAppValues) returns testId
 
+    contentResolverWrapper.delete(mockUri, where = "") returns 1
+
     contentResolverWrapper.deleteById(mockUri, testId) returns 1
 
     contentResolverWrapper.findById(
@@ -68,6 +70,8 @@ trait DockAppRepositorySpecification
     uriCreator.parse(any) returns mockUri
 
     contentResolverWrapper.insert(mockUri, createDockAppValues) throws contentResolverException
+
+    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
 
     contentResolverWrapper.deleteById(mockUri, testId) throws contentResolverException
 
@@ -132,11 +136,41 @@ class DockAppRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
           val result = dockAppRepository.addDockApp(data = createDockAppData).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "deleteDockApps" should {
+
+      "return a successful result when all the dockApps are deleted" in
+        new DockAppRepositoryScope
+          with ValidDockAppRepositoryResponses {
+
+          val result = dockAppRepository.deleteDockApps().run.run
+
+          result must beLike {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new DockAppRepositoryScope
+          with ErrorDockAppRepositoryResponses {
+
+          val result = dockAppRepository.deleteDockApps().run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
@@ -162,7 +196,7 @@ class DockAppRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
@@ -206,7 +240,7 @@ class DockAppRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
@@ -236,7 +270,7 @@ class DockAppRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 

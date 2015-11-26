@@ -40,6 +40,17 @@ class DockAppRepository(
       }
     }
 
+  def deleteDockApps(where: String = ""): ServiceDef2[Int, RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.delete(
+            uri = dockAppUri,
+            where = where)
+        }
+      }
+    }
+
   def deleteDockApp(dockApp: DockApp): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {

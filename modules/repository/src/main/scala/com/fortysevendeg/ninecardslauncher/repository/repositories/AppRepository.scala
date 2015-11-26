@@ -48,6 +48,17 @@ class AppRepository(
       }
     }
 
+  def deleteApps(where: String = ""): ServiceDef2[Int, RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.delete(
+            uri = appUri,
+            where = where)
+        }
+      }
+    }
+
   def deleteApp(app: App): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {

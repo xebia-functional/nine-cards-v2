@@ -47,6 +47,17 @@ class CardRepository(
       }
     }
 
+  def deleteCards(where: String = ""): ServiceDef2[Int, RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.delete(
+            uri = cardUri,
+            where = where)
+        }
+      }
+    }
+
   def deleteCard(card: Card): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {
