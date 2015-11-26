@@ -448,7 +448,7 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns DeleteItemsException when persistence service fails deleting the apps" in
+    "returns ResetException when persistence service fails deleting the apps" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteAppsProcessScope {
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
@@ -458,7 +458,7 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns DeleteItemsException when persistence service fails deleting the collections" in
+    "returns ResetException when persistence service fails deleting the collections" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteCollectionsProcessScope {
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
@@ -468,7 +468,7 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns DeleteItemsException when persistence service fails deleting the cards" in
+    "returns ResetException when persistence service fails deleting the cards" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteCardsProcessScope {
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
@@ -478,7 +478,7 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns DeleteItemsException when persistence service fails deleting the dock apps" in
+    "returns ResetException when persistence service fails deleting the dock apps" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteDockAppsProcessScope {
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
