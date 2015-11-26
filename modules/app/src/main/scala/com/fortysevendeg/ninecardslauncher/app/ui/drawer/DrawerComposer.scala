@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.drawer
 
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -117,8 +118,12 @@ trait DrawerComposer
     adapter <- Option(rv.getAdapter)
   } yield adapter.getItemCount) getOrElse 0
 
+  def paginationDrawer(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
+    w[ImageView] <~ paginationDrawerItemStyle <~ vTag(position.toString)
+  )
+
   private[this] def createDrawerPagers(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = {
-    val pagerViews = 0 until pages map pagination
+    val pagerViews = 0 until pages map paginationDrawer
     paginationDrawerPanel <~ vgAddViews(pagerViews)
   }
 
