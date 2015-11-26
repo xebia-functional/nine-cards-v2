@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, AppEntity}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
@@ -65,6 +65,11 @@ class PersistenceServicesImpl(
       app <- appRepository.addApp(toRepositoryAppData(request))
     } yield toApp(app)).resolve[PersistenceServiceException]
 
+  override def deleteAllApps() =
+    (for {
+      deleted <- appRepository.deleteApps()
+    } yield deleted).resolve[PersistenceServiceException]
+
   override def deleteAppByPackage(packageName: String) =
     (for {
       deleted <- appRepository.deleteAppByPackage(packageName)
@@ -85,9 +90,19 @@ class PersistenceServicesImpl(
         Service(Task(Result.errata(PersistenceServiceException("CollectionId can't be empty"))))
     }
 
+  override def deleteAllCards() =
+    (for {
+      deleted <- cardRepository.deleteCards()
+    } yield deleted).resolve[PersistenceServiceException]
+
   override def deleteCard(request: DeleteCardRequest) =
     (for {
       deleted <- cardRepository.deleteCard(toRepositoryCard(request.card))
+    } yield deleted).resolve[PersistenceServiceException]
+
+  override def deleteCardsByCollection(collectionId: Int) =
+    (for {
+      deleted <- cardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId")
     } yield deleted).resolve[PersistenceServiceException]
 
   override def fetchCardsByCollection(request: FetchCardsByCollectionRequest) =
@@ -115,6 +130,11 @@ class PersistenceServicesImpl(
       collection <- collectionRepository.addCollection(toRepositoryCollectionData(request))
       addedCards <- addCards(request.cards map (_.copy(collectionId = Option(collection.id))))
     } yield toCollection(collection).copy(cards = addedCards)).resolve[PersistenceServiceException]
+
+  override def deleteAllCollections() =
+    (for {
+      deleted <- collectionRepository.deleteCollections()
+    } yield deleted).resolve[PersistenceServiceException]
 
   override def deleteCollection(request: DeleteCollectionRequest) = {
     (for {
@@ -158,6 +178,11 @@ class PersistenceServicesImpl(
       geoInfo <- geoInfoRepository.addGeoInfo(toRepositoryGeoInfoData(request))
     } yield toGeoInfo(geoInfo)).resolve[PersistenceServiceException]
 
+  override def deleteAllGeoInfoItems() =
+    (for {
+      deleted <- geoInfoRepository.deleteGeoInfoItems()
+    } yield deleted).resolve[PersistenceServiceException]
+
   override def deleteGeoInfo(request: DeleteGeoInfoRequest) =
     (for {
       deleted <- geoInfoRepository.deleteGeoInfo(toRepositoryGeoInfo(request.geoInfo))
@@ -187,6 +212,11 @@ class PersistenceServicesImpl(
     (for {
       user <- userRepository.addUser(toRepositoryUserData(request))
     } yield toUser(user)).resolve[PersistenceServiceException]
+
+  override def deleteAllUsers() =
+    (for {
+      deleted <- userRepository.deleteUsers()
+    } yield deleted).resolve[PersistenceServiceException]
 
   override def deleteUser(request: DeleteUserRequest) =
     (for {
@@ -224,6 +254,11 @@ class PersistenceServicesImpl(
     (for {
       dockApp <- dockAppRepository.addDockApp(toRepositoryDockAppData(request))
     } yield toDockApp(dockApp)).resolve[PersistenceServiceException]
+
+  override def deleteAllDockApps() =
+    (for {
+      deleted <- dockAppRepository.deleteDockApps()
+    } yield deleted).resolve[PersistenceServiceException]
 
   override def deleteDockApp(request: DeleteDockAppRequest) =
     (for {

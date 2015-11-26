@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, AppEntity}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -53,11 +53,15 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.answer(repoApp)))
 
+    mockAppRepository.deleteApps() returns Service(Task(Result.answer(5)))
+
     mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(1)))
 
     mockAppRepository.updateApp(repoApp) returns Service(Task(Result.answer(1)))
 
     mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.answer(repoGeoInfo)))
+
+    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.answer(5)))
 
     mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(1)))
 
@@ -74,6 +78,10 @@ trait PersistenceServicesSpecification
     mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(1)))
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.answer(repoCard)))
+
+    mockCardRepository.deleteCards() returns Service(Task(Result.answer(5)))
+
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(5)))
 
     seqRepoCard foreach { repoCard =>
       mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.answer(1)))
@@ -92,6 +100,8 @@ trait PersistenceServicesSpecification
     mockCardRepository.updateCard(repoCard) returns Service(Task(Result.answer(1)))
 
     mockCollectionRepository.addCollection(repoCollectionData) returns Service(Task(Result.answer(repoCollection)))
+
+    mockCollectionRepository.deleteCollections() returns Service(Task(Result.answer(5)))
 
     mockCollectionRepository.deleteCollection(repoCollection) returns Service(Task(Result.answer(1)))
 
@@ -113,6 +123,8 @@ trait PersistenceServicesSpecification
 
     mockUserRepository.addUser(repoUserData) returns Service(Task(Result.answer(repoUser)))
 
+    mockUserRepository.deleteUsers() returns Service(Task(Result.answer(5)))
+
     mockUserRepository.deleteUser(repoUser) returns Service(Task(Result.answer(1)))
 
     mockUserRepository.fetchUsers returns Service(Task(Result.answer(seqRepoUser)))
@@ -124,6 +136,8 @@ trait PersistenceServicesSpecification
     mockUserRepository.updateUser(repoUser) returns Service(Task(Result.answer(1)))
 
     mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.answer(repoDockApp)))
+
+    mockDockAppRepository.deleteDockApps() returns Service(Task(Result.answer(5)))
 
     mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.answer(1)))
 
@@ -146,11 +160,15 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.errata(exception)))
 
+    mockAppRepository.deleteApps() returns Service(Task(Result.errata(exception)))
+
     mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.updateApp(repoApp) returns Service(Task(Result.errata(exception)))
 
     mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.errata(exception)))
+
+    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.errata(exception)))
 
     mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.errata(exception)))
 
@@ -163,6 +181,10 @@ trait PersistenceServicesSpecification
     mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.errata(exception)))
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.errata(exception)))
+
+    mockCardRepository.deleteCards() returns Service(Task(Result.errata(exception)))
+
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.errata(exception)))
 
     seqRepoCard foreach { repoCard =>
       mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.errata(exception)))
@@ -180,6 +202,8 @@ trait PersistenceServicesSpecification
 
     mockCollectionRepository.addCollection(repoCollectionData) returns Service(Task(Result.errata(exception)))
 
+    mockCollectionRepository.deleteCollections() returns Service(Task(Result.errata(exception)))
+
     mockCollectionRepository.deleteCollection(repoCollection) returns Service(Task(Result.errata(exception)))
 
     mockCollectionRepository.fetchCollectionByPosition(position) returns Service(Task(Result.errata(exception)))
@@ -194,6 +218,8 @@ trait PersistenceServicesSpecification
 
     mockUserRepository.addUser(repoUserData) returns Service(Task(Result.errata(exception)))
 
+    mockUserRepository.deleteUsers() returns Service(Task(Result.errata(exception)))
+
     mockUserRepository.deleteUser(repoUser) returns Service(Task(Result.errata(exception)))
 
     mockUserRepository.fetchUsers returns Service(Task(Result.errata(exception)))
@@ -205,6 +231,8 @@ trait PersistenceServicesSpecification
     mockUserRepository.updateUser(repoUser) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.errata(exception)))
+
+    mockDockAppRepository.deleteDockApps() returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
 
@@ -342,6 +370,30 @@ class PersistenceServicesSpec
     }
   }
 
+  "deleteAllApps" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllApps().run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 5
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllApps().run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
   "deleteAppByPackage" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
@@ -404,6 +456,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteAllGeoInfoItems" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllGeoInfoItems().run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 5
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllGeoInfoItems().run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -582,6 +658,30 @@ class PersistenceServicesSpec
     }
   }
 
+  "deleteAllCards" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllCards().run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 5
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllCards().run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
   "deleteCard" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
@@ -595,6 +695,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteCardsByCollection" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteCardsByCollection(collectionId).run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 5
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteCardsByCollection(collectionId).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -727,6 +851,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addCollection(createAddCollectionRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteAllCollections" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllCollections().run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 5
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllCollections().run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -942,6 +1090,30 @@ class PersistenceServicesSpec
     }
   }
 
+  "deleteAllUsers" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllUsers().run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 5
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllUsers().run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
   "deleteUser" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
@@ -1063,6 +1235,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.addDockApp(createAddDockAppRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteAllDockApps" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllDockApps().run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual 5
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllDockApps().run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
