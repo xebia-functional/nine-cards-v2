@@ -20,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, LauncherExecutor, SystemBarsTint, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, LauncherWorkSpaces}
@@ -178,13 +178,14 @@ trait CollectionsComposer
     (menuName <~ tvText(userInfo.email)) ~
       (menuAvatar <~ ivUri(userInfo.imageUrl))
 
-  def uiAddCollection(collection: Collection)
+  def uiActionCollection(action: UiAction, collection: Collection)
     (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-    (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
-
-  def uiRemoveCollection(collection: Collection)
-    (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-    (workspaces <~ lwsRemoveCollection(collection)) ~ reloadPagerAndActiveLast
+    action match {
+      case Add =>
+        (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
+      case Remove =>
+        (workspaces <~ lwsRemoveCollection(collection)) ~ reloadPagerAndActiveLast
+    }
 
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
 

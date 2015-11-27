@@ -92,7 +92,7 @@ class LauncherActivity
     case _ => super.dispatchKeyEvent(event)
   }
 
-  def addNewCollection(collection: Collection) = runUi(uiAddCollection(collection))
+  def addCollection(collection: Collection) = runUi(uiActionCollection(Add, collection))
 
   def removeCollection(collection: Collection) = {
     val overOneCollection = workspaces.exists(_.data.filter(_.widgets == false).headOption.exists(_.collections.length!=1))
@@ -102,7 +102,7 @@ class LauncherActivity
       ft.addToBackStack(javaNull)
       val dialog = new RemoveCollectionDialogFragment(() => {
         Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
-          onResult = (_) => uiRemoveCollection(collection),
+          onResult = (_) => uiActionCollection(Remove, collection),
           onException = (_) => showMessage(R.string.contactUsError)
         )
       })
