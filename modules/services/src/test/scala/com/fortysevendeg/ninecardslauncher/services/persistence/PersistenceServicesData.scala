@@ -417,6 +417,8 @@ trait PersistenceServicesData {
   val seqRepoDockApp: Seq[repositoryModel.DockApp] = createSeqRepoDockApp(data = repoDockAppData)
   val repoDockApp: repositoryModel.DockApp = seqRepoDockApp(0)
 
+  val where: String = ""
+
   def createAddAppRequest(
     name: String = name,
     packageName: String = packageName,

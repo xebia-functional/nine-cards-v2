@@ -1,9 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.drawer
 
 import android.support.v7.widget.RecyclerView
-import android.view.View
-import android.widget.{ProgressBar, LinearLayout}
+import android.view.{ViewGroup, View}
+import android.widget.{ImageView, ProgressBar, LinearLayout}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -19,6 +21,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Tint
 import TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
+import macroid.FullDsl._
 import macroid.{Tweak, ContextWrapper}
 
 trait DrawerStyles {
@@ -45,6 +48,14 @@ trait DrawerStyles {
       vPaddings(padding) +
       vgClipToPadding(false) +
       vOverScrollMode(View.OVER_SCROLL_NEVER)
+  }
+
+  def paginationDrawerItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
+    val margin = resGetDimensionPixelSize(R.dimen.margin_pager_drawer)
+    val size = resGetDimensionPixelSize(R.dimen.drawer_size_pager)
+    lp[ViewGroup](size, size) +
+      llLayoutMargin(margin, margin, margin, margin) +
+      ivSrc(R.drawable.drawer_pager)
   }
 
 }

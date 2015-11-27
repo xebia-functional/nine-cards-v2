@@ -41,6 +41,17 @@ class UserRepository(
       }
     }
 
+  def deleteUsers(where: String = ""): ServiceDef2[Int, RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.delete(
+            uri = userUri,
+            where = where)
+        }
+      }
+    }
+
   def deleteUser(user: User): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {

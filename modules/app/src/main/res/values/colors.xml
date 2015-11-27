@@ -45,6 +45,10 @@
     <color name="wizard_background_step_3">#FF9800</color>
     <color name="wizard_background_step_4">#F44336</color>
 
+    <!-- App Drawer -->
+    <color name="drawer_pager_current">#ffffff</color>
+    <color name="drawer_pager_default">#6bffffff</color>
+
     <!-- Menu -->
     <color name="background_menu">#ffffff</color>
     <color name="background_menu_header">#3F51B5</color>
@@ -104,7 +108,7 @@
     <color name="drawer_tab_bottom">#ffffff</color>
 
     <color name="drawer_search_box">#88000000</color>
-    <color name="drawer_search_box_hint">#50000000</color>
+    <color name="drawer_search_box_hint">#4c000000</color>
 
     <!-- Contact Info Dialog -->
     <color name="divider_color_info_dialog">#d6d6d6</color>

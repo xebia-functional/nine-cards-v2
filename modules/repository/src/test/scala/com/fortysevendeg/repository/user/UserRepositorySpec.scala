@@ -41,6 +41,8 @@ trait UserRepositorySpecification
 
     contentResolverWrapper.insert(mockUri, createUserValues) returns testId
 
+    contentResolverWrapper.delete(mockUri, where = "") returns 1
+
     contentResolverWrapper.deleteById(mockUri, testId) returns 1
 
     contentResolverWrapper.findById(
@@ -68,6 +70,8 @@ trait UserRepositorySpecification
     uriCreator.parse(any) returns mockUri
 
     contentResolverWrapper.insert(mockUri, createUserValues) throws contentResolverException
+
+    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
 
     contentResolverWrapper.deleteById(mockUri, testId) throws contentResolverException
 
@@ -134,11 +138,41 @@ class UserRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope
           with ErrorUserRepositoryResponses {
 
           val result = userRepository.addUser(data = createUserData).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "deleteUsers" should {
+
+      "return a successful result when all the users are deleted" in
+        new UserRepositoryScope
+          with ValidUserRepositoryResponses {
+
+          val result = userRepository.deleteUsers().run.run
+
+          result must beLike {
+            case Answer(deleted) =>
+              deleted shouldEqual 1
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new UserRepositoryScope
+          with ErrorUserRepositoryResponses {
+
+          val result = userRepository.deleteUsers().run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
@@ -164,7 +198,7 @@ class UserRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope
           with ErrorUserRepositoryResponses {
 
@@ -208,7 +242,7 @@ class UserRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope
           with ErrorUserRepositoryResponses {
 
@@ -238,7 +272,7 @@ class UserRepositorySpec
           }
         }
 
-      "return a NineCardsException when a exception is thrown" in
+      "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope
           with ErrorUserRepositoryResponses {
 

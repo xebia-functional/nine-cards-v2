@@ -42,6 +42,17 @@ class GeoInfoRepository(
       }
     }
 
+  def deleteGeoInfoItems(where: String = ""): ServiceDef2[Int, RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.delete(
+            uri = geoInfoUri,
+            where = where)
+        }
+      }
+    }
+
   def deleteGeoInfo(geoInfo: GeoInfo): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {
