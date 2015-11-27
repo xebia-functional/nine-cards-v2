@@ -8,6 +8,7 @@ import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
@@ -17,7 +18,7 @@ object DrawerSnails {
   def revealInAppDrawer(source: View)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
       Lollipop.ifSupportedThen {
@@ -32,7 +33,7 @@ object DrawerSnails {
   def revealOutAppDrawer(source: View)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
       Lollipop.ifSupportedThen {
@@ -62,7 +63,7 @@ object DrawerSnails {
       override def onAnimationEnd(animation: Animator) = {
         super.onAnimationEnd(animation)
         if (!in) view.setVisibility(View.GONE)
-        view.setLayerType(View.LAYER_TYPE_NONE, null)
+        view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
         animationEnd
       }
     })
@@ -83,7 +84,7 @@ object DrawerSnails {
 
       override def onAnimationEnd(animation: Animator) = {
         super.onAnimationEnd(animation)
-        view.setLayerType(View.LAYER_TYPE_NONE, null)
+        view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
         animationEnd
       }
     }).start()
@@ -98,7 +99,7 @@ object DrawerSnails {
         override def onAnimationEnd(animation: Animator) {
           super.onAnimationEnd(animation)
           view.setVisibility(View.GONE)
-          view.setLayerType(View.LAYER_TYPE_NONE, null)
+          view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
           animationEnd
         }
     }).start()

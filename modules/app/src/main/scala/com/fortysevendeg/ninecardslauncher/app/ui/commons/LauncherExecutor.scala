@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.speech.RecognizerIntent
 import android.widget.Toast
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -41,7 +42,7 @@ trait LauncherExecutor {
           phone <- intent.extractPhone()
           activity <- activityContext.original.get
         } yield {
-            val newIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, null))
+            val newIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, javaNull))
             tryOrError(activity, newIntent)
           }) getOrElse showError
       case `openPhone` =>

@@ -9,6 +9,7 @@ import android.widget.{FrameLayout, ImageView, TextView}
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
@@ -17,11 +18,11 @@ class FabItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)(impli
   extends FrameLayout(context, attr, defStyleAttr)
   with FabItemMenuStyles {
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0)
+  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  val content = LayoutInflater.from(context).inflate(R.layout.fab_item, null)
+  val content = LayoutInflater.from(context).inflate(R.layout.fab_item, javaNull)
 
   val title = Option(content.findViewById(R.id.fab_title).asInstanceOf[TextView])
 

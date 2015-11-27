@@ -4,11 +4,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{View, ViewGroup}
 import android.widget.FrameLayout
+import com.fortysevendeg.ninecardslauncher.commons._
 
 class RippleBackgroundView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr) {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 

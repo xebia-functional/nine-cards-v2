@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
@@ -98,7 +99,7 @@ class LauncherActivity
     if (overOneCollection) {
       val ft = getSupportFragmentManager.beginTransaction()
       Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-      ft.addToBackStack(null)
+      ft.addToBackStack(javaNull)
       val dialog = new RemoveCollectionDialogFragment(() => {
         Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
           onResult = (_) => uiRemoveCollection(collection),

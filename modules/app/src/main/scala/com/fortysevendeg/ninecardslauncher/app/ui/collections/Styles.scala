@@ -29,6 +29,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionR
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks
 import CollectionRecyclerViewTweaks._
 import SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.types._
 import CardType._
@@ -102,7 +103,7 @@ trait CollectionAdapterStyles {
     Lollipop ifSupportedThen {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),
-        null,
+        javaNull,
         new ColorDrawable(setAlpha(Color.BLACK, alphaDefault)))
     } getOrElse {
       val states = new StateListDrawable()
@@ -129,7 +130,7 @@ trait CollectionAdapterStyles {
     card.cardType match {
       case PhoneCardType | SmsCardType | EmailCardType =>
         ivUriContact(card.imagePath, card.term) +
-          vBackground(null) +
+          vBackground(javaNull) +
           expandLayout +
           ivScaleType(ScaleType.CENTER_CROP)
       case NoInstalledAppCardType =>
@@ -141,7 +142,7 @@ trait CollectionAdapterStyles {
           ivScaleType(ScaleType.CENTER_INSIDE)
       case _ =>
         ivCardUri(card.imagePath, card.term, circular = true) +
-          vBackground(null) +
+          vBackground(javaNull) +
           reduceLayout +
           ivScaleType(ScaleType.FIT_CENTER)
     }

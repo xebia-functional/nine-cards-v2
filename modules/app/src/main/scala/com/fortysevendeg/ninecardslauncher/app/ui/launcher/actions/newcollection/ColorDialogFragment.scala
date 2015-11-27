@@ -17,6 +17,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 import macroid.FullDsl._
@@ -48,7 +49,7 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
   }
 
   private[this] def createViewItem(index: Int, select: Boolean) = {
-    val view = LayoutInflater.from(getActivity).inflate(R.layout.color_info_item_dialog, null)
+    val view = LayoutInflater.from(getActivity).inflate(R.layout.color_info_item_dialog, javaNull)
     view.findViewById(R.id.color_info_image) match {
       case i: ImageView =>
         if (select) {

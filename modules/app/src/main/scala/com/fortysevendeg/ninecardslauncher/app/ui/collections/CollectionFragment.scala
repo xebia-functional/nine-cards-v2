@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.Contexts
@@ -36,7 +37,7 @@ class CollectionFragment
 
   lazy val position = getInt(Seq(getArguments), keyPosition, 0)
 
-  lazy val collection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, null))
+  lazy val collection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, javaNull))
 
   lazy val collectionId = getInt(Seq(getArguments), keyCollectionId, 0)
 

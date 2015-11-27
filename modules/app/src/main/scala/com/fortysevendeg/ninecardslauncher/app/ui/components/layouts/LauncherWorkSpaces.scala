@@ -5,13 +5,14 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceType._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceWidgetsHolder}
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import macroid.{ActivityContextWrapper, Ui}
 
 class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit activityContext: ActivityContextWrapper)
   extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
 
-  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, null, 0)
+  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet)(implicit activityContext: ActivityContextWrapper) = this(context, attr, 0)
 

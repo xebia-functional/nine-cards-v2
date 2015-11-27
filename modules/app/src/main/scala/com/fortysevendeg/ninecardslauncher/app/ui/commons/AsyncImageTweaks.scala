@@ -15,6 +15,7 @@ import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
+import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.{Snail, ActivityContextWrapper, Tweak}
 import macroid.FullDsl._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -84,7 +85,7 @@ object AsyncImageTweaks {
       .crossFade()
       .into(new ViewTarget[ImageView, GlideDrawable](imageView) {
         override def onLoadStarted(placeholder: Drawable): Unit =
-          imageView.setImageDrawable(null)
+          imageView.setImageDrawable(javaNull)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
           runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
@@ -117,12 +118,12 @@ object AsyncImageTweaks {
           case `idLookup` =>
             Option(ContactsContract.Contacts.lookupContact(contentResolver, model)) match {
               case Some(u) => Contacts.openContactPhotoInputStream(contentResolver, u, true)
-              case _ => None.orNull
+              case _ => javaNull
             }
           case `idContact` => Contacts.openContactPhotoInputStream(contentResolver, model, true)
           case `idThumbnail` => contentResolver.openInputStream(model)
           case `idDisplayPhoto` => contentResolver.openInputStream(model)
-          case _ => None.orNull
+          case _ => javaNull
         }
 
         override def getId: String = model.toString

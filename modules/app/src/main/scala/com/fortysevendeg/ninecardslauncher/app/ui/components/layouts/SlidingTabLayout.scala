@@ -8,6 +8,7 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, LayoutInflater, View}
 import android.widget.{LinearLayout, FrameLayout, HorizontalScrollView, TextView}
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 
 /**
@@ -16,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends HorizontalScrollView(context, attr, defStyleAttr) {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
@@ -65,7 +66,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   }
 
   def createDefaultTabView(position: Int): TextView = {
-    val textView = LayoutInflater.from(context).inflate(R.layout.collections_detail_tab, null).asInstanceOf[TextView]
+    val textView = LayoutInflater.from(context).inflate(R.layout.collections_detail_tab, javaNull).asInstanceOf[TextView]
     textView.setTextColor(defaultTextColor)
     textView.setTag(position.toString)
     textView
@@ -80,7 +81,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
     val tabStripChildCount = tabStrip.getChildCount
     if (tabStripChildCount != 0 && tabIndex > 0 || tabIndex < tabStripChildCount) {
       val selectedChild = tabStrip.getChildAt(tabIndex)
-      if (selectedChild != null && selectedChild.getMeasuredWidth != 0) {
+      if (selectedChild != javaNull && selectedChild.getMeasuredWidth != 0) {
         val targetScrollX = ((positionOffset + selectedChild.getLeft) - getWidth / 2) + selectedChild.getWidth / 2
         if (targetScrollX != lastScrollTo) {
           scrollTo(targetScrollX, 0)
@@ -109,10 +110,10 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
       if (tabStripChildCount != 0 && position > 0 || position < tabStripChildCount) {
         tabStrip.onViewPagerPageChanged(position, positionOffset)
         val selectedTitle: View = tabStrip.getChildAt(position)
-        val selectedOffset: Int = if (selectedTitle == null) 0 else selectedTitle.getWidth
+        val selectedOffset: Int = if (selectedTitle == javaNull) 0 else selectedTitle.getWidth
         val nextTitlePosition: Int = position + 1
         val nextTitle: View = tabStrip.getChildAt(nextTitlePosition)
-        val nextOffset: Int = if (nextTitle == null) 0 else nextTitle.getWidth
+        val nextOffset: Int = if (nextTitle == javaNull) 0 else nextTitle.getWidth
         val extraOffset: Int = (0.5F * (positionOffset * (selectedOffset + nextOffset).toFloat)).toInt
         scrollToTab(position, extraOffset)
         viewPagerPageChangeListener foreach (_.onPageScrolled(position, positionOffset, positionOffsetPixels))
@@ -143,7 +144,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
 class SlidingTabStrip(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attr, defStyleAttr) {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 

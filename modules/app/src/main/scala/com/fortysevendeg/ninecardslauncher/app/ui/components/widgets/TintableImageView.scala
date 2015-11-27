@@ -7,11 +7,12 @@ import android.support.v4.view.MotionEventCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.ImageView
+import com.fortysevendeg.ninecardslauncher.commons._
 
 class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends ImageView(context, attr, defStyleAttr) {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 

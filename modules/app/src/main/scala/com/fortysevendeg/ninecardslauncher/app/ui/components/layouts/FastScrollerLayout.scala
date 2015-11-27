@@ -16,6 +16,7 @@ import android.widget.FrameLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import macroid.FullDsl._
@@ -24,7 +25,7 @@ import macroid.{Ui, Tweak}
 class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr) {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
@@ -67,7 +68,7 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def getDrawable(res: Int): Drawable = if (SDK_INT < LOLLIPOP_MR1) {
     context.getResources.getDrawable(res)
   } else {
-    context.getResources.getDrawable(res, null)
+    context.getResources.getDrawable(res, javaNull)
   }
 
 }
@@ -76,7 +77,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attr, defStyleAttr)
     with TypedFindView {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
@@ -101,13 +102,13 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   val barOff = if (SDK_INT < LOLLIPOP_MR1) {
     context.getResources.getDrawable(R.drawable.fastscroller_bar_off)
   } else {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar_off, null)
+    context.getResources.getDrawable(R.drawable.fastscroller_bar_off, javaNull)
   }
 
   var barOn = if (SDK_INT < LOLLIPOP_MR1) {
     context.getResources.getDrawable(R.drawable.fastscroller_bar_on)
   } else {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar_on, null)
+    context.getResources.getDrawable(R.drawable.fastscroller_bar_on, javaNull)
   }
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {

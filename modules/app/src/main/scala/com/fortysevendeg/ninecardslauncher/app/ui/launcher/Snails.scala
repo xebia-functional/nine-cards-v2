@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail}
 
@@ -14,7 +15,7 @@ object Snails {
     view ⇒
       val duration = resGetInteger(R.integer.anim_duration_pager_appear)
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.setScaleX(.7f)
       view.setScaleY(.7f)
@@ -22,7 +23,7 @@ object Snails {
       view.animate.alpha(1).scaleX(1).scaleY(1).setDuration(duration).setListener(new AnimatorListenerAdapter {
         override def onAnimationEnd(animation: Animator) {
           super.onAnimationEnd(animation)
-          view.setLayerType(View.LAYER_TYPE_NONE, null)
+          view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
           animPromise.success()
         }
       }).start()

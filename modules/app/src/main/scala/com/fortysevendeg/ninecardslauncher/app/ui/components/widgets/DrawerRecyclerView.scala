@@ -9,13 +9,14 @@ import android.view.{MotionEvent, ViewConfiguration}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.ScrollableManager
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, ViewState}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
+import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.ContextWrapper
 import macroid.FullDsl._
 
 class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends RecyclerView(context, attr, defStyleAttr) {
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0)
+  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 

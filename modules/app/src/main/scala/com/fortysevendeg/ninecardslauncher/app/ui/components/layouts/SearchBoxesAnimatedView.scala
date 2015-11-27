@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, ViewState}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchIconsColor, SearchPressedColor}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -31,7 +32,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   with SearchBoxAnimatedController { self =>
 
   def this(context: Context)(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme) =
-    this(context, null, 0)
+    this(context, javaNull, 0)
 
   def this(context: Context, attrs: AttributeSet)(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme) =
     this(context, attrs, 0)

@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, Con
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
@@ -71,7 +72,7 @@ class WizardActivity
   } yield {
       invalidateToken()
       val oauthScopes = resGetString(R.string.oauth_scopes)
-      accountManager.getAuthToken(account, oauthScopes, null, this, new AccountManagerCallback[Bundle] {
+      accountManager.getAuthToken(account, oauthScopes, javaNull, this, new AccountManagerCallback[Bundle] {
         override def run(future: AccountManagerFuture[Bundle]): Unit = {
           Try {
             val authTokenBundle: Bundle = future.getResult
@@ -94,7 +95,7 @@ class WizardActivity
             }
           }
         }
-      }, null)
+      }, javaNull)
     }) getOrElse runUi(uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
 
   private[this] def close(): Ui[_] = Ui {
@@ -104,7 +105,7 @@ class WizardActivity
 
   private[this] def invalidateToken() = {
     getToken foreach (accountManager.invalidateAuthToken(accountType, _))
-    setToken(null)
+    setToken(javaNull)
   }
 
   private def launchService(maybeKey: Option[String]): Unit = {
