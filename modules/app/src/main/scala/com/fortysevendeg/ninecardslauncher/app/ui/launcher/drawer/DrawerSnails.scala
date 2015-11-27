@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.drawer
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.annotation.TargetApi

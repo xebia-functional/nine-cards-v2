@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.drawer
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
 import android.support.v7.widget.RecyclerView
 import android.view.{ViewGroup, View}

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.drawer
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -15,14 +15,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.Cont
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.{FastScrollerLayoutTweak, SearchBoxesAnimatedViewTweak}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.DrawerRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
-import FastScrollerLayoutTweak._
-import SearchBoxesAnimatedViewTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components._
-import com.fortysevendeg.ninecardslauncher.app.ui.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByInstallDate}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -35,9 +34,9 @@ import scala.concurrent.Future
 
 trait DrawerComposer
   extends DrawerStyles
-    with ContextSupportProvider
-    with HeaderGenerator
-    with SearchBoxAnimatedListener {
+  with ContextSupportProvider
+  with HeaderGenerator
+  with SearchBoxAnimatedListener {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
 
