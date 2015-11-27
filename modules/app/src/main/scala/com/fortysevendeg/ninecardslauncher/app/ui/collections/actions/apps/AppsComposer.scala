@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
 import android.support.v7.widget.Toolbar.LayoutParams
-import android.support.v7.widget.{SwitchCompat, RecyclerView}
+import android.support.v7.widget.{RecyclerView, SwitchCompat}
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -14,17 +14,16 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ItemHeaderedViewHolder, ItemHeadered}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak
-import FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak
-import com.fortysevendeg.ninecardslauncher.process.device.{GetByCategory, GetByName}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import com.fortysevendeg.ninecardslauncher.process.device.{GetByCategory, GetByName}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{Tweak, ActivityContextWrapper, Ui}
+import macroid.{ActivityContextWrapper, Tweak, Ui}
 
 trait AppsComposer
   extends Styles

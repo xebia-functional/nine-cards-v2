@@ -67,7 +67,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
 
   val durationAnimation = resGetInteger(android.R.integer.config_shortAnimTime)
 
-  var states = SearchBoxesStates()
+  var states = SearchBoxesStatuses()
 
   val (touchSlop, maximumVelocity, minimumVelocity) = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
@@ -264,7 +264,7 @@ trait SearchBoxAnimatedListener {
 
 
 
-case class SearchBoxesStates(
+case class SearchBoxesStatuses(
   currentItem: BoxView = AppsView,
   lastMotionX: Float = 0,
   lastMotionY: Float = 0,
@@ -272,7 +272,7 @@ case class SearchBoxesStates(
   displacement: Float = 0,
   touchState: ViewState = Stopped)(implicit contextWrapper: ContextWrapper) {
 
-  def swapViews(): SearchBoxesStates = copy(currentItem match {
+  def swapViews(): SearchBoxesStatuses = copy(currentItem match {
     case AppsView => ContactView
     case ContactView => AppsView
   })

@@ -276,7 +276,9 @@ trait CollectionsComposer
     args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
     args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
-    map foreach (item => args.putString(item._1, item._2))
+    map foreach {
+      case (key, value) => args.putString(key, value)
+    }
     args.putInt(BaseActionFragment.colorPrimary, color)
     swapFabButton(doUpdateBars = false) ~
       (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~

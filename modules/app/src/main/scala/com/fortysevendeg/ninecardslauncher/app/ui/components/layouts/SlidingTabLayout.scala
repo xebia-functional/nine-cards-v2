@@ -171,13 +171,17 @@ class SlidingTabStrip(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
     if (childCount > 0) {
       val selectedTitle: View = getChildAt(selectedPosition)
-      var left: Int = selectedTitle.getLeft
-      var right: Int = selectedTitle.getRight
 
-      if (selectionOffset > 0f && selectedPosition < (getChildCount - 1)) {
+      val initialLeft: Int = selectedTitle.getLeft
+      val initialRight: Int = selectedTitle.getRight
+
+      val (left, right) = if (selectionOffset > 0f && selectedPosition < (getChildCount - 1)) {
         val nextTitle = getChildAt(selectedPosition + 1)
-        left = (selectionOffset * nextTitle.getLeft + (1.0f - selectionOffset) * left).toInt
-        right = (selectionOffset * nextTitle.getRight + (1.0f - selectionOffset) * right).toInt
+        val l = (selectionOffset * nextTitle.getLeft + (1.0f - selectionOffset) * initialLeft).toInt
+        val r = (selectionOffset * nextTitle.getRight + (1.0f - selectionOffset) * initialRight).toInt
+        (l, r)
+      } else {
+        (initialLeft, initialRight)
       }
       canvas.drawRect(left, height - selectedIndicatorThickness, right, height, selectedIndicatorPaint)
     }

@@ -207,7 +207,9 @@ case class PathMorphDrawable(
         val fromOver = from.drop(to.length)
         val toOver = to.drop(from.length)
 
-        val transform = from.zip(to) map (i => transformSegment(i._1, i._2, fraction))
+        val transform = from.zip(to) map {
+          case (origin, target) => transformSegment(origin, target, fraction)
+        }
 
         val segmentFromOver = fromOver map (_.copy(alpha = 1 - fraction))
 

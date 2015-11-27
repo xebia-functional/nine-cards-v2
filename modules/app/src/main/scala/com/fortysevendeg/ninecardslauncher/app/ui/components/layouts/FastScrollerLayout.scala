@@ -85,7 +85,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] var scrollListener: Option[ScrollListener] = None
 
-  var states = new FastScrollerStates
+  var statuses = new FastScrollerStatuses
 
   setOrientation(LinearLayout.HORIZONTAL)
 
@@ -113,7 +113,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
-    states = states.copy(height = h)
+    statuses = statuses.copy(height = h)
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
@@ -121,7 +121,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     val y = MotionEventCompat.getY(event, 0)
     action match {
       case ACTION_DOWN =>
-        states = states.startScroll()
+        statuses = statuses.startScroll()
         true
       case ACTION_MOVE =>
         runUi(changePosition(y) ~
@@ -129,10 +129,10 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
           (recyclerView <~ rvScrollToPosition(y)))
         true
       case ACTION_UP | ACTION_CANCEL =>
-        states = states.resetScroll()
+        statuses = statuses.resetScroll()
         runUi(hideSignal)
         // Update scroll position in ScrollListener
-        scrollListener foreach (_.y = states.projectToRecycler(event.getY))
+        scrollListener foreach (_.y = statuses.projectToRecycler(event.getY))
         true
       case _ => super.onTouchEvent(event)
     }
@@ -147,7 +147,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def hideSignal: Ui[_] = (signal <~ vGone) ~ (bar <~ ivSrc(barOff))
 
   def setRecyclerView(rv: RecyclerView) = {
-    states = states.setTotalHeight(rv, getHeight)
+    statuses = statuses.setTotalHeight(rv, getHeight)
     scrollListener foreach rv.removeOnScrollListener
     val sl = new ScrollListener
     scrollListener = Option(sl)
@@ -156,29 +156,29 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   }
 
   def reset() = {
-    recyclerView foreach (rv => states = states.setTotalHeight(rv, getHeight))
+    recyclerView foreach (rv => statuses = statuses.setTotalHeight(rv, getHeight))
     scrollListener foreach (_.y = 0)
     runUi(changePosition(0))
   }
 
   private[this] def changePosition(y: Float): Ui[_] = {
-    val position = y / states.height
+    val position = y / statuses.height
     (bar <~ vChangeY(position)) ~ (signal <~ vChangeY(position))
   }
 
   private[this] def vChangeY(position: Float) = Tweak[View]{ view =>
     val viewHeight = view.getHeight
-    val value = ((states.height - viewHeight) * position).toInt
-    val max = states.height - viewHeight
+    val value = ((statuses.height - viewHeight) * position).toInt
+    val max = statuses.height - viewHeight
     val minimum = math.max(0, value)
     view.setY(math.min(minimum, max))
   }
 
   private[this] def rvScrollToPosition(y: Float) = Tweak[RecyclerView]{ view =>
     val itemCount = view.getAdapter.getItemCount
-    val position = ((y * itemCount) / states.height).toInt
-    if (position != states.lastScrollToPosition) {
-      states = states.copy(lastScrollToPosition = position)
+    val position = ((y * itemCount) / statuses.height).toInt
+    if (position != statuses.lastScrollToPosition) {
+      statuses = statuses.copy(lastScrollToPosition = position)
       view.scrollToPosition(position)
       val element = Option(view.getAdapter) match {
         case Some(listener: FastScrollerListener) => listener.getElement(position)
@@ -196,30 +196,30 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     extends OnScrollListener {
     var y = 0f
 
-    override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = if (!states.moving) {
+    override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = if (!statuses.moving) {
       y = y + dy
-      runUi(changePosition(states.projectToBar(y)))
+      runUi(changePosition(statuses.projectToBar(y)))
     }
 
   }
 
 }
 
-case class FastScrollerStates(
+case class FastScrollerStatuses(
   height: Int = 0,
   totalHeight: Int = 0,
   moving: Boolean = false,
   lastScrollToPosition: Int = -1) {
 
-  def setTotalHeight(recyclerView: RecyclerView, height: Int): FastScrollerStates = copy(
+  def setTotalHeight(recyclerView: RecyclerView, height: Int): FastScrollerStatuses = copy(
     totalHeight = Option(recyclerView.getAdapter) match {
       case Some(listener: FastScrollerListener) => listener.getHeight - height
       case _ => 0
     })
 
-  def startScroll(): FastScrollerStates = copy(moving = true)
+  def startScroll(): FastScrollerStatuses = copy(moving = true)
 
-  def resetScroll(): FastScrollerStates = copy(
+  def resetScroll(): FastScrollerStatuses = copy(
     lastScrollToPosition = -1,
     moving = false)
 

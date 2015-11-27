@@ -22,7 +22,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
 
   lazy val content = getChildAt(0)
 
-  var states = PullToCloseStates()
+  var statuses = PullToCloseStatuses()
 
   val listeners = PullToCloseListener()
 
@@ -31,9 +31,9 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
   }
 
-  def isPulling: Boolean = states.isPulling
+  def isPulling: Boolean = statuses.isPulling
 
-  def currentPosY: Int = states.currentPosY
+  def currentPosY: Int = statuses.currentPosY
 
   override def checkLayoutParams(p: ViewGroup.LayoutParams): Boolean = p.isInstanceOf[MarginLayoutParams]
 
@@ -71,7 +71,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     content.getLayoutParams match {
       case lp: ViewGroup.MarginLayoutParams =>
         val left: Int = getPaddingLeft + lp.leftMargin
-        val top: Int = getPaddingTop + lp.topMargin + states.currentPosY
+        val top: Int = getPaddingTop + lp.topMargin + statuses.currentPosY
         val right: Int = left + content.getMeasuredWidth
         val bottom: Int = top + content.getMeasuredHeight
         content.layout(left, top, right, bottom)
@@ -81,7 +81,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   override def dispatchTouchEvent(ev: MotionEvent): Boolean = {
     val x = ev.getX
     val y = ev.getY
-    (states.isPulling, childInTop, ev.getAction) match {
+    (statuses.isPulling, childInTop, ev.getAction) match {
       case (true, _, ACTION_UP | ACTION_CANCEL) => release(ev)
       case (true, _, ACTION_DOWN) => actionDown(ev, x, y)
       case (true, _, ACTION_MOVE) => actionMove(ev, x, y)
@@ -92,78 +92,78 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   }
 
   private[this] def release(ev: MotionEvent): Boolean = {
-    if (states.currentPosY > 0) {
-      if (states.shouldClose()) listeners.close()
+    if (statuses.currentPosY > 0) {
+      if (statuses.shouldClose()) listeners.close()
       val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
       anim.addUpdateListener(new AnimatorUpdateListener {
         override def onAnimationUpdate(animation: ValueAnimator): Unit =
-          movePos(-states.currentPosY * animation.getAnimatedFraction)
+          movePos(-statuses.currentPosY * animation.getAnimatedFraction)
       })
       anim.addListener(new AnimatorListenerAdapter {
         override def onAnimationEnd(animation: Animator): Unit = {
           listeners.endPulling()
-          states = states.copy(isPulling = false)
+          statuses = statuses.copy(isPulling = false)
           restart()
         }
       })
       anim.start()
     } else {
       listeners.endPulling()
-      states = states.copy(isPulling = false)
+      statuses = statuses.copy(isPulling = false)
     }
     super.dispatchTouchEvent(ev)
   }
 
   private[this] def actionDown(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    states = states.start(x, y)
+    statuses = statuses.start(x, y)
     super.dispatchTouchEvent(ev)
     true
   }
 
   private[this] def actionMove(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    val firstTime = !states.isPulling && childInTop && states.dontStarted
+    val firstTime = !statuses.isPulling && childInTop && statuses.dontStarted
     if (firstTime) {
       // User began movement when the child can scroll up and we need start information
-      states = states.start(x, y)
+      statuses = statuses.start(x, y)
     }
-    states = states.move(x, y)
-    val moveDown = states.offsetY > 0
+    statuses = statuses.move(x, y)
+    val moveDown = statuses.offsetY > 0
 
-    (moveDown, !moveDown, states.hasLeftStartPosition, childInTop) match {
+    (moveDown, !moveDown, statuses.hasLeftStartPosition, childInTop) match {
       case (down, _, _, inTop) if down && !inTop => // disable move when user not reach top
-      case (down, up, canUp, _) if (up && canUp) || down => movePos(states.offsetY)
+      case (down, up, canUp, _) if (up && canUp) || down => movePos(statuses.offsetY)
       case _ =>
     }
     super.dispatchTouchEvent(ev)
   }
 
   private[this] def actionMoveIdle(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    if (y - states.startY > touchSlop) {
-      states = states.copy(isPulling = true)
-      states = states.start(x, y)
+    if (y - statuses.startY > touchSlop) {
+      statuses = statuses.copy(isPulling = true)
+      statuses = statuses.start(x, y)
       listeners.startPulling()
     }
     super.dispatchTouchEvent(ev)
   }
 
   private[this] def restart() = {
-    content.offsetTopAndBottom(-states.currentPosY)
+    content.offsetTopAndBottom(-statuses.currentPosY)
     invalidate()
-    states = states.restart()
+    statuses = statuses.restart()
   }
 
   private[this] def movePos(deltaY: Float) = {
-    if (deltaY >= 0 || !states.isInStartPosition) {
+    if (deltaY >= 0 || !statuses.isInStartPosition) {
       val to: Int = {
-        val to = states.currentPosY + deltaY.toInt
-        states.willOverTop(to) match {
-          case true => states.posStart
+        val to = statuses.currentPosY + deltaY.toInt
+        statuses.willOverTop(to) match {
+          case true => statuses.posStart
           case false => to
         }
       }
-      states = states.updateCurrentPostY(to)
-      listeners.scroll(to, states.shouldClose())
-      val change: Int = to - states.lastPosY
+      statuses = statuses.updateCurrentPostY(to)
+      listeners.scroll(to, statuses.shouldClose())
+      val change: Int = to - statuses.lastPosY
       updatePos(change)
     }
   }
@@ -185,7 +185,7 @@ case class PullToCloseListener(
   var scroll: (Int, Boolean) => Unit = (i: Int, b: Boolean) => (),
   var close: () => Unit = () => ())
 
-case class PullToCloseStates(
+case class PullToCloseStatuses(
   resistance: Float = 3f,
   lastPosY: Int = 0,
   currentPosY: Int = 0,
@@ -201,7 +201,7 @@ case class PullToCloseStates(
 
   val posStart = 0
 
-  def restart(): PullToCloseStates = copy(
+  def restart(): PullToCloseStatuses = copy(
     isPulling = false,
     lastPosY = 0,
     currentPosY = 0,
@@ -214,21 +214,21 @@ case class PullToCloseStates(
 
   def dontStarted: Boolean = startX == 0 && startY == 0
 
-  def start(x: Float, y: Float): PullToCloseStates = copy(
+  def start(x: Float, y: Float): PullToCloseStatuses = copy(
     currentPosY = 0,
     startX = x,
     startY = y,
     lastMoveX = x,
     lastMoveY = y)
 
-  def move(x: Float, y: Float): PullToCloseStates = copy(
+  def move(x: Float, y: Float): PullToCloseStatuses = copy(
     offsetX = x - lastMoveX,
     offsetY = (y - lastMoveY) / resistance,
     lastMoveX = x,
     lastMoveY = y,
     isPulling = true)
 
-  def updateCurrentPostY(current: Int): PullToCloseStates = copy(
+  def updateCurrentPostY(current: Int): PullToCloseStatuses = copy(
     lastPosY = currentPosY,
     currentPosY = current)
 

@@ -6,6 +6,7 @@ import android.graphics.{Color, PorterDuffColorFilter, Rect}
 import android.support.v4.view.MotionEventCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.MotionEvent._
 import android.widget.ImageView
 import com.fortysevendeg.ninecardslauncher.commons._
 
@@ -26,7 +27,6 @@ class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
     val action = MotionEventCompat.getActionMasked(event)
-    import MotionEvent._
     action match {
       case ACTION_DOWN => setTint(pressedColor); outSide = false
       case ACTION_MOVE => {

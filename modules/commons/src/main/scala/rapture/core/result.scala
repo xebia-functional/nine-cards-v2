@@ -16,6 +16,7 @@ import scala.language.existentials
 import scala.language.higherKinds
 import scala.language.experimental.macros
 import scala.reflect.ClassTag
+import Ext._
 
 import scala.annotation.unchecked._
 
@@ -25,8 +26,6 @@ object Ext {
   @inline
   final def ?[T](implicit t: T) = t
 }
-
-import Ext._
 
 object Result {
   private[core] def apply[T, E <: Exception](result: => T, errors: Seq[(ClassTag[_], (String, Exception))]) = try {

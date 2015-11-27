@@ -36,7 +36,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def createView(viewType: Int): LauncherWorkSpaceHolder = viewType match {
     case `widgets` => new LauncherWorkSpaceWidgetsHolder
-    case `collections` => new LauncherWorkSpaceCollectionsHolder(states.dimen)
+    case `collections` => new LauncherWorkSpaceCollectionsHolder(statuses.dimen)
   }
 
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =

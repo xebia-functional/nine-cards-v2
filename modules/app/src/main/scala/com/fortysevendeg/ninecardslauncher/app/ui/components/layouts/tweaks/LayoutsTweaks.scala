@@ -45,7 +45,9 @@ object LauncherWorkSpacesTweaks {
           workspaces.data = workspaces.data map { d =>
             if (d == data) {
               d.copy(collections = d.collections :+ collection)
-            } else d
+            } else {
+              d
+            }
           }
         } else {
           workspaces.data = workspaces.data :+ LauncherData(widgets = false, Seq(collection))
