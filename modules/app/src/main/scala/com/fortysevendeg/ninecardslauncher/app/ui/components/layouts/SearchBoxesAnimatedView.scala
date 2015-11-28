@@ -37,6 +37,9 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   def this(context: Context, attrs: AttributeSet)(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme) =
     this(context, attrs, 0)
 
+  setFocusable(true)
+  setFocusableInTouchMode(true)
+
   val computeUnitsTracker = 1000
 
   val resetAfterAnimationListener = new AnimatorListenerAdapter() {

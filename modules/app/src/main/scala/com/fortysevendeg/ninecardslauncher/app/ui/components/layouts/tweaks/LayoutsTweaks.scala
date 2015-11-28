@@ -119,7 +119,7 @@ object SearchBoxesAnimatedViewTweak {
     runUi(view.forceAppsView ~ view.reset)
   }
 
-  def sbavChangeListener(listener: SearchBoxAnimatedListener)= Tweak[SearchBoxesAnimatedView] { view =>
+  def sbavChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxesAnimatedView] { view =>
     view.listener = Some(listener)
   }
 

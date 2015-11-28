@@ -38,6 +38,10 @@ object ExtraTweaks {
       view.setClipToOutline(true)
   }
 
+  def vClearFocus = Tweak[View](_.clearFocus())
+
+  def vRequestFocus = Tweak[View](_.requestFocus())
+
   def vEnabled(enabled: Boolean) = Tweak[View](_.setEnabled(enabled))
 
   def vTag2[T](tag: T) = Tweak[View](_.setTag(tag)) // We should use this in Macroid-Extras instead of vTag
