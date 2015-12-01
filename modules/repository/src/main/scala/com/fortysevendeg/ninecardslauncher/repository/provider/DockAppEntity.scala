@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
 import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity._
+import com.fortysevendeg.ninecardslauncher.repository.Conversions._
 
 case class DockAppEntity(id: Int, data: DockAppEntityData)
 
@@ -37,6 +38,8 @@ object DockAppEntity {
         intent = cursor.getString(cursor.getColumnIndex(intent)),
         imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
         position = cursor.getInt(cursor.getColumnIndex(position))))
+
+  def dockAppFromCursor(cursor: Cursor) = toDockApp(dockAppEntityFromCursor(cursor))
 
   def createTableSQL =
     s"""CREATE TABLE ${DockAppEntity.table}

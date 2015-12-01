@@ -6,11 +6,13 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
+import com.fortysevendeg.ninecardslauncher.repository.commons.IterableCursor.IterableCursorSeq
 import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo, GeoInfoData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import com.fortysevendeg.ninecardslauncher.repository.commons.IterableCursor._
 
 import scalaz.concurrent.Task
 
@@ -71,6 +73,23 @@ class GeoInfoRepository(
           contentResolverWrapper.fetchAll(
             uri = geoInfoUri,
             projection = allFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
+        }
+      }
+    }
+
+  def fetchIterableCollections(
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): ServiceDef2[IterableCursorSeq[GeoInfo], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.getCursor(
+            uri = geoInfoUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy).toIterator(geoInfoFromCursor)
         }
       }
     }

@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.{allFields, position, _}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import com.fortysevendeg.ninecardslauncher.repository.commons.IterableCursor._
 import RepositoryUtils._
 import scalaz.concurrent.Task
 
@@ -97,6 +98,23 @@ class CollectionRepository(
       Task {
         CatchAll[RepositoryException] {
           fetchCollection(selection = s"${CollectionEntity.position} = ?", selectionArgs = Seq(position.toString))
+        }
+      }
+    }
+
+  def fetchIterableCollections(
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): ServiceDef2[IterableCursorSeq[Collection], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.getCursor(
+            uri = collectionUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy).toIterator(collectionFromCursor)
         }
       }
     }

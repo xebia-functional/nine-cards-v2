@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.repository.Conversions._
+import com.fortysevendeg.ninecardslauncher.repository.model.App
 
 case class AppEntity(id: Int, data: AppEntityData)
 
@@ -56,6 +58,8 @@ object AppEntity {
         dateUpdate = cursor.getLong(cursor.getColumnIndex(dateUpdate)),
         version = cursor.getString(cursor.getColumnIndex(version)),
         installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0))
+
+  def appFromCursor(cursor: Cursor): App = toApp(appEntityFromCursor(cursor))
 
   def createTableSQL =
     s"""CREATE TABLE ${AppEntity.table}

@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.repository.model.{User, UserData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import com.fortysevendeg.ninecardslauncher.repository.commons.IterableCursor._
 
 import scalaz.concurrent.Task
 
@@ -82,6 +83,23 @@ class UserRepository(
           contentResolverWrapper.fetchAll(
             uri = userUri,
             projection = allFields)(getListFromCursor(userEntityFromCursor)) map toUser
+        }
+      }
+    }
+
+  def fetchIterableApps(
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): ServiceDef2[IterableCursorSeq[User], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.getCursor(
+            uri = userUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy).toIterator(userFromCursor)
         }
       }
     }

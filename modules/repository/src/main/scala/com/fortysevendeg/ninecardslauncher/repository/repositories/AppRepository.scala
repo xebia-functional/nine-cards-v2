@@ -6,11 +6,13 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toApp
+import com.fortysevendeg.ninecardslauncher.repository.commons.IterableCursor.IterableCursorSeq
 import com.fortysevendeg.ninecardslauncher.repository.model.{App, AppData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import com.fortysevendeg.ninecardslauncher.repository.commons.IterableCursor._
 
 import scalaz.concurrent.Task
 
@@ -90,6 +92,23 @@ class AppRepository(
             uri = appUri,
             projection = allFields,
             orderBy = orderBy)(getListFromCursor(appEntityFromCursor)) map toApp
+        }
+      }
+    }
+
+  def fetchIterableApps(
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): ServiceDef2[IterableCursorSeq[App], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.getCursor(
+            uri = appUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy).toIterator(appFromCursor)
         }
       }
     }

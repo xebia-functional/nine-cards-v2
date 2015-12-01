@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.repository.Conversions._
 
 case class CollectionEntity(id: Int, data: CollectionEntityData)
 
@@ -56,6 +57,8 @@ object CollectionEntity {
         originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(originalSharedCollectionId)),
         sharedCollectionId = cursor.getString(cursor.getColumnIndex(sharedCollectionId)),
         sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(sharedCollectionSubscribed)) > 0))
+
+  def collectionFromCursor(cursor: Cursor) = toCollection(collectionEntityFromCursor(cursor))
 
   def createTableSQL =
     s"""CREATE TABLE ${CollectionEntity.table}

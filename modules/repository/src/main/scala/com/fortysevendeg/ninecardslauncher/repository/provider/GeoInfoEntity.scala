@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.repository.Conversions._
 
 case class GeoInfoEntity(id: Int, data: GeoInfoEntityData)
 
@@ -40,6 +41,8 @@ object GeoInfoEntity {
         latitude = cursor.getDouble(cursor.getColumnIndex(latitude)),
         longitude = cursor.getDouble(cursor.getColumnIndex(longitude)),
         system = cursor.getInt(cursor.getColumnIndex(system)) > 0))
+
+  def geoInfoFromCursor(cursor: Cursor) = toGeoInfo(geoInfoEntityFromCursor(cursor))
 
   def createTableSQL =
     s"""CREATE TABLE ${GeoInfoEntity.table}

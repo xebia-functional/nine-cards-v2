@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
 import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
+import com.fortysevendeg.ninecardslauncher.repository.Conversions._
 
 case class UserEntity(id: Int, data: UserEntityData)
 
@@ -41,6 +42,8 @@ object UserEntity {
         installationId = cursor.getString(cursor.getColumnIndex(installationId)),
         deviceToken = cursor.getString(cursor.getColumnIndex(deviceToken)),
         androidToken = cursor.getString(cursor.getColumnIndex(androidToken))))
+
+  def userFromCursor(cursor: Cursor) = toUser(userEntityFromCursor(cursor))
 
   def createTableSQL =
     s"""CREATE TABLE ${UserEntity.table}

@@ -6,10 +6,12 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toDockApp
+import com.fortysevendeg.ninecardslauncher.repository.commons.IterableCursor.IterableCursorSeq
 import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp, DockAppData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import com.fortysevendeg.ninecardslauncher.repository.commons.IterableCursor._
 
 import scalaz.concurrent.Task
 
@@ -81,6 +83,23 @@ class DockAppRepository(
           contentResolverWrapper.fetchAll(
             uri = dockAppUri,
             projection = allFields)(getListFromCursor(dockAppEntityFromCursor)) map toDockApp
+        }
+      }
+    }
+
+  def fetchIterableCollections(
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): ServiceDef2[IterableCursorSeq[DockApp], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.getCursor(
+            uri = dockAppUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy).toIterator(dockAppFromCursor)
         }
       }
     }
