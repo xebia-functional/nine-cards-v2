@@ -1,8 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.{FrameLayout, ImageView, TextView}
