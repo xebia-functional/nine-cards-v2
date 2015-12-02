@@ -89,7 +89,7 @@ class DockAppRepository(
   def fetchIterableDockApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursorSeq[DockApp], RepositoryException] =
+    orderBy: String = ""): ServiceDef2[IterableCursor[DockApp], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {

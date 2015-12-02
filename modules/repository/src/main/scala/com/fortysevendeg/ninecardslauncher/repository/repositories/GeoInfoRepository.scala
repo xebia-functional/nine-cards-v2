@@ -79,7 +79,7 @@ class GeoInfoRepository(
   def fetchIterableCollections(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursorSeq[GeoInfo], RepositoryException] =
+    orderBy: String = ""): ServiceDef2[IterableCursor[GeoInfo], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {

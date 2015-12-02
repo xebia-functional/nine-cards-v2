@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor.IterableCursorSeq
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 
@@ -22,7 +22,7 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getIterableContacts: ServiceDef2[IterableCursorSeq[Contact], ContactsServiceException]
+  def getIterableContacts: ServiceDef2[IterableCursor[Contact], ContactsServiceException]
 
   /**
     * Get iterable contacts by keyword sort by name. The info field is not filled
@@ -31,7 +31,7 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getIterableContactsByKeyword(keyword: String): ServiceDef2[IterableCursorSeq[Contact], ContactsServiceException]
+  def getIterableContactsByKeyword(keyword: String): ServiceDef2[IterableCursor[Contact], ContactsServiceException]
 
   /**
    * Return contact by email if exist. The info field is not filled

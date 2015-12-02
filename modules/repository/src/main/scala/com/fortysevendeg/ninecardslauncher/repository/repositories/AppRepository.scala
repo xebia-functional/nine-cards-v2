@@ -98,7 +98,7 @@ class AppRepository(
   def fetchIterableApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursorSeq[App], RepositoryException] =
+    orderBy: String = ""): ServiceDef2[IterableCursor[App], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {

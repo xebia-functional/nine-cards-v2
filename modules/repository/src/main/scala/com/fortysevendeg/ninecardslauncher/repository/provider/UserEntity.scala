@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.repository.model.User
 import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions._
 
@@ -32,7 +33,7 @@ object UserEntity {
     deviceToken,
     androidToken)
 
-  def userEntityFromCursor(cursor: Cursor) =
+  def userEntityFromCursor(cursor: Cursor): UserEntity =
     UserEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = UserEntityData(
@@ -43,9 +44,9 @@ object UserEntity {
         deviceToken = cursor.getString(cursor.getColumnIndex(deviceToken)),
         androidToken = cursor.getString(cursor.getColumnIndex(androidToken))))
 
-  def userFromCursor(cursor: Cursor) = toUser(userEntityFromCursor(cursor))
+  def userFromCursor(cursor: Cursor): User = toUser(userEntityFromCursor(cursor))
 
-  def createTableSQL =
+  def createTableSQL: String =
     s"""CREATE TABLE ${UserEntity.table}
         |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
         |${UserEntity.userId} TEXT,
@@ -55,16 +56,4 @@ object UserEntity {
         |${UserEntity.deviceToken} TEXT,
         |${UserEntity.androidToken} INTEGER)""".stripMargin
 
-}
-
-object UserEntityData {
-
-  def userEntityDataFromCursor(cursor: Cursor) =
-    UserEntityData(
-      userId = cursor.getString(cursor.getColumnIndex(userId)),
-      email = cursor.getString(cursor.getColumnIndex(email)),
-      sessionToken = cursor.getString(cursor.getColumnIndex(sessionToken)),
-      installationId = cursor.getString(cursor.getColumnIndex(installationId)),
-      deviceToken = cursor.getString(cursor.getColumnIndex(deviceToken)),
-      androidToken = cursor.getString(cursor.getColumnIndex(androidToken)))
 }

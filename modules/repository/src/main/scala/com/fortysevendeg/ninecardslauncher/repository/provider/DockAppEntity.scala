@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.repository.model.DockApp
 import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions._
 
@@ -29,7 +30,7 @@ object DockAppEntity {
     imagePath,
     position)
 
-  def dockAppEntityFromCursor(cursor: Cursor) =
+  def dockAppEntityFromCursor(cursor: Cursor): DockAppEntity =
     DockAppEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = DockAppEntityData(
@@ -39,9 +40,9 @@ object DockAppEntity {
         imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
         position = cursor.getInt(cursor.getColumnIndex(position))))
 
-  def dockAppFromCursor(cursor: Cursor) = toDockApp(dockAppEntityFromCursor(cursor))
+  def dockAppFromCursor(cursor: Cursor): DockApp = toDockApp(dockAppEntityFromCursor(cursor))
 
-  def createTableSQL =
+  def createTableSQL: String =
     s"""CREATE TABLE ${DockAppEntity.table}
         |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
         |${DockAppEntity.name} TEXT not null,
@@ -49,15 +50,4 @@ object DockAppEntity {
         |${DockAppEntity.intent} TEXT not null,
         |${DockAppEntity.imagePath} TEXT not null,
         |${DockAppEntity.position} INTEGER not null)""".stripMargin
-}
-
-object DockAppEntityData {
-
-  def dockAppEntityDataFromCursor(cursor: Cursor) =
-    DockAppEntityData(
-      name = cursor.getString(cursor.getColumnIndex(name)),
-      dockType = cursor.getString(cursor.getColumnIndex(dockType)),
-      intent = cursor.getString(cursor.getColumnIndex(intent)),
-      imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
-      position = cursor.getInt(cursor.getColumnIndex(position)))
 }

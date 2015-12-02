@@ -44,7 +44,7 @@ object AppEntity {
     version,
     installedFromGooglePlay)
 
-  def appEntityFromCursor(cursor: Cursor) =
+  def appEntityFromCursor(cursor: Cursor): AppEntity =
     AppEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = AppEntityData(
@@ -61,7 +61,7 @@ object AppEntity {
 
   def appFromCursor(cursor: Cursor): App = toApp(appEntityFromCursor(cursor))
 
-  def createTableSQL =
+  def createTableSQL: String =
     s"""CREATE TABLE ${AppEntity.table}
        |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
        |${AppEntity.name} TEXT not null,

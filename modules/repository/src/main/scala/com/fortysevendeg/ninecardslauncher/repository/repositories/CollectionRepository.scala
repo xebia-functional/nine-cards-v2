@@ -105,7 +105,7 @@ class CollectionRepository(
   def fetchIterableCollections(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursorSeq[Collection], RepositoryException] =
+    orderBy: String = ""): ServiceDef2[IterableCursor[Collection], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {

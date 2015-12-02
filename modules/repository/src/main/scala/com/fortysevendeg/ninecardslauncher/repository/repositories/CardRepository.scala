@@ -107,7 +107,7 @@ class CardRepository(
   def fetchIterableCards(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursorSeq[Card], RepositoryException] =
+    orderBy: String = ""): ServiceDef2[IterableCursor[Card], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {

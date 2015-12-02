@@ -90,7 +90,7 @@ class UserRepository(
   def fetchIterableUsers(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursorSeq[User], RepositoryException] =
+    orderBy: String = ""): ServiceDef2[IterableCursor[User], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {

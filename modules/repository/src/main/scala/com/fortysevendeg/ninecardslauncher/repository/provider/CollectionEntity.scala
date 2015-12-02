@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
 import com.fortysevendeg.ninecardslauncher.repository.Conversions._
+import com.fortysevendeg.ninecardslauncher.repository.model.Collection
 
 case class CollectionEntity(id: Int, data: CollectionEntityData)
 
@@ -43,7 +44,7 @@ object CollectionEntity {
     sharedCollectionId,
     sharedCollectionSubscribed)
 
-  def collectionEntityFromCursor(cursor: Cursor) =
+  def collectionEntityFromCursor(cursor: Cursor): CollectionEntity =
     CollectionEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = CollectionEntityData(
@@ -58,9 +59,9 @@ object CollectionEntity {
         sharedCollectionId = cursor.getString(cursor.getColumnIndex(sharedCollectionId)),
         sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(sharedCollectionSubscribed)) > 0))
 
-  def collectionFromCursor(cursor: Cursor) = toCollection(collectionEntityFromCursor(cursor))
+  def collectionFromCursor(cursor: Cursor): Collection = toCollection(collectionEntityFromCursor(cursor))
 
-  def createTableSQL =
+  def createTableSQL: String =
     s"""CREATE TABLE ${CollectionEntity.table}
        |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
        |${CollectionEntity.position} INTEGER not null,
