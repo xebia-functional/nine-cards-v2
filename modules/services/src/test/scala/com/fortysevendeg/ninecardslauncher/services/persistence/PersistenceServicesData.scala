@@ -3,13 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor.IterableCursorSeq
 import com.fortysevendeg.ninecardslauncher.repository.model._
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
-import com.fortysevendeg.ninecardslauncher.services.persistence.models._
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User, _}
 
 import scala.util.Random
 
