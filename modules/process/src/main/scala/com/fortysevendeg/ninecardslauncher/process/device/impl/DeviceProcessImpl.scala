@@ -5,9 +5,9 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, Misc}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableApps, IterableContacts, LastCallsContact}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
@@ -16,8 +16,8 @@ import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServices, ImplicitsPersistenceServiceExceptions, AddAppRequest, PersistenceServiceException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetsServices
 import rapture.core.Answer
@@ -46,6 +46,11 @@ class DeviceProcessImpl(
     (for {
       apps <- persistenceServices.fetchApps(toFetchAppOrder(orderBy), orderBy.ascending)
     } yield apps map toApp).resolve[AppException]
+
+  override def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
+    (for {
+      iter <- persistenceServices.fetchIterableApps(toFetchAppOrder(orderBy), orderBy.ascending)
+    } yield new IterableApps(iter)).resolve[AppException]
 
   override def saveInstalledApps(implicit context: ContextSupport) =
     (for {
@@ -116,6 +121,15 @@ class DeviceProcessImpl(
         case ContactsWithPhoneNumber => contactsServices.getContactsWithPhone
       }
     } yield toContactSeq(contacts)).resolve[ContactException]
+
+  override def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
+    (for {
+      iter <- filter match {
+        case AllContacts => contactsServices.getIterableContacts
+        case FavoriteContacts => contactsServices.getIterableFavoriteContacts
+        case ContactsWithPhoneNumber => contactsServices.getIterableContactsWithPhone
+      }
+    } yield new IterableContacts(iter)).resolve[ContactException]
 
   override def getContact(lookupKey: String)(implicit context: ContextSupport) =
     (for {

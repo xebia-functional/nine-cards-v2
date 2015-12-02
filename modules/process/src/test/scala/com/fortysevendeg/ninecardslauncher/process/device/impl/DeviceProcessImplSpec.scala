@@ -92,6 +92,9 @@ trait DeviceProcessSpecification
     mockPersistenceServices.fetchApps(any, any) returns
       Service(Task(Result.answer(appsPersistence)))
 
+    mockPersistenceServices.fetchIterableApps(any, any) returns
+      Service(Task(Result.answer(iterableCursorApps)))
+
     mockPersistenceServices.addApp(any[AddAppRequest]) returns(
       Service(Task(Result.answer(appsPersistence.head))),
       Service(Task(Result.answer(appsPersistence(1)))),
@@ -116,6 +119,15 @@ trait DeviceProcessSpecification
 
     mockContactsServices.getContactsWithPhone returns
       Service(Task(Result.answer(contacts)))
+
+    mockContactsServices.getIterableContacts returns
+      Service(Task(Result.answer(iterableCursorContact)))
+
+    mockContactsServices.getIterableFavoriteContacts returns
+      Service(Task(Result.answer(iterableCursorContact)))
+
+    mockContactsServices.getIterableContactsWithPhone returns
+      Service(Task(Result.answer(iterableCursorContact)))
 
     mockContactsServices.findContactByLookupKey("lookupKey 1") returns
       Service(Task(Result.answer(contacts.head)))
@@ -201,6 +213,10 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.fetchApps(any, any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.fetchIterableApps(any, any) returns Service {
       Task(Errata(persistenceServiceException))
     }
 
@@ -333,6 +349,10 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockContactsServices.getContacts returns Service {
+      Task(Errata(contactsServicesException))
+    }
+
+    mockContactsServices.getIterableContacts returns Service {
       Task(Errata(contactsServicesException))
     }
 
@@ -506,6 +526,44 @@ class DeviceProcessImplSpec
 
   }
 
+  "Get Iterable Contacts Sorted By Name" should {
+
+    "get all contacts sorted" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableContacts()(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
+        }
+      }
+
+    "get favorite contacts sorted" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableContacts(FavoriteContacts)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
+        }
+      }
+
+    "get contacts with phone number sorted" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableContacts(ContactsWithPhoneNumber)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
+        }
+      }
+
+    "returns ContactException when ContactsService fails getting contacts" in
+      new DeviceProcessScope with ContactsErrorScope {
+        val result = deviceProcess.getIterableContacts()(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          }
+        }
+      }
+
+  }
+
   "Get Contact" should {
 
     "get contact find a contact with data info filled" in
@@ -565,6 +623,50 @@ class DeviceProcessImplSpec
     "returns AppException if persistence service fails " in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.getSavedApps(GetByName)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+  }
+
+  "Get Saved Apps" should {
+
+    "get iterable saved apps by name" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableApps(GetByName)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) =>
+            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        }
+        there was one(mockPersistenceServices).fetchIterableApps(OrderByName, ascending = true)
+      }
+
+    "get iterable saved apps by update date" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableApps(GetByInstallDate)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) =>
+            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        }
+        there was one(mockPersistenceServices).fetchIterableApps(OrderByInstallDate, ascending = false)
+      }
+
+    "get iterable saved apps by category" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableApps(GetByCategory)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) =>
+            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        }
+        there was one(mockPersistenceServices).fetchIterableApps(OrderByCategory, ascending = true)
+      }
+
+    "returns AppException if persistence service fails " in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.getIterableApps(GetByName)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
