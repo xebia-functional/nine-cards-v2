@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts
 
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor.IterableCursorSeq
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 
@@ -7,14 +8,34 @@ trait ContactsServices {
 
   /**
    * Get contacts sort by name. The info field is not filled
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
+    *
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
    *         information about contacts
    * @throws ContactsServiceException if exist some problem accessing to contact provider
    */
   def getContacts: ServiceDef2[Seq[Contact], ContactsServiceException]
 
   /**
+    * Get iterable contacts sort by name. The info field is not filled
+    *
+    * @return the IterableCursorSeq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
+    *         information about contacts
+    * @throws ContactsServiceException if exist some problem accessing to contact provider
+    */
+  def getIterableContacts: ServiceDef2[IterableCursorSeq[Contact], ContactsServiceException]
+
+  /**
+    * Get iterable contacts by keyword sort by name. The info field is not filled
+    *
+    * @return the IterableCursorSeq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
+    *         information about contacts
+    * @throws ContactsServiceException if exist some problem accessing to contact provider
+    */
+  def getIterableContactsByKeyword(keyword: String): ServiceDef2[IterableCursorSeq[Contact], ContactsServiceException]
+
+  /**
    * Return contact by email if exist. The info field is not filled
+    *
    * @return the Option[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
    *         information about contact
    * @throws ContactsServiceException if exist some problem accessing to contact provider
@@ -23,6 +44,7 @@ trait ContactsServices {
 
   /**
    * Return contact by phone number if exist. The info field is not filled
+ *
    * @return the Option[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
    *         information about contact
    * @throws ContactsServiceException if exist some problem accessing to contact provider
@@ -31,6 +53,7 @@ trait ContactsServices {
 
   /**
    * Return contact by lookup key. The info field is filled
+ *
    * @return the com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact contains
    *         information about contacts
    * @throws ContactsServiceException if exist some problem accessing to contact provider or lookup key don't exits
@@ -39,6 +62,7 @@ trait ContactsServices {
 
   /**
    * Return favorite contacts. The info field is not filled
+ *
    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
    *         information about contacts
    * @throws ContactsServiceException if exist some problem accessing to contact provider
@@ -47,6 +71,7 @@ trait ContactsServices {
 
   /**
    * Return contacts with phone number. The info field is not filled
+ *
    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
    *         information about contacts
    * @throws ContactsServiceException if exist some problem accessing to contact provider

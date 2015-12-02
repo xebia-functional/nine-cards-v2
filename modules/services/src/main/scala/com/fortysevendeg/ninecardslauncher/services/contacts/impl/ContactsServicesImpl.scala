@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactInfo
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 
 import scalaz.concurrent.Task
 
@@ -25,6 +26,33 @@ class ContactsServicesImpl(
             projection = allFields,
             where = Fields.ALL_CONTACTS_SELECTION,
             orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
+        }
+      }
+    }
+
+  override def getIterableContacts =
+    Service {
+      Task {
+        CatchAll[ContactsServiceException] {
+          contentResolverWrapper.getCursor(
+            uri = Fields.CONTENT_URI,
+            projection = allFields,
+            where = Fields.ALL_CONTACTS_SELECTION,
+            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
+        }
+      }
+    }
+
+  override def getIterableContactsByKeyword(keyword: String) =
+    Service {
+      Task {
+        CatchAll[ContactsServiceException] {
+          contentResolverWrapper.getCursor(
+            uri = Fields.CONTENT_URI,
+            projection = allFields,
+            where = Fields.CONTACTS_BY_KEYWORD_SELECTION,
+            whereParams = Seq(keyword),
+            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
         }
       }
     }
