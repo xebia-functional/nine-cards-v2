@@ -359,6 +359,48 @@ class PersistenceServicesSpec
     }
   }
 
+  "fetchIterableAppsByKeyword" should {
+
+    "return a iterable of apps when pass a keyword and OrderByName" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass a keyword and OrderByInstallDate" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass a keyword and OrderByCategory" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
   "findAppByPackage" should {
 
     "return an App when a valid packageName is provided" in new ValidRepositoryServicesResponses {

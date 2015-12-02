@@ -51,6 +51,21 @@ class PersistenceServicesImpl(
     appSeq.resolve[PersistenceServiceException]
   }
 
+  override def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
+    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+
+    val appSeq = for {
+      iter <- appRepository.fetchIterableApps(
+        where = toStringWhere(keyword),
+        whereParams = Seq(keyword),
+        orderBy = orderByString)
+    } yield new IterableApps(iter)
+
+    appSeq.resolve[PersistenceServiceException]
+  }
+
+  private[this] def toStringWhere(keyword: String): String = s"${AppEntity.name} LIKE '%$keyword%' "
+
   private[this] def toStringOrderBy(orderBy: FetchAppOrder): String = orderBy match {
     case OrderByName => s"${AppEntity.name} COLLATE NOCASE"
     case OrderByInstallDate => AppEntity.dateInstalled

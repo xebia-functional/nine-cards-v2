@@ -721,4 +721,6 @@ trait PersistenceServicesData {
   }
   val iterableDockApps = new IterableDockApps(iterableCursorDockApps)
 
+  val keyword = "fake-keyword"
+
 }
