@@ -1,6 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
+import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
+import com.fortysevendeg.ninecardslauncher.api.reads.RecommendationImplicits._
+import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits._
+import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
+import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
 import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -50,12 +55,6 @@ class ApiServicesImpl(
   val categoryNotFoundMessage = "Google Play Category not found"
 
   val shareCollectionNotFoundMessage = "Shared Collections not found"
-
-  import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.RecommendationImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits._
 
   override def login(
     email: String,

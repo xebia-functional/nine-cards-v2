@@ -1,24 +1,25 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.drawer
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
 import android.support.v7.widget.RecyclerView
-import android.view.{ViewGroup, View}
-import android.widget.{ImageView, ProgressBar, LinearLayout}
+import android.view.{View, ViewGroup}
+import android.widget.{ImageView, ProgressBar}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{FastScrollerLayout, TintableImageView}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{Tweak, ContextWrapper}
+import macroid.{ContextWrapper, Tweak}
 
 trait DrawerStyles {
 

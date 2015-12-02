@@ -1,10 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.drawables
 
 import android.graphics._
 import android.graphics.drawable.Drawable
-import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
+
+import scala.annotation.tailrec
 
 case class CharDrawable(char: String, circle: Boolean = false)(implicit contextWrapper: ContextWrapper)
   extends Drawable {
@@ -63,13 +65,17 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
   override def getOpacity: Int = PixelFormat.TRANSPARENT
 
   private[this] def determineMaxTextSize(maxWidth: Float): Int = {
-    var size: Int = 0
     val paint: Paint = new Paint
-    do {
-      size = size + 1
+    @tailrec
+    def calculateSize(size: Int): Int = {
       paint.setTextSize(size)
-    } while (paint.measureText("M") < maxWidth)
-    size
+      if (paint.measureText("M") >= maxWidth) {
+        size
+      } else {
+        calculateSize(size + 1)
+      }
+    }
+    calculateSize(0)
   }
 
   private[this] def positionByChar(): Int = {

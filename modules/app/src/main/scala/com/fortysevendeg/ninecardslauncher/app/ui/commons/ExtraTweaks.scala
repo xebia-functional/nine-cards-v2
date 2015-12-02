@@ -19,6 +19,7 @@ import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{Transformer, ContextWrapper, Tweak, Ui}
@@ -36,6 +37,10 @@ object ExtraTweaks {
       })
       view.setClipToOutline(true)
   }
+
+  def vClearFocus = Tweak[View](_.clearFocus())
+
+  def vRequestFocus = Tweak[View](_.requestFocus())
 
   def vEnabled(enabled: Boolean) = Tweak[View](_.setEnabled(enabled))
 
@@ -174,7 +179,7 @@ object CommonsTweak {
         vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
     } getOrElse {
       val s = 0 until 8 map (_ => radius.toFloat)
-      val d = new ShapeDrawable(new RoundRectShape(s.toArray, null, null))
+      val d = new ShapeDrawable(new RoundRectShape(s.toArray, javaNull, javaNull))
       d.getPaint.setColor(color)
       vBackground(d)
     }

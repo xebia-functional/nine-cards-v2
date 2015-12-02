@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 
 import scalaz.concurrent.Task
 
@@ -107,7 +108,7 @@ class CreateCollectionService
     stopSelf()
   }
 
-  override def onBind(intent: Intent): IBinder = null
+  override def onBind(intent: Intent): IBinder = javaNull
 
 }
 

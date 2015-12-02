@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
@@ -9,19 +9,20 @@ import android.view.MotionEvent._
 import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
 import android.view.{MotionEvent, ViewConfiguration, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{ContextWrapper, Tweak}
+import macroid.ContextWrapper
 
 class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(implicit contextWrapper: ContextWrapper)
   extends ViewGroup(context, attrs, defStyle) {
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, null, 0)
+  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
 
   def this(context: Context, attrs: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attrs, 0)
 
   lazy val content = getChildAt(0)
 
-  val indicator = PullToCloseIndicator()
+  var statuses = PullToCloseStatuses()
 
   val listeners = PullToCloseListener()
 
@@ -30,9 +31,9 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
   }
 
-  def isPulling: Boolean = indicator.isPulling
+  def isPulling: Boolean = statuses.isPulling
 
-  def currentPosY: Int = indicator.currentPosY
+  def currentPosY: Int = statuses.currentPosY
 
   override def checkLayoutParams(p: ViewGroup.LayoutParams): Boolean = p.isInstanceOf[MarginLayoutParams]
 
@@ -70,7 +71,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     content.getLayoutParams match {
       case lp: ViewGroup.MarginLayoutParams =>
         val left: Int = getPaddingLeft + lp.leftMargin
-        val top: Int = getPaddingTop + lp.topMargin + indicator.currentPosY
+        val top: Int = getPaddingTop + lp.topMargin + statuses.currentPosY
         val right: Int = left + content.getMeasuredWidth
         val bottom: Int = top + content.getMeasuredHeight
         content.layout(left, top, right, bottom)
@@ -80,7 +81,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   override def dispatchTouchEvent(ev: MotionEvent): Boolean = {
     val x = ev.getX
     val y = ev.getY
-    (indicator.isPulling, childInTop, ev.getAction) match {
+    (statuses.isPulling, childInTop, ev.getAction) match {
       case (true, _, ACTION_UP | ACTION_CANCEL) => release(ev)
       case (true, _, ACTION_DOWN) => actionDown(ev, x, y)
       case (true, _, ACTION_MOVE) => actionMove(ev, x, y)
@@ -91,78 +92,78 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   }
 
   private[this] def release(ev: MotionEvent): Boolean = {
-    if (indicator.currentPosY > 0) {
-      if (indicator.shouldClose()) listeners.close()
+    if (statuses.currentPosY > 0) {
+      if (statuses.shouldClose()) listeners.close()
       val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
       anim.addUpdateListener(new AnimatorUpdateListener {
         override def onAnimationUpdate(animation: ValueAnimator): Unit =
-          movePos(-indicator.currentPosY * animation.getAnimatedFraction)
+          movePos(-statuses.currentPosY * animation.getAnimatedFraction)
       })
       anim.addListener(new AnimatorListenerAdapter {
         override def onAnimationEnd(animation: Animator): Unit = {
           listeners.endPulling()
-          indicator.isPulling = false
+          statuses = statuses.copy(isPulling = false)
           restart()
         }
       })
       anim.start()
     } else {
       listeners.endPulling()
-      indicator.isPulling = false
+      statuses = statuses.copy(isPulling = false)
     }
     super.dispatchTouchEvent(ev)
   }
 
   private[this] def actionDown(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    indicator.start(x, y)
+    statuses = statuses.start(x, y)
     super.dispatchTouchEvent(ev)
     true
   }
 
   private[this] def actionMove(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    val firstTime = !indicator.isPulling && childInTop && indicator.dontStarted
+    val firstTime = !statuses.isPulling && childInTop && statuses.dontStarted
     if (firstTime) {
       // User began movement when the child can scroll up and we need start information
-      indicator.start(x, y)
+      statuses = statuses.start(x, y)
     }
-    indicator.move(x, y)
-    val moveDown = indicator.offsetY > 0
+    statuses = statuses.move(x, y)
+    val moveDown = statuses.offsetY > 0
 
-    (moveDown, !moveDown, indicator.hasLeftStartPosition, childInTop) match {
+    (moveDown, !moveDown, statuses.hasLeftStartPosition, childInTop) match {
       case (down, _, _, inTop) if down && !inTop => // disable move when user not reach top
-      case (down, up, canUp, _) if (up && canUp) || down => movePos(indicator.offsetY)
+      case (down, up, canUp, _) if (up && canUp) || down => movePos(statuses.offsetY)
       case _ =>
     }
     super.dispatchTouchEvent(ev)
   }
 
   private[this] def actionMoveIdle(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    if (y - indicator.startY > touchSlop) {
-      indicator.isPulling = true
-      indicator.start(x, y)
+    if (y - statuses.startY > touchSlop) {
+      statuses = statuses.copy(isPulling = true)
+      statuses = statuses.start(x, y)
       listeners.startPulling()
     }
     super.dispatchTouchEvent(ev)
   }
 
   private[this] def restart() = {
-    content.offsetTopAndBottom(-indicator.currentPosY)
+    content.offsetTopAndBottom(-statuses.currentPosY)
     invalidate()
-    indicator.restart()
+    statuses = statuses.restart()
   }
 
   private[this] def movePos(deltaY: Float) = {
-    if (deltaY >= 0 || !indicator.isInStartPosition) {
+    if (deltaY >= 0 || !statuses.isInStartPosition) {
       val to: Int = {
-        val to = indicator.currentPosY + deltaY.toInt
-        indicator.willOverTop(to) match {
-          case true => indicator.posStart
+        val to = statuses.currentPosY + deltaY.toInt
+        statuses.willOverTop(to) match {
+          case true => statuses.posStart
           case false => to
         }
       }
-      indicator.updateCurrentPostY(to)
-      listeners.scroll(to, indicator.shouldClose())
-      val change: Int = to - indicator.lastPosY
+      statuses = statuses.updateCurrentPostY(to)
+      listeners.scroll(to, statuses.shouldClose())
+      val change: Int = to - statuses.lastPosY
       updatePos(change)
     }
   }
@@ -184,62 +185,52 @@ case class PullToCloseListener(
   var scroll: (Int, Boolean) => Unit = (i: Int, b: Boolean) => (),
   var close: () => Unit = () => ())
 
-case class PullToCloseIndicator(
+case class PullToCloseStatuses(
   resistance: Float = 3f,
-  var lastPosY: Int = 0,
-  var currentPosY: Int = 0,
-  var startX: Float = 0,
-  var startY: Float = 0,
-  var lastMoveX: Float = 0,
-  var lastMoveY: Float = 0,
-  var offsetX: Float = 0,
-  var offsetY: Float = 0,
-  var isPulling: Boolean = false)(implicit contextWrapper: ContextWrapper) {
+  lastPosY: Int = 0,
+  currentPosY: Int = 0,
+  startX: Float = 0,
+  startY: Float = 0,
+  lastMoveX: Float = 0,
+  lastMoveY: Float = 0,
+  offsetX: Float = 0,
+  offsetY: Float = 0,
+  isPulling: Boolean = false)(implicit contextWrapper: ContextWrapper) {
 
   val distanceToValidClose = resGetDimensionPixelSize(R.dimen.distance_to_valid_close)
 
   val posStart = 0
 
-  def restart() = {
-    isPulling = false
-    lastPosY = 0
-    currentPosY = 0
-    startX = 0
-    startY = 0
-    lastMoveX = 0
-    lastMoveY = 0
-    offsetX = 0
-    offsetY = 0
-  }
+  def restart(): PullToCloseStatuses = copy(
+    isPulling = false,
+    lastPosY = 0,
+    currentPosY = 0,
+    startX = 0,
+    startY = 0,
+    lastMoveX = 0,
+    lastMoveY = 0,
+    offsetX = 0,
+    offsetY = 0)
 
   def dontStarted: Boolean = startX == 0 && startY == 0
 
-  def start(x: Float, y: Float) = {
-    currentPosY = 0
-    startX = x
-    startY = y
-    lastMoveX = x
-    lastMoveY = y
-  }
+  def start(x: Float, y: Float): PullToCloseStatuses = copy(
+    currentPosY = 0,
+    startX = x,
+    startY = y,
+    lastMoveX = x,
+    lastMoveY = y)
 
-  def move(x: Float, y: Float) = {
-    processMove(x - lastMoveX, y - lastMoveY)
-    lastMoveX = x
-    lastMoveY = y
-    isPulling = true
-  }
+  def move(x: Float, y: Float): PullToCloseStatuses = copy(
+    offsetX = x - lastMoveX,
+    offsetY = (y - lastMoveY) / resistance,
+    lastMoveX = x,
+    lastMoveY = y,
+    isPulling = true)
 
-  def offsets(x: Float, y: Float) = {
-    offsetX = x
-    offsetY = y
-  }
-
-  def updateCurrentPostY(current: Int) = {
-    lastPosY = currentPosY
-    currentPosY = current
-  }
-
-  private def processMove(ox: Float, oy: Float) = offsets(ox, oy / resistance)
+  def updateCurrentPostY(current: Int): PullToCloseStatuses = copy(
+    lastPosY = currentPosY,
+    currentPosY = current)
 
   def hasLeftStartPosition: Boolean = currentPosY > posStart
 
@@ -248,17 +239,5 @@ case class PullToCloseIndicator(
   def willOverTop(to: Int): Boolean = to < posStart
 
   def shouldClose(): Boolean = currentPosY > distanceToValidClose
-
-}
-
-object PullToCloseViewTweaks {
-
-  def pcvListener(pullToCloseListener: PullToCloseListener) = Tweak[PullToCloseView] {
-    view =>
-      view.listeners.startPulling = pullToCloseListener.startPulling
-      view.listeners.endPulling = pullToCloseListener.endPulling
-      view.listeners.scroll = pullToCloseListener.scroll
-      view.listeners.close = pullToCloseListener.close
-  }
 
 }

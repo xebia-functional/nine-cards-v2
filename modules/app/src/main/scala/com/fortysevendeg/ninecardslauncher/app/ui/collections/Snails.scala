@@ -5,6 +5,7 @@ import android.view.View
 import android.view.animation.{DecelerateInterpolator, AccelerateDecelerateInterpolator}
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail}
 
@@ -17,7 +18,7 @@ object Snails {
       val distance = if (fromLeft) -resGetDimensionPixelSize(R.dimen.padding_default) else resGetDimensionPixelSize(R.dimen.padding_default)
       val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.animate.translationX(-distance).alpha(0f).scaleX(0.7f).scaleY(0.7f).setDuration(duration).setListener(new AnimatorListenerAdapter {
         override def onAnimationEnd(animation: Animator) {
@@ -28,7 +29,7 @@ object Snails {
             override def onAnimationEnd(animation: Animator) {
               super.onAnimationEnd(animation)
               view.setRotation(0)
-              view.setLayerType(View.LAYER_TYPE_NONE, null)
+              view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
               animPromise.success()
             }
           }).start()
@@ -40,7 +41,7 @@ object Snails {
   def enterViews(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.setAlpha(0)
       view
@@ -51,7 +52,7 @@ object Snails {
         .setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             animPromise.success()
           }
         }).start()
@@ -61,7 +62,7 @@ object Snails {
   def exitViews(up: Boolean = true)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       val move = resGetDimensionPixelSize(R.dimen.space_enter_views_collection_detail)
       view
@@ -73,7 +74,7 @@ object Snails {
         .setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             animPromise.success()
           }
         }).start()

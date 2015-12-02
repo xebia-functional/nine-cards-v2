@@ -24,7 +24,7 @@
         style="@style/CollectionsPager"
         android:id="@+id/collections_view_pager"/>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayout
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SlidingTabLayout
         android:id="@+id/collections_tabs"
         style="@style/CollectionsTabs"/>
 

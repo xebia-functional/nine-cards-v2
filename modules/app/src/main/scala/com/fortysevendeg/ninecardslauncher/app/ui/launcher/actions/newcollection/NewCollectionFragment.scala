@@ -66,7 +66,7 @@ class NewCollectionFragment
     Task.fork(di.collectionProcess.addCollection(request).run).resolveAsyncUi(
       onResult = (c) => {
         activity[LauncherActivity] map { launcherActivity =>
-          launcherActivity.addNewCollection(c)
+          launcherActivity.addCollection(c)
         }
         hideKeyboard ~ unreveal()
       },

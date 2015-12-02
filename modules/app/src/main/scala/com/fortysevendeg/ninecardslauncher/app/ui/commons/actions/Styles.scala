@@ -9,7 +9,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{IconTypes, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
 

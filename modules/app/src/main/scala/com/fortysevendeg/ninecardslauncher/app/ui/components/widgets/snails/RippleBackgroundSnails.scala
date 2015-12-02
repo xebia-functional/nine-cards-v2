@@ -1,48 +1,28 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails
 
 import android.animation.{Animator, AnimatorListenerAdapter}
-import android.content.Context
-import android.util.AttributeSet
 import android.view.View._
 import android.view.animation.DecelerateInterpolator
-import android.view.{View, ViewAnimationUtils, ViewGroup}
-import android.widget.FrameLayout
+import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundSnails._
+import com.fortysevendeg.macroid.extras.SnailsUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.RippleBackgroundView
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Snail, Tweak}
+import macroid.{ContextWrapper, Snail}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
-
-class RippleBackgroundView(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends FrameLayout(context, attr, defStyleAttr) {
-
-  def this(context: Context) = this(context, null, 0)
-
-  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
-
-  val rippleView: View = {
-    val rippleView = new View(context)
-    rippleView.setVisibility(View.INVISIBLE)
-    addView(rippleView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-    rippleView
-  }
-
-}
 
 object RippleBackgroundSnails {
   def ripple(color: Int, forceFade: Boolean)(implicit contextWrapper: ContextWrapper) = Snail[RippleBackgroundView] {
     view =>
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
       val end = () => {
-        view.setLayerType(View.LAYER_TYPE_NONE, null)
+        view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
         view.rippleView.setVisibility(INVISIBLE)
         view.setBackgroundColor(color)
         animPromise.success()
@@ -94,14 +74,6 @@ object RippleBackgroundSnails {
           animationEnd
         }
       }).start()
-  }
-
-}
-
-object RippleBackgroundViewTweaks {
-
-  def rbvColor(color: Int, forceFade: Boolean = false)(implicit contextWrapper: ContextWrapper) = Tweak[RippleBackgroundView] { view =>
-    runUi(view <~~ ripple(color, forceFade))
   }
 
 }

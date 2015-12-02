@@ -9,6 +9,7 @@ import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, TextView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -40,7 +41,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   private[this] def createViewCategory(res: Int) = {
-    val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_category_dialog, null)
+    val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_category_dialog, javaNull)
     view.findViewById(R.id.contact_dialog_category_text) match {
       case t: TextView => t.setText(res)
     }
@@ -48,7 +49,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   private[this] def createViewItem(data: String, cardType: CardType) = {
-    val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_item_dialog, null)
+    val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_item_dialog, javaNull)
     view.findViewById(R.id.contact_dialog_item_text) match {
       case t: TextView => t.setText(data)
     }

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.drawables
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
@@ -7,8 +7,8 @@ import android.graphics._
 import android.graphics.drawable.{Animatable, Drawable}
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.IconTypes._
 import macroid.{ContextWrapper, Tweak}
-import IconTypes._
 
 import scala.util.Try
 
@@ -207,7 +207,9 @@ case class PathMorphDrawable(
         val fromOver = from.drop(to.length)
         val toOver = to.drop(from.length)
 
-        val transform = from.zip(to) map (i => transformSegment(i._1, i._2, fraction))
+        val transform = from.zip(to) map {
+          case (origin, target) => transformSegment(origin, target, fraction)
+        }
 
         val segmentFromOver = fromOver map (_.copy(alpha = 1 - fraction))
 
@@ -304,24 +306,4 @@ case class Segment(
   }
 }
 
-object PathMorphDrawableTweaks {
-  type W = ImageView
 
-  def pmdAnimIcon(icon: Int) = Tweak[W] {
-    view =>
-      view.getDrawable.asInstanceOf[PathMorphDrawable].setToTypeIcon(icon)
-      view.getDrawable.asInstanceOf[PathMorphDrawable].start()
-  }
-
-  def pmdChangeIcon(icon: Int) = Tweak[W](view =>
-    Try(view.getDrawable.asInstanceOf[PathMorphDrawable].setTypeIcon(icon)))
-
-  def pmdColor(color: Int) = Tweak[W](view =>
-    Try(view.getDrawable.asInstanceOf[PathMorphDrawable].setColor(color)))
-
-  def pmdColorResource(color: Int) = Tweak[W](view =>
-    Try(view.getDrawable.asInstanceOf[PathMorphDrawable].setColorResource(color)))
-
-  def pmdStroke(stroke: Float) = Tweak[W](view =>
-    Try(view.getDrawable.asInstanceOf[PathMorphDrawable].setStroke(stroke)))
-}

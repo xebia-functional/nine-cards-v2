@@ -67,7 +67,7 @@
 
     </LinearLayout>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundView
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.RippleBackgroundView
         android:id="@+id/wizard_steps_content"
         style="@style/WizardStepsRoot">
 
@@ -89,6 +89,6 @@
 
         </LinearLayout>
 
-    </com.fortysevendeg.ninecardslauncher.app.ui.components.RippleBackgroundView>
+    </com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.RippleBackgroundView>
 
 </FrameLayout>

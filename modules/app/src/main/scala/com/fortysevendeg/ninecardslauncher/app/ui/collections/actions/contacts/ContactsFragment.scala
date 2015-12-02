@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, ActivityResult, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, ContactsWithPhoneNumber}
@@ -76,7 +77,7 @@ class ContactsFragment
     onResult = (contact: Contact) => {
       val ft = getFragmentManager.beginTransaction()
       Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-      ft.addToBackStack(null)
+      ft.addToBackStack(javaNull)
       val dialog = new SelectInfoContactDialogFragment(contact)
       dialog.setTargetFragment(this, ActivityResult.selectInfoContact)
       dialog.show(ft, tagDialog)

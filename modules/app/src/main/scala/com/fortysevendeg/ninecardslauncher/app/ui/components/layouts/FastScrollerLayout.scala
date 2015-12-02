@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.graphics.drawable.{Drawable, GradientDrawable}
@@ -9,22 +9,23 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.util.AttributeSet
 import android.view.MotionEvent._
+import android.view.{View, MotionEvent, LayoutInflater, Gravity}
 import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, LayoutInflater, MotionEvent, View}
+import android.widget.{LinearLayout, FrameLayout}
 import android.widget.FrameLayout.LayoutParams
-import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{Tweak, Ui}
+import macroid.{Ui, Tweak}
 
 class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr) {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
@@ -67,16 +68,16 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def getDrawable(res: Int): Drawable = if (SDK_INT < LOLLIPOP_MR1) {
     context.getResources.getDrawable(res)
   } else {
-    context.getResources.getDrawable(res, null)
+    context.getResources.getDrawable(res, javaNull)
   }
 
 }
 
 class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attr, defStyleAttr)
-  with TypedFindView {
+    with TypedFindView {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
@@ -84,7 +85,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] var scrollListener: Option[ScrollListener] = None
 
-  private[this] val indicator = new FastScrollerIndicator
+  var statuses = new FastScrollerStatuses
 
   setOrientation(LinearLayout.HORIZONTAL)
 
@@ -101,18 +102,18 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   val barOff = if (SDK_INT < LOLLIPOP_MR1) {
     context.getResources.getDrawable(R.drawable.fastscroller_bar_off)
   } else {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar_off, null)
+    context.getResources.getDrawable(R.drawable.fastscroller_bar_off, javaNull)
   }
 
   var barOn = if (SDK_INT < LOLLIPOP_MR1) {
     context.getResources.getDrawable(R.drawable.fastscroller_bar_on)
   } else {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar_on, null)
+    context.getResources.getDrawable(R.drawable.fastscroller_bar_on, javaNull)
   }
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
-    indicator.height = h
+    statuses = statuses.copy(height = h)
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
@@ -120,7 +121,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     val y = MotionEventCompat.getY(event, 0)
     action match {
       case ACTION_DOWN =>
-        indicator.startScroll()
+        statuses = statuses.startScroll()
         true
       case ACTION_MOVE =>
         runUi(changePosition(y) ~
@@ -128,10 +129,10 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
           (recyclerView <~ rvScrollToPosition(y)))
         true
       case ACTION_UP | ACTION_CANCEL =>
-        indicator.resetScroll()
+        statuses = statuses.resetScroll()
         runUi(hideSignal)
         // Update scroll position in ScrollListener
-        scrollListener foreach (_.y = indicator.projectToRecycler(event.getY))
+        scrollListener foreach (_.y = statuses.projectToRecycler(event.getY))
         true
       case _ => super.onTouchEvent(event)
     }
@@ -146,7 +147,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def hideSignal: Ui[_] = (signal <~ vGone) ~ (bar <~ ivSrc(barOff))
 
   def setRecyclerView(rv: RecyclerView) = {
-    indicator.setTotalHeight(rv, getHeight)
+    statuses = statuses.setTotalHeight(rv, getHeight)
     scrollListener foreach rv.removeOnScrollListener
     val sl = new ScrollListener
     scrollListener = Option(sl)
@@ -155,29 +156,29 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   }
 
   def reset() = {
-    recyclerView foreach (rv => indicator.setTotalHeight(rv, getHeight))
+    recyclerView foreach (rv => statuses = statuses.setTotalHeight(rv, getHeight))
     scrollListener foreach (_.y = 0)
     runUi(changePosition(0))
   }
 
   private[this] def changePosition(y: Float): Ui[_] = {
-    val position = y / indicator.height
+    val position = y / statuses.height
     (bar <~ vChangeY(position)) ~ (signal <~ vChangeY(position))
   }
 
   private[this] def vChangeY(position: Float) = Tweak[View]{ view =>
     val viewHeight = view.getHeight
-    val value = ((indicator.height - viewHeight) * position).toInt
-    val max = indicator.height - viewHeight
+    val value = ((statuses.height - viewHeight) * position).toInt
+    val max = statuses.height - viewHeight
     val minimum = math.max(0, value)
     view.setY(math.min(minimum, max))
   }
 
   private[this] def rvScrollToPosition(y: Float) = Tweak[RecyclerView]{ view =>
     val itemCount = view.getAdapter.getItemCount
-    val position = ((y * itemCount) / indicator.height).toInt
-    if (position != indicator.lastScrollToPosition) {
-      indicator.lastScrollToPosition = position
+    val position = ((y * itemCount) / statuses.height).toInt
+    if (position != statuses.lastScrollToPosition) {
+      statuses = statuses.copy(lastScrollToPosition = position)
       view.scrollToPosition(position)
       val element = Option(view.getAdapter) match {
         case Some(listener: FastScrollerListener) => listener.getElement(position)
@@ -195,34 +196,32 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     extends OnScrollListener {
     var y = 0f
 
-    override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = if (!indicator.moving) {
+    override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = if (!statuses.moving) {
       y = y + dy
-      runUi(changePosition(indicator.projectToBar(y)))
+      runUi(changePosition(statuses.projectToBar(y)))
     }
 
   }
 
 }
 
-case class FastScrollerIndicator(
-  var height: Int = 0,
-  var totalHeight: Int = 0,
-  var moving: Boolean = false,
-  var lastScrollToPosition: Int = -1) {
+case class FastScrollerStatuses(
+  height: Int = 0,
+  totalHeight: Int = 0,
+  moving: Boolean = false,
+  lastScrollToPosition: Int = -1) {
 
-  def setTotalHeight(recyclerView: RecyclerView, height: Int) = {
+  def setTotalHeight(recyclerView: RecyclerView, height: Int): FastScrollerStatuses = copy(
     totalHeight = Option(recyclerView.getAdapter) match {
       case Some(listener: FastScrollerListener) => listener.getHeight - height
       case _ => 0
-    }
-  }
+    })
 
-  def startScroll() = moving = true
+  def startScroll(): FastScrollerStatuses = copy(moving = true)
 
-  def resetScroll() = {
-    lastScrollToPosition = -1
-    moving = false
-  }
+  def resetScroll(): FastScrollerStatuses = copy(
+    lastScrollToPosition = -1,
+    moving = false)
 
   def projectToBar(y: Float) = (y * height) / totalHeight
 
@@ -236,22 +235,3 @@ trait FastScrollerListener {
   def getElement(position: Int): Option[String]
 
 }
-
-object FastScrollerLayoutTweak {
-  // We should launch this tweak when the adapter has been added
-  def fslLinkRecycler = Tweak[FastScrollerLayout](_.linkRecycler())
-
-  def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
-
-  def fslInvisible = Tweak[FastScrollerLayout]{ view =>
-    runUi(view.fastScroller map (fs => fs.hide) getOrElse Ui.nop)
-  }
-
-  def fslVisible = Tweak[FastScrollerLayout]{ view =>
-    runUi(view.fastScroller map (fs => fs.show) getOrElse Ui.nop)
-  }
-
-  def fslReset = Tweak[FastScrollerLayout](_.reset)
-
-}
-

@@ -8,7 +8,7 @@
         style="@style/LauncherSearchEditText"
         android:id="@+id/launcher_search_box_text"/>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.TintableImageView
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
         style="@style/LauncherSearchIcon"
         android:id="@+id/launcher_search_box_icon"/>
 

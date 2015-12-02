@@ -1,20 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
-import android.graphics.Color
+import android.graphics.{Canvas, Color, Paint}
 import android.support.v4.view.ViewPager
-import android.util.{AttributeSet, TypedValue}
+import android.util.AttributeSet
 import android.view.View.OnClickListener
 import android.view.ViewGroup.LayoutParams._
-import android.view.{LayoutInflater, Gravity, View}
-import android.widget.{FrameLayout, HorizontalScrollView, TextView}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import android.view.{Gravity, LayoutInflater, View}
+import android.widget.{LinearLayout, FrameLayout, HorizontalScrollView, TextView}
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Transformer, ActivityContextWrapper, Tweak}
-import macroid.FullDsl._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
 
 /**
  * Inspired in https://developer.android.com/samples/SlidingTabsBasic/index.html
@@ -22,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
 class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends HorizontalScrollView(context, attr, defStyleAttr) {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
@@ -71,7 +66,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   }
 
   def createDefaultTabView(position: Int): TextView = {
-    val textView = LayoutInflater.from(context).inflate(R.layout.collections_detail_tab, null).asInstanceOf[TextView]
+    val textView = LayoutInflater.from(context).inflate(R.layout.collections_detail_tab, javaNull).asInstanceOf[TextView]
     textView.setTextColor(defaultTextColor)
     textView.setTag(position.toString)
     textView
@@ -86,7 +81,7 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
     val tabStripChildCount = tabStrip.getChildCount
     if (tabStripChildCount != 0 && tabIndex > 0 || tabIndex < tabStripChildCount) {
       val selectedChild = tabStrip.getChildAt(tabIndex)
-      if (selectedChild != null && selectedChild.getMeasuredWidth != 0) {
+      if (selectedChild != javaNull && selectedChild.getMeasuredWidth != 0) {
         val targetScrollX = ((positionOffset + selectedChild.getLeft) - getWidth / 2) + selectedChild.getWidth / 2
         if (targetScrollX != lastScrollTo) {
           scrollTo(targetScrollX, 0)
@@ -115,10 +110,10 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
       if (tabStripChildCount != 0 && position > 0 || position < tabStripChildCount) {
         tabStrip.onViewPagerPageChanged(position, positionOffset)
         val selectedTitle: View = tabStrip.getChildAt(position)
-        val selectedOffset: Int = if (selectedTitle == null) 0 else selectedTitle.getWidth
+        val selectedOffset: Int = if (selectedTitle == javaNull) 0 else selectedTitle.getWidth
         val nextTitlePosition: Int = position + 1
         val nextTitle: View = tabStrip.getChildAt(nextTitlePosition)
-        val nextOffset: Int = if (nextTitle == null) 0 else nextTitle.getWidth
+        val nextOffset: Int = if (nextTitle == javaNull) 0 else nextTitle.getWidth
         val extraOffset: Int = (0.5F * (positionOffset * (selectedOffset + nextOffset).toFloat)).toInt
         scrollToTab(position, extraOffset)
         viewPagerPageChangeListener foreach (_.onPageScrolled(position, positionOffset, positionOffsetPixels))
@@ -146,16 +141,52 @@ class SlidingTabLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
 }
 
-object SlidingTabLayoutTweaks {
-  type W = SlidingTabLayout
+class SlidingTabStrip(context: Context, attr: AttributeSet, defStyleAttr: Int)
+  extends LinearLayout(context, attr, defStyleAttr) {
 
-  def stlViewPager(viewPager: Option[ViewPager]): Tweak[W] = Tweak[W](viewPager foreach _.setViewPager)
+  def this(context: Context) = this(context, javaNull, 0)
 
-  def stlDefaultTextColor(color: Int): Tweak[W] = Tweak[W](_.setDefaultTextColor(color))
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  def stlSelectedTextColor(color: Int): Tweak[W] = Tweak[W](_.setSelectedTextColor(color))
+  private var selectedPosition: Int = 0
+  private var selectionOffset: Float = .0f
 
-  def stlTabStripColor(color: Int): Tweak[W] = Tweak[W](_.setTabStripColor(color))
+  setWillNotDraw(false)
 
-  def stlOnPageChangeListener(listener: ViewPager.OnPageChangeListener): Tweak[W] = Tweak[W](_.setOnPageChangeListener(listener))
+  val selectedIndicatorThickness = context.getResources.getDimensionPixelOffset(R.dimen.height_selected_tab)
+  val selectedIndicatorPaint = new Paint
+  setColor(Color.WHITE)
+
+  def setColor(color: Int) = selectedIndicatorPaint.setColor(color)
+
+  def onViewPagerPageChanged(position: Int, positionOffset: Float) {
+    selectedPosition = position
+    selectionOffset = positionOffset
+    invalidate()
+  }
+
+  protected override def onDraw(canvas: Canvas) {
+    val height: Int = getHeight
+    val childCount: Int = getChildCount
+
+    if (childCount > 0) {
+      val selectedTitle: View = getChildAt(selectedPosition)
+
+      val initialLeft: Int = selectedTitle.getLeft
+      val initialRight: Int = selectedTitle.getRight
+
+      val (left, right) = if (selectionOffset > 0f && selectedPosition < (getChildCount - 1)) {
+        val nextTitle = getChildAt(selectedPosition + 1)
+        val l = (selectionOffset * nextTitle.getLeft + (1.0f - selectionOffset) * initialLeft).toInt
+        val r = (selectionOffset * nextTitle.getRight + (1.0f - selectionOffset) * initialRight).toInt
+        (l, r)
+      } else {
+        (initialLeft, initialRight)
+      }
+      canvas.drawRect(left, height - selectedIndicatorThickness, right, height, selectedIndicatorPaint)
+    }
+
+  }
+
+
 }

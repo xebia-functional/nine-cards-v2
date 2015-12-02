@@ -1,18 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components
+package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
 import android.graphics.PorterDuff.Mode
-import android.graphics.{Rect, Color, PorterDuffColorFilter}
+import android.graphics.{Color, PorterDuffColorFilter, Rect}
 import android.support.v4.view.MotionEventCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.MotionEvent._
 import android.widget.ImageView
-import macroid.{Tweak, ContextWrapper}
+import com.fortysevendeg.ninecardslauncher.commons._
 
 class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends ImageView(context, attr, defStyleAttr) {
 
-  def this(context: Context) = this(context, null, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
@@ -26,7 +27,6 @@ class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
     val action = MotionEventCompat.getActionMasked(event)
-    import MotionEvent._
     action match {
       case ACTION_DOWN => setTint(pressedColor); outSide = false
       case ACTION_MOVE => {
@@ -42,18 +42,5 @@ class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     }
     super.onTouchEvent(event)
   }
-
-}
-
-object TintableImageViewTweaks {
-  type W = TintableImageView
-
-  def tivDefaultColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W] {
-    view =>
-      view.defaultColor = color
-      view.setTint(color)
-  }
-
-  def tivPressedColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.pressedColor = color)
 
 }

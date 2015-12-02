@@ -12,8 +12,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.drawer._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
@@ -91,17 +92,17 @@ class LauncherActivity
     case _ => super.dispatchKeyEvent(event)
   }
 
-  def addNewCollection(collection: Collection) = runUi(uiAddCollection(collection))
+  def addCollection(collection: Collection) = runUi(uiActionCollection(Add, collection))
 
   def removeCollection(collection: Collection) = {
     val overOneCollection = workspaces.exists(_.data.filter(_.widgets == false).headOption.exists(_.collections.length!=1))
     if (overOneCollection) {
       val ft = getSupportFragmentManager.beginTransaction()
       Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-      ft.addToBackStack(null)
+      ft.addToBackStack(javaNull)
       val dialog = new RemoveCollectionDialogFragment(() => {
         Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
-          onResult = (_) => uiRemoveCollection(collection),
+          onResult = (_) => uiActionCollection(Remove, collection),
           onException = (_) => showMessage(R.string.contactUsError)
         )
       })
