@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.repository.commons
+package com.fortysevendeg.ninecardslauncher.commons.contentresolver
 
 import android.database.Cursor
 

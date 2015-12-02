@@ -41,6 +41,16 @@ class PersistenceServicesImpl(
     appSeq.resolve[PersistenceServiceException]
   }
 
+  override def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {
+    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+
+    val appSeq = for {
+      iter <- appRepository.fetchIterableApps(orderBy = orderByString)
+    } yield new IterableApps(iter)
+
+    appSeq.resolve[PersistenceServiceException]
+  }
+
   private[this] def toStringOrderBy(orderBy: FetchAppOrder): String = orderBy match {
     case OrderByName => s"${AppEntity.name} COLLATE NOCASE"
     case OrderByInstallDate => AppEntity.dateInstalled
@@ -269,6 +279,11 @@ class PersistenceServicesImpl(
     (for {
       dockAppItems <- dockAppRepository.fetchDockApps
     } yield dockAppItems map toDockApp).resolve[PersistenceServiceException]
+
+  override def fetchIterableDockApps =
+    (for {
+      iter <- dockAppRepository.fetchIterableDockApps()
+    } yield new IterableDockApps(iter)).resolve[PersistenceServiceException]
 
   override def findDockAppById(request: FindDockAppByIdRequest) =
     (for {

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IterableCursor, ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toUser
@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.repository.model.{User, UserData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
-import com.fortysevendeg.ninecardslauncher.repository.commons.IterableCursor._
+import IterableCursor._
 
 import scalaz.concurrent.Task
 
@@ -87,7 +87,7 @@ class UserRepository(
       }
     }
 
-  def fetchIterableApps(
+  def fetchIterableUsers(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
     orderBy: String = ""): ServiceDef2[IterableCursorSeq[User], RepositoryException] =

@@ -16,6 +16,15 @@ trait PersistenceServices {
   def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[Seq[App], PersistenceServiceException]
 
   /**
+    * Obtains iterable of apps from the repository
+    * @param orderBy indicates the field to order by
+    * @param ascending indicates if it will be in ascending order or not
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableApps
+    * @throws PersistenceServiceException if exist some problem obtaining the app
+    */
+  def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[IterableApps, PersistenceServiceException]
+
+  /**
    * Obtains an app from the repository by the package name
    * @param packageName the package name of the app to get
    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
@@ -314,6 +323,13 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
   def fetchDockApps: ServiceDef2[Seq[DockApp], PersistenceServiceException]
+
+  /**
+    * Obtains iterable of dock apps from the repository
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableDockApps
+    * @throws PersistenceServiceException if exist some problem obtaining the dock apps
+    */
+  def fetchIterableDockApps: ServiceDef2[IterableDockApps, PersistenceServiceException]
 
   /**
     * Obtains an dock app from the repository by the id

@@ -1,8 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor.IterableCursorSeq
 import com.fortysevendeg.ninecardslauncher.repository.model._
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 import scala.util.Random
 
@@ -699,4 +706,19 @@ trait PersistenceServicesData {
       intent = intent,
       imagePath = imagePath,
       position = position)
+
+  val iterableCursorApp = new IterableCursorSeq[repositoryModel.App] {
+    override def count(): Int = seqRepoApp.length
+    override def moveToPosition(pos: Int): repositoryModel.App = seqRepoApp(pos)
+    override def close(): Unit = ()
+  }
+  val iterableApps = new IterableApps(iterableCursorApp)
+
+  val iterableCursorDockApps = new IterableCursorSeq[repositoryModel.DockApp] {
+    override def count(): Int = seqRepoDockApp.length
+    override def moveToPosition(pos: Int): repositoryModel.DockApp = seqRepoDockApp(pos)
+    override def close(): Unit = ()
+  }
+  val iterableDockApps = new IterableDockApps(iterableCursorDockApps)
+
 }
