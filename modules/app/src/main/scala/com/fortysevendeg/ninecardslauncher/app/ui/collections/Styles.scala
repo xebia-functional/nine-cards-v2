@@ -22,10 +22,14 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.SlidingTabLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{FabItemMenu, NineRecyclerView, SlidingTabLayout}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{SlidingTabLayout, FabItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.{SlidingTabLayoutTweaks, FabItemMenuTweaks}
+import FabItemMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks
+import CollectionRecyclerViewTweaks._
+import SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.types._
 import CardType._
@@ -67,7 +71,7 @@ trait Styles {
 
 trait CollectionFragmentStyles {
 
-  def recyclerStyle(animateCards: Boolean)(implicit context: ContextWrapper): Tweak[NineRecyclerView] = {
+  def recyclerStyle(animateCards: Boolean)(implicit context: ContextWrapper): Tweak[CollectionRecyclerView] = {
     val paddingTop = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     vMatchParent +
@@ -99,7 +103,7 @@ trait CollectionAdapterStyles {
     Lollipop ifSupportedThen {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),
-        null,
+        javaNull,
         new ColorDrawable(setAlpha(Color.BLACK, alphaDefault)))
     } getOrElse {
       val states = new StateListDrawable()
@@ -126,7 +130,7 @@ trait CollectionAdapterStyles {
     card.cardType match {
       case PhoneCardType | SmsCardType | EmailCardType =>
         ivUriContact(card.imagePath, card.term) +
-          vBackground(null) +
+          vBackground(javaNull) +
           expandLayout +
           ivScaleType(ScaleType.CENTER_CROP)
       case NoInstalledAppCardType =>
@@ -138,7 +142,7 @@ trait CollectionAdapterStyles {
           ivScaleType(ScaleType.CENTER_INSIDE)
       case _ =>
         ivCardUri(card.imagePath, card.term, circular = true) +
-          vBackground(null) +
+          vBackground(javaNull) +
           reduceLayout +
           ivScaleType(ScaleType.FIT_CENTER)
     }

@@ -1,52 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Simple Category -->
+    <!-- Header List Item -->
 
-    <style name="SimpleCategoryRoot">
+    <style name="HeaderListRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_simple_category</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
-    <style name="SimpleCategoryName">
+    <style name="HeaderListName">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_small</item>
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:textColor">@color/text_default_title</item>
     </style>
 
     <!-- Simple Item (Apps and Contacts) -->
 
-    <style name="SimpleItemRoot">
+    <style name="AppItemRoot">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/height_simple_item</item>
+        <item name="android:layout_height">@dimen/height_app_item</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center</item>
-        <item name="android:paddingTop">@dimen/padding_small</item>
-        <item name="android:paddingBottom">@dimen/padding_small</item>
+        <item name="android:padding">@dimen/padding_default</item>
     </style>
 
-    <style name="SimpleItemIcon">
+    <style name="AppItemIcon">
         <item name="android:layout_width">@dimen/size_icon_app</item>
         <item name="android:layout_height">@dimen/size_icon_app</item>
     </style>
 
-    <style name="SimpleItemName">
+    <style name="AppItemName">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/padding_default</item>
-        <item name="android:lines">2</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:lines">1</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
     </style>
 
-    <!-- Simple Item Horizontal (Shortcut) -->
+    <!-- Contacts -->
 
-    <style name="SimpleItemHorizontalRoot">
+    <style name="ContactItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_contact_item</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="ContactItemIcon">
+        <item name="android:layout_width">@dimen/size_icon_contact</item>
+        <item name="android:layout_height">@dimen/size_icon_contact</item>
+    </style>
+
+    <style name="ContactItemName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:textColor">@color/text_default_title</item>
+    </style>
+
+    <!-- Shortcut -->
+
+    <style name="ShortcutItemRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
@@ -55,18 +84,19 @@
         <item name="android:padding">@dimen/padding_default</item>
     </style>
 
-    <style name="SimpleItemHorizontalIcon">
-        <item name="android:layout_width">@dimen/size_icon_app</item>
-        <item name="android:layout_height">@dimen/size_icon_app</item>
+    <style name="ShortcutItemIcon">
+        <item name="android:layout_width">@dimen/size_icon_shortcut</item>
+        <item name="android:layout_height">@dimen/size_icon_shortcut</item>
     </style>
 
-    <style name="SimpleItemHorizontalName">
+    <style name="ShortcutItemName">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:textColor">@color/text_default_title</item>
     </style>
 
     <!-- Recommendations Items -->

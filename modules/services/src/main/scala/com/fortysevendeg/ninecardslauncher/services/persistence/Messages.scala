@@ -22,6 +22,8 @@ case class AddAppRequest(
   version: String,
   installedFromGooglePlay: Boolean)
 
+case class DeleteAppsRequest(where: String)
+
 case class UpdateAppRequest(
   id: Int,
   name: String,
@@ -48,19 +50,13 @@ case class AddCardRequest(
   numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
-case class AddCardResponse(card: Card)
+case class DeleteCardsRequest(where: String)
 
 case class DeleteCardRequest(card: Card)
 
-case class DeleteCardResponse(deleted: Int)
-
 case class FindCardByIdRequest(id: Int)
 
-case class FindCardByIdResponse(card: Option[Card])
-
 case class FetchCardsByCollectionRequest(collectionId: Int)
-
-case class FetchCardsByCollectionResponse(cards: Seq[Card])
 
 case class UpdateCardRequest(
   id: Int,
@@ -74,8 +70,6 @@ case class UpdateCardRequest(
   starRating: Option[Double] = None,
   numDownloads: Option[String] = None,
   notification: Option[String] = None)
-
-case class UpdateCardResponse(updated: Int)
 
 case class CardItem(
   position: Int,
@@ -102,25 +96,15 @@ case class AddCollectionRequest(
   sharedCollectionSubscribed: Option[Boolean],
   cards: Seq[AddCardRequest])
 
-case class AddCollectionResponse(success: Boolean)
+case class DeleteCollectionsRequest(where: String)
 
 case class DeleteCollectionRequest(collection: Collection)
 
-case class DeleteCollectionResponse(deleted: Int)
-
-case class FetchCollectionsResponse(collections: Seq[Collection])
-
 case class FetchCollectionByPositionRequest(position: Int)
-
-case class FetchCollectionByPositionResponse(collection: Option[Collection])
 
 case class FetchCollectionBySharedCollectionRequest(sharedCollectionId: String)
 
-case class FetchCollectionBySharedCollectionResponse(collection: Option[Collection])
-
 case class FindCollectionByIdRequest(id: Int)
-
-case class FindCollectionByIdResponse(collection: Option[Collection])
 
 case class UpdateCollectionRequest(
   id: Int,
@@ -136,8 +120,6 @@ case class UpdateCollectionRequest(
   sharedCollectionSubscribed: Option[Boolean],
   cards: Seq[Card])
 
-case class UpdateCollectionResponse(updated: Int)
-
 case class AddGeoInfoRequest(
   constrain: String,
   occurrence: String,
@@ -146,21 +128,13 @@ case class AddGeoInfoRequest(
   longitude: Double,
   system: Boolean)
 
-case class AddGeoInfoResponse(geoInfo: GeoInfo)
+case class DeleteGeoInfoItemsRequest(where: String)
 
 case class DeleteGeoInfoRequest(geoInfo: GeoInfo)
 
-case class DeleteGeoInfoResponse(deleted: Int)
-
-case class FetchGeoInfoItemsResponse(geoInfoItems: Seq[GeoInfo])
-
 case class FindGeoInfoByIdRequest(id: Int)
 
-case class FindGeoInfoByIdResponse(geoInfo: Option[GeoInfo])
-
 case class FetchGeoInfoByConstrainRequest(constrain: String)
-
-case class FetchGeoInfoByConstrainResponse(geoInfo: Option[GeoInfo])
 
 case class UpdateGeoInfoRequest(
   id: Int,
@@ -171,8 +145,6 @@ case class UpdateGeoInfoRequest(
   longitude: Double,
   system: Boolean)
 
-case class UpdateGeoInfoResponse(updated: Int)
-
 case class AddUserRequest(
   userId: Option[String],
   email: Option[String],
@@ -181,11 +153,9 @@ case class AddUserRequest(
   deviceToken: Option[String],
   androidToken: Option[String])
 
+case class DeleteUsersRequest(where: String)
+
 case class DeleteUserRequest(user: User)
-
-case class DeleteUserResponse(deleted: Int)
-
-case class FetchUserItemsResponse(userItems: Seq[User])
 
 case class FindUserByIdRequest(id: Int)
 
@@ -197,4 +167,26 @@ case class UpdateUserRequest(
   installationId: Option[String],
   deviceToken: Option[String],
   androidToken: Option[String])
+
+case class AddDockAppRequest(
+  name: String,
+  dockType: String,
+  intent: String,
+  imagePath: String,
+  position: Int)
+
+case class DeleteDockAppsRequest(where: String)
+
+case class DeleteDockAppRequest(dockApp: DockApp)
+
+case class FindDockAppByIdRequest(id: Int)
+
+case class UpdateDockAppRequest(
+  id: Int,
+  name: String,
+  dockType: String,
+  intent: String,
+  imagePath: String,
+  position: Int)
+
 

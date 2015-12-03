@@ -1,42 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/launcher_drawer_content"
-    style="@style/LauncherDrawerContent"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    style="@style/LauncherDrawerContent">
+
+    <FrameLayout
+        style="@style/LauncherSearchAnimatedContentPanel"
+        android:id="@+id/launcher_search_box_content_panel" />
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout
+        android:id="@+id/launcher_drawer_scroller_layout"
+        style="@style/LauncherDrawerInnerContent" />
 
     <LinearLayout
-        android:id="@+id/launcher_drawer_toolbar"
-        style="@style/LauncherDrawerToolbar">
+        style="@style/LauncherPaginationPanel"
+        android:id="@+id/launcher_drawer_pagination_panel"/>
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab
-            android:id="@+id/launcher_drawer_tab_app"
-            style="@style/LauncherDrawerTab"/>
-
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.DrawerTab
-            android:id="@+id/launcher_drawer_tab_contact"
-            style="@style/LauncherDrawerTab"/>
-
-    </LinearLayout>
-
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout
-        android:id="@+id/launcher_drawer_scroller_layout"
-        style="@style/LauncherDrawerInnerContent">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/launcher_drawer_recycler"
-            style="@style/LauncherDrawerRecycler"/>
-
-        <ProgressBar
-            android:id="@+id/launcher_drawer_loading"
-            style="@style/LauncherDrawerLoading"/>
-
-
-    </com.fortysevendeg.ninecardslauncher.app.ui.components.FastScrollerLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/launcher_drawer_button"
-        style="@style/LauncherDrawerFabButton"/>
-
-</FrameLayout>
+</LinearLayout>

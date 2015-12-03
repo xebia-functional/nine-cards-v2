@@ -11,12 +11,13 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.components.NineRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.PullToCloseViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.{NineRecyclerView, PullToCloseListener, PullToCloseView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullToCloseView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, _}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.types.{EmailCardType, SmsCardType, PhoneCardType, CardType}
+import com.fortysevendeg.ninecardslauncher.process.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -32,13 +33,13 @@ trait CollectionFragmentComposer
 
   var scrolledListener: Option[ScrolledListener] = None
 
-  var recyclerView = slot[NineRecyclerView]
+  var recyclerView = slot[CollectionRecyclerView]
 
   var pullToCloseView = slot[PullToCloseView]
 
   def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = getUi(
     l[PullToCloseView](
-      w[NineRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards)
+      w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards)
     ) <~ wire(pullToCloseView) <~ pcvListener(PullToCloseListener(
       startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
       endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),

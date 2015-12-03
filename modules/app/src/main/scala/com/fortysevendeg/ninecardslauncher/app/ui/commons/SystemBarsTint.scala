@@ -51,4 +51,10 @@ trait SystemBarsTint {
       }
     }
 
+  def hasNavigationBar = systemBarTintManager.getConfig.hasNavigationBar
+
+  def getNavigationBarHeight = systemBarTintManager.getConfig.getNavigationBarHeight
+
+  def getStatusBarHeight = systemBarTintManager.getConfig.getStatusBarHeight
+
 }

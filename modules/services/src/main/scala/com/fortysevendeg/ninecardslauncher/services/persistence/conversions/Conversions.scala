@@ -6,3 +6,4 @@ trait Conversions
   with CollectionConversions
   with GeoInfoConversions
   with UserConversions
+  with DockAppConversions

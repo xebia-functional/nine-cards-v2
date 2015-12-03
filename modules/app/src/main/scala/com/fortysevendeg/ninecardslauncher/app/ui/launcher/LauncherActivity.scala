@@ -7,14 +7,15 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.{RemoveCardDialogFragment, ActionsScreenListener}
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.drawer._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -34,7 +35,7 @@ class LauncherActivity
   with LauncherComposer
   with SystemBarsTint
   with NineCardIntentConversions
-  with LauncherExecutor {
+  with DrawerListeners {
 
   implicit lazy val di: Injector = new Injector
 
@@ -47,19 +48,13 @@ class LauncherActivity
 
   val tagDialog = "dialog"
 
-  val playStorePackage = "com.android.vending"
-
   var hasFocus = false
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
-    runUi(initUi ~ initDrawerUi(
-      launchStore = () => launchApp(playStorePackage),
-      launchDial = () => launchDial(None),
-      onAppMenuClickListener = loadApps,
-      onContactMenuClickListener = loadContacts))
+    runUi(initUi ~ initDrawerUi)
     initAllSystemBarsTint
     generateCollections()
   }
@@ -97,17 +92,17 @@ class LauncherActivity
     case _ => super.dispatchKeyEvent(event)
   }
 
-  def addNewCollection(collection: Collection) = runUi(uiAddCollection(collection))
+  def addCollection(collection: Collection) = runUi(uiActionCollection(Add, collection))
 
   def removeCollection(collection: Collection) = {
     val overOneCollection = workspaces.exists(_.data.filter(_.widgets == false).headOption.exists(_.collections.length!=1))
     if (overOneCollection) {
       val ft = getSupportFragmentManager.beginTransaction()
       Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-      ft.addToBackStack(null)
+      ft.addToBackStack(javaNull)
       val dialog = new RemoveCollectionDialogFragment(() => {
         Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
-          onResult = (_) => uiRemoveCollection(collection),
+          onResult = (_) => uiActionCollection(Remove, collection),
           onException = (_) => showMessage(R.string.contactUsError)
         )
       })
@@ -138,7 +133,13 @@ class LauncherActivity
     startActivityForResult(wizardIntent, wizard)
   }
 
-  private[this] def loadApps(appsMenuOption: AppsMenuOption): Unit = {
+  private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
+    case AppsAlphabetical => GetByName
+    case AppsByCategories => GetByCategory
+    case AppsByLastInstall => GetByInstallDate
+  }
+
+  override def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     Task.fork(di.deviceProcess.getSavedApps(getAppOrder).run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
@@ -150,13 +151,7 @@ class LauncherActivity
     )
   }
 
-  private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
-    case AppsAlphabetical => GetByName
-    case AppsByCategories => GetByCategory
-    case AppsByLastInstall => GetByInstallDate
-  }
-
-  private[this] def loadContacts(contactsMenuOption: ContactsMenuOption): Unit =
+  override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
     // TODO - Take into account the `contactsMenuOption` param
     Task.fork(di.deviceProcess.getContacts(filter = AllContacts).run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
@@ -164,5 +159,6 @@ class LauncherActivity
         execute(contact)
       })
     )
+  }
 
 }

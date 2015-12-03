@@ -1,4 +1,4 @@
-package com.fortysevendeg.nineuserslauncher.repository.repositories
+package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
@@ -37,6 +37,17 @@ class UserRepository(
             values = values)
 
           User(id = id, data = data)
+        }
+      }
+    }
+
+  def deleteUsers(where: String = ""): ServiceDef2[Int, RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.delete(
+            uri = userUri,
+            where = where)
         }
       }
     }

@@ -9,7 +9,9 @@ import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, TextView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.types.{SmsCardType, EmailCardType, PhoneCardType, CardType}
 import com.fortysevendeg.ninecardslauncher2.R
@@ -39,7 +41,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   private[this] def createViewCategory(res: Int) = {
-    val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_category_dialog, null)
+    val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_category_dialog, javaNull)
     view.findViewById(R.id.contact_dialog_category_text) match {
       case t: TextView => t.setText(res)
     }
@@ -47,27 +49,30 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   private[this] def createViewItem(data: String, cardType: CardType) = {
-    val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_item_dialog, null)
+    val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_item_dialog, javaNull)
     view.findViewById(R.id.contact_dialog_item_text) match {
       case t: TextView => t.setText(data)
     }
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
-        val intent = cardType match {
-          case EmailCardType => emailToNineCardIntent(data)
-          case SmsCardType => smsToNineCardIntent(data)
-          case PhoneCardType => phoneToNineCardIntent(data)
+        val maybeIntent: Option[NineCardIntent] = cardType match {
+          case EmailCardType => Some(emailToNineCardIntent(data))
+          case SmsCardType => Some(smsToNineCardIntent(data))
+          case PhoneCardType => Some(phoneToNineCardIntent(data))
+          case _ => None
         }
-        val card = AddCardRequest(
-          term = contact.name,
-          packageName = None,
-          cardType = cardType,
-          intent = intent,
-          imagePath = contact.photoUri
-        )
-        val responseIntent = new Intent
-        responseIntent.putExtra(ContactsFragment.addCardRequest, card)
-        getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+        maybeIntent foreach { intent =>
+          val card = AddCardRequest(
+            term = contact.name,
+            packageName = None,
+            cardType = cardType,
+            intent = intent,
+            imagePath = contact.photoUri
+          )
+          val responseIntent = new Intent
+          responseIntent.putExtra(ContactsFragment.addCardRequest, card)
+          getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+        }
         dismiss()
       }
     })

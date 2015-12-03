@@ -22,9 +22,9 @@ trait AppRepositoryTestData {
   val testInstalledFromGooglePlay = Random.nextBoolean()
 
   val appEntitySeq = createAppEntitySeq(5)
-  val appEntity = appEntitySeq.head
+  val appEntity = appEntitySeq(0)
   val appSeq = createAppSeq(5)
-  val app = appSeq.head
+  val app = appSeq(0)
 
   def createAppEntitySeq(num: Int) = List.tabulate(num)(
     i => AppEntity(

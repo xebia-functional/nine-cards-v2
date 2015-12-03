@@ -66,4 +66,13 @@ object Conversions {
       installationId = Option[String](userEntity.data.installationId),
       deviceToken = Option[String](userEntity.data.deviceToken),
       androidToken = Option[String](userEntity.data.androidToken)))
+
+  def toDockApp(dockAppEntity: DockAppEntity): DockApp = DockApp(
+    id = dockAppEntity.id,
+    data = DockAppData(
+      name = dockAppEntity.data.name,
+      dockType = dockAppEntity.data.dockType,
+      intent = dockAppEntity.data.intent,
+      imagePath = dockAppEntity.data.imagePath,
+      position = dockAppEntity.data.position))
 }

@@ -47,6 +47,17 @@ class CollectionRepository(
       }
     }
 
+  def deleteCollections(where: String = ""): ServiceDef2[Int, RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.delete(
+            uri = collectionUri,
+            where = where)
+        }
+      }
+    }
+
   def deleteCollection(collection: Collection): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {

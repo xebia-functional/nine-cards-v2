@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.speech.RecognizerIntent
 import android.widget.Toast
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
@@ -24,6 +25,8 @@ trait LauncherExecutor {
 
   val classNameSearch = "com.google.android.googlequicksearchbox.SearchActivity"
 
+  val playStorePackage = "com.android.vending"
+
   def execute(intent: NineCardIntent)(implicit activityContext: ActivityContextWrapper) = {
     intent.getAction match {
       case `openApp` =>
@@ -39,7 +42,7 @@ trait LauncherExecutor {
           phone <- intent.extractPhone()
           activity <- activityContext.original.get
         } yield {
-            val newIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, null))
+            val newIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, javaNull))
             tryOrError(activity, newIntent)
           }) getOrElse showError
       case `openPhone` =>
@@ -112,7 +115,7 @@ trait LauncherExecutor {
       }
     }
 
-  def launchDial(phoneNumber: Option[String])(implicit activityContext: ActivityContextWrapper) = {
+  def launchDial(phoneNumber: Option[String] = None)(implicit activityContext: ActivityContextWrapper) = {
     val intent = new Intent(Intent.ACTION_DIAL)
     phoneNumber foreach (number => intent.setData(Uri.parse(s"tel:$number")))
     activityContext.original.get match {
@@ -120,6 +123,8 @@ trait LauncherExecutor {
       case _ => showError
     }
   }
+
+  def launchPlayStore(implicit activityContext: ActivityContextWrapper) = launchApp(playStorePackage)
 
   def launchApp(packageName: String)(implicit activityContext: ActivityContextWrapper) =
     (for {

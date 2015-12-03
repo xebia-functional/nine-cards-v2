@@ -15,6 +15,7 @@ class NineCardsSqlHelper(context: Context)
     db.execSQL(CardEntity.createTableSQL)
     db.execSQL(GeoInfoEntity.createTableSQL)
     db.execSQL(UserEntity.createTableSQL)
+    db.execSQL(DockAppEntity.createTableSQL)
 
     new Handler().postDelayed(
       new Runnable() {
@@ -36,6 +37,7 @@ class NineCardsSqlHelper(context: Context)
       case 5 => db.execSQL(AppEntity.createTableSQL)
       case 6 => db.execSQL("DROP TABLE CacheCategory")
       case 7 => db.execSQL(UserEntity.createTableSQL)
+      case 8 => db.execSQL(DockAppEntity.createTableSQL)
     }
 
     new Handler().post(
@@ -48,5 +50,5 @@ class NineCardsSqlHelper(context: Context)
 object NineCardsSqlHelper {
   val id = "_id"
   val databaseName = "nineCards"
-  val databaseVersion = 7
+  val databaseVersion = 8
 }

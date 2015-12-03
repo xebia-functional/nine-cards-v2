@@ -18,6 +18,8 @@
 
     <color name="shadow_default">#32364550</color>
 
+    <color name="background_box_content">#ffffff</color>
+
     <!-- Texts -->
 
     <color name="text_default_title">#db000000</color>
@@ -42,6 +44,10 @@
     <color name="wizard_background_step_2">#2196F3</color>
     <color name="wizard_background_step_3">#FF9800</color>
     <color name="wizard_background_step_4">#F44336</color>
+
+    <!-- App Drawer -->
+    <color name="drawer_pager_current">#ffffff</color>
+    <color name="drawer_pager_default">#6bffffff</color>
 
     <!-- Menu -->
     <color name="background_menu">#ffffff</color>
@@ -90,7 +96,8 @@
 
     <!-- Fast Scroller -->
     <color name="fastscroller_text">#ffffff</color>
-    <color name="fastscroller_bar_off">#999999</color>
+    <color name="fastscroller_bar_background">#D8D8D8</color>
+    <color name="fastscroller_bar_off">#4b000000</color>
     <color name="fastscroller_bar_on">#3F51B5</color>
 
     <!-- Drawer -->
@@ -99,7 +106,9 @@
     <color name="drawer_fab_button">#ff303aa6</color>
     <color name="drawer_fab_button_ripple">#ff0e1550</color>
     <color name="drawer_tab_bottom">#ffffff</color>
-    <color name="drawer_content">#ffffff</color>
+
+    <color name="drawer_search_box">#88000000</color>
+    <color name="drawer_search_box_hint">#4c000000</color>
 
     <!-- Contact Info Dialog -->
     <color name="divider_color_info_dialog">#d6d6d6</color>

@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityResult, ColorsUtils}
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -56,7 +57,7 @@ trait NewCollectionComposer
           getColor map { color =>
             val ft = getFragmentManager.beginTransaction()
             Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-            ft.addToBackStack(null)
+            ft.addToBackStack(javaNull)
             val dialog = new ColorDialogFragment(color)
             dialog.setTargetFragment(this, ActivityResult.selectInfoColor)
             dialog.show(ft, tagDialog)
@@ -68,7 +69,7 @@ trait NewCollectionComposer
           getCategory map { category =>
             val ft = getFragmentManager.beginTransaction()
             Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-            ft.addToBackStack(null)
+            ft.addToBackStack(javaNull)
             val dialog = new IconDialogFragment(category)
             dialog.setTargetFragment(this, ActivityResult.selectInfoIcon)
             dialog.show(ft, tagDialog)

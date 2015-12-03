@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.widget._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -23,8 +24,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.Dimen
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{LauncherWorkSpaceHolder, Dimen}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.CollectionItemTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -101,7 +103,7 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
           activity <- activity[LauncherActivity]
         } yield activity.removeCollection(c)
         Ui(true)
-      } <~ vTag(R.id.use_layer_hardware, "")))
+      } <~ vUseLayerHardware))
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)
@@ -119,7 +121,7 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(getColorDark(color, 0.2f))),
         getDrawable(color),
-        null)
+        javaNull)
     } getOrElse {
       val states = new StateListDrawable()
       states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(getColorDark(color)))
