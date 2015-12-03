@@ -10,6 +10,8 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
+import scala.util.Random
+
 object Constants {
 
   val numSpaces = 9
@@ -90,6 +92,8 @@ object AppUtils {
     case 7 => R.color.collection_group_8
     case _ => R.color.collection_group_9
   }
+
+  def getRandomIndexColor: Int = getIndexColor(Random.nextInt(numSpaces))
 }
 
 object ColorsUtils {

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/PublicCollectionsItemRoot">
+
+    <LinearLayout
+        style="@style/PublicCollectionsItemContent">
+
+        <LinearLayout
+            style="@style/PublicCollectionsItemHeader">
+
+            <FrameLayout
+                style="@style/PublicCollectionsItemHeaderIconContent"
+                android:id="@+id/public_collections_item_content">
+
+                <ImageView
+                    android:id="@+id/public_collections_item_icon"
+                    style="@style/PublicCollectionsItemHeaderIcon"/>
+
+            </FrameLayout>
+
+            <LinearLayout
+                style="@style/PublicCollectionsItemHeaderNames">
+
+                <TextView
+                    android:id="@+id/public_collections_item_name"
+                    style="@style/PublicCollectionsItemHeaderName"/>
+
+                <TextView
+                    android:id="@+id/public_collections_item_author"
+                    style="@style/PublicCollectionsItemHeaderAuthor"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/public_collections_item_downloads"
+                style="@style/PublicCollectionsItemHeaderDownloads"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/public_collections_item_apps"
+            style="@style/PublicCollectionsItemIconsApps"/>
+
+        <TextView
+            android:id="@+id/public_collections_item_description"
+            style="@style/PublicCollectionsItemHeaderDescription"/>
+
+        <ImageView
+            style="@style/PublicCollectionsItemLine"/>
+
+        <LinearLayout
+            style="@style/PublicCollectionsItemActionsContent">
+
+            <Button
+                android:id="@+id/public_collections_item_add_collection"
+                style="@style/PublicCollectionsItemAddCollection"/>
+
+            <Button
+                android:id="@+id/public_collections_item_share_collection"
+                style="@style/PublicCollectionsItemShareCollection"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

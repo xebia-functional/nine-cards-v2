@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -18,23 +18,23 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, NineCardIntentConversions, UiContext}
-import com.fortysevendeg.ninecardslauncher.process.collection.{PrivateCard, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
 
-trait PrivateCollectionsComposer
+trait PublicCollectionsComposer
   extends Styles
   with LauncherExecutor
   with NineCardIntentConversions {
 
-  self: TypedFindView with BaseActionFragment =>
+  self: TypedFindView with BaseActionFragment with PublicCollectionsListener =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
   def initUi: Ui[_] =
     (toolbar <~
-      tbTitle(R.string.myCollections) <~
+      tbTitle(R.string.publicCollections) <~
       toolbarStyle(colorPrimary) <~
       tbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
@@ -43,10 +43,9 @@ trait PrivateCollectionsComposer
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def addPrivateCollections(
-    privateCollections: Seq[PrivateCollection],
-    clickListener: (PrivateCollection) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val adapter = new PrivateCollectionsAdapter(privateCollections, clickListener)
+  def addPublicCollections(
+    sharedCollections: Seq[SharedCollection])(implicit uiContext: UiContext[_]): Ui[_] = {
+    val adapter = new PublicCollectionsAdapter(sharedCollections, saveSharedCollection)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -56,69 +55,74 @@ trait PrivateCollectionsComposer
 
 }
 
-case class ViewHolderPrivateCollectionsLayoutAdapter(
+case class ViewHolderPublicCollectionsLayoutAdapter(
   content: ViewGroup,
-  clickListener: (PrivateCollection) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
+  clickListener: (SharedCollection) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
   val appsByRow = 5
 
-  lazy val iconContent = Option(findView(TR.private_collections_item_content))
+  lazy val iconContent = Option(findView(TR.public_collections_item_content))
 
-  lazy val icon = Option(findView(TR.private_collections_item_icon))
+  lazy val icon = Option(findView(TR.public_collections_item_icon))
 
-  lazy val name = Option(findView(TR.private_collections_item_name))
+  lazy val name = Option(findView(TR.public_collections_item_name))
 
-  lazy val appsRow1 = Option(findView(TR.private_collections_item_row1))
+  lazy val author = Option(findView(TR.public_collections_item_author))
 
-  lazy val appsRow2 = Option(findView(TR.private_collections_item_row2))
+  lazy val downloads = Option(findView(TR.public_collections_item_downloads))
 
-  lazy val addCollection = Option(findView(TR.private_collections_item_add_collection))
+  lazy val description = Option(findView(TR.public_collections_item_description))
 
-  def bind(privateCollection: PrivateCollection, position: Int): Ui[_] = {
+  lazy val appsIcons = Option(findView(TR.public_collections_item_apps))
+
+  lazy val addCollection = Option(findView(TR.public_collections_item_add_collection))
+
+  lazy val shareCollection = Option(findView(TR.public_collections_item_share_collection))
+
+  def bind(collection: SharedCollection, position: Int): Ui[_] = {
     val d = new ShapeDrawable(new OvalShape)
-    d.getPaint.setColor(resGetColor(getIndexColor(privateCollection.themedColorIndex)))
-    val cardsRow1 = privateCollection.cards slice(0, appsByRow)
-    val cardsRow2 = privateCollection.cards slice(appsByRow, appsByRow * 2)
+    d.getPaint.setColor(resGetColor(getRandomIndexColor))
+    val cardsRow1 = collection.resolvedPackages slice(0, appsByRow)
     (iconContent <~ vBackground(d)) ~
-      (icon <~ ivSrc(iconCollectionDetail(privateCollection.icon))) ~
-      (appsRow1 <~
+      (icon <~ ivSrc(iconCollectionDetail(collection.icon))) ~
+      (appsIcons <~
         vgRemoveAllViews <~
-        automaticAlignment(appsRow1, cardsRow1)) ~
-      (appsRow2 <~
-        vgRemoveAllViews <~
-        automaticAlignment(appsRow2, cardsRow2)) ~
-      (name <~ tvText(privateCollection.name)) ~
+        automaticAlignment(cardsRow1)) ~
+      (name <~ tvText(resGetString(collection.category.getStringResource) getOrElse collection.category.getStringResource)) ~
+      (author <~ tvText(collection.author)) ~
+      (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
+      (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag2(position)) ~
-      (addCollection <~ On.click(Ui(clickListener(privateCollection))))
+      (addCollection <~ On.click(Ui(clickListener(collection))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
-  private[this] def automaticAlignment(view: Option[LinearLayout], cards: Seq[PrivateCard]): Tweak[LinearLayout] = {
-    val width = view.map(_.getWidth) getOrElse 0
+  private[this] def automaticAlignment(packages: Seq[SharedCollectionPackage]): Tweak[LinearLayout] = {
+    val width = appsIcons.map(_.getWidth) getOrElse 0
     if (width > 0) {
-      val uisRow1 = getViewsByCards(cards, width)
+      val uisRow1 = getViewsByCards(packages, width)
       vgAddViews(uisRow1)
     } else {
       vGlobalLayoutListener { v => {
-        val uisRow1 = getViewsByCards(cards, v.getWidth)
-        appsRow1 <~ vgAddViews(uisRow1)
+        val uisRow1 = getViewsByCards(packages, v.getWidth)
+        appsIcons <~ vgAddViews(uisRow1)
       }}
     }
   }
 
-  private[this] def getViewsByCards(cards: Seq[PrivateCard], width: Int) = {
+  private[this] def getViewsByCards(packages: Seq[SharedCollectionPackage], width: Int) = {
     val size = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
     val padding = (width - (size * appsByRow)) / (appsByRow - 1)
-    cards.zipWithIndex map {
-      case (card, index) =>
+    packages.zipWithIndex map {
+      case (pkg, index) =>
         getUi(
           w[ImageView] <~
             lp[ViewGroup](size, size) <~
             (if (index < appsByRow - 1) llLayoutMargin(0, 0, padding, 0) else Tweak.blank) <~
-            ivUri(card.imagePath))
+            ivUri(pkg.icon))
     }
   }
 }

@@ -221,7 +221,7 @@
         <item name="android:textColor">@color/text_default_subtitle</item>
     </style>
 
-    <!-- MyCollections Items -->
+    <!-- Private Collections Items -->
 
     <style name="PrivateCollectionsItemRoot">
         <item name="android:layout_width">match_parent</item>
@@ -247,14 +247,14 @@
     </style>
 
     <style name="PrivateCollectionsItemHeaderIconContent">
-        <item name="android:layout_width">@dimen/size_icon_private_collections_content</item>
-        <item name="android:layout_height">@dimen/size_icon_private_collections_content</item>
+        <item name="android:layout_width">@dimen/size_icon_item_collections_content</item>
+        <item name="android:layout_height">@dimen/size_icon_item_collections_content</item>
         <item name="android:layout_marginRight">@dimen/padding_default</item>
     </style>
 
     <style name="PrivateCollectionsItemHeaderIcon">
-        <item name="android:layout_width">@dimen/size_icon_private_collections</item>
-        <item name="android:layout_height">@dimen/size_icon_private_collections</item>
+        <item name="android:layout_width">@dimen/size_icon_item_collections</item>
+        <item name="android:layout_height">@dimen/size_icon_item_collections</item>
         <item name="android:layout_gravity">center</item>
     </style>
 
@@ -297,6 +297,143 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
+    <!-- Public Collections Items -->
+
+    <style name="PublicCollectionsItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/padding_small</item>
+        <item name="android:layout_marginRight">@dimen/padding_small</item>
+        <item name="android:layout_marginTop">@dimen/padding_small</item>
+        <item name="android:layout_marginBottom">@dimen/padding_default</item>
+    </style>
+
+    <style name="PublicCollectionsItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="PublicCollectionsItemHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_margin">@dimen/padding_large</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="PublicCollectionsItemHeaderIconContent">
+        <item name="android:layout_width">@dimen/size_icon_item_collections_content</item>
+        <item name="android:layout_height">@dimen/size_icon_item_collections_content</item>
+        <item name="android:layout_marginRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="PublicCollectionsItemHeaderIcon">
+        <item name="android:layout_width">@dimen/size_icon_item_collections</item>
+        <item name="android:layout_height">@dimen/size_icon_item_collections</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="PublicCollectionsItemHeaderNames">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginLeft">@dimen/padding_default</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="PublicCollectionsItemHeaderName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/text_default_title</item>
+    </style>
+
+    <style name="PublicCollectionsItemHeaderAuthor">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
+    <style name="PublicCollectionsItemHeaderDownloads">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
+        <item name="android:drawableLeft">@drawable/icon_dialog_collection_downloaded</item>
+        <item name="android:drawablePadding">@dimen/padding_small</item>
+        <item name="android:paddingTop">@dimen/padding_small</item>
+        <item name="android:layout_gravity">top</item>
+    </style>
+
+    <style name="PublicCollectionsItemIconsApps">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginLeft">@dimen/padding_large</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+        <item name="android:layout_marginBottom">@dimen/padding_large</item>
+    </style>
+
+    <style name="PublicCollectionsItemHeaderDescription">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">3</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/text_default_title</item>
+        <item name="android:layout_marginLeft">@dimen/padding_large</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+        <item name="android:layout_marginBottom">@dimen/padding_large</item>
+    </style>
+
+    <style name="PublicCollectionsItemLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_default</item>
+        <item name="android:background">@color/divider_color_info_dialog</item>
+    </style>
+
+    <style name="PublicCollectionsItemActionsContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="PublicCollectionsItemAddCollection">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:paddingRight">@dimen/padding_large</item>
+        <item name="android:paddingTop">@dimen/padding_small</item>
+        <item name="android:paddingBottom">@dimen/padding_small</item>
+        <item name="android:text">@string/addMyCollection</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
+    <style name="PublicCollectionsItemShareCollection">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:paddingRight">@dimen/padding_large</item>
+        <item name="android:paddingTop">@dimen/padding_small</item>
+        <item name="android:paddingBottom">@dimen/padding_small</item>
+        <item name="android:gravity">center</item>
+        <item name="android:src">@drawable/icon_dialog_collection_share</item>
     </style>
 
 </resources>

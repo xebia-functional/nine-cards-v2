@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl.SharedCollectionsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigProcessImpl
@@ -135,8 +136,10 @@ class Injector(implicit contextSupport: ContextSupport) {
     persistenceServices = persistenceServices
   )
 
-
-
   lazy val themeProcess = new ThemeProcessImpl()
+
+  lazy val sharedCollectionsProcess = new SharedCollectionsProcessImpl(
+    apiServices = apiServices,
+    persistenceServices = persistenceServices)
 
 }
