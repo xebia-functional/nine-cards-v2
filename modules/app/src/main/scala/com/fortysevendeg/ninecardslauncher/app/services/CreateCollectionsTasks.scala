@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.CollectionExceptio
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
-import com.fortysevendeg.ninecardslauncher.process.device.{AppException, ContactException, CreateBitmapException, GetByName}
+import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserCollection
 import play.api.libs.json.Json
@@ -16,8 +16,9 @@ trait CreateCollectionsTasks
 
   self: CreateCollectionService =>
 
-  def createNewConfiguration: ServiceDef2[Seq[Collection], AppException with ContactException with CollectionException] =
+  def createNewConfiguration: ServiceDef2[Seq[Collection], ResetException with AppException with ContactException with CollectionException] =
     for {
+      - <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
       _ = setProcess(GettingAppsProcess)
       apps <- di.deviceProcess.getSavedApps(GetByName)
@@ -27,8 +28,9 @@ trait CreateCollectionsTasks
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
     } yield collections
 
-   def loadConfiguration(deviceId: String): ServiceDef2[Seq[Collection], AppException with CreateBitmapException with UserConfigException with CollectionException] =
+   def loadConfiguration(deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with UserConfigException with CollectionException] =
     for {
+      - <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ = setProcess(GettingAppsProcess)

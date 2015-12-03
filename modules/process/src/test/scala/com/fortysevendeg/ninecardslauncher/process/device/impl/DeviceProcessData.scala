@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 trait DeviceProcessData {
 
   val statusCodeOk = 200
+  val items = 5
 
   val name1 = "Scala Android"
   val packageName1 = "com.fortysevendeg.scala.android"

@@ -53,17 +53,17 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.answer(repoApp)))
 
-    mockAppRepository.deleteApps() returns Service(Task(Result.answer(5)))
+    mockAppRepository.deleteApps() returns Service(Task(Result.answer(items)))
 
-    mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(1)))
+    mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(item)))
 
-    mockAppRepository.updateApp(repoApp) returns Service(Task(Result.answer(1)))
+    mockAppRepository.updateApp(repoApp) returns Service(Task(Result.answer(item)))
 
     mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.answer(repoGeoInfo)))
 
-    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.answer(5)))
+    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.answer(items)))
 
-    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(1)))
+    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(item)))
 
     mockGeoInfoRepository.fetchGeoInfoItems returns Service(Task(Result.answer(seqRepoGeoInfo)))
 
@@ -75,16 +75,16 @@ trait PersistenceServicesSpecification
 
     mockGeoInfoRepository.findGeoInfoById(nonExistentGeoInfoId) returns Service(Task(Result.answer(None)))
 
-    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(1)))
+    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(item)))
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.answer(repoCard)))
 
-    mockCardRepository.deleteCards() returns Service(Task(Result.answer(5)))
+    mockCardRepository.deleteCards() returns Service(Task(Result.answer(items)))
 
-    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(5)))
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(items)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.answer(1)))
+      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.answer(item)))
     }
 
     List.tabulate(5) { index =>
@@ -97,13 +97,13 @@ trait PersistenceServicesSpecification
 
     mockCardRepository.findCardById(nonExistentCardId) returns Service(Task(Result.answer(None)))
 
-    mockCardRepository.updateCard(repoCard) returns Service(Task(Result.answer(1)))
+    mockCardRepository.updateCard(repoCard) returns Service(Task(Result.answer(item)))
 
     mockCollectionRepository.addCollection(repoCollectionData) returns Service(Task(Result.answer(repoCollection)))
 
-    mockCollectionRepository.deleteCollections() returns Service(Task(Result.answer(5)))
+    mockCollectionRepository.deleteCollections() returns Service(Task(Result.answer(items)))
 
-    mockCollectionRepository.deleteCollection(repoCollection) returns Service(Task(Result.answer(1)))
+    mockCollectionRepository.deleteCollection(repoCollection) returns Service(Task(Result.answer(item)))
 
     mockCollectionRepository.fetchCollectionByPosition(position) returns Service(Task(Result.answer(Option(repoCollection))))
 
@@ -119,13 +119,13 @@ trait PersistenceServicesSpecification
 
     mockCollectionRepository.findCollectionById(nonExistentCollectionId) returns Service(Task(Result.answer(None)))
 
-    mockCollectionRepository.updateCollection(repoCollection) returns Service(Task(Result.answer(1)))
+    mockCollectionRepository.updateCollection(repoCollection) returns Service(Task(Result.answer(item)))
 
     mockUserRepository.addUser(repoUserData) returns Service(Task(Result.answer(repoUser)))
 
-    mockUserRepository.deleteUsers() returns Service(Task(Result.answer(5)))
+    mockUserRepository.deleteUsers() returns Service(Task(Result.answer(items)))
 
-    mockUserRepository.deleteUser(repoUser) returns Service(Task(Result.answer(1)))
+    mockUserRepository.deleteUser(repoUser) returns Service(Task(Result.answer(item)))
 
     mockUserRepository.fetchUsers returns Service(Task(Result.answer(seqRepoUser)))
 
@@ -133,13 +133,13 @@ trait PersistenceServicesSpecification
 
     mockUserRepository.findUserById(nonExistentUserId) returns Service(Task(Result.answer(None)))
 
-    mockUserRepository.updateUser(repoUser) returns Service(Task(Result.answer(1)))
+    mockUserRepository.updateUser(repoUser) returns Service(Task(Result.answer(item)))
 
     mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.answer(repoDockApp)))
 
-    mockDockAppRepository.deleteDockApps() returns Service(Task(Result.answer(5)))
+    mockDockAppRepository.deleteDockApps() returns Service(Task(Result.answer(items)))
 
-    mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.answer(1)))
+    mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
 
     mockDockAppRepository.fetchDockApps returns Service(Task(Result.answer(seqRepoDockApp)))
 
@@ -147,7 +147,7 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.answer(None)))
 
-    mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.answer(1)))
+    mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
   }
 
   trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
@@ -377,7 +377,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -474,7 +474,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -498,7 +498,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -616,7 +616,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 
@@ -665,7 +665,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -689,7 +689,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -713,7 +713,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -820,7 +820,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 
@@ -869,7 +869,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -893,7 +893,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -1048,7 +1048,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 
@@ -1097,7 +1097,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -1121,7 +1121,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -1204,7 +1204,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 
@@ -1253,7 +1253,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -1277,7 +1277,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -1360,7 +1360,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 

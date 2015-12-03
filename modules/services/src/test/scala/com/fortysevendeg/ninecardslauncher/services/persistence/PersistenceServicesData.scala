@@ -8,6 +8,9 @@ import scala.util.Random
 
 trait PersistenceServicesData {
 
+  val items = 5
+  val item = 1
+
   val appId: Int =  Random.nextInt(10)
   val className: String = Random.nextString(5)
   val resourceIcon: Int = Random.nextInt(10)
