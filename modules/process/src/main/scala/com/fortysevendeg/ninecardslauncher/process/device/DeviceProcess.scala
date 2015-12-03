@@ -8,6 +8,12 @@ import com.fortysevendeg.ninecardslauncher.process.device.models._
 trait DeviceProcess {
 
   /**
+    * Delete all apps, cards, collections and dockApps from the repository
+    * @throws ResetException if exist some problem deleting the apps, cards, collections and dockApps
+    */
+  def resetSavedItems(): ServiceDef2[Unit, ResetException]
+
+  /**
    * Get the saved apps from the database
    * @param orderBy indicates the order to fetch the apps
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.App]
@@ -118,4 +124,5 @@ trait DeviceProcess {
     * @throws CallException if exist some problem to get the last calls
     */
   def getLastCalls(implicit context: ContextSupport): ServiceDef2[Seq[LastCallsContact], CallException]
+
 }
