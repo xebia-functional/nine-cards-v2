@@ -28,7 +28,7 @@ trait PrivateCollectionsComposer
   with LauncherExecutor
   with NineCardIntentConversions {
 
-  self: TypedFindView with BaseActionFragment =>
+  self: TypedFindView with BaseActionFragment with PrivateCollectionsListener =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
@@ -44,9 +44,8 @@ trait PrivateCollectionsComposer
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def addPrivateCollections(
-    privateCollections: Seq[PrivateCollection],
-    clickListener: (PrivateCollection) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val adapter = new PrivateCollectionsAdapter(privateCollections, clickListener)
+    privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_]): Ui[_] = {
+    val adapter = new PrivateCollectionsAdapter(privateCollections, saveCollection)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~

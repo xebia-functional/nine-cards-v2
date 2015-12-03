@@ -19,7 +19,8 @@ class PrivateCollectionsFragment
   extends BaseActionFragment
   with PrivateCollectionsComposer
   with NineCardIntentConversions
-  with PrivateCollectionsTasks {
+  with PrivateCollectionsTasks
+  with PrivateCollectionsListener {
 
   implicit lazy val di: Injector = new Injector
 
@@ -34,11 +35,11 @@ class PrivateCollectionsFragment
     runUi(initUi)
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
       onPreTask = () => showLoading,
-      onResult = (privateCollections: Seq[PrivateCollection]) => addPrivateCollections(privateCollections, saveCollection),
+      onResult = (privateCollections: Seq[PrivateCollection]) => addPrivateCollections(privateCollections),
       onException = (ex: Throwable) => showGeneralError)
   }
 
-  private[this] def saveCollection(privateCollection: PrivateCollection) =
+  override def saveCollection(privateCollection: PrivateCollection): Unit =
     Task.fork(addCollection(privateCollection).run).resolveAsyncUi(
       onResult = (c) => {
         activity[LauncherActivity] map (_.addCollection(c))
