@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, NineCardIntentConversions, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TopSharedCollection, TypeSharedCollection}
@@ -19,7 +21,8 @@ class PublicCollectionsFragment
   extends BaseActionFragment
   with PublicCollectionsComposer
   with NineCardIntentConversions
-  with PublicCollectionsListener {
+  with PublicCollectionsListener
+  with PublicCollectionsTasks {
 
   implicit lazy val di: Injector = new Injector
 
@@ -36,13 +39,18 @@ class PublicCollectionsFragment
   }
 
   override def loadPublicCollections(category: NineCardCategory, typeSharedCollection: TypeSharedCollection): Unit =
-    Task.fork(di.sharedCollectionsProcess.getSharedCollectionsByCategory(category, typeSharedCollection).run).resolveAsyncUi(
+    Task.fork(getSharedCollections(category, typeSharedCollection).run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (sharedCollections: Seq[SharedCollection]) => addPublicCollections(sharedCollections),
       onException = (ex: Throwable) => showGeneralError)
 
-  override def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
-  }
+  override def saveSharedCollection(sharedCollection: SharedCollection): Unit =
+    Task.fork(addCollection(sharedCollection).run).resolveAsyncUi(
+      onResult = (c) => {
+        activity[LauncherActivity] map (_.addCollection(c))
+        unreveal()
+      },
+      onException = (ex) => showGeneralError)
 
 }
 
