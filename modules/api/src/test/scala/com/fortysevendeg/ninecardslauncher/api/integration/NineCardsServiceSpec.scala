@@ -11,6 +11,10 @@ import org.specs2.mutable.Specification
 import org.specs2.specification._
 import org.specs2.specification.core.Fragments
 import rapture.core.{Answer, Result}
+import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
+import com.fortysevendeg.ninecardslauncher.api.reads.RecommendationImplicits._
+import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits._
+import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
 
 trait NineCardsServiceSpecification
   extends Specification
@@ -46,11 +50,6 @@ class NineCardsServiceSpec
   override protected def after: Any = {}
 
   override def map(fs: => Fragments) = step(beforeAll) ^ super.map(fs) ^ step(afterAll)
-
-  import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.RecommendationImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits._
-  import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
 
   "User Config Service component with OkHttpClient" should {
 

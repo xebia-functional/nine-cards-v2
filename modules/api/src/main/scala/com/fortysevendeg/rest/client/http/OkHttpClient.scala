@@ -6,6 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.rest.client.http.Methods._
 import com.squareup.{okhttp => okHttp}
 import play.api.libs.json.{Json, Writes}
+import scala.collection.JavaConverters._
 
 import scalaz.concurrent.Task
 
@@ -88,10 +89,10 @@ class OkHttpClient(okHttpClient: okHttp.OkHttpClient = new okHttp.OkHttpClient)
       .url(url)
       .headers(createHeaders(httpHeaders))
 
-  private[this] def createHeaders(httpHeaders: Seq[(String, String)]): okHttp.Headers = {
-    import scala.collection.JavaConverters._
-    okHttp.Headers.of(httpHeaders.map(t => t._1 -> t._2).toMap.asJava)
-  }
+  private[this] def createHeaders(httpHeaders: Seq[(String, String)]): okHttp.Headers =
+    okHttp.Headers.of(httpHeaders.map {
+      case (key, value) => key -> value
+    }.toMap.asJava)
 
   private[this] def createBody(body: Option[String]) =
     body match {

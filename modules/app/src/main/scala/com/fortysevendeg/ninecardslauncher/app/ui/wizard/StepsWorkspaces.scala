@@ -6,7 +6,8 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.AnimatedWorkSpaces
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.AnimatedWorkSpaces
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
@@ -14,7 +15,7 @@ import macroid.{ActivityContextWrapper, Tweak, Ui}
 class StepsWorkspaces(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit activityContext: ActivityContextWrapper)
   extends AnimatedWorkSpaces[StepWorkSpaceWidgetsHolder, StepData](context, attr, defStyleAttr) {
 
-  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, null, 0)
+  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet)(implicit activityContext: ActivityContextWrapper) = this(context, attr, 0)
 
@@ -38,7 +39,7 @@ class StepWorkSpaceWidgetsHolder(implicit activityContext: ActivityContextWrappe
 
   lazy val message = findView(TR.wizard_step_item_message)
 
-  val root = LayoutInflater.from(activityContext.getOriginal).inflate(R.layout.wizard_step, null, false)
+  val root = LayoutInflater.from(activityContext.getOriginal).inflate(R.layout.wizard_step, javaNull, false)
 
   addView(root)
 

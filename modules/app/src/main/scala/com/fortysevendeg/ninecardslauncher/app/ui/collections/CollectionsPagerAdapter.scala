@@ -29,7 +29,7 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     val fragment = new CollectionFragment()
     val bundle = new Bundle()
     bundle.putInt(CollectionFragment.keyPosition, position)
-    bundle.putBoolean(CollectionFragment.keyAnimateCards,firstTimeInStartPosition(position))
+    bundle.putBoolean(CollectionFragment.keyAnimateCards, firstTimeInStartPosition(position))
     bundle.putSerializable(CollectionFragment.keyCollection, collections(position))
     bundle.putInt(CollectionFragment.keyCollectionId, collections(position).id)
     bundle.putInt(CollectionFragment.keyScrollType, scrollType)
@@ -70,23 +70,30 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     collections = collections.patch(positionCollection, Seq(newCollection), 1)
   }
 
-  def getCurrentFragmentPosition: Option[Int] = fragments find (f => f._2.activeFragment) map (_._1)
+  def getCurrentFragmentPosition: Option[Int] = fragments collectFirst {
+    case (id, fragment) if fragment.activeFragment => id
+  }
 
-  def getActiveFragment: Option[CollectionFragment] = fragments find (f => f._2.activeFragment) map (_._2)
+  def getActiveFragment: Option[CollectionFragment] = fragments collectFirst {
+    case (_, fragment) if fragment.activeFragment => fragment
+  }
 
-  def activateFragment(pos: Int): Unit = fragments foreach (f => if (f._1 == pos) f._2.activeFragment = true)
+  def activateFragment(pos: Int): Unit = fragments foreach {
+    case (id, fragment) if id == pos => fragment.activeFragment = true
+    case _ =>
+  }
 
   def setScrollType(sType: Int): Unit = scrollType = sType
 
   def notifyChanged(currentPosition: Int): Ui[_] = {
-    val uis = fragments map { f =>
-      f._1 match {
+    val uis = fragments map {
+      case (id, fragment) => id match {
         case `currentPosition` =>
-          f._2.activeFragment = true
+          fragment.activeFragment = true
           Ui.nop
         case _ =>
-          f._2.activeFragment = false
-          f._2.scrollType(scrollType)
+          fragment.activeFragment = false
+          fragment.scrollType(scrollType)
       }
     }
     Ui.sequence(uis.toSeq: _*)

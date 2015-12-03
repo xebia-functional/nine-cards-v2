@@ -2,10 +2,9 @@ package com.fortysevendeg.ninecardslauncher.api.reads
 
 import com.fortysevendeg.ninecardslauncher.api.model._
 import UserConfigImplicits._
+import play.api.libs.json._
 
 object SharedCollectionImplicits {
-
-  import play.api.libs.json._
 
   implicit val sharedCollectionPackageReads = Json.reads[SharedCollectionPackage]
   implicit val assetThumbResponseReads = Json.reads[AssetThumbResponse]

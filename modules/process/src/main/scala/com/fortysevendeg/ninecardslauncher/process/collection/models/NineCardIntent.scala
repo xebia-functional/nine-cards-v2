@@ -143,17 +143,20 @@ object NineCardIntentImplicits {
       }
       (js \ "categories").asOpt[List[String]] foreach (_ foreach intent.addCategory)
       (js \ "action").asOpt[String] map intent.setAction
-      val e = (js \ "extras").asOpt[JsObject] foreach (_.value map { item =>
-        item._2 match {
-          case s:JsString => intent.putExtra(item._1, s.as[String])
-          case s:JsNumber => intent.putExtra(item._1, s.as[Int])
-          case s:JsBoolean => intent.putExtra(item._1, s.as[Boolean])
-          case _ =>
-        }
+      (js \ "extras").asOpt[JsObject] foreach (_.value map {
+        case (name, value) => matchExtras(intent, name, value)
       })
       (js \ "flags").asOpt[Int] foreach intent.setFlags
       JsSuccess(intent)
     }
+
+    def matchExtras(intent: NineCardIntent, name: String, value: JsValue) = value match {
+      case s:JsString => intent.putExtra(name, s.as[String])
+      case s:JsNumber => intent.putExtra(name, s.as[Int])
+      case s:JsBoolean => intent.putExtra(name, s.as[Boolean])
+      case _ =>
+    }
+
   }
 
   implicit val nineCardIntentWrites = new Writes[NineCardIntent] {

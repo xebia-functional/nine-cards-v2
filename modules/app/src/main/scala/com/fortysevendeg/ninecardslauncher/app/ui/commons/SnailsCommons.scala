@@ -6,6 +6,7 @@ import android.view.View
 import android.view.animation.{DecelerateInterpolator, AccelerateInterpolator, AccelerateDecelerateInterpolator}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{Snail, ContextWrapper}
 
@@ -21,7 +22,7 @@ object SnailsCommons {
   def showFabMenu(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.setScaleX(0)
       view.setScaleY(0)
@@ -33,7 +34,7 @@ object SnailsCommons {
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             animPromise.success()
           }
         }).start()
@@ -43,7 +44,7 @@ object SnailsCommons {
   def hideFabMenu(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.animate.
         scaleX(0).
@@ -52,7 +53,7 @@ object SnailsCommons {
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             view.setVisibility(View.GONE)
             animPromise.success()
           }
@@ -65,7 +66,7 @@ object SnailsCommons {
       val duration = resGetInteger(R.integer.anim_duration_normal)
       val translationY = resGetDimensionPixelSize(R.dimen.padding_default)
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.setVisibility(View.VISIBLE)
       view.setTranslationY(translationY)
@@ -77,7 +78,7 @@ object SnailsCommons {
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             animPromise.success()
           }
         }).start()
@@ -88,7 +89,7 @@ object SnailsCommons {
     view =>
       val duration = resGetInteger(R.integer.anim_duration_normal)
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.setVisibility(View.VISIBLE)
       view.setAlpha(0)
@@ -100,7 +101,7 @@ object SnailsCommons {
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             animPromise.success()
           }
         }).start()
@@ -112,7 +113,7 @@ object SnailsCommons {
       val duration = resGetInteger(R.integer.anim_duration_normal)
       val size = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.setVisibility(View.VISIBLE)
       view.setScaleX(0)
@@ -130,7 +131,7 @@ object SnailsCommons {
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, null)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             animPromise.success()
           }
         }).start()
@@ -141,7 +142,7 @@ object SnailsCommons {
     view =>
       val duration = resGetInteger(R.integer.anim_duration_normal)
       view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
       val colorFrom = ColorsUtils.setAlpha(color, 0f)
@@ -158,7 +159,7 @@ object SnailsCommons {
       valueAnimator.addListener(new AnimatorListenerAdapter {
         override def onAnimationEnd(animation: Animator): Unit = {
           super.onAnimationEnd(animation)
-          view.setLayerType(View.LAYER_TYPE_NONE, null)
+          view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
           animPromise.success()
         }
       })

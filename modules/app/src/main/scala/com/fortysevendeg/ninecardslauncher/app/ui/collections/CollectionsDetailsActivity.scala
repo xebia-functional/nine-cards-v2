@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -205,7 +206,7 @@ class CollectionsDetailsActivity
   def removeCard(card: Card): Unit = {
     val ft = getSupportFragmentManager.beginTransaction()
     Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(null)
+    ft.addToBackStack(javaNull)
     val dialog = new RemoveCardDialogFragment(() => {
       getCurrentCollection foreach { collection =>
         Task.fork(removeCard(collection.id, card.id).run).resolveAsync(
@@ -232,7 +233,7 @@ class CollectionsDetailsActivity
       val extra = Try(b.getParcelable[ShortcutIconResource](EXTRA_SHORTCUT_ICON_RESOURCE)).toOption
       extra flatMap { e =>
         val resources = getPackageManager.getResourcesForApplication(e.packageName)
-        val id = resources.getIdentifier(e.resourceName, null, null)
+        val id = resources.getIdentifier(e.resourceName, javaNull, javaNull)
         Option(BitmapFactory.decodeResource(resources, id))
       }
     case _ => None

@@ -7,6 +7,7 @@
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_default">8dp</dimen>
     <dimen name="padding_large">16dp</dimen>
+    <dimen name="padding_xlarge">24dp</dimen>
 
     <dimen name="radius_default">3dp</dimen>
 
@@ -20,6 +21,7 @@
 
     <dimen name="divider_default">1px</dimen>
 
+    <dimen name="elevation_box_workspaces">6dp</dimen>
     <dimen name="elevation_toolbar">4dp</dimen>
     <dimen name="elevation_default">2dp</dimen>
     <dimen name="elevation_pressed">4dp</dimen>
@@ -49,6 +51,10 @@
 
     <dimen name="wizard_margin_pager">6dp</dimen>
     <dimen name="wizard_size_pager">10dp</dimen>
+
+    <!-- App Drawer -->
+    <dimen name="drawer_size_pager">6dp</dimen>
+    <dimen name="margin_pager_drawer">2dp</dimen>
 
     <!-- Menu -->
     <dimen name="menu_height">170dp</dimen>
@@ -91,9 +97,14 @@
 
     <!-- Dialog Actions -->
     <dimen name="height_simple_category">28dp</dimen>
-    <dimen name="height_simple_item">112dp</dimen>
+    <dimen name="height_app_item">112dp</dimen>
+    <dimen name="height_contact_item">64dp</dimen>
 
-    <dimen name="size_icon_app">52dp</dimen>
+    <dimen name="size_icon_app">60dp</dimen>
+
+    <dimen name="size_icon_shortcut">40dp</dimen>
+
+    <dimen name="size_icon_contact">40dp</dimen>
 
     <dimen name="size_icon_recommendation">42dp</dimen>
 
@@ -114,7 +125,6 @@
     <!-- Fast Scroller -->
     <dimen name="fastscroller_text_size">40sp</dimen>
     <dimen name="fastscroller_signal_size">84dp</dimen>
-    <dimen name="fastscroller_bar_corner">3dp</dimen>
     <dimen name="fastscroller_bar_height">30dp</dimen>
     <dimen name="fastscroller_bar_width">6dp</dimen>
     <dimen name="fastscroller_signal_margin_right">32dp</dimen>
