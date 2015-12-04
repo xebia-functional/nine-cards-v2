@@ -31,7 +31,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  var listener = new AnimatedWorkSpacesListener
+  val listener = new AnimatedWorkSpacesListener
 
   var data: Seq[Data] = Seq.empty
 
@@ -387,6 +387,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
         case ACTION_MOVE =>
           statuses.touchState match {
             case Scrolling =>
+              handler.removeCallbacks(runnable)
               requestDisallowInterceptTouchEvent(true)
               val deltaX = statuses.deltaX(x)
               val deltaY = statuses.deltaY(y)
@@ -398,7 +399,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
               }
             case Stopped => setStateIfNeeded(x, y)
           }
-          handler.removeCallbacks(runnable)
         case ACTION_DOWN =>
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
           handler.postDelayed(runnable, longClickMillis)
@@ -490,9 +490,9 @@ case class AnimatedWorkSpacesStatuses(
 }
 
 case class AnimatedWorkSpacesListener(
-  startScroll: (Boolean) => Unit = (b: Boolean) => (),
-  endScroll: () => Unit = () => (),
-  onLongClick: () => Unit = () => ())
+  var startScroll: (Boolean) => Unit = (b: Boolean) => (),
+  var endScroll: () => Unit = () => (),
+  var onLongClick: () => Unit = () => ())
 
 case class Dimen(var width: Int = 0, var height: Int = 0)
 
