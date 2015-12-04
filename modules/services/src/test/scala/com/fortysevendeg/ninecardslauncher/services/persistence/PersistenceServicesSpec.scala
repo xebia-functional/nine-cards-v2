@@ -47,6 +47,8 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.fetchApps(any) returns Service(Task(Result.answer(seqRepoApp)))
 
+    mockAppRepository.fetchIterableApps(any, any, any) returns Service(Task(Result.answer(iterableCursorApp)))
+
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.answer(Option(repoApp))))
 
     mockAppRepository.fetchAppByPackage(nonExistentPackageName) returns Service(Task(Result.answer(None)))
@@ -143,6 +145,8 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.fetchDockApps returns Service(Task(Result.answer(seqRepoDockApp)))
 
+    mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.answer(iterableCursorDockApps)))
+
     mockDockAppRepository.findDockAppById(dockAppId) returns Service(Task(Result.answer(Option(repoDockApp))))
 
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.answer(None)))
@@ -155,6 +159,8 @@ trait PersistenceServicesSpecification
     val exception = RepositoryException("Irrelevant message")
 
     mockAppRepository.fetchApps(any) returns Service(Task(Result.errata(exception)))
+
+    mockAppRepository.fetchIterableApps(any, any, any) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
@@ -238,6 +244,8 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.fetchDockApps returns Service(Task(Result.errata(exception)))
 
+    mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.errata(exception)))
+
     mockDockAppRepository.findDockAppById(dockAppId) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.errata(exception)))
@@ -300,6 +308,90 @@ class PersistenceServicesSpec
       val result = persistenceServices.fetchApps(OrderByName).run.run
 
       result must beLike[Result[Seq[App], PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchIterableApps" should {
+
+    "return a iterable of apps when pass OrderByName" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableApps(OrderByName, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass OrderByInstallDate" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableApps(OrderByInstallDate, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass OrderByCategory" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableApps(OrderByCategory, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableApps(OrderByName).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchIterableAppsByKeyword" should {
+
+    "return a iterable of apps when pass a keyword and OrderByName" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass a keyword and OrderByInstallDate" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass a keyword and OrderByCategory" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
         case Errata(e) => e.headOption must beSome.which {
           case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
             case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
@@ -1307,6 +1399,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchDockApps.run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchDockApps" should {
+
+    "return a iterable of DockApp elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableDockApps.run.run
+
+      result must beLike {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableDockApps.moveToPosition(0)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableDockApps.run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {

@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.repository.Conversions._
+import com.fortysevendeg.ninecardslauncher.repository.model.GeoInfo
 
 case class GeoInfoEntity(id: Int, data: GeoInfoEntityData)
 
@@ -30,7 +32,7 @@ object GeoInfoEntity {
     longitude,
     system)
 
-  def geoInfoEntityFromCursor(cursor: Cursor) =
+  def geoInfoEntityFromCursor(cursor: Cursor): GeoInfoEntity =
     GeoInfoEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = GeoInfoEntityData(
@@ -41,7 +43,9 @@ object GeoInfoEntity {
         longitude = cursor.getDouble(cursor.getColumnIndex(longitude)),
         system = cursor.getInt(cursor.getColumnIndex(system)) > 0))
 
-  def createTableSQL =
+  def geoInfoFromCursor(cursor: Cursor): GeoInfo = toGeoInfo(geoInfoEntityFromCursor(cursor))
+
+  def createTableSQL: String =
     s"""CREATE TABLE ${GeoInfoEntity.table}
        |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
        |${GeoInfoEntity.constrain} TEXT not null,
