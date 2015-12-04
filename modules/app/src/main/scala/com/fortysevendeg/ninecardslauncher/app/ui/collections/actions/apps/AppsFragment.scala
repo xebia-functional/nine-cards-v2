@@ -21,9 +21,9 @@ import scalaz.concurrent.Task
 
 class AppsFragment
   extends BaseActionFragment
-  with AppsComposer
-  with UiExtensions
-  with NineCardIntentConversions {
+    with AppsComposer
+    with UiExtensions
+    with NineCardIntentConversions {
 
   val allApps = AllAppsCategory
 
@@ -48,34 +48,26 @@ class AppsFragment
 
   private[this] def loadApps(
     filter: AppsFilter,
-    reload: Boolean = false) = Task.fork(di.deviceProcess.getIterableApps(GetByName).run).resolveAsyncUi(
-    onPreTask = () => showLoading,
-    onResult = (apps: IterableApps) => if (reload) {
-      reloadAppsAdapter(apps, filter, category) // TODO Filter by category
-    } else {
-      generateAppsAdapter(apps, filter, category, (app: App) => {
-        val card = AddCardRequest(
-          term = app.name,
-          packageName = Option(app.packageName),
-          cardType = AppCardType,
-          intent = toNineCardIntent(app),
-          imagePath = app.imagePath
-        )
-        activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
-        runUi(unreveal())
-      })
-    },
-    onException = (ex: Throwable) => showGeneralError
-  )
-
-//  def getAppsByFilter(apps: IterableApps, filter: AppsFilter) = filter match {
-//    case AllApps => apps
-//    case AppsByCategory =>
-//      category match {
-//        case Game => apps filter(app => gamesCategories contains app.category)
-//        case c => apps filter(_.category.equals(c))
-//      }
-//  }
+    reload: Boolean = false) = // TODO Use filter by category in ticket 9C-350
+    Task.fork(di.deviceProcess.getIterableApps(GetByName).run).resolveAsyncUi(
+      onPreTask = () => showLoading,
+      onResult = (apps: IterableApps) => if (reload) {
+        reloadAppsAdapter(apps, filter, category)
+      } else {
+        generateAppsAdapter(apps, filter, category, (app: App) => {
+          val card = AddCardRequest(
+            term = app.name,
+            packageName = Option(app.packageName),
+            cardType = AppCardType,
+            intent = toNineCardIntent(app),
+            imagePath = app.imagePath
+          )
+          activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
+          runUi(unreveal())
+        })
+      },
+      onException = (ex: Throwable) => showGeneralError
+    )
 
 }
 
