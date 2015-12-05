@@ -1,9 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
-import android.support.v7.widget.Toolbar.LayoutParams
 import android.support.v7.widget.{RecyclerView, SwitchCompat}
-import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, View, ViewGroup}
+import android.view.{View, ViewGroup}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -16,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFra
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
@@ -41,23 +39,19 @@ trait AppsComposer
     val switchViewTweak = if (allApps) {
       Tweak.blank
     } else {
-      val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-      val switchParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL)
-      switchParams.setMarginStart(padding)
-      switchParams.setMarginEnd(padding)
       vgAddView(getUi(
         w[SwitchCompat] <~
           wire(switch) <~
           scColor(colorPrimary) <~
           scChecked(checked = true) <~
           scCheckedChangeListener(onCheckedChange)
-      ), switchParams)
+      ))
     }
     (toolbar <~
-      tbTitle(R.string.applications) <~
-      toolbarStyle(colorPrimary) <~
+      dtbInit(colorPrimary) <~
+      dtbChangeText(R.string.applications) <~
       switchViewTweak <~
-      tbNavigationOnClickListener((_) => unreveal())) ~
+      dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
   }

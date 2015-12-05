@@ -27,13 +27,32 @@
         <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="BaseActionsToolbarParent">
+    <style name="BaseActionsToolbarDialogParent">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="BaseActionsToolbar" parent="BaseActionsToolbarParent" />
+    <style name="BaseActionsToolbarDialog" parent="BaseActionsToolbarDialogParent"/>
+
+    <style name="BaseActionsToolbarRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="BaseActionsToolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+    </style>
+
+    <style name="BaseActionsToolbarTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_top_fab_button</item>
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:textColor">@color/toolbar_title</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:layout_gravity">top</item>
+    </style>
 
     <style name="BaseActionsRootContent">
         <item name="android:layout_width">match_parent</item>

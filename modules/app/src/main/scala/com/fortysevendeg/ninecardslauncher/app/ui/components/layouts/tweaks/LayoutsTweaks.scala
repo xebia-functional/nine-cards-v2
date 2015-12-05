@@ -3,10 +3,17 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.view.ViewPager
+import android.support.v7.widget.Toolbar
+import android.view.View
+import android.view.View.OnClickListener
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{Ui, ContextWrapper, Tweak}
 
@@ -167,4 +174,26 @@ object SlidingTabLayoutTweaks {
   def stlTabStripColor(color: Int): Tweak[W] = Tweak[W](_.setTabStripColor(color))
 
   def stlOnPageChangeListener(listener: ViewPager.OnPageChangeListener): Tweak[W] = Tweak[W](_.setOnPageChangeListener(listener))
+}
+
+object DialogToolbarTweaks {
+
+  type W = DialogToolbar
+
+  def dtbInit(color: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
+    runUi(view.init(color))
+  }
+
+  def dtbExtended(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
+    runUi(view.changeToolbarHeight(resGetDimensionPixelSize(R.dimen.height_extended_toolbar_dialog)))
+  }
+
+  def dtbChangeText(res: Int) = Tweak[W] { view =>
+    runUi(view.changeText(res))
+  }
+
+  def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W]{ view =>
+    runUi(view.navigationClickListener(click))
+  }
+
 }

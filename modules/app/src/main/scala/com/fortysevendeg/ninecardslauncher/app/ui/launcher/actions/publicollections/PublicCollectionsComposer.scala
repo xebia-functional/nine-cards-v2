@@ -9,6 +9,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -34,9 +35,10 @@ trait PublicCollectionsComposer
 
   def initUi: Ui[_] =
     (toolbar <~
-      tbTitle(R.string.publicCollections) <~
-      toolbarStyle(colorPrimary) <~
-      tbNavigationOnClickListener((_) => unreveal())) ~
+      dtbInit(colorPrimary) <~
+      dtbChangeText(R.string.publicCollections) <~
+      dtbExtended <~
+      dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)

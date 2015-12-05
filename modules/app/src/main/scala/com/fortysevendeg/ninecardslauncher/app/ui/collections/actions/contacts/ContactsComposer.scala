@@ -1,9 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
-import android.support.v7.widget.Toolbar.LayoutParams
 import android.support.v7.widget.{RecyclerView, SwitchCompat}
-import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, View, ViewGroup}
+import android.view.{View, ViewGroup}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -17,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFra
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.device.{ContactsFilter, ContactsWithPhoneNumber}
@@ -37,25 +35,20 @@ trait ContactsComposer
 
   var switch = slot[SwitchCompat]
 
-  def initUi(onCheckedChange: (Boolean) => Unit): Ui[_] = {
-    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-    val switchParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL)
-    switchParams.setMarginStart(padding)
-    switchParams.setMarginEnd(padding)
+  def initUi(onCheckedChange: (Boolean) => Unit): Ui[_] =
     (toolbar <~
-      tbTitle(R.string.contacts) <~
-      toolbarStyle(colorPrimary) <~
+      dtbInit(colorPrimary) <~
+      dtbChangeText(R.string.contacts) <~
       vgAddView(getUi(
         w[SwitchCompat] <~
           wire(switch) <~
           scColor(colorPrimary) <~
           scChecked(checked = true) <~
           scCheckedChangeListener(onCheckedChange)
-      ), switchParams) <~
-      tbNavigationOnClickListener((_) => unreveal())) ~
+      )) <~
+      dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
-  }
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ (scrollerLayout <~ fslInvisible)
 

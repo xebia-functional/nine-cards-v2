@@ -82,6 +82,11 @@ object ExtraTweaks {
     override def onClick(v: View): Unit = runUi(click(v))
   }))
 
+  def tbChangeHeightLayout(height: Int) = Tweak[Toolbar] { view =>
+    view.getLayoutParams.height = height
+    view.requestLayout()
+  }
+
   def dlStatusBarBackground(res: Int) = Tweak[DrawerLayout](_.setStatusBarBackground(res))
 
   def dlOpenDrawer = Tweak[DrawerLayout](_.openDrawer(GravityCompat.START))

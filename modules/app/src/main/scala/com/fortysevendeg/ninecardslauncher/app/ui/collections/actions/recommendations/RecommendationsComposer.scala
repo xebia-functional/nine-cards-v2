@@ -11,11 +11,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{NineCardIntentConversions, LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, NineCardIntentConversions, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.process.types.{NoInstalledAppCardType, CardType}
+import com.fortysevendeg.ninecardslauncher.process.types.NoInstalledAppCardType
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
@@ -31,9 +32,9 @@ trait RecommendationsComposer
 
   def initUi: Ui[_] =
     (toolbar <~
-      tbTitle(R.string.recommendations) <~
-      toolbarStyle(colorPrimary) <~
-      tbNavigationOnClickListener((_) => unreveal())) ~
+      dtbInit(colorPrimary) <~
+      dtbChangeText(R.string.recommendations) <~
+      dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)

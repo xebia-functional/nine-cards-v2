@@ -15,11 +15,9 @@
         android:id="@+id/action_content_root"
         style="@style/BaseActionsContent">
 
-        <android.support.v7.widget.Toolbar
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.DialogToolbar
             android:id="@+id/actions_toolbar"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            style="@style/BaseActionsToolbar"/>
+            style="@style/BaseActionsToolbarDialog"/>
 
         <FrameLayout
             android:id="@+id/action_content_layout"

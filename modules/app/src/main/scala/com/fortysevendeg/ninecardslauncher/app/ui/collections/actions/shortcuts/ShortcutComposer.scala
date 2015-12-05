@@ -8,6 +8,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -24,9 +25,9 @@ trait ShortcutComposer
 
   def initUi: Ui[_] =
     (toolbar <~
-      tbTitle(R.string.shortcuts) <~
-      toolbarStyle(colorPrimary) <~
-      tbNavigationOnClickListener((_) => unreveal())) ~
+      dtbInit(colorPrimary) <~
+      dtbChangeText(R.string.shortcuts) <~
+      dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
