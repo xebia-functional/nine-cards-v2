@@ -11,7 +11,6 @@ import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.calls.CallsServices
 import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServices}
@@ -34,6 +33,7 @@ class DeviceProcessImpl(
   with DeviceProcessDependencies
   with AppDeviceProcessImpl
   with ShorcutDeviceProcessImpl
+  with ContactsDeviceProcessImpl
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
   with ImplicitsPersistenceServiceExceptions
@@ -56,25 +56,11 @@ class DeviceProcessImpl(
 
   override def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) = super.saveShortcutIcon(name, bitmap)
 
-  override def getFavoriteContacts(implicit context: ContextSupport) =
-    (for {
-      favoriteContacts <- contactsServices.getFavoriteContacts
-      filledFavoriteContacts <- fillContacts(favoriteContacts)
-    } yield toContactSeq(filledFavoriteContacts)).resolve[ContactException]
+  override def getFavoriteContacts(implicit context: ContextSupport) = super.getFavoriteContacts
 
-  override def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
-    (for {
-      contacts <- filter match {
-        case AllContacts => contactsServices.getContacts
-        case FavoriteContacts => contactsServices.getFavoriteContacts
-        case ContactsWithPhoneNumber => contactsServices.getContactsWithPhone
-      }
-    } yield toContactSeq(contacts)).resolve[ContactException]
+  override def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) = super.getContacts(filter)
 
-  override def getContact(lookupKey: String)(implicit context: ContextSupport) =
-    (for {
-      contact <- contactsServices.findContactByLookupKey(lookupKey)
-    } yield toContact(contact)).resolve[ContactException]
+  override def getContact(lookupKey: String)(implicit context: ContextSupport) = super.getContact(lookupKey)
 
   override def getWidgets(implicit context: ContextSupport) =
     (for {
@@ -118,11 +104,5 @@ class DeviceProcessImpl(
         )
       } getOrElse lastCallsContact
     }).sortWith(_.lastCallDate > _.lastCallDate)
-
-  // TODO Change when ticket is finished (9C-235 - Fetch contacts from several lookup keys)
-  private[this] def fillContacts(contacts: Seq[ServicesContact]) = Service {
-    val tasks = contacts map (c => contactsServices.findContactByLookupKey(c.lookupKey).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[ContactsServiceException](list.collect { case Answer(contact) => contact }))
-  }.resolve[ContactException]
 
 }
