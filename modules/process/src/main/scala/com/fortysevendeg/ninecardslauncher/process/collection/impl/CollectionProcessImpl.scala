@@ -26,68 +26,34 @@ class CollectionProcessImpl(
   val contactsServices: ContactsServices,
   val appsServices: AppsServices)
   extends CollectionProcess
+  with CollectionProcessDependencies
+  with CollectionsProcessImpl
   with ImplicitsPersistenceServiceExceptions
   with FormedCollectionConversions
   with FormedCollectionDependencies {
 
   override val resourceUtils: ResourceUtils = new ResourceUtils
 
-  val minAppsGenerateCollections = 1
-
-  override def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = Service {
-    val tasks = createCollections(apps, contacts, appsCategories, minAppsToAdd) map (persistenceServices.addCollection(_).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
-  }.resolve[CollectionException]
+  override def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) =
+    super.createCollectionsFromUnformedItems(apps, contacts)
 
   override def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
-    (for {
-      apps <- appsServices.getInstalledApplications
-      collections <- createCollectionsAndFillData(items, apps)
-    } yield collections).resolve[CollectionException]
+    super.createCollectionsFromFormedCollections(items)
 
-  override def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = Service {
-    Task {
-      CatchAll[CollectionException] {
-        createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
-      }
-    }
-  }
+  override def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = super.generatePrivateCollections(apps)
 
-  override def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
+  override def getCollections = super.getCollections
 
-  override def getCollectionById(id: Int) =
-    (for {
-      collection <- persistenceServices.findCollectionById(FindCollectionByIdRequest(id))
-    } yield collection map toCollection).resolve[CollectionException]
+  override def getCollectionById(id: Int) = super.getCollectionById(id)
 
-  override def addCollection(addCollectionRequest: AddCollectionRequest) =
-    (for {
-      collectionList <- persistenceServices.fetchCollections
-      collection <- persistenceServices.addCollection(toAddCollectionRequest(addCollectionRequest, collectionList.size))
-    } yield toCollection(collection)).resolve[CollectionException]
+  override def addCollection(addCollectionRequest: AddCollectionRequest) = super.addCollection(addCollectionRequest)
 
-  override def deleteCollection(collectionId: Int) =
-    (for {
-      Some(collection) <- findCollectionById(collectionId)
-      _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
-      _ <- removeCards(collection.cards)
-      collectionList <- getCollections
-      _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
-    } yield ()).resolve[CollectionException]
+  override def deleteCollection(collectionId: Int) = super.deleteCollection(collectionId)
 
-  override def reorderCollection(position: Int, newPosition: Int) =
-    (for {
-      Some(collection) <- persistenceServices.fetchCollectionByPosition(toFetchCollectionByPositionRequest(position))
-      collectionList <- getCollections
-      _ <- updateCollectionList(reorderCollectionList(collectionList, newPosition, position))
-    } yield ()).resolve[CollectionException]
+  override def reorderCollection(position: Int, newPosition: Int) = super.reorderCollection(position, newPosition)
 
   override def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest) =
-    (for {
-      Some(collection) <- findCollectionById(collectionId)
-      updatedCollection = toUpdatedCollection(toCollection(collection), editCollectionRequest)
-      _ <- updateCollection(updatedCollection)
-    } yield updatedCollection).resolve[CollectionException]
+    super.editCollection(collectionId, editCollectionRequest)
 
   override def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): ResultT[Task, Seq[Card], CardException] =
     (for {
@@ -126,45 +92,6 @@ class CollectionProcessImpl(
       _ <- updateCardList(toCardSeq(toInstalledApp(cardsNoInstalled, app)))
     } yield ()).resolve[CardException]
 
-  private[this] def createCollectionsAndFillData(items: Seq[FormedCollection], apps: Seq[Application])
-    (implicit context: ContextSupport): ServiceDef2[List[Collection], PersistenceServiceException] = Service {
-    val tasks = toAddCollectionRequestByFormedCollection(fillImageUri(items, apps)) map (persistenceServices.addCollection(_).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
-  }
-
-  private[this] def getCardsByCollectionId(collectionId: Int) = (
-    persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]
-
-  private[this] def moveCollectionList(collectionList: Seq[Collection], position: Int) =
-    collectionList map { collection =>
-      if (collection.position > position) collection.copy(position = collection.position - 1) else collection
-    }
-
-  private[this] def reorderCollectionList(collectionList: Seq[Collection], newPosition: Int, oldPosition: Int): Seq[Collection] =
-    collectionList map { collection =>
-      val position = collection.position
-      (newPosition, oldPosition, position) match {
-        case (n, o, p) if n < o && p > n && p < o => collection.copy(position = p + 1)
-        case (n, o, p) if n > o && p < n && p > o => collection.copy(position = p - 1)
-        case (n, o, _) if n < o || n > o => collection
-        case _ => collection.copy(position = newPosition)
-      }
-    }
-
-  private[this] def findCollectionById(id: Int) =
-    (for {
-      collection <- persistenceServices.findCollectionById(toFindCollectionByIdRequest(id))
-    } yield collection).resolve[CollectionException]
-
-  private[this] def updateCollection(collection: Collection) =
-    (for {
-      _ <- persistenceServices.updateCollection(toServicesUpdateCollectionRequest(collection))
-    } yield ()).resolve[CollectionException]
-
-  private[this] def updateCollectionList(collectionList: Seq[Collection]) = Service {
-    val tasks = collectionList map (collection => updateCollection(collection).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CollectionException](c.collect { case Answer(r) => r}))
-  }
 
   private[this] def addCardList(collectionId: Int, cardList: Seq[AddCardRequest], position: Int) = Service {
     val tasks = cardList.indices map (item => persistenceServices.addCard(toAddCardRequest(collectionId, cardList(item), position + item)).run)
@@ -201,5 +128,8 @@ class CollectionProcessImpl(
     val tasks = cards map (card => persistenceServices.deleteCard(ServicesDeleteCardRequest(card)).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
   }
+
+  private[this] def getCardsByCollectionId(collectionId: Int) = (
+    persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]
 
 }
