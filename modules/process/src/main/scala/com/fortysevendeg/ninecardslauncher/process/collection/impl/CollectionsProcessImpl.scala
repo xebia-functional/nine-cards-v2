@@ -4,12 +4,13 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, EditCollectionRequest, AddCollectionRequest, CollectionException}
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, FormedCollection, UnformedContact, UnformedApp}
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, FormedCollection, UnformedApp, UnformedContact}
+import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, AddCollectionRequest, CollectionException, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest, FindCollectionByIdRequest, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest => ServicesDeleteCollectionRequest, DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, FindCollectionByIdRequest, PersistenceServiceException}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -18,7 +19,8 @@ trait CollectionsProcessImpl {
 
   self: CollectionProcessDependencies
     with FormedCollectionConversions
-    with FormedCollectionDependencies =>
+    with FormedCollectionDependencies
+    with ImplicitsPersistenceServiceExceptions =>
 
   val minAppsGenerateCollections = 1
 
@@ -112,5 +114,10 @@ trait CollectionsProcessImpl {
   private[this] def updateCollectionList(collectionList: Seq[Collection]) = Service {
     val tasks = collectionList map (collection => updateCollection(collection).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CollectionException](c.collect { case Answer(r) => r}))
+  }
+
+  private[this] def removeCards(cards: Seq[ServicesCard]) = Service {
+    val tasks = cards map (card => persistenceServices.deleteCard(ServicesDeleteCardRequest(card)).run)
+    Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
   }
 }
