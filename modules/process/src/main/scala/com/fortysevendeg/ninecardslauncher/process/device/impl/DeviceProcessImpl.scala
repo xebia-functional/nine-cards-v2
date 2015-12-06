@@ -32,8 +32,9 @@ class DeviceProcessImpl(
   extends DeviceProcess
   with DeviceProcessDependencies
   with AppsDeviceProcessImpl
-  with ShorcutsDeviceProcessImpl
   with ContactsDeviceProcessImpl
+  with ShorcutsDeviceProcessImpl
+  with WidgetsDeviceProcessImpl
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
   with ImplicitsPersistenceServiceExceptions
@@ -62,10 +63,7 @@ class DeviceProcessImpl(
 
   override def getContact(lookupKey: String)(implicit context: ContextSupport) = super.getContact(lookupKey)
 
-  override def getWidgets(implicit context: ContextSupport) =
-    (for {
-      widgets <- widgetsServices.getWidgets
-    } yield widgets map toWidget).resolve[WidgetException]
+  override def getWidgets(implicit context: ContextSupport) = super.getWidgets
 
   override def getLastCalls(implicit context: ContextSupport) =
     (for {
