@@ -31,8 +31,8 @@ class DeviceProcessImpl(
   val callsServices: CallsServices)
   extends DeviceProcess
   with DeviceProcessDependencies
-  with AppDeviceProcessImpl
-  with ShorcutDeviceProcessImpl
+  with AppsDeviceProcessImpl
+  with ShorcutsDeviceProcessImpl
   with ContactsDeviceProcessImpl
   with ImplicitsDeviceException
   with ImplicitsImageExceptions

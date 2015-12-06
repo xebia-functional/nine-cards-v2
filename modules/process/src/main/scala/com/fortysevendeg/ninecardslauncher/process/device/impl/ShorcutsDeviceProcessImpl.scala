@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.device.{ImplicitsDeviceException, DeviceConversions, ShortcutException}
 import com.fortysevendeg.ninecardslauncher.services.image.SaveBitmap
 
-trait ShorcutDeviceProcessImpl {
+trait ShorcutsDeviceProcessImpl {
 
   self: DeviceConversions
     with DeviceProcessDependencies

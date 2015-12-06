@@ -14,7 +14,7 @@ import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
-trait AppDeviceProcessImpl {
+trait AppsDeviceProcessImpl {
 
   self: DeviceConversions
     with DeviceProcessDependencies
