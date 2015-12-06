@@ -106,6 +106,5 @@ class PersistenceServicesImpl(
 
   override def updateDockApp(request: UpdateDockAppRequest) = super.updateDockApp(request)
 
-  override def getAndroidId(implicit context: ContextSupport) = super.getAndroidId(context)
-
+  override def getAndroidId(implicit context: ContextSupport) = super.getAndroidId
 }
