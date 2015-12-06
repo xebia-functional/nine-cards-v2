@@ -33,6 +33,7 @@ class DeviceProcessImpl(
   extends DeviceProcess
   with DeviceProcessDependencies
   with AppDeviceProcessImpl
+  with ShorcutDeviceProcessImpl
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
   with ImplicitsPersistenceServiceExceptions
@@ -51,15 +52,9 @@ class DeviceProcessImpl(
 
   override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport) = super.createBitmapsFromPackages(packages)
 
-  override def getAvailableShortcuts(implicit context: ContextSupport) =
-    (for {
-      shortcuts <- shortcutsServices.getShortcuts
-    } yield toShortcutSeq(shortcuts)).resolve[ShortcutException]
+  override def getAvailableShortcuts(implicit context: ContextSupport) = super.getAvailableShortcuts
 
-  override def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) =
-    (for {
-      saveBitmapPath <- imageServices.saveBitmap(SaveBitmap(name, bitmap))
-    } yield saveBitmapPath.path).resolve[ShortcutException]
+  override def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) = super.saveShortcutIcon(name, bitmap)
 
   override def getFavoriteContacts(implicit context: ContextSupport) =
     (for {
