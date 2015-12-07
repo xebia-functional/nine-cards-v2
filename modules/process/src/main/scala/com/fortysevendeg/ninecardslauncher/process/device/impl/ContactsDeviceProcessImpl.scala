@@ -1,12 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.{CatchAll, _}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ImplicitsContactsServiceExceptions, ContactsServiceException}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
+import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ImplicitsContactsServiceExceptions}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task

@@ -1,19 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.{CatchAll, _}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.device.{ImplicitsDeviceException, DeviceConversions, CallException}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact}
+import com.fortysevendeg.ninecardslauncher.process.device.{CallException, DeviceConversions, ImplicitsDeviceException}
 import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ImplicitsContactsServiceExceptions, ContactsServiceException}
+import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ImplicitsContactsServiceExceptions}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
-trait LastCallsDeviceProcessImpl {
+trait
+
+LastCallsDeviceProcessImpl {
 
   self: DeviceConversions
     with DeviceProcessDependencies
