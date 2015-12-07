@@ -7,6 +7,13 @@ import android.net.Uri._
 
 trait ContentResolverWrapper {
 
+  def getCursor(
+    uri: Uri,
+    projection: Seq[String],
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): Cursor
+
   def insert(
     uri: Uri,
     values: Map[String, Any]): Int
@@ -58,7 +65,16 @@ trait ContentResolverWrapper {
     whereParams: Seq[String] = Seq.empty): Int
 }
 
-class ContentResolverWrapperImpl(contentResolver: ContentResolver) extends ContentResolverWrapper {
+class ContentResolverWrapperImpl(contentResolver: ContentResolver)
+  extends ContentResolverWrapper {
+
+  override def getCursor(
+    uri: Uri,
+    projection: Seq[String],
+    where: String,
+    whereParams: Seq[String],
+    orderBy: String): Cursor =
+    contentResolver.query(uri, projection.toArray, where, whereParams.toArray, orderBy)
 
   override def insert(
     uri: Uri,

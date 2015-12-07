@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IterableCursor, ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.{allFields, position, _}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import IterableCursor._
 import RepositoryUtils._
 import scalaz.concurrent.Task
 
@@ -97,6 +98,23 @@ class CollectionRepository(
       Task {
         CatchAll[RepositoryException] {
           fetchCollection(selection = s"${CollectionEntity.position} = ?", selectionArgs = Seq(position.toString))
+        }
+      }
+    }
+
+  def fetchIterableCollections(
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): ServiceDef2[IterableCursor[Collection], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.getCursor(
+            uri = collectionUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy).toIterator(collectionFromCursor)
         }
       }
     }

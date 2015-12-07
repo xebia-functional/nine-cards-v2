@@ -5,12 +5,12 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, FormedCollection, UnformedApp, UnformedContact}
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, AddCollectionRequest, CollectionException, EditCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequest, CollectionException, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest => ServicesDeleteCollectionRequest, DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, FindCollectionByIdRequest, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -60,7 +60,7 @@ trait CollectionsProcessImpl {
     (for {
       Some(collection) <- findCollectionById(collectionId)
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
-      _ <- removeCards(collection.cards)
+      _ <- persistenceServices.deleteCardsByCollection(collectionId)
       collectionList <- getCollections
       _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
     } yield ()).resolve[CollectionException]
@@ -116,8 +116,4 @@ trait CollectionsProcessImpl {
     Task.gatherUnordered(tasks) map (c => CatchAll[CollectionException](c.collect { case Answer(r) => r}))
   }
 
-  private[this] def removeCards(cards: Seq[ServicesCard]) = Service {
-    val tasks = cards map (card => persistenceServices.deleteCard(ServicesDeleteCardRequest(card)).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
-  }
 }

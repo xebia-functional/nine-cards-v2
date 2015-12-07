@@ -36,6 +36,11 @@ class PersistenceServicesImpl(
 
   override def updateApp(request: UpdateAppRequest) = super.updateApp(request)
 
+  override def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true) = super.fetchIterableApps(orderBy, ascending)
+
+  override def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true) =
+    super.fetchIterableAppsByKeyword(keyword, orderBy, ascending)
+
   override def addCard(request: AddCardRequest) = super.addCard(request)
 
   override def deleteAllCards() = super.deleteAllCards()
@@ -101,6 +106,8 @@ class PersistenceServicesImpl(
   override def deleteDockApp(request: DeleteDockAppRequest) = super.deleteDockApp(request)
 
   override def fetchDockApps = super.fetchDockApps
+
+  override def fetchIterableDockApps = super.fetchIterableDockApps
 
   override def findDockAppById(request: FindDockAppByIdRequest) = super.findDockAppById(request)
 

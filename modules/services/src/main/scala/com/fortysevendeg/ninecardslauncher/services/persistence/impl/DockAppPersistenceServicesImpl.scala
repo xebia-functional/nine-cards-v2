@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableDockApps
 
 trait DockAppPersistenceServicesImpl {
 
@@ -27,6 +28,11 @@ trait DockAppPersistenceServicesImpl {
     (for {
       dockAppItems <- dockAppRepository.fetchDockApps
     } yield dockAppItems map toDockApp).resolve[PersistenceServiceException]
+
+  def fetchIterableDockApps =
+    (for {
+      iter <- dockAppRepository.fetchIterableDockApps()
+    } yield new IterableDockApps(iter)).resolve[PersistenceServiceException]
 
   def findDockAppById(request: FindDockAppByIdRequest) =
     (for {

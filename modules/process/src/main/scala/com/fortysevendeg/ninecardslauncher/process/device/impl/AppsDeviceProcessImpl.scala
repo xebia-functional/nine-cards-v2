@@ -101,5 +101,4 @@ trait AppsDeviceProcessImpl {
     Task.gatherUnordered(tasks) map (list => CatchAll[BitmapTransformationException](list.collect { case Answer(app) => app }))
   }
 
-
 }

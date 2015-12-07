@@ -1,12 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.repository.model._
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User, _}
 
 import scala.util.Random
 
 trait PersistenceServicesData {
+
+  val items = 5
+  val item = 1
 
   val appId: Int =  Random.nextInt(10)
   val className: String = Random.nextString(5)
@@ -699,4 +703,21 @@ trait PersistenceServicesData {
       intent = intent,
       imagePath = imagePath,
       position = position)
+
+  val iterableCursorApp = new IterableCursor[repositoryModel.App] {
+    override def count(): Int = seqRepoApp.length
+    override def moveToPosition(pos: Int): repositoryModel.App = seqRepoApp(pos)
+    override def close(): Unit = ()
+  }
+  val iterableApps = new IterableApps(iterableCursorApp)
+
+  val iterableCursorDockApps = new IterableCursor[repositoryModel.DockApp] {
+    override def count(): Int = seqRepoDockApp.length
+    override def moveToPosition(pos: Int): repositoryModel.DockApp = seqRepoDockApp(pos)
+    override def close(): Unit = ()
+  }
+  val iterableDockApps = new IterableDockApps(iterableCursorDockApps)
+
+  val keyword = "fake-keyword"
+
 }

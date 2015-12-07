@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IterableCursor, ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toGeoInfo
@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.GeoInfoEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import IterableCursor._
 
 import scalaz.concurrent.Task
 
@@ -71,6 +72,23 @@ class GeoInfoRepository(
           contentResolverWrapper.fetchAll(
             uri = geoInfoUri,
             projection = allFields)(getListFromCursor(geoInfoEntityFromCursor)) map toGeoInfo
+        }
+      }
+    }
+
+  def fetchIterableCollections(
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): ServiceDef2[IterableCursor[GeoInfo], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.getCursor(
+            uri = geoInfoUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy).toIterator(geoInfoFromCursor)
         }
       }
     }

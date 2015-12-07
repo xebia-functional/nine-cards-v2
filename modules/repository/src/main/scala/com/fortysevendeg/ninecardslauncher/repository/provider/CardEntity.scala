@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
+import com.fortysevendeg.ninecardslauncher.repository.Conversions._
+import com.fortysevendeg.ninecardslauncher.repository.model.Card
 
 case class CardEntity(id: Int, data: CardEntityData)
 
@@ -45,7 +47,7 @@ object CardEntity {
     numDownloads,
     notification)
 
-  def cardEntityFromCursor(cursor: Cursor) =
+  def cardEntityFromCursor(cursor: Cursor): CardEntity =
     CardEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = CardEntityData(
@@ -61,7 +63,9 @@ object CardEntity {
         numDownloads = cursor.getString(cursor.getColumnIndex(numDownloads)),
         notification = cursor.getString(cursor.getColumnIndex(notification))))
 
-  def createTableSQL =
+  def cardFromCursor(cursor: Cursor): Card = toCard(cardEntityFromCursor(cursor))
+
+  def createTableSQL: String =
     s"""CREATE TABLE ${CardEntity.table}
        |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
        |${CardEntity.position} INTEGER not null,

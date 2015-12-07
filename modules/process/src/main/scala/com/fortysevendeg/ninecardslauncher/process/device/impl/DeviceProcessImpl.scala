@@ -26,6 +26,7 @@ class DeviceProcessImpl(
   with AppsDeviceProcessImpl
   with ContactsDeviceProcessImpl
   with LastCallsDeviceProcessImpl
+  with ResetProcessImpl
   with ShorcutsDeviceProcessImpl
   with WidgetsDeviceProcessImpl
   with ImplicitsDeviceException
@@ -33,6 +34,8 @@ class DeviceProcessImpl(
   with ImplicitsPersistenceServiceExceptions
   with ImplicitsContactsServiceExceptions
   with DeviceConversions {
+
+  override def resetSavedItems() = super.resetSavedItems
 
   override def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) = super.getSavedApps(orderBy)
 

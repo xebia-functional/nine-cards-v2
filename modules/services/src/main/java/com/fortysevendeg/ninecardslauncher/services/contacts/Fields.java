@@ -22,6 +22,13 @@ public interface Fields {
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " NOT NULL " +
             " AND " +
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " <> ''";
+    String CONTACTS_BY_KEYWORD_SELECTION = ContactsContract.Contacts.IN_VISIBLE_GROUP + " = 1 " +
+            " AND " +
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE '%?%' " +
+            " AND " +
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " NOT NULL " +
+            " AND " +
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " <> ''";
     String LOOKUP_SELECTION = ContactsContract.Contacts.LOOKUP_KEY + " = ?";
     String STARRED_SELECTION = ContactsContract.Contacts.STARRED + " > 0";
     String HAS_PHONE_NUMBER_SELECTION = ContactsContract.Contacts.HAS_PHONE_NUMBER + " = 1";

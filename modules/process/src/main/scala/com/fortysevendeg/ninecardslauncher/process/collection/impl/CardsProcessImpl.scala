@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
 import com.fortysevendeg.ninecardslauncher.process.types.{CardType, NoInstalledAppCardType}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, PersistenceServiceException, ImplicitsPersistenceServiceExceptions}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
 import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT
 
@@ -54,7 +54,6 @@ trait CardsProcessImpl {
       card = toCardSeq(toInstalledApp(cardsNoInstalled, app))
       _ <- updateCardList(toCardSeq(toInstalledApp(cardsNoInstalled, app)))
     } yield ()).resolve[CardException]
-
 
   private[this] def addCardList(collectionId: Int, cardList: Seq[AddCardRequest], position: Int) = Service {
     val tasks = cardList.indices map (item => persistenceServices.addCard(toAddCardRequest(collectionId, cardList(item), position + item)).run)
