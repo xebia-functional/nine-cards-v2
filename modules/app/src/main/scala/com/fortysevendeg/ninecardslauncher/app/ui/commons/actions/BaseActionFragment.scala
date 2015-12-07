@@ -19,6 +19,7 @@ import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.postfixOps
 
 trait BaseActionFragment
   extends Fragment
@@ -61,6 +62,14 @@ trait BaseActionFragment
 
   protected lazy val fab = Option(findView(TR.action_content_fab))
 
+  protected lazy val errorContent = Option(findView(TR.actions_content_error_layout))
+
+  protected lazy val errorMessage = Option(findView(TR.actions_content_error_message))
+
+  protected lazy val errorIcon = Option(findView(TR.actions_content_error_icon))
+
+  protected lazy val errorButton = Option(findView(TR.actions_content_error_button))
+
   protected var rootView: Option[FrameLayout] = None
 
   def getLayoutId: Int
@@ -75,7 +84,9 @@ trait BaseActionFragment
       (content <~ vgAddView(layout))  ~
         (loading <~ pbColor(colorPrimary)) ~
         (transitionView <~ vBackgroundColor(colorPrimary)) ~
-        (rootContent <~ vInvisible))
+        (rootContent <~ vInvisible) ~
+        (errorContent <~ vGone) ~
+        (errorButton <~ vBackgroundTint(colorPrimary)))
     baseView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
       override def onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int): Unit = {
         v.removeOnLayoutChangeListener(this)
@@ -100,6 +111,17 @@ trait BaseActionFragment
     val projection = rootView map (projectionScreenPositionInView(_, endPosX, endPosY)) getOrElse(defaultPosition, defaultPosition)
     onStartFinishAction ~ (rootView <~~ revealOut(projection._1, projection._2, width, height)) ~~ onEndFinishAction
   }
+
+  def showError(message: Int, action: => Unit): Ui[_] =
+    (loading <~ vGone) ~
+      (errorMessage <~ text(message)) ~
+      (errorButton <~ On.click {
+        action
+        hideError
+      }) ~
+      (errorContent <~ vVisible)
+
+  def hideError: Ui[_] = errorContent <~ vGone
 
   override def onAttach(activity: Activity): Unit = {
     super.onAttach(activity)

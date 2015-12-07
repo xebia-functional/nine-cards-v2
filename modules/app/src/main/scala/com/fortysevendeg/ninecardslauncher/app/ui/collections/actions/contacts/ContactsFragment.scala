@@ -61,16 +61,17 @@ class ContactsFragment
 
   private[this] def loadContacts(
     filter: ContactsFilter,
-    reload: Boolean = false) = Task.fork(di.deviceProcess.getContacts(filter).run).resolveAsyncUi(
+    reload: Boolean = false): Unit = Task.fork(di.deviceProcess.getContacts(filter).run).resolveAsyncUi(
     onPreTask = () => showLoading,
-    onResult = (contacts: Seq[Contact]) => if (reload) {
-      reloadContactsAdapter(contacts, filter)
-    } else {
-      generateContactsAdapter(contacts, contact => {
-        showDialog(contact)
-      })
-    },
-    onException = (ex: Throwable) => showGeneralError
+    onResult = (contacts: Seq[Contact]) =>
+      if (reload) {
+        reloadContactsAdapter(contacts, filter)
+      } else {
+        generateContactsAdapter(contacts, contact => {
+          showDialog(contact)
+        })
+      },
+    onException = (ex: Throwable) => showError(R.string.error_loading_contacts, loadContacts(filter, reload))
   )
 
   private[this] def showDialog(contact: Contact) = Task.fork(di.deviceProcess.getContact(contact.lookupKey).run).resolveAsync(

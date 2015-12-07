@@ -66,7 +66,7 @@ class AppsFragment
         runUi(unreveal())
       })
     },
-    onException = (ex: Throwable) => showGeneralError
+    onException = (ex: Throwable) => showError(R.string.error_loading_apps, loadApps(filter, reload))
   )
 
   def getAppsByFilter(apps: Seq[App], filter: AppsFilter) = filter match {

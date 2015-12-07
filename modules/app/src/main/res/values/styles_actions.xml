@@ -53,6 +53,38 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="BaseActionsErrorContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="BaseActionsErrorMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:textColor">@color/error_dialog_text</item>
+    </style>
+
+    <style name="BaseActionsErrorIcon">
+        <item name="android:layout_width">@dimen/size_icon_error</item>
+        <item name="android:layout_height">@dimen/size_icon_error</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+    </style>
+
+    <style name="BaseActionsErrorButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">@dimen/error_dialog_min_width_button</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:text">@string/buttonErrorReload</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/error_dialog_text_button</item>
+    </style>
+
     <!-- Content -->
 
     <style name="ActionsListContent">

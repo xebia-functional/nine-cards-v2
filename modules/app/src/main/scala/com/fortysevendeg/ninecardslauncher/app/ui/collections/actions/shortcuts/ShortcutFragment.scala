@@ -25,15 +25,19 @@ class ShortcutFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
+    loadShortCuts()
+  }
+
+  private[this] def loadShortCuts(): Unit =
     Task.fork(di.deviceProcess.getAvailableShortcuts.run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (shortcut: Seq[Shortcut]) => addShortcuts(shortcut, shortcut => {
         runUi(unreveal())
         getActivity.startActivityForResult(shortcut.intent, shortcutAdded)
       }),
-      onException = (ex: Throwable) => showGeneralError
+      onException = (ex: Throwable) => showError(R.string.error_loading_shortcuts, loadShortCuts())
     )
-  }
+
 }
 
 

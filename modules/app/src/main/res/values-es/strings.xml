@@ -100,6 +100,12 @@
     <string name="sms">SMS</string>
     <string name="emails">Email</string>
 
+    <string name="error_loading_contacts">Error cargando contactos</string>
+    <string name="error_loading_apps">Error cargando aplicaciones</string>
+    <string name="error_loading_shortcuts">Error cargando accesos directos</string>
+    <string name="error_loading_recommendations">Error cargando recomendaciones</string>
+    <string name="error_loading_private_collections">Error cargando colleciones privadas</string>
+
     <!-- Recommendations Action -->
 
     <string name="recommendationError">Esta colección no tiene aplicaciones así que no podemos encontrar recomendaciones</string>
