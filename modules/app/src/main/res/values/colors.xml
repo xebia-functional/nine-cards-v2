@@ -115,6 +115,9 @@
     <color name="text_selected_color_dialog">#4285F4</color>
     <color name="color_selected_color_dialog">#ffffff</color>
 
+    <!-- Public Collection Dialog -->
+    <color name="background_count_public_collection_dialog">#cdcdcd</color>
+
     <!-- Theme Light -->
     <color name="search_background_tint_light">#ffffff</color>
     <color name="search_icons_tint_light">#646464</color>
