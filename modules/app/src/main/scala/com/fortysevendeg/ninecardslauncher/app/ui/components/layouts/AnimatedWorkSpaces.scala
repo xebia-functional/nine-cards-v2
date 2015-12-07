@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, ValueAnimator}
 import android.content.Context
+import android.os
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
 import android.view.MotionEvent._
@@ -18,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, ViewState}
 import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak, Ui}
+import macroid.{ContextWrapper, Ui}
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   (context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
@@ -86,6 +87,14 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   var displacement: Float = 0
 
   var currentItem = 0
+
+  val longClickMillis = 1000
+
+  val handler = new os.Handler()
+
+  val runnable = new Runnable {
+    override def run(): Unit = listener.onLongClick()
+  }
 
   def getHorizontalGallery: Boolean = true
 
@@ -375,25 +384,26 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       val x = MotionEventCompat.getX(event, 0)
       val y = MotionEventCompat.getY(event, 0)
       action match {
-        case ACTION_MOVE => statuses.touchState match {
-          case Scrolling =>
-            requestDisallowInterceptTouchEvent(true)
-            val deltaX = statuses.deltaX(x)
-            val deltaY = statuses.deltaY(y)
-            statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-            if (overScroll(deltaX, deltaY)) {
-              runUi(applyTranslation(frontParentView, 0))
-            } else {
-              runUi(performScroll(if (statuses.horizontalGallery) deltaX else deltaY))
-            }
-          case Stopped => setStateIfNeeded(x, y)
-        }
+        case ACTION_MOVE =>
+          statuses.touchState match {
+            case Scrolling =>
+              handler.removeCallbacks(runnable)
+              requestDisallowInterceptTouchEvent(true)
+              val deltaX = statuses.deltaX(x)
+              val deltaY = statuses.deltaY(y)
+              statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+              if (overScroll(deltaX, deltaY)) {
+                runUi(applyTranslation(frontParentView, 0))
+              } else {
+                runUi(performScroll(if (statuses.horizontalGallery) deltaX else deltaY))
+              }
+            case Stopped => setStateIfNeeded(x, y)
+          }
         case ACTION_DOWN =>
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+          handler.postDelayed(runnable, longClickMillis)
         case ACTION_CANCEL | ACTION_UP =>
-          if (statuses.touchState == Stopped) {
-            listener.onClick()
-          }
+          handler.removeCallbacks(runnable)
           computeFling()
           statuses = statuses.copy(touchState = Stopped)
         case _ =>
@@ -482,7 +492,7 @@ case class AnimatedWorkSpacesStatuses(
 case class AnimatedWorkSpacesListener(
   var startScroll: (Boolean) => Unit = (b: Boolean) => (),
   var endScroll: () => Unit = () => (),
-  var onClick: () => Unit = () => ())
+  var onLongClick: () => Unit = () => ())
 
 case class Dimen(var width: Int = 0, var height: Int = 0)
 
