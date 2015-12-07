@@ -36,6 +36,37 @@ class PersistenceServicesImpl(
 
   override def updateApp(request: UpdateAppRequest) = super.updateApp(request)
 
+  override def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {
+    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+
+    val appSeq = for {
+      iter <- appRepository.fetchIterableApps(orderBy = orderByString)
+    } yield new IterableApps(iter)
+
+    appSeq.resolve[PersistenceServiceException]
+  }
+
+  override def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
+    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+
+    val appSeq = for {
+      iter <- appRepository.fetchIterableApps(
+        where = toStringWhere(keyword),
+        whereParams = Seq(keyword),
+        orderBy = orderByString)
+    } yield new IterableApps(iter)
+
+    appSeq.resolve[PersistenceServiceException]
+  }
+
+  private[this] def toStringWhere(keyword: String): String = s"${AppEntity.name} LIKE '%$keyword%' "
+
+  private[this] def toStringOrderBy(orderBy: FetchAppOrder): String = orderBy match {
+    case OrderByName => s"${AppEntity.name} COLLATE NOCASE"
+    case OrderByInstallDate => AppEntity.dateInstalled
+    case OrderByCategory => AppEntity.category
+  }
+
   override def addCard(request: AddCardRequest) = super.addCard(request)
 
   override def deleteAllCards() = super.deleteAllCards()

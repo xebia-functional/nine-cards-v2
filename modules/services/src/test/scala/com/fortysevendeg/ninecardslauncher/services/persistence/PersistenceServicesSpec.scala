@@ -47,23 +47,25 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.fetchApps(any) returns Service(Task(Result.answer(seqRepoApp)))
 
+    mockAppRepository.fetchIterableApps(any, any, any) returns Service(Task(Result.answer(iterableCursorApp)))
+
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.answer(Option(repoApp))))
 
     mockAppRepository.fetchAppByPackage(nonExistentPackageName) returns Service(Task(Result.answer(None)))
 
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.answer(repoApp)))
 
-    mockAppRepository.deleteApps() returns Service(Task(Result.answer(5)))
+    mockAppRepository.deleteApps() returns Service(Task(Result.answer(items)))
 
-    mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(1)))
+    mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(item)))
 
-    mockAppRepository.updateApp(repoApp) returns Service(Task(Result.answer(1)))
+    mockAppRepository.updateApp(repoApp) returns Service(Task(Result.answer(item)))
 
     mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.answer(repoGeoInfo)))
 
-    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.answer(5)))
+    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.answer(items)))
 
-    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(1)))
+    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(item)))
 
     mockGeoInfoRepository.fetchGeoInfoItems returns Service(Task(Result.answer(seqRepoGeoInfo)))
 
@@ -75,16 +77,16 @@ trait PersistenceServicesSpecification
 
     mockGeoInfoRepository.findGeoInfoById(nonExistentGeoInfoId) returns Service(Task(Result.answer(None)))
 
-    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(1)))
+    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(item)))
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.answer(repoCard)))
 
-    mockCardRepository.deleteCards() returns Service(Task(Result.answer(5)))
+    mockCardRepository.deleteCards() returns Service(Task(Result.answer(items)))
 
-    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(5)))
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(items)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.answer(1)))
+      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.answer(item)))
     }
 
     List.tabulate(5) { index =>
@@ -97,13 +99,13 @@ trait PersistenceServicesSpecification
 
     mockCardRepository.findCardById(nonExistentCardId) returns Service(Task(Result.answer(None)))
 
-    mockCardRepository.updateCard(repoCard) returns Service(Task(Result.answer(1)))
+    mockCardRepository.updateCard(repoCard) returns Service(Task(Result.answer(item)))
 
     mockCollectionRepository.addCollection(repoCollectionData) returns Service(Task(Result.answer(repoCollection)))
 
-    mockCollectionRepository.deleteCollections() returns Service(Task(Result.answer(5)))
+    mockCollectionRepository.deleteCollections() returns Service(Task(Result.answer(items)))
 
-    mockCollectionRepository.deleteCollection(repoCollection) returns Service(Task(Result.answer(1)))
+    mockCollectionRepository.deleteCollection(repoCollection) returns Service(Task(Result.answer(item)))
 
     mockCollectionRepository.fetchCollectionByPosition(position) returns Service(Task(Result.answer(Option(repoCollection))))
 
@@ -119,13 +121,13 @@ trait PersistenceServicesSpecification
 
     mockCollectionRepository.findCollectionById(nonExistentCollectionId) returns Service(Task(Result.answer(None)))
 
-    mockCollectionRepository.updateCollection(repoCollection) returns Service(Task(Result.answer(1)))
+    mockCollectionRepository.updateCollection(repoCollection) returns Service(Task(Result.answer(item)))
 
     mockUserRepository.addUser(repoUserData) returns Service(Task(Result.answer(repoUser)))
 
-    mockUserRepository.deleteUsers() returns Service(Task(Result.answer(5)))
+    mockUserRepository.deleteUsers() returns Service(Task(Result.answer(items)))
 
-    mockUserRepository.deleteUser(repoUser) returns Service(Task(Result.answer(1)))
+    mockUserRepository.deleteUser(repoUser) returns Service(Task(Result.answer(item)))
 
     mockUserRepository.fetchUsers returns Service(Task(Result.answer(seqRepoUser)))
 
@@ -133,21 +135,23 @@ trait PersistenceServicesSpecification
 
     mockUserRepository.findUserById(nonExistentUserId) returns Service(Task(Result.answer(None)))
 
-    mockUserRepository.updateUser(repoUser) returns Service(Task(Result.answer(1)))
+    mockUserRepository.updateUser(repoUser) returns Service(Task(Result.answer(item)))
 
     mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.answer(repoDockApp)))
 
-    mockDockAppRepository.deleteDockApps() returns Service(Task(Result.answer(5)))
+    mockDockAppRepository.deleteDockApps() returns Service(Task(Result.answer(items)))
 
-    mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.answer(1)))
+    mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
 
     mockDockAppRepository.fetchDockApps returns Service(Task(Result.answer(seqRepoDockApp)))
+
+    mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.answer(iterableCursorDockApps)))
 
     mockDockAppRepository.findDockAppById(dockAppId) returns Service(Task(Result.answer(Option(repoDockApp))))
 
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.answer(None)))
 
-    mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.answer(1)))
+    mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
   }
 
   trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
@@ -155,6 +159,8 @@ trait PersistenceServicesSpecification
     val exception = RepositoryException("Irrelevant message")
 
     mockAppRepository.fetchApps(any) returns Service(Task(Result.errata(exception)))
+
+    mockAppRepository.fetchIterableApps(any, any, any) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
@@ -238,6 +244,8 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.fetchDockApps returns Service(Task(Result.errata(exception)))
 
+    mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.errata(exception)))
+
     mockDockAppRepository.findDockAppById(dockAppId) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.errata(exception)))
@@ -300,6 +308,90 @@ class PersistenceServicesSpec
       val result = persistenceServices.fetchApps(OrderByName).run.run
 
       result must beLike[Result[Seq[App], PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchIterableApps" should {
+
+    "return a iterable of apps when pass OrderByName" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableApps(OrderByName, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass OrderByInstallDate" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableApps(OrderByInstallDate, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass OrderByCategory" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableApps(OrderByCategory, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableApps(OrderByName).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchIterableAppsByKeyword" should {
+
+    "return a iterable of apps when pass a keyword and OrderByName" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass a keyword and OrderByInstallDate" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a iterable of apps when pass a keyword and OrderByCategory" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName).run.run
+
+      result must beLike[Result[IterableApps, PersistenceServiceException]] {
         case Errata(e) => e.headOption must beSome.which {
           case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
             case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
@@ -377,7 +469,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -474,7 +566,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -498,7 +590,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -616,7 +708,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 
@@ -665,7 +757,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -689,7 +781,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -713,7 +805,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -820,7 +912,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 
@@ -869,7 +961,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -893,7 +985,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -1048,7 +1140,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 
@@ -1097,7 +1189,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -1121,7 +1213,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -1204,7 +1296,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 
@@ -1253,7 +1345,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 5
+          deleted shouldEqual items
       }
     }
 
@@ -1277,7 +1369,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(deleted) =>
-          deleted shouldEqual 1
+          deleted shouldEqual item
       }
     }
 
@@ -1307,6 +1399,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchDockApps.run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchDockApps" should {
+
+    "return a iterable of DockApp elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableDockApps.run.run
+
+      result must beLike {
+        case Answer(iter) =>
+          iter.moveToPosition(0) shouldEqual iterableDockApps.moveToPosition(0)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchIterableDockApps.run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -1360,7 +1476,7 @@ class PersistenceServicesSpec
 
       result must beLike {
         case Answer(updated) =>
-          updated shouldEqual 1
+          updated shouldEqual item
       }
     }
 
