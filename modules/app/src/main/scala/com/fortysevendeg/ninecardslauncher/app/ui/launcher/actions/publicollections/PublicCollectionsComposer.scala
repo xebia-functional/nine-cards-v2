@@ -82,10 +82,10 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
   lazy val shareCollection = Option(findView(TR.public_collections_item_share_collection))
 
   def bind(collection: SharedCollection, position: Int): Ui[_] = {
-    val d = new ShapeDrawable(new OvalShape)
-    d.getPaint.setColor(resGetColor(getRandomIndexColor))
+    val background = new ShapeDrawable(new OvalShape)
+    background.getPaint.setColor(resGetColor(getRandomIndexColor))
     val cardsRow1 = collection.resolvedPackages slice(0, appsByRow)
-    (iconContent <~ vBackground(d)) ~
+    (iconContent <~ vBackground(background)) ~
       (icon <~ ivSrc(iconCollectionDetail(collection.icon))) ~
       (appsIcons <~
         vgRemoveAllViews <~
