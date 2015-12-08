@@ -11,6 +11,7 @@
     <string name="loading">Loading</string>
     <string name="contactUsError">Oops! Please contact us if this problem persists</string>
     <string name="formFieldError">Is it possible to miss something in the form?</string><!-- Pending review language -->
+    <string name="sendTo">Send to</string>
     <string name="todo">TODO. Sorry. We are working in that</string>
 
     <!-- Menu -->

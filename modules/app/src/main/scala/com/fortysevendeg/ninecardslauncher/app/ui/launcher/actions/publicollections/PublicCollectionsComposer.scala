@@ -60,7 +60,8 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
   content: ViewGroup,
   clickListener: (SharedCollection) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+  with TypedFindView
+  with LauncherExecutor {
 
   val appsByRow = 5
 
@@ -98,7 +99,8 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
       (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag2(position)) ~
-      (addCollection <~ On.click(Ui(clickListener(collection))))
+      (addCollection <~ On.click(Ui(clickListener(collection)))) ~
+      (shareCollection <~ On.click(Ui(launchShare(collection.shareLink))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)
