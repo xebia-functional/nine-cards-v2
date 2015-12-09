@@ -8,6 +8,7 @@
     <string name="loading">Cargando</string>
     <string name="contactUsError">Opps! Por favor contacta con nosotros si este problema persiste</string>
     <string name="formFieldError">¿Es posible que falte algo en el formulario?</string>
+    <string name="buttonErrorReload">Recargar</string>
 
     <!-- Menu -->
     <string name="collectionsTitle">Colecciones</string>
@@ -38,7 +39,7 @@
 
     <string name="errorConnectingGoogle">Error conectando con Google. Por favor inténtelo más tarde</string>
     <string name="goTo9Cards">¡Entrar en 9 Cards!</string>
-    <string name="workingNotificationTitle">Espera un momento...</string>
+    <string name="workingNotificationTitle">Espera un momento…</string>
 
     <string name="downloadingAppsInfoMessage">Descargando información de tus apps</string>
     <string name="loadingAppsInfoMessage">Configurando tus apps</string>
