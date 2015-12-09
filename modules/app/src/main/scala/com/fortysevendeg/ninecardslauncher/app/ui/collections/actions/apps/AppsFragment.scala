@@ -49,7 +49,7 @@ class AppsFragment
 
   private[this] def loadApps(
     filter: AppsFilter,
-    reload: Boolean = false) = Task.fork(di.deviceProcess.getSavedApps(GetByName).run).resolveAsyncUi(
+    reload: Boolean = false): Unit = Task.fork(di.deviceProcess.getSavedApps(GetByName).run).resolveAsyncUi(
     onPreTask = () => showLoading,
     onResult = (apps: Seq[App]) => if (reload) {
       reloadAppsAdapter(getAppsByFilter(apps, filter), filter, category)

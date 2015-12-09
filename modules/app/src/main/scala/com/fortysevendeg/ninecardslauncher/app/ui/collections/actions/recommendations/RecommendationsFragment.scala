@@ -35,7 +35,7 @@ class RecommendationsFragment
     loadRecommendations()
   }
 
-  private[this] def loadRecommendations(): Unit =
+  private[this] def loadRecommendations(): Unit = {
     val task = if (nineCardCategory.isAppCategory) {
       di.recommendationsProcess.getRecommendedAppsByCategory(nineCardCategory, packages)
     } else {
@@ -45,6 +45,7 @@ class RecommendationsFragment
       onPreTask = () => showLoading,
       onResult = (recommendations: Seq[RecommendedApp]) => addRecommendations(recommendations, onInstallNowClick),
       onException = (_) => showError(R.string.error_loading_recommendations, loadRecommendations()))
+  }
 }
 
 object RecommendationsFragment {

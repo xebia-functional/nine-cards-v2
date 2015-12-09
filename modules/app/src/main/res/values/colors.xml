@@ -116,7 +116,7 @@
     <color name="color_selected_color_dialog">#ffffff</color>
 
     <!-- Error Dialog -->
-    <color name="error_dialog_text">#8f000000</color>
+    <color name="error_dialog_text">#33000000</color>
     <color name="error_dialog_button">#3F51B5</color>
     <color name="error_dialog_button_pressed">#344285</color>
     <color name="error_dialog_text_button">#ffffff</color>

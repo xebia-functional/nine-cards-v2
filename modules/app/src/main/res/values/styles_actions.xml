@@ -62,17 +62,19 @@
     </style>
 
     <style name="BaseActionsErrorMessage">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">@dimen/width_error_dialog_message</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/padding_default</item>
-        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textColor">@color/error_dialog_text</item>
     </style>
 
     <style name="BaseActionsErrorIcon">
         <item name="android:layout_width">@dimen/size_icon_error</item>
         <item name="android:layout_height">@dimen/size_icon_error</item>
-        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:layout_marginTop">@dimen/margin_top_error_dialog_image</item>
+        <item name="android:layout_marginBottom">@dimen/margin_bottom_error_dialog_image</item>
+        <item name="android:src">@drawable/placeholder_error</item>
     </style>
 
     <style name="BaseActionsErrorButton">
@@ -80,8 +82,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minWidth">@dimen/error_dialog_min_width_button</item>
         <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:textSize">@dimen/text_large</item>
         <item name="android:text">@string/buttonErrorReload</item>
-        <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/error_dialog_text_button</item>
     </style>
 

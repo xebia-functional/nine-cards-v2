@@ -124,7 +124,12 @@
 
     <dimen name="size_icon_error">144dp</dimen>
 
-    <dimen name="error_dialog_min_width_button">190dp</dimen>
+    <dimen name="error_dialog_min_width_button">174dp</dimen>
+
+    <dimen name="width_error_dialog_message">174dp</dimen>
+
+    <dimen name="margin_top_error_dialog_image">46dp</dimen>
+    <dimen name="margin_bottom_error_dialog_image">55dp</dimen>
 
     <!-- Fast Scroller -->
     <dimen name="fastscroller_text_size">40sp</dimen>
