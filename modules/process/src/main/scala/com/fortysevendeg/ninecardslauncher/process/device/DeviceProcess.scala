@@ -90,7 +90,7 @@ trait DeviceProcess {
     *         information about the contact
     * @throws ContactException if exist some problem to get the contacts
     */
-  def getIterableContactsByKeyWord(keyword: String): ServiceDef2[IterableContacts, ContactException]
+  def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport): ServiceDef2[IterableContacts, ContactException]
 
   /**
    * Get the installed apps and store them in the repository

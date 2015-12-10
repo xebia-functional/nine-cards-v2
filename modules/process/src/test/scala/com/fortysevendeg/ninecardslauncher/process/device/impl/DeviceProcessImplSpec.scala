@@ -141,6 +141,9 @@ trait DeviceProcessSpecification
     mockContactsServices.getIterableContactsWithPhone returns
       Service(Task(Result.answer(iterableCursorContact)))
 
+    mockContactsServices.getIterableContactsByKeyword(keyword) returns
+      Service(Task(Result.answer(iterableCursorContact)))
+
     mockContactsServices.findContactByLookupKey("lookupKey 1") returns
       Service(Task(Result.answer(contacts.head)))
     mockContactsServices.findContactByLookupKey("lookupKey 2") returns
@@ -423,6 +426,10 @@ trait DeviceProcessSpecification
     mockContactsServices.findContactByLookupKey(anyString) returns Service {
       Task(Errata(contactsServicesException))
     }
+
+    mockContactsServices.getIterableContactsByKeyword(keyword) returns Service {
+      Task(Errata(contactsServicesException))
+    }
   }
 
   trait WidgetsErrorScope {
@@ -697,6 +704,28 @@ class DeviceProcessImplSpec
     "returns ContactException when ContactsService fails getting contact" in
       new DeviceProcessScope with ContactsErrorScope {
         val result = deviceProcess.getContact(lookupKey)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          }
+        }
+      }
+
+  }
+
+  "Get Iterable Contacts by keyword" should {
+
+    "get contacts by keyword" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableContactsByKeyWord(keyword)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
+        }
+      }
+
+    "returns ContactException when ContactsService fails getting contacts" in
+      new DeviceProcessScope with ContactsErrorScope {
+        val result = deviceProcess.getIterableContactsByKeyWord(keyword)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]

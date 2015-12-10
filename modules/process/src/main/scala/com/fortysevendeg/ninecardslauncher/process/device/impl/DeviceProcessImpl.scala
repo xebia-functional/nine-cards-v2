@@ -144,7 +144,7 @@ class DeviceProcessImpl(
       contact <- contactsServices.findContactByLookupKey(lookupKey)
     } yield toContact(contact)).resolve[ContactException]
 
-  override def getIterableContactsByKeyWord(keyword: String) =
+  override def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport)  =
     (for {
       iter <- contactsServices.getIterableContactsByKeyword(keyword)
     } yield new IterableContacts(iter)).resolve[ContactException]

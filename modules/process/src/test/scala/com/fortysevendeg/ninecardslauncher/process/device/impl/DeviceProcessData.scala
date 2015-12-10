@@ -372,6 +372,8 @@ trait DeviceProcessData {
 
   val lookupKey = "lookupKey 1"
 
+  val keyword = "keyword"
+
   val contact = Contact(
     name = "Simple Contact",
     lookupKey = lookupKey,
