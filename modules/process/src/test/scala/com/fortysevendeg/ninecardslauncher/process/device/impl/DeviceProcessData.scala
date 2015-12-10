@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.drawable.Drawable
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.types._
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
@@ -9,11 +11,12 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp}
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
 import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallServices}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{WidgetDimensions, Widget, App, LastCallsContact, CallData}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
+import play.api.libs.json.Json
 
 trait DeviceProcessData {
 
@@ -582,4 +585,14 @@ trait DeviceProcessData {
       lastCallDate = date3,
       calls = callsData3))
 
+  val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val intent = Json.parse(intentStr).as[NineCardIntent]
+
+  val dockApp1 = DockApp(
+    id = 1,
+    name = packageName1,
+    dockType = AppDockType.name,
+    intent = intentStr,
+    imagePath = imagePath1,
+    position = 0)
 }

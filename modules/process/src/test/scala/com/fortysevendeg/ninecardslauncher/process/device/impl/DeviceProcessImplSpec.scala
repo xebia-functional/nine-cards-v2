@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
@@ -429,6 +430,21 @@ trait DeviceProcessSpecification
 
     mockContactsServices.fetchContactByPhoneNumber(any) returns Service {
       Task(Errata(contactsServicesException))
+    }
+  }
+
+  trait SaveDockAppScope {
+    self: DeviceProcessScope =>
+
+    mockPersistenceServices.addDockApp(any) returns
+      Service(Task(Result.answer(dockApp1)))
+  }
+
+  trait SaveDockAppErrorScope {
+    self: DeviceProcessScope =>
+
+    mockPersistenceServices.addDockApp(any) returns Service {
+      Task(Errata(persistenceServiceException))
     }
   }
 }
@@ -912,5 +928,27 @@ class DeviceProcessImplSpec
       }
 
   }
+  "Save Dock App" should {
+
+    "get path of icon stored" in
+      new DeviceProcessScope with SaveDockAppScope {
+        val result = deviceProcess.saveDockApp(packageName1, intent, imagePath1, 0)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultDockApp) =>
+            resultDockApp shouldEqual ((): Unit)
+        }
+      }
+
+    "returns ShortcutException when ImageServices fails storing the icon" in
+      new DeviceProcessScope with SaveDockAppErrorScope {
+        val result = deviceProcess.saveDockApp(packageName1, intent, imagePath1, 0)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
+          }
+        }
+      }
+  }
+
 
 }
