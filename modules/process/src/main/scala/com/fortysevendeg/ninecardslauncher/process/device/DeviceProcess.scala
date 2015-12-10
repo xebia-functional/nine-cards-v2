@@ -85,6 +85,14 @@ trait DeviceProcess {
   def getContact(lookupKey: String)(implicit context: ContextSupport): ServiceDef2[Contact, ContactException]
 
   /**
+    * Get the iterable contacts by keyword.
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
+    *         information about the contact
+    * @throws ContactException if exist some problem to get the contacts
+    */
+  def getIterableContactsByKeyWord(keyword: String): ServiceDef2[IterableContacts, ContactException]
+
+  /**
    * Get the installed apps and store them in the repository
    * @throws AppException if exist some problem to get the apps or storing them
    */
@@ -124,5 +132,7 @@ trait DeviceProcess {
     * @throws CallException if exist some problem to get the last calls
     */
   def getLastCalls(implicit context: ContextSupport): ServiceDef2[Seq[LastCallsContact], CallException]
+
+
 
 }
