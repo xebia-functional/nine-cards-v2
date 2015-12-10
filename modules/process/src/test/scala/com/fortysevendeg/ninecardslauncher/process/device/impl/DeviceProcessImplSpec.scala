@@ -107,6 +107,9 @@ trait DeviceProcessSpecification
     mockPersistenceServices.fetchIterableApps(any, any) returns
       Service(Task(Result.answer(iterableCursorApps)))
 
+    mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns
+      Service(Task(Result.answer(iterableCursorApps)))
+
     mockPersistenceServices.addApp(any[AddAppRequest]) returns(
       Service(Task(Result.answer(appsPersistence.head))),
       Service(Task(Result.answer(appsPersistence(1)))),
@@ -284,6 +287,10 @@ trait DeviceProcessSpecification
     }
 
     mockPersistenceServices.fetchIterableApps(any, any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns Service {
       Task(Errata(persistenceServiceException))
     }
 
@@ -779,7 +786,7 @@ class DeviceProcessImplSpec
 
   }
 
-  "Get Saved Apps" should {
+  "Get Iterable Saved Apps" should {
 
     "get iterable saved apps by name" in
       new DeviceProcessScope {
@@ -821,6 +828,49 @@ class DeviceProcessImplSpec
         }
       }
 
+  }
+
+  "Get Iterable Apps by keyword" should {
+
+    "get iterable apps ordered by name" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) =>
+            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        }
+        there was one(mockPersistenceServices).fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true)
+      }
+
+    "get iterable apps ordered by update date" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByInstallDate)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) =>
+            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        }
+        there was one(mockPersistenceServices).fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = false)
+      }
+
+    "get iterable apps ordered by category" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByCategory)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) =>
+            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        }
+        there was one(mockPersistenceServices).fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true)
+      }
+
+    "returns AppException if persistence service fails " in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
   }
 
   "Getting and saving installed apps" should {
