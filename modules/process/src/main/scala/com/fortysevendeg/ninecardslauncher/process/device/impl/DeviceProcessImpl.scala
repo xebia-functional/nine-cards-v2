@@ -60,6 +60,11 @@ class DeviceProcessImpl(
       iter <- persistenceServices.fetchIterableApps(toFetchAppOrder(orderBy), orderBy.ascending)
     } yield new IterableApps(iter)).resolve[AppException]
 
+  override def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport)  =
+    (for {
+      iter <- persistenceServices.fetchIterableAppsByKeyword(keyword, toFetchAppOrder(orderBy), orderBy.ascending)
+    } yield new IterableApps(iter)).resolve[AppException]
+
   override def saveInstalledApps(implicit context: ContextSupport) =
     (for {
       requestConfig <- apiUtils.getRequestConfig

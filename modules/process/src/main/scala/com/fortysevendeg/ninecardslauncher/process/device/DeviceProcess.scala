@@ -24,10 +24,19 @@ trait DeviceProcess {
   /**
     * Get iterable of saved apps from the database
     * @param orderBy indicates the order to fetch the apps
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.App]
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
+    *         information about the app
     * @throws AppException if exist some problem to get the apps
     */
   def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
+
+  /**
+    * Get the iterable apps by keyword.
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
+    *         information about the app
+    * @throws AppException if exist some problem to get the contacts
+    */
+  def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
 
   /**
    * Create the bitmaps from a sequence of packages
