@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.device
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 
 trait DeviceProcess {
@@ -107,5 +108,15 @@ trait DeviceProcess {
     * @throws CallException if exist some problem to get the last calls
     */
   def getLastCalls(implicit context: ContextSupport): ServiceDef2[Seq[LastCallsContact], CallException]
+
+  /**
+    * Get an installed app and store it in the repository
+    * @param packageName the packageName of the dock app to save
+    * @param intent the NineCardIntent of the dock app
+    * @param imagePath the path of the image of the dock app
+    * @param position the position in the dock
+    * @throws DockAppException if exist some problem to get the app or storing it
+    */
+  def saveDockApp(packageName:String, intent: NineCardIntent, imagePath: String, position: Int)(implicit context: ContextSupport): ServiceDef2[Unit, DockAppException]
 
 }

@@ -56,6 +56,7 @@ trait CollectionsComposer
       ("com.oneplus.camera", "com.oneplus.camera.OPCameraActivity"))
   )
 
+  // TODO The previous packagesForAppsDrawer and this cardsForAppsDrawer will be removed from here once we can get this info from the database
   lazy val cardsForAppsDrawer = packagesForAppsDrawer map { apps =>
     val dirPath = getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE).getPath
     val maybeApp = apps find { app =>

@@ -1,18 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.types._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, _}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
-import play.api.libs.json.Json
 
-trait Conversions {
+trait Conversions extends NineCardIntentConversions {
 
   val resourceUtils = new ResourceUtils
 
@@ -182,24 +180,6 @@ trait Conversions {
     numDownloads = card.numDownloads,
     notification = card.notification)
 
-  def toNineCardIntent(item: UnformedApp) = {
-    val intent = NineCardIntent(NineCardIntentExtras(
-      package_name = Option(item.packageName),
-      class_name = Option(item.className)))
-    intent.setAction(openApp)
-    intent.setClassName(item.packageName, item.className)
-    intent
-  }
-
-  def toNineCardIntent(app: Application) = {
-    val intent = NineCardIntent(NineCardIntentExtras(
-      package_name = Option(app.packageName),
-      class_name = Option(app.className)))
-    intent.setAction(openApp)
-    intent.setClassName(app.packageName, app.className)
-    intent
-  }
-
   def toAddCardRequestByContacts(items: Seq[UnformedContact]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestByContact(zipped._1, zipped._2))
 
@@ -221,25 +201,5 @@ trait Conversions {
       cardType = AppCardType,
       intent = toNineCardIntent(unformedApp),
       imagePath = unformedApp.imagePath)
-
-  def toNineCardIntent(item: UnformedContact): (NineCardIntent, String) = item match {
-    case UnformedContact(_, _, _, Some(info)) if info.phones.nonEmpty =>
-      val phone = info.phones.headOption map (_.number)
-      val intent = NineCardIntent(NineCardIntentExtras(tel = phone))
-      intent.setAction(openPhone)
-      (intent, PhoneCardType.name)
-    case UnformedContact(_, _, _, Some(info)) if info.emails.nonEmpty =>
-      val address = info.emails.headOption map (_.address)
-      val intent = NineCardIntent(NineCardIntentExtras(email = address))
-      intent.setAction(openEmail)
-      (intent, EmailCardType.name)
-    case _ => // TODO 9C-234 - We should create a new action for open contact and use it here
-      val intent = NineCardIntent(NineCardIntentExtras())
-      (intent, AppCardType.name)
-  }
-
-  def jsonToNineCardIntent(json: String) = Json.parse(json).as[NineCardIntent]
-
-  def nineCardIntentToJson(intent: NineCardIntent) = Json.toJson(intent).toString()
 
 }

@@ -1,16 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.process.device
 
-import android.content.{Intent, ComponentName}
+import android.content.{ComponentName, Intent}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.Dimensions._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{DockType, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
-import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayPackage, GooglePlayApp}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayApp, GooglePlayPackage}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallServices}
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ContactServices, ContactInfo => ContactInfoServices,
-  ContactEmail => ContactEmailServices, ContactPhone => ContactPhoneServices}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ContactServices, ContactEmail => ContactEmailServices, ContactInfo => ContactInfoServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
@@ -19,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => Wi
 
 import scala.util.Try
 
-trait DeviceConversions {
+trait DeviceConversions extends NineCardIntentConversions {
 
   val defaultDate = 0L
 
@@ -85,6 +86,14 @@ trait DeviceConversions {
       className = item.className,
       name = item.name,
       icon = item.resourceIcon)
+
+  def toAddDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): AddDockAppRequest =
+    AddDockAppRequest(
+      name = name,
+      dockType = dockType.name,
+      intent = nineCardIntentToJson(intent),
+      imagePath = imagePath,
+      position = position)
 
   def toShortcutSeq(items: Seq[ShortcutServices])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
 
