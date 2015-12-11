@@ -35,7 +35,7 @@ class ShortcutFragment
         runUi(unreveal())
         getActivity.startActivityForResult(shortcut.intent, shortcutAdded)
       }),
-      onException = (ex: Throwable) => showError(R.string.error_loading_shortcuts, loadShortCuts())
+      onException = (ex: Throwable) => showError(R.string.errorLoadingShortcuts, loadShortCuts())
     )
 
 }

@@ -105,11 +105,11 @@
     <string name="sms">SMS</string>
     <string name="emails">Email</string>
 
-    <string name="error_loading_contacts">Error loading contacts</string>
-    <string name="error_loading_apps">Error loading apps</string>
-    <string name="error_loading_shortcuts">Error loading shortcuts</string>
-    <string name="error_loading_recommendations">Error loading recommendations</string>
-    <string name="error_loading_private_collections">Error loading private collections</string>
+    <string name="errorLoadingContacts">Error loading contacts</string>
+    <string name="errorLoadingApps">Error loading apps</string>
+    <string name="errorLoadingShortcuts">Error loading shortcuts</string>
+    <string name="errorLoadingRecommendations">Error loading recommendations</string>
+    <string name="errorLoadingPrivateCollections">Error loading private collections</string>
 
     <!-- Recommendations Action -->
 

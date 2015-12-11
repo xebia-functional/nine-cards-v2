@@ -71,7 +71,7 @@ class ContactsFragment
           showDialog(contact)
         })
       },
-    onException = (ex: Throwable) => showError(R.string.error_loading_contacts, loadContacts(filter, reload))
+    onException = (ex: Throwable) => showError(R.string.errorLoadingContacts, loadContacts(filter, reload))
   )
 
   private[this] def showDialog(contact: Contact) = Task.fork(di.deviceProcess.getContact(contact.lookupKey).run).resolveAsync(

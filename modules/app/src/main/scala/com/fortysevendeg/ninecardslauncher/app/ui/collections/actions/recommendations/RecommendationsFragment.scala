@@ -44,7 +44,7 @@ class RecommendationsFragment
     Task.fork(task.run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (recommendations: Seq[RecommendedApp]) => addRecommendations(recommendations, onInstallNowClick),
-      onException = (_) => showError(R.string.error_loading_recommendations, loadRecommendations()))
+      onException = (_) => showError(R.string.errorLoadingRecommendations, loadRecommendations()))
   }
 }
 

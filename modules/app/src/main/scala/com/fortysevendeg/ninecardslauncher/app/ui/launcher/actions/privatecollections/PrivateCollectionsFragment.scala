@@ -39,7 +39,7 @@ class PrivateCollectionsFragment
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (privateCollections: Seq[PrivateCollection]) => addPrivateCollections(privateCollections, saveCollection),
-      onException = (ex: Throwable) => showError(R.string.error_loading_private_collections, loadPrivateCollections()))
+      onException = (ex: Throwable) => showError(R.string.errorLoadingPrivateCollections, loadPrivateCollections()))
 
 
   private[this] def saveCollection(privateCollection: PrivateCollection) =
