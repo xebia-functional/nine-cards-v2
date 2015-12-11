@@ -31,7 +31,7 @@ object S3 {
       sys.env.getOrElse("AWS_ACCESS_KEY_ID", ""),
       sys.env.getOrElse("AWS_SECRET_KEY", "")),
     expirationDate in generateLink := getExpirationDate,
-    mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-debug.apk", apkName)),
+    mappings in upload := Seq((target.value / "android" / "output" / "nine-cards-v2-release.apk", apkName)),
     keys in generateLink := Seq(apkName))
 
 
