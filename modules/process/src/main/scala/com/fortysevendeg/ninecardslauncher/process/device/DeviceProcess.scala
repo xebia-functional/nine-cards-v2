@@ -23,6 +23,23 @@ trait DeviceProcess {
   def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[Seq[App], AppException]
 
   /**
+    * Get iterable of saved apps from the database
+    * @param orderBy indicates the order to fetch the apps
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
+    *         information about the app
+    * @throws AppException if exist some problem to get the apps
+    */
+  def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
+
+  /**
+    * Get the iterable apps by keyword.
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
+    *         information about the app
+    * @throws AppException if exist some problem to get the contacts
+    */
+  def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
+
+  /**
    * Create the bitmaps from a sequence of packages
    * @throws CreateBitmapException if exist some problem creating the bitmaps
    */
@@ -61,12 +78,29 @@ trait DeviceProcess {
   def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
 
   /**
+    * Get the iterable contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
+    * and contacts with phone number
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
+    *         information about the contact
+    * @throws ContactException if exist some problem to get the contacts
+    */
+  def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): ServiceDef2[IterableContacts, ContactException]
+
+  /**
    * Get the contact and fill all their data
    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.Contact contains
    *         information about the contact
    * @throws ContactException if exist some problem to get the contacts
    */
   def getContact(lookupKey: String)(implicit context: ContextSupport): ServiceDef2[Contact, ContactException]
+
+  /**
+    * Get the iterable contacts by keyword.
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
+    *         information about the contact
+    * @throws ContactException if exist some problem to get the contacts
+    */
+  def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport): ServiceDef2[IterableContacts, ContactException]
 
   /**
    * Get the installed apps and store them in the repository

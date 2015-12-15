@@ -20,9 +20,7 @@ object IterableCursor {
       override def close(): Unit = c.close()
     }
 
-    private def implicitIter[T](f: => T) = implicitIterator[T] {
-      f
-    }
+    private def implicitIter[T](f: => T) = implicitIterator[T](f)
 
     def toIterator[T](conversionFunction: Cursor => T) = implicitIter {
       conversionFunction(c)
