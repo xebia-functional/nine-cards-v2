@@ -32,6 +32,10 @@ class RecommendationsFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
+    loadRecommendations()
+  }
+
+  private[this] def loadRecommendations(): Unit = {
     val task = if (nineCardCategory.isAppCategory) {
       di.recommendationsProcess.getRecommendedAppsByCategory(nineCardCategory, packages)
     } else {
@@ -40,8 +44,7 @@ class RecommendationsFragment
     Task.fork(task.run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (recommendations: Seq[RecommendedApp]) => addRecommendations(recommendations, onInstallNowClick),
-      onException = (_) => showGeneralError
-    )
+      onException = (_) => showError(R.string.errorLoadingRecommendations, loadRecommendations()))
   }
 }
 

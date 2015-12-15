@@ -115,6 +115,10 @@
     <color name="text_selected_color_dialog">#4285F4</color>
     <color name="color_selected_color_dialog">#ffffff</color>
 
+    <!-- Error Dialog -->
+    <color name="error_dialog_text">#33000000</color>
+    <color name="error_dialog_text_button">#ffffff</color>
+
     <!-- Theme Light -->
     <color name="search_background_tint_light">#ffffff</color>
     <color name="search_icons_tint_light">#646464</color>

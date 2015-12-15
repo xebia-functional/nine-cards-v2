@@ -21,9 +21,9 @@ import scalaz.concurrent.Task
 
 class AppsFragment
   extends BaseActionFragment
-    with AppsComposer
-    with UiExtensions
-    with NineCardIntentConversions {
+  with AppsComposer
+  with UiExtensions
+  with NineCardIntentConversions {
 
   val allApps = AllAppsCategory
 
@@ -48,7 +48,7 @@ class AppsFragment
 
   private[this] def loadApps(
     filter: AppsFilter,
-    reload: Boolean = false) = // TODO Use filter by category in ticket 9C-350
+    reload: Boolean = false): Unit = // TODO Use filter by category in ticket 9C-350
     Task.fork(di.deviceProcess.getIterableApps(GetByName).run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (apps: IterableApps) => if (reload) {
@@ -66,7 +66,7 @@ class AppsFragment
           runUi(unreveal())
         })
       },
-      onException = (ex: Throwable) => showGeneralError
+      onException = (ex: Throwable) => showError(R.string.errorLoadingApps, loadApps(filter, reload))
     )
 
 }

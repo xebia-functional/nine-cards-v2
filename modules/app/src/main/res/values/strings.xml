@@ -12,6 +12,7 @@
     <string name="contactUsError">Oops! Please contact us if this problem persists</string>
     <string name="formFieldError">Is it possible to miss something in the form?</string><!-- Pending review language -->
     <string name="todo">TODO. Sorry. We are working in that</string>
+    <string name="buttonErrorReload">Reload</string>
 
     <!-- Menu -->
     <string name="collectionsTitle">Collections</string>
@@ -103,6 +104,12 @@
     <string name="phones">Phone</string>
     <string name="sms">SMS</string>
     <string name="emails">Email</string>
+
+    <string name="errorLoadingContacts">Error loading contacts</string>
+    <string name="errorLoadingApps">Error loading apps</string>
+    <string name="errorLoadingShortcuts">Error loading shortcuts</string>
+    <string name="errorLoadingRecommendations">Error loading recommendations</string>
+    <string name="errorLoadingPrivateCollections">Error loading private collections</string>
 
     <!-- Recommendations Action -->
 

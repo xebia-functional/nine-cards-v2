@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFra
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
-import com.fortysevendeg.ninecardslauncher.process.device.{FavoriteContacts, ContactsFilter, ContactsWithPhoneNumber}
+import com.fortysevendeg.ninecardslauncher.process.device.{ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.Ui
@@ -50,7 +50,11 @@ trait ContactsComposer
       (scrollerLayout <~ fslColor(colorPrimary))
   }
 
-  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ (scrollerLayout <~ fslInvisible)
+  def showLoading: Ui[_] =
+    (loading <~ vVisible) ~
+      (recycler <~ vGone) ~
+      (scrollerLayout <~ fslInvisible) ~
+      hideError
 
   def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible) ~ (scrollerLayout <~ fslVisible)
 
