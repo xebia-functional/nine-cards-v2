@@ -1,9 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.commons
 
+import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactInfo => DeviceContactInfo,
-  ContactEmail => DeviceContactEmail, ContactPhone => DeviceContactPhone}
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollectionItem, UserCollection}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => DeviceContactEmail, ContactInfo => DeviceContactInfo, ContactPhone => DeviceContactPhone}
+import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
+import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem}
 
 trait Conversions {
 
@@ -53,5 +54,61 @@ trait Conversions {
     itemType = item.itemType,
     title = item.title,
     intent = item.intent)
+
+}
+
+trait NineCardIntentConversions {
+
+  def toNineCardIntent(app: App): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(app.packageName),
+      class_name = Option(app.className)))
+    intent.setAction(NineCardsIntentExtras.openApp)
+    intent.setClassName(app.packageName, app.className)
+    intent
+  }
+
+  def toNineCardIntent(app: RecommendedApp): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(app.packageName)))
+    intent.setAction(NineCardsIntentExtras.openNoInstalledApp)
+    intent
+  }
+
+  def phoneToNineCardIntent(tel: String): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      tel = Option(tel)))
+    intent.setAction(NineCardsIntentExtras.openPhone)
+    intent
+  }
+
+  def smsToNineCardIntent(tel: String): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      tel = Option(tel)))
+    intent.setAction(NineCardsIntentExtras.openSms)
+    intent
+  }
+
+  def emailToNineCardIntent(email: String): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      email = Option(email)))
+    intent.setAction(NineCardsIntentExtras.openEmail)
+    intent
+  }
+
+  def toNineCardIntent(intent: Intent): NineCardIntent = {
+    val i = new NineCardIntent(NineCardIntentExtras())
+    i.fill(intent)
+    i
+  }
+
+  def toNineCardIntent(packageName: String, className: String): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(packageName),
+      class_name = Option(className)))
+    intent.setAction(NineCardsIntentExtras.openApp)
+    intent.setClassName(packageName, className)
+    intent
+  }
 
 }
