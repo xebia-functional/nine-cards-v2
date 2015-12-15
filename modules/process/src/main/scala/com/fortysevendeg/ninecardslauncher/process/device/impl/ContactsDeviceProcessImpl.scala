@@ -42,6 +42,11 @@ trait ContactsDeviceProcessImpl {
       }
     } yield new IterableContacts(iter)).resolve[ContactException]
 
+  def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport)  =
+    (for {
+      iter <- contactsServices.getIterableContactsByKeyword(keyword)
+    } yield new IterableContacts(iter)).resolve[ContactException]
+
   def getContact(lookupKey: String)(implicit context: ContextSupport) =
     (for {
       contact <- contactsServices.findContactByLookupKey(lookupKey)
