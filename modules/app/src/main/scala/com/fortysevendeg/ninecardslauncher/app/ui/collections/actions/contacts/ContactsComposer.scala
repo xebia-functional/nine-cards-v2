@@ -1,16 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
+import android.support.v7.widget.SwitchCompat
 import android.support.v7.widget.Toolbar.LayoutParams
-import android.support.v7.widget.{RecyclerView, SwitchCompat}
+import android.view.Gravity
 import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, View, ViewGroup}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
@@ -18,15 +15,14 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.Cont
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{ItemHeadered, ItemHeaderedViewHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
-import com.fortysevendeg.ninecardslauncher.process.device.{ContactsFilter, ContactsWithPhoneNumber}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
+import com.fortysevendeg.ninecardslauncher.process.device.{FavoriteContacts, ContactsFilter, ContactsWithPhoneNumber}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Tweak, Ui}
+import macroid.Ui
 
 trait ContactsComposer
-  extends Styles
-  with HeaderGenerator {
+  extends Styles {
 
   self: TypedFindView with BaseActionFragment =>
 
@@ -66,9 +62,8 @@ trait ContactsComposer
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def generateContactsAdapter(contacts: Seq[Contact], clickListener: (Contact) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val contactsHeadered = generateContactsForList(contacts)
-    val adapter = new ContactsAdapter(contactsHeadered, clickListener, None)
+  def generateContactsAdapter(contacts: IterableContacts, clickListener: (Contact) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
+    val adapter = new ContactsAdapter(contacts, clickListener, None)
     showData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
@@ -77,13 +72,12 @@ trait ContactsComposer
       (scrollerLayout <~ fslLinkRecycler)
   }
 
-  def reloadContactsAdapter(contacts: Seq[Contact], filter: ContactsFilter)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val contactsHeadered = generateContactsForList(contacts)
+  def reloadContactsAdapter(contacts: IterableContacts, filter: ContactsFilter)(implicit uiContext: UiContext[_]): Ui[_] = {
     showData ~
       (getAdapter map { adapter =>
-        Ui(adapter.loadItems(contactsHeadered)) ~
+        Ui(adapter.swapIterator(contacts)) ~
           (rootContent <~ uiSnackbarShort(filter match {
-            case ContactsWithPhoneNumber => R.string.contactsWithPhoneNumber
+            case FavoriteContacts => R.string.favoriteContacts
             case _ => R.string.allContacts
           })) ~
           (scrollerLayout <~ fslReset) ~
@@ -98,28 +92,4 @@ trait ContactsComposer
     }
   }
 
-}
-
-case class ViewHolderContactLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
-  extends RecyclerView.ViewHolder(content)
-  with ItemHeaderedViewHolder[Contact]
-  with TypedFindView {
-
-  lazy val icon = Option(findView(TR.contact_item_icon))
-
-  lazy val name = Option(findView(TR.contact_item_name))
-
-  runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
-
-  override def bind(item: ItemHeadered[Contact], position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
-    item.item match {
-      case Some(contact) =>
-        val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
-        (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
-          (name <~ tvText(contactName)) ~
-          (content <~ vTag2(position))
-      case _ => Ui.nop
-    }
-
-  override def findViewById(id: Int): View = content.findViewById(id)
 }

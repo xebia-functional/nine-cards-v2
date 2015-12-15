@@ -96,7 +96,7 @@
     <!-- Contacts Action -->
 
     <string name="allContacts">All Contacts</string>
-    <string name="contactsWithPhoneNumber">Contacts with phone number</string>
+    <string name="favoriteContacts">Favorite Contacts</string>
 
     <string name="allApps">All Apps</string>
     <string name="appsByCategory"><xliff:g id="apps_category" example="Social apps">%1$s</xliff:g> apps</string>

@@ -17,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{IterableApps, IterableContacts, App, Contact}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
@@ -141,9 +141,9 @@ class LauncherActivity
 
   override def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
-    Task.fork(di.deviceProcess.getSavedApps(getAppOrder).run).resolveAsyncUi(
+    Task.fork(di.deviceProcess.getIterableApps(getAppOrder).run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
-      onResult = (apps: Seq[App]) => addApps(apps, getAppOrder, (app: App) => {
+      onResult = (apps: IterableApps) => addApps(apps, getAppOrder, (app: App) => {
         execute(toNineCardIntent(app))
       }, (app: App) => {
         launchSettings(app.packageName)
@@ -153,9 +153,9 @@ class LauncherActivity
 
   override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
     // TODO - Take into account the `contactsMenuOption` param
-    Task.fork(di.deviceProcess.getContacts(filter = AllContacts).run).resolveAsyncUi(
+    Task.fork(di.deviceProcess.getIterableContacts(filter = AllContacts).run).resolveAsyncUi(
       onPreTask = () => showDrawerLoading,
-      onResult = (contacts: Seq[Contact]) => addContacts(contacts, (contact: Contact) => {
+      onResult = (contacts: IterableContacts) => addContacts(contacts, (contact: Contact) => {
         execute(contact)
       })
     )
