@@ -41,7 +41,6 @@ class PrivateCollectionsFragment
       onPreTask = () => showLoading,
       onResult = (privateCollections: Seq[PrivateCollection]) => addPrivateCollections(privateCollections),
       onException = (ex: Throwable) => showGeneralError)
-  }
 
   override def saveCollection(privateCollection: PrivateCollection): Unit =
     Task.fork(addCollection(privateCollection).run).resolveAsyncUi(
