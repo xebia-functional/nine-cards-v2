@@ -35,11 +35,13 @@ class DeviceProcessImpl(
   with ImplicitsContactsServiceExceptions
   with DeviceConversions {
 
-  override def resetSavedItems() = super.resetSavedItems
+  override def resetSavedItems() = super.resetSavedItems()
 
   override def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) = super.getSavedApps(orderBy)
 
   override def saveInstalledApps(implicit context: ContextSupport) = super.saveInstalledApps
+
+  override def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) = super.getIterableApps(orderBy)
 
   override def saveApp(packageName: String)(implicit context: ContextSupport) = super.saveApp(packageName)
 
@@ -56,6 +58,8 @@ class DeviceProcessImpl(
   override def getFavoriteContacts(implicit context: ContextSupport) = super.getFavoriteContacts
 
   override def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) = super.getContacts(filter)
+
+  override def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) = super.getIterableContacts(filter)
 
   override def getContact(lookupKey: String)(implicit context: ContextSupport) = super.getContact(lookupKey)
 

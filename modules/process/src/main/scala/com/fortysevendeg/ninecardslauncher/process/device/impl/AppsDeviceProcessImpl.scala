@@ -6,6 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device._
+import com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
@@ -28,6 +29,11 @@ trait AppsDeviceProcessImpl {
     (for {
       apps <- persistenceServices.fetchApps(toFetchAppOrder(orderBy), orderBy.ascending)
     } yield apps map toApp).resolve[AppException]
+
+  def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
+    (for {
+      iter <- persistenceServices.fetchIterableApps(toFetchAppOrder(orderBy), orderBy.ascending)
+    } yield new IterableApps(iter)).resolve[AppException]
 
   def saveInstalledApps(implicit context: ContextSupport) =
     (for {

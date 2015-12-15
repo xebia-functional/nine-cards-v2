@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -9,20 +11,17 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.HeaderedItemAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.header.HeaderGenerator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.{FastScrollerLayoutTweak, SearchBoxesAnimatedViewTweak}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.DrawerRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, IterableApps, IterableContacts}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByInstallDate}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -35,7 +34,6 @@ import scala.concurrent.Future
 trait DrawerComposer
   extends DrawerStyles
   with ContextSupportProvider
-  with HeaderGenerator
   with SearchBoxAnimatedListener {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
@@ -107,13 +105,17 @@ trait DrawerComposer
     (searchPanel <~ vVisible) ~
       (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData))
 
-  def addApps(apps: Seq[App], getAppOrder: GetAppOrder, clickListener: (App) => Unit, longClickListener: (App) => Unit)
-    (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
-    swipeAdapter(new AppsAdapter(
-      initialSeq = generateHeaderList(apps, getAppOrder),
+  def addApps(apps: IterableApps, getAppOrder: GetAppOrder, clickListener: (App) => Unit, longClickListener: (App) => Unit)
+    (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
+    val appsAdapter = new AppsAdapter(
+      apps = apps,
       clickListener = clickListener,
-      longClickListener = Option(longClickListener)),
+      longClickListener = Option(longClickListener))
+    swipeAdapter(
+      adapter = appsAdapter,
+      layoutManager = appsAdapter.getLayoutManager,
       fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
+  }
 
   private[this] def getItemsCount: Int = (for {
     rv <- recycler
@@ -141,19 +143,22 @@ trait DrawerComposer
     case _ => true
   }
 
-  def addContacts(contacts: Seq[Contact], clickListener: (Contact) => Unit)
-    (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] =
-    swipeAdapter(new ContactsAdapter(
-      initialSeq = generateContactsForList(contacts),
+  def addContacts(contacts: IterableContacts, clickListener: (Contact) => Unit)
+    (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
+    val contactAdapter = new ContactsAdapter(
+      contacts = contacts,
       clickListener = clickListener,
-      longClickListener = None))
+      longClickListener = None)
+    swipeAdapter(contactAdapter, contactAdapter.getLayoutManager)
+  }
 
   private[this] def swipeAdapter(
-    adapter: HeaderedItemAdapter[_],
+    adapter: RecyclerView.Adapter[_],
+    layoutManager: LayoutManager,
     fastScrollerVisible: Boolean = true) =
     showDrawerData ~
       (recycler <~
-        rvLayoutManager(adapter.getLayoutManager) <~
+        rvLayoutManager(layoutManager) <~
         rvAdapter(adapter) <~
         rvScrollToTop) ~
       scrollerLayoutUi(fastScrollerVisible)
@@ -163,6 +168,5 @@ trait DrawerComposer
   } else {
     scrollerLayout <~ fslInvisible
   }
-
 
 }

@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.{CatchAll,
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.device._
+import com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ImplicitsContactsServiceExceptions}
 import rapture.core.Answer
@@ -31,6 +32,15 @@ trait ContactsDeviceProcessImpl {
         case ContactsWithPhoneNumber => contactsServices.getContactsWithPhone
       }
     } yield toContactSeq(contacts)).resolve[ContactException]
+
+  def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
+    (for {
+      iter <- filter match {
+        case AllContacts => contactsServices.getIterableContacts
+        case FavoriteContacts => contactsServices.getIterableFavoriteContacts
+        case ContactsWithPhoneNumber => contactsServices.getIterableContactsWithPhone
+      }
+    } yield new IterableContacts(iter)).resolve[ContactException]
 
   def getContact(lookupKey: String)(implicit context: ContextSupport) =
     (for {
