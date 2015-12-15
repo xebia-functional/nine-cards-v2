@@ -1,153 +1,73 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableApps, IterableContacts, LastCallsContact}
-import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.calls.CallsServices
-import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
+import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetsServices
-import rapture.core.Answer
-
-import scalaz.concurrent.Task
 
 class DeviceProcessImpl(
-  appsService: AppsServices,
-  apiServices: ApiServices,
-  persistenceServices: PersistenceServices,
-  shortcutsServices: ShortcutsServices,
-  contactsServices: ContactsServices,
-  imageServices: ImageServices,
-  widgetsServices: WidgetsServices,
-  callsServices: CallsServices)
+  val appsService: AppsServices,
+  val apiServices: ApiServices,
+  val persistenceServices: PersistenceServices,
+  val shortcutsServices: ShortcutsServices,
+  val contactsServices: ContactsServices,
+  val imageServices: ImageServices,
+  val widgetsServices: WidgetsServices,
+  val callsServices: CallsServices)
   extends DeviceProcess
+  with DeviceProcessDependencies
+  with AppsDeviceProcessImpl
+  with ContactsDeviceProcessImpl
+  with LastCallsDeviceProcessImpl
+  with ResetProcessImpl
+  with ShorcutsDeviceProcessImpl
+  with WidgetsDeviceProcessImpl
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
   with ImplicitsPersistenceServiceExceptions
   with ImplicitsContactsServiceExceptions
   with DeviceConversions {
 
-  val apiUtils = new ApiUtils(persistenceServices)
+  override def resetSavedItems() = super.resetSavedItems()
 
-  override def resetSavedItems() =
-    (for {
-      _ <- persistenceServices.deleteAllApps()
-      _ <- persistenceServices.deleteAllCollections()
-      _ <- persistenceServices.deleteAllCards()
-      _ <- persistenceServices.deleteAllDockApps()
-    } yield ()).resolve[ResetException]
+  override def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) = super.getSavedApps(orderBy)
 
-  override def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
-    (for {
-      apps <- persistenceServices.fetchApps(toFetchAppOrder(orderBy), orderBy.ascending)
-    } yield apps map toApp).resolve[AppException]
+  override def saveInstalledApps(implicit context: ContextSupport) = super.saveInstalledApps
 
-  override def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
-    (for {
-      iter <- persistenceServices.fetchIterableApps(toFetchAppOrder(orderBy), orderBy.ascending)
-    } yield new IterableApps(iter)).resolve[AppException]
+  override def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) = super.getIterableApps(orderBy)
 
   override def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport)  =
     (for {
       iter <- persistenceServices.fetchIterableAppsByKeyword(keyword, toFetchAppOrder(orderBy), orderBy.ascending)
     } yield new IterableApps(iter)).resolve[AppException]
+  override def saveApp(packageName: String)(implicit context: ContextSupport) = super.saveApp(packageName)
 
-  override def saveInstalledApps(implicit context: ContextSupport) =
-    (for {
-      requestConfig <- apiUtils.getRequestConfig
-      installedApps <- appsService.getInstalledApplications
-      googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
-      appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
-      apps = installedApps map { app =>
-        val path = appPaths.find { path =>
-          path.packageName.equals(app.packageName) && path.className.equals(app.className)
-        } map (_.path)
-        val category = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
-        toAddAppRequest(app, (category map (NineCardCategory(_))).getOrElse(Misc), path.getOrElse(""))
-      }
-      _ <- addApps(apps)
-    } yield ()).resolve[AppException]
+  override def deleteApp(packageName: String)(implicit context: ContextSupport) = super.deleteApp(packageName)
 
-  override def saveApp(packageName: String)(implicit context: ContextSupport) =
-    (for {
-      app <- appsService.getApplication(packageName)
-      appCategory <- getAppCategory(packageName)
-      appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
-      _ <- persistenceServices.addApp(toAddAppRequest(app, appCategory, appPackagePath.path))
-    } yield ()).resolve[AppException]
+  override def updateApp(packageName: String)(implicit context: ContextSupport) = super.updateApp(packageName)
 
-  override def deleteApp(packageName: String)(implicit context: ContextSupport) =
-    (for {
-      _ <- persistenceServices.deleteAppByPackage(packageName)
-    } yield ()).resolve[AppException]
+  override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport) = super.createBitmapsFromPackages(packages)
 
-  override def updateApp(packageName: String)(implicit context: ContextSupport) =
-    (for {
-      app <- appsService.getApplication(packageName)
-      Some(appPersistence) <- persistenceServices.findAppByPackage(packageName)
-      appCategory <- getAppCategory(packageName)
-      appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
-      _ <- persistenceServices.updateApp(toUpdateAppRequest(appPersistence.id, app, appCategory, appPackagePath.path))
-    } yield ()).resolve[AppException]
+  override def getAvailableShortcuts(implicit context: ContextSupport) = super.getAvailableShortcuts
 
-  override def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport) =
-    (for {
-      requestConfig <- apiUtils.getRequestConfig
-      response <- apiServices.googlePlayPackages(packages)(requestConfig)
-      _ <- createBitmapsFromAppWebSite(toAppWebSiteSeq(response.packages))
-    } yield ()).resolve[CreateBitmapException]
+  override def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) = super.saveShortcutIcon(name, bitmap)
 
-  override def getAvailableShortcuts(implicit context: ContextSupport) =
-    (for {
-      shortcuts <- shortcutsServices.getShortcuts
-    } yield toShortcutSeq(shortcuts)).resolve[ShortcutException]
+  override def getFavoriteContacts(implicit context: ContextSupport) = super.getFavoriteContacts
 
-  override def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) =
-    (for {
-      saveBitmapPath <- imageServices.saveBitmap(SaveBitmap(name, bitmap))
-    } yield saveBitmapPath.path).resolve[ShortcutException]
+  override def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) = super.getContacts(filter)
 
-  override def getFavoriteContacts(implicit context: ContextSupport) =
-    (for {
-      favoriteContacts <- contactsServices.getFavoriteContacts
-      filledFavoriteContacts <- fillContacts(favoriteContacts)
-    } yield toContactSeq(filledFavoriteContacts)).resolve[ContactException]
+  override def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) = super.getIterableContacts(filter)
 
-  override def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
-    (for {
-      contacts <- filter match {
-        case AllContacts => contactsServices.getContacts
-        case FavoriteContacts => contactsServices.getFavoriteContacts
-        case ContactsWithPhoneNumber => contactsServices.getContactsWithPhone
-      }
-    } yield toContactSeq(contacts)).resolve[ContactException]
+  override def getContact(lookupKey: String)(implicit context: ContextSupport) = super.getContact(lookupKey)
 
-  override def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
-    (for {
-      iter <- filter match {
-        case AllContacts => contactsServices.getIterableContacts
-        case FavoriteContacts => contactsServices.getIterableFavoriteContacts
-        case ContactsWithPhoneNumber => contactsServices.getIterableContactsWithPhone
-      }
-    } yield new IterableContacts(iter)).resolve[ContactException]
-
-  override def getContact(lookupKey: String)(implicit context: ContextSupport) =
-    (for {
-      contact <- contactsServices.findContactByLookupKey(lookupKey)
-    } yield toContact(contact)).resolve[ContactException]
+  override def getWidgets(implicit context: ContextSupport) = super.getWidgets
 
   override def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport)  =
     (for {
@@ -229,5 +149,6 @@ class DeviceProcessImpl(
     val tasks = contacts map (c => contactsServices.findContactByLookupKey(c.lookupKey).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[ContactsServiceException](list.collect { case Answer(contact) => contact }))
   }.resolve[ContactException]
+  override def getLastCalls(implicit context: ContextSupport) = super.getLastCalls
 
 }
