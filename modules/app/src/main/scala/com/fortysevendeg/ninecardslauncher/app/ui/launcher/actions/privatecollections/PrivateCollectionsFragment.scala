@@ -33,6 +33,10 @@ class PrivateCollectionsFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
+    loadPrivateCollections()
+  }
+
+  private[this] def loadPrivateCollections(): Unit =
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (privateCollections: Seq[PrivateCollection]) => addPrivateCollections(privateCollections),

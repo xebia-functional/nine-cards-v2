@@ -1,19 +1,22 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.drawable.Drawable
+import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.device.types._
+import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepoApp}
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.commons._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models._
-import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
-import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
 import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallServices}
-import com.fortysevendeg.ninecardslauncher.process.device.models.{WidgetDimensions, Widget, App, LastCallsContact, CallData}
+import com.fortysevendeg.ninecardslauncher.services.commons._
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
+import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, IterableApps => ServiceIterableApps}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
+import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
 
 trait DeviceProcessData {
 
@@ -369,6 +372,8 @@ trait DeviceProcessData {
 
   val lookupKey = "lookupKey 1"
 
+  val keyword = "keyword"
+
   val contact = Contact(
     name = "Simple Contact",
     lookupKey = lookupKey,
@@ -582,4 +587,31 @@ trait DeviceProcessData {
       lastCallDate = date3,
       calls = callsData3))
 
+  val iterableCursorContact = new IterableCursor[Contact] {
+    override def count(): Int = contacts.length
+
+    override def moveToPosition(pos: Int): Contact = contacts(pos)
+
+    override def close(): Unit = ()
+  }
+
+  val iterableContact = new IterableContacts(iterableCursorContact)
+
+  val mockIterableCursor = new IterableCursor[RepoApp] {
+    override def count(): Int = 0
+
+    override def moveToPosition(pos: Int): RepoApp = javaNull
+
+    override def close(): Unit = ()
+  }
+
+  val iterableCursorApps = new ServiceIterableApps(mockIterableCursor) {
+    override def count(): Int = appsPersistence.length
+
+    override def moveToPosition(pos: Int): AppPersistence = appsPersistence(pos)
+
+    override def close(): Unit = ()
+  }
+
+  val iterableApps = new IterableApps(iterableCursorApps)
 }
