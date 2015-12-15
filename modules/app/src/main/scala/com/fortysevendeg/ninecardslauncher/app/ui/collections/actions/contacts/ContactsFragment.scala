@@ -61,7 +61,7 @@ class ContactsFragment
 
   private[this] def loadContacts(
     filter: ContactsFilter,
-    reload: Boolean = false) = Task.fork(di.deviceProcess.getIterableContacts(filter).run).resolveAsyncUi(
+    reload: Boolean = false): Unit = Task.fork(di.deviceProcess.getIterableContacts(filter).run).resolveAsyncUi(
     onPreTask = () => showLoading,
     onResult = (contacts: IterableContacts) => if (reload) {
       reloadContactsAdapter(contacts, filter)

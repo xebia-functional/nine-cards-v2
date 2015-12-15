@@ -48,7 +48,7 @@ class AppsFragment
 
   private[this] def loadApps(
     filter: AppsFilter,
-    reload: Boolean = false) = // TODO Use filter by category in ticket 9C-350
+    reload: Boolean = false): Unit = // TODO Use filter by category in ticket 9C-350
     Task.fork(di.deviceProcess.getIterableApps(GetByName).run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (apps: IterableApps) => if (reload) {
