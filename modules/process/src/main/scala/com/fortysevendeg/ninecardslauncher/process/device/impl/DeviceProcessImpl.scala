@@ -79,7 +79,9 @@ class DeviceProcessImpl(
 
   override def getLastCalls(implicit context: ContextSupport) = super.getLastCalls
 
-  override def saveDockApp(packageName: String, intent: NineCardIntent, imagePath: String, position: Int)(implicit context: ContextSupport) =
+  override def saveDockApp(packageName: String, intent: NineCardIntent, imagePath: String, position: Int) =
     super.saveDockApp(packageName, intent, imagePath, position)
+
+  override def getDockApps = super.getDockApps
 
 }

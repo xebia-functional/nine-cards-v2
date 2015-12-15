@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallSe
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ContactServices, ContactEmail => ContactEmailServices, ContactInfo => ContactInfoServices, ContactPhone => ContactPhoneServices}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp => DockAppPersistence}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
 
@@ -94,6 +94,14 @@ trait DeviceConversions extends NineCardIntentConversions {
       intent = nineCardIntentToJson(intent),
       imagePath = imagePath,
       position = position)
+
+  def toDockApp(app: DockAppPersistence): DockApp = DockApp(
+    name = app.name,
+    dockType = DockType(app.dockType),
+    intent = jsonToNineCardIntent(app.intent),
+    imagePath = app.imagePath,
+    position = app.position
+  )
 
   def toShortcutSeq(items: Seq[ShortcutServices])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
 

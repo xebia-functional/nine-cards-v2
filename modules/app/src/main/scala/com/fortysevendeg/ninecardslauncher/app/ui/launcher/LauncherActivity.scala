@@ -33,6 +33,7 @@ class LauncherActivity
   with TypedFindView
   with ActionsScreenListener
   with LauncherComposer
+  with LauncherTasks
   with SystemBarsTint
   with NineCardIntentConversions
   with DrawerListeners {
@@ -56,14 +57,13 @@ class LauncherActivity
     setContentView(R.layout.launcher_activity)
     runUi(initUi ~ initDrawerUi)
     initAllSystemBarsTint
-    generateCollections()
+    loadCollectionsAndDockApps()
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
     (requestCode, resultCode) match {
-      case (request, result) if result == Activity.RESULT_OK && request == wizard =>
-        generateCollections()
+      case (`wizard`, Activity.RESULT_OK) => loadCollectionsAndDockApps()
       case _ =>
     }
   }
@@ -112,13 +112,13 @@ class LauncherActivity
     }
   }
 
-  private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+  private[this] def loadCollectionsAndDockApps(): Unit = Task.fork(getLauncherApps.run).resolveAsyncUi(
     onResult = {
       // Check if there are collections in DB, if there aren't we go to wizard
-      case Nil => goToWizard()
-      case collections =>
+      case (Nil, Nil) => goToWizard()
+      case (collections, dockApps) =>
         getUserInfo()
-        createCollections(collections)
+        createCollections(collections, dockApps)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading

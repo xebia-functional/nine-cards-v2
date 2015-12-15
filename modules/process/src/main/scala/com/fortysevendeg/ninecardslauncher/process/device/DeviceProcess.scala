@@ -151,6 +151,13 @@ trait DeviceProcess {
     * @param position the position in the dock
     * @throws DockAppException if exist some problem to get the app or storing it
     */
-  def saveDockApp(packageName:String, intent: NineCardIntent, imagePath: String, position: Int)(implicit context: ContextSupport): ServiceDef2[Unit, DockAppException]
+  def saveDockApp(packageName:String, intent: NineCardIntent, imagePath: String, position: Int): ServiceDef2[Unit, DockAppException]
+
+  /**
+    * Get the docks apps available for user
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp]
+    * @throws DockAppException if exist some problem to get the app or storing it
+    */
+  def getDockApps: ServiceDef2[Seq[DockApp], DockAppException]
 
 }

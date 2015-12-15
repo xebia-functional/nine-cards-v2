@@ -1,8 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
 
-import java.io.File
-
-import android.content.{Context, Intent}
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
@@ -19,8 +17,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, LauncherWorkSpaces}
@@ -29,8 +27,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -45,63 +43,6 @@ trait CollectionsComposer
   with LauncherExecutor {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint =>
-
-  // TODO For now, we always use 4 applications in app drawer panel
-  lazy val packagesForAppsDrawer = Seq(
-    Seq(("com.google.android.talk", "com.google.android.talk.SigningInActivity")),
-    Seq(("com.google.android.gm", "com.google.android.gm.ConversationListActivityGmail")),
-    Seq(("com.android.chrome", "com.google.android.apps.chrome.Main")),
-    Seq(
-      ("com.google.android.GoogleCamera", "com.android.camera.CameraLauncher"),
-      ("com.oneplus.camera", "com.oneplus.camera.OPCameraActivity"))
-  )
-
-  // TODO The previous packagesForAppsDrawer and this cardsForAppsDrawer will be removed from here once we can get this info from the database
-  lazy val cardsForAppsDrawer = packagesForAppsDrawer map { apps =>
-    val dirPath = getDir(getResources.getString(R.string.icons_apps_folder), Context.MODE_PRIVATE).getPath
-    val maybeApp = apps find { app =>
-      val (packageName, className) = app
-      val imagePath = s"$dirPath/${packageName.toLowerCase.replace(".", "_")}_${className.toLowerCase.replace(".", "_")}"
-      new File(imagePath).exists()
-    }
-    maybeApp map { app =>
-      val (packageName, className) = app
-      val imagePath = s"$dirPath/${packageName.toLowerCase.replace(".", "_")}_${className.toLowerCase.replace(".", "_")}"
-      val intent = NineCardIntent(NineCardIntentExtras(
-        package_name = Option(packageName),
-        class_name = Option(className)))
-      intent.setAction(NineCardsIntentExtras.openApp)
-      intent.setClassName(packageName, className)
-      Card(
-        id = 0,
-        position = 0,
-        term = "Doesn't matter",
-        packageName = Option(packageName),
-        cardType = AppCardType,
-        intent = intent,
-        imagePath = imagePath
-      )
-    } getOrElse {
-      val packageName = "com.fortysevendeg.ninecardslauncher2"
-      val className = "com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity"
-      val intent = NineCardIntent(NineCardIntentExtras(
-        package_name = Option(packageName),
-        class_name = Option(className)))
-      intent.setAction(NineCardsIntentExtras.openApp)
-      intent.setClassName(packageName, className)
-      val imagePath = s"$dirPath/${packageName.toLowerCase.replace(".", "_")}_${className.toLowerCase.replace(".", "_")}"
-      Card(
-        id = 0,
-        position = 0,
-        term = "Doesn't matter",
-        packageName = Option(packageName),
-        cardType = AppCardType,
-        intent = intent,
-        imagePath = imagePath
-      )
-    }
-
-  }
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
@@ -148,6 +89,8 @@ trait CollectionsComposer
 
   lazy val actionFragmentContent = Option(findView(TR.action_fragment_content))
 
+  var dockApps: Seq[DockApp] = Seq.empty
+
   def showMessage(message: Int): Ui[_] = drawerLayout <~ uiSnackbarShort(message)
 
   def updateBarsInFabMenuShow: Ui[_] = Ui.nop
@@ -157,8 +100,10 @@ trait CollectionsComposer
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
   def createCollections(
-    collections: Seq[Collection])
-    (implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] =
+    collections: Seq[Collection],
+    apps: Seq[DockApp])
+    (implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
+    dockApps = apps
     (loading <~ vGone) ~
       (workspaces <~
         lwsData(collections, selectedPageDefault) <~
@@ -172,8 +117,9 @@ trait CollectionsComposer
             }))
         }
         )) ~
-      (appDrawerPanel <~ fillAppDrawer(collections)) ~
+      (appDrawerPanel <~ fillAppDrawer) ~
       createPager(selectedPageDefault)
+  }
 
   def userInfoMenu(userInfo: UserInfo)(implicit uiContext: UiContext[_]): Ui[_] =
     (menuName <~ tvText(userInfo.email)) ~
@@ -182,10 +128,8 @@ trait CollectionsComposer
   def uiActionCollection(action: UiAction, collection: Collection)
     (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     action match {
-      case Add =>
-        (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
-      case Remove =>
-        (workspaces <~ lwsRemoveCollection(collection)) ~ reloadPagerAndActiveLast
+      case Add => (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
+      case Remove => (workspaces <~ lwsRemoveCollection(collection)) ~ reloadPagerAndActiveLast
     }
 
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
@@ -211,8 +155,9 @@ trait CollectionsComposer
 
   protected def clickAppDrawerItem(view: View)(implicit context: ActivityContextWrapper): Ui[_] = Ui {
     val position = Int.unbox(view.getTag(R.id.app_drawer_position))
-    val card = cardsForAppsDrawer(position)
-    execute(card.intent)
+    dockApps.lift(position) foreach { app =>
+      execute(app.intent)
+    }
   }
 
   protected def getItemsForFabMenu(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]) = Seq(
@@ -248,12 +193,11 @@ trait CollectionsComposer
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
-  private[this] def fillAppDrawer(collections: Seq[Collection])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = Transformer {
-    case i: ImageView if tagEquals(i, R.id.`type`, LauncherTags.app) => {
+  private[this] def fillAppDrawer(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = Transformer {
+    case i: ImageView if tagEquals(i, R.id.`type`, LauncherTags.app) =>
       val position = Int.unbox(i.getTag(R.id.app_drawer_position))
-      val card = cardsForAppsDrawer(position)
-      i <~ ivUri(card.imagePath)
-    }
+      val dockApp = dockApps(position)
+      i <~ ivUri(dockApp.imagePath)
   }
 
   def reloadPager(currentPage: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {

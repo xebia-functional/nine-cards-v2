@@ -19,7 +19,7 @@ case object ContactDockType extends DockType {
 }
 
 
-object CollectionType {
+object DockType {
 
   val dockTypes = Seq(AppDockType, CollectionDockType, ContactDockType)
 
