@@ -2,13 +2,10 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => DeviceContactEmail, ContactInfo => DeviceContactInfo, ContactPhone => DeviceContactPhone}
-import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem}
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest, PrivateCard, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => DeviceContactEmail, ContactInfo => DeviceContactInfo, ContactPhone => DeviceContactPhone}
+import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.ninecardslauncher.process.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem}
@@ -116,6 +113,13 @@ trait NineCardIntentConversions {
       class_name = Option(app.className)))
     intent.setAction(NineCardsIntentExtras.openApp)
     intent.setClassName(app.packageName, app.className)
+    intent
+  }
+
+  def toNineCardIntent(app: SharedCollectionPackage): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(app.packageName)))
+    intent.setAction(NineCardsIntentExtras.openNoInstalledApp)
     intent
   }
 
