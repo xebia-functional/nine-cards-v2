@@ -8,12 +8,11 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiExtensions, FragmentUiContext, NineCardIntentConversions, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, NineCardIntentConversions, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, NineCardCategory, Game}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps}
 import com.fortysevendeg.ninecardslauncher.process.types.AppCardType
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -49,34 +48,26 @@ class AppsFragment
 
   private[this] def loadApps(
     filter: AppsFilter,
-    reload: Boolean = false) = Task.fork(di.deviceProcess.getSavedApps(GetByName).run).resolveAsyncUi(
-    onPreTask = () => showLoading,
-    onResult = (apps: Seq[App]) => if (reload) {
-      reloadAppsAdapter(getAppsByFilter(apps, filter), filter, category)
-    } else {
-      generateAppsAdapter(getAppsByFilter(apps, filter), filter, category, (app: App) => {
-        val card = AddCardRequest(
-          term = app.name,
-          packageName = Option(app.packageName),
-          cardType = AppCardType,
-          intent = toNineCardIntent(app),
-          imagePath = app.imagePath
-        )
-        activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
-        runUi(unreveal())
-      })
-    },
-    onException = (ex: Throwable) => showGeneralError
-  )
-
-  def getAppsByFilter(apps: Seq[App], filter: AppsFilter) = filter match {
-    case AllApps => apps
-    case AppsByCategory =>
-      category match {
-        case Game => apps filter(app => gamesCategories contains app.category)
-        case c => apps filter(_.category.equals(c))
-      }
-  }
+    reload: Boolean = false): Unit = // TODO Use filter by category in ticket 9C-350
+    Task.fork(di.deviceProcess.getIterableApps(GetByName).run).resolveAsyncUi(
+      onPreTask = () => showLoading,
+      onResult = (apps: IterableApps) => if (reload) {
+        reloadAppsAdapter(apps, filter, category)
+      } else {
+        generateAppsAdapter(apps, filter, category, (app: App) => {
+          val card = AddCardRequest(
+            term = app.name,
+            packageName = Option(app.packageName),
+            cardType = AppCardType,
+            intent = toNineCardIntent(app),
+            imagePath = app.imagePath
+          )
+          activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
+          runUi(unreveal())
+        })
+      },
+      onException = (ex: Throwable) => showError(R.string.errorLoadingApps, loadApps(filter, reload))
+    )
 
 }
 

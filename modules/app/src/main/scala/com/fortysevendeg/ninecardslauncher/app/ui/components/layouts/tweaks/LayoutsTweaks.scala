@@ -91,7 +91,7 @@ object AnimatedWorkSpacesTweaks {
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] { view =>
     view.listener.startScroll = listener.startScroll
     view.listener.endScroll = listener.endScroll
-    view.listener.onClick = listener.onClick
+    view.listener.onLongClick = listener.onLongClick
   }
 
   def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))

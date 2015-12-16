@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.speech.RecognizerIntent
 import android.widget.Toast
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
@@ -79,6 +80,18 @@ trait LauncherExecutor {
       case _ => showError
     }
   }
+
+  def launchShare(text: String)(implicit activityContext: ActivityContextWrapper) =
+    for {
+      activity <- activityContext.original.get
+    } yield {
+      val sendIntent = new Intent()
+      sendIntent.setAction(Intent.ACTION_SEND)
+      sendIntent.putExtra(Intent.EXTRA_TEXT, text)
+      sendIntent.setType("text/plain")
+      val chooserIntent = Intent.createChooser(sendIntent, resGetString(R.string.sendTo))
+      tryOrError(activity, chooserIntent)
+    }
 
   def launchSearch(implicit activityContext: ActivityContextWrapper) =
     for {

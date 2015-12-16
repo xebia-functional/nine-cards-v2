@@ -8,6 +8,8 @@
     <string name="loading">Cargando</string>
     <string name="contactUsError">Opps! Por favor contacta con nosotros si este problema persiste</string>
     <string name="formFieldError">¿Es posible que falte algo en el formulario?</string>
+    <string name="sendTo">Enviar a</string>
+    <string name="buttonErrorReload">Recargar</string>
 
     <!-- Menu -->
     <string name="collectionsTitle">Colecciones</string>
@@ -38,7 +40,7 @@
 
     <string name="errorConnectingGoogle">Error conectando con Google. Por favor inténtelo más tarde</string>
     <string name="goTo9Cards">¡Entrar en 9 Cards!</string>
-    <string name="workingNotificationTitle">Espera un momento...</string>
+    <string name="workingNotificationTitle">Espera un momento…</string>
 
     <string name="downloadingAppsInfoMessage">Descargando información de tus apps</string>
     <string name="loadingAppsInfoMessage">Configurando tus apps</string>
@@ -91,7 +93,7 @@
     <!-- Contacts Action -->
 
     <string name="allContacts">Todos los contacts</string>
-    <string name="contactsWithPhoneNumber">Contactos con número de teléfono</string>
+    <string name="favoriteContacts">Favoritos</string>
 
     <string name="allApps">Todas las aplicaciones</string>
     <string name="appsByCategory">Aplicaciones de %1$s</string>
@@ -99,6 +101,12 @@
     <string name="phones">Teléfono</string>
     <string name="sms">SMS</string>
     <string name="emails">Email</string>
+
+    <string name="errorLoadingContacts">Error cargando contactos</string>
+    <string name="errorLoadingApps">Error cargando aplicaciones</string>
+    <string name="errorLoadingShortcuts">Error cargando accesos directos</string>
+    <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>
+    <string name="errorLoadingPrivateCollections">Error cargando colleciones privadas</string>
 
     <!-- Recommendations Action -->
 
