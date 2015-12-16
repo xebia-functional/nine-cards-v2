@@ -31,20 +31,4 @@ trait PrivateCollectionsTasks
       cards <- di.collectionProcess.addCards(collection.id, privateCollection.cards map toAddCollectionRequest)
     } yield collection.copy(cards = cards)
 
-  private[this] def toAddCollectionRequest(privateCollection: PrivateCollection): AddCollectionRequest =
-    AddCollectionRequest(
-      name = privateCollection.name,
-      collectionType = privateCollection.collectionType,
-      icon = privateCollection.icon,
-      themedColorIndex = privateCollection.themedColorIndex,
-      appsCategory = privateCollection.appsCategory)
-
-  private[this] def toAddCollectionRequest(privateCard: PrivateCard): AddCardRequest =
-    AddCardRequest(
-      term = privateCard.term,
-      packageName = privateCard.packageName,
-      cardType = privateCard.cardType,
-      intent = privateCard.intent,
-      imagePath = privateCard.imagePath)
-
 }

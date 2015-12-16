@@ -8,6 +8,7 @@
     <string name="loading">Cargando</string>
     <string name="contactUsError">Opps! Por favor contacta con nosotros si este problema persiste</string>
     <string name="formFieldError">¿Es posible que falte algo en el formulario?</string>
+    <string name="sendTo">Enviar a</string>
     <string name="buttonErrorReload">Recargar</string>
 
     <!-- Menu -->

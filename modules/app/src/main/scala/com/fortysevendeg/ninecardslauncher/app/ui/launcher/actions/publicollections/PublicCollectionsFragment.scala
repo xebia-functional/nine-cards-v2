@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -9,18 +9,20 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, NineCardIntentConversions, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
-import com.fortysevendeg.ninecardslauncher.process.collection.PrivateCollection
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 
 import scalaz.concurrent.Task
 
-class PrivateCollectionsFragment
+class PublicCollectionsFragment
   extends BaseActionFragment
-  with PrivateCollectionsComposer
+  with PublicCollectionsComposer
   with NineCardIntentConversions
-  with PrivateCollectionsTasks
-  with PrivateCollectionsListener {
+  with PublicCollectionsListener
+  with PublicCollectionsTasks {
 
   implicit lazy val di: Injector = new Injector
 
@@ -33,17 +35,17 @@ class PrivateCollectionsFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
-    loadPrivateCollections()
+    loadPublicCollections(Communication, TopSharedCollection)
   }
 
-  private[this] def loadPrivateCollections(): Unit =
-    Task.fork(getPrivateCollections.run).resolveAsyncUi(
+  override def loadPublicCollections(category: NineCardCategory, typeSharedCollection: TypeSharedCollection): Unit =
+    Task.fork(getSharedCollections(category, typeSharedCollection).run).resolveAsyncUi(
       onPreTask = () => showLoading,
-      onResult = (privateCollections: Seq[PrivateCollection]) => addPrivateCollections(privateCollections),
+      onResult = (sharedCollections: Seq[SharedCollection]) => addPublicCollections(sharedCollections),
       onException = (ex: Throwable) => showGeneralError)
 
-  override def saveCollection(privateCollection: PrivateCollection): Unit =
-    Task.fork(addCollection(privateCollection).run).resolveAsyncUi(
+  override def saveSharedCollection(sharedCollection: SharedCollection): Unit =
+    Task.fork(addCollection(sharedCollection).run).resolveAsyncUi(
       onResult = (c) => {
         activity[LauncherActivity] map (_.addCollection(c))
         unreveal()

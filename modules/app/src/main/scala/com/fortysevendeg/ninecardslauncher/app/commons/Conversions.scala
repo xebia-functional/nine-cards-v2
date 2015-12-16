@@ -1,11 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.commons
 
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactInfo => DeviceContactInfo,
-  ContactEmail => DeviceContactEmail, ContactPhone => DeviceContactPhone}
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollectionItem, UserCollection}
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest, PrivateCard, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => DeviceContactEmail, ContactInfo => DeviceContactInfo, ContactPhone => DeviceContactPhone}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import com.fortysevendeg.ninecardslauncher.process.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
+import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem}
 
-trait Conversions {
+import scala.util.Random
+
+trait Conversions
+  extends NineCardIntentConversions {
 
   def toSeqUnformedApp(apps: Seq[App]): Seq[UnformedApp] = apps map toUnformedApp
 
@@ -53,5 +60,46 @@ trait Conversions {
     itemType = item.itemType,
     title = item.title,
     intent = item.intent)
+
+  def toAddCollectionRequest(privateCollection: PrivateCollection): AddCollectionRequest =
+    AddCollectionRequest(
+      name = privateCollection.name,
+      collectionType = privateCollection.collectionType,
+      icon = privateCollection.icon,
+      themedColorIndex = privateCollection.themedColorIndex,
+      appsCategory = privateCollection.appsCategory)
+
+  def toAddCollectionRequest(privateCard: PrivateCard): AddCardRequest =
+    AddCardRequest(
+      term = privateCard.term,
+      packageName = privateCard.packageName,
+      cardType = privateCard.cardType,
+      intent = privateCard.intent,
+      imagePath = privateCard.imagePath)
+
+  def toAddCollectionRequest(collection: SharedCollection): AddCollectionRequest =
+    AddCollectionRequest(
+      name = collection.name,
+      collectionType = AppsCollectionType,
+      icon = collection.icon,
+      themedColorIndex = Random.nextInt(numSpaces),
+      appsCategory = Option(collection.category),
+      originalSharedCollectionId = Option(collection.sharedCollectionId))
+
+  def toAddCollectionRequest(app: SharedCollectionPackage): AddCardRequest =
+    AddCardRequest(
+      term = app.title,
+      packageName = Option(app.packageName),
+      cardType = NoInstalledAppCardType,
+      intent = toNineCardIntent(app),
+      imagePath = "")
+
+  def toAddCollectionRequest(app: App): AddCardRequest =
+    AddCardRequest(
+      term = app.name,
+      packageName = Option(app.packageName),
+      cardType = AppCardType,
+      intent = toNineCardIntent(app),
+      imagePath = app.imagePath)
 
 }
