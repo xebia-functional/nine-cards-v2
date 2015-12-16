@@ -26,6 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherTags
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -167,8 +168,8 @@ trait CollectionsComposer
     getUi(w[FabItemMenu] <~ fabButtonMyCollectionsStyle <~ FuncOn.click { view: View =>
       showAction(f[PrivateCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_my_collections))
     }),
-    getUi(w[FabItemMenu] <~ fabButtonPublicCollectionStyle <~ On.click {
-      uiShortToast("Public Collections")
+    getUi(w[FabItemMenu] <~ fabButtonPublicCollectionStyle <~ FuncOn.click { view: View =>
+      showAction(f[PublicCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_public_collection))
     })
   )
 

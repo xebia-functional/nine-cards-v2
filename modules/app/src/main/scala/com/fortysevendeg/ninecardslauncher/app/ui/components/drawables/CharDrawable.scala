@@ -8,8 +8,13 @@ import macroid.ContextWrapper
 
 import scala.annotation.tailrec
 
-case class CharDrawable(char: String, circle: Boolean = false)(implicit contextWrapper: ContextWrapper)
+case class CharDrawable(
+  char: String,
+  circle: Boolean = false,
+  background: Option[Int] = None)(implicit contextWrapper: ContextWrapper)
   extends Drawable {
+
+  val ratioChars = .3f
 
   val colors = List(
     resGetColor(R.color.background_default_1),
@@ -18,7 +23,7 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
     resGetColor(R.color.background_default_4),
     resGetColor(R.color.background_default_5))
 
-  val backgroundColor = colors(positionByChar())
+  val backgroundColor = background getOrElse colors(positionByChar())
 
   var parentBounds: Option[Rect] = None
 
@@ -33,6 +38,7 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
     paint.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL))
     paint.setAntiAlias(true)
     paint.setColor(Color.WHITE)
+    paint.setTextAlign(Paint.Align.CENTER)
     paint
   }
 
@@ -43,18 +49,17 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
   }
 
   override def draw(canvas: Canvas): Unit = {
-    parentBounds foreach {
-      pb =>
-        if (circle) {
-          canvas.drawCircle(pb.centerX(), pb.centerY(), pb.width() / 2, backgroundPaint)
-        } else {
-          canvas.drawColor(backgroundColor)
-        }
-        val bounds = new Rect
-        charPaint.getTextBounds(char, 0, 1, bounds)
-        val x: Int = (pb.centerX() - bounds.exactCenterX).toInt
-        val y: Int = (pb.centerY() - bounds.exactCenterY).toInt
-        canvas.drawText(char.toUpperCase, x, y, charPaint)
+    parentBounds foreach { pb =>
+      if (circle) {
+        canvas.drawCircle(pb.centerX(), pb.centerY(), pb.width() / 2, backgroundPaint)
+      } else {
+        canvas.drawColor(backgroundColor)
+      }
+      val bounds = new Rect
+      charPaint.getTextBounds(char, 0, 1, bounds)
+      val x: Int = pb.centerX()
+      val y: Int = (pb.centerY() - bounds.exactCenterY).toInt
+      canvas.drawText(char.toUpperCase, x, y, charPaint)
     }
   }
 
@@ -75,8 +80,10 @@ case class CharDrawable(char: String, circle: Boolean = false)(implicit contextW
         calculateSize(size + 1)
       }
     }
-    calculateSize(0)
+    (calculateSize(0) / calculateRatioChars).toInt
   }
+
+  private[this] def calculateRatioChars = 1 + ((char.length - 1) * ratioChars)
 
   private[this] def positionByChar(): Int = {
     val abc = "abcdefghijklmnñopqrstuvwxyz0123456789"

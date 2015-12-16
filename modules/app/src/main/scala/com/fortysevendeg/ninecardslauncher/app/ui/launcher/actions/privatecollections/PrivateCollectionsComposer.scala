@@ -4,32 +4,34 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
-import android.widget.{LinearLayout, ImageView}
+import android.widget.{ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, LauncherExecutor}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, NineCardIntentConversions, UiContext}
 import com.fortysevendeg.ninecardslauncher.process.collection.{PrivateCard, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import macroid.FullDsl._
-import macroid.{Tweak, ActivityContextWrapper, Ui}
+import macroid.{ActivityContextWrapper, Tweak, Ui}
 
 trait PrivateCollectionsComposer
   extends Styles
   with LauncherExecutor
   with NineCardIntentConversions {
 
-  self: TypedFindView with BaseActionFragment =>
+  self: TypedFindView with BaseActionFragment with PrivateCollectionsListener =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
@@ -45,9 +47,8 @@ trait PrivateCollectionsComposer
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def addPrivateCollections(
-    privateCollections: Seq[PrivateCollection],
-    clickListener: (PrivateCollection) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val adapter = new PrivateCollectionsAdapter(privateCollections, clickListener)
+    privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_]): Ui[_] = {
+    val adapter = new PrivateCollectionsAdapter(privateCollections, saveCollection)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -111,7 +112,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
   }
 
   private[this] def getViewsByCards(cards: Seq[PrivateCard], width: Int) = {
-    val size = resGetDimensionPixelSize(R.dimen.size_icon_private_collections_content)
+    val size = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
     val padding = (width - (size * appsByRow)) / (appsByRow - 1)
     cards.zipWithIndex map {
       case (card, index) =>
