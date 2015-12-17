@@ -11,7 +11,7 @@ import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.{GravityCompat, TintableBackgroundView}
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener
-import android.support.v7.widget.{PopupMenu, ListPopupWindow, RecyclerView, SwitchCompat, Toolbar}
+import android.support.v7.widget.{ListPopupWindow, PopupMenu, RecyclerView, SwitchCompat, Toolbar}
 import android.view.View.OnClickListener
 import android.view.inputmethod.InputMethodManager
 import android.view.{MenuItem, View, ViewGroup, ViewOutlineProvider}
@@ -20,10 +20,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{LatestSharedCollection, TopSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Transformer, Tweak, Ui}
@@ -118,13 +116,13 @@ object ExtraTweaks {
   def tvCompoundDrawablesWithIntrinsicBounds2(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) =
     Tweak[TextView](_.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom))
 
-  val tvNormalMedium: Tweak[TextView] = Tweak[TextView](x ⇒ x.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL)))
+  val tvNormalMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL)))
 
-  val tvBoldMedium: Tweak[TextView] = Tweak[TextView](x ⇒ x.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD)))
+  val tvBoldMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD)))
 
-  val tvItalicMedium: Tweak[TextView] = Tweak[TextView](x ⇒ x.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC)))
+  val tvItalicMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC)))
 
-  val tvBoldItalicMedium: Tweak[TextView] = Tweak[TextView](x ⇒ x.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD_ITALIC)))
+  val tvBoldItalicMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD_ITALIC)))
 
   def tbBackgroundColor(color: Int) = Tweak[Toolbar](_.setBackgroundColor(color))
 
