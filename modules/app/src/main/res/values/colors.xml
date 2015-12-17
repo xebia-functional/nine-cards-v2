@@ -119,6 +119,9 @@
     <color name="background_count_public_collection_dialog">#cdcdcd</color>
     <color name="tab_public_collection_dialog">#ffffff</color>
 
+    <!-- ListPopupMenu -->
+    <color name="item_list_popup_menu">#000000</color>
+
     <!-- Error Dialog -->
     <color name="error_dialog_text">#33000000</color>
     <color name="error_dialog_text_button">#ffffff</color>

@@ -134,6 +134,10 @@
     <dimen name="margin_top_error_dialog_image">46dp</dimen>
     <dimen name="margin_bottom_error_dialog_image">55dp</dimen>
 
+    <!-- ListPopupMenu -->
+    <dimen name="width_list_popup_menu">220dp</dimen>
+    <dimen name="height_list_popup_menu">320dp</dimen>
+
     <!-- Fast Scroller -->
     <dimen name="fastscroller_text_size">40sp</dimen>
     <dimen name="fastscroller_signal_size">84dp</dimen>

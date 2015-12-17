@@ -5,7 +5,8 @@ import android.graphics.drawable.shapes.OvalShape
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener
 import android.support.v7.widget.RecyclerView
 import android.view.{MenuItem, View, ViewGroup}
-import android.widget.{TextView, ImageView, LinearLayout}
+import android.widget.AdapterView.OnItemClickListener
+import android.widget.{AdapterView, TextView, ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -42,10 +43,11 @@ trait PublicCollectionsComposer
 
   var categoryFilter = slot[TextView]
 
-  val categories = NineCardCategory.appsCategories
-
-  lazy val categoryNamesMenu = categories map { category =>
-    resGetString(category.getStringResource) getOrElse category.name
+  lazy val (categoryNamesMenu, categories) = {
+    val categoriesSorted = NineCardCategory.appsCategories map { category =>
+      (resGetString(category.getStringResource) getOrElse category.name, category)
+    } sortBy(_._1)
+    (categoriesSorted map (_._1), categoriesSorted map (_._2))
   }
 
   def initUi: Ui[_] =
@@ -66,8 +68,9 @@ trait PublicCollectionsComposer
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (typeFilter <~
         On.click {
-          typeFilter <~ vPopupMenuShow(R.menu.type_public_collection_menu, new OnMenuItemClickListener {
-            override def onMenuItemClick(item: MenuItem): Boolean = {
+          typeFilter <~ vPopupMenuShow(
+            menu = R.menu.type_public_collection_menu,
+            onMenuItemClickListener = (item: MenuItem) => {
               item.getItemId match {
                 case R.id.top =>
                   runUi(typeFilter <~ tvText(R.string.top))
@@ -78,20 +81,21 @@ trait PublicCollectionsComposer
                 case _ =>
               }
               true
-            }
-          })
+            })
         }) ~
       (categoryFilter <~
         On.click {
-          categoryFilter <~ vPopupMenuShow(categoryNamesMenu, new OnMenuItemClickListener {
-            override def onMenuItemClick(item: MenuItem): Boolean = {
-              categories.lift(item.getOrder) foreach { category =>
+          categoryFilter <~ vListPopupWindowShow(
+            layout = R.layout.list_item_popup_menu,
+            menu = categoryNamesMenu,
+            onItemClickListener = (position: Int) => {
+              categories.lift(position) foreach { category =>
                 runUi(categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name))
                 changeCategory(category)
               }
-              true
-            }
-          })
+            },
+            width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
+            height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
         }) ~
       (recycler <~ recyclerStyle)
 
