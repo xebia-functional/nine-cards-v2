@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -26,7 +27,9 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   lazy val toolbar = Option(findView(TR.actions_toolbar_widget))
 
-  lazy val toolbarTitle = Option(findView(TR.actions_toolbar_title))
+  lazy val title = Option(findView(TR.actions_toolbar_title))
+
+  lazy val extendedContent = Option(findView(TR.actions_toolbar_extended_content))
 
   def init(color: Int)(implicit contextWrapper: ContextWrapper) = {
     val closeDrawable = new PathMorphDrawable(
@@ -41,7 +44,9 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def changeToolbarHeight(height: Int): Ui[_] = toolbar <~ tbChangeHeightLayout(height)
 
-  def changeText(res: Int): Ui[_] = toolbarTitle <~ tvText(res)
+  def addExtendedView(view: View): Ui[_] = extendedContent <~ vgAddView(view)
+
+  def changeText(res: Int): Ui[_] = title <~ tvText(res)
 
   def navigationClickListener(click: (View) => Ui[_]): Ui[_] = toolbar <~ tbNavigationOnClickListener(click)
 

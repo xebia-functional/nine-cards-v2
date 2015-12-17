@@ -117,6 +117,7 @@
 
     <!-- Public Collection Dialog -->
     <color name="background_count_public_collection_dialog">#cdcdcd</color>
+    <color name="tab_public_collection_dialog">#ffffff</color>
 
     <!-- Error Dialog -->
     <color name="error_dialog_text">#33000000</color>

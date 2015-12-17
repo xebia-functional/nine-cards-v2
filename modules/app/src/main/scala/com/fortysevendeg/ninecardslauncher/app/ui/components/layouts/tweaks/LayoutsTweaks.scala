@@ -188,6 +188,10 @@ object DialogToolbarTweaks {
     runUi(view.changeToolbarHeight(resGetDimensionPixelSize(R.dimen.height_extended_toolbar_dialog)))
   }
 
+  def dtbAddExtendedView(viewToAdd: View)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
+    runUi(view.addExtendedView(viewToAdd))
+  }
+
   def dtbChangeText(res: Int) = Tweak[W] { view =>
     runUi(view.changeText(res))
   }

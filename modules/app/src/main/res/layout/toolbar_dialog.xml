@@ -16,4 +16,8 @@
 
     </android.support.v7.widget.Toolbar>
 
+    <FrameLayout
+        android:id="@+id/actions_toolbar_extended_content"
+        style="@style/BaseActionsToolbarExtendedContent" />
+
 </FrameLayout>

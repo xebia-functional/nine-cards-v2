@@ -119,6 +119,11 @@
     <string name="installNow">Install now</string>
     <string name="free">Free</string>
 
+    <!-- Public Collections -->
+
+    <string name="top">Top</string>
+    <string name="latest">Latest</string>
+
     <!-- Drawer -->
     <string name="searchApps">Search apps…</string>
     <string name="searchContacts">Search contacts…</string>

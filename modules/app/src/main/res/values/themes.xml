@@ -22,6 +22,7 @@
     <style name="AppThemeWallpaper" parent="AppThemeWallpaperBase"/>
 
     <style name="AppThemeCommons" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--<item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>-->
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
 

@@ -2,9 +2,10 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollect
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
+import android.support.v7.widget.PopupMenu.OnMenuItemClickListener
 import android.support.v7.widget.RecyclerView
-import android.view.{View, ViewGroup}
-import android.widget.{ImageView, LinearLayout}
+import android.view.{MenuItem, View, ViewGroup}
+import android.widget.{TextView, ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -20,6 +21,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, NineCardIntentConversions, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{LatestSharedCollection, TopSharedCollection}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -27,6 +30,7 @@ import macroid.{ActivityContextWrapper, Tweak, Ui}
 
 trait PublicCollectionsComposer
   extends Styles
+  with PublicCollectionsStyle
   with LauncherExecutor
   with NineCardIntentConversions {
 
@@ -34,12 +38,61 @@ trait PublicCollectionsComposer
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
+  var typeFilter = slot[TextView]
+
+  var categoryFilter = slot[TextView]
+
+  val categories = NineCardCategory.appsCategories
+
+  lazy val categoryNamesMenu = categories map { category =>
+    resGetString(category.getStringResource) getOrElse category.name
+  }
+
   def initUi: Ui[_] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.publicCollections) <~
       dtbExtended <~
+      dtbAddExtendedView(getUi(
+        l[LinearLayout](
+          w[TextView] <~
+            wire(typeFilter) <~
+            tabButtonStyle(R.string.top),
+          w[TextView] <~
+            wire(categoryFilter) <~
+            tabButtonStyle(R.string.communication)
+        )
+      )) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
+      (typeFilter <~
+        On.click {
+          typeFilter <~ vPopupMenuShow(R.menu.type_public_collection_menu, new OnMenuItemClickListener {
+            override def onMenuItemClick(item: MenuItem): Boolean = {
+              item.getItemId match {
+                case R.id.top =>
+                  runUi(typeFilter <~ tvText(R.string.top))
+                  changeTypeSharedCollection(TopSharedCollection)
+                case R.id.latest =>
+                  runUi(typeFilter <~ tvText(R.string.latest))
+                  changeTypeSharedCollection(LatestSharedCollection)
+                case _ =>
+              }
+              true
+            }
+          })
+        }) ~
+      (categoryFilter <~
+        On.click {
+          categoryFilter <~ vPopupMenuShow(categoryNamesMenu, new OnMenuItemClickListener {
+            override def onMenuItemClick(item: MenuItem): Boolean = {
+              categories.lift(item.getOrder) foreach { category =>
+                runUi(categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name))
+                changeCategory(category)
+              }
+              true
+            }
+          })
+        }) ~
       (recycler <~ recyclerStyle)
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
