@@ -100,6 +100,9 @@
     <dimen name="height_app_item">112dp</dimen>
     <dimen name="height_contact_item">64dp</dimen>
 
+    <dimen name="height_extended_toolbar_dialog">104dp</dimen>
+    <dimen name="margin_top_extended_content_toolbar">54dp</dimen>
+
     <dimen name="size_icon_app">60dp</dimen>
 
     <dimen name="size_icon_shortcut">40dp</dimen>
@@ -130,6 +133,10 @@
 
     <dimen name="margin_top_error_dialog_image">46dp</dimen>
     <dimen name="margin_bottom_error_dialog_image">55dp</dimen>
+
+    <!-- ListPopupMenu -->
+    <dimen name="width_list_popup_menu">220dp</dimen>
+    <dimen name="height_list_popup_menu">320dp</dimen>
 
     <!-- Fast Scroller -->
     <dimen name="fastscroller_text_size">40sp</dimen>

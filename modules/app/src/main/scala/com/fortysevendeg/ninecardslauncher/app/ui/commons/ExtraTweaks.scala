@@ -2,18 +2,20 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.drawable.shapes.{RoundRectShape, OvalShape}
-import android.graphics.drawable.{ShapeDrawable, Drawable}
-import android.graphics.{Color, Outline, PorterDuff}
+import android.graphics.drawable.shapes.RoundRectShape
+import android.graphics.drawable.{Drawable, ShapeDrawable}
+import android.graphics.{Color, Outline, PorterDuff, Typeface}
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
 import android.support.design.widget.{FloatingActionButton, NavigationView, Snackbar}
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.{GravityCompat, TintableBackgroundView}
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.widget.{RecyclerView, SwitchCompat, Toolbar}
+import android.support.v7.widget.PopupMenu.OnMenuItemClickListener
+import android.support.v7.widget.{ListPopupWindow, PopupMenu, RecyclerView, SwitchCompat, Toolbar}
 import android.view.View.OnClickListener
 import android.view.inputmethod.InputMethodManager
-import android.view.{ViewGroup, MenuItem, View, ViewOutlineProvider}
+import android.view.{MenuItem, View, ViewGroup, ViewOutlineProvider}
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -22,7 +24,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{Transformer, ContextWrapper, Tweak, Ui}
+import macroid.{ContextWrapper, Transformer, Tweak, Ui}
 
 /**
   * This tweaks should be moved to Macroid-Extras
@@ -56,6 +58,50 @@ object ExtraTweaks {
 
   def vSelected(selected: Boolean) = Tweak[View](_.setSelected(selected))
 
+  def vPopupMenuShow(menu: Int, onMenuItemClickListener: (MenuItem) => Boolean)(implicit contextWrapper: ContextWrapper) =
+    Tweak[View] { view =>
+      val popupMenu = new PopupMenu(contextWrapper.bestAvailable, view)
+      popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener {
+        override def onMenuItemClick(item: MenuItem): Boolean = onMenuItemClickListener(item)
+      })
+      popupMenu.inflate(menu)
+      popupMenu.show()
+    }
+
+  def vPopupMenuShow(menu: Seq[String], onMenuItemClickListener: (MenuItem) => Boolean)(implicit contextWrapper: ContextWrapper) =
+    Tweak[View] { view =>
+      val popupMenu = new PopupMenu(contextWrapper.bestAvailable, view)
+      popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener {
+        override def onMenuItemClick(item: MenuItem): Boolean = onMenuItemClickListener(item)
+      })
+      menu.zipWithIndex foreach {
+        case (item, order) => popupMenu.getMenu.add(0, 0, order, item)
+      }
+      popupMenu.show()
+    }
+
+  def vListPopupWindowShow(
+    layout: Int,
+    menu: Seq[String],
+    onItemClickListener: (Int) => Unit,
+    width: Option[Int] = None,
+    height: Option[Int] = None)(implicit contextWrapper: ContextWrapper) =
+    Tweak[View] { view =>
+      val listPopupWindow = new ListPopupWindow(contextWrapper.bestAvailable)
+      listPopupWindow.setAdapter(new ArrayAdapter(contextWrapper.bestAvailable, layout, menu.toArray))
+      listPopupWindow.setAnchorView(view)
+      width foreach listPopupWindow.setWidth
+      height foreach listPopupWindow.setHeight
+      listPopupWindow.setModal(true)
+      listPopupWindow.setOnItemClickListener(new OnItemClickListener {
+        override def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long): Unit = {
+          onItemClickListener(position)
+          listPopupWindow.dismiss()
+        }
+      })
+      listPopupWindow.show()
+    }
+
   def sAdapter(adapter: SpinnerAdapter) = Tweak[Spinner](_.setAdapter(adapter))
 
   def etHideKeyboard(implicit contextWrapper: ContextWrapper) = Tweak[EditText] { editText =>
@@ -63,6 +109,20 @@ object ExtraTweaks {
       case imm: InputMethodManager => imm.hideSoftInputFromWindow(editText.getWindowToken, 0)
     }
   }
+
+  def tvCompoundDrawablesWithIntrinsicBounds2(left: Option[Drawable], top: Option[Drawable], right: Option[Drawable], bottom: Option[Drawable]) =
+    Tweak[TextView](_.setCompoundDrawablesWithIntrinsicBounds(left.orNull, top.orNull, right.orNull, bottom.orNull))
+
+  def tvCompoundDrawablesWithIntrinsicBounds2(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) =
+    Tweak[TextView](_.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom))
+
+  val tvNormalMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL)))
+
+  val tvBoldMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD)))
+
+  val tvItalicMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC)))
+
+  val tvBoldItalicMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD_ITALIC)))
 
   def tbBackgroundColor(color: Int) = Tweak[Toolbar](_.setBackgroundColor(color))
 
@@ -81,6 +141,11 @@ object ExtraTweaks {
   def tbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[Toolbar](_.setNavigationOnClickListener(new OnClickListener {
     override def onClick(v: View): Unit = runUi(click(v))
   }))
+
+  def tbChangeHeightLayout(height: Int) = Tweak[Toolbar] { view =>
+    view.getLayoutParams.height = height
+    view.requestLayout()
+  }
 
   def dlStatusBarBackground(res: Int) = Tweak[DrawerLayout](_.setStatusBarBackground(res))
 

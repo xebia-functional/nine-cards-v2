@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="BaseActionsToolbar" parent="BaseActionsToolbarParent">
+    <style name="BaseActionsToolbarDialog" parent="BaseActionsToolbarDialogParent">
         <item name="android:elevation">@dimen/elevation_toolbar</item>
     </style>
 

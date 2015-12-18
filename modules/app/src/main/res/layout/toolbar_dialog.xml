@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/BaseActionsToolbarRoot">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/actions_toolbar_widget"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        style="@style/BaseActionsToolbar">
+
+        <TextView
+            android:id="@+id/actions_toolbar_title"
+            style="@style/BaseActionsToolbarTitle"/>
+
+    </android.support.v7.widget.Toolbar>
+
+    <FrameLayout
+        android:id="@+id/actions_toolbar_extended_content"
+        style="@style/BaseActionsToolbarExtendedContent" />
+
+</FrameLayout>

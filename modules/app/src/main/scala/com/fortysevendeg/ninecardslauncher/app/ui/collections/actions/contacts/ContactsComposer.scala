@@ -1,17 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
 import android.support.v7.widget.SwitchCompat
-import android.support.v7.widget.Toolbar.LayoutParams
-import android.view.Gravity
-import android.view.ViewGroup.LayoutParams._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
 import com.fortysevendeg.ninecardslauncher.process.device.{ContactsFilter, FavoriteContacts}
@@ -30,25 +27,20 @@ trait ContactsComposer
 
   var switch = slot[SwitchCompat]
 
-  def initUi(onCheckedChange: (Boolean) => Unit): Ui[_] = {
-    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-    val switchParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL)
-    switchParams.setMarginStart(padding)
-    switchParams.setMarginEnd(padding)
+  def initUi(onCheckedChange: (Boolean) => Unit): Ui[_] =
     (toolbar <~
-      tbTitle(R.string.contacts) <~
-      toolbarStyle(colorPrimary) <~
+      dtbInit(colorPrimary) <~
+      dtbChangeText(R.string.contacts) <~
       vgAddView(getUi(
         w[SwitchCompat] <~
           wire(switch) <~
           scColor(colorPrimary) <~
           scChecked(checked = true) <~
           scCheckedChangeListener(onCheckedChange)
-      ), switchParams) <~
-      tbNavigationOnClickListener((_) => unreveal())) ~
+      )) <~
+      dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
-  }
 
   def showLoading: Ui[_] =
     (loading <~ vVisible) ~

@@ -10,9 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 
@@ -36,11 +34,11 @@ class PublicCollectionsFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     runUi(initUi)
-    loadPublicCollections(Communication, TopSharedCollection)
+    loadPublicCollections()
   }
 
-  override def loadPublicCollections(category: NineCardCategory, typeSharedCollection: TypeSharedCollection): Unit =
-    Task.fork(getSharedCollections(category, typeSharedCollection).run).resolveAsyncUi(
+  override def loadPublicCollections(): Unit =
+    Task.fork(getSharedCollections(statuses.category, statuses.typeSharedCollection).run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (sharedCollections: Seq[SharedCollection]) => addPublicCollections(sharedCollections),
       onException = (ex: Throwable) => showGeneralError)

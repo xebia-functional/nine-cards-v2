@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollect
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v7.widget.RecyclerView
-import android.view.{View, ViewGroup}
-import android.widget.{ImageView, LinearLayout}
+import android.view.{MenuItem, View, ViewGroup}
+import android.widget.{ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -20,13 +20,17 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{LatestSharedCollection, TopSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
 
 trait PublicCollectionsComposer
   extends Styles
+  with PublicCollectionsStyle
   with LauncherExecutor
   with NineCardIntentConversions {
 
@@ -34,11 +38,64 @@ trait PublicCollectionsComposer
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
+  var typeFilter = slot[TextView]
+
+  var categoryFilter = slot[TextView]
+
+  lazy val (categoryNamesMenu, categories) = {
+    val categoriesSorted = NineCardCategory.appsCategories map { category =>
+      (resGetString(category.getStringResource) getOrElse category.name, category)
+    } sortBy(_._1)
+    (categoriesSorted map (_._1), categoriesSorted map (_._2))
+  }
+
   def initUi: Ui[_] =
     (toolbar <~
-      tbTitle(R.string.publicCollections) <~
-      toolbarStyle(colorPrimary) <~
-      tbNavigationOnClickListener((_) => unreveal())) ~
+      dtbInit(colorPrimary) <~
+      dtbChangeText(R.string.publicCollections) <~
+      dtbExtended <~
+      dtbAddExtendedView(getUi(
+        l[LinearLayout](
+          w[TextView] <~
+            wire(typeFilter) <~
+            tabButtonStyle(R.string.top),
+          w[TextView] <~
+            wire(categoryFilter) <~
+            tabButtonStyle(R.string.communication)
+        )
+      )) <~
+      dtbNavigationOnClickListener((_) => unreveal())) ~
+      (typeFilter <~
+        On.click {
+          typeFilter <~ vPopupMenuShow(
+            menu = R.menu.type_public_collection_menu,
+            onMenuItemClickListener = (item: MenuItem) => {
+              item.getItemId match {
+                case R.id.top =>
+                  runUi(typeFilter <~ tvText(R.string.top))
+                  changeTypeSharedCollection(TopSharedCollection)
+                case R.id.latest =>
+                  runUi(typeFilter <~ tvText(R.string.latest))
+                  changeTypeSharedCollection(LatestSharedCollection)
+                case _ =>
+              }
+              true
+            })
+        }) ~
+      (categoryFilter <~
+        On.click {
+          categoryFilter <~ vListPopupWindowShow(
+            layout = R.layout.list_item_popup_menu,
+            menu = categoryNamesMenu,
+            onItemClickListener = (position: Int) => {
+              categories.lift(position) foreach { category =>
+                runUi(categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name))
+                changeCategory(category)
+              }
+            },
+            width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
+            height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
+        }) ~
       (recycler <~ recyclerStyle)
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)

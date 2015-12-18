@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityResult, ColorsUtils}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -38,9 +39,9 @@ trait NewCollectionComposer
 
   def initUi(storeCollection: (String, String, Int) => Unit): Ui[_] =
     (toolbar <~
-      tbTitle(R.string.newCollection) <~
-      toolbarStyle(colorPrimary) <~
-      tbNavigationOnClickListener((_) => unreveal())) ~
+      dtbInit(colorPrimary) <~
+      dtbChangeText(R.string.newCollection) <~
+      dtbNavigationOnClickListener((_) => unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(

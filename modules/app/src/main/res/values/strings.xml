@@ -119,6 +119,11 @@
     <string name="installNow">Install now</string>
     <string name="free">Free</string>
 
+    <!-- Public Collections -->
+
+    <string name="top">Top</string>
+    <string name="latest">Latest</string>
+
     <!-- Drawer -->
     <string name="searchApps">Search apps…</string>
     <string name="searchContacts">Search contacts…</string>
@@ -167,7 +172,7 @@
     <string name="transportation">Transportation</string>
     <string name="travel_and_local">Travel and Local</string>
     <string name="weather">Weather</string>
-    <string name="widgets">Widgets</string>
+    <string name="app_widgets">Widgets</string>
 
     <string name="game_action">Action</string>
     <string name="game_adventure">Adventure</string>
