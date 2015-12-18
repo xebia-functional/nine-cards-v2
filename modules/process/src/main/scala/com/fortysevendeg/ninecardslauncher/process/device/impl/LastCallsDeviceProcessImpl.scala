@@ -12,9 +12,7 @@ import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
-trait
-
-LastCallsDeviceProcessImpl {
+trait LastCallsDeviceProcessImpl {
 
   self: DeviceConversions
     with DeviceProcessDependencies

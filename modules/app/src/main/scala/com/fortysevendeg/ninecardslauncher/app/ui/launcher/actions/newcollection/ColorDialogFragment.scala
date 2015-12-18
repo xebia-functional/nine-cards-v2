@@ -14,8 +14,8 @@ import android.view.{Gravity, LayoutInflater, View}
 import android.widget.{ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R

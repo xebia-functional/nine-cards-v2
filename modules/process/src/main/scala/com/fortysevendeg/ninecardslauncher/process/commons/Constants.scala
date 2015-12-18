@@ -77,6 +77,12 @@ object CardType {
   val recommendedApp = "RECOMMENDED_APP" // DON'T USE this type. Only for compatibility with 9cards 1.0
 }
 
+object DockAppTypes {
+  val app = "APP"
+  val contact = "CONTACT"
+  val collection = "COLLECTION"
+}
+
 object NineCardsMoments {
   val homeMorningMoment = "home_morning"
   val workMoment = "work"
