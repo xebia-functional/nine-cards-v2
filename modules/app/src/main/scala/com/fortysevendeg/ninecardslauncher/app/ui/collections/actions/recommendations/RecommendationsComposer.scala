@@ -12,9 +12,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, NineCardIntentConversions, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
