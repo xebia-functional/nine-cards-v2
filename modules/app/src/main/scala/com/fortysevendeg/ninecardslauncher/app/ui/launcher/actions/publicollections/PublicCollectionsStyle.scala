@@ -17,7 +17,7 @@ trait PublicCollectionsStyle {
     vWrapContent +
       tvText(text) +
       tvNormalMedium +
-      tvSizeResource(R.dimen.text_default) +
+      tvSizeResource(R.dimen.text_large) +
       tvGravity(Gravity.CENTER_VERTICAL) +
       tvColorResource(R.color.tab_public_collection_dialog) +
       vPadding(paddingTop = paddingDefault, paddingBottom = paddingDefault, paddingRight = paddingLarge) +
