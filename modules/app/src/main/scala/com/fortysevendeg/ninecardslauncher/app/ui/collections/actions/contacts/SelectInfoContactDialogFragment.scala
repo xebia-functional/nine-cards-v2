@@ -8,7 +8,7 @@ import android.support.v7.app.AlertDialog
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, TextView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent

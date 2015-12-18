@@ -3,8 +3,11 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import android.graphics.drawable.Drawable
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.device.models._
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, WidgetDimensions, _}
 import com.fortysevendeg.ninecardslauncher.process.device.types._
 import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepoApp}
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
@@ -14,11 +17,13 @@ import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallSe
 import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, IterableApps => ServiceIterableApps}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp=> ServiceDockApp, IterableApps => ServiceIterableApps}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
+import play.api.libs.json.Json
 
-trait DeviceProcessData {
+trait DeviceProcessData
+  extends NineCardIntentConversions {
 
   val statusCodeOk = 200
   val items = 5
@@ -586,6 +591,28 @@ trait DeviceProcessData {
       lookupKey = Some(lookupKey3),
       lastCallDate = date3,
       calls = callsData3))
+
+  val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val intent = Json.parse(intentStr).as[NineCardIntent]
+
+  val dockApp1 = ServiceDockApp(
+    id = 1,
+    name = packageName1,
+    dockType = AppDockType.name,
+    intent = intentStr,
+    imagePath = imagePath1,
+    position = 0)
+
+  val dockAppSeq = Seq(dockApp1)
+
+  val dockAppProcess1 = DockApp(
+    name = dockApp1.name,
+    dockType = DockType(dockApp1.dockType),
+    intent = jsonToNineCardIntent(dockApp1.intent),
+    imagePath = dockApp1.imagePath,
+    position = dockApp1.position)
+
+  val dockAppProcessSeq = Seq(dockAppProcess1)
 
   val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = contacts.length

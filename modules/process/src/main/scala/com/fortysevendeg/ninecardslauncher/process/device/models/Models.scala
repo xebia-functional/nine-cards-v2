@@ -2,7 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.device.models
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{DockType, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
 
 case class App(
@@ -52,6 +53,13 @@ case class ContactEmail(
 case class ContactPhone(
   number: String,
   category: String)
+
+case class DockApp(
+  name: String,
+  dockType: DockType,
+  intent: NineCardIntent,
+  imagePath: String,
+  position: Int)
 
 case class Widget(
   userHashCode: Option[Int],

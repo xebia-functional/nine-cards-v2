@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.process.device.ImplicitsDeviceException
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
@@ -24,6 +25,7 @@ class CreateCollectionService
   with Contexts[Service]
   with ContextSupportProvider
   with CreateCollectionsTasks
+  with ImplicitsDeviceException
   with BroadcastDispatcher { self =>
 
   val maxProgress = 4

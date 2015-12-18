@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportProvider, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
@@ -17,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{IterableApps, IterableContacts, App, Contact}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, IterableApps, IterableContacts}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
@@ -33,6 +33,7 @@ class LauncherActivity
   with TypedFindView
   with ActionsScreenListener
   with LauncherComposer
+  with LauncherTasks
   with SystemBarsTint
   with NineCardIntentConversions
   with DrawerListeners {
@@ -56,14 +57,13 @@ class LauncherActivity
     setContentView(R.layout.launcher_activity)
     runUi(initUi ~ initDrawerUi)
     initAllSystemBarsTint
-    generateCollections()
+    loadCollectionsAndDockApps()
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
     (requestCode, resultCode) match {
-      case (request, result) if result == Activity.RESULT_OK && request == wizard =>
-        generateCollections()
+      case (`wizard`, Activity.RESULT_OK) => loadCollectionsAndDockApps()
       case _ =>
     }
   }
@@ -112,13 +112,13 @@ class LauncherActivity
     }
   }
 
-  private[this] def generateCollections() = Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+  private[this] def loadCollectionsAndDockApps(): Unit = Task.fork(getLauncherApps.run).resolveAsyncUi(
     onResult = {
       // Check if there are collections in DB, if there aren't we go to wizard
-      case Nil => goToWizard()
-      case collections =>
+      case (Nil, Nil) => goToWizard()
+      case (collections, dockApps) =>
         getUserInfo()
-        createCollections(collections)
+        createCollections(collections, dockApps)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading
