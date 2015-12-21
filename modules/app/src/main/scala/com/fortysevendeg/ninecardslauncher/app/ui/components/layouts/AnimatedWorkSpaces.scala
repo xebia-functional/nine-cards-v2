@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
-import android.os
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
 import android.view.MotionEvent._
@@ -21,7 +20,8 @@ import macroid.{ContextWrapper, Ui}
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   (context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(context, attr, defStyleAttr) { self =>
+  extends FrameLayout(context, attr, defStyleAttr)
+  with LongClickHandler { self =>
 
   type PageChangedObserver = (Int => Unit)
 
@@ -77,13 +77,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   var currentItem = 0
 
-  val longClickMillis = 1000
-
-  val handler = new os.Handler()
-
-  val runnable = new Runnable {
-    override def run(): Unit = listener.onLongClick()
-  }
+  override def onLongClick: () => Unit = listener.onLongClick
 
   def getHorizontalGallery: Boolean = true
 
@@ -380,9 +374,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
         case (ACTION_MOVE, Stopped) => setStateIfNeeded(x, y)
         case (ACTION_DOWN, _) =>
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          handler.postDelayed(runnable, longClickMillis)
+          startLongClick()
         case (ACTION_CANCEL | ACTION_UP, _) =>
-          handler.removeCallbacks(runnable)
+          resetLongClick()
           computeFling()
           statuses = statuses.copy(touchState = Stopped)
         case _ =>
@@ -420,7 +414,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     val yMoved = yDiff > touchSlop
 
     if (xMoved || yMoved) {
-      handler.removeCallbacks(runnable)
+      resetLongClick()
       val penultimate = data.length - 2
       val isScrolling = (statuses.infinite, statuses.horizontalGallery, xDiff > yDiff, moveItemsAnimator.isRunning) match {
         case (true, true, true, _) => true

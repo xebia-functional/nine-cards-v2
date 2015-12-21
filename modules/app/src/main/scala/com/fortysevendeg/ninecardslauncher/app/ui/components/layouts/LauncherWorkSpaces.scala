@@ -147,7 +147,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
     // We check that the user is doing up vertical swipe
     if (yMoved && up && (yDiff > xDiff)) {
-      handler.removeCallbacks(runnable)
+      resetLongClick()
       launcherWorkSpacesStatuses = launcherWorkSpacesStatuses.copy(openingMenu = true)
     } else {
       super.setStateIfNeeded(x, y)
