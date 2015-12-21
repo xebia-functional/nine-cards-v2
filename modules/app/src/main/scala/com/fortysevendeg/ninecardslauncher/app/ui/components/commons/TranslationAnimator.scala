@@ -7,13 +7,18 @@ import macroid.Ui
 import macroid.FullDsl._
 
 class TranslationAnimator(
-  translation: Translation = TranslationX,
+  translation: Translation = NoTranslation,
   update: (Float) => Ui[_],
   end: () => Ui[_]) {
 
-  private[this] val animator: ObjectAnimator = new ObjectAnimator
+  private[this] val animator: ValueAnimator = translation match {
+    case NoTranslation => new ValueAnimator
+    case _ =>
+      val objectAnimator = new ObjectAnimator
+      objectAnimator.setPropertyName(translation.name)
+      objectAnimator
+  }
   animator.setInterpolator(new DecelerateInterpolator())
-  animator.setPropertyName(translation.name)
   animator.addListener(new AnimatorListenerAdapter() {
     override def onAnimationEnd(animation: Animator) = {
       runUi(end())
@@ -48,4 +53,8 @@ case object TranslationX extends Translation {
 
 case object TranslationY extends Translation {
   override val name: String = "translationY"
+}
+
+case object NoTranslation extends Translation {
+  override val name: String = ""
 }

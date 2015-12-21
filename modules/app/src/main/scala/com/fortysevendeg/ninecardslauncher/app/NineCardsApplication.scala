@@ -36,10 +36,10 @@ class NineCardsApplication
             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
             .build())
       }
+      Fabric.`with`(this, new Crashlytics())
     } catch {
       case _: Throwable =>
     }
-    Fabric.`with`(this, new Crashlytics())
   }
 
   override def attachBaseContext(base: Context): Unit = {

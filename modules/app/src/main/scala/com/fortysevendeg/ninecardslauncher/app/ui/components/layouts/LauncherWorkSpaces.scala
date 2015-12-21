@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
-import android.util.AttributeSet
+import android.util.{Log, AttributeSet}
 import android.view.MotionEvent
 import android.view.MotionEvent._
 import android.widget.FrameLayout
@@ -24,7 +24,6 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   var workSpacesStatuses = LauncherWorkSpacesStatuses()
 
   val menuAnimator = new TranslationAnimator(
-    translation = TranslationY,
     update = (value: Float) => {
       workSpacesStatuses = workSpacesStatuses.copy(displacement = value)
       updateCanvasMenu()
@@ -148,9 +147,13 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def resetMenuMovement() = workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false)
 
   private[this] def animateViewsMenuMovement(dest: Int, duration: Int) = {
-    menuAnimator.move(workSpacesStatuses.displacement, dest)
-    menuAnimator.setDuration(duration)
-    menuAnimator.start()
+    Log.d("9cards", s"displacement => ${workSpacesStatuses.displacement} dest => $dest duration => $duration")
+    frontView foreach { view =>
+      moveItemsAnimator.setTarget(view)
+      menuAnimator.move(workSpacesStatuses.displacement, dest)
+      menuAnimator.setDuration(duration)
+      menuAnimator.start()
+    }
     invalidate()
   }
 
