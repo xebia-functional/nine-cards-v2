@@ -142,7 +142,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def canGoToNext = !isLast || (isLast && statuses.infinite)
 
-  def snap(velocity: Float): Unit = {
+  private[this] def snap(velocity: Float): Unit = {
     moveItemsAnimator.cancel()
     val destiny = (velocity, statuses.displacement) match {
       case (v, d) if v > 0 && d > 0 => getSizeWidget
@@ -152,7 +152,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     animateViews(destiny, calculateDurationByVelocity(velocity, durationAnimation))
   }
 
-  def snapDestination(): Unit = {
+  private[this] def snapDestination(): Unit = {
     val destiny = statuses.displacement match {
       case d if d > getSizeWidget * .6f => getSizeWidget
       case d if d < -getSizeWidget * .6f => -getSizeWidget
@@ -162,7 +162,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     invalidate()
   }
 
-  def performScroll(delta: Float): Ui[_] = {
+  private[this] def performScroll(delta: Float): Ui[_] = {
     moveItemsAnimator.cancel()
     statuses = statuses.updateDisplacement(getSizeWidget, delta)
 
