@@ -21,12 +21,12 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def this(context: Context, attr: AttributeSet)(implicit activityContext: ActivityContextWrapper) = this(context, attr, 0)
 
-  var launcherWorkSpacesStatuses = LauncherWorkSpacesStatuses()
+  var workSpacesStatuses = LauncherWorkSpacesStatuses()
 
   val menuAnimator = new TranslationAnimator(
     translation = TranslationY,
     update = (value: Float) => {
-      launcherWorkSpacesStatuses = launcherWorkSpacesStatuses.copy(displacement = value)
+      workSpacesStatuses = workSpacesStatuses.copy(displacement = value)
       updateCanvas()
     },
     end = () => {
@@ -41,7 +41,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   lazy val sizeCalculateMovement = getHeight
 
-  def isWidgetScreen = data(currentItem).widgets
+  def isWidgetScreen = data(statuses.currentItem).widgets
 
   def isWidgetScreen(page: Int) = data(page).widgets
 
@@ -50,9 +50,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def isCollectionScreen(page: Int) = !isWidgetScreen(page)
 
   def goToWizardScreen(toRight: Boolean): Boolean = data.lift(if (toRight) {
-    currentItem - 1
+    statuses.currentItem - 1
   } else {
-    currentItem + 1
+    statuses.currentItem + 1
   }) exists (_.widgets)
 
   override def createView(viewType: Int): LauncherWorkSpaceHolder = viewType match {
@@ -69,13 +69,13 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def performVerticalScroll(delta: Float): Ui[_] = {
     menuAnimator.cancel()
-    launcherWorkSpacesStatuses = launcherWorkSpacesStatuses.updateDisplacement(sizeCalculateMovement, delta)
+    workSpacesStatuses = workSpacesStatuses.updateDisplacement(sizeCalculateMovement, delta)
     updateCanvas()
   }
 
   def updateCanvas(): Ui[_] = {
-    val percent = 1 - launcherWorkSpacesStatuses.percent(sizeCalculateMovement)
-    val tranform = launcherWorkSpacesStatuses.displacement < 0 && percent > .5f
+    val percent = 1 - workSpacesStatuses.percent(sizeCalculateMovement)
+    val tranform = workSpacesStatuses.displacement < 0 && percent > .5f
     if (tranform) {
       frontParentView <~ vScaleX(percent) <~ vScaleY(percent) <~ vAlpha(percent)
     } else {
@@ -83,21 +83,21 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     }
   }
 
-  def resetVerticalScroll() = launcherWorkSpacesStatuses = launcherWorkSpacesStatuses.copy(openingMenu = false, displacement = 0)
+  def resetVerticalScroll() = workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false, displacement = 0)
 
   def finishVerticalMovement() = {
-    val destiny = launcherWorkSpacesStatuses.percent(sizeCalculateMovement) match {
+    val destiny = workSpacesStatuses.percent(sizeCalculateMovement) match {
       case d if d > .25f => -sizeCalculateMovement / 2
       case _ => 0
     }
-    menuAnimator.move(launcherWorkSpacesStatuses.displacement, destiny)
+    menuAnimator.move(workSpacesStatuses.displacement, destiny)
     menuAnimator.setDuration(durationAnimation)
     menuAnimator.start()
     invalidate()
   }
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
-    if (launcherWorkSpacesStatuses.openingMenu) {
+    if (workSpacesStatuses.openingMenu) {
       val (action, x, y) = updateTouch(event)
       action match {
         case ACTION_MOVE =>
@@ -118,7 +118,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
-    if (launcherWorkSpacesStatuses.openingMenu) {
+    if (workSpacesStatuses.openingMenu) {
       val (action, x, y) = updateTouch(event)
       action match {
         case ACTION_MOVE =>
@@ -148,7 +148,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     // We check that the user is doing up vertical swipe
     if (yMoved && up && (yDiff > xDiff)) {
       resetLongClick()
-      launcherWorkSpacesStatuses = launcherWorkSpacesStatuses.copy(openingMenu = true)
+      workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
     } else {
       super.setStateIfNeeded(x, y)
     }

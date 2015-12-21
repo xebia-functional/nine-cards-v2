@@ -51,7 +51,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   val moveItemsAnimator = new TranslationAnimator(
     translation = if (statuses.horizontalGallery) TranslationX else TranslationY,
     update = (value: Float) => {
-      displacement = value
+      statuses = statuses.copy(displacement = value)
       transformPanelCanvas()
     },
     end = () => {
@@ -73,10 +73,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   var frontView = slot[Holder]
   var frontViewType = 0
 
-  var displacement: Float = 0
-
-  var currentItem = 0
-
   override def onLongClick: () => Unit = listener.onLongClick
 
   def getHorizontalGallery: Boolean = true
@@ -97,7 +93,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     if (data.isEmpty) {
       throw new InstantiationException("data can't be empty")
     }
-    currentItem = position
+    statuses = statuses.copy(currentItem = position)
 
     val (lastItem, nextItem) = if (data.length > 1) (data.length - 1, 1) else (0, 0)
     previewViewType = getItemViewType(data.last, lastItem)
@@ -123,11 +119,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     runUi(ui ~ reset())
   }
 
-  def goToItem(): Int = (displacement, currentItem) match {
+  def goToItem(): Int = (statuses.displacement, statuses.currentItem) match {
     case (disp, item) if disp < 0 && item >= data.size - 1 => 0
-    case (disp, item) if disp < 0 => currentItem + 1
-    case _ if currentItem <= 0 => data.length - 1
-    case _ => currentItem - 1
+    case (disp, item) if disp < 0 => item + 1
+    case (_, item) if item <= 0 => data.length - 1
+    case (_, item) => item - 1
   }
 
   def notifyPageChangedObservers() = onPageChangedObservers foreach (observer => observer(goToItem()))
@@ -136,7 +132,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   private[this] def getSizeWidget = if (statuses.horizontalGallery) getWidth else getHeight
 
-  def isPosition(position: Int): Boolean = currentItem == position
+  def isPosition(position: Int): Boolean = statuses.currentItem == position
 
   def isFirst: Boolean = isPosition(0)
 
@@ -148,16 +144,16 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def snap(velocity: Float): Unit = {
     moveItemsAnimator.cancel()
-    val destiny = velocity match {
-      case v if v > 0 && displacement > 0 => getSizeWidget
-      case v if v <= 0 && displacement < 0 => -getSizeWidget
+    val destiny = (velocity, statuses.displacement) match {
+      case (v, d) if v > 0 && d > 0 => getSizeWidget
+      case (v, d) if v <= 0 && d < 0 => -getSizeWidget
       case _ => 0
     }
     animateViews(destiny, calculateDurationByVelocity(velocity, durationAnimation))
   }
 
   def snapDestination(): Unit = {
-    val destiny = displacement match {
+    val destiny = statuses.displacement match {
       case d if d > getSizeWidget * .6f => getSizeWidget
       case d if d < -getSizeWidget * .6f => -getSizeWidget
       case _ => 0
@@ -168,18 +164,18 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def performScroll(delta: Float): Ui[_] = {
     moveItemsAnimator.cancel()
-    displacement = math.max(-getSizeWidget, Math.min(getSizeWidget, displacement - delta))
+    statuses = statuses.updateDisplacement(getSizeWidget, delta)
 
-    val uiVisibility = displacement match {
+    val uiVisibility = statuses.displacement match {
       case d if d > 0 => (previousParentView <~ vVisible) ~ (nextParentView <~ vGone)
       case _ => (previousParentView <~ vGone) ~ (nextParentView <~ vVisible)
     }
 
-    uiVisibility ~ applyTranslation(frontParentView, displacement) ~ transformPanelCanvas()
+    uiVisibility ~ applyTranslation(frontParentView, statuses.displacement) ~ transformPanelCanvas()
   }
 
   def selectPosition(position: Int): Unit = {
-    currentItem = position
+    statuses = statuses.copy(currentItem = position)
     runUi(reset())
   }
 
@@ -187,8 +183,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     view <~ (if (statuses.horizontalGallery) vTranslationX(translate) else vTranslationY(translate))
 
   private[this] def transformPanelCanvas(): Ui[_] = {
-    val percent = math.abs(displacement) / getSizeWidget
-    val fromLeft = displacement > 0
+    val percent = statuses.percent(getSizeWidget)
+    val fromLeft = statuses.isFromLeft
     applyTransformer(if (fromLeft) previousParentView else nextParentView, percent, fromLeft)
   }
 
@@ -203,7 +199,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   private[this] def animateViews(dest: Int, duration: Int) = {
     statuses = statuses.copy(swap = dest != 0)
     if (statuses.swap) notifyPageChangedObservers()
-    moveItemsAnimator.move(displacement, dest)
+    moveItemsAnimator.move(statuses.displacement, dest)
     moveItemsAnimator.setDuration(duration)
     moveItemsAnimator.start()
   }
@@ -226,7 +222,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     frontViewType = nextViewType
     nextViewType = previewViewType
     previewViewType = auxFront
-    currentItem = goToItem()
+    statuses = statuses.copy(currentItem = goToItem())
   }
 
   private[this] def previous(): Unit = for {
@@ -247,11 +243,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     frontViewType = previewViewType
     previewViewType = nextViewType
     nextViewType = auxFront
-    currentItem = goToItem()
+    statuses = statuses.copy(currentItem = goToItem())
   }
 
   private[this] def swapViews(): Unit = {
-    if (displacement < 0) next() else previous()
+    if (statuses.isFromLeft) previous() else next()
     runUi(reset())
   }
 
@@ -260,8 +256,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     val frontUi = generateFrontUi
     val leftUi = generateLeftUi
     val rightUi = generateRightUi
-    displacement = 0
-    statuses = statuses.copy(enabled = data.nonEmpty && data.length > 1)
+    statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
 
     moveItemsAnimator.cancel()
 
@@ -272,7 +267,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     }
 
     frontUi ~ leftUi ~ rightUi ~
-      applyTranslation(frontParentView, displacement) ~
+      applyTranslation(frontParentView, statuses.displacement) ~
       applyTranslation(nextParentView, getSizeWidget) ~
       applyTranslation(previousParentView, -getSizeWidget) ~
       (previousParentView <~ vGone) ~
@@ -283,6 +278,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   }
 
   private[this] def generateFrontUi: Ui[_] = {
+    val currentItem = statuses.currentItem
     val auxFrontViewType = getItemViewType(data(currentItem), currentItem)
 
     auxFrontViewType match {
@@ -297,6 +293,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   }
 
   private[this] def generateLeftUi: Ui[_] = {
+    val currentItem = statuses.currentItem
     val positionLeft: Int = if (currentItem - 1 < 0) data.length - 1 else currentItem - 1
     val auxPreviewViewType = getItemViewType(data(positionLeft), positionLeft)
     (auxPreviewViewType, canGoToPrevious) match {
@@ -312,6 +309,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   }
 
   private[this] def generateRightUi: Ui[_] = {
+    val currentItem = statuses.currentItem
     val positionRight: Int = if (currentItem + 1 > data.length - 1) 0 else currentItem + 1
     val auxNextViewType = getItemViewType(data(positionRight), positionRight)
     (auxNextViewType, canGoToNext) match {
@@ -460,7 +458,9 @@ case class AnimatedWorkSpacesStatuses(
   velocityTracker: Option[VelocityTracker] = None,
   lastMotionX: Float = 0,
   lastMotionY: Float = 0,
-  swap: Boolean = false) {
+  swap: Boolean = false,
+  displacement: Float = 0,
+  currentItem: Int = 0) {
 
   def deltaX(x: Float): Float = lastMotionX - x
 
@@ -469,6 +469,13 @@ case class AnimatedWorkSpacesStatuses(
   def isStopped = touchState == Stopped
 
   def isScrolling = touchState == Scrolling
+
+  def updateDisplacement(size: Int, delta: Float): AnimatedWorkSpacesStatuses =
+    copy(displacement = math.max(-size, Math.min(size, displacement - delta)))
+
+  def percent(size: Int): Float = math.abs(displacement) / size
+
+  def isFromLeft = displacement > 0
 
 }
 
