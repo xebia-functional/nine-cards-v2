@@ -7,8 +7,7 @@ import android.view.MotionEvent._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{TranslationAnimator, TranslationY}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceType._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceWidgetsHolder}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import macroid.FullDsl._
@@ -27,37 +26,37 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     translation = TranslationY,
     update = (value: Float) => {
       workSpacesStatuses = workSpacesStatuses.copy(displacement = value)
-      updateCanvas()
+      updateCanvasMenu()
     },
     end = () => {
-      resetVerticalScroll()
+      resetMenuMovement()
       Ui.nop
     }
   )
 
-  override def getItemViewTypeCount: Int = 2
-
-  override def getItemViewType(data: LauncherData, position: Int): Int = if (data.widgets) widgets else collections
-
   lazy val sizeCalculateMovement = getHeight
 
-  def isWidgetScreen = data(statuses.currentItem).widgets
+  def isMomentWorkSpace = data(statuses.currentItem).workSpaceType.isMomentWorkSpace
 
-  def isWidgetScreen(page: Int) = data(page).widgets
+  def isMomentWorkSpace(page: Int) = data(page).workSpaceType.isMomentWorkSpace
 
-  def isCollectionScreen = !isWidgetScreen
+  def isCollectionWorkSpace = !isMomentWorkSpace
 
-  def isCollectionScreen(page: Int) = !isWidgetScreen(page)
+  def isCollectionWorkSpace(page: Int) = !isMomentWorkSpace(page)
 
-  def goToWizardScreen(toRight: Boolean): Boolean = data.lift(if (toRight) {
+  def goToMomentWorkSpace(toRight: Boolean): Boolean = data.lift(if (toRight) {
     statuses.currentItem - 1
   } else {
     statuses.currentItem + 1
-  }) exists (_.widgets)
+  }) exists (_.workSpaceType.isMomentWorkSpace)
 
-  override def createView(viewType: Int): LauncherWorkSpaceHolder = viewType match {
-    case `widgets` => new LauncherWorkSpaceWidgetsHolder
-    case `collections` => new LauncherWorkSpaceCollectionsHolder(statuses.dimen)
+  override def getItemViewTypeCount: Int = 2
+
+  override def getItemViewType(data: LauncherData, position: Int): Int = data.workSpaceType.value
+
+  override def createView(viewType: Int): LauncherWorkSpaceHolder = WorkSpaceType(viewType) match {
+    case MomentWorkSpace => new LauncherWorkSpaceMomentsHolder
+    case CollectionsWorkSpace => new LauncherWorkSpaceCollectionsHolder(statuses.dimen)
   }
 
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
@@ -65,36 +64,6 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
       case Some(v: LauncherWorkSpaceCollectionsHolder) => v.populate(data.collections)
       case _ => Ui.nop
     }
-
-
-  def performVerticalScroll(delta: Float): Ui[_] = {
-    menuAnimator.cancel()
-    workSpacesStatuses = workSpacesStatuses.updateDisplacement(sizeCalculateMovement, delta)
-    updateCanvas()
-  }
-
-  def updateCanvas(): Ui[_] = {
-    val percent = 1 - workSpacesStatuses.percent(sizeCalculateMovement)
-    val tranform = workSpacesStatuses.displacement < 0 && percent > .5f
-    if (tranform) {
-      frontParentView <~ vScaleX(percent) <~ vScaleY(percent) <~ vAlpha(percent)
-    } else {
-      Ui.nop
-    }
-  }
-
-  def resetVerticalScroll() = workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false, displacement = 0)
-
-  def finishVerticalMovement() = {
-    val destiny = workSpacesStatuses.percent(sizeCalculateMovement) match {
-      case d if d > .25f => -sizeCalculateMovement / 2
-      case _ => 0
-    }
-    menuAnimator.move(workSpacesStatuses.displacement, destiny)
-    menuAnimator.setDuration(durationAnimation)
-    menuAnimator.start()
-    invalidate()
-  }
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
     if (workSpacesStatuses.openingMenu) {
@@ -104,11 +73,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
           requestDisallowInterceptTouchEvent(true)
           val deltaY = statuses.deltaY(y)
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          runUi(performVerticalScroll(deltaY))
+          runUi(performMenuMovement(deltaY))
         case ACTION_DOWN =>
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         case ACTION_CANCEL | ACTION_UP =>
-          finishVerticalMovement()
+          finishMenuMovement()
         case _ =>
       }
       true
@@ -125,11 +94,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
           requestDisallowInterceptTouchEvent(true)
           val deltaY = statuses.deltaY(y)
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          runUi(performVerticalScroll(deltaY))
+          runUi(performMenuMovement(deltaY))
         case ACTION_DOWN =>
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         case ACTION_CANCEL | ACTION_UP =>
-          finishVerticalMovement()
+          finishMenuMovement()
         case _ =>
       }
       true
@@ -154,6 +123,35 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     }
   }
 
+  private[this] def performMenuMovement(delta: Float): Ui[_] = {
+    menuAnimator.cancel()
+    workSpacesStatuses = workSpacesStatuses.updateDisplacement(sizeCalculateMovement, delta)
+    updateCanvasMenu()
+  }
+
+  private[this] def updateCanvasMenu(): Ui[_] = {
+    val percent = 1 - workSpacesStatuses.percent(sizeCalculateMovement)
+    val tranform = workSpacesStatuses.displacement < 0 && percent > .5f
+    if (tranform) {
+      frontParentView <~ vScaleX(percent) <~ vScaleY(percent) <~ vAlpha(percent)
+    } else {
+      Ui.nop
+    }
+  }
+
+  private[this] def resetMenuMovement() = workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false, displacement = 0)
+
+  private[this] def finishMenuMovement() = {
+    val destiny = workSpacesStatuses.percent(sizeCalculateMovement) match {
+      case d if d > .25f => -sizeCalculateMovement / 2
+      case _ => 0
+    }
+    menuAnimator.move(workSpacesStatuses.displacement, destiny)
+    menuAnimator.setDuration(durationAnimation)
+    menuAnimator.start()
+    invalidate()
+  }
+
 }
 
 case class LauncherWorkSpacesStatuses(
@@ -167,13 +165,28 @@ case class LauncherWorkSpacesStatuses(
 
 }
 
-object WorkSpaceType {
-  val widgets = 0
-  val collections = 1
-}
-
 class LauncherWorkSpaceHolder(implicit activityContext: ActivityContextWrapper)
   extends FrameLayout(activityContext.application)
 
-case class LauncherData(widgets: Boolean, collections: Seq[Collection] = Seq.empty)
+case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collection] = Seq.empty)
+
+sealed trait WorkSpaceType {
+  val value: Int
+  def isMomentWorkSpace: Boolean = this == MomentWorkSpace
+}
+
+case object MomentWorkSpace extends WorkSpaceType {
+  override val value: Int = 0
+}
+
+case object CollectionsWorkSpace extends WorkSpaceType {
+  override val value: Int = 1
+}
+
+object WorkSpaceType {
+  def apply(value: Int): WorkSpaceType = value match {
+    case MomentWorkSpace.value => MomentWorkSpace
+    case _ => CollectionsWorkSpace
+  }
+}
 

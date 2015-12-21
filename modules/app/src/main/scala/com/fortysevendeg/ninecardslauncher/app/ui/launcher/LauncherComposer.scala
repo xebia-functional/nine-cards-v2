@@ -35,15 +35,15 @@ trait LauncherComposer
           wire(workspaces) <~
           awsListener(AnimatedWorkSpacesListener(
             startScroll = (toRight: Boolean) => {
-              val goToWizardScreen = workspaces exists (_.goToWizardScreen(toRight))
-              val collectionScreen = workspaces exists (_.isCollectionScreen)
+              val goToWizardScreen = workspaces exists (_.goToMomentWorkSpace(toRight))
+              val collectionScreen = workspaces exists (_.isCollectionWorkSpace)
               (goToWizardScreen, collectionScreen) match {
                 case (false, true) => runUi(showFabButton())
                 case _ =>
               }
             },
             endScroll = () => {
-              val collectionScreen = workspaces exists (_.isCollectionScreen)
+              val collectionScreen = workspaces exists (_.isCollectionWorkSpace)
               if (collectionScreen) runUi(showFabButton())
             },
             onLongClick = () => runUi(drawerLayout <~ dlOpenDrawer))
