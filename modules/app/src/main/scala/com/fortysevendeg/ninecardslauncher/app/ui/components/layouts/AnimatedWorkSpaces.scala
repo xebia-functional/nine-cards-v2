@@ -29,7 +29,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  val listener = new AnimatedWorkSpacesListener
+  var listener = new AnimatedWorkSpacesListener
 
   var data: Seq[Data] = Seq.empty
 
@@ -329,58 +329,52 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     statuses = statuses.copy(dimen = Dimen(w, h))
   }
 
-  private[this] def onStatusEnabled(enabled: Boolean)(f: () => Boolean): Boolean = enabled && f()
-
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
     super.onInterceptTouchEvent(event)
-    onStatusEnabled(statuses.enabled) { () =>
-      val (action, x, y) = updateTouch(event)
-      (action, statuses.touchState) match {
-        case (ACTION_MOVE, Scrolling) =>
-          requestDisallowInterceptTouchEvent(true)
-          true
-        case (ACTION_MOVE, _) =>
-          setStateIfNeeded(x, y)
-          statuses.isScrolling
-        case (ACTION_DOWN, _) =>
-          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          statuses.isScrolling
-        case (ACTION_CANCEL | ACTION_UP, _) =>
-          computeFling()
-          statuses = statuses.copy(touchState = Stopped)
-          statuses.isScrolling
-        case _ => statuses.isScrolling
-      }
+    val (action, x, y) = updateTouch(event)
+    (action, statuses.touchState) match {
+      case (ACTION_MOVE, Scrolling) =>
+        requestDisallowInterceptTouchEvent(true)
+        true
+      case (ACTION_MOVE, _) =>
+        setStateIfNeeded(x, y)
+        !statuses.enabled || statuses.isScrolling
+      case (ACTION_DOWN, _) =>
+        statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+        !statuses.enabled || statuses.isScrolling
+      case (ACTION_CANCEL | ACTION_UP, _) =>
+        computeFling()
+        statuses = statuses.copy(touchState = Stopped)
+        !statuses.enabled || statuses.isScrolling
+      case _ => !statuses.enabled || statuses.isScrolling
     }
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
     super.onTouchEvent(event)
-    onStatusEnabled(statuses.enabled) { () =>
-      val (action, x, y) = updateTouch(event)
-      (action, statuses.touchState) match {
-        case (ACTION_MOVE, Scrolling) =>
-          requestDisallowInterceptTouchEvent(true)
-          val deltaX = statuses.deltaX(x)
-          val deltaY = statuses.deltaY(y)
-          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          if (overScroll(deltaX, deltaY)) {
-            runUi(applyTranslation(frontParentView, 0))
-          } else {
-            runUi(performScroll(if (statuses.horizontalGallery) deltaX else deltaY))
-          }
-        case (ACTION_MOVE, Stopped) => setStateIfNeeded(x, y)
-        case (ACTION_DOWN, _) =>
-          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          startLongClick()
-        case (ACTION_CANCEL | ACTION_UP, _) =>
-          resetLongClick()
-          computeFling()
-          statuses = statuses.copy(touchState = Stopped)
-        case _ =>
-      }
-      true
+    val (action, x, y) = updateTouch(event)
+    (action, statuses.touchState) match {
+      case (ACTION_MOVE, Scrolling) =>
+        requestDisallowInterceptTouchEvent(true)
+        val deltaX = statuses.deltaX(x)
+        val deltaY = statuses.deltaY(y)
+        statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+        if (overScroll(deltaX, deltaY)) {
+          runUi(applyTranslation(frontParentView, 0))
+        } else {
+          runUi(performScroll(if (statuses.horizontalGallery) deltaX else deltaY))
+        }
+      case (ACTION_MOVE, Stopped) => setStateIfNeeded(x, y)
+      case (ACTION_DOWN, _) =>
+        statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+        startLongClick()
+      case (ACTION_CANCEL | ACTION_UP, _) =>
+        resetLongClick()
+        computeFling()
+        statuses = statuses.copy(touchState = Stopped)
+      case _ =>
     }
+    true
   }
 
   protected def updateTouch(event: MotionEvent) = {
@@ -405,34 +399,36 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   }
 
   def setStateIfNeeded(x: Float, y: Float) = {
-    val xDiff = math.abs(x - statuses.lastMotionX)
-    val yDiff = math.abs(y - statuses.lastMotionY)
+    if (statuses.enabled) {
+      val xDiff = math.abs(x - statuses.lastMotionX)
+      val yDiff = math.abs(y - statuses.lastMotionY)
 
-    val xMoved = xDiff > touchSlop
-    val yMoved = yDiff > touchSlop
+      val xMoved = xDiff > touchSlop
+      val yMoved = yDiff > touchSlop
 
-    if (xMoved || yMoved) {
-      resetLongClick()
-      val penultimate = data.length - 2
-      val isScrolling = (statuses.infinite, statuses.horizontalGallery, xDiff > yDiff, moveItemsAnimator.isRunning) match {
-        case (true, true, true, _) => true
-        case (true, false, false, _) => true
-        case (false, true, true, true) if x - statuses.lastMotionX > 0 && isPosition(1) => false
-        case (false, true, true, true) if x - statuses.lastMotionX < 0 && isPosition(penultimate) => false
-        case (false, false, false, true) if y - statuses.lastMotionY > 0 && isPosition(1) => false
-        case (false, false, false, true) if y - statuses.lastMotionY < 0 && isPosition(penultimate) => false
-        case (false, true, true, _) if x - statuses.lastMotionX > 0 && !isFirst => true
-        case (false, true, true, _) if x - statuses.lastMotionX < 0 && !isLast => true
-        case (false, false, false, _) if y - statuses.lastMotionY > 0 && !isFirst => true
-        case (false, false, false, _) if y - statuses.lastMotionY < 0 && !isLast => true
-        case _ => false
+      if (xMoved || yMoved) {
+        resetLongClick()
+        val penultimate = data.length - 2
+        val isScrolling = (statuses.infinite, statuses.horizontalGallery, xDiff > yDiff, moveItemsAnimator.isRunning) match {
+          case (true, true, true, _) => true
+          case (true, false, false, _) => true
+          case (false, true, true, true) if x - statuses.lastMotionX > 0 && isPosition(1) => false
+          case (false, true, true, true) if x - statuses.lastMotionX < 0 && isPosition(penultimate) => false
+          case (false, false, false, true) if y - statuses.lastMotionY > 0 && isPosition(1) => false
+          case (false, false, false, true) if y - statuses.lastMotionY < 0 && isPosition(penultimate) => false
+          case (false, true, true, _) if x - statuses.lastMotionX > 0 && !isFirst => true
+          case (false, true, true, _) if x - statuses.lastMotionX < 0 && !isLast => true
+          case (false, false, false, _) if y - statuses.lastMotionY > 0 && !isFirst => true
+          case (false, false, false, _) if y - statuses.lastMotionY < 0 && !isLast => true
+          case _ => false
+        }
+        if (isScrolling) {
+          listener.startScroll(x - statuses.lastMotionX > 0)
+          statuses = statuses.copy(touchState = Scrolling)
+          runUi(self <~ vLayerHardware(activate = true))
+        }
+        statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
       }
-      if (isScrolling) {
-        listener.startScroll(x - statuses.lastMotionX > 0)
-        statuses = statuses.copy(touchState = Scrolling)
-        runUi(self <~ vLayerHardware(activate = true))
-      }
-      statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
     }
   }
 
@@ -480,10 +476,10 @@ case class AnimatedWorkSpacesStatuses(
 }
 
 case class AnimatedWorkSpacesListener(
-  var startScroll: (Boolean) => Unit = (b: Boolean) => (),
-  var endScroll: () => Unit = () => (),
-  var onLongClick: () => Unit = () => ())
+  startScroll: (Boolean) => Unit = (b: Boolean) => (),
+  endScroll: () => Unit = () => (),
+  onLongClick: () => Unit = () => ())
 
-case class Dimen(var width: Int = 0, var height: Int = 0)
+case class Dimen(width: Int = 0, height: Int = 0)
 
 

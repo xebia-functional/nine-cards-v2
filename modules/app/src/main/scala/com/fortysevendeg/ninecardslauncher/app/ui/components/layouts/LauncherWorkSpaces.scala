@@ -82,7 +82,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
       }
       true
     } else {
-      checkResetMenuOpened(x, y)
+      checkResetMenuOpened(action, x, y)
       super.onInterceptTouchEvent(event)
     }
   }
@@ -104,7 +104,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
       }
       true
     } else {
-      checkResetMenuOpened(x, y)
+      checkResetMenuOpened(action, x, y)
       super.onTouchEvent(event)
     }
   }
@@ -119,12 +119,21 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     }
   }
 
-  private[this] def checkResetMenuOpened(x: Float, y: Float) = if (!statuses.enabled) {
-    if (isVerticalMoving(x, y)) {
-      statuses = statuses.copy(enabled = true)
-      workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
+  private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
+    action match {
+      case ACTION_DOWN =>
+        statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+      case ACTION_MOVE =>
+        if (!statuses.enabled) {
+          if (isVerticalMoving(x, y)) {
+            resetLongClick()
+            statuses = statuses.copy(enabled = true)
+            workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
+          }
+          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+        }
+      case _ =>
     }
-    statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
   }
 
   private[this] def isVerticalMoving(x: Float, y: Float): Boolean = {
