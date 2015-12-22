@@ -1,18 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
-import android.util.{Log, AttributeSet}
+import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.MotionEvent._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{TranslationAnimator, TranslationY}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 
 class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit activityContext: ActivityContextWrapper)
   extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
@@ -66,8 +66,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     }
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
+    val (action, x, y) = updateTouch(event)
     if (workSpacesStatuses.openingMenu) {
-      val (action, x, y) = updateTouch(event)
       action match {
         case ACTION_MOVE =>
           requestDisallowInterceptTouchEvent(true)
@@ -82,13 +82,14 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
       }
       true
     } else {
+      checkResetMenuOpened(x, y)
       super.onInterceptTouchEvent(event)
     }
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
+    val (action, x, y) = updateTouch(event)
     if (workSpacesStatuses.openingMenu) {
-      val (action, x, y) = updateTouch(event)
       action match {
         case ACTION_MOVE =>
           requestDisallowInterceptTouchEvent(true)
@@ -103,11 +104,30 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
       }
       true
     } else {
+      checkResetMenuOpened(x, y)
       super.onTouchEvent(event)
     }
   }
 
   override def setStateIfNeeded(x: Float, y: Float): Unit = {
+    // We check that the user is doing up vertical swipe
+    if (isVerticalMoving(x, y)) {
+      resetLongClick()
+      workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
+    } else {
+      super.setStateIfNeeded(x, y)
+    }
+  }
+
+  private[this] def checkResetMenuOpened(x: Float, y: Float) = if (!statuses.enabled) {
+    if (isVerticalMoving(x, y)) {
+      statuses = statuses.copy(enabled = true)
+      workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
+    }
+    statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+  }
+
+  private[this] def isVerticalMoving(x: Float, y: Float): Boolean = {
     val xDiff = math.abs(x - statuses.lastMotionX)
     val yDiff = math.abs(y - statuses.lastMotionY)
 
@@ -118,14 +138,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     }
 
     val yMoved = yDiff > touchSlop
-
-    // We check that the user is doing up vertical swipe
-    if (yMoved && rightDirection && (yDiff > xDiff)) {
-      resetLongClick()
-      workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
-    } else {
-      super.setStateIfNeeded(x, y)
-    }
+    yMoved && rightDirection && (yDiff > xDiff)
   }
 
   private[this] def performMenuMovement(delta: Float): Ui[_] = {
@@ -147,36 +160,32 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def resetMenuMovement() = workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false)
 
   private[this] def animateViewsMenuMovement(dest: Int, duration: Int) = {
-    Log.d("9cards", s"displacement => ${workSpacesStatuses.displacement} dest => $dest duration => $duration")
-    frontView foreach { view =>
-      moveItemsAnimator.setTarget(view)
-      menuAnimator.move(workSpacesStatuses.displacement, dest)
-      menuAnimator.setDuration(duration)
-      menuAnimator.start()
-    }
+    menuAnimator.move(workSpacesStatuses.displacement, dest)
+    menuAnimator.setDuration(duration)
+    menuAnimator.start()
     invalidate()
   }
 
-  def snapMenuMovement(velocity: Float): Unit = {
+  private[this] def snapMenuMovement(velocity: Float): Unit = {
     moveItemsAnimator.cancel()
     val destiny = (velocity, workSpacesStatuses.displacement) match {
       case (v, d) if v <= 0 && d < 0 =>
-        workSpacesStatuses = workSpacesStatuses.copy(openedMenu = true)
+        setOpenedMenu(true)
         -sizeCalculateMovement / 2
       case _ =>
-        workSpacesStatuses = workSpacesStatuses.copy(openedMenu = false)
+        setOpenedMenu(false)
         0
     }
     animateViewsMenuMovement(destiny, calculateDurationByVelocity(velocity, durationAnimation))
   }
 
-  def snapDestinationMenuMovement(): Unit = {
+  private[this] def snapDestinationMenuMovement(): Unit = {
     val destiny = workSpacesStatuses.percent(sizeCalculateMovement) match {
       case d if d > .25f =>
-        workSpacesStatuses = workSpacesStatuses.copy(openedMenu = true)
+        setOpenedMenu(true)
         -sizeCalculateMovement / 2
       case _ =>
-        workSpacesStatuses = workSpacesStatuses.copy(openedMenu = false)
+        setOpenedMenu(false)
         0
     }
     animateViewsMenuMovement(destiny, durationAnimation)
@@ -189,6 +198,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
       if (math.abs(tracker.getYVelocity) > minimumVelocity) snapMenuMovement(tracker.getYVelocity) else snapDestinationMenuMovement()
       tracker.recycle()
       statuses = statuses.copy(velocityTracker = None)
+  }
+
+  private[this] def setOpenedMenu(openedMenu: Boolean): Unit = {
+    workSpacesStatuses = workSpacesStatuses.copy(openedMenu = openedMenu)
+    statuses = statuses.copy(enabled = !openedMenu)
   }
 
 }

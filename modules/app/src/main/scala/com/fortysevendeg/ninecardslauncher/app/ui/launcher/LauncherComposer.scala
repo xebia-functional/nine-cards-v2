@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
-import android.view.{Gravity, View, WindowManager}
+import android.view.{View, WindowManager}
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -48,10 +48,6 @@ trait LauncherComposer
             },
             onLongClick = () => runUi(drawerLayout <~ dlOpenDrawer))
           )))) ~
-      (content <~ On.longClick {
-        (toast("I’m a caption") <~ gravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL) <~ fry) ~
-          Ui(true)
-      }) ~
       (searchPanel <~ searchContentStyle) ~
       (menuAvatar <~ menuAvatarStyle) ~
       initFabButton ~
