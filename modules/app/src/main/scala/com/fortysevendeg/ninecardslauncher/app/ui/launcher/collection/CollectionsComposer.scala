@@ -20,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, LauncherWorkSpaces}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{LauncherWorkSpaces, WorkSpaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherTags
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
@@ -39,7 +39,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait CollectionsComposer
   extends Styles
   with ActionsBehaviours
-  with FabButtonBehaviour
   with LauncherExecutor {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint =>
@@ -89,6 +88,10 @@ trait CollectionsComposer
 
   lazy val actionFragmentContent = Option(findView(TR.action_fragment_content))
 
+  lazy val menuCollectionRoot = Option(findView(TR.menu_collection_root))
+
+  lazy val menuCollectionContent = Option(findView(TR.menu_collection_content))
+
   var dockApps: Seq[DockApp] = Seq.empty
 
   def showMessage(message: Int): Ui[_] = drawerLayout <~ uiSnackbarShort(message)
@@ -108,13 +111,7 @@ trait CollectionsComposer
       (workspaces <~
         lwsData(collections, selectedPageDefault) <~
         awsAddPageChangedObserver(currentPage => {
-          val widgetScreen = workspaces exists (_.isMomentWorkSpace(currentPage))
-          runUi((paginationPanel <~ reloadPager(currentPage)) ~
-            (if (widgetScreen) {
-              hideFabButton
-            } else {
-              Ui.nop
-            }))
+          runUi(paginationPanel <~ reloadPager(currentPage))
         }
         )) ~
       (appDrawerPanel <~ fillAppDrawer) ~
@@ -134,7 +131,11 @@ trait CollectionsComposer
 
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
 
+  def closeCollectionMenu(): Ui[_] = (menuCollectionRoot <~ vGone) ~ (workspaces <~ lwsCloseMenu)
+
   def isMenuVisible: Boolean = drawerLayout exists (_.isDrawerOpen(GravityCompat.START))
+
+  def isCollectionMenuVisible: Boolean = workspaces exists (_.workSpacesStatuses.openedMenu)
 
   def goToWorkspace(page: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (workspaces <~ lwsSelect(page)) ~
@@ -161,13 +162,13 @@ trait CollectionsComposer
   }
 
   protected def getItemsForFabMenu(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]) = Seq(
-    getUi(w[FabItemMenu] <~ fabButtonCreateCollectionStyle <~ FuncOn.click { view: View =>
+    getUi(w[WorkSpaceItemMenu] <~ workspaceButtonCreateCollectionStyle <~ FuncOn.click { view: View =>
       showAction(f[NewCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection))
     }),
-    getUi(w[FabItemMenu] <~ fabButtonMyCollectionsStyle <~ FuncOn.click { view: View =>
+    getUi(w[WorkSpaceItemMenu] <~ workspaceButtonMyCollectionsStyle <~ FuncOn.click { view: View =>
       showAction(f[PrivateCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_my_collections))
     }),
-    getUi(w[FabItemMenu] <~ fabButtonPublicCollectionStyle <~ FuncOn.click { view: View =>
+    getUi(w[WorkSpaceItemMenu] <~ workspaceButtonPublicCollectionStyle <~ FuncOn.click { view: View =>
       showAction(f[PublicCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_public_collection))
     })
   )
@@ -209,24 +210,27 @@ trait CollectionsComposer
     w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
 
+  private[this] def tagEquals(view: View, id: Int, value: String) =
+    Option(view.getTag(id)).isDefined && view.getTag(id).equals(value)
+
   private[this] def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], view: View, color: Int, map: Map[String, String] = Map.empty)
     (implicit context: ActivityContextWrapper, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] = {
-    val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
-    val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
-    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
-    val (endX: Int, endY: Int) = fabButton map calculateAnchorViewPosition getOrElse(0, 0)
+    val sizeIconWorkSpaceMenuItem = resGetDimensionPixelSize(R.dimen.size_workspace_menu_item)
+    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.workspace_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
+    val x = startX + (sizeIconWorkSpaceMenuItem / 2)
+    val y = startY + (sizeIconWorkSpaceMenuItem / 2)
     val args = new Bundle()
-    args.putInt(BaseActionFragment.startRevealPosX, startX + (sizeIconFabMenuItem / 2))
-    args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
-    args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
-    args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
+    args.putInt(BaseActionFragment.sizeIcon, sizeIconWorkSpaceMenuItem)
+    args.putInt(BaseActionFragment.startRevealPosX, x)
+    args.putInt(BaseActionFragment.startRevealPosY, y)
+    args.putInt(BaseActionFragment.endRevealPosX, x)
+    args.putInt(BaseActionFragment.endRevealPosY, y)
     map foreach {
       case (key, value) => args.putString(key, value)
     }
     args.putInt(BaseActionFragment.colorPrimary, color)
-    swapFabButton(doUpdateBars = false) ~
-      (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~
+    (fragmentContent <~ fragmentContentStyle(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
 

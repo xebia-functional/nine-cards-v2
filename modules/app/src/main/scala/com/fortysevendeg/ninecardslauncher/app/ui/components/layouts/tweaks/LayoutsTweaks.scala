@@ -74,9 +74,15 @@ object LauncherWorkSpacesTweaks {
       workspaces.selectPosition(page)
       workspaces.reset()
 
+
   }
+  def lwsListener(listener: LauncherWorkSpacesListener) = Tweak[W] (_.workSpacesListener = listener)
 
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
+
+  def lwsCloseMenu = Tweak[W] { view =>
+    runUi(view.closeMenu())
+  }
 
 }
 
@@ -84,9 +90,7 @@ object AnimatedWorkSpacesTweaks {
 
   type W = AnimatedWorkSpaces[_, _]
 
-  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] { view =>
-    view.listener = listener
-  }
+  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
   def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
 
@@ -111,6 +115,28 @@ object FabItemMenuTweaks {
   def fimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
 
   def fimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
+
+}
+
+object WorkSpaceItemMenuTweaks {
+  type W = WorkSpaceItemMenu
+
+  def wimBackgroundColor(color: Int) = Tweak[W](_.icon foreach {
+    ic =>
+      Lollipop ifSupportedThen {
+        ic.setBackgroundColor(color)
+      } getOrElse {
+        val d = new ShapeDrawable(new OvalShape)
+        d.getPaint.setColor(color)
+        ic.setBackground(d)
+      }
+  })
+
+  def wimSrc(res: Int) = Tweak[W](_.icon foreach (_.setImageResource(res)))
+
+  def wimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
+
+  def wimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
 
 }
 

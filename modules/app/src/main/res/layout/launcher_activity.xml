@@ -31,25 +31,11 @@
 
         </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/fab_menu_content"
-            style="@style/LauncherFabMenuContent">
-
-            <LinearLayout
-                android:id="@+id/fab_menu"
-                style="@style/FabMenu">
-
-                <android.support.design.widget.FloatingActionButton
-                    style="@style/LauncherFabButton"
-                    android:id="@+id/fab_button"/>
-
-            </LinearLayout>
-
-        </FrameLayout>
+        <include layout="@layout/workspace_menu_layout"/>
 
         <include layout="@layout/app_drawer_layout"/>
 
-        <include layout="@layout/action_content_include"/>
+        <include layout="@layout/action_content_layout"/>
 
     </FrameLayout>
 

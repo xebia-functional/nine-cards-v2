@@ -272,8 +272,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       applyTranslation(previousParentView, -getSizeWidget) ~
       (previousParentView <~ vGone) ~
       (nextParentView <~ vGone <~ vBringToFront) ~
-      (frontParentView <~ vClearAnimation <~ vVisible <~ vBringToFront) ~
-      Ui(listener.endScroll())
+      (frontParentView <~ vClearAnimation <~ vVisible <~ vBringToFront)
 
   }
 
@@ -423,7 +422,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
           case _ => false
         }
         if (isScrolling) {
-          listener.startScroll(x - statuses.lastMotionX > 0)
           statuses = statuses.copy(touchState = Scrolling)
           runUi(self <~ vLayerHardware(activate = true))
         }
@@ -476,8 +474,6 @@ case class AnimatedWorkSpacesStatuses(
 }
 
 case class AnimatedWorkSpacesListener(
-  startScroll: (Boolean) => Unit = (b: Boolean) => (),
-  endScroll: () => Unit = () => (),
   onLongClick: () => Unit = () => ())
 
 case class Dimen(width: Int = 0, height: Int = 0)

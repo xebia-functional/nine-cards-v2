@@ -138,8 +138,21 @@
         <item name="borderWidth">0dp</item>
         <item name="elevation">@dimen/elevation_fab_button</item>
         <item name="pressedTranslationZ">@dimen/elevation_fab_button_pressed</item>
-        <item name="backgroundTint">@color/collection_fab_button</item>
-        <item name="rippleColor">@color/collection_fab_button_ripple</item>
+    </style>
+
+    <!-- Collection Menu -->
+
+    <style name="LauncherCollectionMenuRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/background_dialog</item>
+    </style>
+
+    <style name="LauncherCollectionMenuContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|center_horizontal</item>
+        <item name="android:orientation">horizontal</item>
     </style>
 
 </resources>

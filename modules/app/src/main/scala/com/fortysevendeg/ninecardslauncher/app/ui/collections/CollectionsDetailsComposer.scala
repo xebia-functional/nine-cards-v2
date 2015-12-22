@@ -37,7 +37,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehavi
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
@@ -147,6 +146,8 @@ trait CollectionsDetailsComposer
       adapter.notifyChanged(vp.getCurrentItem)
     }) getOrElse Ui.nop
 
+
+
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>
@@ -200,6 +201,11 @@ trait CollectionsDetailsComposer
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
   } yield fragment
+
+  def turnOffFragmentContent(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
+    (fragmentContent <~
+      colorContentDialog(paint = false) <~
+      fragmentContentStyle(false)) ~ updateBarsInFabMenuHide
 
   protected def addCardsToCurrentFragment(c: Seq[Card]) = for {
     adapter <- getAdapter
@@ -356,6 +362,7 @@ trait CollectionsDetailsComposer
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
     val (endX: Int, endY: Int) = fabButton map calculateAnchorViewPosition getOrElse(0, 0)
     val args = new Bundle()
+    args.putInt(BaseActionFragment.sizeIcon, sizeIconFabMenuItem)
     args.putInt(BaseActionFragment.startRevealPosX, startX + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
     args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))

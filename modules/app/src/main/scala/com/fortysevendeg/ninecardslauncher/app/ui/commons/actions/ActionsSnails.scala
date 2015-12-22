@@ -16,7 +16,7 @@ import scala.concurrent.Promise
 
 object ActionsSnails {
 
-  def revealIn(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def revealIn(x: Int, y: Int, w: Int, h: Int, sizeIcon: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
@@ -24,7 +24,7 @@ object ActionsSnails {
       val duration = resGetInteger(R.integer.anim_duration_normal)
 
       Lollipop ifSupportedThen {
-        val startRadius = resGetDimensionPixelSize(R.dimen.size_fab_menu_item) / 2
+        val startRadius = sizeIcon / 2
         val endRadius = SnailsUtils.calculateRadius(x, y, w, h)
         circularReveal(view, x, y, w, h, duration, startRadius, endRadius, animPromise.success())
       } getOrElse {

@@ -23,6 +23,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   var workSpacesStatuses = LauncherWorkSpacesStatuses()
 
+  var workSpacesListener = LauncherWorkSpacesListener()
+
   val menuAnimator = new TranslationAnimator(
     update = (value: Float) => {
       workSpacesStatuses = workSpacesStatuses.copy(displacement = value)
@@ -43,12 +45,6 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def isCollectionWorkSpace = !isMomentWorkSpace
 
   def isCollectionWorkSpace(page: Int) = !isMomentWorkSpace(page)
-
-  def goToMomentWorkSpace(toRight: Boolean): Boolean = data.lift(if (toRight) {
-    statuses.currentItem - 1
-  } else {
-    statuses.currentItem + 1
-  }) exists (_.workSpaceType.isMomentWorkSpace)
 
   override def getItemViewTypeCount: Int = 2
 
@@ -112,12 +108,21 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   override def setStateIfNeeded(x: Float, y: Float): Unit = {
     // We check that the user is doing up vertical swipe
     if (isVerticalMoving(x, y)) {
+      workSpacesListener.onStartOpenMenu()
       resetLongClick()
       workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
     } else {
       super.setStateIfNeeded(x, y)
     }
   }
+
+  def closeMenu(): Ui[_] = if (workSpacesStatuses.openedMenu) {
+    Ui {
+      setOpenedMenu(false)
+      animateViewsMenuMovement(0, durationAnimation)
+      invalidate()
+    }
+  } else Ui.nop
 
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
     action match {
@@ -157,16 +162,21 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   private[this] def updateCanvasMenu(): Ui[_] = {
-    val percent = 1 - workSpacesStatuses.percent(sizeCalculateMovement)
-    val transform = workSpacesStatuses.displacement < 0 && percent > .5f
+    val percent = workSpacesStatuses.percent(sizeCalculateMovement)
+    val updatePercent = 1 - workSpacesStatuses.percent(sizeCalculateMovement)
+    val transform = workSpacesStatuses.displacement < 0 && updatePercent > .5f
     if (transform) {
-      frontParentView <~ vScaleX(percent) <~ vScaleY(percent) <~ vAlpha(percent)
+      workSpacesListener.onUpdateOpenMenu(percent * 2)
+      frontParentView <~ vScaleX(updatePercent) <~ vScaleY(updatePercent) <~ vAlpha(updatePercent)
     } else {
       Ui.nop
     }
   }
 
-  private[this] def resetMenuMovement() = workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false)
+  private[this] def resetMenuMovement() = {
+    workSpacesListener.onEndOpenMenu(workSpacesStatuses.openedMenu)
+    workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false)
+  }
 
   private[this] def animateViewsMenuMovement(dest: Int, duration: Int) = {
     menuAnimator.move(workSpacesStatuses.displacement, dest)
@@ -227,6 +237,11 @@ case class LauncherWorkSpacesStatuses(
   def percent(size: Int): Float = math.abs(displacement) / size
 
 }
+
+case class LauncherWorkSpacesListener(
+  onStartOpenMenu: () => Unit = () => (),
+  onUpdateOpenMenu: (Float) => Unit = (f) => (),
+  onEndOpenMenu: (Boolean) => Unit = (b) => ())
 
 class LauncherWorkSpaceHolder(implicit activityContext: ActivityContextWrapper)
   extends FrameLayout(activityContext.application)

@@ -9,7 +9,8 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpaces}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpaces, LauncherWorkSpacesListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{DrawerComposer, DrawerListeners}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -30,28 +31,23 @@ trait LauncherComposer
         runUi(goToMenuOption(itemId))
         true
       })) ~
+      (menuCollectionRoot <~ vGone) ~
       (workspacesContent <~
         vgAddView(getUi(w[LauncherWorkSpaces] <~
           wire(workspaces) <~
+          lwsListener(
+            LauncherWorkSpacesListener(
+              onStartOpenMenu = () => (),
+              onUpdateOpenMenu = (percent: Float) => (),
+              onEndOpenMenu = (opened: Boolean) => runUi(menuCollectionRoot <~ (if (opened) vVisible else vGone))
+            )
+          ) <~
           awsListener(AnimatedWorkSpacesListener(
-            startScroll = (toRight: Boolean) => {
-              val goToWizardScreen = workspaces exists (_.goToMomentWorkSpace(toRight))
-              val collectionScreen = workspaces exists (_.isCollectionWorkSpace)
-              (goToWizardScreen, collectionScreen) match {
-                case (false, true) => runUi(showFabButton())
-                case _ =>
-              }
-            },
-            endScroll = () => {
-              val collectionScreen = workspaces exists (_.isCollectionWorkSpace)
-              if (collectionScreen) runUi(showFabButton())
-            },
             onLongClick = () => runUi(drawerLayout <~ dlOpenDrawer))
           )))) ~
       (searchPanel <~ searchContentStyle) ~
       (menuAvatar <~ menuAvatarStyle) ~
-      initFabButton ~
-      loadMenuItems(getItemsForFabMenu) ~
+      (menuCollectionContent <~ vgAddViews(getItemsForFabMenu)) ~
       (burgerIcon <~ burgerButtonStyle <~ On.click(
         drawerLayout <~ dlOpenDrawer
       )) ~
@@ -72,8 +68,8 @@ trait LauncherComposer
 
   def backByPriority(implicit context: ActivityContextWrapper, manager: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] = if (isMenuVisible) {
     closeMenu()
-  } else if (fabMenuOpened) {
-    swapFabButton()
+  } else if (isCollectionMenuVisible) {
+    closeCollectionMenu()
   } else if (isDrawerVisible) {
     revealOutDrawer
   } else if (isActionShowed) {
@@ -82,10 +78,15 @@ trait LauncherComposer
     Ui.nop
   }
 
+  def turnOffFragmentContent(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
+    fragmentContent <~
+      fragmentContentStyle(false)
+
   private[this] def prepareBars(implicit context: ActivityContextWrapper) =
     KitKat.ifSupportedThen {
       Ui(getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
         (content <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
+        (menuCollectionRoot <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
         (drawerContent <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
         (actionFragmentContent <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
         (drawerLayout <~ vBackground(R.drawable.background_workspace))
