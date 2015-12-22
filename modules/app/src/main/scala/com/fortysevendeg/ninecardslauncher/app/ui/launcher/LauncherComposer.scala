@@ -68,12 +68,12 @@ trait LauncherComposer
 
   def backByPriority(implicit context: ActivityContextWrapper, manager: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] = if (isMenuVisible) {
     closeMenu()
-  } else if (isCollectionMenuVisible) {
-    closeCollectionMenu()
   } else if (isDrawerVisible) {
     revealOutDrawer
   } else if (isActionShowed) {
     unrevealActionFragment
+  } else if (isCollectionMenuVisible) {
+    closeCollectionMenu()
   } else {
     Ui.nop
   }
