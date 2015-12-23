@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
+import android.graphics.Color
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.{View, WindowManager}
@@ -7,10 +8,11 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpaces, LauncherWorkSpacesListener}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{DrawerComposer, DrawerListeners}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -20,9 +22,11 @@ import macroid._
 
 trait LauncherComposer
   extends CollectionsComposer
-  with DrawerComposer {
+    with DrawerComposer {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with DrawerListeners =>
+
+  val maxBackgroundPercent: Float = 0.4f
 
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
     prepareBars ~
@@ -37,9 +41,9 @@ trait LauncherComposer
           wire(workspaces) <~
           lwsListener(
             LauncherWorkSpacesListener(
-              onStartOpenMenu = () => (),
-              onUpdateOpenMenu = (percent: Float) => (),
-              onEndOpenMenu = (opened: Boolean) => runUi(menuCollectionRoot <~ (if (opened) vVisible else vGone))
+              onStartOpenMenu = startOpenMenu,
+              onUpdateOpenMenu = updateOpenMenu,
+              onEndOpenMenu = closeMenu
             )
           ) <~
           awsListener(AnimatedWorkSpacesListener(
@@ -79,8 +83,32 @@ trait LauncherComposer
   }
 
   def turnOffFragmentContent(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
-    fragmentContent <~
-      fragmentContentStyle(false)
+    fragmentContent <~ vClickable(false)
+
+  private[this] def startOpenMenu()(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
+    (menuCollectionRoot <~ vVisible <~ vClearClick) ~
+      (appDrawerPanel <~ fade(out = true)) ~
+      (paginationPanel <~ fade(out = true)) ~
+      (searchPanel <~ fade(out = true))
+
+  private[this] def updateOpenMenu(percent: Float): Ui[_] = {
+    val backgroundPercent = maxBackgroundPercent * percent
+    val colorBackground = ColorsUtils.setAlpha(Color.BLACK, backgroundPercent)
+    val height = (menuCollectionContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
+    val translate = height - (height * percent)
+    (menuCollectionRoot <~ vBackgroundColor(colorBackground)) ~
+      (menuCollectionContent <~ vTranslationY(translate))
+  }
+
+  private[this] def closeMenu(opened: Boolean)(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
+    if (opened) {
+      menuCollectionRoot <~ On.click(closeCollectionMenu())
+    } else {
+      (appDrawerPanel <~ fade()) ~
+        (paginationPanel <~ fade()) ~
+        (searchPanel <~ fade()) ~
+        (menuCollectionRoot <~ vGone)
+    }
 
   private[this] def prepareBars(implicit context: ActivityContextWrapper) =
     KitKat.ifSupportedThen {

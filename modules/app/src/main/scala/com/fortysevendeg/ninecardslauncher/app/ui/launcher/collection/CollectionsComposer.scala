@@ -131,7 +131,7 @@ trait CollectionsComposer
 
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
 
-  def closeCollectionMenu(): Ui[_] = (menuCollectionRoot <~ vGone) ~ (workspaces <~ lwsCloseMenu)
+  def closeCollectionMenu(): Ui[_] = workspaces <~ lwsCloseMenu
 
   def isMenuVisible: Boolean = drawerLayout exists (_.isDrawerOpen(GravityCompat.START))
 
@@ -230,7 +230,7 @@ trait CollectionsComposer
       case (key, value) => args.putString(key, value)
     }
     args.putInt(BaseActionFragment.colorPrimary, color)
-    (fragmentContent <~ fragmentContentStyle(true)) ~
+    (fragmentContent <~ vClickable(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
 

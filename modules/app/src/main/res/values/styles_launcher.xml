@@ -145,7 +145,7 @@
     <style name="LauncherCollectionMenuRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/background_dialog</item>
+        <item name="android:clipToPadding">false</item>
     </style>
 
     <style name="LauncherCollectionMenuContent">

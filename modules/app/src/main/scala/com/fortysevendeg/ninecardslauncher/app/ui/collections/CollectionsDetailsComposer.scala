@@ -205,7 +205,7 @@ trait CollectionsDetailsComposer
   def turnOffFragmentContent(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
     (fragmentContent <~
       colorContentDialog(paint = false) <~
-      fragmentContentStyle(false)) ~ updateBarsInFabMenuHide
+      vClickable(false)) ~ updateBarsInFabMenuHide
 
   protected def addCardsToCurrentFragment(c: Seq[Card]) = for {
     adapter <- getAdapter
@@ -375,7 +375,7 @@ trait CollectionsDetailsComposer
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
     swapFabButton(doUpdateBars = false) ~
-      (fragmentContent <~ colorContentDialog(paint = true) <~ fragmentContentStyle(true)) ~
+      (fragmentContent <~ colorContentDialog(paint = true) <~ vClickable(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
 

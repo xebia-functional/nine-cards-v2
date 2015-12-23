@@ -108,7 +108,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   override def setStateIfNeeded(x: Float, y: Float): Unit = {
     // We check that the user is doing up vertical swipe
     if (isVerticalMoving(x, y)) {
-      workSpacesListener.onStartOpenMenu()
+      runUi(workSpacesListener.onStartOpenMenu())
       resetLongClick()
       workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
     } else {
@@ -166,7 +166,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     val updatePercent = 1 - workSpacesStatuses.percent(sizeCalculateMovement)
     val transform = workSpacesStatuses.displacement < 0 && updatePercent > .5f
     if (transform) {
-      workSpacesListener.onUpdateOpenMenu(percent * 2)
+      runUi(workSpacesListener.onUpdateOpenMenu(percent * 2))
       frontParentView <~ vScaleX(updatePercent) <~ vScaleY(updatePercent) <~ vAlpha(updatePercent)
     } else {
       Ui.nop
@@ -174,7 +174,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   private[this] def resetMenuMovement() = {
-    workSpacesListener.onEndOpenMenu(workSpacesStatuses.openedMenu)
+    runUi(workSpacesListener.onEndOpenMenu(workSpacesStatuses.openedMenu))
     workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false)
   }
 
@@ -239,9 +239,9 @@ case class LauncherWorkSpacesStatuses(
 }
 
 case class LauncherWorkSpacesListener(
-  onStartOpenMenu: () => Unit = () => (),
-  onUpdateOpenMenu: (Float) => Unit = (f) => (),
-  onEndOpenMenu: (Boolean) => Unit = (b) => ())
+  onStartOpenMenu: () => Ui[_] = () => Ui.nop,
+  onUpdateOpenMenu: (Float) => Ui[_] = (f) => Ui.nop,
+  onEndOpenMenu: (Boolean) => Ui[_] = (b) => Ui.nop)
 
 class LauncherWorkSpaceHolder(implicit activityContext: ActivityContextWrapper)
   extends FrameLayout(activityContext.application)
