@@ -101,17 +101,17 @@ trait BaseActionFragment
   }
 
   def reveal: Ui[_] = {
-    val projection = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultValue, defaultValue)
+    val (x, y) = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultValue, defaultValue)
     val ratioScaleToolbar = toolbar map (tb => tb.getHeight.toFloat / height.toFloat) getOrElse 0f
-    (rootView <~~ revealIn(projection._1, projection._2, width, height, sizeIcon)) ~~
+    (rootView <~~ revealIn(x, y, width, height, sizeIcon)) ~~
       (transitionView <~~ scaleToToolbar(ratioScaleToolbar)) ~~
       (rootContent <~~ showContent()) ~~
       (if (useFab) fab <~~ showFab() else Ui.nop)
   }
 
   def unreveal(): Ui[_] = {
-    val projection = rootView map (projectionScreenPositionInView(_, endPosX, endPosY)) getOrElse(defaultValue, defaultValue)
-    onStartFinishAction ~ (rootView <~~ revealOut(projection._1, projection._2, width, height)) ~~ onEndFinishAction
+    val (x, y) = rootView map (projectionScreenPositionInView(_, endPosX, endPosY)) getOrElse(defaultValue, defaultValue)
+    onStartFinishAction ~ (rootView <~~ revealOut(x, y, width, height)) ~~ onEndFinishAction
   }
 
   def showError(message: Int, action: => Unit): Ui[_] =
