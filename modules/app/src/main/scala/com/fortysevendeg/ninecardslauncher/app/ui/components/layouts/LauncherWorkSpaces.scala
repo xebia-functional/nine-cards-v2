@@ -7,12 +7,15 @@ import android.view.MotionEvent._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit activityContext: ActivityContextWrapper)
   extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
@@ -29,10 +32,6 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     update = (value: Float) => {
       workSpacesStatuses = workSpacesStatuses.copy(displacement = value)
       updateCanvasMenu()
-    },
-    end = () => {
-      resetMenuMovement()
-      Ui.nop
     }
   )
 
@@ -117,11 +116,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   def closeMenu(): Ui[_] = if (workSpacesStatuses.openedMenu) {
-    Ui {
-      setOpenedMenu(false)
-      animateViewsMenuMovement(0, durationAnimation)
-      invalidate()
-    }
+    setOpenedMenu(false)
+    animateViewsMenuMovement(0, durationAnimation)
   } else Ui.nop
 
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
@@ -166,26 +162,24 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     val updatePercent = 1 - workSpacesStatuses.percent(sizeCalculateMovement)
     val transform = workSpacesStatuses.displacement < 0 && updatePercent > .5f
     if (transform) {
-      runUi(workSpacesListener.onUpdateOpenMenu(percent * 2))
-      frontParentView <~ vScaleX(updatePercent) <~ vScaleY(updatePercent) <~ vAlpha(updatePercent)
+      workSpacesListener.onUpdateOpenMenu(percent * 2) ~
+        (frontParentView <~ vScaleX(updatePercent) <~ vScaleY(updatePercent) <~ vAlpha(updatePercent))
     } else {
       Ui.nop
     }
   }
 
-  private[this] def resetMenuMovement() = {
-    runUi(workSpacesListener.onEndOpenMenu(workSpacesStatuses.openedMenu))
+  private[this] def resetMenuMovement(): Ui[_] = {
     workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false)
+    workSpacesListener.onEndOpenMenu(workSpacesStatuses.openedMenu)
   }
 
-  private[this] def animateViewsMenuMovement(dest: Int, duration: Int) = {
-    menuAnimator.move(workSpacesStatuses.displacement, dest)
-    menuAnimator.setDuration(duration)
-    menuAnimator.start()
-    invalidate()
-  }
+  private[this] def animateViewsMenuMovement(dest: Int, duration: Int): Ui[_] =
+    (this <~
+      vInvalidate <~~
+      menuAnimator.move(workSpacesStatuses.displacement, dest, duration)) ~~ resetMenuMovement()
 
-  private[this] def snapMenuMovement(velocity: Float): Unit = {
+  private[this] def snapMenuMovement(velocity: Float): Ui[_] = {
     moveItemsAnimator.cancel()
     val destiny = (velocity, workSpacesStatuses.displacement) match {
       case (v, d) if v <= 0 && d < 0 =>
@@ -198,7 +192,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     animateViewsMenuMovement(destiny, calculateDurationByVelocity(velocity, durationAnimation))
   }
 
-  private[this] def snapDestinationMenuMovement(): Unit = {
+  private[this] def snapDestinationMenuMovement(): Ui[_] = {
     val destiny = workSpacesStatuses.percent(sizeCalculateMovement) match {
       case d if d > .25f =>
         setOpenedMenu(true)
@@ -208,13 +202,16 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
         0
     }
     animateViewsMenuMovement(destiny, durationAnimation)
-    invalidate()
   }
 
   private[this] def computeFlingMenuMovement() = statuses.velocityTracker foreach {
     tracker =>
       tracker.computeCurrentVelocity(1000, maximumVelocity)
-      if (math.abs(tracker.getYVelocity) > minimumVelocity) snapMenuMovement(tracker.getYVelocity) else snapDestinationMenuMovement()
+      runUi(
+        if (math.abs(tracker.getYVelocity) > minimumVelocity)
+          snapMenuMovement(tracker.getYVelocity)
+        else
+          snapDestinationMenuMovement())
       tracker.recycle()
       statuses = statuses.copy(velocityTracker = None)
   }
@@ -250,6 +247,7 @@ case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collectio
 
 sealed trait WorkSpaceType {
   val value: Int
+
   def isMomentWorkSpace: Boolean = this == MomentWorkSpace
 }
 

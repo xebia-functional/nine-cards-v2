@@ -3,13 +3,18 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.commons
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator, ObjectAnimator}
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import macroid.Ui
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher2.R
+import macroid.{Snail, ContextWrapper, Ui}
 import macroid.FullDsl._
+
+import scala.concurrent.Promise
 
 class TranslationAnimator(
   translation: Translation = NoTranslation,
-  update: (Float) => Ui[_],
-  end: () => Ui[_]) {
+  update: (Float) => Ui[_])(implicit context: ContextWrapper) {
+
+  val duration = resGetInteger(R.integer.anim_duration_normal)
 
   private[this] val animator: ValueAnimator = translation match {
     case NoTranslation => new ValueAnimator
@@ -19,25 +24,31 @@ class TranslationAnimator(
       objectAnimator
   }
   animator.setInterpolator(new DecelerateInterpolator())
-  animator.addListener(new AnimatorListenerAdapter() {
-    override def onAnimationEnd(animation: Animator) = {
-      runUi(end())
-      super.onAnimationEnd(animation)
-    }
-  })
   animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
     override def onAnimationUpdate(value: ValueAnimator) = runUi(update(value.getAnimatedValue.asInstanceOf[Float]))
   })
 
-  def start(): Unit = animator.start()
+  def move(
+    from: Float,
+    to: Float,
+    duration: Int = duration,
+    attachTarget: Boolean = false): Snail[View] = Snail[View] { view =>
+    val promise = Promise[Unit]()
+    animator.removeAllListeners()
+    animator.addListener(new AnimatorListenerAdapter() {
+      override def onAnimationEnd(animation: Animator) = {
+        super.onAnimationEnd(animation)
+        promise.success()
+      }
+    })
+    if (attachTarget) animator.setTarget(view)
+    animator.setFloatValues(from, to)
+    animator.setDuration(duration)
+    animator.start()
+    promise.future
+  }
 
   def cancel(): Unit = animator.cancel()
-
-  def setTarget(view: View): Unit = animator.setTarget(view)
-
-  def move(from: Float, to: Float): Unit = animator.setFloatValues(from, to)
-
-  def setDuration(duration: Long): Unit = animator.setDuration(duration)
 
   def isRunning: Boolean = animator.isRunning
 

@@ -21,9 +21,8 @@ import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Transformer, Tweak, Ui}
 
@@ -61,7 +60,9 @@ object ExtraTweaks {
 
   def vClickable(clickable: Boolean): Tweak[FrameLayout] = Tweak[View]( _.setClickable(clickable))
 
-  def vClearClick: Tweak[FrameLayout] = Tweak[View]( _.setOnClickListener(javaNull))
+  def vClearClick: Tweak[View] = Tweak[View]( _.setOnClickListener(javaNull))
+
+  def vInvalidate: Tweak[View] = Tweak[View]( _.invalidate())
 
   def vPopupMenuShow(menu: Int, onMenuItemClickListener: (MenuItem) => Boolean)(implicit contextWrapper: ContextWrapper) =
     Tweak[View] { view =>

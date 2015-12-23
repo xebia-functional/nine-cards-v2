@@ -9,6 +9,7 @@ import android.view.ViewGroup.LayoutParams._
 import android.view._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
@@ -17,6 +18,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Ui}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   (context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
@@ -53,10 +56,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     update = (value: Float) => {
       statuses = statuses.copy(displacement = value)
       transformPanelCanvas()
-    },
-    end = () => {
-      if (statuses.swap) swapViews()
-      self <~ vLayerHardware(activate = false)
     }
   )
 
@@ -142,7 +141,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def canGoToNext = !isLast || (isLast && statuses.infinite)
 
-  private[this] def snap(velocity: Float): Unit = {
+  private[this] def snap(velocity: Float): Ui[_] = {
     moveItemsAnimator.cancel()
     val destiny = (velocity, statuses.displacement) match {
       case (v, d) if v > 0 && d > 0 => getSizeWidget
@@ -152,14 +151,13 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     animateViews(destiny, calculateDurationByVelocity(velocity, durationAnimation))
   }
 
-  private[this] def snapDestination(): Unit = {
+  private[this] def snapDestination(): Ui[_] = {
     val destiny = statuses.displacement match {
       case d if d > getSizeWidget * .6f => getSizeWidget
       case d if d < -getSizeWidget * .6f => -getSizeWidget
       case _ => 0
     }
     animateViews(destiny, durationAnimation)
-    invalidate()
   }
 
   private[this] def performScroll(delta: Float): Ui[_] = {
@@ -196,12 +194,13 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     applyTranslation(view, translate)
   }
 
-  private[this] def animateViews(dest: Int, duration: Int) = {
+  private[this] def animateViews(dest: Int, duration: Int): Ui[_] = {
     statuses = statuses.copy(swap = dest != 0)
     if (statuses.swap) notifyPageChangedObservers()
-    moveItemsAnimator.move(statuses.displacement, dest)
-    moveItemsAnimator.setDuration(duration)
-    moveItemsAnimator.start()
+    (self <~
+      vInvalidate <~~
+      moveItemsAnimator.move(statuses.displacement, dest, duration)) ~~
+      resetAnimationEnd
   }
 
   private[this] def next(): Unit = for {
@@ -246,10 +245,14 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     statuses = statuses.copy(currentItem = goToItem())
   }
 
-  private[this] def swapViews(): Unit = {
+  private[this] def swapViews(): Ui[_] = {
     if (statuses.isFromLeft) previous() else next()
-    runUi(reset())
+    reset()
   }
+
+  private[this] def resetAnimationEnd(): Ui[_] =
+    (if (statuses.swap) swapViews() else Ui.nop) ~
+      (self <~ vLayerHardware(activate = false))
 
   def reset(): Ui[_] = {
     // TODO Shouldn't create views directly from here
@@ -260,13 +263,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
     moveItemsAnimator.cancel()
 
-    frontParentView foreach {
-      front =>
-        moveItemsAnimator.setTarget(front)
-        moveItemsAnimator.move(0, 0)
-    }
-
-    frontUi ~ leftUi ~ rightUi ~
+    (frontParentView <~ moveItemsAnimator.move(0, 0, attachTarget = true)) ~
+      frontUi ~ leftUi ~ rightUi ~
       applyTranslation(frontParentView, statuses.displacement) ~
       applyTranslation(nextParentView, getSizeWidget) ~
       applyTranslation(previousParentView, -getSizeWidget) ~
@@ -435,7 +433,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       tracker.computeCurrentVelocity(1000, maximumVelocity)
       if (statuses.isScrolling && !overScroll(-tracker.getXVelocity, -tracker.getYVelocity)) {
         val velocity = if (statuses.horizontalGallery) tracker.getXVelocity else tracker.getYVelocity
-        if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()
+        runUi(if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination())
       }
       tracker.recycle()
       statuses = statuses.copy(velocityTracker = None)
