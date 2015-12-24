@@ -100,8 +100,6 @@ trait PublicCollectionsComposer
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
-
   def addPublicCollections(
     sharedCollections: Seq[SharedCollection])(implicit uiContext: UiContext[_]): Ui[_] = {
     val adapter = new PublicCollectionsAdapter(sharedCollections, saveSharedCollection)

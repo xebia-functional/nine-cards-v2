@@ -9,8 +9,8 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{WorkSpaceItemMenu, FabItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherTags
@@ -51,31 +51,25 @@ trait Styles {
       ivSrc(R.drawable.workspaces_pager)
   }
 
-  def fabButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    fabButton(R.string.createNewCollection,
+  def workspaceButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
+    workspaceButton(R.string.createNewCollection,
       R.drawable.fab_menu_icon_create_new_collection,
-      R.color.collection_fab_button_item_create_new_collection,
-      1)
+      R.color.collection_fab_button_item_create_new_collection)
 
-  def fabButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    fabButton(R.string.myCollections,
+  def workspaceButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
+    workspaceButton(R.string.myCollections,
       R.drawable.fab_menu_icon_my_collections,
-      R.color.collection_fab_button_item_my_collections,
-      2)
+      R.color.collection_fab_button_item_my_collections)
 
-  def fabButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
-    fabButton(R.string.publicCollections,
+  def workspaceButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
+    workspaceButton(R.string.publicCollections,
       R.drawable.fab_menu_icon_public_collections,
-      R.color.collection_fab_button_item_public_collection,
-      3)
+      R.color.collection_fab_button_item_public_collection)
 
-  private[this] def fabButton(title: Int, icon: Int, color: Int, tag: Int)(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+  private[this] def workspaceButton(title: Int, icon: Int, color: Int)(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
     vWrapContent +
-      fimBackgroundColor(resGetColor(color)) +
-      fimTitle(resGetString(title)) +
-      fimSrc(icon) +
-      vGone +
-      vTag(R.id.`type`, fabButtonItem) +
-      vTag2(R.id.fab_menu_position, tag)
+      wimBackgroundColor(resGetColor(color)) +
+      wimTitle(resGetString(title)) +
+      wimSrc(icon)
 
 }

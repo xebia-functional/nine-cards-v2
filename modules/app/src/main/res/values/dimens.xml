@@ -28,11 +28,6 @@
     <dimen name="elevation_fab_button">6dp</dimen>
     <dimen name="elevation_fab_button_pressed">12dp</dimen>
 
-    <dimen name="margin_fab_button">0dp</dimen>
-    <dimen name="margin_horizontal_fab_button_item">7dp</dimen>
-    <dimen name="margin_vertical_fab_button_item">12dp</dimen>
-    <dimen name="size_fab_menu_item">40dp</dimen>
-
     <dimen name="stroke_default">2dp</dimen>
     <dimen name="stroke_large">4dp</dimen>
 
@@ -40,6 +35,16 @@
     <dimen name="shadow_radius_default">1dp</dimen>
 
     <integer name="anim_duration_normal">200</integer>
+
+    <!-- WorkSpace -->
+    <dimen name="size_workspace_menu_item">50dp</dimen>
+    <dimen name="max_width_workspace_menu_item">100dp</dimen>
+
+    <!-- FAB -->
+    <dimen name="margin_fab_button">0dp</dimen>
+    <dimen name="margin_horizontal_fab_button_item">7dp</dimen>
+    <dimen name="margin_vertical_fab_button_item">12dp</dimen>
+    <dimen name="size_fab_menu_item">40dp</dimen>
 
     <!-- Wizard -->
     <dimen name="wizard_min_width_button">190dp</dimen>

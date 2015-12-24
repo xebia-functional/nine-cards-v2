@@ -41,7 +41,7 @@ class PublicCollectionsFragment
     Task.fork(getSharedCollections(statuses.category, statuses.typeSharedCollection).run).resolveAsyncUi(
       onPreTask = () => showLoading,
       onResult = (sharedCollections: Seq[SharedCollection]) => addPublicCollections(sharedCollections),
-      onException = (ex: Throwable) => showGeneralError)
+      onException = (ex: Throwable) => showError(R.string.contactUsError, loadPublicCollections()))
 
   override def saveSharedCollection(sharedCollection: SharedCollection): Unit =
     Task.fork(addCollection(sharedCollection).run).resolveAsyncUi(
@@ -49,7 +49,7 @@ class PublicCollectionsFragment
         activity[LauncherActivity] map (_.addCollection(c))
         unreveal()
       },
-      onException = (ex) => showGeneralError)
+      onException = (ex) => showError(R.string.contactUsError, loadPublicCollections()))
 
 }
 

@@ -28,7 +28,7 @@ trait BaseActionFragment
   with UiExtensions
   with Contexts[Fragment] {
 
-  val defaultPosition = 0
+  val defaultValue = 0
 
   private[this] lazy val defaultColor = fragmentContextWrapper.application.getResources.getColor(R.color.primary)
 
@@ -40,13 +40,15 @@ trait BaseActionFragment
 
   protected var height: Int = 0
 
-  protected lazy val originalPosX = getInt(Seq(getArguments), BaseActionFragment.startRevealPosX, defaultPosition)
+  protected lazy val sizeIcon = getInt(Seq(getArguments), BaseActionFragment.sizeIcon, defaultValue)
 
-  protected lazy val originalPosY = getInt(Seq(getArguments), BaseActionFragment.startRevealPosY, defaultPosition)
+  protected lazy val originalPosX = getInt(Seq(getArguments), BaseActionFragment.startRevealPosX, defaultValue)
 
-  protected lazy val endPosX = getInt(Seq(getArguments), BaseActionFragment.endRevealPosX, defaultPosition)
+  protected lazy val originalPosY = getInt(Seq(getArguments), BaseActionFragment.startRevealPosY, defaultValue)
 
-  protected lazy val endPosY = getInt(Seq(getArguments), BaseActionFragment.endRevealPosY, defaultPosition)
+  protected lazy val endPosX = getInt(Seq(getArguments), BaseActionFragment.endRevealPosX, defaultValue)
+
+  protected lazy val endPosY = getInt(Seq(getArguments), BaseActionFragment.endRevealPosY, defaultValue)
 
   protected lazy val colorPrimary = getInt(Seq(getArguments), BaseActionFragment.colorPrimary, defaultColor)
 
@@ -99,17 +101,17 @@ trait BaseActionFragment
   }
 
   def reveal: Ui[_] = {
-    val projection = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultPosition, defaultPosition)
+    val (x, y) = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultValue, defaultValue)
     val ratioScaleToolbar = toolbar map (tb => tb.getHeight.toFloat / height.toFloat) getOrElse 0f
-    (rootView <~~ revealIn(projection._1, projection._2, width, height)) ~~
+    (rootView <~~ revealIn(x, y, width, height, sizeIcon)) ~~
       (transitionView <~~ scaleToToolbar(ratioScaleToolbar)) ~~
       (rootContent <~~ showContent()) ~~
       (if (useFab) fab <~~ showFab() else Ui.nop)
   }
 
   def unreveal(): Ui[_] = {
-    val projection = rootView map (projectionScreenPositionInView(_, endPosX, endPosY)) getOrElse(defaultPosition, defaultPosition)
-    onStartFinishAction ~ (rootView <~~ revealOut(projection._1, projection._2, width, height)) ~~ onEndFinishAction
+    val (x, y) = rootView map (projectionScreenPositionInView(_, endPosX, endPosY)) getOrElse(defaultValue, defaultValue)
+    onStartFinishAction ~ (rootView <~~ revealOut(x, y, width, height)) ~~ onEndFinishAction
   }
 
   def showError(message: Int, action: => Unit): Ui[_] =
@@ -147,6 +149,7 @@ trait BaseActionFragment
 }
 
 object BaseActionFragment {
+  val sizeIcon = "size_icon"
   val startRevealPosX = "start_reveal_pos_x"
   val startRevealPosY = "start_reveal_pos_y"
   val endRevealPosX = "end_reveal_pos_x"

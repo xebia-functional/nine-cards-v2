@@ -3,19 +3,15 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.view.ViewPager
-import android.support.v7.widget.Toolbar
 import android.view.View
-import android.view.View.OnClickListener
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{Ui, ContextWrapper, Tweak}
+import macroid.{ContextWrapper, Tweak, Ui}
 
 import scala.annotation.tailrec
 
@@ -30,17 +26,17 @@ object LauncherWorkSpacesTweaks {
     collections match {
       case Nil if newLauncherData.collections.nonEmpty => acc :+ newLauncherData
       case Nil => acc
-      case h :: t if newLauncherData.collections.length == numSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(widgets = false, Seq(h)))
+      case h :: t if newLauncherData.collections.length == numSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(CollectionsWorkSpace, Seq(h)))
       case h :: t =>
         val g: Seq[Collection] = newLauncherData.collections :+ h
-        val n = LauncherData(widgets = false, g)
+        val n = LauncherData(CollectionsWorkSpace, g)
         getCollectionsItems(t, acc, n)
     }
   }
 
   def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] {
     workspaces =>
-      workspaces.data = LauncherData(widgets = true) +: getCollectionsItems(collections, Seq.empty, LauncherData(widgets = false))
+      workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
       workspaces.init(pageSelected)
   }
 
@@ -57,7 +53,7 @@ object LauncherWorkSpacesTweaks {
             }
           }
         } else {
-          workspaces.data = workspaces.data :+ LauncherData(widgets = false, Seq(collection))
+          workspaces.data = workspaces.data :+ LauncherData(CollectionsWorkSpace, Seq(collection))
         }
         workspaces.selectPosition(workspaces.data.size - 1)
         workspaces.reset()
@@ -71,16 +67,22 @@ object LauncherWorkSpacesTweaks {
       val maybePage = maybeWorkspaceCollection map { workspace =>
         workspaces.data.indexOf(workspace)
       }
-      workspaces.data = LauncherData(widgets = true) +: getCollectionsItems(collections, Seq.empty, LauncherData(widgets = false))
+      workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
       val page = maybePage map { page =>
         if (workspaces.data.isDefinedAt(page)) page else workspaces.data.length - 1
       } getOrElse defaultPage
       workspaces.selectPosition(page)
       workspaces.reset()
 
+
   }
+  def lwsListener(listener: LauncherWorkSpacesListener) = Tweak[W] (_.workSpacesListener = listener)
 
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
+
+  def lwsCloseMenu = Tweak[W] { view =>
+    runUi(view.closeMenu())
+  }
 
 }
 
@@ -88,11 +90,7 @@ object AnimatedWorkSpacesTweaks {
 
   type W = AnimatedWorkSpaces[_, _]
 
-  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] { view =>
-    view.listener.startScroll = listener.startScroll
-    view.listener.endScroll = listener.endScroll
-    view.listener.onLongClick = listener.onLongClick
-  }
+  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
   def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
 
@@ -117,6 +115,28 @@ object FabItemMenuTweaks {
   def fimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
 
   def fimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
+
+}
+
+object WorkSpaceItemMenuTweaks {
+  type W = WorkSpaceItemMenu
+
+  def wimBackgroundColor(color: Int) = Tweak[W](_.icon foreach {
+    ic =>
+      Lollipop ifSupportedThen {
+        ic.setBackgroundColor(color)
+      } getOrElse {
+        val d = new ShapeDrawable(new OvalShape)
+        d.getPaint.setColor(color)
+        ic.setBackground(d)
+      }
+  })
+
+  def wimSrc(res: Int) = Tweak[W](_.icon foreach (_.setImageResource(res)))
+
+  def wimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
+
+  def wimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
 
 }
 

@@ -40,8 +40,6 @@ trait RecommendationsComposer
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
-
   def addRecommendations(recommendations: Seq[RecommendedApp], clickListener: (RecommendedApp) => Ui[_])(implicit uiContext: UiContext[_]) = {
     val adapter = new RecommendationsAdapter(recommendations, clickListener)
     (recycler <~

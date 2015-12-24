@@ -44,6 +44,6 @@
 
     </FrameLayout>
 
-    <include layout="@layout/action_content_include" />
+    <include layout="@layout/action_content_layout" />
 
 </FrameLayout>

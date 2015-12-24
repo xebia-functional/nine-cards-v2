@@ -4,18 +4,16 @@ import android.os.Handler
 import android.support.design.widget.FloatingActionButton
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View}
-import android.widget.{FrameLayout, LinearLayout}
+import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -47,7 +45,7 @@ trait FabButtonBehaviour
   def initFabButton(implicit context: ActivityContextWrapper): Ui[_] =
     (fabMenuContent <~ On.click(
       swapFabButton()
-    ) <~ fabContentStyle(false)) ~
+    ) <~ vClickable(false)) ~
       (fabButton <~ fabButtonMenuStyle <~ On.click(swapFabButton()))
 
   def loadMenuItems(items: Seq[FabItemMenu]): Ui[_] =
@@ -65,7 +63,7 @@ trait FabButtonBehaviour
         (fabMenuContent <~
           animFabButton(opened) <~
           colorContentDialog(!opened) <~
-          fabContentStyle(!opened)) ~
+          vClickable(!opened)) ~
         (if (opened) postDelayedHideFabButton else removeDelayedHideFabButton)
       ui ~ (if (doUpdateBars) updateBars(opened) else Ui.nop)
     } getOrElse Ui.nop
@@ -137,8 +135,6 @@ trait FabButtonBehaviour
 }
 
 trait FabButtonStyle {
-
-  def fabContentStyle(clickable: Boolean): Tweak[FrameLayout] = Tweak[View]( _.setClickable(clickable))
 
   def fabButtonMenuStyle(implicit context: ContextWrapper): Tweak[FloatingActionButton] = {
     val iconFabButton = new PathMorphDrawable(

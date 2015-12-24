@@ -54,6 +54,9 @@
     <color name="background_menu_header">#3F51B5</color>
     <color name="text_menu_name">#ffffff</color>
 
+    <!-- WorkSpace -->
+    <color name="collection_workspace_button_item_title">#ffffff</color>
+
     <!-- Groups of collections -->
     <color name="collection_group_name">#ffffff</color>
     <color name="workspaces_pager_default">#32ffffff</color>
@@ -68,9 +71,6 @@
     <color name="collection_group_7">#8BC34A</color>
     <color name="collection_group_8">#4CAF50</color>
     <color name="collection_group_9">#009688</color>
-
-    <color name="collection_fab_button">#E91E63</color>
-    <color name="collection_fab_button_ripple">#ff4e081f</color>
 
     <color name="collection_fab_button_item_title">#000000</color>
     <color name="collection_fab_button_item_title_background_default">#ffffff</color>
