@@ -146,8 +146,6 @@ trait CollectionsDetailsComposer
       adapter.notifyChanged(vp.getCurrentItem)
     }) getOrElse Ui.nop
 
-
-
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>

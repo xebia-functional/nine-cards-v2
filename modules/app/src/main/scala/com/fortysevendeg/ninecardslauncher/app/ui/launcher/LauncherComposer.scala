@@ -7,6 +7,7 @@ import android.view.{View, WindowManager}
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
@@ -112,11 +113,17 @@ trait LauncherComposer
 
   private[this] def prepareBars(implicit context: ActivityContextWrapper) =
     KitKat.ifSupportedThen {
+      val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
+      val sbHeight = getStatusBarHeight
+      val nbHeight = getNavigationBarHeight
+      val elevation = resGetDimensionPixelSize(R.dimen.elevation_fab_button)
       Ui(getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
-        (content <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
-        (menuCollectionRoot <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
-        (drawerContent <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
-        (actionFragmentContent <~ vPadding(0, getStatusBarHeight, 0, getNavigationBarHeight)) ~
+        (content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
+        (menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
+        (drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
+        (actionFragmentContent <~
+          vPadding(paddingDefault, paddingDefault + sbHeight, paddingDefault, paddingDefault + nbHeight) <~
+          vElevation(elevation)) ~
         (drawerLayout <~ vBackground(R.drawable.background_workspace))
     } getOrElse Ui.nop
 

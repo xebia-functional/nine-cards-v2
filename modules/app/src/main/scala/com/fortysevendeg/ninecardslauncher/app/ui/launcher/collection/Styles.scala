@@ -54,27 +54,22 @@ trait Styles {
   def workspaceButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
     workspaceButton(R.string.createNewCollection,
       R.drawable.fab_menu_icon_create_new_collection,
-      R.color.collection_fab_button_item_create_new_collection,
-      1)
+      R.color.collection_fab_button_item_create_new_collection)
 
   def workspaceButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
     workspaceButton(R.string.myCollections,
       R.drawable.fab_menu_icon_my_collections,
-      R.color.collection_fab_button_item_my_collections,
-      2)
+      R.color.collection_fab_button_item_my_collections)
 
   def workspaceButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
     workspaceButton(R.string.publicCollections,
       R.drawable.fab_menu_icon_public_collections,
-      R.color.collection_fab_button_item_public_collection,
-      3)
+      R.color.collection_fab_button_item_public_collection)
 
-  private[this] def workspaceButton(title: Int, icon: Int, color: Int, tag: Int)(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
+  private[this] def workspaceButton(title: Int, icon: Int, color: Int)(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
     vWrapContent +
       wimBackgroundColor(resGetColor(color)) +
       wimTitle(resGetString(title)) +
-      wimSrc(icon) +
-      vTag(R.id.`type`, fabButtonItem) +
-      vTag2(R.id.fab_menu_position, tag)
+      wimSrc(icon)
 
 }
