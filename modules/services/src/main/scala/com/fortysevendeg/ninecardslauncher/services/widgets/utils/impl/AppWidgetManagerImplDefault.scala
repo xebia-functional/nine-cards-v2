@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
 
@@ -31,7 +32,7 @@ class AppWidgetManagerImplDefault(implicit contextSupport: ContextSupport)
 
   protected def getIconImage(info: AppWidgetProviderInfo) = getFullResIcon(info.provider.getPackageName, info.icon)
 
-  protected def getPreviewImage(info: AppWidgetProviderInfo) = Option(packageManager.getDrawable(info.provider.getPackageName, info.previewImage, null))
+  protected def getPreviewImage(info: AppWidgetProviderInfo) = Option(packageManager.getDrawable(info.provider.getPackageName, info.previewImage, javaNull))
 
   protected def getUser(info: AppWidgetProviderInfo) =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) Option(android.os.Process.myUserHandle.hashCode)

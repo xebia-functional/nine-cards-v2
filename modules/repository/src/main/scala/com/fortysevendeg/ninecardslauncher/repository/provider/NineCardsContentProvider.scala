@@ -6,6 +6,7 @@ import android.database.sqlite.{SQLiteDatabase, SQLiteQueryBuilder}
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 
 class NineCardsContentProvider extends ContentProvider {
 
@@ -104,13 +105,13 @@ class NineCardsContentProvider extends ContentProvider {
           projection,
           s"${NineCardsSqlHelper.id} = ?",
           Seq(uri.getPathSegments.get(1)).toArray,
-          null,
-          null,
+          javaNull,
+          javaNull,
           sortOrder)
       case (tableName, MimeTypeAllItems) =>
         val queryBuilder = new SQLiteQueryBuilder()
         queryBuilder.setTables(tableName)
-        queryBuilder.query(getOrOpenDatabase, projection, selection, selectionArgs, null, null, sortOrder)
+        queryBuilder.query(getOrOpenDatabase, projection, selection, selectionArgs, javaNull, javaNull, sortOrder)
     }
 
   private[this] def getOrOpenDatabase = database match {
