@@ -58,6 +58,5 @@ trait WidgetsServicesImplData {
       preview = preview))
 
   val seqWidget: Seq[Widget] = createSeqWidget()
-  val widget: Widget = seqWidget.head
 
 }

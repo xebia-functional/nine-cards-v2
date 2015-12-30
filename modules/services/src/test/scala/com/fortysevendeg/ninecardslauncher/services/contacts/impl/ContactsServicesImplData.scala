@@ -24,15 +24,17 @@ trait ContactsServicesImplData {
 
   val contacts = generateContacts(num = 10, withEmails = false, withPhones = false)
 
-  val contact = generateContacts(1, withEmails = true, withPhones = true).head
+  val contact = generateContacts(1, withEmails = true, withPhones = true).headOption
 
-  val contactEmails = contact.info map (_.emails) getOrElse Seq.empty
+  val contactInfo = contact flatMap (_.info)
 
-  val contactPhones = contact.info map (_.phones) getOrElse Seq.empty
+  val contactEmails = contactInfo map (_.emails) getOrElse Seq.empty
 
-  val contactWithEmail = generateContacts(1, withEmails = true, withPhones = false).head
+  val contactPhones = contactInfo map (_.phones) getOrElse Seq.empty
 
-  val contactWithPhone = generateContacts(1, withEmails = false, withPhones = true).head
+  val contactWithEmail = generateContacts(1, withEmails = true, withPhones = false).headOption
+
+  val contactWithPhone = generateContacts(1, withEmails = false, withPhones = true).headOption
 
   def generateContacts(num: Int, withEmails: Boolean = true, withPhones: Boolean = true): Seq[Contact] =
     1 to num map { i =>

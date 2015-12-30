@@ -39,12 +39,12 @@ object ReplacePropertiesGenerator {
   private def replaceLine(properties: Map[String, String], line: String) = {
     @tailrec
     def replace(properties: Map[String, String], line: String): String = {
-      if (properties.isEmpty) {
-        line
-      } else {
-        val (key, value) = properties.head
-        val name = namePropertyInConfig(key)
-        replace(properties.tail, if (line.contains(name)) line.replace(name, value) else line)
+      properties.headOption match {
+        case Some(property) =>
+          val (key, value) = property
+          val name = namePropertyInConfig(key)
+          replace(properties.tail, if (line.contains(name)) line.replace(name, value) else line)
+        case None => line
       }
     }
     replace(properties, line)

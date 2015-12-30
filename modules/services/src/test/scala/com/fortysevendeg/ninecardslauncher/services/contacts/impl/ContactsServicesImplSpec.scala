@@ -48,7 +48,7 @@ trait ContactsServicesSpecification
       uri = Fields.EMAIL_CONTENT_URI,
       projection = allEmailContactFields,
       where = Fields.EMAIL_SELECTION,
-      whereParams = Seq(emailHome))(getEntityFromCursor(contactFromEmailCursor)) returns Some(contactWithEmail)
+      whereParams = Seq(emailHome))(getEntityFromCursor(contactFromEmailCursor)) returns contactWithEmail
 
     contentResolverWrapper.fetch(
       uri = Fields.EMAIL_CONTENT_URI,
@@ -58,7 +58,7 @@ trait ContactsServicesSpecification
 
     contentResolverWrapper.fetch(
       uri = mockUri,
-      projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor)) returns Some(contactWithPhone)
+      projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor)) returns contactWithPhone
 
     contentResolverWrapper.fetch(
       uri = nonExistentMockUri,
@@ -68,7 +68,7 @@ trait ContactsServicesSpecification
       uri = Fields.CONTENT_URI,
       projection = allFields,
       where = Fields.LOOKUP_SELECTION,
-      whereParams = Seq(firstLookupKey))(getEntityFromCursor(contactFromCursor)) returns Some(contact)
+      whereParams = Seq(firstLookupKey))(getEntityFromCursor(contactFromCursor)) returns contact
 
     contentResolverWrapper.fetchAll(
       uri = Fields.EMAIL_CONTENT_URI,
@@ -206,7 +206,7 @@ class ContactsServicesImplSpec
           val result = contactsServices.fetchContactByEmail(emailHome).run.run
 
           result must beLike {
-            case Answer(c) => c must beSome(contactWithEmail)
+            case Answer(c) => c must beEqualTo(contactWithEmail)
           }
         }
 
@@ -241,7 +241,7 @@ class ContactsServicesImplSpec
           val result = contactsServices.fetchContactByPhoneNumber(phoneHome).run.run
 
           result must beLike {
-            case Answer(c) => c must beSome(contactWithPhone)
+            case Answer(c) => c must beEqualTo(contactWithPhone)
           }
         }
 
@@ -274,9 +274,8 @@ class ContactsServicesImplSpec
       "return the contact from the content resolver for an existent lookup key" in
         new ValidContactsServicesResponses {
           val result = contactsServices.findContactByLookupKey(firstLookupKey).run.run
-
           result must beLike {
-            case Answer(c) => c shouldEqual contact
+            case Answer(c) => Some(c) shouldEqual contact
           }
         }
 

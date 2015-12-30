@@ -154,8 +154,8 @@ class NineCardsServiceSpec
         result must beLike {
           case Answer(r) => r.data must beSome[SharedCollectionList].which { collectionList =>
             collectionList.items must have size sharedCollectionSize
-            collectionList.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
-            collectionList.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+            collectionList.items.headOption map (_.sharedCollectionId) must beSome(sharedCollectionIdFirst)
+            collectionList.items.lastOption map (_.sharedCollectionId) must beSome(sharedCollectionIdLast)
           }
         }
       }
@@ -169,8 +169,8 @@ class NineCardsServiceSpec
         result must beLike {
           case Answer(r) => r.data must beSome[SharedCollectionList].which { collectionList =>
             collectionList.items must have size sharedCollectionSize
-            collectionList.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
-            collectionList.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+            collectionList.items.headOption map (_.sharedCollectionId) must beSome(sharedCollectionIdFirst)
+            collectionList.items.lastOption map (_.sharedCollectionId) must beSome(sharedCollectionIdLast)
           }
         }
       }
@@ -184,8 +184,8 @@ class NineCardsServiceSpec
         result must beLike {
           case Answer(r) => r.data must beSome[SharedCollectionList].which { collectionList =>
             collectionList.items must have size sharedCollectionSize
-            collectionList.items.head.sharedCollectionId shouldEqual sharedCollectionIdFirst
-            collectionList.items.last.sharedCollectionId shouldEqual sharedCollectionIdLast
+            collectionList.items.headOption map (_.sharedCollectionId) must beSome(sharedCollectionIdFirst)
+            collectionList.items.lastOption map (_.sharedCollectionId) must beSome(sharedCollectionIdLast)
           }
         }
       }
@@ -258,8 +258,8 @@ class NineCardsServiceSpec
         result must beLike {
           case Answer(r) => r.data must beSome[GooglePlayPackages].which { packages =>
             packages.items must have size 2
-            packages.items.head.docV2.docid shouldEqual packageName1
-            packages.items.last.docV2.docid shouldEqual packageName2
+            packages.items.headOption map (_.docV2.docid) must beSome(packageName1)
+            packages.items.lastOption map (_.docV2.docid) must beSome(packageName2)
           }
         }
       }
@@ -273,8 +273,8 @@ class NineCardsServiceSpec
         result must beLike {
           case Answer(r) => r.data must beSome[GooglePlaySimplePackages].which { packages =>
             packages.items must have size 2
-            packages.items.head.packageName shouldEqual packageName1
-            packages.items.last.packageName shouldEqual packageName2
+            packages.items.headOption map (_.packageName) must beSome(packageName1)
+            packages.items.lastOption map (_.packageName) must beSome(packageName2)
           }
         }
       }

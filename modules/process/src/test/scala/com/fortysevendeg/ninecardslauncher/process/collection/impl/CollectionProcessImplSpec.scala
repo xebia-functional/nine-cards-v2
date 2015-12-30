@@ -64,7 +64,7 @@ trait CollectionProcessImplSpecification
 
     mockPersistenceServices.fetchCards returns Service(Task(Result.answer(seqServicesCard)))
 
-    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(servicesCard.id)))
+    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(cardId)))
 
     mockAppsServices.getApplication(packageName1)(contextSupport) returns
       Service(Task(Result.answer(application1)))
@@ -101,7 +101,7 @@ trait CollectionProcessImplSpecification
     mockContactsServices.getFavoriteContacts returns Service(Task(Result.answer(seqContacts)))
 
     val tasks = seqContactsWithPhones map (contact => Service(Task(Result.answer[Contact, ContactsServiceException](contact))))
-    mockContactsServices.findContactByLookupKey(anyString) returns (tasks.head, tasks.tail :_*)
+    mockContactsServices.findContactByLookupKey(anyString) returns (tasks(0), tasks.tail :_*)
 
   }
 
@@ -112,7 +112,7 @@ trait CollectionProcessImplSpecification
 
     mockPersistenceServices.fetchCards returns Service(Task(Result.answer(seqServicesCard)))
 
-    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(servicesCard.id)))
+    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(cardId)))
 
     mockAppsServices.getApplication(packageName1)(contextSupport) returns
       Service(Task(Errata(appsInstalledException)))
@@ -145,7 +145,7 @@ trait CollectionProcessImplSpecification
 
     mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
     mockPersistenceServices.addCollection(any) returns Service(Task(Result.answer(servicesCollectionAdded)))
-    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
 
   }
 
@@ -173,7 +173,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.deleteCollection(any) returns Service(Task(Result.answer(collectionId)))
     mockPersistenceServices.deleteCardsByCollection(any) returns Service(Task(Result.answer(collectionId)))
     mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
@@ -195,7 +195,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.deleteCollection(any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
@@ -205,7 +205,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.deleteCollection(any) returns Service(Task(Result.answer(collectionId)))
     mockPersistenceServices.deleteCardsByCollection(any) returns Service(Task(Errata(persistenceServiceException)))
 
@@ -216,7 +216,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.deleteCollection(any) returns Service(Task(Result.answer(collectionId)))
     mockPersistenceServices.deleteCardsByCollection(any) returns Service(Task(Result.answer(collectionId)))
     mockPersistenceServices.fetchCollections returns Service(Task(Errata(persistenceServiceException)))
@@ -228,7 +228,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.deleteCollection(any) returns Service(Task(Result.answer(collectionId)))
     mockPersistenceServices.deleteCardsByCollection(any) returns Service(Task(Result.answer(collectionId)))
     mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
@@ -241,7 +241,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollectionByPosition(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.fetchCollectionByPosition(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
     mockPersistenceServices.updateCollection(any) returns Service(Task(Result.answer(collectionId)))
 
@@ -261,7 +261,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollectionByPosition(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.fetchCollectionByPosition(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.fetchCollections returns Service(Task(Errata(persistenceServiceException)))
 
   }
@@ -271,7 +271,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollectionByPosition(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.fetchCollectionByPosition(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
     mockPersistenceServices.updateCollection(any) returns Service(Task(Errata(persistenceServiceException)))
 
@@ -282,7 +282,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.updateCollection(any) returns Service(Task(Result.answer(collectionId)))
 
   }
@@ -292,7 +292,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(Option(servicesCollection))))
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
     mockPersistenceServices.updateCollection(any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
@@ -334,7 +334,7 @@ trait CollectionProcessImplSpecification
     mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
     mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
     mockPersistenceServices.deleteCard(any) returns Service(Task(Result.answer(cardId)))
-    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(servicesCard.id)))
+    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(cardId)))
 
   }
 
@@ -387,7 +387,7 @@ trait CollectionProcessImplSpecification
 
     mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
     mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
-    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(servicesCard.id)))
+    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(cardId)))
 
   }
 
@@ -427,7 +427,7 @@ trait CollectionProcessImplSpecification
     self: CollectionProcessScope =>
 
     mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
-    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(servicesCard.id)))
+    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(cardId)))
 
   }
 
@@ -734,7 +734,7 @@ class CollectionProcessImplSpec
 
     "returns a sequence of cards for a valid request" in
       new CollectionProcessScope with ValidAddCardPersistenceServicesResponses {
-        val result = collectionProcess.addCards(collection.id, seqAddCardRequest).run.run
+        val result = collectionProcess.addCards(collectionId, seqAddCardRequest).run.run
         result must beLike {
           case Answer(resultCards) =>
             resultCards shouldEqual seqAddCardResponse
@@ -743,7 +743,7 @@ class CollectionProcessImplSpec
 
     "returns a CardException if service throws a exception fetching the cards" in
       new CollectionProcessScope with ErrorFetchCardsPersistenceServicesResponses {
-        val result = collectionProcess.addCards(collection.id, seqAddCardRequest).run.run
+        val result = collectionProcess.addCards(collectionId, seqAddCardRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[CardException]
@@ -753,7 +753,7 @@ class CollectionProcessImplSpec
 
     "returns an empty answer if the service throws a exception adding the new card" in
       new CollectionProcessScope with ErrorAddCardPersistenceServicesResponses {
-        val result = collectionProcess.addCards(collection.id, seqAddCardRequest).run.run
+        val result = collectionProcess.addCards(collectionId, seqAddCardRequest).run.run
         result must beLike {
           case Answer(resultCollection) =>
             resultCollection shouldEqual Seq()
