@@ -54,6 +54,7 @@ object ExtraTweaks {
 
   def vBackgroundTint(color: Int) = Tweak[View] {
     case t: TintableBackgroundView => t.setSupportBackgroundTintList(ColorStateList.valueOf(color))
+    case _ =>
   }
 
   def vSelected(selected: Boolean) = Tweak[View](_.setSelected(selected))
@@ -113,6 +114,7 @@ object ExtraTweaks {
   def etHideKeyboard(implicit contextWrapper: ContextWrapper) = Tweak[EditText] { editText =>
     contextWrapper.application.getSystemService(Context.INPUT_METHOD_SERVICE) match {
       case imm: InputMethodManager => imm.hideSoftInputFromWindow(editText.getWindowToken, 0)
+      case _ =>
     }
   }
 

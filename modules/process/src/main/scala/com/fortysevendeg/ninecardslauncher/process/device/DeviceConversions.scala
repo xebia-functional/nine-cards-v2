@@ -70,12 +70,13 @@ trait DeviceConversions extends NineCardIntentConversions {
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
 
-  def toAppWebSiteSeq(googlePlayPackages: Seq[GooglePlayPackage]): Seq[AppWebsite] = googlePlayPackages map {
+  def toAppWebSiteSeq(googlePlayPackages: Seq[GooglePlayPackage]): Seq[AppWebsite] = googlePlayPackages flatMap {
     case GooglePlayPackage(GooglePlayApp(docid, title, _, _, Some(icon), _, _, _, _, _, _)) =>
-      AppWebsite(
+      Some(AppWebsite(
         packageName = docid,
         url = icon,
-        name = title)
+        name = title))
+    case _ => None
   }
 
   def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map toAppPackage

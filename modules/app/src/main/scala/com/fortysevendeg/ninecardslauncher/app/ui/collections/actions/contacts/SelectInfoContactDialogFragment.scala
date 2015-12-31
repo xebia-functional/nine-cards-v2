@@ -44,6 +44,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_category_dialog, javaNull)
     view.findViewById(R.id.contact_dialog_category_text) match {
       case t: TextView => t.setText(res)
+      case _ =>
     }
     view
   }
@@ -52,6 +53,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     val view = LayoutInflater.from(getActivity).inflate(R.layout.contact_info_item_dialog, javaNull)
     view.findViewById(R.id.contact_dialog_item_text) match {
       case t: TextView => t.setText(data)
+      case _ =>
     }
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {

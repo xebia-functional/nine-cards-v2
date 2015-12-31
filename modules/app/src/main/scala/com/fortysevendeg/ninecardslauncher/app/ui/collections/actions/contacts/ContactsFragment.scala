@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, Itera
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
+import macroid.Ui
 
 import scalaz.concurrent.Task
 
@@ -48,15 +49,18 @@ class ContactsFragment
     super.onActivityResult(requestCode, resultCode, data)
     (requestCode, resultCode) match {
       case (ActivityResult.selectInfoContact, Activity.RESULT_OK) =>
-        Option(data) flatMap (d => Option(d.getExtras)) map {
+        val ui: Ui[_] = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(ContactsFragment.addCardRequest) =>
             extras.get(ContactsFragment.addCardRequest) match {
               case card: AddCardRequest =>
                 activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
-                runUi(unreveal())
-              case _ => runUi(showGeneralError)
+                unreveal()
+              case _ => showGeneralError
             }
-        } getOrElse runUi(showGeneralError)
+          case _ => showGeneralError
+        } getOrElse showGeneralError
+        runUi(ui)
+      case _ =>
     }
   }
 
