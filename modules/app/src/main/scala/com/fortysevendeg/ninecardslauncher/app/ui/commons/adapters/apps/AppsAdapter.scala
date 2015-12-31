@@ -59,7 +59,7 @@ case class AppsAdapter(
     notifyDataSetChanged()
   }
 
-  override def getHeightAllRows = apps.count() / columnsLists * heightItem
+  override def getHeightAllRows = apps.count() / columnsLists * getHeightItem
 
   override def getHeightItem: Int = heightItem
 

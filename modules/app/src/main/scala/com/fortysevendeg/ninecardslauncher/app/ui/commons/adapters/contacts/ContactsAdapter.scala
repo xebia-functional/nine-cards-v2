@@ -60,7 +60,7 @@ case class ContactsAdapter(
     notifyDataSetChanged()
   }
 
-  override def getHeightAllRows: Int = contacts.count() * heightItem
+  override def getHeightAllRows: Int = contacts.count() * getHeightItem
 
   override def getHeightItem: Int = heightItem
 

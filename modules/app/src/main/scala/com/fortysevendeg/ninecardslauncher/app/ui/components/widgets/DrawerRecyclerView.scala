@@ -88,7 +88,8 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     val xMoved = xDiff > touchSlop
 
     if (xMoved) {
-      val isScrolling = xDiff > yDiff
+      val isAnimationRunning = animatedController exists(_.isRunning)
+      val isScrolling = (xDiff > yDiff) && !isAnimationRunning
       if (isScrolling) {
         animatedController foreach (controller => runUi(controller.startMovement))
         statuses = statuses.copy(touchState = Scrolling)

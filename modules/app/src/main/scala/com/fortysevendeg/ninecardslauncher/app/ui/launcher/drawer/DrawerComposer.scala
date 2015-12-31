@@ -33,8 +33,8 @@ import scala.concurrent.Future
 
 trait DrawerComposer
   extends DrawerStyles
-    with ContextSupportProvider
-    with SearchBoxAnimatedListener {
+  with ContextSupportProvider
+  with SearchBoxAnimatedListener {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
 

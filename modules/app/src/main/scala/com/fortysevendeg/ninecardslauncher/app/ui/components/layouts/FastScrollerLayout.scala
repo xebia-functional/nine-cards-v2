@@ -131,7 +131,6 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
         runUi(changePosition(y) ~ showSignal ~ (recyclerView <~ rvScrollToPosition(y)))
         true
       case ACTION_UP | ACTION_CANCEL =>
-        // reset
         statuses = statuses.resetScroll()
         runUi((recyclerView <~ rvScrollToPosition(y)) ~ changePosition(y) ~ hideSignal)
         true
@@ -275,24 +274,16 @@ case class FastScrollerStatuses(
     copy(heightAllRows = allRows, heightRow = item, totalItems = total, columns = columns, visibleRows = 0)
   }
 
-  /**
-    * Number of rows of reciclerview given the number of columns
-    */
+  // Number of rows of recyclerview given the number of columns
   def rows: Int = math.ceil(totalItems.toFloat / columns).toInt
 
-  /**
-    * Maximum number of rows for calculate the position of bar in fastscroller
-    */
+  // Maximum number of rows for calculate the position of bar in fastscroller
   def maxRows: Int = rows - visibleRows
 
-  /**
-    * Number of rows for a number of items
-    */
+  // Number of rows for a number of items
   def childCountToRows(count: Int) = math.ceil(count.toFloat / columns).toInt
 
-  /**
-    * Calculate y position given first rom position
-    */
+  // Calculate y position given first rom position
   def projectToBar(rowFirstItem: Int) = heightScroller * (rowFirstItem.toFloat / maxRows.toFloat)
 
   def startScroll(): FastScrollerStatuses = copy(moving = true)
