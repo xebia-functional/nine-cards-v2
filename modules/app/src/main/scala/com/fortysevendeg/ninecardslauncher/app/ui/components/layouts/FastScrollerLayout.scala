@@ -55,8 +55,9 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def fsRecyclerView(rv: RecyclerView) = Tweak[FastScrollerView](view => view.setRecyclerView(rv))
 
   private[this] def fsColor(color: Int) = Tweak[FastScrollerView] { view =>
-    view.barOn = changeColor(R.drawable.fastscroller_bar_on, color)
-    runUi(view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color))))
+    runUi(
+      (view.bar <~ ivSrc(changeColor(R.drawable.fastscroller_bar, color))) ~
+        (view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color)))))
   }
 
   private[this] def changeColor(res: Int, color: Int): Drawable = getDrawable(res) match {
@@ -100,17 +101,11 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val text = Option(findView(TR.fastscroller_signal_text))
 
-  val barOff = if (SDK_INT < LOLLIPOP_MR1) {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar_off)
+  runUi(bar <~ ivSrc(if (SDK_INT < LOLLIPOP_MR1) {
+    context.getResources.getDrawable(R.drawable.fastscroller_bar)
   } else {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar_off, javaNull)
-  }
-
-  var barOn = if (SDK_INT < LOLLIPOP_MR1) {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar_on)
-  } else {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar_on, javaNull)
-  }
+    context.getResources.getDrawable(R.drawable.fastscroller_bar, javaNull)
+  }))
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
@@ -142,9 +137,9 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def hide: Ui[_] = (signal <~ vGone) ~ (bar <~ vGone)
 
-  def showSignal: Ui[_] = (signal <~ vVisible) ~ (bar <~ ivSrc(barOn))
+  def showSignal: Ui[_] = signal <~ vVisible
 
-  def hideSignal: Ui[_] = (signal <~ vGone) ~ (bar <~ ivSrc(barOff))
+  def hideSignal: Ui[_] = signal <~ vGone
 
   def setRecyclerView(rv: RecyclerView): Unit = {
     statuses = statuses.resetRecyclerInfo(rv, statuses.heightScroller)
