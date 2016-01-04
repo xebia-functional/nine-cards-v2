@@ -97,7 +97,6 @@
 
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
-    <dimen name="height_toolbar_app_drawer">56dp</dimen>
     <dimen name="margin_app_drawer_fab_button">16dp</dimen>
 
     <!-- Dialog Actions -->

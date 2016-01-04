@@ -33,11 +33,7 @@ trait DrawerStyles {
   }
 
   def drawerContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FastScrollerLayout] =
-    fslColor(resGetColor(R.color.drawer_toolbar)) +
-      vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
-
-  def loadingDrawerStyle(implicit context: ContextWrapper): Tweak[ProgressBar] =
-    pbColor(resGetColor(R.color.drawer_toolbar))
+    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
 
   def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)

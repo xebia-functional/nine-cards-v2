@@ -10,9 +10,9 @@ import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, LayoutInflater, MotionEvent, View}
+import android.view.{Gravity, LayoutInflater, MotionEvent}
+import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
-import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -76,8 +76,8 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 }
 
 class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends LinearLayout(context, attr, defStyleAttr)
-    with TypedFindView {
+  extends FrameLayout(context, attr, defStyleAttr)
+  with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -89,8 +89,6 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   var statuses = new FastScrollerStatuses
 
-  setOrientation(LinearLayout.HORIZONTAL)
-
   setClipChildren(false)
 
   LayoutInflater.from(context).inflate(R.layout.fastscroller, this)
@@ -101,11 +99,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val text = Option(findView(TR.fastscroller_signal_text))
 
-  runUi(bar <~ ivSrc(if (SDK_INT < LOLLIPOP_MR1) {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar)
-  } else {
-    context.getResources.getDrawable(R.drawable.fastscroller_bar, javaNull)
-  }))
+  val barSize = context.getResources.getDimensionPixelOffset(R.dimen.fastscroller_bar_height)
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
@@ -158,15 +152,12 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] def changePosition(y: Float): Ui[_] = {
     val position = y / statuses.heightScroller
-    (bar <~ vChangeY(position)) ~ (signal <~ vChangeY(position))
-  }
-
-  private[this] def vChangeY(position: Float) = Tweak[View] { view =>
-    val viewHeight = view.getHeight
-    val value = ((statuses.heightScroller - viewHeight) * position).toInt
-    val max = statuses.heightScroller - viewHeight
+    val value = ((statuses.heightScroller - barSize) * position).toInt
+    val max = statuses.heightScroller - barSize
     val minimum = math.max(0, value)
-    view.setY(math.min(minimum, max))
+    val barPosY = math.min(minimum, max)
+    val signalPosY = math.max(0, barPosY - barSize)
+    (bar <~ vY(barPosY)) ~ (signal <~ vY(signalPosY))
   }
 
   private[this] def rvScrollToPosition(y: Float) = Tweak[RecyclerView] { view =>
