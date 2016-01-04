@@ -106,6 +106,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     if (statuses.heightScroller != h) {
       statuses = statuses.copy(heightScroller = h)
       recyclerView foreach (rv => statuses = statuses.resetRecyclerInfo(rv, statuses.heightScroller))
+      runUi(changePosition(0))
     }
   }
 

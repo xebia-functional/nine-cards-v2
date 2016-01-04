@@ -67,10 +67,6 @@ trait DrawerComposer
         runUi(Ui(loadContacts(ContactsAlphabetical)) ~ (paginationDrawerPanel <~ reloadPager(1)))
     }
 
-  def showDrawerLoading: Ui[_] = scrollerLayout <~ fslInvisible
-
-  def showDrawerData: Ui[_] = scrollerLayout <~ fslVisible
-
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
@@ -160,8 +156,7 @@ trait DrawerComposer
     adapter: RecyclerView.Adapter[_],
     layoutManager: LayoutManager,
     fastScrollerVisible: Boolean = true) =
-    showDrawerData ~
-      (recycler <~
+    (recycler <~
         rvLayoutManager(layoutManager) <~
         rvAdapter(adapter) <~
         rvScrollToTop) ~
