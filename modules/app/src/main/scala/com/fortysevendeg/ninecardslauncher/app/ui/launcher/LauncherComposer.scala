@@ -4,7 +4,7 @@ import android.graphics.Color
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.{View, WindowManager}
-import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
+import com.fortysevendeg.macroid.extras.DeviceVersion.{Lollipop, KitKat}
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -122,9 +122,11 @@ trait LauncherComposer
         (menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (actionFragmentContent <~
-          vPadding(paddingDefault, paddingDefault + sbHeight, paddingDefault, paddingDefault + nbHeight) <~
-          vElevation(elevation)) ~
-        (drawerLayout <~ vBackground(R.drawable.background_workspace))
+          vPadding(paddingDefault, paddingDefault + sbHeight, paddingDefault, paddingDefault + nbHeight)) ~
+        (drawerLayout <~ vBackground(R.drawable.background_workspace)) ~
+        (Lollipop.ifSupportedThen {
+          actionFragmentContent <~ vElevation(elevation)
+        } getOrElse Ui.nop)
     } getOrElse Ui.nop
 
 }

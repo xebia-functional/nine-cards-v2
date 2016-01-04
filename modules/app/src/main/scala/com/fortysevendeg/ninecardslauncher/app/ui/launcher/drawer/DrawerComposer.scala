@@ -8,6 +8,7 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
@@ -66,13 +67,10 @@ trait DrawerComposer
         runUi(Ui(loadContacts(ContactsAlphabetical)) ~ (paginationDrawerPanel <~ reloadPager(1)))
     }
 
-  def showDrawerLoading: Ui[_] = scrollerLayout <~ fslInvisible
-
-  def showDrawerData: Ui[_] = scrollerLayout <~ fslVisible
-
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val colorPrimary = resGetColor(R.color.primary)
     (searchBoxContentPanel <~
       vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView) <~ sbavChangeListener(self)))) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
@@ -89,10 +87,12 @@ trait DrawerComposer
             recyclerStyle <~
             wire(recycler) <~
             (searchBoxView map drvAddController getOrElse Tweak.blank)
-        ), 0)) ~
+        ), 0) <~
+        fslColor(colorPrimary)) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical)) ~
       createDrawerPagers
+  }
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
@@ -156,8 +156,7 @@ trait DrawerComposer
     adapter: RecyclerView.Adapter[_],
     layoutManager: LayoutManager,
     fastScrollerVisible: Boolean = true) =
-    showDrawerData ~
-      (recycler <~
+    (recycler <~
         rvLayoutManager(layoutManager) <~
         rvAdapter(adapter) <~
         rvScrollToTop) ~
