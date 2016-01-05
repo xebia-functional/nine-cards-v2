@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.{MotionEvent, ViewConfiguration}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.ScrollableManager
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, ViewState}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -79,9 +78,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       }
     }
 
-    override def onRequestDisallowInterceptTouchEvent(b: Boolean): Unit = {
-
-    }
+    override def onRequestDisallowInterceptTouchEvent(b: Boolean): Unit = {}
   })
 
   private[this] def setStateIfNeeded(x: Float, y: Float) = {
@@ -91,7 +88,8 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     val xMoved = xDiff > touchSlop
 
     if (xMoved) {
-      val isScrolling = xDiff > yDiff
+      val isAnimationRunning = animatedController exists(_.isRunning)
+      val isScrolling = (xDiff > yDiff) && !isAnimationRunning
       if (isScrolling) {
         animatedController foreach (controller => runUi(controller.startMovement))
         statuses = statuses.copy(touchState = Scrolling)
@@ -102,7 +100,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   private[this] def blockScroll(bs: Boolean) = getLayoutManager match {
-    case lm: ScrollableManager => lm.blockScroll = bs
+    case lm: ScrollingLinearLayoutManager => lm.blockScroll = bs
     case _ =>
   }
 

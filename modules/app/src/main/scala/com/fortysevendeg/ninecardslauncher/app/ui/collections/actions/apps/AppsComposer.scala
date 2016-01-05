@@ -70,11 +70,7 @@ trait AppsComposer
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter)) ~
       (scrollerLayout <~
-        fslLinkRecycler <~
-        (filter match {
-          case AllApps => fslVisible
-          case AppsByCategory => fslInvisible
-        }))
+        fslLinkRecycler)
   }
 
   def reloadAppsAdapter(
@@ -90,11 +86,7 @@ trait AppsComposer
             case _ => resGetString(R.string.allApps)
           })) ~
           (scrollerLayout <~
-            fslReset <~
-            (filter match {
-              case AllApps => fslVisible
-              case AppsByCategory => fslInvisible
-            })) ~
+            fslReset) ~
           (recycler <~ rvScrollToTop)
       } getOrElse showGeneralError)
   }
