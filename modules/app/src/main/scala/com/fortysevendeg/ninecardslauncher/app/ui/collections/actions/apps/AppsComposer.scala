@@ -69,8 +69,9 @@ trait AppsComposer
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter)) ~
-      (scrollerLayout <~
-        fslLinkRecycler)
+      (recycler map { rv =>
+        scrollerLayout <~ fslLinkRecycler(rv)
+      } getOrElse showGeneralError)
   }
 
   def reloadAppsAdapter(

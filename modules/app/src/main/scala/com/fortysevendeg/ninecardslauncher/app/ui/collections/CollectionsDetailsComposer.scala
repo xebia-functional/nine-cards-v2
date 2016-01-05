@@ -112,7 +112,7 @@ trait CollectionsDetailsComposer
 
   def pullCloseScrollY(scroll: Int, scrollType: Int, close: Boolean): Ui[_] = {
     val displacement = scroll * resistanceDisplacement
-    val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_close)
+    val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_action)
     val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
     (tabs <~ (scrollType match {
       case ScrollType.down => vTranslationY(displacement)

@@ -35,12 +35,10 @@ trait CollectionFragmentComposer
 
   var recyclerView = slot[CollectionRecyclerView]
 
-  var pullToCloseView = slot[PullToCloseView]
-
   def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = getUi(
     l[PullToCloseView](
       w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards)
-    ) <~ wire(pullToCloseView) <~ pcvListener(PullToCloseListener(
+    ) <~ pcvListener(PullToCloseListener(
       startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
       endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),
       scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, sType, close)),

@@ -41,10 +41,7 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
     super.onFinishInflate()
   }
 
-  def linkRecycler() = Option(getChildAt(0)) match {
-    case Some(rv: RecyclerView) => runUi(fastScroller <~ fsRecyclerView(rv))
-    case _ =>
-  }
+  def linkRecycler(recyclerView: RecyclerView) = runUi(fastScroller <~ fsRecyclerView(recyclerView))
 
   def setColor(color: Int) = runUi(fastScroller <~ fsColor(color))
 

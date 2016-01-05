@@ -59,7 +59,9 @@ trait ContactsComposer
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter)) ~
       (loading <~ vGone) ~
-      (scrollerLayout <~ fslLinkRecycler)
+      (recycler map { rv =>
+        scrollerLayout <~ fslLinkRecycler(rv)
+      } getOrElse showGeneralError)
   }
 
   def reloadContactsAdapter(contacts: IterableContacts, filter: ContactsFilter)(implicit uiContext: UiContext[_]): Ui[_] = {

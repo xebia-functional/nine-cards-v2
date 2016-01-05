@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.view.ViewPager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -166,7 +167,7 @@ object PullToCloseViewTweaks {
 
 object FastScrollerLayoutTweak {
   // We should launch this tweak when the adapter has been added
-  def fslLinkRecycler = Tweak[FastScrollerLayout](_.linkRecycler())
+  def fslLinkRecycler(recyclerView: RecyclerView) = Tweak[FastScrollerLayout](_.linkRecycler(recyclerView))
 
   def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
 

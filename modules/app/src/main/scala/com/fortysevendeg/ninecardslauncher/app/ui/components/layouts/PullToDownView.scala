@@ -9,31 +9,26 @@ import android.view.MotionEvent._
 import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
 import android.view.{MotionEvent, ViewConfiguration, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
-class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(implicit contextWrapper: ContextWrapper)
+class PullToDownView(context: Context, attrs: AttributeSet, defStyle: Int)(implicit contextWrapper: ContextWrapper)
   extends ViewGroup(context, attrs, defStyle) {
-
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
-
-  def this(context: Context, attrs: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attrs, 0)
 
   lazy val content = getChildAt(0)
 
-  var statuses = PullToCloseStatuses()
+  var pullToDownStatuses = PullToDownStatuses()
 
-  val listeners = PullToCloseListener()
+  val listeners = PullToDownListener()
 
   val touchSlop = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
     ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
   }
 
-  def isPulling: Boolean = statuses.isPulling
+  def isPulling: Boolean = pullToDownStatuses.isPulling
 
-  def currentPosY: Int = statuses.currentPosY
+  def currentPosY: Int = pullToDownStatuses.currentPosY
 
   override def checkLayoutParams(p: ViewGroup.LayoutParams): Boolean = p.isInstanceOf[MarginLayoutParams]
 
@@ -47,7 +42,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
 
   override def onFinishInflate(): Unit = {
     if (getChildCount != 1) {
-      throw new IllegalStateException("PullToCloseView only can host 1 element")
+      throw new IllegalStateException("PullToDownView only can host 1 element")
     }
     super.onFinishInflate()
   }
@@ -71,7 +66,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
     content.getLayoutParams match {
       case lp: ViewGroup.MarginLayoutParams =>
         val left: Int = getPaddingLeft + lp.leftMargin
-        val top: Int = getPaddingTop + lp.topMargin + statuses.currentPosY
+        val top: Int = getPaddingTop + lp.topMargin + pullToDownStatuses.currentPosY
         val right: Int = left + content.getMeasuredWidth
         val bottom: Int = top + content.getMeasuredHeight
         content.layout(left, top, right, bottom)
@@ -81,7 +76,7 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   override def dispatchTouchEvent(ev: MotionEvent): Boolean = {
     val x = ev.getX
     val y = ev.getY
-    (statuses.isPulling, childInTop, ev.getAction) match {
+    (pullToDownStatuses.isPulling, childInTop, ev.getAction) match {
       case (true, _, ACTION_UP | ACTION_CANCEL) => release(ev)
       case (true, _, ACTION_DOWN) => actionDown(ev, x, y)
       case (true, _, ACTION_MOVE) => actionMove(ev, x, y)
@@ -92,78 +87,77 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
   }
 
   private[this] def release(ev: MotionEvent): Boolean = {
-    if (statuses.currentPosY > 0) {
-      if (statuses.shouldClose()) listeners.close()
+    if (pullToDownStatuses.currentPosY > 0) {
       val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
       anim.addUpdateListener(new AnimatorUpdateListener {
         override def onAnimationUpdate(animation: ValueAnimator): Unit =
-          movePos(-statuses.currentPosY * animation.getAnimatedFraction)
+          movePos(-pullToDownStatuses.currentPosY * animation.getAnimatedFraction)
       })
       anim.addListener(new AnimatorListenerAdapter {
         override def onAnimationEnd(animation: Animator): Unit = {
           listeners.endPulling()
-          statuses = statuses.copy(isPulling = false)
+          pullToDownStatuses = pullToDownStatuses.copy(isPulling = false)
           restart()
         }
       })
       anim.start()
     } else {
       listeners.endPulling()
-      statuses = statuses.copy(isPulling = false)
+      pullToDownStatuses = pullToDownStatuses.copy(isPulling = false)
     }
     super.dispatchTouchEvent(ev)
   }
 
   private[this] def actionDown(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    statuses = statuses.start(x, y)
+    pullToDownStatuses = pullToDownStatuses.start(x, y)
     super.dispatchTouchEvent(ev)
     true
   }
 
   private[this] def actionMove(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    val firstTime = !statuses.isPulling && childInTop && statuses.dontStarted
+    val firstTime = !pullToDownStatuses.isPulling && childInTop && pullToDownStatuses.dontStarted
     if (firstTime) {
       // User began movement when the child can scroll up and we need start information
-      statuses = statuses.start(x, y)
+      pullToDownStatuses = pullToDownStatuses.start(x, y)
     }
-    statuses = statuses.move(x, y)
-    val moveDown = statuses.offsetY > 0
+    pullToDownStatuses = pullToDownStatuses.move(x, y)
+    val moveDown = pullToDownStatuses.offsetY > 0
 
-    (moveDown, !moveDown, statuses.hasLeftStartPosition, childInTop) match {
+    (moveDown, !moveDown, pullToDownStatuses.hasLeftStartPosition, childInTop) match {
       case (down, _, _, inTop) if down && !inTop => // disable move when user not reach top
-      case (down, up, canUp, _) if (up && canUp) || down => movePos(statuses.offsetY)
+      case (down, up, canUp, _) if (up && canUp) || down => movePos(pullToDownStatuses.offsetY)
       case _ =>
     }
     super.dispatchTouchEvent(ev)
   }
 
   private[this] def actionMoveIdle(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    if (y - statuses.startY > touchSlop) {
-      statuses = statuses.copy(isPulling = true)
-      statuses = statuses.start(x, y)
+    if (y - pullToDownStatuses.startY > touchSlop) {
+      pullToDownStatuses = pullToDownStatuses.copy(isPulling = true)
+      pullToDownStatuses = pullToDownStatuses.start(x, y)
       listeners.startPulling()
     }
     super.dispatchTouchEvent(ev)
   }
 
   private[this] def restart() = {
-    content.offsetTopAndBottom(-statuses.currentPosY)
+    content.offsetTopAndBottom(-pullToDownStatuses.currentPosY)
     invalidate()
-    statuses = statuses.restart()
+    pullToDownStatuses = pullToDownStatuses.restart()
   }
 
   private[this] def movePos(deltaY: Float) = {
-    if (deltaY >= 0 || !statuses.isInStartPosition) {
+    if (deltaY >= 0 || !pullToDownStatuses.isInStartPosition) {
       val to: Int = {
-        val to = statuses.currentPosY + deltaY.toInt
-        statuses.willOverTop(to) match {
-          case true => statuses.posStart
+        val to = pullToDownStatuses.currentPosY + deltaY.toInt
+        pullToDownStatuses.willOverTop(to) match {
+          case true => pullToDownStatuses.posStart
           case false => to
         }
       }
-      statuses = statuses.updateCurrentPostY(to)
-      listeners.scroll(to, statuses.shouldClose())
-      val change: Int = to - statuses.lastPosY
+      pullToDownStatuses = pullToDownStatuses.updateCurrentPostY(to)
+      listeners.scroll(to, pullToDownStatuses.isValidAction())
+      val change: Int = to - pullToDownStatuses.lastPosY
       updatePos(change)
     }
   }
@@ -179,13 +173,12 @@ class PullToCloseView(context: Context, attrs: AttributeSet, defStyle: Int)(impl
 
 }
 
-case class PullToCloseListener(
+case class PullToDownListener(
   var startPulling: () => Unit = () => (),
   var endPulling: () => Unit = () => (),
-  var scroll: (Int, Boolean) => Unit = (i: Int, b: Boolean) => (),
-  var close: () => Unit = () => ())
+  var scroll: (Int, Boolean) => Unit = (i: Int, b: Boolean) => ())
 
-case class PullToCloseStatuses(
+case class PullToDownStatuses(
   resistance: Float = 3f,
   lastPosY: Int = 0,
   currentPosY: Int = 0,
@@ -197,11 +190,11 @@ case class PullToCloseStatuses(
   offsetY: Float = 0,
   isPulling: Boolean = false)(implicit contextWrapper: ContextWrapper) {
 
-  val distanceToValidClose = resGetDimensionPixelSize(R.dimen.distance_to_valid_action)
+  val distanceToValidAction = resGetDimensionPixelSize(R.dimen.distance_to_valid_action)
 
   val posStart = 0
 
-  def restart(): PullToCloseStatuses = copy(
+  def restart(): PullToDownStatuses = copy(
     isPulling = false,
     lastPosY = 0,
     currentPosY = 0,
@@ -214,21 +207,21 @@ case class PullToCloseStatuses(
 
   def dontStarted: Boolean = startX == 0 && startY == 0
 
-  def start(x: Float, y: Float): PullToCloseStatuses = copy(
+  def start(x: Float, y: Float): PullToDownStatuses = copy(
     currentPosY = 0,
     startX = x,
     startY = y,
     lastMoveX = x,
     lastMoveY = y)
 
-  def move(x: Float, y: Float): PullToCloseStatuses = copy(
+  def move(x: Float, y: Float): PullToDownStatuses = copy(
     offsetX = x - lastMoveX,
     offsetY = (y - lastMoveY) / resistance,
     lastMoveX = x,
     lastMoveY = y,
     isPulling = true)
 
-  def updateCurrentPostY(current: Int): PullToCloseStatuses = copy(
+  def updateCurrentPostY(current: Int): PullToDownStatuses = copy(
     lastPosY = currentPosY,
     currentPosY = current)
 
@@ -238,6 +231,6 @@ case class PullToCloseStatuses(
 
   def willOverTop(to: Int): Boolean = to < posStart
 
-  def shouldClose(): Boolean = currentPosY > distanceToValidClose
+  def isValidAction(): Boolean = currentPosY > distanceToValidAction
 
 }

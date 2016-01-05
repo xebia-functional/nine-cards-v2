@@ -6,9 +6,9 @@ import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.Cont
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.DrawerRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
@@ -83,11 +84,17 @@ trait DrawerComposer
       (scrollerLayout <~
         drawerContentStyle <~
         vgAddViewByIndex(getUi(
-          w[DrawerRecyclerView] <~
-            recyclerStyle <~
-            wire(recycler) <~
-            (searchBoxView map drvAddController getOrElse Tweak.blank)
-        ), 0) <~
+          l[PullToCloseView](
+            w[DrawerRecyclerView] <~
+              recyclerStyle <~
+              wire(recycler) <~
+              (searchBoxView map drvAddController getOrElse Tweak.blank)
+          ) <~ pcvListener(PullToCloseListener(
+            startPulling = () => {},
+            endPulling = () => {},
+            scroll = (scroll: Int, close: Boolean) => {},
+            close = () => {}
+          ))), 0) <~
         fslColor(colorPrimary)) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical)) ~
@@ -155,15 +162,18 @@ trait DrawerComposer
   private[this] def swipeAdapter(
     adapter: RecyclerView.Adapter[_],
     layoutManager: LayoutManager,
-    fastScrollerVisible: Boolean = true) =
+    fastScrollerVisible: Boolean = true
+  ) =
     (recycler <~
-        rvLayoutManager(layoutManager) <~
-        rvAdapter(adapter) <~
-        rvScrollToTop) ~
+      rvLayoutManager(layoutManager) <~
+      rvAdapter(adapter) <~
+      rvScrollToTop) ~
       scrollerLayoutUi(fastScrollerVisible)
 
   def scrollerLayoutUi(fastScrollerVisible: Boolean): Ui[_] = if (fastScrollerVisible) {
-    scrollerLayout <~ fslVisible <~ fslLinkRecycler <~ fslReset
+    recycler map { rv =>
+      scrollerLayout <~ fslVisible <~ fslLinkRecycler(rv) <~ fslReset
+    } getOrElse showGeneralError
   } else {
     scrollerLayout <~ fslInvisible
   }
