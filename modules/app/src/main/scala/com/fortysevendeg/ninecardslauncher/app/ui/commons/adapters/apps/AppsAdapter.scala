@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps
 
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
-import android.view.View.{OnLongClickListener, OnClickListener}
+import android.view.View.{OnClickListener, OnLongClickListener}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -9,8 +9,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.ScrollableManager
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -23,7 +23,7 @@ case class AppsAdapter(
   longClickListener: Option[(App) => Unit])
   (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_])
   extends RecyclerView.Adapter[AppsIterableHolder]
-    with FastScrollerListener {
+  with FastScrollerListener {
 
   val heightItem = resGetDimensionPixelSize(R.dimen.height_app_item)
 
@@ -51,19 +51,19 @@ case class AppsAdapter(
     AppsIterableHolder(view)
   }
 
-  def getLayoutManager: GridLayoutManager = {
-    val manager = new GridLayoutManager(activityContext.application, columnsLists) with ScrollableManager {
-      override def canScrollVertically: Boolean = if (blockScroll) false else super.canScrollVertically
-    }
-    manager
-  }
+  def getLayoutManager: GridLayoutManager =
+    new GridLayoutManager(activityContext.application, columnsLists) with ScrollingLinearLayoutManager
 
   def swapIterator(iter: IterableApps) = {
     apps = iter
     notifyDataSetChanged()
   }
 
-  override def getHeight = (apps.count() / columnsLists) * heightItem
+  override def getHeightAllRows = apps.count() / columnsLists * getHeightItem
+
+  override def getHeightItem: Int = heightItem
+
+  override def getColumns: Int = columnsLists
 
   override def getElement(position: Int): Option[String] = Option(apps.moveToPosition(position).name.substring(0, 1))
 }

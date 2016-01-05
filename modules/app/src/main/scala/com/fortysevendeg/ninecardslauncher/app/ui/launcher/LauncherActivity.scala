@@ -142,7 +142,6 @@ class LauncherActivity
   override def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     Task.fork(di.deviceProcess.getIterableApps(getAppOrder).run).resolveAsyncUi(
-      onPreTask = () => showDrawerLoading,
       onResult = (apps: IterableApps) => addApps(apps, getAppOrder, (app: App) => {
         execute(toNineCardIntent(app))
       }, (app: App) => {
@@ -154,7 +153,6 @@ class LauncherActivity
   override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
     // TODO - Take into account the `contactsMenuOption` param
     Task.fork(di.deviceProcess.getIterableContacts(filter = AllContacts).run).resolveAsyncUi(
-      onPreTask = () => showDrawerLoading,
       onResult = (contacts: IterableContacts) => addContacts(contacts, (contact: Contact) => {
         execute(contact)
       })

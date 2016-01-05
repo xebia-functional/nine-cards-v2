@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts
 
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
-import android.view.View.{OnLongClickListener, OnClickListener}
+import android.view.View.{OnClickListener, OnLongClickListener}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -10,8 +10,8 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.ScrollableManager
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -53,16 +53,18 @@ case class ContactsAdapter(
   }
 
   def getLayoutManager: LinearLayoutManager =
-    new LinearLayoutManager(activityContext.application) with ScrollableManager {
-      override def canScrollVertically: Boolean = if (blockScroll) false else super.canScrollVertically
-    }
+    new LinearLayoutManager(activityContext.application) with ScrollingLinearLayoutManager
 
   def swapIterator(iter: IterableContacts) = {
     contacts = iter
     notifyDataSetChanged()
   }
 
-  override def getHeight: Int = contacts.count() * heightItem
+  override def getHeightAllRows: Int = contacts.count() * getHeightItem
+
+  override def getHeightItem: Int = heightItem
+
+  override def getColumns: Int = 1
 
   override def getElement(position: Int): Option[String] = Option(contacts.moveToPosition(position).name.substring(0, 1))
 }

@@ -4,14 +4,11 @@ import android.content.Context
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.util.AttributeSet
-import android.view.ViewGroup.{LayoutParams, OnHierarchyChangeListener}
-import android.view.animation.AnimationUtils
+import android.view.ViewGroup.LayoutParams
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak}
+import macroid.ContextWrapper
 
 class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends RecyclerView(context, attr, defStyleAttr) {

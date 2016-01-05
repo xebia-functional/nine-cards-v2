@@ -3,7 +3,7 @@ object Versions {
   val appV = "1.0.0"
   val scalaV = "2.11.7"
   val androidPlatformV = "android-23"
-  val androidV = "23.0.1"
+  val androidV = "23.1.1"
   val androidProvidedV = "4.1.1.4"
   val multiDexV = "0.1"
   val macroidExtrasV = "0.2"

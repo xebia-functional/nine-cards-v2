@@ -33,6 +33,8 @@
 
         <activity
             android:theme="@style/AppTheme"
+            android:launchMode="singleTask"
+            android:clearTaskOnLaunch="true"
             android:screenOrientation="portrait"
             android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity"/>
