@@ -17,7 +17,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.Cont
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.DrawerRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
@@ -84,17 +83,12 @@ trait DrawerComposer
       (scrollerLayout <~
         drawerContentStyle <~
         vgAddViewByIndex(getUi(
-          l[PullToCloseView](
+          l[PullToDownView](
             w[DrawerRecyclerView] <~
               recyclerStyle <~
               wire(recycler) <~
               (searchBoxView map drvAddController getOrElse Tweak.blank)
-          ) <~ pcvListener(PullToCloseListener(
-            startPulling = () => {},
-            endPulling = () => {},
-            scroll = (scroll: Int, close: Boolean) => {},
-            close = () => {}
-          ))), 0) <~
+          )), 0) <~
         fslColor(colorPrimary)) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical)) ~

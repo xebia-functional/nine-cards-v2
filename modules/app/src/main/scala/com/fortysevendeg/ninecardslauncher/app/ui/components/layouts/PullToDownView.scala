@@ -12,8 +12,8 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
-class PullToDownView(context: Context, attrs: AttributeSet, defStyle: Int)(implicit contextWrapper: ContextWrapper)
-  extends ViewGroup(context, attrs, defStyle) {
+class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
+  extends ViewGroup(context) {
 
   lazy val content = getChildAt(0)
 
@@ -86,21 +86,25 @@ class PullToDownView(context: Context, attrs: AttributeSet, defStyle: Int)(impli
     }
   }
 
+  def drop(): Unit = {
+    val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
+    anim.addUpdateListener(new AnimatorUpdateListener {
+      override def onAnimationUpdate(animation: ValueAnimator): Unit =
+        movePos(-pullToDownStatuses.currentPosY * animation.getAnimatedFraction)
+    })
+    anim.addListener(new AnimatorListenerAdapter {
+      override def onAnimationEnd(animation: Animator): Unit = {
+        listeners.endPulling()
+        pullToDownStatuses = pullToDownStatuses.copy(isPulling = false)
+        restart()
+      }
+    })
+    anim.start()
+  }
+
   private[this] def release(ev: MotionEvent): Boolean = {
     if (pullToDownStatuses.currentPosY > 0) {
-      val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
-      anim.addUpdateListener(new AnimatorUpdateListener {
-        override def onAnimationUpdate(animation: ValueAnimator): Unit =
-          movePos(-pullToDownStatuses.currentPosY * animation.getAnimatedFraction)
-      })
-      anim.addListener(new AnimatorListenerAdapter {
-        override def onAnimationEnd(animation: Animator): Unit = {
-          listeners.endPulling()
-          pullToDownStatuses = pullToDownStatuses.copy(isPulling = false)
-          restart()
-        }
-      })
-      anim.start()
+      drop()
     } else {
       listeners.endPulling()
       pullToDownStatuses = pullToDownStatuses.copy(isPulling = false)

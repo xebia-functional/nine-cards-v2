@@ -157,10 +157,19 @@ object PullToCloseViewTweaks {
 
   def pcvListener(pullToCloseListener: PullToCloseListener) = Tweak[PullToCloseView] {
     view =>
-      view.listeners.startPulling = pullToCloseListener.startPulling
-      view.listeners.endPulling = pullToCloseListener.endPulling
-      view.listeners.scroll = pullToCloseListener.scroll
-      view.listeners.close = pullToCloseListener.close
+      view.closeListeners.close = pullToCloseListener.close
+  }
+
+}
+
+
+object PullToDownViewTweaks {
+
+  def pdvListener(pullToDownListener: PullToDownListener) = Tweak[PullToCloseView] {
+    view =>
+      view.listeners.startPulling = pullToDownListener.startPulling
+      view.listeners.endPulling = pullToDownListener.endPulling
+      view.listeners.scroll = pullToDownListener.scroll
   }
 
 }
