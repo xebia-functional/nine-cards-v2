@@ -43,6 +43,12 @@ object Crashlytics {
     }
   }
 
+  /*
+   * Removes the namespace from the crashlytics auto-generated file.
+   * This is a common problem of the com.android.tools.build:builder and crashlytics
+   * that can be solved by simply removing the namespace declaration and the attributes
+   * with namespace
+   */
   def fixNameSpace = Def.task[Unit] {
     antTaskKey("crashlytics-code-gen").value
     val file = baseDirectory.value / "src/main/res/values/com_crashlytics_export_strings.xml"
