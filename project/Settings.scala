@@ -34,7 +34,27 @@ object Settings {
       proguardScala in Android := true,
       useProguard in Android := true,
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := Seq.empty)
+      proguardCache in Android := Seq(
+        "android.support",
+        "com.bumptech.glide",
+        "com.crashlytics.android",
+        "com.facebook.stetho",
+        "com.fasterxml.jackson",
+        "com.fortysevendeg.macroid.extras",
+        "com.google.android.gms",
+        "com.skuareup.okhttp",
+        "com.typesafe.config",
+        "io.fabric.sdk",
+        "javax.annotation",
+        "macroid",
+        "okio",
+        "org.apache.commons",
+        "org.brianmckenna.wartremover",
+        "org.joda",
+        "play.api",
+        "rapture.core",
+        "scala",
+        "scalaz"))
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++
@@ -129,7 +149,7 @@ object Settings {
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,
     DefaultMavenRepository,
-    "jcenter" at "http://jcenter.bintray.com",
+    "JCenter Bintray" at "http://jcenter.bintray.com",
     "47 Degrees Bintray Repo" at "http://dl.bintray.com/47deg/maven",
     Resolver.typesafeRepo("releases"),
     Resolver.typesafeRepo("snapshots"),
@@ -146,6 +166,7 @@ object Settings {
     "-keepattributes Signature",
     "-keepattributes InnerClasses",
     "-dontwarn scala.collection.**",
+    "-dontobfuscate",
     "-keep class android.support.v7.widget.SearchView { <init>(...); }",
     "-keep class android.support.v7.internal.widget.* { <init>(...); }",
     "-keep class scala.Dynamic",
