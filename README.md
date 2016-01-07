@@ -13,7 +13,6 @@ To compile the project:
 * Install sbt
 * Configure the Android SDK on your computer
 * Set `ANDROID_HOME` environment variable
-* Publish our `sbt-s3` project in local (See [Publish sbt-s3 in local](#publish-sbt-s3-in-local) section)
 * Add `debug.properties` file (See [Add Debug Keys](#add-debug-keys) section)
 * Clone this GitHub project to your computer
 
@@ -29,16 +28,6 @@ $ sbt
 
 ```
 > run
-```
-
-#Publish sbt-s3 in local
-
-We have made some changes in `sbt-s3` project and you need publish it in local. Try that:
-
-```
-git clone -b generate-link-version https://github.com/47deg/sbt-s3.git
-cd sbt-s3
-sbt publishLocal
 ```
 
 #Add Debug Keys
