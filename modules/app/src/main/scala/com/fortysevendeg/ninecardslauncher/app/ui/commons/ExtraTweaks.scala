@@ -112,7 +112,7 @@ object ExtraTweaks {
   def sAdapter(adapter: SpinnerAdapter) = Tweak[Spinner](_.setAdapter(adapter))
 
   def etHideKeyboard(implicit contextWrapper: ContextWrapper) = Tweak[EditText] { editText =>
-    Option(contextWrapper.application.getSystemService(Context.INPUT_METHOD_SERVICE)) map {
+    Option(contextWrapper.application.getSystemService(Context.INPUT_METHOD_SERVICE)) foreach {
       case imm: InputMethodManager => imm.hideSoftInputFromWindow(editText.getWindowToken, 0)
     }
   }
@@ -124,7 +124,7 @@ object ExtraTweaks {
     bottom: Option[Drawable] = None) =
     Tweak[TextView](_.setCompoundDrawablesWithIntrinsicBounds(left.orNull, top.orNull, right.orNull, bottom.orNull))
 
-  def tvCompoundDrawablesWithIntrinsicBounds2(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) =
+  def tvCompoundDrawablesWithIntrinsicBounds2Resources(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) =
     Tweak[TextView](_.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom))
 
   val tvNormalMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL)))
