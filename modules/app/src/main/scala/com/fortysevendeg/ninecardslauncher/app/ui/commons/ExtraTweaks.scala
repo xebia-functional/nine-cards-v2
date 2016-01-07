@@ -114,6 +114,7 @@ object ExtraTweaks {
   def etHideKeyboard(implicit contextWrapper: ContextWrapper) = Tweak[EditText] { editText =>
     Option(contextWrapper.application.getSystemService(Context.INPUT_METHOD_SERVICE)) foreach {
       case imm: InputMethodManager => imm.hideSoftInputFromWindow(editText.getWindowToken, 0)
+      case _ =>
     }
   }
 
