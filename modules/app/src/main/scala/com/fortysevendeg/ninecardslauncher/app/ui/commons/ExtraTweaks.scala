@@ -117,7 +117,11 @@ object ExtraTweaks {
     }
   }
 
-  def tvCompoundDrawablesWithIntrinsicBounds2(left: Option[Drawable], top: Option[Drawable], right: Option[Drawable], bottom: Option[Drawable]) =
+  def tvCompoundDrawablesWithIntrinsicBounds2(
+    left: Option[Drawable] = None,
+    top: Option[Drawable] = None,
+    right: Option[Drawable] = None,
+    bottom: Option[Drawable] = None) =
     Tweak[TextView](_.setCompoundDrawablesWithIntrinsicBounds(left.orNull, top.orNull, right.orNull, bottom.orNull))
 
   def tvCompoundDrawablesWithIntrinsicBounds2(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) =

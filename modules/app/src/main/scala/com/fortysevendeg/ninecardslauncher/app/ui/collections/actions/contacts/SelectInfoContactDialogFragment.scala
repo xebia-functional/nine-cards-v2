@@ -1,27 +1,22 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
 import android.app.{Activity, Dialog}
-import android.content.{Context, Intent}
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
-import android.view.View.OnClickListener
-import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, LayoutInflater, View}
-import android.widget.{LinearLayout, TextView}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import android.view.{LayoutInflater, View}
+import android.widget.LinearLayout
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
-import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
-import com.fortysevendeg.ninecardslauncher.process.types.{SmsCardType, EmailCardType, PhoneCardType, CardType}
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import macroid.ContextWrapper
+import com.fortysevendeg.ninecardslauncher.process.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
+import macroid.{ContextWrapper, Ui}
 
 import scala.annotation.tailrec
 
@@ -44,54 +39,53 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     new AlertDialog.Builder(getActivity).setView(rootView).create()
   }
 
-  class CategoryView(context: Context)
-    extends LinearLayout(context)
+  class CategoryView(res: Int)
+    extends LinearLayout(contextWrapper.bestAvailable)
     with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_category_dialog, this)
 
-    lazy val text = findView(TR.contact_dialog_category_text)
+    val text = Option(findView(TR.contact_dialog_category_text))
 
-    def populate(res: Int) = {
-      text.setText(res)
-    }
+    runUi(text <~ tvText(res))
   }
 
-  class ItemView(context: Context)
-    extends LinearLayout(context)
+  class ItemView(data: String, cardType: CardType)
+    extends LinearLayout(contextWrapper.bestAvailable)
     with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_item_dialog, this)
 
-    lazy val text = findView(TR.contact_dialog_item_text)
+    lazy val text = Option(findView(TR.contact_dialog_item_text))
 
-    def populate(data: String, cardType: CardType) = {
-
-      text.setText(data)
-      setOnClickListener(new OnClickListener {
-        override def onClick(v: View): Unit = {
-          val maybeIntent: Option[NineCardIntent] = cardType match {
-            case EmailCardType => Some(emailToNineCardIntent(data))
-            case SmsCardType => Some(smsToNineCardIntent(data))
-            case PhoneCardType => Some(phoneToNineCardIntent(data))
-            case _ => None
+    runUi(
+      text <~
+        tvText(data) <~
+        On.click {
+          Ui {
+            val maybeIntent: Option[NineCardIntent] = cardType match {
+              case EmailCardType => Some(emailToNineCardIntent(data))
+              case SmsCardType => Some(smsToNineCardIntent(data))
+              case PhoneCardType => Some(phoneToNineCardIntent(data))
+              case _ => None
+            }
+            maybeIntent foreach { intent =>
+              val card = AddCardRequest(
+                term = contact.name,
+                packageName = None,
+                cardType = cardType,
+                intent = intent,
+                imagePath = contact.photoUri
+              )
+              val responseIntent = new Intent
+              responseIntent.putExtra(ContactsFragment.addCardRequest, card)
+              getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+            }
+            dismiss()
           }
-          maybeIntent foreach { intent =>
-            val card = AddCardRequest(
-              term = contact.name,
-              packageName = None,
-              cardType = cardType,
-              intent = intent,
-              imagePath = contact.photoUri
-            )
-            val responseIntent = new Intent
-            responseIntent.putExtra(ContactsFragment.addCardRequest, card)
-            getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
-          }
-          dismiss()
         }
-      })
-    }
+    )
+
   }
 
   @tailrec
@@ -103,12 +97,9 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     case Nil => acc
     case h :: t =>
       val maybeViewCategory: Option[View] = if (acc.isEmpty) {
-        val viewCategory = new CategoryView(contextWrapper.bestAvailable)
-        viewCategory.populate(resHead)
-        Option(viewCategory)
+        Option(new CategoryView(resHead))
       } else None
-      val viewItem = new ItemView(contextWrapper.bestAvailable)
-      viewItem.populate(h, cardType)
+      val viewItem = new ItemView(h, cardType)
       val newAcc = maybeViewCategory map { viewCategory =>
         acc ++ Seq(viewCategory, viewItem)
       } getOrElse acc :+ viewItem
