@@ -40,13 +40,6 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
   override def generateLayoutParams(attrs: AttributeSet): ViewGroup.LayoutParams =
     new MarginLayoutParams(getContext, attrs)
 
-  override def onFinishInflate(): Unit = {
-    if (getChildCount != 1) {
-      throw new IllegalStateException("PullToDownView only can host 1 element")
-    }
-    super.onFinishInflate()
-  }
-
   override def onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int): Unit = {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     content.getLayoutParams match {
@@ -89,8 +82,10 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
   def drop(): Unit = {
     val anim: ValueAnimator = ValueAnimator.ofInt(0, 100)
     anim.addUpdateListener(new AnimatorUpdateListener {
-      override def onAnimationUpdate(animation: ValueAnimator): Unit =
+      override def onAnimationUpdate(animation: ValueAnimator): Unit = {
         movePos(-pullToDownStatuses.currentPosY * animation.getAnimatedFraction)
+        requestDisallowInterceptTouchEvent(true)
+      }
     })
     anim.addListener(new AnimatorListenerAdapter {
       override def onAnimationEnd(animation: Animator): Unit = {

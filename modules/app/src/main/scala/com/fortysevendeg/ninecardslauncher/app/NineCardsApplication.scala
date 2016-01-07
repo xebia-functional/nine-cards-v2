@@ -11,6 +11,7 @@ import io.fabric.sdk.android.Fabric
 
 class NineCardsApplication
   extends Application {
+  self =>
 
   override def onCreate() {
     super.onCreate()
@@ -36,7 +37,11 @@ class NineCardsApplication
             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
             .build())
       }
-      Fabric.`with`(this, new Crashlytics())
+      new Thread() {
+        override def run(): Unit = {
+          Fabric.`with`(self, new Crashlytics())
+        }
+      }.start()
     } catch {
       case _: Throwable =>
     }

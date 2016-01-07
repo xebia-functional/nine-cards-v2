@@ -5,6 +5,7 @@ import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -153,6 +154,16 @@ object SearchBoxesAnimatedViewTweak {
 
 }
 
+object PullToTabsViewTweaks {
+
+  def ptvAddTabs(items: Seq[TabInfo]) = Tweak[PullToTabsView](_.addTabs(items))
+
+  def ptvLinkTabs(tabs: Option[LinearLayout]) = Tweak[PullToTabsView](_.tabs = tabs)
+
+  def ptvClearTabs() = Tweak[PullToTabsView](_.clear)
+
+}
+
 object PullToCloseViewTweaks {
 
   def pcvListener(pullToCloseListener: PullToCloseListener) = Tweak[PullToCloseView] {
@@ -165,7 +176,7 @@ object PullToCloseViewTweaks {
 
 object PullToDownViewTweaks {
 
-  def pdvListener(pullToDownListener: PullToDownListener) = Tweak[PullToCloseView] {
+  def pdvListener(pullToDownListener: PullToDownListener) = Tweak[PullToDownView] {
     view =>
       view.listeners.startPulling = pullToDownListener.startPulling
       view.listeners.endPulling = pullToDownListener.endPulling

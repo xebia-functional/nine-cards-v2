@@ -4,7 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
-import android.widget.ImageView
+import android.widget.{ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.Cont
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.DrawerRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
@@ -35,7 +36,8 @@ import scala.concurrent.Future
 trait DrawerComposer
   extends DrawerStyles
   with ContextSupportProvider
-  with SearchBoxAnimatedListener {
+  with SearchBoxAnimatedListener
+  with PullToTabsViewStyles {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
 
@@ -49,13 +51,23 @@ trait DrawerComposer
 
   lazy val paginationDrawerPanel = Option(findView(TR.launcher_drawer_pagination_panel))
 
-  var recycler: Option[DrawerRecyclerView] = None
+  var recycler = slot[DrawerRecyclerView]
+
+  var tabs = slot[LinearLayout]
+
+  var pullToTabsView = slot[PullToTabsView]
 
   lazy val searchBoxContentPanel = Option(findView(TR.launcher_search_box_content_panel))
 
   var searchBoxView: Option[SearchBoxesAnimatedView] = None
 
   var isShowingAppsAlphabetical = true
+
+  lazy val appTabs = Seq(
+    TabInfo(R.drawable.app_drawer_icon_phone, "Tab 1"),
+    TabInfo(R.drawable.app_drawer_icon_phone, "Tab 2"),
+    TabInfo(R.drawable.app_drawer_icon_phone, "Tab 3")
+  )
 
   override def onChangeBoxView(boxView: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit =
     boxView match {
@@ -82,14 +94,16 @@ trait DrawerComposer
       }) ~
       (scrollerLayout <~
         drawerContentStyle <~
+        vgAddView(getUi(l[LinearLayout]() <~ tabContentStyles <~ wire(tabs))) <~
         vgAddViewByIndex(getUi(
-          l[PullToDownView](
+          l[PullToTabsView](
             w[DrawerRecyclerView] <~
               recyclerStyle <~
               wire(recycler) <~
               (searchBoxView map drvAddController getOrElse Tweak.blank)
-          )), 0) <~
+          ) <~ wire(pullToTabsView) <~ ptvLinkTabs(tabs)), 0) <~
         fslColor(colorPrimary)) ~
+      (pullToTabsView <~ ptvAddTabs(appTabs)) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical)) ~
       createDrawerPagers
