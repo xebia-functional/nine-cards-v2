@@ -79,7 +79,6 @@ case class IconDialogFragment(categorySelected: String)(implicit contextWrapper:
       })
     }
 
-
   }
 
 }

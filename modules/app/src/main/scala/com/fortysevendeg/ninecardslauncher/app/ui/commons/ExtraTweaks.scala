@@ -112,9 +112,8 @@ object ExtraTweaks {
   def sAdapter(adapter: SpinnerAdapter) = Tweak[Spinner](_.setAdapter(adapter))
 
   def etHideKeyboard(implicit contextWrapper: ContextWrapper) = Tweak[EditText] { editText =>
-    contextWrapper.application.getSystemService(Context.INPUT_METHOD_SERVICE) match {
+    Option(contextWrapper.application.getSystemService(Context.INPUT_METHOD_SERVICE)) map {
       case imm: InputMethodManager => imm.hideSoftInputFromWindow(editText.getWindowToken, 0)
-      case _ =>
     }
   }
 
