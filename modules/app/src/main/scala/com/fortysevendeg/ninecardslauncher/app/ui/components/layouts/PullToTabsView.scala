@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Tint
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchIconsColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Transformer, Tweak}
+import macroid.{ContextWrapper, Transformer, Tweak, Ui}
 
 class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends PullToDownView(context) {
@@ -31,24 +31,24 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
 
   var selectedItem = 0
 
-  runUi(
-    this <~ vGlobalLayoutListener(view => {
-      this <~
-        pdvListener(PullToDownListener(
-          startPulling = () => runUi(tabs <~ vVisible <~ vY(-heightTabs)),
-          endPulling = () => runUi(tabs <~ vGone),
-          scroll = (scroll: Int, close: Boolean) => runUi(tabs <~ vY(-heightTabs + scroll)))
-        )
-    }))
+  def linkTabsView(tabsView: Option[LinearLayout], start: Ui[_], end: Ui[_]): Ui[PullToTabsView] = {
+    tabs = tabsView
+    this <~
+      pdvListener(PullToDownListener(
+        startPulling = () => runUi((tabs <~ vVisible <~ vY(-heightTabs)) ~ start),
+        endPulling = () => runUi((tabs <~ vGone) ~ end),
+        scroll = (scroll: Int, close: Boolean) => runUi(tabs <~ vY(-heightTabs + scroll)))
+      )
+  }
 
-  def activate(item: Int) = Transformer {
+  def activate(item: Int): Transformer = Transformer {
     case tab: TabView if tab.isPosition(item) => tab.activate()
     case tab: TabView => tab.deactivate()
   }
 
-  def clear = runUi(tabs <~ vgRemoveAllViews)
+  def clear: Unit = runUi(tabs <~ vgRemoveAllViews)
 
-  def addTabs(items: Seq[TabInfo], index: Option[Int] = None) = {
+  def addTabs(items: Seq[TabInfo], index: Option[Int] = None): Unit = {
     val views = items.zipWithIndex map {
       case (item, pos) => new TabView(item, pos, index contains pos)
     }
@@ -69,7 +69,11 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
     runUi(
       (icon <~ ivSrc(item.drawable)) ~
         (name <~ tvText(item.name)) ~
-        (if (selected) { activate() } else { deactivate() }) ~
+        (if (selected) {
+          activate()
+        } else {
+          deactivate()
+        }) ~
         (this <~ vSetPosition(pos)))
 
     def activate() =

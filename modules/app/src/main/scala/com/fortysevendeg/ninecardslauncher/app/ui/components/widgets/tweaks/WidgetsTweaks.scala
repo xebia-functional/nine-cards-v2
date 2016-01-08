@@ -80,4 +80,8 @@ object DrawerRecyclerViewTweaks {
 
   def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
 
+  def drvEnabled(enabled: Boolean) = Tweak[W] { view =>
+    view.statuses = view.statuses.copy(enabled = enabled)
+  }
+
 }

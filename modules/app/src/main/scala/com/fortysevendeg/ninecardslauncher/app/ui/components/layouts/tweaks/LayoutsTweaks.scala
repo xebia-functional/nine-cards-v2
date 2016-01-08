@@ -152,6 +152,10 @@ object SearchBoxesAnimatedViewTweak {
     view.listener = Some(listener)
   }
 
+  def sbavEnabled(enabled: Boolean) = Tweak[SearchBoxesAnimatedView] { view =>
+    view.statuses = view.statuses.copy(enabled = enabled)
+  }
+
 }
 
 object PullToTabsViewTweaks {
@@ -160,7 +164,9 @@ object PullToTabsViewTweaks {
 
   def ptvAddTabs(items: Seq[TabInfo]) = Tweak[PullToTabsView](_.addTabs(items))
 
-  def ptvLinkTabs(tabs: Option[LinearLayout]) = Tweak[PullToTabsView](_.tabs = tabs)
+  def ptvLinkTabs(tabs: Option[LinearLayout], start: Ui[_], end: Ui[_]) = Tweak[PullToTabsView] { view =>
+    runUi(view.linkTabsView(tabs, start, end))
+  }
 
   def ptvClearTabs() = Tweak[PullToTabsView](_.clear)
 

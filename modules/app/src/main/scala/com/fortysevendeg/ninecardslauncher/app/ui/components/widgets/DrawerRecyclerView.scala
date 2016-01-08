@@ -94,7 +94,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
     if (xMoved) {
       val isAnimationRunning = animatedController exists(_.isRunning)
-      val isScrolling = (xDiff > yDiff) && !isAnimationRunning
+      val isScrolling = (xDiff > yDiff) && !isAnimationRunning && statuses.enabled
       if (isScrolling) {
         animatedController foreach (controller => runUi(controller.startMovement))
         runUi(drawerRecyclerListener.start())
@@ -121,6 +121,7 @@ case class DrawerRecyclerStatuses(
   disableScroll: Boolean = false,
   lastMotionX: Float = 0,
   lastMotionY: Float = 0,
+  enabled: Boolean = true,
   touchState: ViewState = Stopped) {
 
   def deltaX(x: Float): Float = lastMotionX - x
