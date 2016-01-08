@@ -4,6 +4,7 @@ import android.content.{ContentResolver, ContentValues}
 import android.database.Cursor
 import android.net.Uri
 import android.net.Uri._
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 
 trait ContentResolverWrapper {
 
@@ -149,7 +150,7 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     val contentValues = new ContentValues()
 
     values foreach {
-      case (key, null) => contentValues.putNull(key)
+      case (key, `javaNull`) => contentValues.putNull(key)
       case (key, value: Array[Byte]) => contentValues.put(key, value)
       case (key, value: Byte) => contentValues.put(key, value.asInstanceOf[java.lang.Byte])
       case (key, value: Boolean) => contentValues.put(key, value)

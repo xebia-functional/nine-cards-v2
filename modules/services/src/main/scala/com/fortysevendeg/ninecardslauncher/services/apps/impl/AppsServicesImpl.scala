@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.{PackageManager, ResolveInfo}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.apps._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
@@ -66,7 +67,7 @@ class AppsServicesImpl
   }
 
   protected def categoryLauncherIntent(): Intent = {
-    val mainIntent: Intent = new Intent(Intent.ACTION_MAIN, null)
+    val mainIntent: Intent = new Intent(Intent.ACTION_MAIN, javaNull)
     mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
     mainIntent
   }

@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import java.io.{FileOutputStream, File, InputStream}
+import java.io.{File, FileOutputStream, InputStream}
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -8,12 +8,13 @@ import android.graphics._
 import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.services.image.{ImageServicesConfig, BitmapTransformationExceptionImpl, FileException}
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationExceptionImpl, FileException, ImageServicesConfig}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Errata, Answer}
+import rapture.core.{Answer, Errata}
 
 trait ImageServicesTasksSpecification
   extends Specification
@@ -114,7 +115,7 @@ trait ImageServicesTasksSpecification
 
     self: ImageServicesTasksScope =>
 
-    packageManager.getResourcesForApplication(packageName) returns null
+    packageManager.getResourcesForApplication(packageName) returns javaNull
 
   }
 
@@ -143,7 +144,7 @@ trait ImageServicesTasksSpecification
     val mockInputStream = mock[InputStream]
 
     override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def createInputStream(uri: String) = null
+      override def createInputStream(uri: String) = javaNull
     }
 
   }
@@ -170,7 +171,7 @@ trait ImageServicesTasksSpecification
     val mockFileOutputStream = mock[FileOutputStream]
 
     override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def createFileOutputStream(file: File): FileOutputStream = null
+      override def createFileOutputStream(file: File): FileOutputStream = javaNull
     }
   }
 
@@ -224,7 +225,7 @@ trait ImageServicesTasksSpecification
 
     val mockImageServicesConfig = mock[ImageServicesConfig]
 
-    packageManager.getResourcesForApplication(packageName) returns null
+    packageManager.getResourcesForApplication(packageName) returns javaNull
 
   }
 
@@ -247,7 +248,7 @@ trait ImageServicesTasksSpecification
 
     val mockImageServicesConfig = mock[ImageServicesConfig]
 
-    packageManager.getResourcesForApplication(packageName) returns null
+    packageManager.getResourcesForApplication(packageName) returns javaNull
 
   }
 

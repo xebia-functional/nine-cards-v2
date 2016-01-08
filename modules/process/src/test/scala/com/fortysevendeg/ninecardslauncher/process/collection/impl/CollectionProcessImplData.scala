@@ -192,7 +192,7 @@ trait CollectionProcessImplData {
     starRating: Double = starRating,
     numDownloads: String = numDownloads,
     notification: String = notification) =
-    (0 until 5) map (item =>
+    (1 until 5) map (item =>
       servicesModel.Card(
         id = id + item,
         position = position,
@@ -226,14 +226,24 @@ trait CollectionProcessImplData {
     }
 
   val seqCard = createSeqCard()
-  val card = seqCard.head
-  val seqServicesCard = createSeqServicesCard()
-  val servicesCard = seqServicesCard.head
+  val servicesCard = servicesModel.Card(
+    id = cardId,
+    position = position,
+    micros = micros,
+    term = term,
+    packageName = Option(packageName),
+    cardType = cardType.name,
+    intent = intent,
+    imagePath = imagePath,
+    starRating = Option(starRating),
+    numDownloads = Option(numDownloads),
+    notification = Option(notification))
+  val seqServicesCard = Seq(servicesCard) ++ createSeqServicesCard()
 
   val seqCollection = createSeqCollection()
-  val collection = seqCollection.head
+  val collection = seqCollection.headOption
   val seqServicesCollection = createSeqServicesCollection()
-  val servicesCollection = seqServicesCollection.head
+  val servicesCollection = seqServicesCollection.headOption
 
   val unformedApps = createSeqUnformedApps()
   val unformedContacts = createSeqUnformedContacs()
@@ -332,8 +342,8 @@ trait CollectionProcessImplData {
     appsCategory = Option(appsCategory))
 
   val updatedCollection = Collection(
-    id = seqServicesCollection.head.id,
-    position = seqServicesCollection.head.position,
+    id = collectionId,
+    position = position,
     name = name,
     collectionType = collectionType,
     icon = icon,
@@ -345,7 +355,7 @@ trait CollectionProcessImplData {
     sharedCollectionSubscribed = sharedCollectionSubscribed)
 
   val seqAddCardRequest = createSeqAddCardRequest()
-  val addCardRequest = seqAddCardRequest.head
+  val addCardRequest = seqAddCardRequest.headOption
   val seqAddCardResponse = createSeqCardResponse()
 
   def createSeqAddCardRequest(num: Int = 3) =

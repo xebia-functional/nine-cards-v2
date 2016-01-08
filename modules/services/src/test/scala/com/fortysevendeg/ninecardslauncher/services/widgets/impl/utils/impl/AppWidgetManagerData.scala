@@ -59,6 +59,5 @@ trait AppWidgetManagerData {
       preview = preview))
 
   val seqWidget: Seq[Widget] = createSeqWidget()
-  val widget: Widget = seqWidget.head
 
 }

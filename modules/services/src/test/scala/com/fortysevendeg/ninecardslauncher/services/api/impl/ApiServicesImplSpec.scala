@@ -338,7 +338,7 @@ class ApiServicesImplSpec
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
-            response.app shouldEqual toGooglePlayApp(googlePlayPackages.items.head.docV2)
+            Some(response.app) shouldEqual googlePlayPackages.items.headOption.map(a => toGooglePlayApp(a.docV2))
         }
       }
 

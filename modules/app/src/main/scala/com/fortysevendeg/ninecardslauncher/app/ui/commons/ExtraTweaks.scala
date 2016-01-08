@@ -54,6 +54,7 @@ object ExtraTweaks {
 
   def vBackgroundTint(color: Int) = Tweak[View] {
     case t: TintableBackgroundView => t.setSupportBackgroundTintList(ColorStateList.valueOf(color))
+    case _ =>
   }
 
   def vSelected(selected: Boolean) = Tweak[View](_.setSelected(selected))
@@ -111,15 +112,20 @@ object ExtraTweaks {
   def sAdapter(adapter: SpinnerAdapter) = Tweak[Spinner](_.setAdapter(adapter))
 
   def etHideKeyboard(implicit contextWrapper: ContextWrapper) = Tweak[EditText] { editText =>
-    contextWrapper.application.getSystemService(Context.INPUT_METHOD_SERVICE) match {
+    Option(contextWrapper.application.getSystemService(Context.INPUT_METHOD_SERVICE)) foreach {
       case imm: InputMethodManager => imm.hideSoftInputFromWindow(editText.getWindowToken, 0)
+      case _ =>
     }
   }
 
-  def tvCompoundDrawablesWithIntrinsicBounds2(left: Option[Drawable], top: Option[Drawable], right: Option[Drawable], bottom: Option[Drawable]) =
+  def tvCompoundDrawablesWithIntrinsicBounds2(
+    left: Option[Drawable] = None,
+    top: Option[Drawable] = None,
+    right: Option[Drawable] = None,
+    bottom: Option[Drawable] = None) =
     Tweak[TextView](_.setCompoundDrawablesWithIntrinsicBounds(left.orNull, top.orNull, right.orNull, bottom.orNull))
 
-  def tvCompoundDrawablesWithIntrinsicBounds2(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) =
+  def tvCompoundDrawablesWithIntrinsicBounds2Resources(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) =
     Tweak[TextView](_.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom))
 
   val tvNormalMedium: Tweak[TextView] = Tweak[TextView](x => x.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL)))
