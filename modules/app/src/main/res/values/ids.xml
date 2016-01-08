@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="type" type="id" />
+    <item name="position" type="id" />
     <item name="use_layer_hardware" type="id" />
     <item name="fab_menu_opened" type="id" />
     <item name="fab_menu_position" type="id" />

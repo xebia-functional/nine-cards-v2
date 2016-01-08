@@ -103,7 +103,7 @@ trait DrawerComposer
               (searchBoxView map drvAddController getOrElse Tweak.blank)
           ) <~ wire(pullToTabsView) <~ ptvLinkTabs(tabs)), 0) <~
         fslColor(colorPrimary)) ~
-      (pullToTabsView <~ ptvAddTabs(appTabs)) ~
+      (pullToTabsView <~ ptvAddTabsAndActivate(appTabs, 0)) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical)) ~
       createDrawerPagers

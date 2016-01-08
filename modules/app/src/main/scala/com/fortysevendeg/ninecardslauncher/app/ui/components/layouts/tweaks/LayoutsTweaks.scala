@@ -156,11 +156,15 @@ object SearchBoxesAnimatedViewTweak {
 
 object PullToTabsViewTweaks {
 
+  def ptvAddTabsAndActivate(items: Seq[TabInfo], index: Int) = Tweak[PullToTabsView](_.addTabs(items, Some(index)))
+
   def ptvAddTabs(items: Seq[TabInfo]) = Tweak[PullToTabsView](_.addTabs(items))
 
   def ptvLinkTabs(tabs: Option[LinearLayout]) = Tweak[PullToTabsView](_.tabs = tabs)
 
   def ptvClearTabs() = Tweak[PullToTabsView](_.clear)
+
+  def ptvActivate(item: Int) = Tweak[PullToTabsView](_.activate(item))
 
 }
 

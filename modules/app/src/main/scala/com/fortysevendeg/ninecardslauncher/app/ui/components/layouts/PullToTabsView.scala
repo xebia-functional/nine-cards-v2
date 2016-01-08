@@ -9,19 +9,27 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchIconsColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak}
+import macroid.{ContextWrapper, Transformer, Tweak}
 
 class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends PullToDownView(context) {
 
   val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_height)
 
+  val primaryColor = resGetColor(R.color.primary)
+
+  val defaultColor = theme.get(SearchIconsColor)
+
   var tabs = slot[LinearLayout]
+
+  var selectedItem = 0
 
   runUi(
     this <~ vGlobalLayoutListener(view => {
@@ -33,17 +41,22 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
         )
     }))
 
+  def activate(item: Int) = Transformer {
+    case tab: TabView if tab.isPosition(item) => tab.activate()
+    case tab: TabView => tab.deactivate()
+  }
+
   def clear = runUi(tabs <~ vgRemoveAllViews)
 
-  def addTabs(items: Seq[TabInfo]) = {
-    val views = items map { item =>
-      new TabView(item)
+  def addTabs(items: Seq[TabInfo], index: Option[Int] = None) = {
+    val views = items.zipWithIndex map {
+      case (item, pos) => new TabView(item, pos, index contains pos)
     }
     val params = new LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1)
     runUi(tabs <~ vgAddViews(views, params))
   }
 
-  class TabView(item: TabInfo)
+  class TabView(item: TabInfo, pos: Int, selected: Boolean)
     extends LinearLayout(context)
     with TypedFindView {
 
@@ -54,10 +67,19 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
     lazy val name = findView(TR.tab_item_name)
 
     runUi(
-      (icon <~
-        tivDefaultColor(theme.get(SearchIconsColor)) <~
-        ivSrc(item.drawable)) ~
-        (name <~ tvText(item.name)))
+      (icon <~ ivSrc(item.drawable)) ~
+        (name <~ tvText(item.name)) ~
+        (if (selected) { activate() } else { deactivate() }) ~
+        (this <~ vSetPosition(pos)))
+
+    def activate() =
+      (icon <~ tivDefaultColor(primaryColor)) ~
+        (name <~ tvColor(primaryColor))
+
+    def deactivate() =
+      (icon <~ tivDefaultColor(defaultColor)) ~
+        (name <~ tvColor(defaultColor))
+
   }
 
 }
