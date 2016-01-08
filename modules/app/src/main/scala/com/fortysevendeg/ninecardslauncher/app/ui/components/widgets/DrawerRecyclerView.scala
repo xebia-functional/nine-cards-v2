@@ -9,8 +9,8 @@ import android.view.{MotionEvent, ViewConfiguration}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, ViewState}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
 import com.fortysevendeg.ninecardslauncher.commons._
-import macroid.ContextWrapper
 import macroid.FullDsl._
+import macroid.{ContextWrapper, Ui}
 
 class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends RecyclerView(context, attr, defStyleAttr) {
@@ -18,6 +18,8 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
   def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
+
+  var drawerRecyclerListener = DrawerRecyclerViewListener()
 
   var animatedController: Option[SearchBoxAnimatedController] = None
 
@@ -48,9 +50,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
         case (ACTION_DOWN, _) =>
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         case (ACTION_CANCEL | ACTION_UP, _) =>
-          animatedController foreach (_.computeFling())
-          statuses = statuses.copy(touchState = Stopped)
-          blockScroll(false)
+          reset()
         case _ =>
       }
     }
@@ -70,9 +70,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
           false
         case (ACTION_CANCEL | ACTION_UP, _) =>
-          animatedController foreach (_.computeFling())
-          statuses = statuses.copy(touchState = Stopped)
-          blockScroll(false)
+          reset()
           statuses.touchState != Stopped
         case _ => statuses.touchState != Stopped
       }
@@ -80,6 +78,13 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
     override def onRequestDisallowInterceptTouchEvent(b: Boolean): Unit = {}
   })
+
+  private[this] def reset() = {
+    animatedController foreach (_.computeFling())
+    runUi(drawerRecyclerListener.end())
+    statuses = statuses.copy(touchState = Stopped)
+    blockScroll(false)
+  }
 
   private[this] def setStateIfNeeded(x: Float, y: Float) = {
     val xDiff = math.abs(x - statuses.lastMotionX)
@@ -92,6 +97,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       val isScrolling = (xDiff > yDiff) && !isAnimationRunning
       if (isScrolling) {
         animatedController foreach (controller => runUi(controller.startMovement))
+        runUi(drawerRecyclerListener.start())
         statuses = statuses.copy(touchState = Scrolling)
         blockScroll(true)
       }
@@ -106,7 +112,10 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
 }
 
-
+case class DrawerRecyclerViewListener(
+  start: () => Ui[_] = () => Ui.nop,
+  end: () => Ui[_] = () => Ui.nop
+)
 
 case class DrawerRecyclerStatuses(
   disableScroll: Boolean = false,

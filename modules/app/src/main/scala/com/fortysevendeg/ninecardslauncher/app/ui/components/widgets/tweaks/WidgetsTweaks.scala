@@ -7,7 +7,7 @@ import android.view.animation.AnimationUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.RippleBackgroundSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{DrawerRecyclerView, CollectionRecyclerView, RippleBackgroundView, TintableImageView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
 
@@ -77,5 +77,7 @@ object DrawerRecyclerViewTweaks {
   def drvDisableScroll(disable: Boolean) = Tweak[W](view => view.statuses = view.statuses.copy(disableScroll = disable))
 
   def drvAddController(controller: SearchBoxAnimatedController) = Tweak[W](_.animatedController = Some(controller))
+
+  def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
 
 }

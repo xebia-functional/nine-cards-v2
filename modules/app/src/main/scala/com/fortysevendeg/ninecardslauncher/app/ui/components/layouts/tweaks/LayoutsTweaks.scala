@@ -181,6 +181,11 @@ object PullToDownViewTweaks {
   def pdvListener(pullToDownListener: PullToDownListener) =
     Tweak[PullToDownView] (_.listeners = pullToDownListener)
 
+  def pdvEnable(enabled: Boolean) =
+    Tweak[PullToDownView] { view =>
+      view.pullToDownStatuses = view.pullToDownStatuses.copy(enabled = enabled)
+    }
+
 }
 
 object FastScrollerLayoutTweak {

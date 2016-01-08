@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
 import android.content.Context
-import android.support.v4.view.ViewConfigurationCompat
+import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
@@ -17,7 +17,8 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
 
   lazy val content = getChildAt(0)
 
-  var pullToDownStatuses = PullToDownStatuses()
+  var pullToDownStatuses = PullToDownStatuses(
+    distanceToValidAction = resGetDimensionPixelSize(R.dimen.distance_to_valid_action))
 
   var listeners = PullToDownListener()
 
@@ -66,16 +67,16 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
       case _ =>
     }
 
-  override def dispatchTouchEvent(ev: MotionEvent): Boolean = {
-    val x = ev.getX
-    val y = ev.getY
-    (pullToDownStatuses.isPulling, childInTop, ev.getAction) match {
-      case (true, _, ACTION_UP | ACTION_CANCEL) => release(ev)
-      case (true, _, ACTION_DOWN) => actionDown(ev, x, y)
-      case (true, _, ACTION_MOVE) => actionMove(ev, x, y)
-      case (false, true, ACTION_DOWN) => actionDown(ev, x, y)
-      case (false, true, ACTION_MOVE) => actionMoveIdle(ev, x, y)
-      case _ => super.dispatchTouchEvent(ev)
+  override def dispatchTouchEvent(event: MotionEvent): Boolean = {
+    val x = MotionEventCompat.getX(event, 0)
+    val y = MotionEventCompat.getY(event, 0)
+    (pullToDownStatuses.isPulling, childInTop, event.getAction) match {
+      case (true, _, ACTION_UP | ACTION_CANCEL) => release(event)
+      case (true, _, ACTION_DOWN) => actionDown(event, x, y)
+      case (true, _, ACTION_MOVE) => actionMove(event, x, y)
+      case (false, true, ACTION_DOWN) => actionDown(event, x, y)
+      case (false, true, ACTION_MOVE) => actionMoveIdle(event, x, y)
+      case _ => super.dispatchTouchEvent(event)
     }
   }
 
@@ -131,7 +132,7 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
   }
 
   private[this] def actionMoveIdle(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    if (y - pullToDownStatuses.startY > touchSlop) {
+    if (y - pullToDownStatuses.startY > touchSlop && pullToDownStatuses.enabled) {
       pullToDownStatuses = pullToDownStatuses.copy(isPulling = true)
       pullToDownStatuses = pullToDownStatuses.start(x, y)
       listeners.startPulling()
@@ -178,6 +179,7 @@ case class PullToDownListener(
   scroll: (Int, Boolean) => Unit = (i: Int, b: Boolean) => ())
 
 case class PullToDownStatuses(
+  distanceToValidAction: Int,
   resistance: Float = 3f,
   lastPosY: Int = 0,
   currentPosY: Int = 0,
@@ -187,9 +189,8 @@ case class PullToDownStatuses(
   lastMoveY: Float = 0,
   offsetX: Float = 0,
   offsetY: Float = 0,
-  isPulling: Boolean = false)(implicit contextWrapper: ContextWrapper) {
-
-  val distanceToValidAction = resGetDimensionPixelSize(R.dimen.distance_to_valid_action)
+  enabled: Boolean = true,
+  isPulling: Boolean = false) {
 
   val posStart = 0
 
