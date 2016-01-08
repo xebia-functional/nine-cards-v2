@@ -8,6 +8,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.{Lollipop, KitKat}
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
@@ -58,16 +59,16 @@ trait LauncherComposer
       )) ~
       (googleIcon <~ googleButtonStyle <~ On.click(Ui(launchSearch))) ~
       (micIcon <~ micButtonStyle <~ On.click(Ui(launchVoiceSearch))) ~
-      (appDrawer1 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 0) <~ FuncOn.click { view: View =>
+      (appDrawer1 <~ drawerItemStyle <~ vSetPosition(0) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
-      (appDrawer2 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 1) <~ FuncOn.click { view: View =>
+      (appDrawer2 <~ drawerItemStyle <~ vSetPosition(1) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
-      (appDrawer3 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 2) <~ FuncOn.click { view: View =>
+      (appDrawer3 <~ drawerItemStyle <~ vSetPosition(2) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
-      (appDrawer4 <~ drawerItemStyle <~ vTag2(R.id.app_drawer_position, 3) <~ FuncOn.click { view: View =>
+      (appDrawer4 <~ drawerItemStyle <~ vSetPosition(3) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       })
 

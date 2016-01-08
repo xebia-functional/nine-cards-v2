@@ -19,21 +19,20 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{SlidingTabLayout, FabItemMenu}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.{SlidingTabLayoutTweaks, FabItemMenuTweaks}
-import FabItemMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.{FabItemMenuTweaks, SlidingTabLayoutTweaks}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks
-import CollectionRecyclerViewTweaks._
-import SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
-import com.fortysevendeg.ninecardslauncher.process.types._
-import CardType._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import com.fortysevendeg.ninecardslauncher.process.types._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 
@@ -58,14 +57,14 @@ trait Styles {
   def fabButtonShortcutsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     fabButton(R.string.shortcuts, R.drawable.fab_menu_icon_shorcut, 4)
 
-  private[this] def fabButton(title: Int, icon: Int, tag: Int)(implicit context: ContextWrapper): Tweak[FabItemMenu] =
+  private[this] def fabButton(title: Int, icon: Int, position: Int)(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     vWrapContent +
       fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
       fimTitle(resGetString(title)) +
       fimSrc(icon) +
       vGone +
       vTag(R.id.`type`, fabButtonItem) +
-      vTag2(R.id.fab_menu_position, tag)
+      vSetPosition(position)
 
 }
 

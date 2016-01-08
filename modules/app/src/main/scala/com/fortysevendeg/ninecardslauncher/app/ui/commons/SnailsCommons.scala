@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.animation._
-import android.graphics.Color
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import android.view.View
 import android.view.animation.{DecelerateInterpolator, AccelerateInterpolator, AccelerateDecelerateInterpolator}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -167,11 +167,8 @@ object SnailsCommons {
       animPromise.future
   }
 
-  private[this] def extractDelay(view: View): Int = Option(view.getTag(R.id.fab_menu_position)) match {
-    case Some(position) => Try(defaultDelay * Int.unbox(position)) match {
-      case Success(delay) => delay
-      case Failure(_) => noDelay
-    }
+  private[this] def extractDelay(view: View): Int = view.getPosition match {
+    case Some(position) => defaultDelay * position
     case _ => noDelay
   }
 

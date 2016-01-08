@@ -14,6 +14,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
@@ -155,8 +156,7 @@ trait CollectionsComposer
   }
 
   protected def clickAppDrawerItem(view: View)(implicit context: ActivityContextWrapper): Ui[_] = Ui {
-    val position = Int.unbox(view.getTag(R.id.app_drawer_position))
-    dockApps.lift(position) foreach { app =>
+    view.getPosition flatMap dockApps.lift foreach { app =>
       execute(app.intent)
     }
   }
@@ -196,9 +196,10 @@ trait CollectionsComposer
 
   private[this] def fillAppDrawer(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = Transformer {
     case i: ImageView if tagEquals(i, R.id.`type`, LauncherTags.app) =>
-      val position = Int.unbox(i.getTag(R.id.app_drawer_position))
-      val dockApp = dockApps(position)
-      i <~ ivUri(dockApp.imagePath)
+      i.getPosition map { position =>
+        val dockApp = dockApps(position)
+        i <~ ivUri(dockApp.imagePath)
+      } getOrElse Ui.nop
   }
 
   def reloadPager(currentPage: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {
