@@ -170,22 +170,16 @@ object PullToTabsViewTweaks {
 
 object PullToCloseViewTweaks {
 
-  def pcvListener(pullToCloseListener: PullToCloseListener) = Tweak[PullToCloseView] {
-    view =>
-      view.closeListeners.close = pullToCloseListener.close
-  }
+  def pcvListener(pullToCloseListener: PullToCloseListener) =
+    Tweak[PullToCloseView] (_.closeListeners = pullToCloseListener)
 
 }
 
 
 object PullToDownViewTweaks {
 
-  def pdvListener(pullToDownListener: PullToDownListener) = Tweak[PullToDownView] {
-    view =>
-      view.listeners.startPulling = pullToDownListener.startPulling
-      view.listeners.endPulling = pullToDownListener.endPulling
-      view.listeners.scroll = pullToDownListener.scroll
-  }
+  def pdvListener(pullToDownListener: PullToDownListener) =
+    Tweak[PullToDownView] (_.listeners = pullToDownListener)
 
 }
 

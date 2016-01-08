@@ -6,9 +6,9 @@ import macroid.ContextWrapper
 class PullToCloseView(context: Context)(implicit contextWrapper: ContextWrapper)
   extends PullToDownView(context) {
 
-  val closeListeners = PullToCloseListener()
+  var closeListeners = PullToCloseListener()
 
-  override def drop(): Unit = if (pullToDownStatuses.isValidAction()) {
+  override def drop(): Unit = if (pullToDownStatuses.isValidAction) {
     closeListeners.close()
   } else {
     super.drop()
@@ -16,4 +16,4 @@ class PullToCloseView(context: Context)(implicit contextWrapper: ContextWrapper)
 
 }
 
-case class PullToCloseListener(var close: () => Unit = () => ())
+case class PullToCloseListener(close: () => Unit = () => ())

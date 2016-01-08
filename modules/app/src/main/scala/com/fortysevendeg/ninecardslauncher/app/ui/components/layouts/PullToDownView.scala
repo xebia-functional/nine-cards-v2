@@ -19,7 +19,7 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
 
   var pullToDownStatuses = PullToDownStatuses()
 
-  val listeners = PullToDownListener()
+  var listeners = PullToDownListener()
 
   val touchSlop = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
@@ -155,7 +155,7 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
         }
       }
       pullToDownStatuses = pullToDownStatuses.updateCurrentPostY(to)
-      listeners.scroll(to, pullToDownStatuses.isValidAction())
+      listeners.scroll(to, pullToDownStatuses.isValidAction)
       val change: Int = to - pullToDownStatuses.lastPosY
       updatePos(change)
     }
@@ -173,9 +173,9 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
 }
 
 case class PullToDownListener(
-  var startPulling: () => Unit = () => (),
-  var endPulling: () => Unit = () => (),
-  var scroll: (Int, Boolean) => Unit = (i: Int, b: Boolean) => ())
+  startPulling: () => Unit = () => (),
+  endPulling: () => Unit = () => (),
+  scroll: (Int, Boolean) => Unit = (i: Int, b: Boolean) => ())
 
 case class PullToDownStatuses(
   resistance: Float = 3f,
@@ -230,6 +230,6 @@ case class PullToDownStatuses(
 
   def willOverTop(to: Int): Boolean = to < posStart
 
-  def isValidAction(): Boolean = currentPosY > distanceToValidAction
+  def isValidAction: Boolean = currentPosY > distanceToValidAction
 
 }
