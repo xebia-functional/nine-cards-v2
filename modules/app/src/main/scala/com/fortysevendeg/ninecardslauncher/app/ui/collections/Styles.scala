@@ -63,7 +63,7 @@ trait Styles {
       fimTitle(resGetString(title)) +
       fimSrc(icon) +
       vGone +
-      vTag(R.id.`type`, fabButtonItem) +
+      vSetType(fabButtonItem) +
       vSetPosition(position)
 
 }

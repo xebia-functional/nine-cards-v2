@@ -195,7 +195,7 @@ trait CollectionsComposer
     } getOrElse Ui.nop
 
   private[this] def fillAppDrawer(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = Transformer {
-    case i: ImageView if tagEquals(i, R.id.`type`, LauncherTags.app) =>
+    case i: ImageView if i.isType(LauncherTags.app) =>
       i.getPosition map { position =>
         val dockApp = dockApps(position)
         i <~ ivUri(dockApp.imagePath)
@@ -210,9 +210,6 @@ trait CollectionsComposer
   def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
     w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
   )
-
-  private[this] def tagEquals(view: View, id: Int, value: String) =
-    Option(view.getTag(id)).isDefined && view.getTag(id).equals(value)
 
   private[this] def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], view: View, color: Int, map: Map[String, String] = Map.empty)

@@ -31,6 +31,8 @@ object CommonsTweak {
 
   def vSetPosition(position: Int) = vTag2(R.id.position, position)
 
+  def vSetType(t: String) = vTag(R.id.`type`, t)
+
   def vUseLayerHardware = vTag(R.id.use_layer_hardware, "")
 
   def vLayerHardware(activate: Boolean) = Transformer {
