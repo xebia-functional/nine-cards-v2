@@ -10,6 +10,7 @@ import Libraries.debug._
 import android.Keys._
 import S3._
 import Crashlytics._
+import Proguard._
 import sbt.Keys._
 import sbt._
 
@@ -34,27 +35,7 @@ object Settings {
       proguardScala in Android := true,
       useProguard in Android := true,
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := Seq(
-        "android.support",
-        "com.bumptech.glide",
-        "com.crashlytics.android",
-        "com.facebook.stetho",
-        "com.fasterxml.jackson",
-        "com.fortysevendeg.macroid.extras",
-        "com.google.android.gms",
-        "com.skuareup.okhttp",
-        "com.typesafe.config",
-        "io.fabric.sdk",
-        "javax.annotation",
-        "macroid",
-        "okio",
-        "org.apache.commons",
-        "org.brianmckenna.wartremover",
-        "org.joda",
-        "play.api",
-        "rapture.core",
-        "scala",
-        "scalaz"))
+      proguardCache in Android := proguardCacheList)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++
@@ -131,7 +112,7 @@ object Settings {
   lazy val apiDependencies = Seq(
     androidProvidedLib,
     playJson,
-    okHttp % "provided",
+    okHttp,
     specs2,
     mockito,
     mockServer)
@@ -160,23 +141,6 @@ object Settings {
     "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
     "crashlytics" at "https://maven.fabric.io/public"
   )
-
-  lazy val proguardCommons = Seq(
-    "-ignorewarnings",
-    "-keepattributes Signature",
-    "-keepattributes InnerClasses",
-    "-dontwarn scala.collection.**",
-    "-dontobfuscate",
-    "-keep class android.support.v7.widget.SearchView { <init>(...); }",
-    "-keep class android.support.v7.internal.widget.* { <init>(...); }",
-    "-keep class scala.Dynamic",
-    "-keep class macroid.** { *; }",
-    "-keep class com.fortysevendeg.** { *; }",
-    "-keep class android.** { *; }",
-    "-keep class com.google.** { *; }",
-    "-keep class com.facebook.stetho.** { *; }",
-    "-keep class com.crashlytics.** { *; }",
-    "-dontwarn com.crashlytics.**")
 
   lazy val multiDex = Seq(
     dexMulti in Android := true,
