@@ -113,7 +113,10 @@ trait DrawerComposer
           tabs = tabs,
           start = recycler <~ drvEnabled(false),
           end = recycler <~ drvEnabled(true)) <~
-        ptvAddTabsAndActivate(appTabs, 0)) ~
+        ptvAddTabsAndActivate(appTabs, 0) <~
+        ptvListener(PullToTabsListener(
+          changeItem = (pos: Int) => runUi(drawerLayout <~ uiSnackbarShort(s"New pos: $pos"))
+        ))) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical)) ~
       createDrawerPagers

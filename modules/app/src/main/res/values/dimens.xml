@@ -150,6 +150,7 @@
     <dimen name="fastscroller_signal_margin_right">32dp</dimen>
 
     <!-- PullToTabsView -->
-    <dimen name="pulltotabs_height">80sp</dimen>
+    <dimen name="pulltotabs_height">80dp</dimen>
+    <dimen name="pulltotabs_distance_change_tabs">48dp</dimen>
 
 </resources>

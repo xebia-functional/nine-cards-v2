@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
-import android.view.{LayoutInflater, ViewGroup}
+import android.support.v4.view.MotionEventCompat
+import android.view.{MotionEvent, LayoutInflater, ViewGroup}
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -23,19 +24,48 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
 
   val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_height)
 
+  val distanceChangeTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_distance_change_tabs)
+
   val primaryColor = resGetColor(R.color.primary)
 
   val defaultColor = theme.get(SearchIconsColor)
 
   var tabs = slot[LinearLayout]
 
-  var selectedItem = 0
+  var pullToTabsStatuses = PullToTabsStatuses()
+
+  var tabsListener = PullToTabsListener()
+
+  override def dispatchTouchEvent(event: MotionEvent): Boolean = {
+    if (pullToDownStatuses.isPulling) {
+      val displacedX = MotionEventCompat.getX(event, 0) + (distanceChangeTabs / 2)
+      val pos = math.floor((displacedX - pullToDownStatuses.startX) / distanceChangeTabs).toInt
+      val newPos = pullToTabsStatuses.calculatePosition(pos, getTabsCount)
+      if (newPos != pullToTabsStatuses.selectedItem) {
+        pullToTabsStatuses = pullToTabsStatuses.copy(selectedItem = newPos)
+        runUi(tabs <~ activate(newPos))
+      }
+    }
+    super.dispatchTouchEvent(event)
+  }
+
+  override def drop(): Unit = {
+    if (pullToTabsStatuses.wasTabChanged()) {
+      tabsListener.changeItem(pullToTabsStatuses.selectedItem)
+    }
+    super.drop()
+  }
+
+  def getTabsCount = tabs map (_.getChildCount) getOrElse 0
 
   def linkTabsView(tabsView: Option[LinearLayout], start: Ui[_], end: Ui[_]): Ui[PullToTabsView] = {
     tabs = tabsView
     this <~
       pdvListener(PullToDownListener(
-        startPulling = () => runUi((tabs <~ vVisible <~ vY(-heightTabs)) ~ start),
+        startPulling = () => {
+          pullToTabsStatuses = pullToTabsStatuses.start()
+          runUi((tabs <~ vVisible <~ vY(-heightTabs)) ~ start)
+        },
         endPulling = () => runUi((tabs <~ vGone) ~ end),
         scroll = (scroll: Int, close: Boolean) => runUi(tabs <~ vY(-heightTabs + scroll)))
       )
@@ -46,9 +76,10 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
     case tab: TabView => tab.deactivate()
   }
 
-  def clear: Unit = runUi(tabs <~ vgRemoveAllViews)
+  def clear(): Unit = runUi(tabs <~ vgRemoveAllViews)
 
   def addTabs(items: Seq[TabInfo], index: Option[Int] = None): Unit = {
+    index foreach (i => pullToTabsStatuses = pullToTabsStatuses.copy(selectedItem = i))
     val views = items.zipWithIndex map {
       case (item, pos) => new TabView(item, pos, index contains pos)
     }
@@ -76,16 +107,32 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
         }) ~
         (this <~ vSetPosition(pos)))
 
-    def activate() =
+    def activate(): Ui[_] =
       (icon <~ tivDefaultColor(primaryColor)) ~
         (name <~ tvColor(primaryColor))
 
-    def deactivate() =
+    def deactivate(): Ui[_] =
       (icon <~ tivDefaultColor(defaultColor)) ~
         (name <~ tvColor(defaultColor))
 
   }
 
+}
+
+case class PullToTabsListener(changeItem: (Int) => Unit = (_) => ())
+
+case class PullToTabsStatuses(
+  selectedItem: Int = 0,
+  selectedItemWhenStartPulling: Int = 0) {
+
+  def start() = copy(selectedItemWhenStartPulling = selectedItem)
+
+  def wasTabChanged() = selectedItemWhenStartPulling != selectedItem
+
+  def calculatePosition(pos: Int, max: Int) = {
+    val min = math.max(pos + selectedItemWhenStartPulling, 0)
+    math.min(min, max - 1)
+  }
 }
 
 trait PullToTabsViewStyles {
