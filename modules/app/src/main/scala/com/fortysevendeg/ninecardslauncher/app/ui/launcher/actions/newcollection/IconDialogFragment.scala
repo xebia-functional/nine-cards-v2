@@ -6,21 +6,22 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
-import android.view.View.OnClickListener
-import android.view.{LayoutInflater, View}
-import android.widget.{ImageView, LinearLayout, ScrollView, TextView}
+import android.view.LayoutInflater
+import android.widget.{LinearLayout, ScrollView}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher2.R
-import macroid.ContextWrapper
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
+import macroid.{ContextWrapper, Tweak, Ui}
 
 case class IconDialogFragment(categorySelected: String)(implicit contextWrapper: ContextWrapper)
   extends DialogFragment
@@ -31,7 +32,7 @@ case class IconDialogFragment(categorySelected: String)(implicit contextWrapper:
     val contentView = new LinearLayout(getActivity)
     contentView.setOrientation(LinearLayout.VERTICAL)
 
-    val views = appsCategories map (cat => createViewItem(cat, select = cat == categorySelected))
+    val views = appsCategories map { cat => new ItemView(cat, cat == categorySelected) }
 
     runUi(
       (rootView <~ vgAddView(contentView)) ~
@@ -40,35 +41,40 @@ case class IconDialogFragment(categorySelected: String)(implicit contextWrapper:
     new AlertDialog.Builder(getActivity).setView(rootView).create()
   }
 
-  private[this] def createViewItem(category: NineCardCategory, select: Boolean) = {
+  class ItemView(category: NineCardCategory, select: Boolean)
+    extends LinearLayout(contextWrapper.bestAvailable)
+    with TypedFindView {
+
+    LayoutInflater.from(getActivity).inflate(R.layout.icon_info_item_dialog, this)
+
+    lazy val text = Option(findView(TR.icon_dialog_name))
+    lazy val icon = Option(findView(TR.icon_dialog_select))
+
     val name = resGetString(category.getStringResource).getOrElse(category.getStringResource)
-    val view = LayoutInflater.from(getActivity).inflate(R.layout.icon_info_item_dialog, javaNull)
-    view.findViewById(R.id.icon_dialog_name) match {
-      case t: TextView =>
-        if (select) t.setTextColor(R.color.text_selected_color_dialog)
-        t.setText(name)
-        val colorizeDrawable = ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category.name)), Color.GRAY)
-        t.setCompoundDrawablesWithIntrinsicBounds(colorizeDrawable, javaNull, javaNull, javaNull)
-    }
-    if (select) {
-      view.findViewById(R.id.icon_dialog_select) match {
-        case i: ImageView =>
-          val icon = new PathMorphDrawable(
-            defaultIcon = IconTypes.CHECK,
-            defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
-            defaultColor = resGetColor(R.color.text_selected_color_dialog))
-          i.setImageDrawable(icon)
-      }
-    }
-    view.setOnClickListener(new OnClickListener {
-      override def onClick(v: View): Unit = {
-        val responseIntent = new Intent
-        responseIntent.putExtra(NewCollectionFragment.iconRequest, category.name)
-        getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
-        dismiss()
-      }
-    })
-    view
+
+    val colorizeDrawable = ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category.name)), Color.GRAY)
+
+    val drawable = new PathMorphDrawable(
+      defaultIcon = IconTypes.CHECK,
+      defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
+      defaultColor = resGetColor(R.color.text_selected_color_dialog))
+
+    runUi(
+      (text <~
+        (if (select) tvColorResource(R.color.text_selected_color_dialog) else Tweak.blank) <~
+        tvText(name) <~
+        tvCompoundDrawablesWithIntrinsicBounds2(left = Some(colorizeDrawable))) ~
+        (icon <~ (if (select) ivSrc(drawable) else Tweak.blank)) ~
+        (this <~ On.click{
+          Ui {
+            val responseIntent = new Intent
+            responseIntent.putExtra(NewCollectionFragment.iconRequest, category.name)
+            getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+            dismiss()
+          }
+        })
+    )
+
   }
 
 }

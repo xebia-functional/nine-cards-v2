@@ -22,7 +22,7 @@ trait PublicCollectionsStyle {
       tvColorResource(R.color.tab_public_collection_dialog) +
       vPadding(paddingTop = paddingDefault, paddingBottom = paddingDefault, paddingRight = paddingLarge) +
       tvDrawablePadding(paddingSmall) +
-      tvCompoundDrawablesWithIntrinsicBounds2(right = R.drawable.tab_menu_indicator)
+      tvCompoundDrawablesWithIntrinsicBounds2Resources(right = R.drawable.tab_menu_indicator)
   }
 
 }

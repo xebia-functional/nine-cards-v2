@@ -63,6 +63,7 @@ object CollectionRecyclerViewTweaks {
             val v = recyclerView.getChildAt(position)
             runUi(v <~ vTag2(newPosition))
           }
+        case _ =>
       }
 
     })

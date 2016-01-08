@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
@@ -56,7 +57,7 @@ trait DeviceProcessSpecification
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
     val mockPackageManager = mock[PackageManager]
-    mockPackageManager.getActivityIcon(any[ComponentName]) returns null
+    mockPackageManager.getActivityIcon(any[ComponentName]) returns javaNull
 
     val contextSupport = mock[ContextSupport]
     contextSupport.getPackageManager returns mockPackageManager

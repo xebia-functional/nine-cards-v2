@@ -55,8 +55,9 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityCo
       column <- 0 until numInLine
     } yield {
       val position = (row * numInLine) + column
-      val view = grid map (_.getChildAt(position) match {
-        case item: CollectionItem => item
+      val view = grid flatMap (_.getChildAt(position) match {
+        case item: CollectionItem => Some(item)
+        case _ => None
       })
       collections.lift(position) map { collection =>
         view <~ vVisible <~ ciPopulate(collection)

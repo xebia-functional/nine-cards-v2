@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.{Answer, Result}
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 
 import scalaz.concurrent.Task
 
@@ -150,7 +151,7 @@ trait ImageServicesTasks
 
   private[this] def tryIconByDensity(resources: Resources, icon: Int, density: Int): Result[Bitmap, BitmapTransformationException] =
     CatchAll[BitmapTransformationException] {
-      val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) resources.getDrawableForDensity(icon, density, null)
+      val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) resources.getDrawableForDensity(icon, density, javaNull)
       else resources.getDrawableForDensity(icon, density)
       getIconByDensity(d)
     }

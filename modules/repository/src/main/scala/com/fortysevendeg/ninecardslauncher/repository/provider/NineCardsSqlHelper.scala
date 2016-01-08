@@ -3,9 +3,10 @@ package com.fortysevendeg.ninecardslauncher.repository.provider
 import android.content.Context
 import android.database.sqlite.{SQLiteDatabase, SQLiteOpenHelper}
 import android.os.Handler
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 
 class NineCardsSqlHelper(context: Context)
-  extends SQLiteOpenHelper(context, NineCardsSqlHelper.databaseName, null, NineCardsSqlHelper.databaseVersion)
+  extends SQLiteOpenHelper(context, NineCardsSqlHelper.databaseName, javaNull, NineCardsSqlHelper.databaseVersion)
   with DBUtils{
 
   override def onCreate(db: SQLiteDatabase) = {

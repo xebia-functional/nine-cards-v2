@@ -320,6 +320,7 @@ trait CollectionsDetailsComposer
               }
               snapshot = Option(snapshotView)
               element.addView(snapshotView, layoutParams)
+            case _ =>
           }
         }
       }
