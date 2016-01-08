@@ -10,6 +10,7 @@ import Libraries.debug._
 import android.Keys._
 import S3._
 import Crashlytics._
+import Proguard._
 import sbt.Keys._
 import sbt._
 
@@ -34,7 +35,7 @@ object Settings {
       proguardScala in Android := true,
       useProguard in Android := true,
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := Seq.empty)
+      proguardCache in Android := proguardCacheList)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++
@@ -111,7 +112,7 @@ object Settings {
   lazy val apiDependencies = Seq(
     androidProvidedLib,
     playJson,
-    okHttp % "provided",
+    okHttp,
     specs2,
     mockito,
     mockServer)
@@ -129,7 +130,7 @@ object Settings {
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,
     DefaultMavenRepository,
-    "jcenter" at "http://jcenter.bintray.com",
+    "JCenter Bintray" at "http://jcenter.bintray.com",
     "47 Degrees Bintray Repo" at "http://dl.bintray.com/47deg/maven",
     Resolver.typesafeRepo("releases"),
     Resolver.typesafeRepo("snapshots"),
@@ -140,22 +141,6 @@ object Settings {
     "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
     "crashlytics" at "https://maven.fabric.io/public"
   )
-
-  lazy val proguardCommons = Seq(
-    "-ignorewarnings",
-    "-keepattributes Signature",
-    "-keepattributes InnerClasses",
-    "-dontwarn scala.collection.**",
-    "-keep class android.support.v7.widget.SearchView { <init>(...); }",
-    "-keep class android.support.v7.internal.widget.* { <init>(...); }",
-    "-keep class scala.Dynamic",
-    "-keep class macroid.** { *; }",
-    "-keep class com.fortysevendeg.** { *; }",
-    "-keep class android.** { *; }",
-    "-keep class com.google.** { *; }",
-    "-keep class com.facebook.stetho.** { *; }",
-    "-keep class com.crashlytics.** { *; }",
-    "-dontwarn com.crashlytics.**")
 
   lazy val multiDex = Seq(
     dexMulti in Android := true,

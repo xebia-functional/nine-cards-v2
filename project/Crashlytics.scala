@@ -16,7 +16,7 @@ object Crashlytics {
         "crashlytics-post-package") ++
       Seq(
         antBuildFile := baseDirectory.value / "crashlytics" / "crashlytics_build.xml",
-        typedResourcesGenerator in Android <<= (typedResourcesGenerator in Android)
+        collectResources in Android <<= (collectResources in Android)
           dependsOn fixNameSpace
           dependsOn antTaskKey("crashlytics-pre-build")
           dependsOn createFiles,
