@@ -41,6 +41,12 @@ class PersistenceServicesImpl(
   override def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true) =
     super.fetchIterableAppsByKeyword(keyword, orderBy, ascending)
 
+  override def fetchAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true) =
+    super.fetchAppsByCategory(category, orderBy, ascending)
+
+  override def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true) =
+    super.fetchIterableAppsByCategory(category, orderBy, ascending)
+
   override def addCard(request: AddCardRequest) = super.addCard(request)
 
   override def deleteAllCards() = super.deleteAllCards()
