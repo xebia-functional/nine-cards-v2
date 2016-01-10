@@ -443,7 +443,7 @@ class AppRepositorySpec
     }
 
     "fetchAppsByCategory" should {
-      "return an App object when a existent package name is given" in
+      "return a sequence of Apps when a existent category is given" in
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
@@ -455,7 +455,7 @@ class AppRepositorySpec
           }
         }
 
-      "return None when a non-existent package name is given" in
+      "return an empty sequence when a non-existent category is given" in
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 

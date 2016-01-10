@@ -411,7 +411,7 @@ class PersistenceServicesSpec
 
   "fetchAppsByCategory" should {
 
-    "return a sequence of of apps when pass a category and OrderByName" in new ValidRepositoryServicesResponses {
+    "return a sequence of apps when pass a category and OrderByName" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchAppsByCategory(category, OrderByName, ascending = true).run.run
 
       result must beLike[Result[Seq[App], PersistenceServiceException]] {
@@ -422,7 +422,7 @@ class PersistenceServicesSpec
       there was one(mockAppRepository).fetchAppsByCategory(contain(category), contain(AppEntity.name))
     }
 
-    "return a sequence of of apps when pass a category and OrderByInstallDate" in new ValidRepositoryServicesResponses {
+    "return a sequence of apps when pass a category and OrderByInstallDate" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchAppsByCategory(category, OrderByInstallDate, ascending = true).run.run
 
       result must beLike[Result[Seq[App], PersistenceServiceException]] {
