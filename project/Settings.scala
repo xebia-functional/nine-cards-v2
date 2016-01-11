@@ -91,6 +91,7 @@ object Settings {
     aar(androidCardView),
     aar(androidDesign),
     aar(playServicesBase),
+    aar(playServicesDrive),
     aar(multiDexLib),
     aar(crashlytics),
     glide,

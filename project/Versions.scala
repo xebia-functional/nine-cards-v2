@@ -11,7 +11,7 @@ object Versions {
   val playJsonV = "2.3.7"
   val specs2V = "2.4.15"
   val picassoV = "2.5.0"
-  val playServicesV = "8.1.0"
+  val playServicesV = "8.4.0"
   val mockitoV = "3.0-M2"
   val glideV = "3.6.1"
   val sprayClientV = "1.3.1"
