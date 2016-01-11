@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.drive
 
 import scalaz.Scalaz._
 
-case class GoogleDriveException(
+case class DriveServiceException(
   message: String,
   statusCode: Option[Int] = None,
   cause: Option[Throwable] = None) extends RuntimeException(message) {
@@ -11,6 +11,6 @@ case class GoogleDriveException(
 
 }
 
-trait ImplicitsGoogleDriveExceptions {
-  implicit def googleDriveExceptionConverter = (t: Throwable) => GoogleDriveException(t.getMessage, cause = t.some)
+trait ImplicitsDriveServiceExceptions {
+  implicit def googleDriveExceptionConverter = (t: Throwable) => DriveServiceException(t.getMessage, cause = t.some)
 }
