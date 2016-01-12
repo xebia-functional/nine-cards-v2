@@ -14,6 +14,7 @@ trait AppRepositoryTestData {
   val testNonExistingPackageName = Random.nextString(5)
   val testClassName = Random.nextString(5)
   val testCategory = Random.nextString(5)
+  val testNonExistingCategory = Random.nextString(5)
   val testImagePath = Random.nextString(5)
   val testColorPrimary = Random.nextString(5)
   val testDateInstalled = Random.nextLong()
