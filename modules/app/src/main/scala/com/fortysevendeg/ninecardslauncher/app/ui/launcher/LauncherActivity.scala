@@ -159,7 +159,7 @@ class LauncherActivity
   override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
     val getContactOrder = toGetContactOrder(contactsMenuOption)
     Task.fork(di.deviceProcess.getIterableContacts(filter = getContactOrder).run).resolveAsyncUi(
-      onResult = (contacts: IterableContacts) => addContacts(contacts, (contact: Contact) => {
+      onResult = (contacts: IterableContacts) => addContacts(contacts, getContactOrder, (contact: Contact) => {
         execute(contact)
       })
     )

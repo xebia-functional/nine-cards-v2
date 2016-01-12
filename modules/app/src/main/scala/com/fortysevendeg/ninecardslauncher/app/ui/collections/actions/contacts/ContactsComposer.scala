@@ -42,13 +42,9 @@ trait ContactsComposer
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))
 
-  def showLoading: Ui[_] =
-    (loading <~ vVisible) ~
-      (recycler <~ vGone) ~
-      (scrollerLayout <~ fslInvisible) ~
-      hideError
+  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError
 
-  def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible) ~ (scrollerLayout <~ fslVisible)
+  def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 

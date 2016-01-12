@@ -25,7 +25,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{DrawerRecy
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, IterableApps, IterableContacts}
-import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByInstallDate}
+import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -43,6 +43,8 @@ trait DrawerComposer
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
 
   val pages = 2
+
+  val resistance = 2.4f
 
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
@@ -139,6 +141,7 @@ trait DrawerComposer
           start = recycler <~ drvEnabled(false),
           end = recycler <~ drvEnabled(true)) <~
         ptvAddTabsAndActivate(appTabs, 0) <~
+        pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => (pos, getTypeView()) match {
             case (0, Some(AppsView)) => loadApps(AppsAlphabetical)
@@ -205,20 +208,27 @@ trait DrawerComposer
     case _ => true
   }
 
-  def addContacts(contacts: IterableContacts, clickListener: (Contact) => Unit)
+  private[this] def isScrollerLayoutVisible(filter: ContactsFilter) = filter match {
+    case FavoriteContacts => false
+    case _ => true
+  }
+
+  def addContacts(contacts: IterableContacts, filter: ContactsFilter, clickListener: (Contact) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val contactAdapter = new ContactsAdapter(
       contacts = contacts,
       clickListener = clickListener,
       longClickListener = None)
-    swipeAdapter(contactAdapter, contactAdapter.getLayoutManager)
+    swipeAdapter(
+      contactAdapter,
+      contactAdapter.getLayoutManager,
+      isScrollerLayoutVisible(filter))
   }
 
   private[this] def swipeAdapter(
     adapter: RecyclerView.Adapter[_],
     layoutManager: LayoutManager,
-    fastScrollerVisible: Boolean = true
-  ) =
+    fastScrollerVisible: Boolean) =
     (recycler <~
       rvLayoutManager(layoutManager) <~
       rvAdapter(adapter) <~
@@ -227,10 +237,10 @@ trait DrawerComposer
 
   def scrollerLayoutUi(fastScrollerVisible: Boolean): Ui[_] = if (fastScrollerVisible) {
     recycler map { rv =>
-      scrollerLayout <~ fslVisible <~ fslLinkRecycler(rv) <~ fslReset
+      scrollerLayout <~ fslEnabledScroller(true) <~ fslLinkRecycler(rv) <~ fslReset
     } getOrElse showGeneralError
   } else {
-    scrollerLayout <~ fslInvisible
+    scrollerLayout <~ fslEnabledScroller(false)
   }
 
 }

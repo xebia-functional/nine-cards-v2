@@ -22,7 +22,6 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, Ui}
 
-
 class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr) {
 
@@ -47,7 +46,15 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def reset = runUi(fastScroller <~ fsReset)
 
+  def setEnabledScroller(enabled: Boolean) =
+    runUi(
+      fastScroller <~
+        fsEnabledScroller(enabled) <~
+        (if (enabled) show else hide))
+
   private[this] def fsReset = Tweak[FastScrollerView](_.reset())
+
+  private[this] def fsEnabledScroller(enabled: Boolean) = Tweak[FastScrollerView](_.setEnabledScroller(enabled))
 
   private[this] def fsRecyclerView(rv: RecyclerView) = Tweak[FastScrollerView](view => view.setRecyclerView(rv))
 
@@ -110,14 +117,15 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   override def onTouchEvent(event: MotionEvent): Boolean = {
     val action = MotionEventCompat.getActionMasked(event)
     val y = flatInBoundaries(MotionEventCompat.getY(event, 0))
-    action match {
-      case ACTION_DOWN =>
+    (statuses.enabled, action) match {
+      case (false, _) => super.onTouchEvent(event)
+      case (_, ACTION_DOWN) =>
         statuses = statuses.startScroll()
         true
-      case ACTION_MOVE =>
+      case (_, ACTION_MOVE) =>
         runUi(changePosition(y) ~ showSignal ~ (recyclerView <~ rvScrollToPosition(y)))
         true
-      case ACTION_UP | ACTION_CANCEL =>
+      case (_, ACTION_UP | ACTION_CANCEL) =>
         statuses = statuses.resetScroll()
         runUi((recyclerView <~ rvScrollToPosition(y)) ~ changePosition(y) ~ hideSignal)
         true
@@ -147,6 +155,8 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     scrollListener foreach (_.reset())
     runUi(changePosition(0))
   }
+
+  def setEnabledScroller(enabled: Boolean) = statuses = statuses.copy(enabled = enabled)
 
   private[this] def changePosition(y: Float): Ui[_] = {
     val position = y / statuses.heightScroller
@@ -234,6 +244,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 }
 
 case class FastScrollerStatuses(
+  enabled: Boolean = true,
   heightScroller: Int = 0,
   heightAllRows: Int = 0,
   heightRow: Int = 0,
