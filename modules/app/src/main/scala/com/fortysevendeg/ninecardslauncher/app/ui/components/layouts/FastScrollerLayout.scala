@@ -209,11 +209,12 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       if (!statuses.moving) {
         val rowFirstItem = getRowFirstItem(recyclerView)
         val y = statuses.projectToBar(rowFirstItem)
-        val move = if (rowFirstItem == lastRowFirstItem) {
+        val maxRows = statuses.maxRows
+        val move = if (rowFirstItem == lastRowFirstItem && maxRows > 0) {
           // We calculate the displacement between the last and current row
           offsetY = offsetY + dy
           val ratio = offsetY / statuses.heightRow.toFloat
-          val space = statuses.heightScroller / statuses.maxRows
+          val space = statuses.heightScroller / maxRows
           y + (ratio * space)
         } else {
           lastRowFirstItem = rowFirstItem

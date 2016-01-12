@@ -64,20 +64,36 @@ trait DrawerComposer
 
   var isShowingAppsAlphabetical = true
 
-  lazy val appTabs = Seq(
-    TabInfo(R.drawable.app_drawer_icon_phone, "Tab 1"),
-    TabInfo(R.drawable.app_drawer_icon_phone, "Tab 2"),
-    TabInfo(R.drawable.app_drawer_icon_phone, "Tab 3")
+  def appTabs(implicit context: ActivityContextWrapper) = Seq(
+    TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.apps_alphabetical)),
+    TabInfo(R.drawable.app_drawer_filter_categories, resGetString(R.string.apps_categories)),
+    TabInfo(R.drawable.app_drawer_filter_installation_date, resGetString(R.string.apps_date))
+  )
+
+  def contactsTabs(implicit context: ActivityContextWrapper) = Seq(
+    TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.contacts_alphabetical)),
+    TabInfo(R.drawable.app_drawer_filter_favorites, resGetString(R.string.contacts_favorites)),
+    TabInfo(R.drawable.app_drawer_filter_last_call, resGetString(R.string.contacts_last))
   )
 
   override def onChangeBoxView(boxView: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit =
     boxView match {
       case AppsView =>
         isShowingAppsAlphabetical = true
-        runUi(Ui(loadApps(AppsAlphabetical)) ~ (paginationDrawerPanel <~ reloadPager(0)))
+        runUi(
+          Ui(loadApps(AppsAlphabetical)) ~
+            (paginationDrawerPanel <~ reloadPager(0)) ~
+            (pullToTabsView <~
+              ptvClearTabs() <~
+              ptvAddTabsAndActivate(appTabs, 0)))
       case ContactView =>
         isShowingAppsAlphabetical = false
-        runUi(Ui(loadContacts(ContactsAlphabetical)) ~ (paginationDrawerPanel <~ reloadPager(1)))
+        runUi(
+          Ui(loadContacts(ContactsAlphabetical)) ~
+            (paginationDrawerPanel <~ reloadPager(1)) ~
+            (pullToTabsView <~
+              ptvClearTabs() <~
+              ptvAddTabsAndActivate(contactsTabs, 0)))
     }
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
@@ -115,7 +131,15 @@ trait DrawerComposer
           end = recycler <~ drvEnabled(true)) <~
         ptvAddTabsAndActivate(appTabs, 0) <~
         ptvListener(PullToTabsListener(
-          changeItem = (pos: Int) => runUi(drawerLayout <~ uiSnackbarShort(s"New pos: $pos"))
+          changeItem = (pos: Int) => (pos, getTypeView()) match {
+            case (0, Some(AppsView)) => loadApps(AppsAlphabetical)
+            case (1, Some(AppsView)) => loadApps(AppsByCategories)
+            case (2, Some(AppsView)) => loadApps(AppsByLastInstall)
+            case (0, Some(ContactView)) => loadContacts(ContactsAlphabetical)
+            case (1, Some(ContactView)) => loadContacts(ContactsFavorites)
+            case (2, Some(ContactView)) => loadContacts(ContactsByLastCall)
+            case _ =>
+          }
         ))) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical)) ~
@@ -144,6 +168,8 @@ trait DrawerComposer
       layoutManager = appsAdapter.getLayoutManager,
       fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
   }
+
+  private[this] def getTypeView(): Option[BoxView] = searchBoxView map (_.statuses.currentItem)
 
   private[this] def getItemsCount: Int = (for {
     rv <- recycler
