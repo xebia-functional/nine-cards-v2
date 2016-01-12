@@ -68,6 +68,31 @@ trait AppPersistenceServicesImpl {
     appSeq.resolve[PersistenceServiceException]
   }
 
+  def fetchAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
+    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+
+    val appSeq = for {
+      apps <- appRepository.fetchAppsByCategory(
+        category = toStringWhere(category),
+        orderBy = orderByString)
+    } yield apps map toApp
+
+    appSeq.resolve[PersistenceServiceException]
+  }
+
+  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true) ={
+    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+
+    val appSeq = for {
+      iter <- appRepository.fetchIterableAppsByCategory(
+        category = toStringWhere(category),
+        orderBy = orderByString)
+    } yield new IterableApps(iter)
+
+    appSeq.resolve[PersistenceServiceException]
+  }
+
+
   private[this] def toStringDirection(ascending: Boolean): String =
     if (ascending) "ASC" else "DESC"
 
