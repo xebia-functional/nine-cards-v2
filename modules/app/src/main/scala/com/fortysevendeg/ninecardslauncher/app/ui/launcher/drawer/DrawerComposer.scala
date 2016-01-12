@@ -98,10 +98,25 @@ trait DrawerComposer
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
-    val colorPrimary = resGetColor(R.color.primary)
+  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+    addWidgetsDrawer ~ transformDrawerUi
+
+  private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (searchBoxContentPanel <~
       vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView) <~ sbavChangeListener(self)))) ~
+      (scrollerLayout <~
+        vgAddView(getUi(l[LinearLayout]() <~ tabContentStyles <~ wire(tabs))) <~
+        vgAddViewByIndex(getUi(
+          l[PullToTabsView](
+            w[DrawerRecyclerView] <~
+              recyclerStyle <~
+              wire(recycler)
+          ) <~ wire(pullToTabsView)), 0)) ~
+      createDrawerPagers
+
+  private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val colorPrimary = resGetColor(R.color.primary)
+    (searchBoxView <~ sbavChangeListener(self)) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         (if (getItemsCount == 0) {
           Ui(loadApps(AppsAlphabetical))
@@ -109,20 +124,14 @@ trait DrawerComposer
           Ui.nop
         }) ~ revealInDrawer ~~ (searchPanel <~ vGone)
       }) ~
+      (recycler <~
+        drvListener(DrawerRecyclerViewListener(
+          start = () => pullToTabsView <~ pdvEnable(false),
+          end = () => pullToTabsView <~ pdvEnable(true)
+        )) <~
+        (searchBoxView map drvAddController getOrElse Tweak.blank)) ~
       (scrollerLayout <~
         drawerContentStyle <~
-        vgAddView(getUi(l[LinearLayout]() <~ tabContentStyles <~ wire(tabs))) <~
-        vgAddViewByIndex(getUi(
-          l[PullToTabsView](
-            w[DrawerRecyclerView] <~
-              recyclerStyle <~
-              wire(recycler) <~
-              drvListener(DrawerRecyclerViewListener(
-                start = () => pullToTabsView <~ pdvEnable(false),
-                end = () => pullToTabsView <~ pdvEnable(true)
-              )) <~
-              (searchBoxView map drvAddController getOrElse Tweak.blank)
-          ) <~ wire(pullToTabsView)), 0) <~
         fslColor(colorPrimary)) ~
       (pullToTabsView <~
         ptvLinkTabs(
@@ -142,8 +151,7 @@ trait DrawerComposer
           }
         ))) ~
       (drawerContent <~ vGone) ~
-      Ui(loadApps(AppsAlphabetical)) ~
-      createDrawerPagers
+      Ui(loadApps(AppsAlphabetical))
   }
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)

@@ -55,7 +55,7 @@ class LauncherActivity
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
-    runUi(initUi ~ initDrawerUi)
+    runUi(initUi)
     initAllSystemBarsTint
     loadCollectionsAndDockApps()
   }
