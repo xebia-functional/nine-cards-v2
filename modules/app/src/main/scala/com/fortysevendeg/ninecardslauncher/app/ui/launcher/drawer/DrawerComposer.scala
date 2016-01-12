@@ -107,7 +107,10 @@ trait DrawerComposer
     (searchBoxContentPanel <~
       vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView) <~ sbavChangeListener(self)))) ~
       (scrollerLayout <~
-        vgAddView(getUi(l[LinearLayout]() <~ tabContentStyles <~ wire(tabs))) <~
+        vgAddView(getUi(
+          l[LinearLayout]() <~
+            tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
+            wire(tabs))) <~
         vgAddViewByIndex(getUi(
           l[PullToTabsView](
             w[DrawerRecyclerView] <~

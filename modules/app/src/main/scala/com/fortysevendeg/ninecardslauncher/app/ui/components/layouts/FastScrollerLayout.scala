@@ -50,7 +50,7 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
     runUi(
       fastScroller <~
         fsEnabledScroller(enabled) <~
-        (if (enabled) show else hide))
+        (if (enabled) fsShow else fsHide))
 
   private[this] def fsReset = Tweak[FastScrollerView](_.reset())
 
@@ -63,6 +63,10 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
       (view.bar <~ ivSrc(changeColor(R.drawable.fastscroller_bar, color))) ~
         (view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color)))))
   }
+
+  private[this] def fsShow = Tweak[FastScrollerView] { view => runUi(view.show) }
+
+  private[this] def fsHide = Tweak[FastScrollerView] { view => runUi(view.hide) }
 
   private[this] def changeColor(res: Int, color: Int): Drawable = getDrawable(res) match {
     case drawable: GradientDrawable =>

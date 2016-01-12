@@ -93,6 +93,8 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
 
     LayoutInflater.from(context).inflate(R.layout.tab_item, this)
 
+    lazy val line = findView(TR.tab_item_line)
+
     lazy val icon = findView(TR.tab_item_icon)
 
     lazy val name = findView(TR.tab_item_name)
@@ -109,11 +111,13 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
 
     def activate(): Ui[_] =
       (icon <~ tivDefaultColor(primaryColor)) ~
-        (name <~ tvColor(primaryColor))
+        (name <~ tvColor(primaryColor)) ~
+        (line <~ vBackgroundColor(primaryColor))
 
     def deactivate(): Ui[_] =
       (icon <~ tivDefaultColor(defaultColor)) ~
-        (name <~ tvColor(defaultColor))
+        (name <~ tvColor(defaultColor)) ~
+        (line <~ vBlankBackground)
 
   }
 
@@ -137,9 +141,10 @@ case class PullToTabsStatuses(
 
 trait PullToTabsViewStyles {
 
-  def tabContentStyles(implicit context: ContextWrapper): Tweak[LinearLayout] = {
+  def tabContentStyles(paddingRight: Int = 0)(implicit context: ContextWrapper): Tweak[LinearLayout] = {
     val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_height)
     vContentSizeMatchWidth(heightTabs) +
+      vPadding(paddingRight = paddingRight) +
       vGone
   }
 

@@ -51,10 +51,29 @@
     <style name="TabItemRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/pulltotabs_background</item>
+    </style>
+
+    <style name="TabItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center</item>
         <item name="android:padding">@dimen/padding_default</item>
-        <item name="android:background">@color/pulltotabs_background</item>
+        <item name="android:layout_gravity">bottom</item>
+    </style>
+
+    <style name="TabItemLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/pulltotabs_height_line</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:background">@color/pulltotabs_line</item>
+    </style>
+
+    <style name="TabItemSelectLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/pulltotabs_height_selected_line</item>
+        <item name="android:layout_gravity">bottom</item>
     </style>
 
     <style name="TabItemIcon">
