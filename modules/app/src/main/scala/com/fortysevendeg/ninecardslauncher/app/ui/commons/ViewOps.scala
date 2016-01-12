@@ -7,7 +7,7 @@ object ViewOps {
 
   val positionId = R.id.position
 
-  val typeId = R.id.`type`
+  val viewTypeId = R.id.view_type
 
   val useLayerHardwareId = R.id.use_layer_hardware
 
@@ -17,7 +17,7 @@ object ViewOps {
       Option(view.getTag(positionId)).isDefined && Int.unbox(view.getTag(positionId)).equals(item)
 
     def isType(t: String): Boolean =
-      Option(view.getTag(typeId)).isDefined && view.getTag(typeId).equals(t)
+      Option(view.getTag(viewTypeId)).isDefined && view.getTag(viewTypeId).equals(t)
 
     def getPosition: Option[Int] = Option(view.getTag(positionId)) map (pos => Int.unbox(pos))
 
