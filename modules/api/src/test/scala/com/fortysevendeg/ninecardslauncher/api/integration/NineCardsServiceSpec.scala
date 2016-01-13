@@ -194,7 +194,7 @@ class NineCardsServiceSpec
       new NineCardsServiceScope {
 
         val result =
-          apiSharedCollectionsService.shareCollection(createSharedCollection(), Seq.empty).run.run
+          apiSharedCollectionsService.shareCollection(createShareCollection(), Seq.empty).run.run
 
         result must beLike {
           case Answer(r) => r.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)

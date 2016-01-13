@@ -30,42 +30,21 @@ trait ApiServiceHelper {
       work = work,
       current = current)
 
-  def createSharedCollection(
-    _id: String = "",
-    sharedCollectionId: String = "",
-    publishedOn: Long = 0,
+  def createShareCollection(
+    sharedCollectionId: Option[String] = None,
     description: String = "",
-    screenshots: Seq[AssetResponse] = Seq.empty,
     author: String = "",
-    tags: Seq[String] = Seq.empty,
     name: String = "",
-    shareLink: String = "",
     packages: Seq[String] = Seq.empty,
-    resolvedPackages: Seq[SharedCollectionPackage] = Seq.empty,
-    occurrence: Seq[UserConfigTimeSlot] = Seq.empty,
-    lat: Double = 0.0,
-    lng: Double = 0.0,
-    alt: Double = 0.0,
-    views: Int = 1,
     category: String = "",
     icon: String = "",
-    community: Boolean = false): SharedCollection =
-    SharedCollection(_id = _id,
+    community: Boolean = false): ShareCollection =
+    ShareCollection(
       sharedCollectionId = sharedCollectionId,
-      publishedOn = publishedOn,
       description = description,
-      screenshots = screenshots,
       author = author,
-      tags = tags,
       name = name,
-      shareLink = shareLink,
       packages = packages,
-      resolvedPackages = resolvedPackages,
-      occurrence = occurrence,
-      lat = lat,
-      lng = lng,
-      alt = alt,
-      views = views,
       category = category,
       icon = icon,
       community = community)

@@ -16,6 +16,7 @@ object SharedCollectionImplicits {
   implicit val sharedCollectionPackageWrites = Json.writes[SharedCollectionPackage]
   implicit val assetThumbResponseWrites = Json.writes[AssetThumbResponse]
   implicit val assetResponseWrites = Json.writes[AssetResponse]
+  implicit val shareCollectionWrites = Json.writes[ShareCollection]
   implicit val sharedCollectionWrites = Json.writes[SharedCollection]
 
 }
