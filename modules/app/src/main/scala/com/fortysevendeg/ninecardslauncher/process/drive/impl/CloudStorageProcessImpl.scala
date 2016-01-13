@@ -2,10 +2,12 @@ package com.fortysevendeg.ninecardslauncher.process.drive.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.drive.models.CloudStorageDevice
 import com.fortysevendeg.ninecardslauncher.process.drive.{Conversions, CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
-import com.fortysevendeg.ninecardslauncher.services.drive.DriveServices
+import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServiceException, DriveServices}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
+import com.fortysevendeg.ninecardslauncher.process.drive.models.CloudStorageImplicits._
 import play.api.libs.json.Json
 import rapture.core.{Errata, Answer}
 
@@ -17,6 +19,7 @@ class CloudStorageProcessImpl(driveServices: DriveServices)
   extends CloudStorageProcess
   with Conversions
   with ImplicitsCloudStorageProcessExceptions {
+
 
   private[this] val userDeviceType = "USER_DEVICE"
 
@@ -41,25 +44,25 @@ class CloudStorageProcessImpl(driveServices: DriveServices)
     } yield ()).resolve[CloudStorageProcessException]
   }
 
-  private[this] def parseCloudStorageDevice(json: String) = Service {
+  private[this] def parseCloudStorageDevice(json: String): ServiceDef2[CloudStorageDevice, CloudStorageProcessException] = Service {
     Task {
       Try(Json.parse(json).as[CloudStorageDevice]) match {
         case Success(s) => Answer(s)
-        case Failure(e) => Errata(CloudStorageProcessException(message = e.getMessage, cause = Some(e)))
+        case Failure(e) => Errata(CloudStorageProcessException(message = e.getMessage, cause = e.some))
       }
     }
   }
 
-  private[this] def cloudStorageDeviceToJson(cloudStorageDevice: CloudStorageDevice) = Service {
+  private[this] def cloudStorageDeviceToJson(cloudStorageDevice: CloudStorageDevice): ServiceDef2[String, CloudStorageProcessException] = Service {
     Task {
-      Try(Json.toJson(CloudStorageDevice).toString()) match {
+      Try(Json.toJson(cloudStorageDevice).toString()) match {
         case Success(s) => Answer(s)
         case Failure(e) => Errata(CloudStorageProcessException(message = e.getMessage, cause = Some(e)))
       }
     }
   }
 
-  private[this] def createOrUpdateFile(maybeDriveFile: Option[DriveServiceFile], title: String, content: String, fileId: String) = {
+  private[this] def createOrUpdateFile(maybeDriveFile: Option[DriveServiceFile], title: String, content: String, fileId: String): ServiceDef2[Unit, DriveServiceException] = {
     maybeDriveFile match {
       case Some(driveFile) => driveServices.updateFile(driveFile.driveId, content)
       case _ => driveServices.createFile(title, content, fileId, userDeviceType, jsonMimeType)

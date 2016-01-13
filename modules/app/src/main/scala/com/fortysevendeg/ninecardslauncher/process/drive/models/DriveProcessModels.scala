@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.drive.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, CollectionType}
 
 case class CloudStorageResource(resourceId: String, title: String)
 
@@ -25,4 +24,4 @@ case class CloudStorageCollectionItem(
   itemType: String,
   title: String,
   intent: String,
-  categories: Option[Seq[NineCardCategory]])
+  categories: Seq[NineCardCategory])

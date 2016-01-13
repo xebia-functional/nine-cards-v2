@@ -33,10 +33,11 @@ trait ImplicitsCloudStorageProcessExceptions {
     case _ => CloudStorageProcessException(t.getMessage, t.some)
   }
 
-  private[this] def driveErrorToCloudStorageError(driveError: GoogleDriveError) = driveError match {
-    case DriveSigInRequired => SigInRequired.some
-    case DriveRateLimitExceeded => RateLimitExceeded.some
-    case DriveResourceNotAvailable => ResourceNotAvailable.some
-    case _ => None[CloudStorageError]
-  }
+  private[this] def driveErrorToCloudStorageError(driveError: GoogleDriveError): Option[CloudStorageError] =
+    driveError match {
+      case DriveSigInRequired => SigInRequired.some
+      case DriveRateLimitExceeded => RateLimitExceeded.some
+      case DriveResourceNotAvailable => ResourceNotAvailable.some
+      case _ => None
+    }
 }
