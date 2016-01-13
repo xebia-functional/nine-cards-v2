@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
-import com.fortysevendeg.ninecardslauncher.process.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Ui}

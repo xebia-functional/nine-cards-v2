@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
-import com.fortysevendeg.ninecardslauncher.process.types.{CardType, NoInstalledAppCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
 import rapture.core.Answer
 import rapture.core.scalazInterop.ResultT

@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, A
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => DeviceContactEmail, ContactInfo => DeviceContactInfo, ContactPhone => DeviceContactPhone}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
-import com.fortysevendeg.ninecardslauncher.process.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem}
 
 import scala.util.Random

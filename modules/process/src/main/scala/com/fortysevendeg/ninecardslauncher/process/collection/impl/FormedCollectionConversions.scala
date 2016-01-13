@@ -5,10 +5,9 @@ import java.io.File
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory}
-import com.fortysevendeg.ninecardslauncher.process.types._
-import com.fortysevendeg.ninecardslauncher.process.collection.{PrivateCollection, CollectionProcessConfig, Conversions, ImplicitsCollectionException}
+import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory, _}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}

@@ -9,8 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequ
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
