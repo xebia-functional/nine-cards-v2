@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.api.services
 
-import com.fortysevendeg.ninecardslauncher.api.model.{SharedCollection, SharedCollectionList, SharedCollectionSubscription}
+import com.fortysevendeg.ninecardslauncher.api.model._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.rest.client.http.HttpClientException
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
@@ -12,11 +12,11 @@ class ApiSharedCollectionsService(serviceClient: ServiceClient) {
   val prefixPathCollections = "/ninecards/collections"
 
   def shareCollection(
-    sharedCollection: SharedCollection,
+    sharedCollection: ShareCollection,
     headers: Seq[(String, String)]
     )(implicit reads: Reads[SharedCollection],
-    writes: Writes[SharedCollection]): ServiceDef2[ServiceClientResponse[SharedCollection], HttpClientException with ServiceClientException] =
-    serviceClient.post[SharedCollection, SharedCollection](
+    writes: Writes[ShareCollection]): ServiceDef2[ServiceClientResponse[SharedCollection], HttpClientException with ServiceClientException] =
+    serviceClient.post[ShareCollection, SharedCollection](
       path = prefixPathCollections,
       headers = headers,
       body = sharedCollection,
