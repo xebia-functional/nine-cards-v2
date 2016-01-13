@@ -2,9 +2,17 @@ package com.fortysevendeg.ninecardslauncher.services.drive
 
 import scalaz.Scalaz._
 
+sealed trait GoogleDriveError
+
+case object DriveSigInRequired extends GoogleDriveError
+
+case object DriveRateLimitExceeded extends GoogleDriveError
+
+case object DriveResourceNotAvailable extends GoogleDriveError
+
 case class DriveServiceException(
   message: String,
-  statusCode: Option[Int] = None,
+  googleDriveError: Option[GoogleDriveError] = None,
   cause: Option[Throwable] = None) extends RuntimeException(message) {
 
   cause map initCause
