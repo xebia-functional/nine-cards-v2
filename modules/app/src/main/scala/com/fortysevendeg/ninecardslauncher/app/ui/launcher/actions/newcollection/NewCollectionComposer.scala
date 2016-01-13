@@ -49,7 +49,7 @@ trait NewCollectionComposer
             name <- getName
             category <- getCategory
             index <- getColor
-          } yield Ui(storeCollection(name, category, index))) getOrElse showMessage(R.string.formFieldError)
+          } yield Ui(storeCollection(name, category.getIconResource, index))) getOrElse showMessage(R.string.formFieldError)
         )) ~
       setCategory(Communication) ~
       setIndexColor(0) ~
@@ -104,7 +104,12 @@ trait NewCollectionComposer
     text <- Option(n.getText)
   } yield if (text.toString.isEmpty) None else Some(text.toString)).flatten
 
-  private[this] def getCategory = iconImage map (_.getTag.toString)
+  private[this] def getCategory: Option[NineCardCategory] = iconImage flatMap { icon =>
+    icon.getTag match {
+      case c: NineCardCategory => Some(c)
+      case _ => None
+    }
+  }
 
   private[this] def getColor = colorImage map (c => Int.unbox(c.getTag))
 
