@@ -25,7 +25,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{DrawerRecy
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, IterableApps, IterableContacts}
-import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByInstallDate}
+import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -43,6 +43,8 @@ trait DrawerComposer
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
 
   val pages = 2
+
+  val resistance = 2.4f
 
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
@@ -64,28 +66,62 @@ trait DrawerComposer
 
   var isShowingAppsAlphabetical = true
 
-  lazy val appTabs = Seq(
-    TabInfo(R.drawable.app_drawer_icon_phone, "Tab 1"),
-    TabInfo(R.drawable.app_drawer_icon_phone, "Tab 2"),
-    TabInfo(R.drawable.app_drawer_icon_phone, "Tab 3")
+  def appTabs(implicit context: ActivityContextWrapper) = Seq(
+    TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.apps_alphabetical)),
+    TabInfo(R.drawable.app_drawer_filter_categories, resGetString(R.string.apps_categories)),
+    TabInfo(R.drawable.app_drawer_filter_installation_date, resGetString(R.string.apps_date))
+  )
+
+  def contactsTabs(implicit context: ActivityContextWrapper) = Seq(
+    TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.contacts_alphabetical)),
+    TabInfo(R.drawable.app_drawer_filter_favorites, resGetString(R.string.contacts_favorites)),
+    TabInfo(R.drawable.app_drawer_filter_last_call, resGetString(R.string.contacts_last))
   )
 
   override def onChangeBoxView(boxView: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit =
     boxView match {
       case AppsView =>
         isShowingAppsAlphabetical = true
-        runUi(Ui(loadApps(AppsAlphabetical)) ~ (paginationDrawerPanel <~ reloadPager(0)))
+        runUi(
+          Ui(loadApps(AppsAlphabetical)) ~
+            (paginationDrawerPanel <~ reloadPager(0)) ~
+            (pullToTabsView <~
+              ptvClearTabs() <~
+              ptvAddTabsAndActivate(appTabs, 0)))
       case ContactView =>
         isShowingAppsAlphabetical = false
-        runUi(Ui(loadContacts(ContactsAlphabetical)) ~ (paginationDrawerPanel <~ reloadPager(1)))
+        runUi(
+          Ui(loadContacts(ContactsAlphabetical)) ~
+            (paginationDrawerPanel <~ reloadPager(1)) ~
+            (pullToTabsView <~
+              ptvClearTabs() <~
+              ptvAddTabsAndActivate(contactsTabs, 0)))
     }
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
-    val colorPrimary = resGetColor(R.color.primary)
+  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+    addWidgetsDrawer ~ transformDrawerUi
+
+  private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (searchBoxContentPanel <~
       vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView) <~ sbavChangeListener(self)))) ~
+      (scrollerLayout <~
+        vgAddView(getUi(
+          l[LinearLayout]() <~
+            tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
+            wire(tabs))) <~
+        vgAddViewByIndex(getUi(
+          l[PullToTabsView](
+            w[DrawerRecyclerView] <~
+              recyclerStyle <~
+              wire(recycler)
+          ) <~ wire(pullToTabsView)), 0)) ~
+      createDrawerPagers
+
+  private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val colorPrimary = resGetColor(R.color.primary)
+    (searchBoxView <~ sbavChangeListener(self)) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         (if (getItemsCount == 0) {
           Ui(loadApps(AppsAlphabetical))
@@ -93,20 +129,14 @@ trait DrawerComposer
           Ui.nop
         }) ~ revealInDrawer ~~ (searchPanel <~ vGone)
       }) ~
+      (recycler <~
+        drvListener(DrawerRecyclerViewListener(
+          start = () => pullToTabsView <~ pdvEnable(false),
+          end = () => pullToTabsView <~ pdvEnable(true)
+        )) <~
+        (searchBoxView map drvAddController getOrElse Tweak.blank)) ~
       (scrollerLayout <~
         drawerContentStyle <~
-        vgAddView(getUi(l[LinearLayout]() <~ tabContentStyles <~ wire(tabs))) <~
-        vgAddViewByIndex(getUi(
-          l[PullToTabsView](
-            w[DrawerRecyclerView] <~
-              recyclerStyle <~
-              wire(recycler) <~
-              drvListener(DrawerRecyclerViewListener(
-                start = () => pullToTabsView <~ pdvEnable(false),
-                end = () => pullToTabsView <~ pdvEnable(true)
-              )) <~
-              (searchBoxView map drvAddController getOrElse Tweak.blank)
-          ) <~ wire(pullToTabsView)), 0) <~
         fslColor(colorPrimary)) ~
       (pullToTabsView <~
         ptvLinkTabs(
@@ -114,12 +144,20 @@ trait DrawerComposer
           start = recycler <~ drvEnabled(false),
           end = recycler <~ drvEnabled(true)) <~
         ptvAddTabsAndActivate(appTabs, 0) <~
+        pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
-          changeItem = (pos: Int) => runUi(drawerLayout <~ uiSnackbarShort(s"New pos: $pos"))
+          changeItem = (pos: Int) => (pos, getTypeView()) match {
+            case (0, Some(AppsView)) => loadApps(AppsAlphabetical)
+            case (1, Some(AppsView)) => loadApps(AppsByCategories)
+            case (2, Some(AppsView)) => loadApps(AppsByLastInstall)
+            case (0, Some(ContactView)) => loadContacts(ContactsAlphabetical)
+            case (1, Some(ContactView)) => loadContacts(ContactsFavorites)
+            case (2, Some(ContactView)) => loadContacts(ContactsByLastCall)
+            case _ =>
+          }
         ))) ~
       (drawerContent <~ vGone) ~
-      Ui(loadApps(AppsAlphabetical)) ~
-      createDrawerPagers
+      Ui(loadApps(AppsAlphabetical))
   }
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
@@ -144,6 +182,8 @@ trait DrawerComposer
       layoutManager = appsAdapter.getLayoutManager,
       fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
   }
+
+  private[this] def getTypeView(): Option[BoxView] = searchBoxView map (_.statuses.currentItem)
 
   private[this] def getItemsCount: Int = (for {
     rv <- recycler
@@ -171,20 +211,27 @@ trait DrawerComposer
     case _ => true
   }
 
-  def addContacts(contacts: IterableContacts, clickListener: (Contact) => Unit)
+  private[this] def isScrollerLayoutVisible(filter: ContactsFilter) = filter match {
+    case FavoriteContacts => false
+    case _ => true
+  }
+
+  def addContacts(contacts: IterableContacts, filter: ContactsFilter, clickListener: (Contact) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val contactAdapter = new ContactsAdapter(
       contacts = contacts,
       clickListener = clickListener,
       longClickListener = None)
-    swipeAdapter(contactAdapter, contactAdapter.getLayoutManager)
+    swipeAdapter(
+      contactAdapter,
+      contactAdapter.getLayoutManager,
+      isScrollerLayoutVisible(filter))
   }
 
   private[this] def swipeAdapter(
     adapter: RecyclerView.Adapter[_],
     layoutManager: LayoutManager,
-    fastScrollerVisible: Boolean = true
-  ) =
+    fastScrollerVisible: Boolean) =
     (recycler <~
       rvLayoutManager(layoutManager) <~
       rvAdapter(adapter) <~
@@ -193,10 +240,10 @@ trait DrawerComposer
 
   def scrollerLayoutUi(fastScrollerVisible: Boolean): Ui[_] = if (fastScrollerVisible) {
     recycler map { rv =>
-      scrollerLayout <~ fslVisible <~ fslLinkRecycler(rv) <~ fslReset
+      scrollerLayout <~ fslEnabledScroller(true) <~ fslLinkRecycler(rv) <~ fslReset
     } getOrElse showGeneralError
   } else {
-    scrollerLayout <~ fslInvisible
+    scrollerLayout <~ fslEnabledScroller(false)
   }
 
 }

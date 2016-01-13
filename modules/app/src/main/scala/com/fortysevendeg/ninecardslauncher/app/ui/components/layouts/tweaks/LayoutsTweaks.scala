@@ -195,6 +195,11 @@ object PullToDownViewTweaks {
       view.pullToDownStatuses = view.pullToDownStatuses.copy(enabled = enabled)
     }
 
+  def pdvResistance(resistance: Float) =
+    Tweak[PullToDownView] { view =>
+      view.pullToDownStatuses = view.pullToDownStatuses.copy(resistance = resistance)
+    }
+
 }
 
 object FastScrollerLayoutTweak {
@@ -203,13 +208,7 @@ object FastScrollerLayoutTweak {
 
   def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
 
-  def fslInvisible = Tweak[FastScrollerLayout]{ view =>
-    runUi(view.fastScroller map (fs => fs.hide) getOrElse Ui.nop)
-  }
-
-  def fslVisible = Tweak[FastScrollerLayout]{ view =>
-    runUi(view.fastScroller map (fs => fs.show) getOrElse Ui.nop)
-  }
+  def fslEnabledScroller(enabled: Boolean) = Tweak[FastScrollerLayout](_.setEnabledScroller(enabled))
 
   def fslReset = Tweak[FastScrollerLayout](_.reset)
 

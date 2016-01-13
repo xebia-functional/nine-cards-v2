@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              style="@style/TabItemRoot">
-    
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
-        android:id="@+id/tab_item_icon"
-        style="@style/TabItemIcon"/>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/TabItemRoot">
 
-    <TextView
-        android:id="@+id/tab_item_name"
-        style="@style/TabItemName"/>
+    <LinearLayout
+        style="@style/TabItemContent">
 
-</LinearLayout>
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            android:id="@+id/tab_item_icon"
+            style="@style/TabItemIcon"/>
+
+        <TextView
+            android:id="@+id/tab_item_name"
+            style="@style/TabItemName"/>
+
+    </LinearLayout>
+
+    <ImageView style="@style/TabItemLine"/>
+
+    <ImageView
+        android:id="@+id/tab_item_line"
+        style="@style/TabItemSelectLine"/>
+
+</FrameLayout>

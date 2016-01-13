@@ -55,7 +55,7 @@ class LauncherActivity
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
-    runUi(initUi ~ initDrawerUi)
+    runUi(initUi)
     initAllSystemBarsTint
     loadCollectionsAndDockApps()
   }
@@ -139,6 +139,12 @@ class LauncherActivity
     case AppsByLastInstall => GetByInstallDate
   }
 
+  private[this] def toGetContactOrder(contactMenuOption: ContactsMenuOption): ContactsFilter = contactMenuOption match {
+    case ContactsAlphabetical => AllContacts
+    case ContactsFavorites => FavoriteContacts
+    case ContactsByLastCall => AllContacts // TODO We should create a new adapter in ticket #204
+  }
+
   override def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     Task.fork(di.deviceProcess.getIterableApps(getAppOrder).run).resolveAsyncUi(
@@ -151,9 +157,9 @@ class LauncherActivity
   }
 
   override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
-    // TODO - Take into account the `contactsMenuOption` param
-    Task.fork(di.deviceProcess.getIterableContacts(filter = AllContacts).run).resolveAsyncUi(
-      onResult = (contacts: IterableContacts) => addContacts(contacts, (contact: Contact) => {
+    val getContactOrder = toGetContactOrder(contactsMenuOption)
+    Task.fork(di.deviceProcess.getIterableContacts(filter = getContactOrder).run).resolveAsyncUi(
+      onResult = (contacts: IterableContacts) => addContacts(contacts, getContactOrder, (contact: Contact) => {
         execute(contact)
       })
     )
