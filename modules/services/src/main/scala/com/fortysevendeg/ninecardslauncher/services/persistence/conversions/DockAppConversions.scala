@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
 import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp => RepoDockApp, DockAppData => RepoDockAppData}
-import com.fortysevendeg.ninecardslauncher.services.persistence._
+import com.fortysevendeg.ninecardslauncher.services.persistence.CreateOrUpdateDockAppRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp
 
 trait DockAppConversions {
@@ -27,17 +27,12 @@ trait DockAppConversions {
         imagePath = dockApp.imagePath,
         position = dockApp.position))
 
-  def toRepositoryDockApp(request: UpdateDockAppRequest): RepoDockApp =
+  def toRepositoryDockApp(id: Int, request: CreateOrUpdateDockAppRequest): RepoDockApp =
     RepoDockApp(
-      id = request.id,
-      data = RepoDockAppData(
-        name = request.name,
-        dockType = request.dockType,
-        intent = request.intent,
-        imagePath = request.imagePath,
-        position = request.position))
+      id = id,
+      data = toRepositoryDockAppData(request))
 
-  def toRepositoryDockAppData(request: AddDockAppRequest): RepoDockAppData =
+  def toRepositoryDockAppData(request: CreateOrUpdateDockAppRequest): RepoDockAppData =
     RepoDockAppData(
       name = request.name,
       dockType = request.dockType,
