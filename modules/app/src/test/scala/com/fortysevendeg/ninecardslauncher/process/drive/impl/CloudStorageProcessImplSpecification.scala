@@ -159,7 +159,7 @@ class CloudStorageProcessImplSpec
             anyString,
             anyString) returns Service(Task(Answer(())))
 
-          val result = cloudStorageProcess.createOrUpdateCloudStorageDevice(cloudStorageDevice).run.run
+          cloudStorageProcess.createOrUpdateCloudStorageDevice(cloudStorageDevice).run.run
         }
 
       "call to update file in Service with a valid Json when the file does exists" in
@@ -170,7 +170,7 @@ class CloudStorageProcessImplSpec
             anyString,
             anArgThat(new JsonMatcher(validCloudStorageDeviceJson))) returns Service(Task(Answer(())))
 
-          val result = cloudStorageProcess.createOrUpdateCloudStorageDevice(cloudStorageDevice).run.run
+          cloudStorageProcess.createOrUpdateCloudStorageDevice(cloudStorageDevice).run.run
         }
 
       "return a CloudStorageProcessException when the service return an exception" in
