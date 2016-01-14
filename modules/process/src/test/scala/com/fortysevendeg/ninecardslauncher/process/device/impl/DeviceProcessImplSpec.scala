@@ -471,8 +471,8 @@ trait DeviceProcessSpecification
   trait DockAppsScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.addDockApp(any) returns
-      Service(Task(Result.answer(dockApp1)))
+    mockPersistenceServices.createOrUpdateDockApp(any) returns
+      Service(Task(Result.answer(dockApp1.id)))
 
     mockPersistenceServices.fetchDockApps returns
       Service(Task(Result.answer(dockAppSeq)))
@@ -481,7 +481,7 @@ trait DeviceProcessSpecification
   trait DockAppsErrorScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.addDockApp(any) returns Service {
+    mockPersistenceServices.createOrUpdateDockApp(any) returns Service {
       Task(Errata(persistenceServiceException))
     }
 
