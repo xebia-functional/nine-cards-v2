@@ -8,9 +8,9 @@ case class CloudStorageDevice(
   deviceId: String,
   deviceName: String,
   documentVersion: Int,
-  collections: Seq[ClodStorageCollection])
+  collections: Seq[CloudStorageCollection])
 
-case class ClodStorageCollection(
+case class CloudStorageCollection(
   name: String,
   originalSharedCollectionId: Option[String],
   sharedCollectionId: Option[String],

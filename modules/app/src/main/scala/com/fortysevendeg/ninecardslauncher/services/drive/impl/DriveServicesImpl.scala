@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveResourceNotAvailable, DriveRateLimitExceeded, DriveSigInRequired}
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
-import com.fortysevendeg.ninecardslauncher.services.drive.{Conversions, DriveServiceException, DriveServices}
+import com.fortysevendeg.ninecardslauncher.services.drive.{Conversions, DriveServicesException, DriveServices}
 import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, PendingResult, Result}
 import com.google.android.gms.drive._
 import com.google.android.gms.drive.metadata.CustomPropertyKey
@@ -126,7 +126,7 @@ class DriveServicesImpl(client: GoogleApiClient)
       contents.commit(client, javaNull).withResult(_ => Answer())
     }
 
-  private[this] def openDriveFile[R](driveId: String)(f: (DriveApi.DriveContentsResult) => core.Result[R, DriveServiceException]) = Service {
+  private[this] def openDriveFile[R](driveId: String)(f: (DriveApi.DriveContentsResult) => core.Result[R, DriveServicesException]) = Service {
     Task {
       Drive.DriveApi
         .fetchDriveId(client, driveId)
@@ -145,15 +145,15 @@ object Extensions {
 
   implicit class PendingResultOps[T <: Result](pendingResult: PendingResult[T]) {
 
-    def withResult[R](f: (T) => core.Result[R, DriveServiceException]): core.Result[R, DriveServiceException] = {
+    def withResult[R](f: (T) => core.Result[R, DriveServicesException]): core.Result[R, DriveServicesException] = {
       val result = pendingResult.await()
       if (result.getStatus.isSuccess) {
         Try(f(result)) match {
           case Success(r) => r
-          case Failure(e) => Errata(DriveServiceException(e.getMessage, cause = Some(e)))
+          case Failure(e) => Errata(DriveServicesException(e.getMessage, cause = Some(e)))
         }
       } else {
-        Errata(DriveServiceException(
+        Errata(DriveServicesException(
           googleDriveError = statusCodeToError(result.getStatus.getStatusCode),
           message = result.getStatus.getStatusMessage))
       }

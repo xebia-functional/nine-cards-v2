@@ -98,7 +98,9 @@ object Settings {
     okHttp,
     stetho,
     stethoOkhttp,
-    stethoUrlconnection)
+    stethoUrlconnection,
+    specs2,
+    mockito)
 
   lazy val processDependencies = Seq(
     androidProvidedLib,

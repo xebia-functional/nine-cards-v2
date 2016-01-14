@@ -10,7 +10,7 @@ case object DriveRateLimitExceeded extends GoogleDriveError
 
 case object DriveResourceNotAvailable extends GoogleDriveError
 
-case class DriveServiceException(
+case class DriveServicesException(
   message: String,
   googleDriveError: Option[GoogleDriveError] = None,
   cause: Option[Throwable] = None) extends RuntimeException(message) {
@@ -19,6 +19,6 @@ case class DriveServiceException(
 
 }
 
-trait ImplicitsDriveServiceExceptions {
-  implicit def googleDriveExceptionConverter = (t: Throwable) => DriveServiceException(t.getMessage, cause = t.some)
+trait ImplicitsDriveServicesExceptions {
+  implicit def driveServicesExceptionConverter = (t: Throwable) => DriveServicesException(t.getMessage, cause = t.some)
 }

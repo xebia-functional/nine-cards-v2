@@ -8,18 +8,18 @@ object CloudStorageImplicits {
 
   implicit val nineCardCategoryReads = new Reads[NineCardCategory] {
     def reads(js: JsValue): JsResult[NineCardCategory] = {
-      JsSuccess(NineCardCategory(js.toString()))
+      JsSuccess(NineCardCategory(js.as[String]))
     }
   }
 
   implicit val collectionTypeReads = new Reads[CollectionType] {
     def reads(js: JsValue): JsResult[CollectionType] = {
-      JsSuccess(CollectionType(js.toString()))
+      JsSuccess(CollectionType(js.as[String]))
     }
   }
 
   implicit val cloudStorageCollectionItemReads = Json.reads[CloudStorageCollectionItem]
-  implicit val cloudStorageCollectionReads = Json.reads[ClodStorageCollection]
+  implicit val cloudStorageCollectionReads = Json.reads[CloudStorageCollection]
   implicit val cloudStorageDeviceReads = Json.reads[CloudStorageDevice]
 
   implicit val nineCardCategoryWrites = new Writes[NineCardCategory] {
@@ -35,7 +35,7 @@ object CloudStorageImplicits {
   }
 
   implicit val cloudStorageCollectionItemWrites = Json.writes[CloudStorageCollectionItem]
-  implicit val cloudStorageCollectionWrites = Json.writes[ClodStorageCollection]
+  implicit val cloudStorageCollectionWrites = Json.writes[CloudStorageCollection]
   implicit val cloudStorageDeviceWrites = Json.writes[CloudStorageDevice]
 
 }

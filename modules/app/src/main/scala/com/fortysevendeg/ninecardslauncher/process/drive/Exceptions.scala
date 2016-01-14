@@ -24,7 +24,7 @@ case class CloudStorageProcessException(
 trait ImplicitsCloudStorageProcessExceptions {
 
   implicit def cloudStorageExceptionConverter = (t: Throwable) => t match {
-    case e: DriveServiceException =>
+    case e: DriveServicesException =>
       CloudStorageProcessException(
         message = e.message,
         cause = e.some,

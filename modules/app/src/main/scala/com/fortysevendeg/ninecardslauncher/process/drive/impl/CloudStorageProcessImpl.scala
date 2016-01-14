@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.drive.models.CloudStorageDevice
 import com.fortysevendeg.ninecardslauncher.process.drive.{Conversions, CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
-import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServiceException, DriveServices}
+import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServicesException, DriveServices}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import com.fortysevendeg.ninecardslauncher.process.drive.models.CloudStorageImplicits._
 import play.api.libs.json.Json
@@ -62,7 +62,7 @@ class CloudStorageProcessImpl(driveServices: DriveServices)
     }
   }
 
-  private[this] def createOrUpdateFile(maybeDriveFile: Option[DriveServiceFile], title: String, content: String, fileId: String): ServiceDef2[Unit, DriveServiceException] = {
+  private[this] def createOrUpdateFile(maybeDriveFile: Option[DriveServiceFile], title: String, content: String, fileId: String): ServiceDef2[Unit, DriveServicesException] = {
     maybeDriveFile match {
       case Some(driveFile) => driveServices.updateFile(driveFile.driveId, content)
       case _ => driveServices.createFile(title, content, fileId, userDeviceType, jsonMimeType)
