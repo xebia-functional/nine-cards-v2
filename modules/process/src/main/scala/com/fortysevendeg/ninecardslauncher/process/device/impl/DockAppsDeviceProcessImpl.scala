@@ -14,7 +14,7 @@ trait DockAppsDeviceProcessImpl {
 
   def saveDockApp(packageName: String, intent: NineCardIntent, imagePath: String, position: Int) = {
     (for {
-      _ <- persistenceServices.addDockApp(toAddDockAppRequest(packageName, AppDockType, intent, imagePath, position))
+      _ <- persistenceServices.createOrUpdateDockApp(toCreateOrUpdateDockAppRequest(packageName, AppDockType, intent, imagePath, position))
     } yield ()).resolve[DockAppException]
   }
 
