@@ -670,13 +670,13 @@ trait PersistenceServicesData {
       deviceToken = Option(deviceToken),
       androidToken = Option(androidToken))
 
-  def createAddDockAppRequest(
+  def createCreateOrUpdateDockAppRequest(
     name: String = name,
     dockType: String = dockType,
     intent: String = intent,
     imagePath: String = imagePath,
-    position: Int = position): AddDockAppRequest =
-    AddDockAppRequest(
+    position: Int = position): CreateOrUpdateDockAppRequest =
+    CreateOrUpdateDockAppRequest(
       name = name,
       dockType = dockType,
       intent = intent,
@@ -688,21 +688,6 @@ trait PersistenceServicesData {
 
   def createFindDockAppByIdRequest(id: Int): FindDockAppByIdRequest =
     FindDockAppByIdRequest(id = id)
-
-  def createUpdateDockAppRequest(
-    id: Int = dockAppId,
-    name: String = name,
-    dockType: String = dockType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    position: Int = position): UpdateDockAppRequest =
-    UpdateDockAppRequest(
-      id = id,
-      name = name,
-      dockType = dockType,
-      intent = intent,
-      imagePath = imagePath,
-      position = position)
 
   val iterableCursorApp = new IterableCursor[repositoryModel.App] {
     override def count(): Int = seqRepoApp.length

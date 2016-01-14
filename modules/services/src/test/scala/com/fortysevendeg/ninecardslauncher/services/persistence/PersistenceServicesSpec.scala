@@ -147,7 +147,9 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
 
-    mockDockAppRepository.fetchDockApps returns Service(Task(Result.answer(seqRepoDockApp)))
+    mockDockAppRepository.fetchDockApps() returns Service(Task(Result.answer(seqRepoDockApp)))
+
+    mockDockAppRepository.fetchDockApps(where = s"position = ?", whereParams = Seq(position.toString)) returns Service(Task(Result.answer(seqRepoDockApp)))
 
     mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.answer(iterableCursorDockApps)))
 
@@ -250,7 +252,9 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
 
-    mockDockAppRepository.fetchDockApps returns Service(Task(Result.errata(exception)))
+    mockDockAppRepository.fetchDockApps() returns Service(Task(Result.errata(exception)))
+
+    mockDockAppRepository.fetchDockApps(where = s"position = ?", whereParams = Seq(position.toString)) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.errata(exception)))
 
@@ -1391,20 +1395,19 @@ class PersistenceServicesSpec
     }
   }
 
-  "addDockApp" should {
+  "createOrUpdateDockApp" should {
 
     "return a DockApp value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addDockApp(createAddDockAppRequest()).run.run
+      val result = persistenceServices.createOrUpdateDockApp(createCreateOrUpdateDockAppRequest()).run.run
 
       result must beLike {
-        case Answer(dockApp) =>
-          dockApp.id shouldEqual dockAppId
-          dockApp.name shouldEqual name
+        case Answer(id) =>
+          id shouldEqual dockApp.id
       }
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addDockApp(createAddDockAppRequest()).run.run
+      val result = persistenceServices.createOrUpdateDockApp(createCreateOrUpdateDockAppRequest()).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -1488,7 +1491,7 @@ class PersistenceServicesSpec
     }
   }
 
-  "fetchDockApps" should {
+  "fetchIterableDockApps" should {
 
     "return a iterable of DockApp elements for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.fetchIterableDockApps.run.run
@@ -1547,27 +1550,4 @@ class PersistenceServicesSpec
     }
   }
 
-  "updateDockApp" should {
-
-    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.updateDockApp(createUpdateDockAppRequest()).run.run
-
-      result must beLike {
-        case Answer(updated) =>
-          updated shouldEqual item
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.updateDockApp(createUpdateDockAppRequest()).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
 }
