@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.LayoutManager
+import android.support.v7.widget.RecyclerView.{ViewHolder, Adapter, LayoutManager}
 import android.view.View
 import android.widget.{ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -79,15 +79,24 @@ trait DrawerComposer
   )
 
   override def onChangeBoxView(boxView: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit =
-    boxView match {
-      case AppsView => runUi(loadAppsAlphabetical)
-      case ContactView => runUi(loadContactsAlphabetical)
-    }
+    runUi(
+      closeCursorAdapter ~ (boxView match {
+        case AppsView => loadAppsAlphabetical
+        case ContactView => loadContactsAlphabetical
+      }))
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     addWidgetsDrawer ~ transformDrawerUi
+
+  private[this] def closeCursorAdapter: Ui[_] =
+    Ui(
+      recycler foreach { _.getAdapter match {
+        case a: AppsAdapter => a.close()
+        case a: ContactsAdapter => a.close()
+        case _ =>
+      }})
 
   private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] =
     Ui(loadApps(option)) ~ (recycler <~ vSetType(option.toString))
@@ -215,7 +224,7 @@ trait DrawerComposer
     loadAppsAlphabetical
   }
 
-  private[this] def isShowingAppsAlphabetical = recycler exists(_.isType(AppsAlphabetical.toString))
+  private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.toString))
 
   private[this] def isScrollerLayoutVisible(getAppOrder: GetAppOrder) = getAppOrder match {
     case v: GetByInstallDate => false
