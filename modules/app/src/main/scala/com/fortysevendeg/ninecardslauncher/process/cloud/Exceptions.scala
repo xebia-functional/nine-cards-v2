@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.drive
+package com.fortysevendeg.ninecardslauncher.process.cloud
 
 import com.fortysevendeg.ninecardslauncher.services.drive._
 

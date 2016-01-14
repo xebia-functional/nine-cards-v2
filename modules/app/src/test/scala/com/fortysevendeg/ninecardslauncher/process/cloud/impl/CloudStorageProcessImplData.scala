@@ -1,12 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.process.drive.impl
+package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
-import com.fortysevendeg.ninecardslauncher.process.commons.{NineCardCategories, CollectionTypes}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageCollectionItem, CloudStorageDevice}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.drive.models.{CloudStorageCollectionItem, CloudStorageCollection, CloudStorageDevice}
+import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 
 import scala.util.Random
-
 import scalaz.Scalaz._
 
 trait CloudStorageProcessImplData {

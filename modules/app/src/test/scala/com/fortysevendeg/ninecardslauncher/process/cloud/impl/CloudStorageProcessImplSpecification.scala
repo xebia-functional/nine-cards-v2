@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.process.drive.impl
+package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.drive.CloudStorageProcessException
+import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
 import org.hamcrest.{Description, TypeSafeMatcher}

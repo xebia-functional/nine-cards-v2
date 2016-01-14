@@ -1,13 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.process.drive.impl
+package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.drive.models.CloudStorageDevice
-import com.fortysevendeg.ninecardslauncher.process.drive.{Conversions, CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
+import com.fortysevendeg.ninecardslauncher.process.cloud.{ImplicitsCloudStorageProcessExceptions, CloudStorageProcessException, Conversions, CloudStorageProcess}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageImplicits
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDevice
+import com.fortysevendeg.ninecardslauncher.process.cloud.ImplicitsCloudStorageProcessExceptions
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServicesException, DriveServices}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
-import com.fortysevendeg.ninecardslauncher.process.drive.models.CloudStorageImplicits._
+import CloudStorageImplicits._
 import play.api.libs.json.Json
 import rapture.core.{Errata, Answer}
 

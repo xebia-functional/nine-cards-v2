@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.drive.models
+package com.fortysevendeg.ninecardslauncher.process.cloud.models
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, CollectionType}
 
