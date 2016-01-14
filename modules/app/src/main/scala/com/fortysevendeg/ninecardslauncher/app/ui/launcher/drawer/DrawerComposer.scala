@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{LastCallsAdapter, ContactsAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
@@ -24,7 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Draw
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{DrawerRecyclerView, DrawerRecyclerViewListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, IterableApps, IterableContacts}
+import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -226,6 +226,17 @@ trait DrawerComposer
       contactAdapter,
       contactAdapter.getLayoutManager,
       isScrollerLayoutVisible(filter))
+  }
+
+  def addLastCallContacts(contacts: Seq[LastCallsContact], clickListener: (LastCallsContact) => Unit)
+    (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
+    val contactAdapter = new LastCallsAdapter(
+      contacts = contacts,
+      clickListener = clickListener)
+    swipeAdapter(
+      contactAdapter,
+      contactAdapter.getLayoutManager,
+      false)
   }
 
   private[this] def swipeAdapter(
