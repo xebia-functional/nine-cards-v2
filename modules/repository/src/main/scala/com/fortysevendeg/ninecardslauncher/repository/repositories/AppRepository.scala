@@ -137,6 +137,34 @@ class AppRepository(
       }
     }
 
+  def fetchAppsByCategory(category: String, orderBy: String = ""): ServiceDef2[Seq[App], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.fetchAll(
+            uri = appUri,
+            projection = allFields,
+            where = s"${AppEntity.category} = ?",
+            whereParams = Seq(category),
+            orderBy = orderBy)(getListFromCursor(appEntityFromCursor)) map toApp
+        }
+      }
+    }
+
+  def fetchIterableAppsByCategory(category: String, orderBy: String = ""): ServiceDef2[IterableCursor[App], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.getCursor(
+            uri = appUri,
+            projection = allFields,
+            where = s"${AppEntity.category} = ?",
+            whereParams = Seq(category),
+            orderBy = orderBy).toIterator(appFromCursor)
+        }
+      }
+    }
+
   def updateApp(app: App): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {

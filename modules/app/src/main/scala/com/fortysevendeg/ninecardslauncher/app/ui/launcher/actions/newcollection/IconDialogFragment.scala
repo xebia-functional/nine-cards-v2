@@ -23,7 +23,7 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak, Ui}
 
-case class IconDialogFragment(categorySelected: String)(implicit contextWrapper: ContextWrapper)
+case class IconDialogFragment(categorySelected: NineCardCategory)(implicit contextWrapper: ContextWrapper)
   extends DialogFragment
   with NineCardIntentConversions {
 

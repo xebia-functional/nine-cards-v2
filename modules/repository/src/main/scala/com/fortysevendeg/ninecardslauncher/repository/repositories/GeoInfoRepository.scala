@@ -76,7 +76,7 @@ class GeoInfoRepository(
       }
     }
 
-  def fetchIterableCollections(
+  def fetchIterableGeoInfoItems(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
     orderBy: String = ""): ServiceDef2[IterableCursor[GeoInfo], RepositoryException] =

@@ -35,6 +35,26 @@ trait PersistenceServices {
   def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[IterableApps, PersistenceServiceException]
 
   /**
+    * Obtains all the apps by category from the repository
+    * @param category category for search
+    * @param orderBy indicates the field to order by
+    * @param ascending indicates if it will be in ascending order or not
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
+    * @throws PersistenceServiceException if exist some problem obtaining the app
+    */
+  def fetchAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[Seq[App], PersistenceServiceException]
+
+  /**
+    * Obtains iterable of apps by category from the repository
+    * @param category category for search
+    * @param orderBy indicates the field to order by
+    * @param ascending indicates if it will be in ascending order or not
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableApps
+    * @throws PersistenceServiceException if exist some problem obtaining the apps
+    */
+  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[IterableApps, PersistenceServiceException]
+
+  /**
    * Obtains an app from the repository by the package name
    * @param packageName the package name of the app to get
    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]

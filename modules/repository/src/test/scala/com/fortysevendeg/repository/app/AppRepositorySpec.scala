@@ -70,6 +70,22 @@ trait AppRepositorySpecification
       orderBy = "")(
         f = getListFromCursor(appEntityFromCursor)) returns appEntitySeq
 
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields,
+      where = s"$category = ?",
+      whereParams = Seq(testCategory),
+      orderBy = "")(
+      f = getListFromCursor(appEntityFromCursor)) returns appEntitySeq
+
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields,
+      where = s"$category = ?",
+      whereParams = Seq(testNonExistingCategory),
+      orderBy = "")(
+      f = getListFromCursor(appEntityFromCursor)) returns Seq.empty
+
     contentResolverWrapper.fetch(
       uri = mockUri,
       projection = allFields,
@@ -120,6 +136,14 @@ trait AppRepositorySpecification
       projection = allFields,
       orderBy = "")(
         f = getListFromCursor(appEntityFromCursor)) throws contentResolverException
+
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields,
+      where = s"$category = ?",
+      whereParams = Seq(testCategory),
+      orderBy = "")(
+      f = getListFromCursor(appEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -407,6 +431,47 @@ class AppRepositorySpec
           with ErrorAppRepositoryResponses {
 
           val result = appRepository.fetchAppByPackage(packageName = testPackageName).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "fetchAppsByCategory" should {
+      "return a sequence of Apps when a existent category is given" in
+        new AppRepositoryScope
+          with ValidAppRepositoryResponses {
+
+          val result = appRepository.fetchAppsByCategory(category = testCategory).run.run
+
+          result must beLike {
+            case Answer(apps) =>
+              apps shouldEqual appSeq
+          }
+        }
+
+      "return an empty sequence when a non-existent category is given" in
+        new AppRepositoryScope
+          with ValidAppRepositoryResponses {
+
+          val result = appRepository.fetchAppsByCategory(category = testNonExistingCategory).run.run
+
+          result must beLike {
+            case Answer(apps) =>
+              apps shouldEqual Seq.empty
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new AppRepositoryScope
+          with ErrorAppRepositoryResponses {
+
+          val result = appRepository.fetchAppsByCategory(category = testCategory).run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
