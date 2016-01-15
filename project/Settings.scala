@@ -92,6 +92,7 @@ object Settings {
     aar(androidCardView),
     aar(androidDesign),
     aar(playServicesBase),
+    aar(playServicesDrive),
     aar(multiDexLib),
     aar(crashlytics),
     prettyTime,
@@ -99,7 +100,9 @@ object Settings {
     okHttp,
     stetho,
     stethoOkhttp,
-    stethoUrlconnection)
+    stethoUrlconnection,
+    specs2,
+    mockito)
 
   lazy val processDependencies = Seq(
     androidProvidedLib,

@@ -4,8 +4,7 @@ import android.content.Intent
 import android.content.Intent._
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.types.CollectionType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
 import play.api.libs.json._
 
 import scala.collection.JavaConversions._

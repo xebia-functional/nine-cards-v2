@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.types
+package com.fortysevendeg.ninecardslauncher.process.commons.types
 
 import com.fortysevendeg.ninecardslauncher.process.commons.CardType._
 

@@ -31,6 +31,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Coll
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import CardType._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher.process.types._
 import com.fortysevendeg.ninecardslauncher2.R

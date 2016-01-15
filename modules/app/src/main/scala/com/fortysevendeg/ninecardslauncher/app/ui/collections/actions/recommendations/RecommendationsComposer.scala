@@ -17,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiC
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.process.types.NoInstalledAppCardType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui}

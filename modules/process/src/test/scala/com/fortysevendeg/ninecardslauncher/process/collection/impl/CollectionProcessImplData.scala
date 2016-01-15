@@ -1,18 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import com.fortysevendeg.ninecardslauncher.process.collection.{EditCollectionRequest, AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.CardType._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.types.{CardType, CollectionType}
-import com.fortysevendeg.ninecardslauncher.process.types.CardType._
-import com.fortysevendeg.ninecardslauncher.process.types.CollectionType._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, CollectionType, ContactsCategory, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, ContactInfo => ServiceContactInfo, ContactPhone => ServiceContactPhone}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, ContactPhone => ServiceContactPhone, ContactInfo => ServiceContactInfo}
 import play.api.libs.json.Json
 
 import scala.util.Random
