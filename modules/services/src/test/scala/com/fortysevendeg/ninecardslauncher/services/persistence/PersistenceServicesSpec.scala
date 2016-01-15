@@ -1399,9 +1399,6 @@ class PersistenceServicesSpec
 
     "return a DockApp value for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.createOrUpdateDockApp(createCreateOrUpdateDockAppRequest()).run.run
-      println(s"dockAppId: $dockAppId")
-      println(s"dockApp.id: ${dockApp.id}")
-      println(s"seqRepoDockApp.headOption.get.id: ${seqRepoDockApp.headOption.get.id}")
 
       result must beLike {
         case Answer(a) =>
