@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.models
 
-import com.fortysevendeg.ninecardslauncher.process.types.{CollectionType, CardType}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, CollectionType, NineCardCategory}
 
 case class Collection(
   id: Int,

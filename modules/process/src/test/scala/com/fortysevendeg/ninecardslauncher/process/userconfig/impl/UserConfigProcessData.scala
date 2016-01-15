@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.userconfig.impl
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.Game
-import com.fortysevendeg.ninecardslauncher.process.types.{AppCardType, AppsCollectionType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{Game, AppCardType, AppsCollectionType}
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json.JsString

@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.userconfig.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.types.CollectionType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
 
 case class UserInfo(
   email: String,

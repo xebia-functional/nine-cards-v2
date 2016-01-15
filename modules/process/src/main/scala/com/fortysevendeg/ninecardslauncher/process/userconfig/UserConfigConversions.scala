@@ -1,9 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.userconfig
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.types.CollectionType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models._
-import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfigCollectionItem, UserConfigCollection, UserConfigDevice, UserConfig}
+import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfig, UserConfigCollection, UserConfigCollectionItem, UserConfigDevice}
 
 trait UserConfigConversions {
 

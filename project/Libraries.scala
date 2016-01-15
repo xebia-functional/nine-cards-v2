@@ -65,6 +65,7 @@ object Libraries {
 
     // Google Actions, Google Analytics and Google Cloud Messaging
     lazy val playServicesBase = playServicesDep("play-services-base")
+    lazy val playServicesDrive = playServicesDep("play-services-drive")
   }
 
   object debug {

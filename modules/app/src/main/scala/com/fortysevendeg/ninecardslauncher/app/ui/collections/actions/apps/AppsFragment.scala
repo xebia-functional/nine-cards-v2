@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps}
-import com.fortysevendeg.ninecardslauncher.process.types.AppCardType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 
