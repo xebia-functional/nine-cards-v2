@@ -34,6 +34,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import ViewOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -275,12 +276,12 @@ trait CollectionsComposer
   }
 
   def reloadPager(currentPage: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Transformer {
-    case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true) <~~ pagerAppear
+    case i: ImageView if i.isPosition(currentPage) => i <~ vActivated(true) <~~ pagerAppear
     case i: ImageView => i <~ vActivated(false)
   }
 
   def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
-    w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
+    w[ImageView] <~ paginationItemStyle <~ vSetPosition(position)
   )
 
   private[this] def showAction[F <: BaseActionFragment]

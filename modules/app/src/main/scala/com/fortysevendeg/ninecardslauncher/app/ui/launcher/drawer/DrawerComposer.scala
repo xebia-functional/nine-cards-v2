@@ -99,14 +99,14 @@ trait DrawerComposer
       }})
 
   private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] =
-    Ui(loadApps(option)) ~ (recycler <~ vSetType(option.toString))
+    Ui(loadApps(option)) ~ (recycler <~ vSetType(option.name))
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] =
-    Ui(loadContacts(option)) ~ (recycler <~ vSetType(option.toString))
+    Ui(loadContacts(option)) ~ (recycler <~ vSetType(option.name))
 
   private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     loadAppsAndSaveStatus(AppsAlphabetical) ~
-      (recycler <~ vSetType(AppsAlphabetical.toString)) ~
+      (recycler <~ vSetType(AppsAlphabetical.name)) ~
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
@@ -114,7 +114,7 @@ trait DrawerComposer
 
   private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     loadContactsAndSaveStatus(ContactsAlphabetical) ~
-      (recycler <~ vSetType(ContactsAlphabetical.toString)) ~
+      (recycler <~ vSetType(ContactsAlphabetical.name)) ~
       (paginationDrawerPanel <~ reloadPager(1)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
@@ -132,7 +132,7 @@ trait DrawerComposer
           l[PullToTabsView](
             w[DrawerRecyclerView] <~
               recyclerStyle <~
-              vSetType(AppsAlphabetical.toString) <~
+              vSetType(AppsAlphabetical.name) <~
               wire(recycler)
           ) <~ wire(pullToTabsView)), 0)) ~
       createDrawerPagers
@@ -210,7 +210,7 @@ trait DrawerComposer
   } yield adapter.getItemCount) getOrElse 0
 
   def paginationDrawer(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
-    w[ImageView] <~ paginationDrawerItemStyle <~ vTag(position.toString)
+    w[ImageView] <~ paginationDrawerItemStyle <~ vSetPosition(position)
   )
 
   private[this] def createDrawerPagers(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = {
@@ -224,7 +224,7 @@ trait DrawerComposer
     loadAppsAlphabetical
   }
 
-  private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.toString))
+  private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.name))
 
   private[this] def isScrollerLayoutVisible(getAppOrder: GetAppOrder) = getAppOrder match {
     case v: GetByInstallDate => false
