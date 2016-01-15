@@ -13,11 +13,10 @@ trait DockAppPersistenceServicesImpl {
   def createOrUpdateDockApp(request: CreateOrUpdateDockAppRequest) =
     (for {
       dockApps <- dockAppRepository.fetchDockApps(where = s"${DockAppEntity.position} = ?", whereParams = Seq(request.position.toString))
-      app = dockApps.headOption
-      id <- app map { a =>
-        updateDockApp(a.id, request)
+      id <- dockApps.headOption map { app =>
+        updateDockApp(app.id, request)
       } getOrElse addDockApp(request)
-    } yield id).resolve[PersistenceServiceException]
+    } yield ()).resolve[PersistenceServiceException]
 
   def deleteAllDockApps() =
     (for {
@@ -46,12 +45,12 @@ trait DockAppPersistenceServicesImpl {
 
   private[this] def addDockApp(request: CreateOrUpdateDockAppRequest) =
     (for {
-      dockApp <- dockAppRepository.addDockApp(toRepositoryDockAppData(request))
-    } yield dockApp.id).resolve[PersistenceServiceException]
+      _ <- dockAppRepository.addDockApp(toRepositoryDockAppData(request))
+    } yield ()).resolve[PersistenceServiceException]
 
   private[this] def updateDockApp(id: Int, request: CreateOrUpdateDockAppRequest) =
     (for {
-      updated <- dockAppRepository.updateDockApp(toRepositoryDockApp(id, request))
-    } yield updated).resolve[PersistenceServiceException]
+      _ <- dockAppRepository.updateDockApp(toRepositoryDockApp(id, request))
+    } yield ()).resolve[PersistenceServiceException]
   
 }

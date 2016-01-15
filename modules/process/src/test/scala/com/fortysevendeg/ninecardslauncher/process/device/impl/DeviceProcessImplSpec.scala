@@ -472,7 +472,7 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.createOrUpdateDockApp(any) returns
-      Service(Task(Result.answer(dockApp1.id)))
+      Service(Task(Result.answer((): Unit)))
 
     mockPersistenceServices.fetchDockApps returns
       Service(Task(Result.answer(dockAppSeq)))

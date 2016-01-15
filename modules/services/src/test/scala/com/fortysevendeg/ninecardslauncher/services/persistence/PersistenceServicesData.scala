@@ -360,11 +360,11 @@ trait PersistenceServicesData {
     item =>
       DockApp(
         id = id + item,
-        name =name,
-        dockType =dockType,
-        intent =intent,
-        imagePath =imagePath,
-        position =position))
+        name = name,
+        dockType = dockType,
+        intent = intent,
+        imagePath = imagePath,
+        position = position))
 
   def createSeqRepoDockApp(
     num: Int = 5,
@@ -379,11 +379,11 @@ trait PersistenceServicesData {
     imagePath: String = imagePath,
     position: Int = position): DockAppData =
     repositoryModel.DockAppData(
-      name =name,
-      dockType =dockType,
-      intent =intent,
-      imagePath =imagePath,
-      position =position)
+      name = name,
+      dockType = dockType,
+      intent = intent,
+      imagePath = imagePath,
+      position = position)
 
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp(0)

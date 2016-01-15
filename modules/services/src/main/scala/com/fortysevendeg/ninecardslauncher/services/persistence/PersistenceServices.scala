@@ -327,10 +327,9 @@ trait PersistenceServices {
   /**
     * Creates or updates dock app to the repository
     * @param request includes the necessary data to create a new dock app in the repository
-    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp
-    * @throws PersistenceServiceException if exist some problem creating the dock app
+    * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
-  def createOrUpdateDockApp(request: CreateOrUpdateDockAppRequest): ServiceDef2[Int, PersistenceServiceException]
+  def createOrUpdateDockApp(request: CreateOrUpdateDockAppRequest): ServiceDef2[Unit, PersistenceServiceException]
 
   /**
     * Deletes all dock apps from the repository by the where clause
