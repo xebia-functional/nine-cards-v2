@@ -11,7 +11,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.StepsWorkspacesTweaks._
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserDevice, UserInfo}
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDevice
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -19,7 +20,7 @@ import macroid._
 trait WizardComposer
   extends WizardStyles {
 
-  self: TypedFindView =>
+  self: TypedFindView with WizarListeners =>
 
   val newConfigurationKey = "new_configuration"
 
@@ -63,12 +64,7 @@ trait WizardComposer
 
   def showMessage(message: Int): Ui[_] = rootLayout <~ uiSnackbarShort(message)
 
-  def initUi(
-    accounts: Seq[Account],
-    requestToken: (String) => Unit,
-    launchService: (Option[String]) => Unit,
-    finishUi: Ui[_]
-  )(implicit context: ActivityContextWrapper): Ui[_] = {
+  def initUi(accounts: Seq[Account])(implicit context: ActivityContextWrapper): Ui[_] = {
     val steps = createSteps
     addUsersToRadioGroup(accounts) ~
       (userAction <~
@@ -125,8 +121,8 @@ trait WizardComposer
     usersSpinner <~ sAdapter(sa)
   }
 
-  def addDevicesToRadioGroup(devices: Seq[UserDevice])(implicit context: ActivityContextWrapper): Ui[_] = {
-    val radioViews = (devices map (account => userRadio(account.deviceName, account.deviceId))) :+
+  def addDevicesToRadioGroup(devices: Seq[CloudStorageDevice])(implicit context: ActivityContextWrapper): Ui[_] = {
+    val radioViews = (devices map (device => userRadio(device.deviceName, device.deviceId))) :+
       userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey)
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui {
@@ -156,10 +152,10 @@ trait WizardComposer
     w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)
   )
 
-  def searchDevices(userInfo: UserInfo)(implicit context: ActivityContextWrapper): Ui[_] =
-    addDevicesToRadioGroup(userInfo.devices) ~
+  def searchDevices(userCloudDevices: UserCloudDevices)(implicit context: ActivityContextWrapper): Ui[_] =
+    addDevicesToRadioGroup(userCloudDevices.devices) ~
       showDevices ~
-      (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, userInfo.name)))
+      (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, userCloudDevices.name)))
 
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] =
     (loadingRootLayout <~ vVisible) ~

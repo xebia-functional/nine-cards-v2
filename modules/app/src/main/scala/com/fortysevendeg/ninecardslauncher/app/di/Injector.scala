@@ -1,8 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.di
 
 import com.fortysevendeg.ninecardslauncher.api.services._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.GoogleApiClientProvider
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.process.cloud.impl.CloudStorageProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
@@ -18,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig,
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.calls.impl.CallsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.contacts.impl.ContactsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
@@ -141,5 +144,10 @@ class Injector(implicit contextSupport: ContextSupport) {
   lazy val sharedCollectionsProcess = new SharedCollectionsProcessImpl(
     apiServices = apiServices,
     persistenceServices = persistenceServices)
+
+  def createCloudStorageProcess(provider: GoogleApiClientProvider, account: String) = {
+    val services = new DriveServicesImpl(provider.createGoogleApiClient(account))
+    new CloudStorageProcessImpl(services)
+  }
 
 }
