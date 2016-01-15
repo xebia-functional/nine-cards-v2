@@ -24,17 +24,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.{FabItemMenuTweaks, SlidingTabLayoutTweaks}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import CardType._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
-import com.fortysevendeg.ninecardslauncher.process.types._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 
