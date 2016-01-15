@@ -56,9 +56,12 @@ case class ContactsAdapter(
     new LinearLayoutManager(activityContext.application) with ScrollingLinearLayoutManager
 
   def swapIterator(iter: IterableContacts) = {
+    contacts.close()
     contacts = iter
     notifyDataSetChanged()
   }
+
+  def close() = contacts.close()
 
   override def getHeightAllRows: Int = contacts.count() * getHeightItem
 

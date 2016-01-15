@@ -17,24 +17,25 @@ import macroid._
 
 trait LauncherComposer
   extends CollectionsComposer
-    with DrawerComposer {
+  with DrawerComposer {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with DrawerListeners =>
 
   def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]) =
     prepareBars ~ initCollectionsUi ~ initDrawerUi
 
-  def backByPriority(implicit context: ActivityContextWrapper, manager: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] = if (isMenuVisible) {
-    closeMenu()
-  } else if (isDrawerVisible) {
-    revealOutDrawer
-  } else if (isActionShowed) {
-    unrevealActionFragment
-  } else if (isCollectionMenuVisible) {
-    closeCollectionMenu()
-  } else {
-    Ui.nop
-  }
+  def backByPriority(implicit context: ActivityContextWrapper, manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme): Ui[_] =
+    if (isMenuVisible) {
+      closeMenu()
+    } else if (isDrawerVisible) {
+      revealOutDrawer
+    } else if (isActionShowed) {
+      unrevealActionFragment
+    } else if (isCollectionMenuVisible) {
+      closeCollectionMenu()
+    } else {
+      Ui.nop
+    }
 
   def turnOffFragmentContent(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
     fragmentContent <~ vClickable(false)

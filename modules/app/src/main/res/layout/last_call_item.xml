@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/LastCallItemRoot">
+    
+    <ImageView
+        android:id="@+id/last_call_item_icon"
+        style="@style/LastCallItemIcon"/>
+
+    <LinearLayout style="@style/LastCallContentInfo">
+
+        <TextView
+            android:id="@+id/last_call_item_name"
+            style="@style/LastCallItemName"/>
+
+        <LinearLayout style="@style/LastCallContentTime">
+
+            <LinearLayout
+                android:id="@+id/last_call_item_types"
+                style="@style/LastCallContentCalls"/>
+
+            <TextView
+                android:id="@+id/last_call_item_hour"
+                style="@style/LastCallItemHour"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

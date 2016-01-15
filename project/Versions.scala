@@ -16,6 +16,7 @@ object Versions {
   val glideV = "3.6.1"
   val sprayClientV = "1.3.1"
   val okHttpV = "2.3.0"
+  val prettyTimeV = "3.2.7.Final"
   val akkaActorV = "2.3.9"
   val mockServerV = "3.9.2"
   val stethoV = "1.2.0"

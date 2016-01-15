@@ -55,9 +55,12 @@ case class AppsAdapter(
     new GridLayoutManager(activityContext.application, columnsLists) with ScrollingLinearLayoutManager
 
   def swapIterator(iter: IterableApps) = {
+    apps.close()
     apps = iter
     notifyDataSetChanged()
   }
+
+  def close() = apps.close()
 
   override def getHeightAllRows = apps.count() / columnsLists * getHeightItem
 

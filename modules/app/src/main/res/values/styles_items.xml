@@ -120,6 +120,63 @@
         <item name="android:textColor">@color/text_default_title</item>
     </style>
 
+    <!-- Last Call -->
+
+    <style name="LastCallItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_contact_item</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="LastCallItemIcon">
+        <item name="android:layout_width">@dimen/size_icon_contact</item>
+        <item name="android:layout_height">@dimen/size_icon_contact</item>
+    </style>
+
+    <style name="LastCallContentInfo">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+    </style>
+
+    <style name="LastCallItemName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/text_default_title</item>
+    </style>
+
+    <style name="LastCallContentTime">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="LastCallContentCalls">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="LastCallItemHour">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:paddingLeft">@dimen/padding_small</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
     <!-- Shortcut -->
 
     <style name="ShortcutItemRoot">
