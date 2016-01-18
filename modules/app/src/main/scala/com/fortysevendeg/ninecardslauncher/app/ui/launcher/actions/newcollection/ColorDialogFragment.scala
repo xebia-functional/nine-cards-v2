@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, LayoutInflater}
 import android.widget.LinearLayout
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -31,9 +32,7 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
       layout.setOrientation(LinearLayout.HORIZONTAL)
       val params = new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1)
 
-      val views = from to to map { i =>
-        new ItemView(i, select = index == i)
-      }
+      val views = from to to map (i => new ItemView(i, select = index == i))
       runUi(layout <~ vgAddViews(views, params))
       layout
     }
@@ -65,18 +64,18 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
       padding = resGetDimensionPixelSize(R.dimen.padding_large))
 
     runUi(
-      color <~
+      (color <~
         (if (select) ivSrc(icon) else Tweak.blank) <~
-        ivSrc(getDrawable(index))  <~
-        On.click{
-          Ui {
-            val responseIntent = new Intent
-            responseIntent.putExtra(NewCollectionFragment.iconRequest, index)
-            getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
-            dismiss()
-          }
-        }
-    )
+        vBackground(getDrawable(index))) ~
+        (this <~
+          On.click {
+            Ui {
+              val responseIntent = new Intent
+              responseIntent.putExtra(NewCollectionFragment.colorRequest, index)
+              getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+              dismiss()
+            }
+          }))
   }
 
   private[this] def getDrawable(index: Int) = {

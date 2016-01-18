@@ -62,11 +62,12 @@ object LauncherWorkSpacesTweaks {
 
   def lwsRemoveCollection(collection: Collection) = Tweak[W] {
     workspaces =>
-      val collections = workspaces.data flatMap (_.collections.filterNot(_ == collection))
-      val maybeWorkspaceCollection = workspaces.data find (_.collections contains collection)
-      val maybePage = maybeWorkspaceCollection map { workspace =>
-        workspaces.data.indexOf(workspace)
+      // We remove a collection in sequence and fix positions
+      val collections = (workspaces.data flatMap (_.collections.filterNot(_ == collection))).zipWithIndex map {
+        case (col, index) => col.copy(position = index)
       }
+      val maybeWorkspaceCollection = workspaces.data find (_.collections contains collection)
+      val maybePage = maybeWorkspaceCollection map workspaces.data.indexOf
       workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
       val page = maybePage map { page =>
         if (workspaces.data.isDefinedAt(page)) page else workspaces.data.length - 1

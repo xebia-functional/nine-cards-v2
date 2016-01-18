@@ -24,6 +24,7 @@ import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 import rapture.core.Answer
 
+import scala.concurrent.Future
 import scalaz.concurrent.Task
 
 class LauncherActivity
@@ -92,9 +93,9 @@ class LauncherActivity
     case _ => super.dispatchKeyEvent(event)
   }
 
-  def addCollection(collection: Collection) = runUi(uiActionCollection(Add, collection))
+  def addCollection(collection: Collection): Unit = runUi(uiActionCollection(Add, collection))
 
-  def removeCollection(collection: Collection) = {
+  def removeCollection(collection: Collection): Unit = {
     val overOneCollection = workspaces.exists(_.data.filterNot(_.workSpaceType.isMomentWorkSpace).headOption.exists(_.collections.length!=1))
     if (overOneCollection) {
       val ft = getSupportFragmentManager.beginTransaction()
@@ -116,9 +117,9 @@ class LauncherActivity
     onResult = {
       // Check if there are collections in DB, if there aren't we go to wizard
       case (Nil, Nil) => goToWizard()
-      case (collections, dockApps) =>
+      case (collections, apps) =>
         getUserInfo()
-        createCollections(collections, dockApps)
+        createCollections(collections, apps)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading
