@@ -180,7 +180,7 @@ trait ApiServices {
     * @param collectionType type [top or latest]
     * @param offset offset of list
     * @param limit the maximum number of collection returned
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SharedCollectionResponseList]] with the HTTP Code
     *         of the response and the sequence of recommended [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
@@ -189,4 +189,25 @@ trait ApiServices {
     collectionType: String,
     offset: Int,
     limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[SharedCollectionResponseList, ApiServiceException]
+
+  /**
+    * Persists a new shared collection
+    * @param name The name of the collection
+    * @param description The user's description of the collection
+    * @param author The original author of the collection
+    * @param packages The list of packages in the collection
+    * @param icon The collection's icon
+    * @param community A flag for whether this is a community collection
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.CreateSharedCollectionResponse]] with the HTTP Code
+    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.CreateSharedCollection]]
+    * @throws ApiServiceException if the service is unable to create the shared collection
+    */
+  def createSharedCollection(
+    name: String,
+    description: String,
+    author: String,
+    packages: Seq[String],
+    category: String,
+    icon: String,
+    community: Boolean)(implicit requestConfig: RequestConfig): ServiceDef2[CreateSharedCollectionResponse, ApiServiceException]
 }

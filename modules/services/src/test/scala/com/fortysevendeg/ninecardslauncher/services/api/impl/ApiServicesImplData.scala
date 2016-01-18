@@ -164,13 +164,12 @@ trait ApiServicesImplData {
       googlePlayApps map (app => GooglePlayRecommendationItems(app.docid, app, None))
     )
 
-  def generateSharedCollectionList =
+  def generateSharedCollectionList(num: Int = 10) =
     SharedCollectionList(
-      items = generateSharedCollection()
+      items = (1 to num map (_ => generateSharedCollection))
     )
 
-  def generateSharedCollection(num: Int = 10): Seq[SharedCollection] =
-    1 to num map { _ =>
+  def generateSharedCollection: SharedCollection =
       SharedCollection(
         _id = Random.nextString(10),
         sharedCollectionId = Random.nextString(10),
@@ -191,13 +190,36 @@ trait ApiServicesImplData {
         category = Random.nextString(10),
         icon = Random.nextString(10),
         community = true)
-    }
 
+/*  def generateShareCollection: ShareCollection =
+    ShareCollection(
+      sharedCollectionId = if (Random.nextBoolean) Some(Random.nextString(10)) else None,
+      description = Random.nextString(10),
+      author = Random.nextString(10),
+      name = Random.nextString(10),
+      packages = List.fill(Random.nextInt(10) + 1)(Random.nextString(10)),
+      category = Random.nextString(10),
+      icon = Random.nextString(10),
+      community = Random.nextBoolean
+    )
+ */
   val offset = 0
 
   val limit = 20
 
   val category = "COMMUNICATION"
+
+  val name = "Name"
+
+  val description = "Description"
+
+  val author = "Author"
+
+  val packages = List("Package1", "Package2")
+
+  val icon = "Icon"
+
+  val community = true
 
   val collectionType = "TOP"
 
@@ -215,6 +237,7 @@ trait ApiServicesImplData {
 
   val userConfig = generateUserConfig
 
-  val sharedCollectionList = generateSharedCollectionList
+  val sharedCollectionList = generateSharedCollectionList()
 
+  val sharedCollection = generateSharedCollection
 }
