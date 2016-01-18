@@ -19,6 +19,12 @@ case object AppsByLastInstall extends AppsMenuOption {
   override val name: String = appsByLastInstall
 }
 
+object AppsMenuOption {
+  val list = Seq(AppsAlphabetical, AppsByCategories, AppsByLastInstall)
+
+  def apply(o: AppsMenuOption): Int = list.indexOf(o)
+}
+
 object AppsAlphabeticalNames {
   val appsAlphabetical = "AppsAlphabetical"
   val appsByCategories = "AppsByCategories"
@@ -39,6 +45,13 @@ case object ContactsFavorites extends ContactsMenuOption {
 
 case object ContactsByLastCall extends ContactsMenuOption {
   override val name: String = contactsByLastCall
+}
+
+object ContactsMenuOption {
+  val list = Seq(ContactsAlphabetical, ContactsFavorites, ContactsByLastCall)
+
+  def apply(o: ContactsMenuOption): Int = list.indexOf(o)
+
 }
 
 object ContactsMenuOptionNames {

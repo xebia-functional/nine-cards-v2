@@ -157,6 +157,8 @@ object SearchBoxesAnimatedViewTweak {
     view.statuses = view.statuses.copy(enabled = enabled)
   }
 
+  def sbavUpdateHeader(res: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateHeader(res)))
+
 }
 
 object PullToTabsViewTweaks {

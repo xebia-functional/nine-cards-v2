@@ -36,7 +36,7 @@ object Settings {
       proguardScala in Android := true,
       useProguard in Android := true,
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := proguardCacheList)
+      proguardCache in Android := Seq.empty)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++

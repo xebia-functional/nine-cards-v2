@@ -4,6 +4,12 @@
     style="@style/LauncherSearchPanel"
     android:id="@+id/launcher_search_box_panel">
 
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        android:id="@+id/launcher_header_icon"
+        style="@style/LauncherSearchHeader" />
+
+    <ImageView style="@style/LauncherSearchHeaderLine"/>
+
     <EditText
         style="@style/LauncherSearchEditText"
         android:id="@+id/launcher_search_box_text"/>

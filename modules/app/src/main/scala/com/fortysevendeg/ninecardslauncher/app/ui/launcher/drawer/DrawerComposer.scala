@@ -66,17 +66,17 @@ trait DrawerComposer
 
   var searchBoxView: Option[SearchBoxesAnimatedView] = None
 
-  def appTabs(implicit context: ActivityContextWrapper) = Seq(
-    TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.apps_alphabetical)),
-    TabInfo(R.drawable.app_drawer_filter_categories, resGetString(R.string.apps_categories)),
-    TabInfo(R.drawable.app_drawer_filter_installation_date, resGetString(R.string.apps_date))
-  )
+  lazy val appTabs = AppsMenuOption.list map {
+    case AppsAlphabetical => TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.apps_alphabetical))
+    case AppsByCategories => TabInfo(R.drawable.app_drawer_filter_categories, getString(R.string.apps_categories))
+    case AppsByLastInstall => TabInfo(R.drawable.app_drawer_filter_installation_date, getString(R.string.apps_date))
+  }
 
-  def contactsTabs(implicit context: ActivityContextWrapper) = Seq(
-    TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.contacts_alphabetical)),
-    TabInfo(R.drawable.app_drawer_filter_favorites, resGetString(R.string.contacts_favorites)),
-    TabInfo(R.drawable.app_drawer_filter_last_call, resGetString(R.string.contacts_last))
-  )
+  lazy val contactsTabs = ContactsMenuOption.list map {
+    case ContactsAlphabetical => TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.contacts_alphabetical))
+    case ContactsFavorites => TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites))
+    case ContactsByLastCall => TabInfo(R.drawable.app_drawer_filter_last_call, getString(R.string.contacts_last))
+  }
 
   override def onChangeBoxView(boxView: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit =
     runUi(
@@ -99,10 +99,14 @@ trait DrawerComposer
       }})
 
   private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] =
-    Ui(loadApps(option)) ~ (recycler <~ vSetType(option.name))
+    Ui(loadApps(option)) ~
+      (searchBoxView <~ sbavUpdateHeader(appTabs(AppsMenuOption(option)).drawable)) ~
+      (recycler <~ vSetType(option.name))
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] =
-    Ui(loadContacts(option)) ~ (recycler <~ vSetType(option.name))
+    Ui(loadContacts(option)) ~
+      (searchBoxView <~ sbavUpdateHeader(contactsTabs(ContactsMenuOption(option)).drawable)) ~
+      (recycler <~ vSetType(option.name))
 
   private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     loadAppsAndSaveStatus(AppsAlphabetical) ~
@@ -164,17 +168,16 @@ trait DrawerComposer
         ptvAddTabsAndActivate(appTabs, 0) <~
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
-          changeItem = (pos: Int) =>
-            runUi((pos, getTypeView()) match {
-              case (0, Some(AppsView)) => loadAppsAndSaveStatus(AppsAlphabetical)
-              case (1, Some(AppsView)) => loadAppsAndSaveStatus(AppsByCategories)
-              case (2, Some(AppsView)) => loadAppsAndSaveStatus(AppsByLastInstall)
-              case (0, Some(ContactView)) => loadContactsAndSaveStatus(ContactsAlphabetical)
-              case (1, Some(ContactView)) => loadContactsAndSaveStatus(ContactsFavorites)
-              case (2, Some(ContactView)) => loadContactsAndSaveStatus(ContactsByLastCall)
-              case _ => Ui.nop
-            }
-            )))) ~
+          changeItem = (pos: Int) => {
+            runUi(
+              getTypeView() match {
+                case Some(AppsView) =>
+                  AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
+                case Some(ContactView) =>
+                  ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
+              })
+          }
+        ))) ~
       (drawerContent <~ vGone) ~
       Ui(loadApps(AppsAlphabetical))
   }

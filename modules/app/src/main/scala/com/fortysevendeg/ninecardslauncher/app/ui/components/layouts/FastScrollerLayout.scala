@@ -238,7 +238,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
         runUi(changePosition(move))
       }
 
-    def reset() = {
+    def reset(): Unit = {
       lastRowFirstItem = 0
       offsetY = 0f
     }
