@@ -6,10 +6,12 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps
+import com.fortysevendeg.ninecardslauncher.process.device.models.{TermCounter, IterableApps}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
+import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServiceException
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{DataCounter, App}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
 import rapture.core.Answer
 
@@ -25,6 +27,14 @@ trait AppsDeviceProcessImpl {
 
   val apiUtils = new ApiUtils(persistenceServices)
 
+  val emptyDataCounterService = Service {
+    Task {
+      CatchAll[PersistenceServiceException] {
+        Seq.empty[DataCounter]
+      }
+    }
+  }
+
   def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
       apps <- persistenceServices.fetchApps(toFetchAppOrder(orderBy), orderBy.ascending)
@@ -34,6 +44,14 @@ trait AppsDeviceProcessImpl {
     (for {
       iter <- persistenceServices.fetchIterableApps(toFetchAppOrder(orderBy), orderBy.ascending)
     } yield new IterableApps(iter)).resolve[AppException]
+
+  def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
+    (for {
+      counters <- orderBy match {
+        case GetByName => persistenceServices.fetchAlphabeticalAppsCounter
+        case _ => emptyDataCounterService
+      }
+    } yield counters map toTermCounter).resolve[AppException]
 
   def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport)  =
     (for {

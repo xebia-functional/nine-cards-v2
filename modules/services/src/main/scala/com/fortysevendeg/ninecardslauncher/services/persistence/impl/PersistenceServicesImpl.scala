@@ -47,6 +47,8 @@ class PersistenceServicesImpl(
   override def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true) =
     super.fetchIterableAppsByCategory(category, orderBy, ascending)
 
+  override def fetchAlphabeticalAppsCounter = super.fetchAlphabeticalAppsCounter
+
   override def addCard(request: AddCardRequest) = super.addCard(request)
 
   override def deleteAllCards() = super.deleteAllCards()

@@ -55,6 +55,13 @@ trait PersistenceServices {
   def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[IterableApps, PersistenceServiceException]
 
   /**
+    * Returns the number of times the first letter of a app is repeated alphabetically
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.DataCounter]
+    * @throws PersistenceServiceException if exist some problem obtaining the apps
+    */
+  def fetchAlphabeticalAppsCounter: ServiceDef2[Seq[DataCounter], PersistenceServiceException]
+
+  /**
    * Obtains an app from the repository by the package name
    * @param packageName the package name of the app to get
    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]

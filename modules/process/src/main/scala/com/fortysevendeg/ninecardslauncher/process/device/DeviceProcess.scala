@@ -32,6 +32,14 @@ trait DeviceProcess {
   def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
 
   /**
+    * Returns the number of times the first letter of an app is repeated alphabetically filtered by parameter
+    * @return the Seq[Returns the number of times the first letter of a contact is repeated alphabetically] contains
+    *         information about the times is repeated an apps
+    * @throws AppException if exist some problem to get the contacts
+    */
+  def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[Seq[TermCounter], AppException]
+
+  /**
     * Get the iterable apps by keyword.
     * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
     *         information about the app
@@ -76,6 +84,14 @@ trait DeviceProcess {
    * @throws ContactException if exist some problem to get the contacts
    */
   def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): ServiceDef2[Seq[Contact], ContactException]
+
+  /**
+    * Returns the number of times the first letter of a contact is repeated alphabetically filtered by parameter
+    * @return the Seq[Returns the number of times the first letter of a contact is repeated alphabetically] contains
+    *         information about the times is repeated a contacts
+    * @throws ContactException if exist some problem to get the contacts
+    */
+  def getTermCountersForContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): ServiceDef2[Seq[TermCounter], ContactException]
 
   /**
     * Get the iterable contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts

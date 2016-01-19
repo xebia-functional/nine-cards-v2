@@ -11,10 +11,15 @@ import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, Widge
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayApp, GooglePlayPackage}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallServices}
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ContactServices, ContactEmail => ContactEmailServices, ContactInfo => ContactInfoServices, ContactPhone => ContactPhoneServices}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{
+  Contact => ContactServices,
+  ContactEmail => ContactEmailServices,
+  ContactInfo => ContactInfoServices,
+  ContactPhone => ContactPhoneServices,
+  ContactCounter}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp => DockAppPersistence}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp => DockAppPersistence, DataCounter}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
 
@@ -134,6 +139,16 @@ trait DeviceConversions extends NineCardIntentConversions {
     CallData(
       date = item.date,
       callType = CallType(item.callType))
+
+  def toTermCounter(item: ContactCounter): TermCounter = TermCounter(
+    term = item.term,
+    count = item.count
+  )
+
+  def toTermCounter(item: DataCounter): TermCounter = TermCounter(
+    term = item.term,
+    count = item.count
+  )
 
   def toContactSeq(items: Seq[ContactServices]): Seq[Contact] = items map toContact
 
