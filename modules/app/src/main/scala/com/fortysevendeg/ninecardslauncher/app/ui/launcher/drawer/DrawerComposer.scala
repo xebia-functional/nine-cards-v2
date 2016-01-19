@@ -146,7 +146,7 @@ trait DrawerComposer
     (searchBoxView <~ sbavChangeListener(self)) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         (if (getItemsCount == 0) {
-          Ui(loadApps(AppsAlphabetical))
+          loadAppsAlphabetical
         } else {
           Ui.nop
         }) ~ revealInDrawer ~~ (searchPanel <~ vGone)
@@ -179,7 +179,7 @@ trait DrawerComposer
           }
         ))) ~
       (drawerContent <~ vGone) ~
-      Ui(loadApps(AppsAlphabetical))
+      loadAppsAlphabetical
   }
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
