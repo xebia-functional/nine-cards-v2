@@ -20,9 +20,9 @@ before_install:
   - echo yes | android update sdk --all --filter extra-android-support --no-ui
   - echo yes | android update sdk --all --filter extra-android-m2repository --no-ui
   - echo yes | android update sdk --all --filter extra-google-m2repository --no-ui
-#  - openssl aes-256-cbc -K $encrypted_e4893f5c86d2_key -iv $encrypted_e4893f5c86d2_iv -in properties.tar.enc -out properties.tar -d
-#  - tar xvf properties.tar
-#  - mv local.properties modules/app/local.properties
+  - openssl aes-256-cbc -K $encrypted_e4893f5c86d2_key -iv $encrypted_e4893f5c86d2_iv -in properties.tar.enc -out properties.tar -d
+  - tar xvf properties.tar
+  - mv local.properties modules/app/local.properties
   - export GIT_BRANCH=${TRAVIS_BRANCH}
   - export GIT_PR=${TRAVIS_PULL_REQUEST}
 script:
@@ -35,6 +35,6 @@ script:
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
-#  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" android:packageRelease
-#  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
-#  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-generateLink
+  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" android:packageRelease
+  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
+  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-generateLink
