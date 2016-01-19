@@ -3,19 +3,17 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 import android.accounts._
 import android.app.Activity
 import android.content.Intent
-import android.os.{Build, Bundle}
+import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.GoogleApiClientProvider
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GoogleApiClientStatuses, GoogleApiClientProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
+import com.google.android.gms.common.api.GoogleApiClient
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
@@ -68,16 +66,7 @@ class WizardActivity
 
   override def onBackPressed(): Unit = {}
 
-  def requestToken(username: String): Unit =
-    getAccountAndAndroidId(username) match {
-      case Some((account, id)) =>
-        invalidateToken()
-        Task.fork(loadDevices(account, username, id).run).resolveAsyncUi(
-          userCloudDevices => showLoading ~ searchDevices(userCloudDevices),
-          onException)
-      case _ => runUi(uiShortToast(R.string.errorConnectingGoogle) ~ showUser)
-    }
-
+  def requestToken(username: String): Unit = connectGoogleDrive(username)
 
   def finishUi: Ui[_] = Ui {
     setResult(Activity.RESULT_OK)
@@ -90,41 +79,43 @@ class WizardActivity
     startService(intent)
   }
 
-  private[this] def onException[E >: Exception](e: E): Ui[_] = e match {
-    case ex: AuthTokenOperationCancelledException => uiShortToast(R.string.canceledGooglePermission) ~ showUser
-    case _ => uiShortToast(R.string.errorConnectingGoogle) ~ showUser
-  }
+  override def onRequestConnectionError(): Unit = runUi(backToUser(R.string.errorConnectingGoogle))
 
-  private[this] def getAccountAndAndroidId(username: String): Option[(Account, String)] = {
+  override def onResolveConnectionError(): Unit = runUi(backToUser(R.string.errorConnectingGoogle))
+
+  override def onConnected(bundle: Bundle): Unit =
+    clientStatuses match {
+      case GoogleApiClientStatuses(Some(username), Some(client)) =>
+        loadCloudDevices(username, client)
+      case _ =>
+        runUi(backToUser(R.string.errorConnectingGoogle))
+    }
+
+  private[this] def loadCloudDevices(username: String, client: GoogleApiClient) =
+    getAccountAndAndroidId(username) match {
+      case Some((account, id)) =>
+        invalidateToken()
+        Task.fork(loadDevices(accountManager, account, client).run).resolveAsyncUi(
+          userCloudDevices => showLoading ~ searchDevices(userCloudDevices),
+          onException)
+      case _ => runUi(backToUser(R.string.errorConnectingGoogle))
+    }
+
+  private[this] def getAccountAndAndroidId(username: String): Option[(Account, String)] =
     for {
       account <- accounts find (_.name == username)
       androidId <- getAndroidId
     } yield (account, androidId)
-  }
-
-  private[this] def loadDevices(account: Account, username: String, androidId: String) = {
-    val oauthScopes = resGetString(R.string.oauth_scopes)
-    val driveScope = "oauth2:https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.appdata"
-    for {
-      token <- getAuthToken(accountManager, account, oauthScopes)
-      _ = setToken(token)
-      driveToken <- getAuthToken(accountManager, account, driveScope)
-      device = Device(
-        name = Build.MODEL,
-        deviceId = androidId,
-        secretToken = token,
-        permissions = Seq(oauthScopes))
-      userCloudDevices <- signInUser(username, device)
-    } yield userCloudDevices
-  }
 
   private[this] def invalidateToken() = {
     getToken foreach (accountManager.invalidateAuthToken(accountType, _))
     setToken(javaNull)
   }
 
-  override def onRequestConnectionError(): Unit = {}
+  private[this] def onException[E >: Exception](exception: E): Ui[_] = exception match {
+    case ex: AuthTokenOperationCancelledException => backToUser(R.string.canceledGooglePermission)
+    case _ => backToUser(R.string.errorConnectingGoogle)
+  }
 
-  override def onResolveConnectionError(): Unit = {}
 }
 

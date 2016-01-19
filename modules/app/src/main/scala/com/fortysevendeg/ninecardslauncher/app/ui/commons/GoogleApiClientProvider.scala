@@ -9,6 +9,8 @@ import com.google.android.gms.drive._
 
 import scala.util.{Failure, Try}
 
+case class GoogleApiClientStatuses(username: Option[String] = None, apiClient: Option[GoogleApiClient] = None)
+
 trait GoogleApiClientProvider
   extends GoogleApiClient.ConnectionCallbacks
   with GoogleApiClient.OnConnectionFailedListener {
@@ -17,19 +19,25 @@ trait GoogleApiClientProvider
 
   val resolveConnectionRequestCode = 1
 
-  var client: GoogleApiClient = null
+  var clientStatuses = GoogleApiClientStatuses()
 
-  def createGoogleApiClient(account: String) = new GoogleApiClient.Builder(this)
-    .setAccountName(account)
-    .addApi(Drive.API)
-    .addScope(Drive.SCOPE_APPFOLDER)
-    .addConnectionCallbacks(this)
-    .addOnConnectionFailedListener(this)
-    .build()
+  def connectGoogleDrive(account: String) = {
+    val apiClient = new GoogleApiClient.Builder(this)
+      .setAccountName(account)
+      .addApi(Drive.API)
+      .addScope(Drive.SCOPE_APPFOLDER)
+      .addConnectionCallbacks(this)
+      .addOnConnectionFailedListener(this)
+      .build()
+    apiClient.connect()
+    clientStatuses = clientStatuses.copy(username = Some(account), Some(apiClient))
+  }
 
   def onRequestConnectionError(): Unit
 
   def onResolveConnectionError(): Unit
+
+  def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
 
   override def onConnectionSuspended(i: Int): Unit = { }
 
@@ -48,7 +56,7 @@ trait GoogleApiClientProvider
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
     requestCode match {
       case `resolveConnectionRequestCode` =>
-        if (resultCode == Activity.RESULT_OK) client.connect() else onResolveConnectionError()
+        if (resultCode == Activity.RESULT_OK) tryToConnect() else onResolveConnectionError()
       case _ =>
         self.onActivityResult(requestCode, resultCode, data)
     }

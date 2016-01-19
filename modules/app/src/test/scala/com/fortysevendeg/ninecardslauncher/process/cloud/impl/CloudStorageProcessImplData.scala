@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCol
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
+import org.joda.time.DateTime
 
 import scala.util.Random
 import scalaz.Scalaz._
@@ -17,7 +18,9 @@ trait CloudStorageProcessImplData {
   def generateDriveServiceFile =
     DriveServiceFile(
       driveId = Random.nextString(10),
-      title = Random.nextString(10))
+      title = Random.nextString(10),
+      createdDate = DateTime.now().minusMonths(6).toDate,
+      modifiedDate = DateTime.now().minusMonths(3).toDate)
 
   val driveId = "drive-id"
 

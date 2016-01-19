@@ -29,6 +29,7 @@ import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServices
 import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
+import com.google.android.gms.common.api.GoogleApiClient
 import com.squareup.{okhttp => okHttp}
 import com.facebook.stetho.okhttp.StethoInterceptor
 
@@ -145,8 +146,8 @@ class Injector(implicit contextSupport: ContextSupport) {
     apiServices = apiServices,
     persistenceServices = persistenceServices)
 
-  def createCloudStorageProcess(provider: GoogleApiClientProvider, account: String) = {
-    val services = new DriveServicesImpl(provider.createGoogleApiClient(account))
+  def createCloudStorageProcess(client: GoogleApiClient, account: String) = {
+    val services = new DriveServicesImpl(client)
     new CloudStorageProcessImpl(services)
   }
 

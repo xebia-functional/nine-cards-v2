@@ -6,8 +6,12 @@ dist
 /out
 /RUNNING_PID
 /.ivy*
+
+# Keys
 debug.properties
 release.properties
+debug.keystore
+local.properties
 
 # Crashlytics
 /modules/app/crashlytics/fabric.properties

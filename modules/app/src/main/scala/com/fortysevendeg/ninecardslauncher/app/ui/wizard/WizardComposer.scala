@@ -5,6 +5,7 @@ import android.os.Build
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -180,6 +181,9 @@ trait WizardComposer
       (userRootLayout <~ vGone) ~
       (wizardRootLayout <~ vGone) ~
       (deviceRootLayout <~ vVisible)
+
+  def backToUser(errorMessage: Int)(implicit context: ActivityContextWrapper): Ui[_] =
+    uiShortToast(errorMessage) ~ showUser
 
 }
 

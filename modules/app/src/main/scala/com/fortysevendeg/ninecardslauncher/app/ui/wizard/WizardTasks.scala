@@ -1,12 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.{OperationCanceledException, Account, AccountManager}
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.GoogleApiClientProvider
+import android.os.Build
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.{ImplicitsCloudStorageProcessExceptions, CloudStorageProcess, CloudStorageProcessException}
@@ -14,8 +13,9 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCol
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollectionItem, UserCollection, UserDevice, UserInfo}
-import macroid.ActivityContextWrapper
+import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollectionItem, UserCollection, UserDevice}
+import com.fortysevendeg.ninecardslauncher2.R
+import com.google.android.gms.common.api.GoogleApiClient
 import rapture.core._
 
 import scala.reflect.ClassTag
@@ -23,26 +23,45 @@ import scalaz.{-\/, \/-, \/}
 import scalaz.concurrent.Task
 
 trait WizardTasks
-  extends ImplicitsCloudStorageProcessExceptions {
+  extends ImplicitsWizardTasksExceptions
+  with ImplicitsCloudStorageProcessExceptions {
 
-  self: GoogleApiClientProvider =>
+  self: WizardActivity =>
 
-  def signInUser(username: String, device: Device)
-    (implicit context: ContextSupport, di: Injector): ServiceDef2[UserCloudDevices, UserException with CloudStorageProcessException with UserConfigException] = {
-      val cloudStorageProcess = di.createCloudStorageProcess(this, username)
-      for {
+  def loadDevices(
+    accountManager: AccountManager,
+    account: Account,
+    client: GoogleApiClient): ServiceDef2[UserCloudDevices, AuthTokenException with AuthTokenOperationCancelledException with ServiceConnectionException] = {
+    val oauthScopes = "androidmarket" // TODO - This should be removed when we switch off the server v1
+    val driveScope = resGetString(R.string.oauth_scopes)
+    for {
+      token <- getAuthToken(accountManager, account, oauthScopes)
+      _ = setToken(token)
+      _ <- getAuthToken(accountManager, account, driveScope)
+      device = Device(
+        name = Build.MODEL,
+        deviceId = androidId,
+        secretToken = token,
+        permissions = Seq(oauthScopes))
+      userCloudDevices <- signInUser(client, account.name, device)
+    } yield userCloudDevices
+
+  }
+
+  private[this] def signInUser(client: GoogleApiClient, username: String, device: Device): ServiceDef2[UserCloudDevices, ServiceConnectionException] = {
+      val cloudStorageProcess = di.createCloudStorageProcess(client, username)
+      (for {
         response <- di.userProcess.signIn(username, device)
-        cloudDevices <- cloudStorageProcess.getCloudStorageDevices()
-        userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudDevices)
-      } yield userCloudDevices
+        cloudcloudStorageResources <- cloudStorageProcess.getCloudStorageDevices()
+        userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudcloudStorageResources)
+      } yield userCloudDevices).resolve[ServiceConnectionException]
     }
 
   private[this] def verifyAndUpdate(
     cloudStorageProcess: CloudStorageProcess,
     name: String,
-    cloudDevices: Seq[CloudStorageResource])
-    (implicit context: ContextSupport, di: Injector): ServiceDef2[UserCloudDevices, UserConfigException with CloudStorageProcessException] = {
-    if (cloudDevices.isEmpty) {
+    cloudStorageResources: Seq[CloudStorageResource]): ServiceDef2[UserCloudDevices, UserConfigException with CloudStorageProcessException] = {
+    if (cloudStorageResources.isEmpty) {
       for {
         userInfo <- di.userConfigProcess.getUserInfo
         cloudStorageDevices = userInfo.devices map toCloudStorageDevice
@@ -50,7 +69,7 @@ trait WizardTasks
       } yield UserCloudDevices(userInfo.name, cloudStorageDevices)
     } else {
       for {
-        devices <- loadFromCloud(cloudStorageProcess, cloudDevices)
+        devices <- loadFromCloud(cloudStorageProcess, cloudStorageResources)
         _ <- fakeUserConfigException
       } yield UserCloudDevices(name, devices)
     }
@@ -68,10 +87,13 @@ trait WizardTasks
 
   private[this] def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer()))
 
-  def getAuthToken(accountManager: AccountManager, account: Account, scopes: String)(implicit context: ActivityContextWrapper): ServiceDef2[String, AuthTokenException with AuthTokenOperationCancelledException] = Service {
+  private[this] def getAuthToken(
+    accountManager: AccountManager,
+    account: Account,
+    scopes: String): ServiceDef2[String, AuthTokenException with AuthTokenOperationCancelledException] = Service {
     Task {
       \/.fromTryCatchNonFatal{
-        val result = accountManager.getAuthToken(account, scopes, javaNull, context.original.get.get, javaNull, javaNull).getResult
+        val result = accountManager.getAuthToken(account, scopes, javaNull, this, javaNull, javaNull).getResult
         result.getString(AccountManager.KEY_AUTHTOKEN)
       } match {
         case \/-(x) => Result.answer(x)
