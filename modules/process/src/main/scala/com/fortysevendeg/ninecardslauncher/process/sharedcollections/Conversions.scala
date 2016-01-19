@@ -40,7 +40,7 @@ trait Conversions {
       description = item.newSharedCollection.description,
       author = item.newSharedCollection.author,
       packages = item.newSharedCollection.packages,
-      category = item.newSharedCollection.category,
+      category = NineCardCategory(item.newSharedCollection.category),
       icon = item.newSharedCollection.icon,
       community = item.newSharedCollection.community
     )

@@ -33,7 +33,7 @@ case class CreatedCollection(
   description: String,
   author: String,
   packages: Seq[String],
-  category: String,
+  category: NineCardCategory,
   icon: String,
   community: Boolean
 )
