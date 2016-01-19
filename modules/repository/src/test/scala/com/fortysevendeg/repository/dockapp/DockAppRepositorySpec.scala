@@ -58,6 +58,29 @@ trait DockAppRepositorySpecification
         f = getEntityFromCursor(dockAppEntityFromCursor)) returns None
 
     contentResolverWrapper.updateById(mockUri, testId, createDockAppValues) returns 1
+
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields,
+      where = "",
+      whereParams = Seq.empty,
+      orderBy = "")(
+      f = getListFromCursor(dockAppEntityFromCursor)) returns dockAppEntitySeq
+
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields,
+      where = s"$position = ?",
+      whereParams = Seq(testPosition.toString),
+      orderBy = "")(
+      f = getListFromCursor(dockAppEntityFromCursor)) returns dockAppEntitySeq
+
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields,
+      where = s"$position = ?",
+      whereParams = Seq(testPosition.toString))(
+      f = getListFromCursor(dockAppEntityFromCursor)) returns dockAppEntitySeq
   }
 
   trait ErrorDockAppRepositoryResponses
@@ -82,6 +105,14 @@ trait DockAppRepositorySpecification
         f = getEntityFromCursor(dockAppEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.updateById(mockUri, testId, createDockAppValues) throws contentResolverException
+
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields,
+      where = "",
+      whereParams = Seq.empty,
+      orderBy = "")(
+      f = getListFromCursor(dockAppEntityFromCursor)) throws contentResolverException
   }
 
 }
@@ -275,6 +306,48 @@ class DockAppRepositorySpec
           with ErrorDockAppRepositoryResponses {
 
           val result = dockAppRepository.updateDockApp(item = dockApp).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "fetchDockApps" should {
+
+      "return all DockApps" in
+        new DockAppRepositoryScope
+          with ValidDockAppRepositoryResponses {
+
+          val result = dockAppRepository.fetchDockApps().run.run
+
+          result must beLike {
+            case Answer(dockApps) =>
+              dockApps shouldEqual dockAppSeq
+          }
+        }
+
+      "return all DockApps that match the where clause" in
+        new DockAppRepositoryScope
+          with ValidDockAppRepositoryResponses {
+
+          val result = dockAppRepository.fetchDockApps(where = s"$position = ?", whereParams = Seq(testPosition.toString)).run.run
+
+          result must beLike {
+            case Answer(dockApps) =>
+              dockApps shouldEqual dockAppSeq
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new DockAppRepositoryScope
+          with ErrorDockAppRepositoryResponses {
+
+          val result = dockAppRepository.fetchDockApps().run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

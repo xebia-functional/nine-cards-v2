@@ -88,8 +88,8 @@ trait DeviceConversions extends NineCardIntentConversions {
       name = item.name,
       icon = item.resourceIcon)
 
-  def toAddDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): AddDockAppRequest =
-    AddDockAppRequest(
+  def toCreateOrUpdateDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): CreateOrUpdateDockAppRequest =
+    CreateOrUpdateDockAppRequest(
       name = name,
       dockType = dockType.name,
       intent = nineCardIntentToJson(intent),
