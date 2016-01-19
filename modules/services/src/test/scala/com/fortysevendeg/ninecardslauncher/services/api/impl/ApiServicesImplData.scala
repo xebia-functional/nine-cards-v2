@@ -191,18 +191,6 @@ trait ApiServicesImplData {
         icon = Random.nextString(10),
         community = true)
 
-/*  def generateShareCollection: ShareCollection =
-    ShareCollection(
-      sharedCollectionId = if (Random.nextBoolean) Some(Random.nextString(10)) else None,
-      description = Random.nextString(10),
-      author = Random.nextString(10),
-      name = Random.nextString(10),
-      packages = List.fill(Random.nextInt(10) + 1)(Random.nextString(10)),
-      category = Random.nextString(10),
-      icon = Random.nextString(10),
-      community = Random.nextBoolean
-    )
- */
   val offset = 0
 
   val limit = 20
