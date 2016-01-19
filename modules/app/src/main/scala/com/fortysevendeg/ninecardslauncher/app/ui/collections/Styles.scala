@@ -31,7 +31,7 @@ import CollectionRecyclerViewTweaks._
 import SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
-import com.fortysevendeg.ninecardslauncher.process.types._
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import CardType._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R

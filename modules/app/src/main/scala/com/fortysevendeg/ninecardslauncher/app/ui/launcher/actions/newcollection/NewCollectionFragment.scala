@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.types.{FreeCollectionType, CollectionType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{FreeCollectionType, CollectionType}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._

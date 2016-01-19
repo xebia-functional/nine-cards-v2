@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.types
+package com.fortysevendeg.ninecardslauncher.process.commons.types
 
 import com.fortysevendeg.ninecardslauncher.process.commons.CollectionTypes._
 
@@ -39,7 +39,7 @@ object CollectionType {
   val collectionTypes = Seq(AppsCollectionType, ContactsCollectionType, HomeMorningCollectionType, HomeNightCollectionType, WorkCollectionType, TransitCollectionType, FreeCollectionType)
 
   def apply(name: String): CollectionType = collectionTypes find (_.name == name) getOrElse
-    (throw new IllegalArgumentException(s"$name not found"))
+    (throw new IllegalArgumentException(s"The key '$name' is not a valid CollectionType"))
 
 }
 
