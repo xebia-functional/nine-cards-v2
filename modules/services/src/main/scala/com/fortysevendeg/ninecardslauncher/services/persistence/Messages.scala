@@ -168,7 +168,7 @@ case class UpdateUserRequest(
   deviceToken: Option[String],
   androidToken: Option[String])
 
-case class AddDockAppRequest(
+case class CreateOrUpdateDockAppRequest(
   name: String,
   dockType: String,
   intent: String,
@@ -180,13 +180,5 @@ case class DeleteDockAppsRequest(where: String)
 case class DeleteDockAppRequest(dockApp: DockApp)
 
 case class FindDockAppByIdRequest(id: Int)
-
-case class UpdateDockAppRequest(
-  id: Int,
-  name: String,
-  dockType: String,
-  intent: String,
-  imagePath: String,
-  position: Int)
 
 
