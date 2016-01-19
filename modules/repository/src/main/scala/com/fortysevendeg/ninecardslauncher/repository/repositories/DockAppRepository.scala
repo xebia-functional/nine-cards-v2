@@ -75,13 +75,19 @@ class DockAppRepository(
       }
     }
 
-  def fetchDockApps: ServiceDef2[Seq[DockApp], RepositoryException] =
+  def fetchDockApps(
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): ServiceDef2[Seq[DockApp], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = dockAppUri,
-            projection = allFields)(getListFromCursor(dockAppEntityFromCursor)) map toDockApp
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy)(getListFromCursor(dockAppEntityFromCursor)) map toDockApp
         }
       }
     }
