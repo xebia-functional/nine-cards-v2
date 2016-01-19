@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections._
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
@@ -26,4 +27,13 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       response <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)
     } yield response.items map toSharedCollection).resolve[SharedCollectionsExceptions]
 
+  override def createSharedCollection(
+    sharedCollection: SharedCollection)
+    (implicit context: ContextSupport) = {
+    import sharedCollection._
+    (for {
+      userConfig <- apiUtils.getRequestConfig
+      result <- apiServices.createSharedCollection(name, description, author, packages, category.name, icon, community)(userConfig)
+    } yield toCreatedCollection(result)).resolve[SharedCollectionsExceptions]
+  }
 }

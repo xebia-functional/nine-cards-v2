@@ -27,3 +27,13 @@ case class SharedCollectionPackage(
   stars: Double,
   downloads: String,
   free: Boolean)
+
+case class CreatedCollection(
+  name: String,
+  description: String,
+  author: String,
+  packages: Seq[String],
+  category: String,
+  icon: String,
+  community: Boolean
+)
