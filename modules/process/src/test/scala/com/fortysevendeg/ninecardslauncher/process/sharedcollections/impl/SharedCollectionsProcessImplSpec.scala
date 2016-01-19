@@ -120,7 +120,7 @@ class SharedCollectionsProcessImplSpec
             sharedCollection.description,
             sharedCollection.author,
             sharedCollection.packages,
-            sharedCollection.category.name,
+            sharedCollection.category,
             sharedCollection.icon,
             sharedCollection.community
           ))
