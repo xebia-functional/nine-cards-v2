@@ -157,8 +157,9 @@ object SearchBoxesAnimatedViewTweak {
     view.statuses = view.statuses.copy(enabled = enabled)
   }
 
-  def sbavUpdateHeader(res: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateHeader(res)))
+  def sbavUpdateAppsIcon(res: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateAppsIcon(res)))
 
+  def sbavUpdateContactsIcon(res: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateContactsIcon(res)))
 }
 
 object PullToTabsViewTweaks {

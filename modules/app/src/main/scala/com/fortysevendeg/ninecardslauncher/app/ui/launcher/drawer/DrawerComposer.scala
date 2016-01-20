@@ -100,12 +100,12 @@ trait DrawerComposer
 
   private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] =
     Ui(loadApps(option)) ~
-      (searchBoxView <~ sbavUpdateHeader(appTabs(AppsMenuOption(option)).drawable)) ~
+      (searchBoxView <~ sbavUpdateAppsIcon(appTabs(AppsMenuOption(option)).drawable)) ~
       (recycler <~ vSetType(option.name))
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] =
     Ui(loadContacts(option)) ~
-      (searchBoxView <~ sbavUpdateHeader(contactsTabs(ContactsMenuOption(option)).drawable)) ~
+      (searchBoxView <~ sbavUpdateContactsIcon(contactsTabs(ContactsMenuOption(option)).drawable)) ~
       (recycler <~ vSetType(option.name))
 
   private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
@@ -114,7 +114,8 @@ trait DrawerComposer
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
-        ptvAddTabsAndActivate(appTabs, 0))
+        ptvAddTabsAndActivate(appTabs, 0)) ~
+      (searchBoxView <~ sbavUpdateContactsIcon(contactsTabs(ContactsMenuOption(ContactsAlphabetical)).drawable))
 
   private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     loadContactsAndSaveStatus(ContactsAlphabetical) ~
@@ -122,7 +123,8 @@ trait DrawerComposer
       (paginationDrawerPanel <~ reloadPager(1)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
-        ptvAddTabsAndActivate(contactsTabs, 0))
+        ptvAddTabsAndActivate(contactsTabs, 0)) ~
+    (searchBoxView <~ sbavUpdateAppsIcon(appTabs(AppsMenuOption(AppsAlphabetical)).drawable))
 
   private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (searchBoxContentPanel <~

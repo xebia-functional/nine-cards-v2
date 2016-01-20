@@ -141,10 +141,9 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
       applyTranslation(getInactiveView, 0) ~
       (getInactiveView <~ vGone)
 
-  def updateHeader(res: Int): Ui[_] = statuses.currentItem match {
-    case AppsView => appBox.updateHeader(res)
-    case ContactView => contactBox.updateHeader(res)
-  }
+  def updateAppsIcon(res: Int): Ui[_] = appBox.updateHeader(res)
+
+  def updateContactsIcon(res: Int): Ui[_] = contactBox.updateHeader(res)
 
   private[this] def applyTranslation(view: View, translate: Float): Ui[_] =
     view <~ vTranslationX(translate)
