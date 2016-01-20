@@ -107,7 +107,7 @@ class PersistenceServicesImpl(
 
   override def updateUser(request: UpdateUserRequest) = super.updateUser(request)
 
-  override def addDockApp(request: AddDockAppRequest) = super.addDockApp(request)
+  override def createOrUpdateDockApp(request: CreateOrUpdateDockAppRequest) = super.createOrUpdateDockApp(request)
 
   override def deleteAllDockApps() = super.deleteAllDockApps()
 
@@ -118,8 +118,6 @@ class PersistenceServicesImpl(
   override def fetchIterableDockApps = super.fetchIterableDockApps
 
   override def findDockAppById(request: FindDockAppByIdRequest) = super.findDockAppById(request)
-
-  override def updateDockApp(request: UpdateDockAppRequest) = super.updateDockApp(request)
 
   override def getAndroidId(implicit context: ContextSupport) = super.getAndroidId
 }
