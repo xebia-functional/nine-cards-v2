@@ -2,8 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.drawable.shapes.RoundRectShape
-import android.graphics.drawable.{Drawable, ShapeDrawable}
+import android.graphics.drawable.Drawable
 import android.graphics.{Color, Outline, PorterDuff, Typeface}
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
 import android.support.design.widget.{FloatingActionButton, NavigationView, Snackbar}
@@ -18,13 +17,10 @@ import android.view.{MenuItem, View, ViewGroup, ViewOutlineProvider}
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget._
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Transformer, Tweak, Ui}
+import macroid.{ContextWrapper, Tweak, Ui}
 
 /**
   * This tweaks should be moved to Macroid-Extras
@@ -246,26 +242,3 @@ object ExtraTweaks {
 
 }
 
-object CommonsTweak {
-
-  def vBackgroundBoxWorkspace(color: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
-    val radius = resGetDimensionPixelSize(R.dimen.radius_default)
-    Lollipop.ifSupportedThen {
-      vBackgroundColor(color) +
-        ExtraTweaks.vClipBackground(radius) +
-        vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
-    } getOrElse {
-      val s = 0 until 8 map (_ => radius.toFloat)
-      val d = new ShapeDrawable(new RoundRectShape(s.toArray, javaNull, javaNull))
-      d.getPaint.setColor(color)
-      vBackground(d)
-    }
-  }
-
-  def vUseLayerHardware = vTag(R.id.use_layer_hardware, "")
-
-  def vLayerHardware(activate: Boolean) = Transformer {
-    case v: View if Option(v.getTag(R.id.use_layer_hardware)).isDefined => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
-  }
-
-}

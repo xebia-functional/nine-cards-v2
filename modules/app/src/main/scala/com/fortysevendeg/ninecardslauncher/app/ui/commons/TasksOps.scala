@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
-import macroid.Ui
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import macroid.FullDsl._
-import rapture.core.{Unforeseen, Errata, Answer, Result}
+import macroid.Ui
+import rapture.core.{Answer, Errata, Result, Unforeseen}
 
-import scalaz.{\/-, -\/, \/}
 import scalaz.concurrent.Task
-
-import AppLog._
+import scalaz.{-\/, \/-}
 
 object TasksOps {
 

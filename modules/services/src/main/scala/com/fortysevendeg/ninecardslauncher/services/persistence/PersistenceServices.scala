@@ -325,12 +325,11 @@ trait PersistenceServices {
   def updateUser(request: UpdateUserRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
-    * Adds an dock app to the repository
+    * Creates or updates dock app to the repository
     * @param request includes the necessary data to create a new dock app in the repository
-    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp
-    * @throws PersistenceServiceException if exist some problem creating the dock app
+    * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
-  def addDockApp(request: AddDockAppRequest): ServiceDef2[DockApp, PersistenceServiceException]
+  def createOrUpdateDockApp(request: CreateOrUpdateDockAppRequest): ServiceDef2[Unit, PersistenceServiceException]
 
   /**
     * Deletes all dock apps from the repository by the where clause
@@ -340,7 +339,7 @@ trait PersistenceServices {
   def deleteAllDockApps(): ServiceDef2[Int, PersistenceServiceException]
 
   /**
-    * Deletes an dock app from the repository by the dock app
+    * Deletes a dock app from the repository by the dock app
     * @param request includes the dock app to delete
     * @return an Int if the dock app has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the dock app
@@ -362,18 +361,11 @@ trait PersistenceServices {
   def fetchIterableDockApps: ServiceDef2[IterableDockApps, PersistenceServiceException]
 
   /**
-    * Obtains an dock app from the repository by the id
+    * Obtains a dock app from the repository by the id
     * @param request includes the dock app id  of the dock app to get
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock app
     */
   def findDockAppById(request: FindDockAppByIdRequest): ServiceDef2[Option[DockApp], PersistenceServiceException]
 
-  /**
-    * Updates the data of an dock app from the repository
-    * @param request includes the data to update the dock app
-    * @return an Int if the dock app has been updated correctly
-    * @throws PersistenceServiceException if exist some problem updating the dock app
-    */
-  def updateDockApp(request: UpdateDockAppRequest): ServiceDef2[Int, PersistenceServiceException]
 }

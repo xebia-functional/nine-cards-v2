@@ -48,6 +48,10 @@ object Libraries {
     lazy val okHttp = "com.squareup.okhttp" % "okhttp" % okHttpV
   }
 
+  object date {
+    lazy val prettyTime = "org.ocpsoft.prettytime" % "prettytime" % prettyTimeV
+  }
+
   object test {
     lazy val specs2 = "org.specs2" %% "specs2-core" % specs2V % "test"
     lazy val mockito = "org.specs2" % "specs2-mock_2.11" % mockitoV % "test"

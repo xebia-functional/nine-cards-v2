@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableDockApps
@@ -9,10 +10,13 @@ trait DockAppPersistenceServicesImpl {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 
-  def addDockApp(request: AddDockAppRequest) =
+  def createOrUpdateDockApp(request: CreateOrUpdateDockAppRequest) =
     (for {
-      dockApp <- dockAppRepository.addDockApp(toRepositoryDockAppData(request))
-    } yield toDockApp(dockApp)).resolve[PersistenceServiceException]
+      dockApps <- dockAppRepository.fetchDockApps(where = s"${DockAppEntity.position} = ?", whereParams = Seq(request.position.toString))
+      id <- dockApps.headOption map { app =>
+        updateDockApp(app.id, request)
+      } getOrElse addDockApp(request)
+    } yield ()).resolve[PersistenceServiceException]
 
   def deleteAllDockApps() =
     (for {
@@ -26,7 +30,7 @@ trait DockAppPersistenceServicesImpl {
 
   def fetchDockApps =
     (for {
-      dockAppItems <- dockAppRepository.fetchDockApps
+      dockAppItems <- dockAppRepository.fetchDockApps()
     } yield dockAppItems map toDockApp).resolve[PersistenceServiceException]
 
   def fetchIterableDockApps =
@@ -39,9 +43,14 @@ trait DockAppPersistenceServicesImpl {
       maybeDockApp <- dockAppRepository.findDockAppById(request.id)
     } yield maybeDockApp map toDockApp).resolve[PersistenceServiceException]
 
-  def updateDockApp(request: UpdateDockAppRequest) =
+  private[this] def addDockApp(request: CreateOrUpdateDockAppRequest) =
     (for {
-      updated <- dockAppRepository.updateDockApp(toRepositoryDockApp(request))
-    } yield updated).resolve[PersistenceServiceException]
+      _ <- dockAppRepository.addDockApp(toRepositoryDockAppData(request))
+    } yield ()).resolve[PersistenceServiceException]
+
+  private[this] def updateDockApp(id: Int, request: CreateOrUpdateDockAppRequest) =
+    (for {
+      _ <- dockAppRepository.updateDockApp(toRepositoryDockApp(id, request))
+    } yield ()).resolve[PersistenceServiceException]
   
 }

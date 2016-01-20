@@ -150,7 +150,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     val yMoved = yDiff > touchSlop
 
     if (xMoved || yMoved) {
-      val isScrolling = (xDiff > yDiff) && !mainAnimator.isRunning
+      val isScrolling = (xDiff > yDiff) && !mainAnimator.isRunning && statuses.enabled
       if (isScrolling) runUi(startMovement)
       statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
     }
@@ -259,8 +259,6 @@ trait SearchBoxAnimatedListener {
   def onChangeBoxView(state: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit
 }
 
-
-
 case class SearchBoxesStatuses(
   currentItem: BoxView = AppsView,
   lastMotionX: Float = 0,
@@ -268,7 +266,8 @@ case class SearchBoxesStatuses(
   velocityTracker: Option[VelocityTracker] = None,
   displacement: Float = 0,
   swap: Boolean = false,
-  touchState: ViewState = Stopped)(implicit contextWrapper: ContextWrapper) {
+  enabled: Boolean = false,
+  touchState: ViewState = Stopped) {
 
   def swapViews(): SearchBoxesStatuses = copy(currentItem match {
     case AppsView => ContactView

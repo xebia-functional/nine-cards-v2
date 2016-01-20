@@ -40,6 +40,8 @@ case class Contact(
   name: String,
   lookupKey: String,
   photoUri: String,
+  hasPhone: Boolean,
+  favorite: Boolean,
   info: Option[ContactInfo] = None)
 
 case class ContactInfo(
