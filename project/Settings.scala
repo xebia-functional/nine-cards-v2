@@ -5,6 +5,7 @@ import Libraries.macroid._
 import Libraries.net._
 import Libraries.playServices._
 import Libraries.scala._
+import Libraries.date._
 import Libraries.test._
 import Libraries.debug._
 import android.Keys._
@@ -94,6 +95,7 @@ object Settings {
     aar(playServicesDrive),
     aar(multiDexLib),
     aar(crashlytics),
+    prettyTime,
     glide,
     okHttp,
     stetho,

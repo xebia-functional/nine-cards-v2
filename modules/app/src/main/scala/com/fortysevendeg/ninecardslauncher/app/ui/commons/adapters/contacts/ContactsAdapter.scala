@@ -56,9 +56,12 @@ case class ContactsAdapter(
     new LinearLayoutManager(activityContext.application) with ScrollingLinearLayoutManager
 
   def swapIterator(iter: IterableContacts) = {
+    contacts.close()
     contacts = iter
     notifyDataSetChanged()
   }
+
+  def close() = contacts.close()
 
   override def getHeightAllRows: Int = contacts.count() * getHeightItem
 
@@ -77,13 +80,16 @@ case class ContactsIterableHolder(content: View)
 
   lazy val name = Option(findView(TR.contact_item_name))
 
+  lazy val favorite = Option(findView(TR.contact_item_favorite))
+
   runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
 
   def bind(contact: Contact, position: Int)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
     (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
       (name <~ tvText(contactName)) ~
-      (content <~ vTag2(position))
+      (content <~ vTag2(position)) ~
+      (favorite <~ (if (contact.favorite) vVisible else vGone))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

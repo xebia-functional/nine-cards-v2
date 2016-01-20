@@ -1,17 +1,48 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
-sealed trait AppsMenuOption
+import AppsAlphabeticalNames._
+import ContactsMenuOptionNames._
 
-case object AppsAlphabetical extends AppsMenuOption
+sealed trait AppsMenuOption {
+  val name: String
+}
 
-case object AppsByCategories extends AppsMenuOption
+case object AppsAlphabetical extends AppsMenuOption {
+  override val name: String = appsAlphabetical
+}
 
-case object AppsByLastInstall extends AppsMenuOption
+case object AppsByCategories extends AppsMenuOption {
+  override val name: String = appsByCategories
+}
 
-sealed trait ContactsMenuOption
+case object AppsByLastInstall extends AppsMenuOption {
+  override val name: String = appsByLastInstall
+}
 
-case object ContactsAlphabetical extends ContactsMenuOption
+object AppsAlphabeticalNames {
+  val appsAlphabetical = "AppsAlphabetical"
+  val appsByCategories = "AppsByCategories"
+  val appsByLastInstall = "AppsByLastInstall"
+}
 
-case object ContactsFavorites extends ContactsMenuOption
+sealed trait ContactsMenuOption {
+  val name: String
+}
 
-case object ContactsByLastCall extends ContactsMenuOption
+case object ContactsAlphabetical extends ContactsMenuOption {
+  override val name: String = contactsAlphabetical
+}
+
+case object ContactsFavorites extends ContactsMenuOption {
+  override val name: String = contactsFavorites
+}
+
+case object ContactsByLastCall extends ContactsMenuOption {
+  override val name: String = contactsByLastCall
+}
+
+object ContactsMenuOptionNames {
+  val contactsAlphabetical = "ContactsAlphabetical"
+  val contactsFavorites = "ContactsFavorites"
+  val contactsByLastCall = "ContactsByLastCall"
+}

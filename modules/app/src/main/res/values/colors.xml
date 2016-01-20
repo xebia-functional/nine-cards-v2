@@ -98,6 +98,10 @@
     <color name="fastscroller_text">#ffffff</color>
     <color name="fastscroller_bar_background">#D8D8D8</color>
 
+    <!-- PullToTabsView -->
+    <color name="pulltotabs_background">#0a000000</color>
+    <color name="pulltotabs_line">#24000000</color>
+
     <!-- Drawer -->
     <color name="drawer_status_bar">#ff2F3E9E</color>
     <color name="drawer_toolbar">#ff3E50B4</color>

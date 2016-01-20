@@ -49,9 +49,9 @@ trait AppsComposer
       (scrollerLayout <~ fslColor(colorPrimary))
   }
 
-  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ (scrollerLayout <~ fslInvisible)
+  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible) ~ (scrollerLayout <~ fslVisible)
+  def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
@@ -69,8 +69,9 @@ trait AppsComposer
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter)) ~
-      (scrollerLayout <~
-        fslLinkRecycler)
+      (recycler map { rv =>
+        scrollerLayout <~ fslLinkRecycler(rv)
+      } getOrElse showGeneralError)
   }
 
   def reloadAppsAdapter(
