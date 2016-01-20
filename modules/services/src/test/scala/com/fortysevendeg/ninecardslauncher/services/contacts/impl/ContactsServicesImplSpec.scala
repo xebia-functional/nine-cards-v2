@@ -15,6 +15,8 @@ trait ContactsServicesSpecification
   with Mockito
   with ContactsServicesImplData {
 
+  val contentResolverException = new RuntimeException("Irrelevant message")
+
   trait ContactsServicesScope
     extends Scope {
 
@@ -30,8 +32,9 @@ trait ContactsServicesSpecification
 
     uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, nonExistentPhone) returns nonExistentMockUri
 
-    lazy val contactsServices = new ContactsServicesImpl(contentResolverWrapper, uriCreator)
-
+    lazy val contactsServices = new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
+      override protected def getIteratorForAlphabeticalCounterContacts: Iterator[String] = contactsIterator
+    }
 
   }
 
@@ -94,8 +97,6 @@ trait ContactsServicesSpecification
     extends ContactsServicesScope
     with ContactsServicesImplData {
 
-    val contentResolverException = new RuntimeException("Irrelevant message")
-
     contentResolverWrapper.fetchAll(
       uri = Fields.CONTENT_URI,
       projection = allFields,
@@ -118,6 +119,16 @@ trait ContactsServicesSpecification
       where = Fields.LOOKUP_SELECTION,
       whereParams = Seq(firstLookupKey))(getEntityFromCursor(contactFromCursor)) throws contentResolverException
 
+  }
+
+  trait ErrorIteratorContactsServicesResponses
+    extends ContactsServicesScope
+      with ContactsServicesImplData {
+
+    lazy val contactsServicesException = new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
+      override protected def getIteratorForAlphabeticalCounterContacts: Iterator[String] =
+        throw contentResolverException
+    }
   }
 
   trait FavoriteContactsServicesResponses
@@ -187,6 +198,32 @@ class ContactsServicesImplSpec
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ErrorContactsServicesResponses {
           val result = contactsServices.getContacts.run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, exception)) => exception must beLike {
+                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+
+    }
+
+    "getAlphabeticalCounterContacts" should {
+
+      "return a sequence of ContactCounter sort alphabetically" in
+        new ValidContactsServicesResponses {
+          val result = contactsServices.getAlphabeticalCounterContacts.run.run
+
+          result must beLike {
+            case Answer(seq) => seq shouldEqual contactCounters
+          }
+        }
+
+      "return a ContactsServiceException when the content resolver throws an exception" in
+        new ErrorIteratorContactsServicesResponses {
+          val result = contactsServicesException.getAlphabeticalCounterContacts.run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

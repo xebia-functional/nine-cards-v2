@@ -34,12 +34,7 @@ class ContactsServicesImpl(
     Service {
       Task {
         CatchAll[ContactsServiceException] {
-          val iterator = new IteratorCursorWrapper(
-            contentResolverWrapper.getCursor(
-              uri = Fields.CONTENT_URI,
-              projection = Seq(Fields.DISPLAY_NAME),
-              where = Fields.ALL_CONTACTS_SELECTION,
-              orderBy = s"${Fields.DISPLAY_NAME} COLLATE NOCASE ASC")).toIterator
+          val iterator = getIteratorForAlphabeticalCounterContacts
           iterator.foldLeft(Seq.empty[ContactCounter]) { (acc, name) =>
             val term = name.substring(0, 1)
             val lastWithSameTerm = acc.lastOption flatMap {
@@ -187,4 +182,12 @@ class ContactsServicesImpl(
         }
       }
     }
+
+  protected def getIteratorForAlphabeticalCounterContacts = new IteratorCursorWrapper(
+    contentResolverWrapper.getCursor(
+      uri = Fields.CONTENT_URI,
+      projection = Seq(Fields.DISPLAY_NAME),
+      where = Fields.ALL_CONTACTS_SELECTION,
+      orderBy = s"${Fields.DISPLAY_NAME} COLLATE NOCASE ASC")).toIterator
+
 }

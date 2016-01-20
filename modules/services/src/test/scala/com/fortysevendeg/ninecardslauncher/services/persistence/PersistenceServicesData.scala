@@ -1,9 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model._
 import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User, _}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 import scala.util.Random
 
@@ -75,6 +74,9 @@ trait PersistenceServicesData {
   val dockAppId: Int = Random.nextInt(10)
   val nonExistentDockAppId: Int = Random.nextInt(10) + 100
   val dockType: String = Random.nextString(5)
+
+  val termDataCounter: String = Random.nextString(1)
+  val countDataCounter: Int = Random.nextInt(2)
 
   def createSeqApp(
     num: Int = 5,
@@ -161,7 +163,7 @@ trait PersistenceServicesData {
     wifi: String = wifi,
     longitude: Double = longitude,
     latitude: Double = latitude,
-    system: Boolean = system): GeoInfoData =
+    system: Boolean = system): repositoryModel.GeoInfoData =
     repositoryModel.GeoInfoData(
       constrain = constrain,
       occurrence = occurrence,
@@ -215,7 +217,7 @@ trait PersistenceServicesData {
     constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): CollectionData =
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): repositoryModel.CollectionData =
     repositoryModel.CollectionData(
       position = position,
       name = name,
@@ -296,7 +298,7 @@ trait PersistenceServicesData {
     imagePath: String = imagePath,
     starRating: Double = starRating,
     numDownloads: String = numDownloads,
-    notification: String = notification): CardData =
+    notification: String = notification): repositoryModel.CardData =
     repositoryModel.CardData(
       position = position,
       micros = micros,
@@ -340,7 +342,7 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): UserData =
+    androidToken: String = androidToken): repositoryModel.UserData =
     repositoryModel.UserData(
       userId = Option(userId),
       email = Option(email),
@@ -377,7 +379,7 @@ trait PersistenceServicesData {
     dockType: String = dockType,
     intent: String = intent,
     imagePath: String = imagePath,
-    position: Int = position): DockAppData =
+    position: Int = position): repositoryModel.DockAppData =
     repositoryModel.DockAppData(
       name = name,
       dockType = dockType,
@@ -387,37 +389,37 @@ trait PersistenceServicesData {
 
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp(0)
-  val repoAppData: AppData = createRepoAppData()
+  val repoAppData: repositoryModel.AppData = createRepoAppData()
   val seqRepoApp: Seq[repositoryModel.App] = createSeqRepoApp(data = repoAppData)
   val repoApp: repositoryModel.App = seqRepoApp(0)
 
   val seqGeoInfo: Seq[GeoInfo] = createSeqGeoInfo()
   val geoInfo: GeoInfo = seqGeoInfo(0)
-  val repoGeoInfoData: GeoInfoData = createRepoGeoInfoData()
+  val repoGeoInfoData: repositoryModel.GeoInfoData = createRepoGeoInfoData()
   val seqRepoGeoInfo: Seq[repositoryModel.GeoInfo] = createSeqRepoGeoInfo(data = repoGeoInfoData)
   val repoGeoInfo: repositoryModel.GeoInfo = seqRepoGeoInfo(0)
 
   val seqCard: Seq[Card] = createSeqCard()
   val card: Card = seqCard(0)
-  val repoCardData: CardData = createRepoCardData()
+  val repoCardData: repositoryModel.CardData = createRepoCardData()
   val seqRepoCard: Seq[repositoryModel.Card] = createSeqRepoCard(data = repoCardData)
   val repoCard: repositoryModel.Card = seqRepoCard(0)
 
   val seqCollection: Seq[Collection] = createSeqCollection()
   val collection: Collection = seqCollection(0)
-  val repoCollectionData: CollectionData = createRepoCollectionData()
+  val repoCollectionData: repositoryModel.CollectionData = createRepoCollectionData()
   val seqRepoCollection: Seq[repositoryModel.Collection] = createSeqRepoCollection(data = repoCollectionData)
   val repoCollection: repositoryModel.Collection = seqRepoCollection(0)
 
   val seqUser: Seq[User] = createSeqUser()
   val user: User = seqUser(0)
-  val repoUserData: UserData = createRepoUserData()
+  val repoUserData: repositoryModel.UserData = createRepoUserData()
   val seqRepoUser: Seq[repositoryModel.User] = createSeqRepoUser(data = repoUserData)
   val repoUser: repositoryModel.User = seqRepoUser(0)
 
   val seqDockApp: Seq[DockApp] = createSeqDockApp()
   val dockApp: DockApp = seqDockApp(0)
-  val repoDockAppData: DockAppData = createRepoDockAppData()
+  val repoDockAppData: repositoryModel.DockAppData = createRepoDockAppData()
   val seqRepoDockApp: Seq[repositoryModel.DockApp] = createSeqRepoDockApp(data = repoDockAppData)
   val repoDockApp: repositoryModel.DockApp = seqRepoDockApp(0)
 
@@ -689,6 +691,12 @@ trait PersistenceServicesData {
   def createFindDockAppByIdRequest(id: Int): FindDockAppByIdRequest =
     FindDockAppByIdRequest(id = id)
 
+  def createDataCounter(i: Int): repositoryModel.DataCounter =
+    repositoryModel.DataCounter(
+      term = s"$i - $termDataCounter",
+      count = countDataCounter
+    )
+
   val iterableCursorApp = new IterableCursor[repositoryModel.App] {
     override def count(): Int = seqRepoApp.length
     override def moveToPosition(pos: Int): repositoryModel.App = seqRepoApp(pos)
@@ -704,5 +712,7 @@ trait PersistenceServicesData {
   val iterableDockApps = new IterableDockApps(iterableCursorDockApps)
 
   val keyword = "fake-keyword"
+
+  val dataCounters = 1 to 10 map createDataCounter
 
 }

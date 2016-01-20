@@ -70,4 +70,12 @@ trait ContactsServicesImplData {
       ContactPhone(phoneMobile, PhoneMobile),
       ContactPhone(phoneOther, PhoneOther))
 
+  val contactsIterator: Iterator[String] = Iterator("Abc", "Acd", "Ade", "Bcd", "Bde", "Bef", "Cde")
+
+  val contactCounters = Seq(
+    ContactCounter("A", 3),
+    ContactCounter("B", 3),
+    ContactCounter("C", 1)
+  )
+
 }
