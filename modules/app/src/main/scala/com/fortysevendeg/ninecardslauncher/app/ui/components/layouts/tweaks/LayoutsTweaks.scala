@@ -3,7 +3,9 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.view.ViewPager
+import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -151,33 +153,63 @@ object SearchBoxesAnimatedViewTweak {
     view.listener = Some(listener)
   }
 
+  def sbavEnabled(enabled: Boolean) = Tweak[SearchBoxesAnimatedView] { view =>
+    view.statuses = view.statuses.copy(enabled = enabled)
+  }
+
+}
+
+object PullToTabsViewTweaks {
+
+  def ptvAddTabsAndActivate(items: Seq[TabInfo], index: Int) = Tweak[PullToTabsView](_.addTabs(items, Some(index)))
+
+  def ptvAddTabs(items: Seq[TabInfo]) = Tweak[PullToTabsView](_.addTabs(items))
+
+  def ptvLinkTabs(tabs: Option[LinearLayout], start: Ui[_], end: Ui[_]) = Tweak[PullToTabsView] { view =>
+    runUi(view.linkTabsView(tabs, start, end))
+  }
+
+  def ptvClearTabs() = Tweak[PullToTabsView](_.clear())
+
+  def ptvActivate(item: Int) = Tweak[PullToTabsView](_.activate(item))
+
+  def ptvListener(pullToTabsListener: PullToTabsListener) =
+    Tweak[PullToTabsView] (_.tabsListener = pullToTabsListener)
+
 }
 
 object PullToCloseViewTweaks {
 
-  def pcvListener(pullToCloseListener: PullToCloseListener) = Tweak[PullToCloseView] {
-    view =>
-      view.listeners.startPulling = pullToCloseListener.startPulling
-      view.listeners.endPulling = pullToCloseListener.endPulling
-      view.listeners.scroll = pullToCloseListener.scroll
-      view.listeners.close = pullToCloseListener.close
-  }
+  def pcvListener(pullToCloseListener: PullToCloseListener) =
+    Tweak[PullToCloseView] (_.closeListeners = pullToCloseListener)
+
+}
+
+
+object PullToDownViewTweaks {
+
+  def pdvListener(pullToDownListener: PullToDownListener) =
+    Tweak[PullToDownView] (_.listeners = pullToDownListener)
+
+  def pdvEnable(enabled: Boolean) =
+    Tweak[PullToDownView] { view =>
+      view.pullToDownStatuses = view.pullToDownStatuses.copy(enabled = enabled)
+    }
+
+  def pdvResistance(resistance: Float) =
+    Tweak[PullToDownView] { view =>
+      view.pullToDownStatuses = view.pullToDownStatuses.copy(resistance = resistance)
+    }
 
 }
 
 object FastScrollerLayoutTweak {
   // We should launch this tweak when the adapter has been added
-  def fslLinkRecycler = Tweak[FastScrollerLayout](_.linkRecycler())
+  def fslLinkRecycler(recyclerView: RecyclerView) = Tweak[FastScrollerLayout](_.linkRecycler(recyclerView))
 
   def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
 
-  def fslInvisible = Tweak[FastScrollerLayout]{ view =>
-    runUi(view.fastScroller map (fs => fs.hide) getOrElse Ui.nop)
-  }
-
-  def fslVisible = Tweak[FastScrollerLayout]{ view =>
-    runUi(view.fastScroller map (fs => fs.show) getOrElse Ui.nop)
-  }
+  def fslEnabledScroller(enabled: Boolean) = Tweak[FastScrollerLayout](_.setEnabledScroller(enabled))
 
   def fslReset = Tweak[FastScrollerLayout](_.reset)
 

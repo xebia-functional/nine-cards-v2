@@ -42,7 +42,7 @@ trait Styles {
 
   def drawerItemStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
     tivPressedColor(theme.get(AppDrawerPressedColor)) +
-      vTag(R.id.`type`, LauncherTags.app)
+      vSetType(LauncherTags.app)
 
   def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)

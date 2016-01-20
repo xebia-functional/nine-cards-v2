@@ -17,14 +17,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, IterableApps, IterableContacts}
+import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 import rapture.core.Answer
 
-import scala.concurrent.Future
 import scalaz.concurrent.Task
 
 class LauncherActivity
@@ -56,7 +55,7 @@ class LauncherActivity
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
     setContentView(R.layout.launcher_activity)
-    runUi(initUi ~ initDrawerUi)
+    runUi(initUi)
     initAllSystemBarsTint
     loadCollectionsAndDockApps()
   }
@@ -140,6 +139,11 @@ class LauncherActivity
     case AppsByLastInstall => GetByInstallDate
   }
 
+  private[this] def toGetContactFilter(contactMenuOption: ContactsMenuOption): ContactsFilter = contactMenuOption match {
+    case ContactsFavorites => FavoriteContacts
+    case _ => AllContacts
+  }
+
   override def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     Task.fork(di.deviceProcess.getIterableApps(getAppOrder).run).resolveAsyncUi(
@@ -152,12 +156,19 @@ class LauncherActivity
   }
 
   override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
-    // TODO - Take into account the `contactsMenuOption` param
-    Task.fork(di.deviceProcess.getIterableContacts(filter = AllContacts).run).resolveAsyncUi(
-      onResult = (contacts: IterableContacts) => addContacts(contacts, (contact: Contact) => {
-        execute(contact)
-      })
-    )
+    contactsMenuOption match {
+      case ContactsByLastCall =>
+        Task.fork(di.deviceProcess.getLastCalls.run).resolveAsyncUi(
+          onResult = (contacts: Seq[LastCallsContact]) => addLastCallContacts(contacts, (contact: LastCallsContact) => {
+            execute(phoneToNineCardIntent(contact.number))
+          }))
+      case _ =>
+        val getContactFilter = toGetContactFilter(contactsMenuOption)
+        Task.fork(di.deviceProcess.getIterableContacts(filter = getContactFilter).run).resolveAsyncUi(
+          onResult = (contacts: IterableContacts) => addContacts(contacts, getContactFilter, (contact: Contact) => {
+            execute(contact)
+          }))
+    }
   }
 
 }

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app
 
 import android.app.Application
 import android.content.Context
-import android.os.StrictMode
+import android.os.{Handler, StrictMode}
 import android.support.multidex.MultiDex
 import com.crashlytics.android.Crashlytics
 import com.facebook.stetho.Stetho
@@ -11,11 +11,12 @@ import io.fabric.sdk.android.Fabric
 
 class NineCardsApplication
   extends Application {
+  self =>
 
   override def onCreate() {
     super.onCreate()
     // In old version BuildConfig returns a NoClassDefFoundError
-    // Fix this problem in ticket 9C-325
+    // Fix this problem in issue #212
     try {
       if (BuildConfig.DEBUG) {
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
@@ -36,15 +37,21 @@ class NineCardsApplication
             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
             .build())
       }
-      Fabric.`with`(this, new Crashlytics())
     } catch {
       case _: Throwable =>
     }
+    startCrashlytics()
   }
 
   override def attachBaseContext(base: Context): Unit = {
     super.attachBaseContext(base)
     MultiDex.install(this)
+  }
+
+  private[this] def startCrashlytics() = {
+    new Handler().post(new Runnable {
+      override def run(): Unit = Fabric.`with`(self, new Crashlytics())
+    })
   }
 
 }
