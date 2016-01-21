@@ -140,6 +140,10 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[apiModel.SharedCollectionList](statusCode, Some(sharedCollectionList))))
       }
 
+    apiSharedCollectionsService.shareCollection(any, any)(any, any) returns
+      Service {
+        Task(Answer(ServiceClientResponse[apiModel.SharedCollection](statusCode, Some(sharedCollection))))
+     }
   }
 
   trait ErrorApiServicesImplResponses
@@ -220,6 +224,10 @@ trait ApiServicesSpecification
         Task(Errata(exception))
       }
 
+    apiSharedCollectionsService.shareCollection(any, any)(any, any) returns
+      Service {
+        Task(Errata(exception))
+      }
   }
 
 }
@@ -631,6 +639,40 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.getSharedCollectionsByCategory(category, collectionType, offset, limit).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, apiException)) => apiException must beLike {
+              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
+            }
+          }
+        }
+      }
+
+  }
+
+  "createSharedCollection" should {
+
+    "return a valid response if the services return a valid response" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).run.run
+        result must beLike {
+          case Answer(response) =>
+            response.statusCode shouldEqual statusCode
+            response.newSharedCollection shouldEqual CreateSharedCollection(
+              name = sharedCollection.name,
+              description = sharedCollection.description,
+              author = sharedCollection.author,
+              packages = sharedCollection.packages,
+              category = sharedCollection.category,
+              icon = sharedCollection.icon,
+              community = sharedCollection.community
+            )
+        }
+      }
+
+    "return an ApiServiceException with the calue the exception returned by the service" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {

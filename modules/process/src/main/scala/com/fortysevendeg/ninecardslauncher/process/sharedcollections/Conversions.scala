@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollectionPackage, SharedCollection}
-import com.fortysevendeg.ninecardslauncher.services.api.{SharedCollectionPackageResponse, SharedCollectionResponse}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollectionPackage, SharedCollection, CreatedCollection}
+import com.fortysevendeg.ninecardslauncher.services.api.{SharedCollectionPackageResponse, SharedCollectionResponse, CreateSharedCollectionResponse}
 
 trait Conversions {
 
@@ -34,4 +34,14 @@ trait Conversions {
       downloads = item.downloads,
       free = item.free)
 
+  def toCreatedCollection(item: CreateSharedCollectionResponse): CreatedCollection =
+    CreatedCollection(
+      name = item.newSharedCollection.name,
+      description = item.newSharedCollection.description,
+      author = item.newSharedCollection.author,
+      packages = item.newSharedCollection.packages,
+      category = NineCardCategory(item.newSharedCollection.category),
+      icon = item.newSharedCollection.icon,
+      community = item.newSharedCollection.community
+    )
 }
