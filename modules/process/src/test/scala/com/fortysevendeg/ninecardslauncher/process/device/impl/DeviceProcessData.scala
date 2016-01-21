@@ -17,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallSe
 import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp=> ServiceDockApp, IterableApps => ServiceIterableApps}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp => ServiceDockApp, IterableApps => ServiceIterableApps, DataCounter}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
 import play.api.libs.json.Json
@@ -641,4 +641,21 @@ trait DeviceProcessData
   }
 
   val iterableApps = new IterableApps(iterableCursorApps)
+
+  val appsCounters = Seq(
+    DataCounter("#", 4),
+    DataCounter("B", 1),
+    DataCounter("E", 6),
+    DataCounter("F", 5),
+    DataCounter("Z", 3)
+  )
+
+  val contactsCounters = Seq(
+    ContactCounter("#", 4),
+    ContactCounter("B", 1),
+    ContactCounter("E", 6),
+    ContactCounter("F", 5),
+    ContactCounter("Z", 3)
+  )
+
 }
