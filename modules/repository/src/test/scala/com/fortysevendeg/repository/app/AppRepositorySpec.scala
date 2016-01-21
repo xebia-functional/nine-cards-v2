@@ -31,7 +31,8 @@ trait AppRepositorySpecification
     lazy val uriCreator = mock[UriCreator]
 
     lazy val appRepository = new AppRepository(contentResolverWrapper, uriCreator) {
-      override protected def getIteratorForAlphabeticalCounterApps: Iterator[String] = dataIterator
+      override protected def getNamesAlphabetically: Seq[String] = appsDataSequence
+      override protected def getCategoriesAlphabetically: Seq[String] = categoryDataSequence
     }
 
     lazy val mockUri = mock[Uri]
@@ -42,7 +43,9 @@ trait AppRepositorySpecification
     self: AppRepositoryScope =>
 
     lazy val appRepositoryException = new AppRepository(contentResolverWrapper, uriCreator) {
-      override protected def getIteratorForAlphabeticalCounterApps: Iterator[String] =
+      override protected def getNamesAlphabetically: Seq[String] =
+        throw contentResolverException
+      override protected def getCategoriesAlphabetically: Seq[String] =
         throw contentResolverException
     }
 
@@ -256,7 +259,7 @@ class AppRepositorySpec
 
           result must beLike {
             case Answer(counters) =>
-              counters shouldEqual dataCounters
+              counters shouldEqual appsDataCounters
           }
         }
 
@@ -265,6 +268,36 @@ class AppRepositorySpec
           with ErrorCounterAppRepositoryResponses {
 
           val result = appRepositoryException.fetchAlphabeticalAppsCounter.run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "fetchCategorizedAppsCounter" should {
+
+      "return a sequence of DataCounter sort by category" in
+        new AppRepositoryScope
+          with ValidAppRepositoryResponses {
+
+          val result = appRepository.fetchCategorizedAppsCounter.run.run
+
+          result must beLike {
+            case Answer(counters) =>
+              counters shouldEqual categoryDataCounters
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new AppRepositoryScope
+          with ErrorCounterAppRepositoryResponses {
+
+          val result = appRepositoryException.fetchCategorizedAppsCounter.run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

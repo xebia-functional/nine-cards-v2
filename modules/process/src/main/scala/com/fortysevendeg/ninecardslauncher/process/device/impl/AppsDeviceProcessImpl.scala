@@ -49,6 +49,7 @@ trait AppsDeviceProcessImpl {
     (for {
       counters <- orderBy match {
         case GetByName => persistenceServices.fetchAlphabeticalAppsCounter
+        case GetByCategory => persistenceServices.fetchCategorizedAppsCounter
         case _ => emptyDataCounterService
       }
     } yield counters map toTermCounter).resolve[AppException]

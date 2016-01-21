@@ -97,6 +97,11 @@ trait AppPersistenceServicesImpl {
       counters <- appRepository.fetchAlphabeticalAppsCounter
     } yield toDataCounterSeq(counters)).resolve[PersistenceServiceException]
 
+  def fetchCategorizedAppsCounter =
+    (for {
+      counters <- appRepository.fetchCategorizedAppsCounter
+    } yield toDataCounterSeq(counters)).resolve[PersistenceServiceException]
+
   private[this] def toStringDirection(ascending: Boolean): String =
     if (ascending) "ASC" else "DESC"
 

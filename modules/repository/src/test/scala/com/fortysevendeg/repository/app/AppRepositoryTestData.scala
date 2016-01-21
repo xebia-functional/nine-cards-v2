@@ -81,13 +81,48 @@ trait AppRepositoryTestData {
     version = testVersion,
     installedFromGooglePlay = testInstalledFromGooglePlay)
 
-  val dataIterator: Iterator[String] = Iterator("!aaa", "2bbb", "?ccc", "1ddd", "#eeee", "Abc", "Acd", "Ade", "Bcd", "Bde", "Bef", "Cde")
+  val appsDataSequence: Seq[String] =
+    Seq(
+      "!aaa",
+      "2bbb",
+      "?ccc",
+      "1ddd",
+      "#eeee",
+      "Abc",
+      "Acd",
+      "Ade",
+      "Bcd",
+      "Bde",
+      "Bef",
+      "Cde")
 
-  val dataCounters = Seq(
+  val appsDataCounters = Seq(
     DataCounter("#", 5),
     DataCounter("A", 3),
     DataCounter("B", 3),
     DataCounter("C", 1)
+  )
+
+  val categoryDataSequence: Seq[String] =
+    Seq(
+      "COMMUNICATION",
+      "COMMUNICATION",
+      "COMMUNICATION",
+      "GAMES",
+      "GAMES",
+      "GAMES",
+      "SOCIAL",
+      "SOCIAL",
+      "SOCIAL",
+      "SOCIAL",
+      "TOOLS",
+      "TOOLS")
+
+  val categoryDataCounters = Seq(
+    DataCounter("COMMUNICATION", 3),
+    DataCounter("GAMES", 3),
+    DataCounter("SOCIAL", 4),
+    DataCounter("TOOLS", 2)
   )
 
 }

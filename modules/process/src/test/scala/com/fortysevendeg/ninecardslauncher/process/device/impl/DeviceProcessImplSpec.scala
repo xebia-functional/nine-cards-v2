@@ -112,6 +112,9 @@ trait DeviceProcessSpecification
     mockPersistenceServices.fetchAlphabeticalAppsCounter returns
       Service(Task(Result.answer(appsCounters)))
 
+    mockPersistenceServices.fetchCategorizedAppsCounter returns
+      Service(Task(Result.answer(categoryCounters)))
+
     mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns
       Service(Task(Result.answer(iterableCursorApps)))
 
@@ -299,6 +302,10 @@ trait DeviceProcessSpecification
     }
 
     mockPersistenceServices.fetchAlphabeticalAppsCounter returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.fetchCategorizedAppsCounter returns Service {
       Task(Errata(persistenceServiceException))
     }
 
@@ -929,8 +936,10 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
         val result = deviceProcess.getTermCountersForApps(GetByCategory)(contextSupport).run.run
         result must beLike {
-          case Answer(counters) => counters shouldEqual Seq.empty
+          case Answer(counters) =>
+            counters map (_.term) shouldEqual (categoryCounters map (_.term))
         }
+        there was one(mockPersistenceServices).fetchCategorizedAppsCounter
       }
 
     "returns AppException if persistence service fails " in

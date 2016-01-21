@@ -33,7 +33,7 @@ trait ContactsServicesSpecification
     uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, nonExistentPhone) returns nonExistentMockUri
 
     lazy val contactsServices = new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
-      override protected def getIteratorForAlphabeticalCounterContacts: Iterator[String] = contactsIterator
+      override protected def getNamesAlphabetically: Seq[String] = contactsIterator
     }
 
   }
@@ -126,7 +126,7 @@ trait ContactsServicesSpecification
     with ContactsServicesImplData {
 
     lazy val contactsServicesException = new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
-      override protected def getIteratorForAlphabeticalCounterContacts: Iterator[String] =
+      override protected def getNamesAlphabetically: Seq[String] =
         throw contentResolverException
     }
   }

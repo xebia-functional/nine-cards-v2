@@ -650,6 +650,14 @@ trait DeviceProcessData
     DataCounter("Z", 3)
   )
 
+  val categoryCounters = Seq(
+    DataCounter("COMMUNICATION", 4),
+    DataCounter("GAMES", 1),
+    DataCounter("SOCIAL", 6),
+    DataCounter("TOOLS", 5),
+    DataCounter("WEATHER", 3)
+  )
+
   val contactsCounters = Seq(
     ContactCounter("#", 4),
     ContactCounter("B", 1),

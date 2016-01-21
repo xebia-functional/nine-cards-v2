@@ -45,7 +45,8 @@ class DeviceProcessImpl(
 
   override def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) = super.getIterableApps(orderBy)
 
-  override def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport) = super.getTermCountersForApps(orderBy)
+  override def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
+    super.getTermCountersForApps(orderBy)
 
   override def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport) =
     super.getIterableAppsByKeyWord(keyword, orderBy)

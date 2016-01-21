@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IteratorCursorWrapper, ContentResolverWrapper, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
@@ -38,7 +38,7 @@ class ContactsServicesImpl(
     Service {
       Task {
         CatchAll[ContactsServiceException] {
-          val iterator = getIteratorForAlphabeticalCounterContacts
+          val iterator = getNamesAlphabetically
           iterator.foldLeft(Seq.empty[ContactCounter]) { (acc, name) =>
             val term = name.substring(0, 1).toUpperCase match {
               case t if abc.contains(t) => t
@@ -190,11 +190,12 @@ class ContactsServicesImpl(
       }
     }
 
-  protected def getIteratorForAlphabeticalCounterContacts = new IteratorCursorWrapper(
-    contentResolverWrapper.getCursor(
+  protected def getNamesAlphabetically: Seq[String] = {
+    getListFromCursor(nameFromCursor)(contentResolverWrapper.getCursor(
       uri = Fields.CONTENT_URI,
       projection = Seq(Fields.DISPLAY_NAME),
       where = Fields.ALL_CONTACTS_SELECTION,
-      orderBy = s"${Fields.DISPLAY_NAME} COLLATE NOCASE ASC")).toIterator
+      orderBy = s"${Fields.DISPLAY_NAME} COLLATE NOCASE ASC"))
+  }
 
 }
