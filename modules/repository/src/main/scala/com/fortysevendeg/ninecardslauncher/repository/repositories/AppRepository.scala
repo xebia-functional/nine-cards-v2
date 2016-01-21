@@ -22,6 +22,10 @@ class AppRepository(
 
   val appUri = uriCreator.parse(appUriString)
 
+  val abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
+
+  val wildcard = "#"
+
   def addApp(data: AppData): ServiceDef2[App, RepositoryException] =
     Service {
       Task {
@@ -116,15 +120,14 @@ class AppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val iterator = new IteratorCursorWrapper(
-            contentResolverWrapper.getCursor(
-              uri = appUri,
-              projection = Seq(name),
-              orderBy = s"$name COLLATE NOCASE ASC")).toIterator
+          val iterator = getIteratorForAlphabeticalCounterApps
           iterator.foldLeft(Seq.empty[DataCounter]) { (acc, name) =>
-            val term = name.substring(0, 1)
+            val term = name.substring(0, 1).toUpperCase match {
+              case t if abc.contains(t) => t
+              case _ => wildcard
+            }
             val lastWithSameTerm = acc.lastOption flatMap {
-              case last if last.term.toLowerCase == term.toLowerCase => Some(last)
+              case last if last.term == term => Some(last)
               case _ => None
             }
             lastWithSameTerm map { c =>
@@ -212,4 +215,10 @@ class AppRepository(
         }
       }
     }
+
+  protected def getIteratorForAlphabeticalCounterApps = new IteratorCursorWrapper(
+    contentResolverWrapper.getCursor(
+      uri = appUri,
+      projection = Seq(name),
+      orderBy = s"$name COLLATE NOCASE ASC")).toIterator
 }

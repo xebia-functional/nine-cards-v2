@@ -123,7 +123,7 @@ trait ContactsServicesSpecification
 
   trait ErrorIteratorContactsServicesResponses
     extends ContactsServicesScope
-      with ContactsServicesImplData {
+    with ContactsServicesImplData {
 
     lazy val contactsServicesException = new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
       override protected def getIteratorForAlphabeticalCounterContacts: Iterator[String] =

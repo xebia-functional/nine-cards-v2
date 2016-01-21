@@ -17,6 +17,10 @@ class ContactsServicesImpl(
   extends ContactsServices
   with ImplicitsContactsServiceExceptions {
 
+  val abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
+
+  val wildcard = "#"
+
   override def getContacts =
     Service {
       Task {
@@ -36,9 +40,12 @@ class ContactsServicesImpl(
         CatchAll[ContactsServiceException] {
           val iterator = getIteratorForAlphabeticalCounterContacts
           iterator.foldLeft(Seq.empty[ContactCounter]) { (acc, name) =>
-            val term = name.substring(0, 1)
+            val term = name.substring(0, 1).toUpperCase match {
+              case t if abc.contains(t) => t
+              case _ => wildcard
+            }
             val lastWithSameTerm = acc.lastOption flatMap {
-              case last if last.term.toLowerCase == term.toLowerCase => Some(last)
+              case last if last.term == term => Some(last)
               case _ => None
             }
             lastWithSameTerm map { c =>
