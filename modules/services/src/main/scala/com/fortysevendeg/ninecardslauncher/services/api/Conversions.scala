@@ -369,4 +369,33 @@ trait Conversions {
       downloads = item.downloads,
       free = item.free)
 
+  def toShareCollection(
+    description: String,
+    author: String,
+    name: String,
+    packages: Seq[String],
+    category: String,
+    icon: String,
+    community: Boolean): apiModel.ShareCollection =
+    apiModel.ShareCollection(
+      sharedCollectionId = None,
+      description = description,
+      author = author,
+      name = name,
+      packages = packages,
+      category = category,
+      icon = icon,
+      community = community
+    )
+
+  def toCreateSharedCollection(sharedCollection: SharedCollection): CreateSharedCollection =
+    CreateSharedCollection(
+      name = sharedCollection.name,
+      description = sharedCollection.description,
+      author = sharedCollection.author,
+      packages = sharedCollection.packages,
+      category = sharedCollection.category,
+      icon = sharedCollection.icon,
+      community = sharedCollection.community
+    )
 }
