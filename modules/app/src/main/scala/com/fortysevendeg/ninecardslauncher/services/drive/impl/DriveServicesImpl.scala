@@ -64,9 +64,7 @@ class DriveServicesImpl(client: GoogleApiClient)
     }
 
   def createFile(title: String, content: String, fileId: String, fileType: String, mimeType: String) =
-    for {
-      file <- createNewFile(title, fileId, fileType, mimeType, _.write(content))
-    } yield ()
+    createNewFile(title, fileId, fileType, mimeType, _.write(content)) map (_ => ())
 
   def createFile(title: String, content: InputStream, fileId: String, fileType: String, mimeType: String) =
     for {

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.{ConnectionResult, GooglePlayServicesUtil}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.google.android.gms.drive._
 
 import scala.util.{Failure, Try}
@@ -16,8 +17,6 @@ trait GoogleApiClientProvider
   with GoogleApiClient.OnConnectionFailedListener {
 
   self: Activity =>
-
-  val resolveConnectionRequestCode = 1
 
   var clientStatuses = GoogleApiClientStatuses()
 
@@ -45,7 +44,7 @@ trait GoogleApiClientProvider
 
   override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
     if (connectionResult.hasResolution) {
-      Try(connectionResult.startResolutionForResult(this, resolveConnectionRequestCode)) match {
+      Try(connectionResult.startResolutionForResult(this, resolveGooglePlayConnection)) match {
         case Failure(e) => onRequestConnectionError()
         case _ =>
       }
@@ -54,10 +53,9 @@ trait GoogleApiClientProvider
     }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
-    requestCode match {
-      case `resolveConnectionRequestCode` =>
-        if (resultCode == Activity.RESULT_OK) tryToConnect() else onResolveConnectionError()
-      case _ =>
-        self.onActivityResult(requestCode, resultCode, data)
+    (requestCode, resultCode) match {
+      case (`resolveGooglePlayConnection`, Activity.RESULT_OK) => tryToConnect()
+      case (`resolveGooglePlayConnection`, _) => onResolveConnectionError()
+      case _ => self.onActivityResult(requestCode, resultCode, data)
     }
 }
