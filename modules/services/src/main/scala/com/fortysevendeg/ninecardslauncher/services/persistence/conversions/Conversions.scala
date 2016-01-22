@@ -16,7 +16,6 @@ trait Conversions
   def toDataCounter(item: RepoDataCounter): DataCounter =
     DataCounter(
       term = item.term,
-      count = item.count
-    )
+      count = item.count)
 
 }
