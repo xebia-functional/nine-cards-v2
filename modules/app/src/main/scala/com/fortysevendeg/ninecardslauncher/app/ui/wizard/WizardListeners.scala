@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import macroid.Ui
 
-trait WizarListeners {
+trait WizardListeners {
 
   def requestToken(username: String): Unit
 

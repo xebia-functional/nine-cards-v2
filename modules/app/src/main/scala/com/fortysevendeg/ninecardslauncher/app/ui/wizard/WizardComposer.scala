@@ -21,7 +21,7 @@ import macroid._
 trait WizardComposer
   extends WizardStyles {
 
-  self: TypedFindView with WizarListeners =>
+  self: TypedFindView with WizardListeners =>
 
   val newConfigurationKey = "new_configuration"
 

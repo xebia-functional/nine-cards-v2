@@ -25,7 +25,7 @@ class WizardActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with GoogleApiClientProvider
-  with WizarListeners
+  with WizardListeners
   with WizardTasks
   with WizardPersistence
   with TypedFindView
