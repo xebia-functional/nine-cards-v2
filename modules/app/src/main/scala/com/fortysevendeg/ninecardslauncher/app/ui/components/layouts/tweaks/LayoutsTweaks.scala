@@ -135,7 +135,7 @@ object WorkSpaceItemMenuTweaks {
       }
   })
 
-  def wimSrc(res: Int) = Tweak[W](_.icon foreach (_.setImageResource(res)))
+  def wimSrc(resourceId: Int) = Tweak[W](_.icon foreach (_.setImageResource(resourceId)))
 
   def wimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
 
@@ -157,9 +157,9 @@ object SearchBoxesAnimatedViewTweak {
     view.statuses = view.statuses.copy(enabled = enabled)
   }
 
-  def sbavUpdateAppsIcon(res: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateAppsIcon(res)))
+  def sbavUpdateAppsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateAppsIcon(resourceId)))
 
-  def sbavUpdateContactsIcon(res: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateContactsIcon(res)))
+  def sbavUpdateContactsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateContactsIcon(resourceId)))
 }
 
 object PullToTabsViewTweaks {
@@ -248,8 +248,8 @@ object DialogToolbarTweaks {
     runUi(view.addExtendedView(viewToAdd))
   }
 
-  def dtbChangeText(res: Int) = Tweak[W] { view =>
-    runUi(view.changeText(res))
+  def dtbChangeText(resourceId: Int) = Tweak[W] { view =>
+    runUi(view.changeText(resourceId))
   }
 
   def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W]{ view =>

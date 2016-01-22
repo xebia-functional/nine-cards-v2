@@ -33,7 +33,7 @@ trait DeviceProcess {
 
   /**
     * Returns the number of times the first letter of an app is repeated alphabetically filtered by parameter
-    * @return the Seq[Returns the number of times the first letter of a contact is repeated alphabetically] contains
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter] contains
     *         information about the times is repeated an apps
     * @throws AppException if exist some problem to get the contacts
     */
@@ -87,7 +87,7 @@ trait DeviceProcess {
 
   /**
     * Returns the number of times the first letter of a contact is repeated alphabetically filtered by parameter
-    * @return the Seq[Returns the number of times the first letter of a contact is repeated alphabetically] contains
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter] contains
     *         information about the times is repeated a contacts
     * @throws ContactException if exist some problem to get the contacts
     */

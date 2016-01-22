@@ -142,13 +142,11 @@ trait DeviceConversions extends NineCardIntentConversions {
 
   def toTermCounter(item: ContactCounter): TermCounter = TermCounter(
     term = item.term,
-    count = item.count
-  )
+    count = item.count)
 
   def toTermCounter(item: DataCounter): TermCounter = TermCounter(
     term = item.term,
-    count = item.count
-  )
+    count = item.count)
 
   def toContactSeq(items: Seq[ContactServices]): Seq[Contact] = items map toContact
 

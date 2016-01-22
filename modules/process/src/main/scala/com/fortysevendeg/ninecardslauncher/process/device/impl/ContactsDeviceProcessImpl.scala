@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.{CatchAll, _}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactCounter}
@@ -18,13 +19,8 @@ trait ContactsDeviceProcessImpl {
     with ImplicitsDeviceException
     with ImplicitsContactsServiceExceptions =>
 
-  val emptyContactCounterService = Service {
-    Task {
-      CatchAll[ContactsServiceException] {
-        Seq.empty[ContactCounter]
-      }
-    }
-  }
+  val emptyContactCounterService: ServiceDef2[Seq[ContactCounter], ContactsServiceException] =
+    Service(Task(Answer(Seq.empty)))
 
   def getFavoriteContacts(implicit context: ContextSupport) =
     (for {

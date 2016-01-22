@@ -117,44 +117,15 @@ class AppRepository(
     }
 
   def fetchAlphabeticalAppsCounter: ServiceDef2[Seq[DataCounter], RepositoryException] =
-    Service {
-      Task {
-        CatchAll[RepositoryException] {
-          val data = getNamesAlphabetically
-          data.foldLeft(Seq.empty[DataCounter]) { (acc, name) =>
-            val term = name.substring(0, 1).toUpperCase match {
-              case t if abc.contains(t) => t
-              case _ => wildcard
-            }
-            val lastWithSameTerm = acc.lastOption flatMap {
-              case last if last.term == term => Some(last)
-              case _ => None
-            }
-            lastWithSameTerm map { c =>
-              acc.dropRight(1) :+ c.copy(count = c.count + 1)
-            } getOrElse acc :+ DataCounter(term, 1)
-          }
-        }
-      }
-    }
+    toDataCounter(
+      getNamesAlphabetically,
+      (name: String) => name.substring(0, 1).toUpperCase match {
+        case t if abc.contains(t) => t
+        case _ => wildcard
+      })
 
   def fetchCategorizedAppsCounter: ServiceDef2[Seq[DataCounter], RepositoryException] =
-    Service {
-      Task {
-        CatchAll[RepositoryException] {
-          val data = getCategoriesAlphabetically
-          data.foldLeft(Seq.empty[DataCounter]) { (acc, term) =>
-            val lastWithSameTerm = acc.lastOption flatMap {
-              case last if last.term == term => Some(last)
-              case _ => None
-            }
-            lastWithSameTerm map { c =>
-              acc.dropRight(1) :+ c.copy(count = c.count + 1)
-            } getOrElse acc :+ DataCounter(term, 1)
-          }
-        }
-      }
-    }
+    toDataCounter(getCategoriesAlphabetically)
 
   def findAppById(id: Int): ServiceDef2[Option[App], RepositoryException] =
     Service {
@@ -245,5 +216,26 @@ class AppRepository(
       uri = appUri,
       projection = Seq(category),
       orderBy = s"$category COLLATE NOCASE ASC"))
+
+  private[this] def toDataCounter(
+    fetchData: => Seq[String],
+    normalize: (String) => String = (term) => term): ServiceDef2[Seq[DataCounter], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          val data = fetchData
+          data.foldLeft(Seq.empty[DataCounter]) { (acc, name) =>
+            val term = normalize(name)
+            val lastWithSameTerm = acc.lastOption flatMap {
+              case last if last.term == term => Some(last)
+              case _ => None
+            }
+            lastWithSameTerm map { c =>
+              acc.dropRight(1) :+ c.copy(count = c.count + 1)
+            } getOrElse acc :+ DataCounter(term, 1)
+          }
+        }
+      }
+    }
 
 }

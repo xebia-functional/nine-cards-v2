@@ -98,33 +98,41 @@ trait DrawerComposer
         case _ =>
       }})
 
-  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] =
+  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] = {
+    val maybeDrawable = appTabs.lift(AppsMenuOption(option)) map (_.drawable)
     Ui(loadApps(option)) ~
-      (searchBoxView <~ sbavUpdateAppsIcon(appTabs(AppsMenuOption(option)).drawable)) ~
+      (searchBoxView <~ (maybeDrawable map sbavUpdateAppsIcon getOrElse Tweak.blank)) ~
       (recycler <~ vSetType(option.name))
+  }
 
-  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] =
+  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] = {
+    val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
     Ui(loadContacts(option)) ~
-      (searchBoxView <~ sbavUpdateContactsIcon(contactsTabs(ContactsMenuOption(option)).drawable)) ~
+      (searchBoxView <~ (maybeDrawable map sbavUpdateContactsIcon getOrElse Tweak.blank)) ~
       (recycler <~ vSetType(option.name))
+  }
 
-  private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val maybeDrawable = contactsTabs.lift(ContactsMenuOption(ContactsAlphabetical)) map (_.drawable)
     loadAppsAndSaveStatus(AppsAlphabetical) ~
       (recycler <~ vSetType(AppsAlphabetical.name)) ~
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
         ptvAddTabsAndActivate(appTabs, 0)) ~
-      (searchBoxView <~ sbavUpdateContactsIcon(contactsTabs(ContactsMenuOption(ContactsAlphabetical)).drawable))
+      (searchBoxView <~ (maybeDrawable map sbavUpdateContactsIcon getOrElse Tweak.blank))
+  }
 
-  private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val maybeDrawable = appTabs.lift(AppsMenuOption(AppsAlphabetical)) map (_.drawable)
     loadContactsAndSaveStatus(ContactsAlphabetical) ~
       (recycler <~ vSetType(ContactsAlphabetical.name)) ~
       (paginationDrawerPanel <~ reloadPager(1)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
         ptvAddTabsAndActivate(contactsTabs, 0)) ~
-    (searchBoxView <~ sbavUpdateAppsIcon(appTabs(AppsMenuOption(AppsAlphabetical)).drawable))
+      (searchBoxView <~ (maybeDrawable map sbavUpdateAppsIcon getOrElse Tweak.blank))
+  }
 
   private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (searchBoxContentPanel <~

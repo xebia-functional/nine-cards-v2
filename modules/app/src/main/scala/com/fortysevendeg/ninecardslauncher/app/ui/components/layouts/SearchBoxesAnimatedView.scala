@@ -141,9 +141,9 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
       applyTranslation(getInactiveView, 0) ~
       (getInactiveView <~ vGone)
 
-  def updateAppsIcon(res: Int): Ui[_] = appBox.updateHeader(res)
+  def updateAppsIcon(resourceId: Int): Ui[_] = appBox.updateHeader(resourceId)
 
-  def updateContactsIcon(res: Int): Ui[_] = contactBox.updateHeader(res)
+  def updateContactsIcon(resourceId: Int): Ui[_] = contactBox.updateHeader(resourceId)
 
   private[this] def applyTranslation(view: View, translate: Float): Ui[_] =
     view <~ vTranslationX(translate)
@@ -308,7 +308,7 @@ case class BoxViewHolder(boxView: BoxView, content: LinearLayout)(implicit conte
       })) ~
       (icon <~ iconTweak))
 
-  def updateHeader(res: Int): Ui[_] = headerIcon <~ searchBoxButtonStyle(res)
+  def updateHeader(resourceId: Int): Ui[_] = headerIcon <~ searchBoxButtonStyle(resourceId)
 
   private[this] def iconTweak = boxView match {
     case AppsView =>
@@ -330,11 +330,11 @@ trait Styles {
   def searchBoxCharStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
     tvColor(theme.get(SearchIconsColor))
 
-  def searchBoxNameStyle(res: Int)(implicit context: ContextWrapper): Tweak[EditText] =
-    tvHint(res)
+  def searchBoxNameStyle(resourceId: Int)(implicit context: ContextWrapper): Tweak[EditText] =
+    tvHint(resourceId)
 
-  def searchBoxButtonStyle(res: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    ivSrc(res) +
+  def searchBoxButtonStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+    ivSrc(resourceId) +
       tivDefaultColor(theme.get(SearchIconsColor)) +
       tivPressedColor(theme.get(SearchPressedColor))
 }

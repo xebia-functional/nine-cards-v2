@@ -27,13 +27,7 @@ trait AppsDeviceProcessImpl {
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  val emptyDataCounterService = Service {
-    Task {
-      CatchAll[PersistenceServiceException] {
-        Seq.empty[DataCounter]
-      }
-    }
-  }
+  val emptyDataCounterService: ServiceDef2[Seq[DataCounter], PersistenceServiceException] = Service(Task(Answer(Seq.empty)))
 
   def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
