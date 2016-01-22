@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepoApp, AppData => RepoAppData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, UpdateAppRequest}
 
 trait AppConversions {
 
-  def toAppSeq(cache: Seq[RepoApp]): Seq[App] = cache map toApp
+  def toAppSeq(cache: Seq[RepositoryApp]): Seq[App] = cache map toApp
 
-  def toApp(app: RepoApp): App =
+  def toApp(app: RepositoryApp): App =
     App(
       id = app.id,
       name = app.data.name,
@@ -22,10 +22,10 @@ trait AppConversions {
       version = app.data.version,
       installedFromGooglePlay = app.data.installedFromGooglePlay)
 
-  def toRepositoryApp(request: UpdateAppRequest): RepoApp =
-    RepoApp(
+  def toRepositoryApp(request: UpdateAppRequest): RepositoryApp =
+    RepositoryApp(
       id = request.id,
-      data = RepoAppData(
+      data = RepositoryAppData(
         name = request.name,
         packageName = request.packageName,
         className = request.className,
@@ -38,8 +38,8 @@ trait AppConversions {
         installedFromGooglePlay = request.installedFromGooglePlay)
     )
 
-  def toRepositoryAppData(request: AddAppRequest): RepoAppData =
-    RepoAppData(
+  def toRepositoryAppData(request: AddAppRequest): RepositoryAppData =
+    RepositoryAppData(
       name = request.name,
       packageName = request.packageName,
       className = request.className,
