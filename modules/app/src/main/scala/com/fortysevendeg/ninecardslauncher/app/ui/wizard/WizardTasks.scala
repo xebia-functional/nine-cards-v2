@@ -129,6 +129,5 @@ trait WizardTasks
     CloudStorageCollectionItem(
       itemType = userCollectionItem.itemType,
       title = userCollectionItem.title,
-      intent = userCollectionItem.intent,
-      categories = userCollectionItem.categories getOrElse Seq.empty)
+      intent = userCollectionItem.intent)
 }

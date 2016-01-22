@@ -57,8 +57,7 @@ trait CloudStorageProcessImplData {
     CloudStorageCollectionItem(
       s"Item Type $num",
       s"Item Title $num",
-      s"Item intent $num",
-      Seq(AppWallpaper, Game))
+      s"Item intent $num")
   }
 
   val validCloudStorageDeviceJson =
@@ -91,8 +90,7 @@ trait CloudStorageProcessImplData {
       |{
       | "itemType": "Item Type $num",
       | "title": "Item Title $num",
-      | "intent": "Item intent $num",
-      | "categories": ["${NineCardCategories.appWallpaper}", "${NineCardCategories.game}"]
+      | "intent": "Item intent $num"
       |}
     """.stripMargin
   }

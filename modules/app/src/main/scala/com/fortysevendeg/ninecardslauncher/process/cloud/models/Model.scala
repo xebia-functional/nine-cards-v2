@@ -29,5 +29,4 @@ case class CloudStorageCollection(
 case class CloudStorageCollectionItem(
   itemType: String,
   title: String,
-  intent: String,
-  categories: Seq[NineCardCategory])
+  intent: String)
