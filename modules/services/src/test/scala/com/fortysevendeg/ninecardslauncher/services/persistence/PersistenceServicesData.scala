@@ -1,10 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.services.persistence.models._
-import com.fortysevendeg.ninecardslauncher.repository.model.{AppData => RepositoryAppData, App => RepositoryApp, GeoInfo => RepositoryGeoInfo, GeoInfoData => RepositoryGeoInfoData,
-Collection => RepositoryCollection, CollectionData => RepositoryCollectionData,Card => RepositoryCard, CardData => RepositoryCardData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData,
-User => RepositoryUser, UserData => RepositoryUserData
+import com.fortysevendeg.ninecardslauncher.repository.model.{
+  AppData => RepositoryAppData,
+  App => RepositoryApp,
+  GeoInfo => RepositoryGeoInfo,
+  GeoInfoData => RepositoryGeoInfoData,
+  Collection => RepositoryCollection,
+  DataCounter => RepositoryDataCounter,
+  CollectionData => RepositoryCollectionData,
+  Card => RepositoryCard,
+  CardData => RepositoryCardData,
+  DockApp => RepositoryDockApp,
+  DockAppData => RepositoryDockAppData,
+  User => RepositoryUser,
+  UserData => RepositoryUserData
 }
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User, _}
 
@@ -695,8 +705,8 @@ trait PersistenceServicesData {
   def createFindDockAppByIdRequest(id: Int): FindDockAppByIdRequest =
     FindDockAppByIdRequest(id = id)
 
-  def createDataCounter(i: Int): repositoryModel.DataCounter =
-    repositoryModel.DataCounter(
+  def createDataCounter(i: Int): RepositoryDataCounter =
+    RepositoryDataCounter(
       term = s"$i - $termDataCounter",
       count = countDataCounter
     )

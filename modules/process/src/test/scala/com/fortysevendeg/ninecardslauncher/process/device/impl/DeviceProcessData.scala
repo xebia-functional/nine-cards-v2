@@ -17,7 +17,11 @@ import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => Servic
 import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp=> ServiceDockApp, IterableApps => ServiceIterableApps}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{
+  App => ServicesApp,
+  DockApp=> ServicesDockApp,
+  DataCounter=> ServicesDataCounter,
+  IterableApps => ServicesIterableApps}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json
@@ -643,19 +647,19 @@ trait DeviceProcessData
   val iterableApps = new IterableApps(iterableCursorApps)
 
   val appsCounters = Seq(
-    DataCounter("#", 4),
-    DataCounter("B", 1),
-    DataCounter("E", 6),
-    DataCounter("F", 5),
-    DataCounter("Z", 3)
+    ServicesDataCounter("#", 4),
+    ServicesDataCounter("B", 1),
+    ServicesDataCounter("E", 6),
+    ServicesDataCounter("F", 5),
+    ServicesDataCounter("Z", 3)
   )
 
   val categoryCounters = Seq(
-    DataCounter("COMMUNICATION", 4),
-    DataCounter("GAMES", 1),
-    DataCounter("SOCIAL", 6),
-    DataCounter("TOOLS", 5),
-    DataCounter("WEATHER", 3)
+    ServicesDataCounter("COMMUNICATION", 4),
+    ServicesDataCounter("GAMES", 1),
+    ServicesDataCounter("SOCIAL", 6),
+    ServicesDataCounter("TOOLS", 5),
+    ServicesDataCounter("WEATHER", 3)
   )
 
   val contactsCounters = Seq(
