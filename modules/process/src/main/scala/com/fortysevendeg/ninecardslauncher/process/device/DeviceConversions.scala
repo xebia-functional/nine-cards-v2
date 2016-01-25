@@ -10,18 +10,13 @@ import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayApp, GooglePlayPackage}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallServices}
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{
-  Contact => ContactServices,
-  ContactEmail => ContactEmailServices,
-  ContactInfo => ContactInfoServices,
-  ContactPhone => ContactPhoneServices,
-  ContactCounter}
+import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => ServicesCall}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp => DockAppPersistence, DataCounter}
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ShortcutServices}
-import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, DockApp => ServicesDockApp}
+import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ServicesShortcut}
+import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => ServicesWidget}
 
 import scala.util.Try
 
@@ -35,7 +30,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     case GetByCategory(_) => OrderByCategory
   }
 
-  def toApp(app: AppPersistence): App =
+  def toApp(app: ServicesApp): App =
     App(
       name = app.name,
       packageName = app.packageName,
@@ -101,7 +96,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       imagePath = imagePath,
       position = position)
 
-  def toDockApp(app: DockAppPersistence): DockApp = DockApp(
+  def toDockApp(app: ServicesDockApp): DockApp = DockApp(
     name = app.name,
     dockType = DockType(app.dockType),
     intent = jsonToNineCardIntent(app.intent),
@@ -109,9 +104,9 @@ trait DeviceConversions extends NineCardIntentConversions {
     position = app.position
   )
 
-  def toShortcutSeq(items: Seq[ShortcutServices])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
+  def toShortcutSeq(items: Seq[ServicesShortcut])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
 
-  def toShortcut(item: ShortcutServices)(implicit context: ContextSupport): Shortcut = {
+  def toShortcut(item: ServicesShortcut)(implicit context: ContextSupport): Shortcut = {
     val componentName = new ComponentName(item.packageName, item.name)
     val drawable = Try(context.getPackageManager.getActivityIcon(componentName)).toOption
     val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
@@ -123,7 +118,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       intent = intent)
   }
 
-  def toSimpleLastCallsContact(number: String, calls: Seq[CallServices]): LastCallsContact = {
+  def toSimpleLastCallsContact(number: String, calls: Seq[ServicesCall]): LastCallsContact = {
     val (hasContact, name, date) = calls.headOption map { call =>
       (call.name.isDefined, call.name getOrElse number, call.date)
     } getOrElse (false, number, defaultDate)
@@ -135,7 +130,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       calls = calls map toCallData)
   }
 
-  def toCallData(item: CallServices): CallData =
+  def toCallData(item: ServicesCall): CallData =
     CallData(
       date = item.date,
       callType = CallType(item.callType))
@@ -148,9 +143,9 @@ trait DeviceConversions extends NineCardIntentConversions {
     term = item.term,
     count = item.count)
 
-  def toContactSeq(items: Seq[ContactServices]): Seq[Contact] = items map toContact
+  def toContactSeq(items: Seq[ServicesContact]): Seq[Contact] = items map toContact
 
-  def toContact(item: ContactServices): Contact = Contact(
+  def toContact(item: ServicesContact): Contact = Contact(
       name = item.name,
       lookupKey = item.lookupKey,
       photoUri = item.photoUri,
@@ -158,19 +153,19 @@ trait DeviceConversions extends NineCardIntentConversions {
       favorite = item.favorite,
       info = item.info map toContactInfo)
 
-  def toContactInfo(item: ContactInfoServices): ContactInfo = ContactInfo(
+  def toContactInfo(item: ServicesContactInfo): ContactInfo = ContactInfo(
     emails = item.emails map toContactEmail,
     phones = item.phones map toContactPhone)
 
-  def toContactEmail(item: ContactEmailServices): ContactEmail = ContactEmail(
+  def toContactEmail(item: ServicesContactEmail): ContactEmail = ContactEmail(
     address = item.address,
     category = item.category.toString)
 
-  def toContactPhone(item: ContactPhoneServices): ContactPhone = ContactPhone(
+  def toContactPhone(item: ServicesContactPhone): ContactPhone = ContactPhone(
     number = item.number,
     category = item.category.toString)
 
-  def toWidget(item: WidgetServices): Widget = Widget(
+  def toWidget(item: ServicesWidget): Widget = Widget(
     userHashCode = item.userHashCode,
     autoAdvanceViewId = item.autoAdvanceViewId,
     initialLayout = item.initialLayout,

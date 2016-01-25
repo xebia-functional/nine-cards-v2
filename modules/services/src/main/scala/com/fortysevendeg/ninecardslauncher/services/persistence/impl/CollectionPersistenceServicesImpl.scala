@@ -4,12 +4,12 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection, Card}
-import com.fortysevendeg.ninecardslauncher.{repository => repo}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection}
 import rapture.core.scalazInterop.ResultT
-import rapture.core.{Result, Answer}
+import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
 
@@ -92,14 +92,14 @@ trait CollectionPersistenceServicesImpl {
           CatchAll[PersistenceServiceException](list.collect { case Answer(value) => value }.sum)))
   }
 
-  private[this] def fetchCards(maybeCollection: Option[repo.model.Collection]): ServiceDef2[Seq[repo.model.Card], RepositoryException] = {
+  private[this] def fetchCards(maybeCollection: Option[RepositoryCollection]): ServiceDef2[Seq[RepositoryCard], RepositoryException] = {
     maybeCollection match {
       case Some(collection) => cardRepository.fetchCardsByCollection(collection.id)
-      case None => Service(Task(Result.answer[Seq[repo.model.Card], RepositoryException](Seq.empty)))
+      case None => Service(Task(Result.answer[Seq[RepositoryCard], RepositoryException](Seq.empty)))
     }
   }
 
-  private[this] def fetchCards(collections: Seq[repo.model.Collection]): ServiceDef2[Seq[Collection], PersistenceServiceException] = {
+  private[this] def fetchCards(collections: Seq[RepositoryCollection]): ServiceDef2[Seq[Collection], PersistenceServiceException] = {
     val result = collections map {
       collection =>
         (for {

@@ -1,8 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.{model => repositoryModel}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
+import com.fortysevendeg.ninecardslauncher.repository.model.{AppData => RepositoryAppData, App => RepositoryApp, GeoInfo => RepositoryGeoInfo, GeoInfoData => RepositoryGeoInfoData,
+Collection => RepositoryCollection, CollectionData => RepositoryCollectionData,Card => RepositoryCard, CardData => RepositoryCardData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData,
+User => RepositoryUser, UserData => RepositoryUserData
+}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User, _}
 
 import scala.util.Random
 
@@ -107,8 +111,8 @@ trait PersistenceServicesData {
   def createSeqRepoApp(
     num: Int = 5,
     id: Int = appId,
-    data: repositoryModel.AppData = createRepoAppData()): Seq[repositoryModel.App] =
-    List.tabulate(num)(item => repositoryModel.App(id = id + item, data = data))
+    data: RepositoryAppData = createRepoAppData()): Seq[RepositoryApp] =
+    List.tabulate(num)(item => RepositoryApp(id = id + item, data = data))
 
   def createRepoAppData(
     name: String = name,
@@ -120,7 +124,7 @@ trait PersistenceServicesData {
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): repositoryModel.AppData = repositoryModel.AppData(
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): RepositoryAppData = RepositoryAppData(
     name = name,
     packageName = packageName,
     className = className,
@@ -154,8 +158,8 @@ trait PersistenceServicesData {
   def createSeqRepoGeoInfo(
     num: Int = 5,
     id: Int = geoInfoId,
-    data: repositoryModel.GeoInfoData = createRepoGeoInfoData()): Seq[repositoryModel.GeoInfo] =
-    List.tabulate(num)(item => repositoryModel.GeoInfo(id = id + item, data = data))
+    data: RepositoryGeoInfoData = createRepoGeoInfoData()): Seq[RepositoryGeoInfo] =
+    List.tabulate(num)(item => RepositoryGeoInfo(id = id + item, data = data))
 
   def createRepoGeoInfoData(
     constrain: String = constrain,
@@ -163,8 +167,8 @@ trait PersistenceServicesData {
     wifi: String = wifi,
     longitude: Double = longitude,
     latitude: Double = latitude,
-    system: Boolean = system): repositoryModel.GeoInfoData =
-    repositoryModel.GeoInfoData(
+    system: Boolean = system): RepositoryGeoInfoData =
+    RepositoryGeoInfoData(
       constrain = constrain,
       occurrence = occurrence,
       wifi = wifi,
@@ -204,8 +208,8 @@ trait PersistenceServicesData {
   def createSeqRepoCollection(
     num: Int = 5,
     id: Int = collectionId,
-    data: repositoryModel.CollectionData = createRepoCollectionData()): Seq[repositoryModel.Collection] =
-    List.tabulate(num)(item => repositoryModel.Collection(id = id + item, data = data))
+    data: RepositoryCollectionData = createRepoCollectionData()): Seq[RepositoryCollection] =
+    List.tabulate(num)(item => RepositoryCollection(id = id + item, data = data))
 
   def createRepoCollectionData(
     position: Int = position,
@@ -217,8 +221,8 @@ trait PersistenceServicesData {
     constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): repositoryModel.CollectionData =
-    repositoryModel.CollectionData(
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): RepositoryCollectionData =
+    RepositoryCollectionData(
       position = position,
       name = name,
       collectionType = collectionType,
@@ -285,8 +289,8 @@ trait PersistenceServicesData {
   def createSeqRepoCard(
     num: Int = 5,
     id: Int = cardId,
-    data: repositoryModel.CardData = createRepoCardData()): Seq[repositoryModel.Card] =
-    List.tabulate(num)(item => repositoryModel.Card(id = id + item, data = data))
+    data: RepositoryCardData = createRepoCardData()): Seq[RepositoryCard] =
+    List.tabulate(num)(item => RepositoryCard(id = id + item, data = data))
 
   def createRepoCardData(
     position: Int = position,
@@ -298,8 +302,8 @@ trait PersistenceServicesData {
     imagePath: String = imagePath,
     starRating: Double = starRating,
     numDownloads: String = numDownloads,
-    notification: String = notification): repositoryModel.CardData =
-    repositoryModel.CardData(
+    notification: String = notification): RepositoryCardData =
+    RepositoryCardData(
       position = position,
       micros = micros,
       term = term,
@@ -333,8 +337,8 @@ trait PersistenceServicesData {
   def createSeqRepoUser(
     num: Int = 5,
     id: Int = uId,
-    data: repositoryModel.UserData = createRepoUserData()): Seq[repositoryModel.User] =
-    List.tabulate(num)(item => repositoryModel.User(id = id + item, data = data))
+    data: RepositoryUserData = createRepoUserData()): Seq[RepositoryUser] =
+    List.tabulate(num)(item => RepositoryUser(id = id + item, data = data))
 
   def createRepoUserData(
     userId: String = userId,
@@ -342,8 +346,8 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): repositoryModel.UserData =
-    repositoryModel.UserData(
+    androidToken: String = androidToken): RepositoryUserData =
+    RepositoryUserData(
       userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
@@ -371,16 +375,16 @@ trait PersistenceServicesData {
   def createSeqRepoDockApp(
     num: Int = 5,
     id: Int = dockAppId,
-    data: repositoryModel.DockAppData = createRepoDockAppData()): Seq[repositoryModel.DockApp] =
-    List.tabulate(num)(item => repositoryModel.DockApp(id = id + item, data = data))
+    data: RepositoryDockAppData = createRepoDockAppData()): Seq[RepositoryDockApp] =
+    List.tabulate(num)(item => RepositoryDockApp(id = id + item, data = data))
 
   def createRepoDockAppData(
     name: String = name,
     dockType: String = dockType,
     intent: String = intent,
     imagePath: String = imagePath,
-    position: Int = position): repositoryModel.DockAppData =
-    repositoryModel.DockAppData(
+    position: Int = position): RepositoryDockAppData =
+    RepositoryDockAppData(
       name = name,
       dockType = dockType,
       intent = intent,
@@ -389,39 +393,39 @@ trait PersistenceServicesData {
 
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp(0)
-  val repoAppData: repositoryModel.AppData = createRepoAppData()
-  val seqRepoApp: Seq[repositoryModel.App] = createSeqRepoApp(data = repoAppData)
-  val repoApp: repositoryModel.App = seqRepoApp(0)
+  val repoAppData: RepositoryAppData = createRepoAppData()
+  val seqRepoApp: Seq[RepositoryApp] = createSeqRepoApp(data = repoAppData)
+  val repoApp: RepositoryApp = seqRepoApp(0)
 
   val seqGeoInfo: Seq[GeoInfo] = createSeqGeoInfo()
   val geoInfo: GeoInfo = seqGeoInfo(0)
-  val repoGeoInfoData: repositoryModel.GeoInfoData = createRepoGeoInfoData()
-  val seqRepoGeoInfo: Seq[repositoryModel.GeoInfo] = createSeqRepoGeoInfo(data = repoGeoInfoData)
-  val repoGeoInfo: repositoryModel.GeoInfo = seqRepoGeoInfo(0)
+  val repoGeoInfoData: RepositoryGeoInfoData = createRepoGeoInfoData()
+  val seqRepoGeoInfo: Seq[RepositoryGeoInfo] = createSeqRepoGeoInfo(data = repoGeoInfoData)
+  val repoGeoInfo: RepositoryGeoInfo = seqRepoGeoInfo(0)
 
   val seqCard: Seq[Card] = createSeqCard()
   val card: Card = seqCard(0)
-  val repoCardData: repositoryModel.CardData = createRepoCardData()
-  val seqRepoCard: Seq[repositoryModel.Card] = createSeqRepoCard(data = repoCardData)
-  val repoCard: repositoryModel.Card = seqRepoCard(0)
+  val repoCardData: RepositoryCardData = createRepoCardData()
+  val seqRepoCard: Seq[RepositoryCard] = createSeqRepoCard(data = repoCardData)
+  val repoCard: RepositoryCard = seqRepoCard(0)
 
   val seqCollection: Seq[Collection] = createSeqCollection()
   val collection: Collection = seqCollection(0)
-  val repoCollectionData: repositoryModel.CollectionData = createRepoCollectionData()
-  val seqRepoCollection: Seq[repositoryModel.Collection] = createSeqRepoCollection(data = repoCollectionData)
-  val repoCollection: repositoryModel.Collection = seqRepoCollection(0)
+  val repoCollectionData: RepositoryCollectionData = createRepoCollectionData()
+  val seqRepoCollection: Seq[RepositoryCollection] = createSeqRepoCollection(data = repoCollectionData)
+  val repoCollection: RepositoryCollection = seqRepoCollection(0)
 
   val seqUser: Seq[User] = createSeqUser()
   val user: User = seqUser(0)
-  val repoUserData: repositoryModel.UserData = createRepoUserData()
-  val seqRepoUser: Seq[repositoryModel.User] = createSeqRepoUser(data = repoUserData)
-  val repoUser: repositoryModel.User = seqRepoUser(0)
+  val repoUserData: RepositoryUserData = createRepoUserData()
+  val seqRepoUser: Seq[RepositoryUser] = createSeqRepoUser(data = repoUserData)
+  val repoUser: RepositoryUser = seqRepoUser(0)
 
   val seqDockApp: Seq[DockApp] = createSeqDockApp()
   val dockApp: DockApp = seqDockApp(0)
-  val repoDockAppData: repositoryModel.DockAppData = createRepoDockAppData()
-  val seqRepoDockApp: Seq[repositoryModel.DockApp] = createSeqRepoDockApp(data = repoDockAppData)
-  val repoDockApp: repositoryModel.DockApp = seqRepoDockApp(0)
+  val repoDockAppData: RepositoryDockAppData = createRepoDockAppData()
+  val seqRepoDockApp: Seq[RepositoryDockApp] = createSeqRepoDockApp(data = repoDockAppData)
+  val repoDockApp: RepositoryDockApp = seqRepoDockApp(0)
 
   val where: String = ""
 
@@ -697,16 +701,16 @@ trait PersistenceServicesData {
       count = countDataCounter
     )
 
-  val iterableCursorApp = new IterableCursor[repositoryModel.App] {
+  val iterableCursorApp = new IterableCursor[RepositoryApp] {
     override def count(): Int = seqRepoApp.length
-    override def moveToPosition(pos: Int): repositoryModel.App = seqRepoApp(pos)
+    override def moveToPosition(pos: Int): RepositoryApp = seqRepoApp(pos)
     override def close(): Unit = ()
   }
   val iterableApps = new IterableApps(iterableCursorApp)
 
-  val iterableCursorDockApps = new IterableCursor[repositoryModel.DockApp] {
+  val iterableCursorDockApps = new IterableCursor[RepositoryDockApp] {
     override def count(): Int = seqRepoDockApp.length
-    override def moveToPosition(pos: Int): repositoryModel.DockApp = seqRepoDockApp(pos)
+    override def moveToPosition(pos: Int): RepositoryDockApp = seqRepoDockApp(pos)
     override def close(): Unit = ()
   }
   val iterableDockApps = new IterableDockApps(iterableCursorDockApps)
