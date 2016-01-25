@@ -29,6 +29,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -195,7 +196,7 @@ trait CollectionsComposer
     (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = itemId match {
     case R.id.menu_collections => goToWorkspace(pageCollections)
     case R.id.menu_moments => goToWorkspace(pageWidgets)
-    case R.id.menu_profile => showMessage(R.string.todo)
+    case R.id.menu_profile => uiStartIntent(new Intent(this, classOf[ProfileActivity]))
     case R.id.menu_wallpapers => uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
     case R.id.menu_android_settings => uiStartIntent(new Intent(android.provider.Settings.ACTION_SETTINGS))
     case R.id.menu_9cards_settings => showMessage(R.string.todo)

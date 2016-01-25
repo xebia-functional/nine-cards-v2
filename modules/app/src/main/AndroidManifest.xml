@@ -45,6 +45,12 @@
             android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity"/>
 
+        <activity
+            android:theme="@style/AppThemeToolbar"
+            android:screenOrientation="portrait"
+            android:label=""
+            android:name="com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity"/>
+
         <service
             android:name="com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService"/>
 
