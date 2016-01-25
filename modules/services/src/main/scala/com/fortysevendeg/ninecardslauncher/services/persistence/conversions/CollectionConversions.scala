@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepoCard, Collection => RepoCollection, CollectionData => RepoCollectionData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 
 trait CollectionConversions extends CardConversions {
 
-  def toCollectionSeq(collections: Seq[RepoCollection]): Seq[Collection] = collections map toCollection
+  def toCollectionSeq(collections: Seq[RepositoryCollection]): Seq[Collection] = collections map toCollection
 
-  def toCollection(collection: RepoCollection): Collection =
+  def toCollection(collection: RepositoryCollection): Collection =
     Collection(
       id = collection.id,
       position = collection.data.position,
@@ -23,7 +23,7 @@ trait CollectionConversions extends CardConversions {
       sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed getOrElse false
     )
 
-  def toCollection(collection: RepoCollection, cards: Seq[RepoCard]): Collection =
+  def toCollection(collection: RepositoryCollection, cards: Seq[RepositoryCard]): Collection =
     Collection(
       id = collection.id,
       position = collection.data.position,
@@ -39,10 +39,10 @@ trait CollectionConversions extends CardConversions {
       cards = cards map toCard
     )
 
-  def toRepositoryCollection(collection: Collection): RepoCollection =
-    RepoCollection(
+  def toRepositoryCollection(collection: Collection): RepositoryCollection =
+    RepositoryCollection(
       id = collection.id,
-      data = RepoCollectionData(
+      data = RepositoryCollectionData(
         position = collection.position,
         name = collection.name,
         collectionType = collection.collectionType,
@@ -56,10 +56,10 @@ trait CollectionConversions extends CardConversions {
       )
     )
 
-  def toRepositoryCollection(request: UpdateCollectionRequest): RepoCollection =
-    RepoCollection(
+  def toRepositoryCollection(request: UpdateCollectionRequest): RepositoryCollection =
+    RepositoryCollection(
       id = request.id,
-      data = RepoCollectionData(
+      data = RepositoryCollectionData(
         position = request.position,
         name = request.name,
         collectionType = request.collectionType,
@@ -73,8 +73,8 @@ trait CollectionConversions extends CardConversions {
       )
     )
 
-  def toRepositoryCollectionData(request: AddCollectionRequest): RepoCollectionData =
-    RepoCollectionData(
+  def toRepositoryCollectionData(request: AddCollectionRequest): RepositoryCollectionData =
+    RepositoryCollectionData(
       position = request.position,
       name = request.name,
       collectionType = request.collectionType,

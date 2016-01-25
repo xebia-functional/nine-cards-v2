@@ -9,17 +9,17 @@ import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConvers
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, WidgetDimensions, _}
 import com.fortysevendeg.ninecardslauncher.process.device.types._
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepoApp}
+import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp}
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => CallServices}
+import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => ServicesCall}
 import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => AppPersistence, DockApp=> ServiceDockApp, IterableApps => ServiceIterableApps}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
-import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => WidgetServices}
+import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json
 
 trait DeviceProcessData
@@ -235,8 +235,8 @@ trait DeviceProcessData
       installedFromGooglePlay = installedFromGooglePlay3)
   )
 
-  val appsPersistence: Seq[AppPersistence] = Seq(
-    AppPersistence(
+  val appsPersistence: Seq[ServicesApp] = Seq(
+    ServicesApp(
       id = 1,
       name = name1,
       packageName = packageName1,
@@ -248,7 +248,7 @@ trait DeviceProcessData
       dateUpdate = dateUpdate1,
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1),
-    AppPersistence(
+    ServicesApp(
       id = 2,
       name = name2,
       packageName = packageName2,
@@ -260,7 +260,7 @@ trait DeviceProcessData
       dateUpdate = dateUpdate2,
       version = version2,
       installedFromGooglePlay = installedFromGooglePlay2),
-    AppPersistence(
+    ServicesApp(
       id = 3,
       name = name3,
       packageName = packageName3,
@@ -406,8 +406,8 @@ trait DeviceProcessData
       )
     ))
 
-  val widgetsServices: Seq[WidgetServices] = Seq(
-    WidgetServices(
+  val widgetsServices: Seq[ServicesWidget] = Seq(
+    ServicesWidget(
       userHashCode = userHashCodeOption1,
       autoAdvanceViewId = autoAdvanceViewId1,
       initialLayout = initialLayout1,
@@ -422,7 +422,7 @@ trait DeviceProcessData
       label = label1,
       icon = icon1,
       preview = previewOption1),
-    WidgetServices(
+    ServicesWidget(
       userHashCode = userHashCodeOption2,
       autoAdvanceViewId = autoAdvanceViewId2,
       initialLayout = initialLayout2,
@@ -437,7 +437,7 @@ trait DeviceProcessData
       label = label2,
       icon = icon2,
       preview = previewOption2),
-    WidgetServices(
+    ServicesWidget(
       userHashCode = userHashCodeOption3,
       autoAdvanceViewId = autoAdvanceViewId3,
       initialLayout = initialLayout3,
@@ -508,20 +508,20 @@ trait DeviceProcessData
       preview = previewOption3)
   )
 
-  val callsServices: Seq[CallServices] = Seq(
-    CallServices(
+  val callsServices: Seq[ServicesCall] = Seq(
+    ServicesCall(
       number = phoneNumber1,
       name = Some(contactName1),
       numberType = PhoneMobile,
       date = date1,
       callType = callType1),
-    CallServices(
+    ServicesCall(
       number = phoneNumber2,
       name = Some(contactName2),
       numberType = numberType2,
       date = date2,
       callType = callType2),
-    CallServices(
+    ServicesCall(
       number = phoneNumber3,
       name = Some(contactName3),
       numberType = numberType3,
@@ -595,7 +595,7 @@ trait DeviceProcessData
   val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val intent = Json.parse(intentStr).as[NineCardIntent]
 
-  val dockApp1 = ServiceDockApp(
+  val dockApp1 = ServicesDockApp(
     id = 1,
     name = packageName1,
     dockType = AppDockType.name,
@@ -624,18 +624,18 @@ trait DeviceProcessData
 
   val iterableContact = new IterableContacts(iterableCursorContact)
 
-  val mockIterableCursor = new IterableCursor[RepoApp] {
+  val mockIterableCursor = new IterableCursor[RepositoryApp] {
     override def count(): Int = 0
 
-    override def moveToPosition(pos: Int): RepoApp = javaNull
+    override def moveToPosition(pos: Int): RepositoryApp = javaNull
 
     override def close(): Unit = ()
   }
 
-  val iterableCursorApps = new ServiceIterableApps(mockIterableCursor) {
+  val iterableCursorApps = new ServicesIterableApps(mockIterableCursor) {
     override def count(): Int = appsPersistence.length
 
-    override def moveToPosition(pos: Int): AppPersistence = appsPersistence(pos)
+    override def moveToPosition(pos: Int): ServicesApp = appsPersistence(pos)
 
     override def close(): Unit = ()
   }

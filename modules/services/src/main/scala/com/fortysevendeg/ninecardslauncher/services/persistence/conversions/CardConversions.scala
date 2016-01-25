@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepoCard, CardData => RepoCardData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
 
 trait CardConversions {
 
-  def toCard(card: RepoCard): Card = {
+  def toCard(card: RepositoryCard): Card = {
     Card(
       id = card.id,
       position = card.data.position,
@@ -21,10 +21,10 @@ trait CardConversions {
       notification = card.data.notification)
   }
 
-  def toRepositoryCard(card: Card): RepoCard =
-    RepoCard(
+  def toRepositoryCard(card: Card): RepositoryCard =
+    RepositoryCard(
       id = card.id,
-      data = RepoCardData(
+      data = RepositoryCardData(
         position = card.position,
         micros = card.micros,
         term = card.term,
@@ -38,10 +38,10 @@ trait CardConversions {
       )
     )
 
-  def toRepositoryCard(request: UpdateCardRequest): RepoCard =
-    RepoCard(
+  def toRepositoryCard(request: UpdateCardRequest): RepositoryCard =
+    RepositoryCard(
       id = request.id,
-      data = RepoCardData(
+      data = RepositoryCardData(
         position = request.position,
         micros = request.micros,
         term = request.term,
@@ -55,8 +55,8 @@ trait CardConversions {
       )
     )
 
-  def toRepositoryCardData(card: Card): RepoCardData =
-    RepoCardData(
+  def toRepositoryCardData(card: Card): RepositoryCardData =
+    RepositoryCardData(
       position = card.position,
       term = card.term,
       cardType = card.cardType,
@@ -68,8 +68,8 @@ trait CardConversions {
       numDownloads = card.numDownloads,
       notification = card.notification)
 
-  def toRepositoryCardData(request: AddCardRequest): RepoCardData =
-    RepoCardData(
+  def toRepositoryCardData(request: AddCardRequest): RepositoryCardData =
+    RepositoryCardData(
       position = request.position,
       micros = request.micros,
       term = request.term,

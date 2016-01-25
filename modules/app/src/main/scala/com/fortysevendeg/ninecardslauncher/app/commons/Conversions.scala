@@ -4,7 +4,7 @@ import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest, PrivateCard, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => DeviceContactEmail, ContactInfo => DeviceContactInfo, ContactPhone => DeviceContactPhone}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
@@ -32,15 +32,15 @@ trait Conversions
     photoUri = contact.photoUri,
     info = contact.info map toContactInfo)
 
-  def toContactInfo(item: DeviceContactInfo): ContactInfo = ContactInfo(
+  def toContactInfo(item: ProcessContactInfo): ContactInfo = ContactInfo(
     emails = item.emails map toContactEmail,
     phones = item.phones map toContactPhone)
 
-  def toContactEmail(item: DeviceContactEmail): ContactEmail = ContactEmail(
+  def toContactEmail(item: ProcessContactEmail): ContactEmail = ContactEmail(
     address = item.address,
     category = item.category.toString)
 
-  def toContactPhone(item: DeviceContactPhone): ContactPhone = ContactPhone(
+  def toContactPhone(item: ProcessContactPhone): ContactPhone = ContactPhone(
     number = item.number,
     category = item.category.toString)
 
