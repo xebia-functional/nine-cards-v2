@@ -18,6 +18,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Tweak, Ui}
@@ -46,6 +47,8 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def reset = runUi(fastScroller <~ fsReset)
 
+  def setCounters(counters: Seq[TermCounter]) = runUi(fastScroller <~ fsCounters(counters))
+
   def setEnabledScroller(enabled: Boolean) =
     runUi(
       fastScroller <~
@@ -53,6 +56,8 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
         (if (enabled) fsShow else fsHide))
 
   private[this] def fsReset = Tweak[FastScrollerView](_.reset())
+
+  private[this] def fsCounters(counters: Seq[TermCounter]) = Tweak[FastScrollerView](_.setCounters(counters))
 
   private[this] def fsEnabledScroller(enabled: Boolean) = Tweak[FastScrollerView](_.setEnabledScroller(enabled))
 
@@ -127,7 +132,10 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
         statuses = statuses.startScroll()
         true
       case (_, ACTION_MOVE) =>
-        runUi(changePosition(y) ~ showSignal ~ (recyclerView <~ rvScrollToPosition(y)))
+        runUi(
+          changePosition(y) ~
+            (if (statuses.usingCounters) showSignal else hideSignal) ~
+            (recyclerView <~ rvScrollToPosition(y)))
         true
       case (_, ACTION_UP | ACTION_CANCEL) =>
         statuses = statuses.resetScroll()
@@ -162,6 +170,8 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def setEnabledScroller(enabled: Boolean) = statuses = statuses.copy(enabled = enabled)
 
+  def setCounters(counters: Seq[TermCounter]) = statuses = statuses.copy(counters = counters)
+
   private[this] def changePosition(y: Float): Ui[_] = {
     val position = y / statuses.heightScroller
     val value = ((statuses.heightScroller - barSize) * position).toInt
@@ -176,20 +186,23 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     val position = getPosition(y)
     if (position != statuses.lastScrollToPosition) {
       statuses = statuses.copy(lastScrollToPosition = position)
-      view.smoothScrollToPosition(position)
-      val element = Option(view.getAdapter) match {
-        case Some(listener: FastScrollerListener) => listener.getElement(position)
-        case _ => None
+      if (statuses.usingCounters) {
+        val item = statuses.counters(position)
+        val count = (statuses.counters take position map (_.count)).sum
+        view.smoothScrollToPosition(count)
+        runUi(text <~ tvText(item.term))
+      } else {
+        val count = position * statuses.columns
+        view.smoothScrollToPosition(position * statuses.columns)
       }
-      val ui = element map { e =>
-        val tag = if (e.length > 1) e.substring(0, 1) else e
-        (text <~ tvText(tag)) ~ (signal <~ vVisible)
-      } getOrElse signal <~ vGone
-      runUi(ui)
     }
   }
 
-  private[this] def getPosition(y: Float) = ((y * statuses.totalItems) / statuses.heightScroller).toInt
+  private[this] def getPosition(y: Float) = if (statuses.usingCounters) {
+    ((y * statuses.counters.length) / statuses.heightScroller).toInt
+  } else {
+    ((y * statuses.rows) / statuses.heightScroller).toInt
+  }
 
   private[this] def getRowFirstItem(recyclerView: RecyclerView): Int = {
     // Update child count if it's necessary
@@ -256,7 +269,8 @@ case class FastScrollerStatuses(
   moving: Boolean = false,
   totalItems: Int = 0,
   visibleRows: Int = 0,
-  lastScrollToPosition: Int = -1) {
+  lastScrollToPosition: Int = -1,
+  counters: Seq[TermCounter] = Seq.empty) {
 
   /**
     * Update information related to data from recyclerview
@@ -289,6 +303,8 @@ case class FastScrollerStatuses(
   def startScroll(): FastScrollerStatuses = copy(moving = true)
 
   def resetScroll(): FastScrollerStatuses = copy(lastScrollToPosition = -1, moving = false)
+
+  def usingCounters = counters.nonEmpty
 
 }
 
