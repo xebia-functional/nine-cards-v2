@@ -219,6 +219,8 @@ object FastScrollerLayoutTweak {
 
   def fslCounters(counters: Seq[TermCounter]) = Tweak[FastScrollerLayout](_.setCounters(counters))
 
+  def fslSignalType(signalType: FastScrollerSignalType) = Tweak[FastScrollerLayout](_.setSignalType(signalType))
+
 }
 
 object SlidingTabLayoutTweaks {

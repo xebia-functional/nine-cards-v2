@@ -19,6 +19,8 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -46,6 +48,8 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def setColor(color: Int) = runUi(fastScroller <~ fsColor(color))
 
+  def setSignalType(signalType: FastScrollerSignalType) = runUi(fastScroller <~ fsSignalType(signalType))
+
   def reset = runUi(fastScroller <~ fsReset)
 
   def setCounters(counters: Seq[TermCounter]) = runUi(fastScroller <~ fsCounters(counters))
@@ -55,6 +59,8 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
       fastScroller <~
         fsEnabledScroller(enabled) <~
         (if (enabled) fsShow else fsHide))
+
+  private[this] def fsSignalType(signalType: FastScrollerSignalType) = Tweak[FastScrollerView](_.setFastScrollerSignalType(signalType))
 
   private[this] def fsReset = Tweak[FastScrollerView](_.reset())
 
@@ -113,6 +119,8 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val text = Option(findView(TR.fastscroller_signal_text))
 
+  val icon = Option(findView(TR.fastscroller_signal_icon))
+
   val barSize = context.getResources.getDimensionPixelOffset(R.dimen.fastscroller_bar_height)
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
@@ -161,6 +169,14 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def hideSignal: Ui[_] = signal <~ vGone
 
+  def setFastScrollerSignalType(signalType: FastScrollerSignalType): Unit = {
+    statuses = statuses.copy(fastScrollerSignalType = signalType)
+    signalType match {
+      case FastScrollerText => runUi((icon <~ vGone) ~ (text <~ vVisible))
+      case FastScrollerCategory => runUi((icon <~ vVisible) ~ (text <~ vGone))
+    }
+  }
+
   def setRecyclerView(rv: RecyclerView): Unit = {
     statuses = statuses.resetRecyclerInfo(rv, statuses.heightScroller)
     scrollListener foreach rv.removeOnScrollListener
@@ -199,13 +215,24 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
         val count = (statuses.counters take position map (_.count)).sum
         view.setTag(R.id.max, item.count)
         view.smoothScrollToPosition(count)
-        runUi(text <~ tvText(item.term))
+        runUi(updateSignal(item.term))
       } else {
         val count = position * statuses.columns
         view.setTag(R.id.max, javaNull)
         view.smoothScrollToPosition(count)
       }
     }
+  }
+
+  private[this] def updateSignal(term: String): Ui[_] = statuses.fastScrollerSignalType match {
+    case FastScrollerText => text <~ tvText(term)
+    case FastScrollerCategory => icon <~ ivSrc(getResource(NineCardCategory(term).getIconResource))
+  }
+
+  private[this] def getResource(name: String) = {
+    val resourceName = s"icon_collection_${name}_detail"
+    val resource = getResources.getIdentifier(resourceName, "drawable", context.getPackageName)
+    if (resource == 0) R.drawable.icon_collection_default_detail else resource
   }
 
   private[this] def rvResetItems = Tweak[RecyclerView] {
@@ -284,6 +311,7 @@ case class FastScrollerStatuses(
   totalItems: Int = 0,
   visibleRows: Int = 0,
   lastScrollToPosition: Int = -1,
+  fastScrollerSignalType: FastScrollerSignalType = FastScrollerText,
   counters: Seq[TermCounter] = Seq.empty) {
 
   /**
@@ -339,3 +367,9 @@ trait FastScrollerTransformsListener {
   def feedbackItems(from: Int, count: Int): Ui[_]
 
 }
+
+sealed trait FastScrollerSignalType
+
+case object FastScrollerCategory extends FastScrollerSignalType
+
+case object FastScrollerText extends FastScrollerSignalType

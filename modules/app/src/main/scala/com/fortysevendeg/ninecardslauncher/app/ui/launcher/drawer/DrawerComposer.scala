@@ -212,7 +212,11 @@ trait DrawerComposer
     swipeAdapter(
       adapter = appsAdapter,
       layoutManager = appsAdapter.getLayoutManager,
-      counters)
+      counters = counters,
+      signalType = getAppOrder match {
+        case GetByCategory => FastScrollerCategory
+        case _ => FastScrollerText
+      })
   }
 
   private[this] def getTypeView(): Option[BoxView] = searchBoxView map (_.statuses.currentItem)
@@ -265,15 +269,17 @@ trait DrawerComposer
   private[this] def swipeAdapter(
     adapter: RecyclerView.Adapter[_],
     layoutManager: LayoutManager,
-    counters: Seq[TermCounter]) =
+    counters: Seq[TermCounter],
+    signalType: FastScrollerSignalType = FastScrollerText) =
     (recycler <~
       rvLayoutManager(layoutManager) <~
       rvAdapter(adapter) <~
       rvScrollToTop) ~
-      scrollerLayoutUi(counters)
+      scrollerLayoutUi(counters, signalType)
 
-  def scrollerLayoutUi(counters: Seq[TermCounter]): Ui[_] = recycler map { rv =>
-    scrollerLayout <~ fslEnabledScroller(true) <~ fslLinkRecycler(rv) <~ fslReset <~ fslCounters(counters)
-  } getOrElse showGeneralError
+  private[this] def scrollerLayoutUi(counters: Seq[TermCounter], signalType: FastScrollerSignalType): Ui[_] =
+    recycler map { rv =>
+      scrollerLayout <~ fslEnabledScroller(true) <~ fslLinkRecycler(rv) <~ fslReset <~ fslCounters(counters) <~ fslSignalType(signalType)
+    } getOrElse showGeneralError
 
 }
