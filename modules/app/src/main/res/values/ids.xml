@@ -7,4 +7,5 @@
     <item name="drawable_on" type="id" />
     <item name="drawable_off" type="id" />
     <item name="selected_item" type="id" />
+    <item name="max" type="id" />
 </resources>

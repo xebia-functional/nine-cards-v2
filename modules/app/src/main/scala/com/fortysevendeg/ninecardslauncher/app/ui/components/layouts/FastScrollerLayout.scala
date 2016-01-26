@@ -13,6 +13,7 @@ import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, LayoutInflater, MotionEvent}
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -138,8 +139,15 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
             (recyclerView <~ rvScrollToPosition(y)))
         true
       case (_, ACTION_UP | ACTION_CANCEL) =>
-        statuses = statuses.resetScroll()
-        runUi((recyclerView <~ rvScrollToPosition(y)) ~ changePosition(y) ~ hideSignal)
+        statuses = statuses.resetScrollPosition()
+        runUi(
+          (recyclerView <~ rvResetItems) ~
+            changePosition(y) ~
+            hideSignal ~
+            uiHandlerDelayed({
+              statuses = statuses.resetScroll()
+              recyclerView <~ rvResetItems
+            }, 600))
         true
       case _ => super.onTouchEvent(event)
     }
@@ -189,13 +197,19 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       if (statuses.usingCounters) {
         val item = statuses.counters(position)
         val count = (statuses.counters take position map (_.count)).sum
+        view.setTag(R.id.max, item.count)
         view.smoothScrollToPosition(count)
         runUi(text <~ tvText(item.term))
       } else {
         val count = position * statuses.columns
-        view.smoothScrollToPosition(position * statuses.columns)
+        view.setTag(R.id.max, javaNull)
+        view.smoothScrollToPosition(count)
       }
     }
+  }
+
+  private[this] def rvResetItems = Tweak[RecyclerView] {
+    case v: FastScrollerTransformsListener => if (statuses.usingCounters) runUi(v.feedbackItems(0, 0))
   }
 
   private[this] def getPosition(y: Float) = if (statuses.usingCounters) {
@@ -302,7 +316,9 @@ case class FastScrollerStatuses(
 
   def startScroll(): FastScrollerStatuses = copy(moving = true)
 
-  def resetScroll(): FastScrollerStatuses = copy(lastScrollToPosition = -1, moving = false)
+  def resetScrollPosition(): FastScrollerStatuses = copy(lastScrollToPosition = -1)
+
+  def resetScroll(): FastScrollerStatuses = copy(moving = false)
 
   def usingCounters = counters.nonEmpty
 
@@ -316,6 +332,10 @@ trait FastScrollerListener {
 
   def getColumns: Int
 
-  def getElement(position: Int): Option[String]
+}
+
+trait FastScrollerTransformsListener {
+
+  def feedbackItems(from: Int, count: Int): Ui[_]
 
 }
