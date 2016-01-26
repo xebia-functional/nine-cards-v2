@@ -12,8 +12,6 @@ object NineCardsUri {
 
   val collectionUriString = s"$contentPrefix$authorityPart/${CollectionEntity.table}"
 
-  val geoInfoUriString = s"$contentPrefix$authorityPart/${GeoInfoEntity.table}"
-
   val userUriString = s"$contentPrefix$authorityPart/${UserEntity.table}"
 
   val dockAppUriString = s"$contentPrefix$authorityPart/${DockAppEntity.table}"

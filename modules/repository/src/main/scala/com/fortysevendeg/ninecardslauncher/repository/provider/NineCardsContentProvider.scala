@@ -20,8 +20,6 @@ class NineCardsContentProvider extends ContentProvider {
       case `codeCardSingleItem` => (CardEntity.table, MimeTypeSingleItem)
       case `codeCollectionAllItems` => (CollectionEntity.table, MimeTypeAllItems)
       case `codeCollectionSingleItem` => (CollectionEntity.table, MimeTypeSingleItem)
-      case `codeGeoInfoAllItems` => (GeoInfoEntity.table, MimeTypeAllItems)
-      case `codeGeoInfoSingleItem` => (GeoInfoEntity.table, MimeTypeSingleItem)
       case `codeAppAllItems` => (AppEntity.table, MimeTypeAllItems)
       case `codeAppSingleItem` => (AppEntity.table, MimeTypeSingleItem)
       case `codeUserAllItems` => (UserEntity.table, MimeTypeAllItems)
@@ -127,8 +125,6 @@ object NineCardsContentProvider {
   val codeCardSingleItem = 4
   val codeCollectionAllItems = 5
   val codeCollectionSingleItem = 6
-  val codeGeoInfoAllItems = 7
-  val codeGeoInfoSingleItem = 8
   val codeAppAllItems = 9
   val codeAppSingleItem = 10
   val codeUserAllItems = 11
@@ -145,8 +141,6 @@ object NineCardsContentProvider {
   uriMatcher.addURI(authorityPart, s"${CardEntity.table}/#", codeCardSingleItem)
   uriMatcher.addURI(authorityPart, CollectionEntity.table, codeCollectionAllItems)
   uriMatcher.addURI(authorityPart, s"${CollectionEntity.table}/#", codeCollectionSingleItem)
-  uriMatcher.addURI(authorityPart, GeoInfoEntity.table, codeGeoInfoAllItems)
-  uriMatcher.addURI(authorityPart, s"${GeoInfoEntity.table}/#", codeGeoInfoSingleItem)
   uriMatcher.addURI(authorityPart, UserEntity.table, codeUserAllItems)
   uriMatcher.addURI(authorityPart, s"${UserEntity.table}/#", codeUserSingleItem)
   uriMatcher.addURI(authorityPart, DockAppEntity.table, codeDockAppAllItems)

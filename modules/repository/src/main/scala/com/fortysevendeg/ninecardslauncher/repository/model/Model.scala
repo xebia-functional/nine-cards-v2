@@ -59,17 +59,9 @@ case class DockAppData(
   imagePath: String,
   position: Int)
 
-case class GeoInfo(
-  id: Int,
-  data: GeoInfoData)
 
-case class GeoInfoData(
-  constrain: String,
-  occurrence: String,
-  wifi: String,
-  latitude: Double,
-  longitude: Double,
-  system: Boolean)
+
+
 
 case class User(
   id: Int,
