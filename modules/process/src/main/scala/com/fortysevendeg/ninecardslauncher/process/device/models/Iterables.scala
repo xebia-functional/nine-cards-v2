@@ -2,10 +2,10 @@ package com.fortysevendeg.ninecardslauncher.process.device.models
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.process.device.DeviceConversions
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{IterableApps => ServiceIterableApps}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{IterableApps => ServicesIterableApps}
 
-class IterableApps(cursor: ServiceIterableApps)
+class IterableApps(cursor: ServicesIterableApps)
   extends IterableCursor[App]
   with DeviceConversions {
 
@@ -17,7 +17,7 @@ class IterableApps(cursor: ServiceIterableApps)
 
 }
 
-class IterableContacts(cursor: IterableCursor[ServiceContact])
+class IterableContacts(cursor: IterableCursor[ServicesContact])
   extends IterableCursor[Contact]
     with DeviceConversions {
 

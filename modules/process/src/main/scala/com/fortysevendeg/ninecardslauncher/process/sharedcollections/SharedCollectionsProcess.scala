@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, CreatedCollection}
 
 trait SharedCollectionsProcess {
 
@@ -22,4 +22,13 @@ trait SharedCollectionsProcess {
     offset: Int,
     limit: Int)(implicit context: ContextSupport): ServiceDef2[Seq[SharedCollection], SharedCollectionsExceptions]
 
+  /**
+    * Persist a [[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]]
+    * @param sharedCollection the defined collection to create
+    * @param return unit, to signify successful completion
+    * @throws SharedCollectionsExceptions if the service cannot create the collection for some reason
+    */
+  def createSharedCollection(
+    sharedCollection: SharedCollection
+  )(implicit context: ContextSupport): ServiceDef2[CreatedCollection, SharedCollectionsExceptions]
 }

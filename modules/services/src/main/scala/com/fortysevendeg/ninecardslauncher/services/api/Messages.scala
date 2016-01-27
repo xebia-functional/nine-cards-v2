@@ -94,3 +94,16 @@ case class SharedCollectionPackageResponse(
   stars: Double,
   downloads: String,
   free: Boolean)
+
+case class CreateSharedCollectionResponse(
+  statusCode: Int,
+  newSharedCollection: CreateSharedCollection)
+
+case class CreateSharedCollection(
+  name: String,
+  description: String,
+  author: String,
+  packages: Seq[String],
+  category: String,
+  icon: String,
+  community: Boolean)

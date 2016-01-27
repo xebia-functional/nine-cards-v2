@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsExceptions
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreatedCollection
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices}
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
 import org.specs2.mock.Mockito
@@ -54,6 +55,8 @@ trait SharedCollectionsProcessImplSpecification
     mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
       Service(Task(Result.answer(shareCollectionList)))
 
+    mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
+      Service(Task(Result.answer(createSharedCollectionResponse)))
   }
 
   trait ErrorSharedCollectionsProcessProcessScope {
@@ -63,6 +66,8 @@ trait SharedCollectionsProcessImplSpecification
     mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
       Service(Task(Errata(apiException)))
 
+    mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
+      Service(Task(Errata(apiException)))
   }
 
 }
@@ -101,4 +106,37 @@ class SharedCollectionsProcessImplSpec
       }
   }
 
+  "createNewCollection" should {
+
+    "successfully create a collection for a valid request" in
+      new SharedCollectionsProcessProcessScope with ValidSharedCollectionsProcessProcessScope {
+        val result = sharedCollectionsProcess.createSharedCollection(
+          sharedCollection
+        )(contextSupport).run.run
+
+        result mustEqual Answer(
+          CreatedCollection(
+            sharedCollection.name,
+            sharedCollection.description,
+            sharedCollection.author,
+            sharedCollection.packages,
+            sharedCollection.category,
+            sharedCollection.icon,
+            sharedCollection.community
+          ))
+      }
+
+    "return a SharedCollectionsException if the service throws an exception" in
+      new SharedCollectionsProcessProcessScope with ErrorSharedCollectionsProcessProcessScope {
+        val result = sharedCollectionsProcess.createSharedCollection(
+          sharedCollection
+        )(contextSupport).run.run
+
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[SharedCollectionsExceptions]
+          }
+        }
+      }
+  }
 }

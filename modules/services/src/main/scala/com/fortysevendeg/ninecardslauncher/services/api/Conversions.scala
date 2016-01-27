@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
-import com.fortysevendeg.ninecardslauncher.api.model.{SharedCollectionPackage, SharedCollection, GooglePlayRecommendation}
-import com.fortysevendeg.ninecardslauncher.api.{model => apiModel}
+import com.fortysevendeg.ninecardslauncher.api.model.{AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, GooglePlayPackage => ApiGooglePlayPackage, GooglePlayRecommendation, GooglePlaySimplePackage => ApiGooglePlaySimplePackage, GooglePlaySimplePackages => ApiGooglePlaySimplePackages, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, SharedCollection, SharedCollectionPackage, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigGeoInfo => ApiUserConfigGeoInfo, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json._
 
@@ -10,15 +9,15 @@ trait Conversions {
   def toUser(
     email: String,
     device: GoogleDevice
-    ): apiModel.User =
-    apiModel.User(
+    ): ApiUser =
+    ApiUser(
       _id = None,
       email = None,
       sessionToken = None,
       username = None,
       password = None,
-      authData = Some(apiModel.AuthData(
-        google = Some(apiModel.AuthGoogle(
+      authData = Some(ApiAuthData(
+        google = Some(ApiAuthGoogle(
           email = email,
           devices = List(fromGoogleDevice(device))
         )),
@@ -26,14 +25,14 @@ trait Conversions {
         twitter = None,
         anonymous = None)))
 
-  def fromGoogleDevice(device: GoogleDevice): apiModel.AuthGoogleDevice =
-    apiModel.AuthGoogleDevice(
+  def fromGoogleDevice(device: GoogleDevice): ApiAuthGoogleDevice =
+    ApiAuthGoogleDevice(
       name = device.name,
       deviceId = device.deviceId,
       secretToken = device.secretToken,
       permissions = device.permissions)
 
-  def toUser(user: apiModel.User): User =
+  def toUser(user: ApiUser): User =
     User(
       id = user._id,
       sessionToken = user.sessionToken,
@@ -43,9 +42,9 @@ trait Conversions {
         google <- data.google
       } yield toGoogleDeviceSeq(google.devices)) getOrElse Seq.empty)
 
-  def toGoogleDeviceSeq(devices: Seq[apiModel.AuthGoogleDevice]): Seq[GoogleDevice] = devices map toGoogleDevice
+  def toGoogleDeviceSeq(devices: Seq[ApiAuthGoogleDevice]): Seq[GoogleDevice] = devices map toGoogleDevice
 
-  def toGoogleDevice(device: apiModel.AuthGoogleDevice): GoogleDevice =
+  def toGoogleDevice(device: ApiAuthGoogleDevice): GoogleDevice =
     GoogleDevice(
       name = device.name,
       deviceId = device.deviceId,
@@ -55,9 +54,9 @@ trait Conversions {
   def toAuthData(
     email: String,
     devices: Seq[GoogleDevice]
-    ): apiModel.AuthData =
-    apiModel.AuthData(
-      google = Some(apiModel.AuthGoogle(
+    ): ApiAuthData =
+    ApiAuthData(
+      google = Some(ApiAuthGoogle(
         email = email,
         devices = devices map fromGoogleDevice
       )),
@@ -70,14 +69,14 @@ trait Conversions {
     deviceType: Option[DeviceType],
     deviceToken: Option[String],
     userId: Option[String]
-    ): apiModel.Installation =
-    apiModel.Installation(
+    ): ApiInstallation =
+    ApiInstallation(
       _id = id,
       deviceType = deviceType map (_.paramValue),
       deviceToken = deviceToken,
       userId = userId)
 
-  def toInstallation(installation: apiModel.Installation): Installation =
+  def toInstallation(installation: ApiInstallation): Installation =
     Installation(
       id = installation._id,
       deviceType = installation.deviceType flatMap parseDeviceType,
@@ -90,14 +89,14 @@ trait Conversions {
       case _ => None
     }
 
-  def toGooglePlayPackageSeq(googlePlayPackages: Seq[apiModel.GooglePlayPackage]): Seq[GooglePlayPackage] =
+  def toGooglePlayPackageSeq(googlePlayPackages: Seq[ApiGooglePlayPackage]): Seq[GooglePlayPackage] =
     googlePlayPackages map toGooglePlayPackage
 
-  def toGooglePlayPackage(googlePlayPackage: apiModel.GooglePlayPackage): GooglePlayPackage =
+  def toGooglePlayPackage(googlePlayPackage: ApiGooglePlayPackage): GooglePlayPackage =
     GooglePlayPackage(
       app = toGooglePlayApp(googlePlayPackage.docV2))
 
-  def toGooglePlayApp(googlePlayApp: apiModel.GooglePlayApp): GooglePlayApp =
+  def toGooglePlayApp(googlePlayApp: ApiGooglePlayApp): GooglePlayApp =
     GooglePlayApp(
       docid = googlePlayApp.docid,
       title = googlePlayApp.title,
@@ -119,30 +118,30 @@ trait Conversions {
 
   val iconVideoType = 3
 
-  def getIcon(images: Seq[apiModel.GooglePlayImage]): Option[String] =
+  def getIcon(images: Seq[ApiGooglePlayImage]): Option[String] =
     images.find(_.imageType == iconImageType) map (_.imageUrl)
 
-  def getBackground(images: Seq[apiModel.GooglePlayImage]): Option[String] =
+  def getBackground(images: Seq[ApiGooglePlayImage]): Option[String] =
     images.find(_.imageType == iconBackgroundType) map (_.imageUrl)
 
-  def getScreenShoots(images: Seq[apiModel.GooglePlayImage]): Seq[String] =
+  def getScreenShoots(images: Seq[ApiGooglePlayImage]): Seq[String] =
     images.filter(_.imageType == iconScreenShootType) map (_.imageUrl)
 
-  def getVideo(images: Seq[apiModel.GooglePlayImage]): Option[String] =
+  def getVideo(images: Seq[ApiGooglePlayImage]): Option[String] =
     images.find(_.imageType == iconVideoType) map (_.imageUrl)
 
-  def toGooglePlayImage(googlePlayImage: apiModel.GooglePlayImage): GooglePlayImage =
+  def toGooglePlayImage(googlePlayImage: ApiGooglePlayImage): GooglePlayImage =
     GooglePlayImage(
       imageType = googlePlayImage.imageType,
       imageUrl = googlePlayImage.imageUrl,
       creator = googlePlayImage.creator)
 
-  def toGooglePlayOffer(googlePlayOffer: apiModel.GooglePlayOffer): GooglePlayOffer =
+  def toGooglePlayOffer(googlePlayOffer: ApiGooglePlayOffer): GooglePlayOffer =
     GooglePlayOffer(
       formattedAmount = googlePlayOffer.formattedAmount,
       micros = googlePlayOffer.micros)
 
-  def toGooglePlayAggregateRating(googlePlayAggregateRating: apiModel.GooglePlayAggregateRating): GooglePlayAggregateRating =
+  def toGooglePlayAggregateRating(googlePlayAggregateRating: ApiGooglePlayAggregateRating): GooglePlayAggregateRating =
     GooglePlayAggregateRating(
       ratingsCount = googlePlayAggregateRating.ratingsCount,
       commentCount = googlePlayAggregateRating.commentCount,
@@ -153,10 +152,10 @@ trait Conversions {
       fiveStarRatings = googlePlayAggregateRating.fiveStarRatings,
       starRating = googlePlayAggregateRating.starRating)
 
-  def toGooglePlayDetails(googlePlayDetails: apiModel.GooglePlayDetails): GooglePlayDetails =
+  def toGooglePlayDetails(googlePlayDetails: ApiGooglePlayDetails): GooglePlayDetails =
     GooglePlayDetails(appDetails = toGooglePlayAppDetails(googlePlayDetails.appDetails))
 
-  def toGooglePlayAppDetails(googlePlayAppDetails: apiModel.GooglePlayAppDetails): GooglePlayAppDetails =
+  def toGooglePlayAppDetails(googlePlayAppDetails: ApiGooglePlayAppDetails): GooglePlayAppDetails =
     GooglePlayAppDetails(
       appCategory = googlePlayAppDetails.appCategory,
       numDownloads = googlePlayAppDetails.numDownloads,
@@ -168,13 +167,13 @@ trait Conversions {
       appType = googlePlayAppDetails.appType,
       permission = googlePlayAppDetails.permission)
 
-  def toGooglePlaySimplePackages(googlePlaySimplePackages: apiModel.GooglePlaySimplePackages): GooglePlaySimplePackages =
+  def toGooglePlaySimplePackages(googlePlaySimplePackages: ApiGooglePlaySimplePackages): GooglePlaySimplePackages =
     GooglePlaySimplePackages(
       errors = googlePlaySimplePackages.errors,
       items = googlePlaySimplePackages.items map toGooglePlaySimplePackage
     )
 
-  def toGooglePlaySimplePackage(googlePlaySimplePackage: apiModel.GooglePlaySimplePackage): GooglePlaySimplePackage =
+  def toGooglePlaySimplePackage(googlePlaySimplePackage: ApiGooglePlaySimplePackage): GooglePlaySimplePackage =
     GooglePlaySimplePackage(
       packageName = googlePlaySimplePackage.packageName,
       appType = googlePlaySimplePackage.appType,
@@ -185,7 +184,7 @@ trait Conversions {
       commentCount = googlePlaySimplePackage.commentCount
     )
 
-  def toUserConfig(apiUserConfig: apiModel.UserConfig): UserConfig =
+  def toUserConfig(apiUserConfig: ApiUserConfig): UserConfig =
     UserConfig(
       _id = apiUserConfig._id,
       email = apiUserConfig.email,
@@ -194,23 +193,23 @@ trait Conversions {
       geoInfo = toUserConfigGeoInfo(apiUserConfig.geoInfo),
       status = toUserConfigStatusInfo(apiUserConfig.status))
 
-  def toUserConfigPlusProfile(apiPlusProfile: apiModel.UserConfigPlusProfile): UserConfigPlusProfile =
+  def toUserConfigPlusProfile(apiPlusProfile: ApiUserConfigPlusProfile): UserConfigPlusProfile =
     UserConfigPlusProfile(
       displayName = apiPlusProfile.displayName,
       profileImage = toUserConfigProfileImage(apiPlusProfile.profileImage))
 
-  def toUserConfigProfileImage(apiProfileImage: apiModel.UserConfigProfileImage): UserConfigProfileImage =
+  def toUserConfigProfileImage(apiProfileImage: ApiUserConfigProfileImage): UserConfigProfileImage =
     UserConfigProfileImage(
       imageType = apiProfileImage.imageType,
       imageUrl = apiProfileImage.imageUrl)
 
-  def toUserConfigDevice(apiDevice: apiModel.UserConfigDevice): UserConfigDevice =
+  def toUserConfigDevice(apiDevice: ApiUserConfigDevice): UserConfigDevice =
     UserConfigDevice(
       deviceId = apiDevice.deviceId,
       deviceName = apiDevice.deviceName,
       collections = apiDevice.collections map toUserConfigCollection)
 
-  def toUserConfigCollection(apiCollection: apiModel.UserConfigCollection): UserConfigCollection =
+  def toUserConfigCollection(apiCollection: ApiUserConfigCollection): UserConfigCollection =
     UserConfigCollection(
       name = apiCollection.name,
       originalSharedCollectionId = apiCollection.originalSharedCollectionId,
@@ -228,34 +227,34 @@ trait Conversions {
       alt = apiCollection.alt,
       category = apiCollection.category)
 
-  def toUserConfigCollectionItem(apiCollectionItem: apiModel.UserConfigCollectionItem): UserConfigCollectionItem =
+  def toUserConfigCollectionItem(apiCollectionItem: ApiUserConfigCollectionItem): UserConfigCollectionItem =
     UserConfigCollectionItem(
       itemType = apiCollectionItem.itemType,
       title = apiCollectionItem.title,
       metadata = apiCollectionItem.metadata,
       categories = apiCollectionItem.categories)
 
-  def toUserConfigGeoInfo(apiGeoInfo: apiModel.UserConfigGeoInfo): UserConfigGeoInfo =
+  def toUserConfigGeoInfo(apiGeoInfo: ApiUserConfigGeoInfo): UserConfigGeoInfo =
     UserConfigGeoInfo(
       homeMorning = apiGeoInfo.homeMorning map toUserConfigUserLocation,
       homeNight = apiGeoInfo.homeNight map toUserConfigUserLocation,
       work = apiGeoInfo.work map toUserConfigUserLocation,
       current = apiGeoInfo.current map toUserConfigUserLocation)
 
-  def toUserConfigUserLocation(apiUserLocation: apiModel.UserConfigUserLocation): UserConfigUserLocation =
+  def toUserConfigUserLocation(apiUserLocation: ApiUserConfigUserLocation): UserConfigUserLocation =
     UserConfigUserLocation(
       wifi = apiUserLocation.wifi,
       lat = apiUserLocation.lat,
       lng = apiUserLocation.lng,
       occurrence = apiUserLocation.occurrence map toUserConfigTimeSlot)
 
-  def toUserConfigTimeSlot(apiTimeSlot: apiModel.UserConfigTimeSlot): UserConfigTimeSlot =
+  def toUserConfigTimeSlot(apiTimeSlot: ApiUserConfigTimeSlot): UserConfigTimeSlot =
     UserConfigTimeSlot(
       from = apiTimeSlot.from,
       to = apiTimeSlot.to,
       days = apiTimeSlot.days)
 
-  def toUserConfigStatusInfo(apiStatusInfo: apiModel.UserConfigStatusInfo): UserConfigStatusInfo =
+  def toUserConfigStatusInfo(apiStatusInfo: ApiUserConfigStatusInfo): UserConfigStatusInfo =
     UserConfigStatusInfo(
       products = apiStatusInfo.products,
       friendsReferred = apiStatusInfo.friendsReferred,
@@ -267,14 +266,14 @@ trait Conversions {
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
 
-  def toConfigDevice(device: UserConfigDevice): apiModel.UserConfigDevice =
-    apiModel.UserConfigDevice(
+  def toConfigDevice(device: UserConfigDevice): ApiUserConfigDevice =
+    ApiUserConfigDevice(
       deviceId = device.deviceId,
       deviceName = device.deviceName,
       collections = device.collections map fromUserConfigCollection)
 
-  def fromUserConfigCollection(collection: UserConfigCollection): apiModel.UserConfigCollection =
-    apiModel.UserConfigCollection(
+  def fromUserConfigCollection(collection: UserConfigCollection): ApiUserConfigCollection =
+    ApiUserConfigCollection(
       name = collection.name,
       originalSharedCollectionId = collection.originalSharedCollectionId,
       sharedCollectionId = collection.sharedCollectionId,
@@ -291,29 +290,29 @@ trait Conversions {
       alt = collection.alt,
       category = collection.category)
 
-  def fromUserConfigCollectionItem(collectionItem: UserConfigCollectionItem): apiModel.UserConfigCollectionItem =
-    apiModel.UserConfigCollectionItem(
+  def fromUserConfigCollectionItem(collectionItem: UserConfigCollectionItem): ApiUserConfigCollectionItem =
+    ApiUserConfigCollectionItem(
       itemType = collectionItem.itemType,
       title = collectionItem.title,
       metadata = Json.parse("{\"name\": \"test\"}"), // TODO Create metadata for item
       categories = collectionItem.categories)
 
-  def toUserConfigGeoInfo(apiGeoInfo: UserConfigGeoInfo): apiModel.UserConfigGeoInfo =
-    apiModel.UserConfigGeoInfo(
+  def toUserConfigGeoInfo(apiGeoInfo: UserConfigGeoInfo): ApiUserConfigGeoInfo =
+    ApiUserConfigGeoInfo(
       homeMorning = apiGeoInfo.homeMorning map fromUserConfigUserLocation,
       homeNight = apiGeoInfo.homeNight map fromUserConfigUserLocation,
       work = apiGeoInfo.work map fromUserConfigUserLocation,
       current = apiGeoInfo.current map fromUserConfigUserLocation)
 
-  def fromUserConfigUserLocation(apiUserLocation: UserConfigUserLocation): apiModel.UserConfigUserLocation =
-    apiModel.UserConfigUserLocation(
+  def fromUserConfigUserLocation(apiUserLocation: UserConfigUserLocation): ApiUserConfigUserLocation =
+    ApiUserConfigUserLocation(
       wifi = apiUserLocation.wifi,
       lat = apiUserLocation.lat,
       lng = apiUserLocation.lng,
       occurrence = apiUserLocation.occurrence map fromUserConfigTimeSlot)
 
-  def fromUserConfigTimeSlot(apiTimeSlot: UserConfigTimeSlot): apiModel.UserConfigTimeSlot =
-    apiModel.UserConfigTimeSlot(
+  def fromUserConfigTimeSlot(apiTimeSlot: UserConfigTimeSlot): ApiUserConfigTimeSlot =
+    ApiUserConfigTimeSlot(
       from = apiTimeSlot.from,
       to = apiTimeSlot.to,
       days = apiTimeSlot.days)
@@ -322,8 +321,8 @@ trait Conversions {
     categories: Seq[String],
     likePackages: Seq[String],
     excludePackages: Seq[String],
-    limit: Int): apiModel.RecommendationRequest =
-    apiModel.RecommendationRequest(
+    limit: Int): ApiRecommendationRequest =
+    ApiRecommendationRequest(
       collectionId = None,
       categories = categories,
       adPresenceRatio = 0.0,
@@ -369,4 +368,33 @@ trait Conversions {
       downloads = item.downloads,
       free = item.free)
 
+  def toShareCollection(
+    description: String,
+    author: String,
+    name: String,
+    packages: Seq[String],
+    category: String,
+    icon: String,
+    community: Boolean): ApiShareCollection =
+    ApiShareCollection(
+      sharedCollectionId = None,
+      description = description,
+      author = author,
+      name = name,
+      packages = packages,
+      category = category,
+      icon = icon,
+      community = community
+    )
+
+  def toCreateSharedCollection(sharedCollection: SharedCollection): CreateSharedCollection =
+    CreateSharedCollection(
+      name = sharedCollection.name,
+      description = sharedCollection.description,
+      author = sharedCollection.author,
+      packages = sharedCollection.packages,
+      category = sharedCollection.category,
+      icon = sharedCollection.icon,
+      community = sharedCollection.community
+    )
 }
