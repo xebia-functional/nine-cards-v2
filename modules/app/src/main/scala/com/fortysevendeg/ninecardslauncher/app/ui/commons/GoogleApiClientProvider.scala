@@ -10,17 +10,13 @@ import com.google.android.gms.drive._
 
 import scala.util.{Failure, Try}
 
-case class GoogleApiClientStatuses(username: Option[String] = None, apiClient: Option[GoogleApiClient] = None)
-
 trait GoogleApiClientProvider
   extends GoogleApiClient.ConnectionCallbacks
   with GoogleApiClient.OnConnectionFailedListener {
 
   self: Activity =>
 
-  var clientStatuses = GoogleApiClientStatuses()
-
-  def connectGoogleDrive(account: String) = {
+  def createGoogleDriveClient(account: String): GoogleApiClient = {
     val apiClient = new GoogleApiClient.Builder(this)
       .setAccountName(account)
       .addApi(Drive.API)
@@ -28,15 +24,14 @@ trait GoogleApiClientProvider
       .addConnectionCallbacks(this)
       .addOnConnectionFailedListener(this)
       .build()
-    apiClient.connect()
-    clientStatuses = clientStatuses.copy(username = Some(account), Some(apiClient))
+    apiClient
   }
 
-  def onRequestConnectionError(): Unit
+  def onRequestConnectionError(errorCode: Int): Unit
 
   def onResolveConnectionError(): Unit
 
-  def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
+  def tryToConnect(): Unit
 
   override def onConnectionSuspended(i: Int): Unit = { }
 
@@ -45,11 +40,11 @@ trait GoogleApiClientProvider
   override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
     if (connectionResult.hasResolution) {
       Try(connectionResult.startResolutionForResult(this, resolveGooglePlayConnection)) match {
-        case Failure(e) => onRequestConnectionError()
+        case Failure(e) => onRequestConnectionError(connectionResult.getErrorCode)
         case _ =>
       }
     } else {
-      GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode, this, 0).show()
+      onRequestConnectionError(connectionResult.getErrorCode)
     }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =

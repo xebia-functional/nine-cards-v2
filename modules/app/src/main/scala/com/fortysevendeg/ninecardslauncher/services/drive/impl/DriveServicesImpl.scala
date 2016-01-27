@@ -54,26 +54,20 @@ class DriveServicesImpl(client: GoogleApiClient)
   def readFile(driveId: String) =
     openDriveFile(driveId) { driveContentsResult =>
       val contents = driveContentsResult.getDriveContents
-      Answer(scala.io.Source.fromInputStream(contents.getInputStream).mkString)
-    }
-
-  def openFile(driveId: String) =
-    openDriveFile(driveId) { driveContentsResult =>
-      val contents = driveContentsResult.getDriveContents
-      Answer(contents.getInputStream)
+      val stringContent = scala.io.Source.fromInputStream(contents.getInputStream).mkString
+      contents.discard(client)
+      Answer(stringContent)
     }
 
   def createFile(title: String, content: String, fileId: String, fileType: String, mimeType: String) =
     createNewFile(title, fileId, fileType, mimeType, _.write(content)) map (_ => ())
 
   def createFile(title: String, content: InputStream, fileId: String, fileType: String, mimeType: String) =
-    for {
-      file <- createNewFile(title, fileId, fileType, mimeType,
+    createNewFile(title, fileId, fileType, mimeType,
         writer => Iterator
           .continually(content.read)
           .takeWhile(_ != -1)
-          .foreach(writer.write))
-    } yield ()
+          .foreach(writer.write)) map (_ => ())
 
   def updateFile(driveId: String, content: String) =
     updateFile(driveId, _.write(content))
@@ -118,8 +112,10 @@ class DriveServicesImpl(client: GoogleApiClient)
           writer.close()
 
           appFolder
-            .createFile(client, changeSet, r.getDriveContents)
-            .withResult(nr => Answer(nr.getDriveFile))
+            .createFile(client, changeSet, driveContents)
+            .withResult { nr =>
+              Answer(nr.getDriveFile)
+            }
         }
 
     }
