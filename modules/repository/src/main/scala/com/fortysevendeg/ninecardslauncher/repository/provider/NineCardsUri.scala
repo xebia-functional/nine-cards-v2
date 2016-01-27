@@ -12,7 +12,10 @@ object NineCardsUri {
 
   val collectionUriString = s"$contentPrefix$authorityPart/${CollectionEntity.table}"
 
+  val dockAppUriString = s"$contentPrefix$authorityPart/${DockAppEntity.table}"
+
+  val momentUriString = s"$contentPrefix$authorityPart/${MomentEntity.table}"
+
   val userUriString = s"$contentPrefix$authorityPart/${UserEntity.table}"
 
-  val dockAppUriString = s"$contentPrefix$authorityPart/${DockAppEntity.table}"
 }

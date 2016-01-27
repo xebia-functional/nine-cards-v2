@@ -59,9 +59,15 @@ case class DockAppData(
   imagePath: String,
   position: Int)
 
+case class Moment(
+  id: Int,
+  data: MomentData)
 
-
-
+case class MomentData(
+  collectionId: Option[Int],
+  timeslot: String,
+  wifi: String,
+  headphone: Boolean)
 
 case class User(
   id: Int,

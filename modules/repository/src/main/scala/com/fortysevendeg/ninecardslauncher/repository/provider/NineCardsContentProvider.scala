@@ -22,10 +22,13 @@ class NineCardsContentProvider extends ContentProvider {
       case `codeCollectionSingleItem` => (CollectionEntity.table, MimeTypeSingleItem)
       case `codeAppAllItems` => (AppEntity.table, MimeTypeAllItems)
       case `codeAppSingleItem` => (AppEntity.table, MimeTypeSingleItem)
-      case `codeUserAllItems` => (UserEntity.table, MimeTypeAllItems)
-      case `codeUserSingleItem` => (UserEntity.table, MimeTypeSingleItem)
       case `codeDockAppAllItems` => (DockAppEntity.table, MimeTypeAllItems)
       case `codeDockAppSingleItem` => (DockAppEntity.table, MimeTypeSingleItem)
+      case `codeMomentAllItems` => (MomentEntity.table, MimeTypeAllItems)
+      case `codeMomentSingleItem` => (MomentEntity.table, MimeTypeSingleItem)
+      case `codeUserAllItems` => (UserEntity.table, MimeTypeAllItems)
+      case `codeUserSingleItem` => (UserEntity.table, MimeTypeSingleItem)
+
       case _ => throw new IllegalArgumentException(invalidUri + uri)
     }
 
@@ -121,16 +124,18 @@ class NineCardsContentProvider extends ContentProvider {
 object NineCardsContentProvider {
 
   val invalidUri = "Invalid uri: "
+  val codeAppAllItems = 1
+  val codeAppSingleItem = 2
   val codeCardAllItems = 3
   val codeCardSingleItem = 4
   val codeCollectionAllItems = 5
   val codeCollectionSingleItem = 6
-  val codeAppAllItems = 9
-  val codeAppSingleItem = 10
+  val codeDockAppAllItems = 7
+  val codeDockAppSingleItem = 8
+  val codeMomentAllItems = 9
+  val codeMomentSingleItem = 10
   val codeUserAllItems = 11
   val codeUserSingleItem = 12
-  val codeDockAppAllItems = 13
-  val codeDockAppSingleItem = 14
   val mimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.com.fortysevendeg.ninecardslauncher"
   val mimeTypeSingleItemValue = "vnd.android.cursor.item/vnd.com.fortysevendeg.ninecardslauncher"
 
@@ -141,10 +146,12 @@ object NineCardsContentProvider {
   uriMatcher.addURI(authorityPart, s"${CardEntity.table}/#", codeCardSingleItem)
   uriMatcher.addURI(authorityPart, CollectionEntity.table, codeCollectionAllItems)
   uriMatcher.addURI(authorityPart, s"${CollectionEntity.table}/#", codeCollectionSingleItem)
-  uriMatcher.addURI(authorityPart, UserEntity.table, codeUserAllItems)
-  uriMatcher.addURI(authorityPart, s"${UserEntity.table}/#", codeUserSingleItem)
   uriMatcher.addURI(authorityPart, DockAppEntity.table, codeDockAppAllItems)
   uriMatcher.addURI(authorityPart, s"${DockAppEntity.table}/#", codeDockAppSingleItem)
+  uriMatcher.addURI(authorityPart, MomentEntity.table, codeMomentAllItems)
+  uriMatcher.addURI(authorityPart, s"${MomentEntity.table}/#", codeMomentSingleItem)
+  uriMatcher.addURI(authorityPart, UserEntity.table, codeUserAllItems)
+  uriMatcher.addURI(authorityPart, s"${UserEntity.table}/#", codeUserSingleItem)
 }
 
 sealed trait MimeType
