@@ -40,14 +40,7 @@ case class Card(
   numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
-case class GeoInfo(
-  id: Int,
-  constrain: String,
-  occurrence: String,
-  wifi: String,
-  latitude: Double,
-  longitude: Double,
-  system: Boolean)
+
 
 case class User(
   id: Int,

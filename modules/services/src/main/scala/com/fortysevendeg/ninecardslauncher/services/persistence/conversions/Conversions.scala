@@ -4,6 +4,5 @@ trait Conversions
   extends AppConversions
   with CardConversions
   with CollectionConversions
-  with GeoInfoConversions
   with UserConversions
   with DockAppConversions

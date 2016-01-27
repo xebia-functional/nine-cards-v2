@@ -10,7 +10,6 @@ class PersistenceServicesImpl(
   val cardRepository: CardRepository,
   val collectionRepository: CollectionRepository,
   val dockAppRepository: DockAppRepository,
-  val geoInfoRepository: GeoInfoRepository,
   val userRepository: UserRepository)
   extends PersistenceServices
   with Conversions
@@ -19,7 +18,6 @@ class PersistenceServicesImpl(
   with CardPersistenceServicesImpl
   with CollectionPersistenceServicesImpl
   with DockAppPersistenceServicesImpl
-  with GeoInfoPersistenceServicesImpl
   with UserPersistenceServicesImpl
   with AndroidPersistenceServicesImpl
   with ImplicitsPersistenceServiceExceptions {
@@ -78,20 +76,6 @@ class PersistenceServicesImpl(
   override def findCollectionById(request: FindCollectionByIdRequest) = super.findCollectionById(request)
 
   override def updateCollection(request: UpdateCollectionRequest) = super.updateCollection(request)
-
-  override def addGeoInfo(request: AddGeoInfoRequest) = super.addGeoInfo(request)
-
-  override def deleteAllGeoInfoItems() = super.deleteAllGeoInfoItems()
-
-  override def deleteGeoInfo(request: DeleteGeoInfoRequest) = super.deleteGeoInfo(request)
-
-  override def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest) = super.fetchGeoInfoByConstrain(request)
-
-  override def fetchGeoInfoItems = super.fetchGeoInfoItems
-
-  override def findGeoInfoById(request: FindGeoInfoByIdRequest) = super.findGeoInfoById(request)
-
-  override def updateGeoInfo(request: UpdateGeoInfoRequest) = super.updateGeoInfo(request)
 
   override def addUser(request: AddUserRequest) = super.addUser(request)
 

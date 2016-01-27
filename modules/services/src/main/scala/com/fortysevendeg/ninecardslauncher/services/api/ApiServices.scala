@@ -109,17 +109,6 @@ trait ApiServices {
     userConfigDevice: UserConfigDevice)(implicit requestConfig: RequestConfig): ServiceDef2[SaveDeviceResponse, ApiServiceException]
 
   /**
-   * Creates or updates geolocation information associated to the user identified by the data in
-   * [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfig]]
-   * @param userConfigGeoInfo the information to be stored
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SaveGeoInfoResponse]] with the HTTP Code
-   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserConfig]]
-   * @throws ApiServiceException if the user doesn't exists or there was an error in the request
-   */
-  def saveGeoInfo(
-    userConfigGeoInfo: UserConfigGeoInfo)(implicit requestConfig: RequestConfig): ServiceDef2[SaveGeoInfoResponse, ApiServiceException]
-
-  /**
    * Notifies that a product has been purchased by the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfig]]
    * @param productId the product identifier
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.CheckpointPurchaseProductResponse]] with the HTTP Code

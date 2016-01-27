@@ -7,7 +7,6 @@ case class UserConfig(
   email: String,
   plusProfile: UserConfigPlusProfile,
   devices: Seq[UserConfigDevice],
-  geoInfo: UserConfigGeoInfo,
   status: UserConfigStatusInfo)
 
 case class UserConfigPlusProfile(
@@ -18,12 +17,6 @@ case class UserConfigDevice(
   deviceId: String,
   deviceName: String,
   collections: Seq[UserConfigCollection])
-
-case class UserConfigGeoInfo(
-  homeMorning: Option[UserConfigUserLocation],
-  homeNight: Option[UserConfigUserLocation],
-  work: Option[UserConfigUserLocation],
-  current: Option[UserConfigUserLocation])
 
 case class UserConfigStatusInfo(
   products: Seq[String],

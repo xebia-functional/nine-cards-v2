@@ -218,60 +218,6 @@ trait PersistenceServices {
   def updateCollection(request: UpdateCollectionRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
-    * Adds an geoInfo item to the repository
-    * @param request includes the necessary data to create a new geoInfo item in the repository
-    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo
-    * @throws PersistenceServiceException if exist some problem creating the geoInfo item
-    */
-  def addGeoInfo(request: AddGeoInfoRequest): ServiceDef2[GeoInfo, PersistenceServiceException]
-
-  /**
-    * Deletes all geoInfo items from the repository by the where clause
-    * @return an Int if the geoInfo items has been deleted correctly
-    * @throws PersistenceServiceException if exist some problem deleting the geoInfo items
-    */
-  def deleteAllGeoInfoItems(): ServiceDef2[Int, PersistenceServiceException]
-
-  /**
-    * Deletes a geoInfo item from the repository by the geoInfo item
-    * @param request includes the geoInfo item to delete
-    * @return an Int if the geoInfo item has been deleted correctly
-    * @throws PersistenceServiceException if exist some problem deleting the geoInfo item
-    */
-  def deleteGeoInfo(request: DeleteGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException]
-
-  /**
-    * Obtains the geoInfo item from the repository by the constrain
-    * @param request includes the constrain of the geoInfo item to find
-    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo]
-    * @throws PersistenceServiceException if exist some problem obtaining the geoInfo item
-    */
-  def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest): ServiceDef2[Option[GeoInfo], PersistenceServiceException]
-
-  /**
-    * Obtains all the geoInfo items from the repository
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo]
-    * @throws PersistenceServiceException if exist some problem obtaining the geoInfo items
-    */
-  def fetchGeoInfoItems: ServiceDef2[Seq[GeoInfo], PersistenceServiceException]
-
-  /**
-    * Obtains the geoInfo item from the repository by the id
-    * @param request includes the id of the geoInfo item to find
-    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo]
-    * @throws PersistenceServiceException if exist some problem obtaining the geoInfo item
-    */
-  def findGeoInfoById(request: FindGeoInfoByIdRequest): ServiceDef2[Option[GeoInfo], PersistenceServiceException]
-
-  /**
-    * Updates the data of an geoInfo item from the repository
-    * @param request includes the data to update the geoInfo item
-    * @return an Int if the geoInfo item has been updated correctly
-    * @throws PersistenceServiceException if exist some problem updating the geoInfo item
-    */
-  def updateGeoInfo(request: UpdateGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException]
-
-  /**
     * Obtains the android id from the repository
     * @return an String with the android id
     * @throws AndroidIdNotFoundException if exist some problem obtaining the android id

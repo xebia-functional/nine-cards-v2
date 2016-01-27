@@ -1,11 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{AppData => RepositoryAppData, App => RepositoryApp, GeoInfo => RepositoryGeoInfo, GeoInfoData => RepositoryGeoInfoData,
-Collection => RepositoryCollection, CollectionData => RepositoryCollectionData,Card => RepositoryCard, CardData => RepositoryCardData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData,
-User => RepositoryUser, UserData => RepositoryUserData
-}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User, _}
+import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, User => RepositoryUser, UserData => RepositoryUserData}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, User, _}
 
 import scala.util.Random
 
@@ -31,8 +28,6 @@ trait PersistenceServicesData {
   val ratingsCount: Int = Random.nextInt(10)
   val commentCount: Int = Random.nextInt(10)
 
-  val geoInfoId: Int = Random.nextInt(10)
-  val nonExistentGeoInfoId: Int = Random.nextInt(10) + 100
   val constrain: String = Random.nextString(5)
   val nonExistentConstrain: String = "nonExistentPackageName"
   val occurrence: String = Random.nextString(5)
@@ -131,46 +126,6 @@ trait PersistenceServicesData {
     dateUpdate = dateUpdate,
     version = version,
     installedFromGooglePlay = installedFromGooglePlay)
-
-  def createSeqGeoInfo(
-    num: Int = 5,
-    id: Int = geoInfoId,
-    constrain: String = constrain,
-    occurrence: String = occurrence,
-    wifi: String = wifi,
-    longitude: Double = longitude,
-    latitude: Double = latitude,
-    system: Boolean = system): Seq[GeoInfo] = List.tabulate(num)(
-    item =>
-      GeoInfo(
-        id = id + item,
-        constrain = constrain,
-        occurrence = occurrence,
-        wifi = wifi,
-        longitude = longitude,
-        latitude = latitude,
-        system = system))
-
-  def createSeqRepoGeoInfo(
-    num: Int = 5,
-    id: Int = geoInfoId,
-    data: RepositoryGeoInfoData = createRepoGeoInfoData()): Seq[RepositoryGeoInfo] =
-    List.tabulate(num)(item => RepositoryGeoInfo(id = id + item, data = data))
-
-  def createRepoGeoInfoData(
-    constrain: String = constrain,
-    occurrence: String = occurrence,
-    wifi: String = wifi,
-    longitude: Double = longitude,
-    latitude: Double = latitude,
-    system: Boolean = system): RepositoryGeoInfoData =
-    RepositoryGeoInfoData(
-      constrain = constrain,
-      occurrence = occurrence,
-      wifi = wifi,
-      longitude = longitude,
-      latitude = latitude,
-      system = system)
 
   def createSeqCollection(
     num: Int = 5,
@@ -393,12 +348,6 @@ trait PersistenceServicesData {
   val seqRepoApp: Seq[RepositoryApp] = createSeqRepoApp(data = repoAppData)
   val repoApp: RepositoryApp = seqRepoApp(0)
 
-  val seqGeoInfo: Seq[GeoInfo] = createSeqGeoInfo()
-  val geoInfo: GeoInfo = seqGeoInfo(0)
-  val repoGeoInfoData: RepositoryGeoInfoData = createRepoGeoInfoData()
-  val seqRepoGeoInfo: Seq[RepositoryGeoInfo] = createSeqRepoGeoInfo(data = repoGeoInfoData)
-  val repoGeoInfo: RepositoryGeoInfo = seqRepoGeoInfo(0)
-
   val seqCard: Seq[Card] = createSeqCard()
   val card: Card = seqCard(0)
   val repoCardData: RepositoryCardData = createRepoCardData()
@@ -472,47 +421,6 @@ trait PersistenceServicesData {
       dateUpdate = dateUpdate,
       version = version,
       installedFromGooglePlay = installedFromGooglePlay)
-
-  def createAddGeoInfoRequest(
-    constrain: String = constrain,
-    occurrence: String = occurrence,
-    wifi: String = wifi,
-    longitude: Double = longitude,
-    latitude: Double = latitude,
-    system: Boolean = system): AddGeoInfoRequest =
-    AddGeoInfoRequest(
-      constrain = constrain,
-      occurrence = occurrence,
-      wifi = wifi,
-      longitude = longitude,
-      latitude = latitude,
-      system = system)
-
-  def createDeleteGeoInfoRequest(geoInfo: GeoInfo): DeleteGeoInfoRequest =
-    DeleteGeoInfoRequest(geoInfo = geoInfo)
-
-  def createFetchGeoInfoByConstrainRequest(constrain: String): FetchGeoInfoByConstrainRequest =
-    FetchGeoInfoByConstrainRequest(constrain = constrain)
-
-  def createFindGeoInfoByIdRequest(id: Int): FindGeoInfoByIdRequest =
-    FindGeoInfoByIdRequest(id = id)
-
-  def createUpdateGeoInfoRequest(
-    id: Int = geoInfoId,
-    constrain: String = constrain,
-    occurrence: String = occurrence,
-    wifi: String = wifi,
-    longitude: Double = longitude,
-    latitude: Double = latitude,
-    system: Boolean = system): UpdateGeoInfoRequest =
-    UpdateGeoInfoRequest(
-      id = id,
-      constrain = constrain,
-      occurrence = occurrence,
-      wifi = wifi,
-      longitude = longitude,
-      latitude = latitude,
-      system = system)
 
   def createAddCardRequest(
     collectionId: Int = collectionId,

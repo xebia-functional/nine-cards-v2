@@ -30,8 +30,6 @@ trait PersistenceServicesSpecification
 
     val mockDockAppRepository = mock[DockAppRepository]
 
-    val mockGeoInfoRepository = mock[GeoInfoRepository]
-
     val mockUserRepository = mock[UserRepository]
 
     val persistenceServices = new PersistenceServicesImpl(
@@ -39,7 +37,6 @@ trait PersistenceServicesSpecification
       cardRepository = mockCardRepository,
       collectionRepository = mockCollectionRepository,
       dockAppRepository = mockDockAppRepository,
-      geoInfoRepository = mockGeoInfoRepository,
       userRepository = mockUserRepository)
   }
 
@@ -64,24 +61,6 @@ trait PersistenceServicesSpecification
     mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(item)))
 
     mockAppRepository.updateApp(repoApp) returns Service(Task(Result.answer(item)))
-
-    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.answer(repoGeoInfo)))
-
-    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.answer(items)))
-
-    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(item)))
-
-    mockGeoInfoRepository.fetchGeoInfoItems returns Service(Task(Result.answer(seqRepoGeoInfo)))
-
-    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Service(Task(Result.answer(Option(repoGeoInfo))))
-
-    mockGeoInfoRepository.fetchGeoInfoByConstrain(nonExistentConstrain) returns Service(Task(Result.answer(None)))
-
-    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Service(Task(Result.answer(Option(repoGeoInfo))))
-
-    mockGeoInfoRepository.findGeoInfoById(nonExistentGeoInfoId) returns Service(Task(Result.answer(None)))
-
-    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(item)))
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.answer(repoCard)))
 
@@ -181,20 +160,6 @@ trait PersistenceServicesSpecification
     mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.updateApp(repoApp) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.fetchGeoInfoItems returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.errata(exception)))
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.errata(exception)))
 
@@ -605,197 +570,6 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateApp(createUpdateAppRequest()).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "addGeoInfo" should {
-
-    "return a GeoInfo value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest()).run.run
-
-      result must beLike {
-        case Answer(geoInfo) =>
-          geoInfo.id shouldEqual geoInfoId
-          geoInfo.constrain shouldEqual constrain
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest()).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "deleteAllGeoInfoItems" should {
-
-    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteAllGeoInfoItems().run.run
-
-      result must beLike {
-        case Answer(deleted) =>
-          deleted shouldEqual items
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteAllGeoInfoItems().run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "deleteGeoInfo" should {
-
-    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo)).run.run
-
-      result must beLike {
-        case Answer(deleted) =>
-          deleted shouldEqual item
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo)).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "fetchGeoInfoItems" should {
-
-    "return a list of GeoInfo elements for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoItems.run.run
-
-      result must beLike {
-        case Answer(geoInfoItems) =>
-          geoInfoItems.size shouldEqual seqGeoInfo.size
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoItems.run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "fetchGeoInfoByConstrain" should {
-
-    "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)).run.run
-
-      result must beLike {
-        case Answer(maybeGeoInfo) =>
-          maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
-            geoInfo.constrain shouldEqual constrain
-          }
-      }
-    }
-
-    "return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = nonExistentConstrain)).run.run
-
-      result must beLike {
-        case Answer(maybeGeoInfo) =>
-          maybeGeoInfo must beNone
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "findGeoInfoById" should {
-
-    "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)).run.run
-
-      result must beLike {
-        case Answer(maybeGeoInfo) =>
-          maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
-            geoInfo.id shouldEqual geoInfoId
-          }
-      }
-    }
-
-    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = nonExistentGeoInfoId)).run.run
-
-      result must beLike {
-        case Answer(maybeGeoInfo) =>
-          maybeGeoInfo must beNone
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "updateGeoInfo" should {
-
-    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest()).run.run
-
-      result must beLike {
-        case Answer(updated) =>
-          updated shouldEqual item
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest()).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
