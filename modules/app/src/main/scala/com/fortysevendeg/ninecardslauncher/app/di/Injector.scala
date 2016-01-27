@@ -70,6 +70,7 @@ class Injector(implicit contextSupport: ContextSupport) {
     cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
     collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
     dockAppRepository = new DockAppRepository(contentResolverWrapper, uriCreator),
+    momentRepository = new MomentRepository(contentResolverWrapper, uriCreator),
     userRepository = new UserRepository(contentResolverWrapper, uriCreator))
 
   private[this] lazy val appsServices = new AppsServicesImpl()

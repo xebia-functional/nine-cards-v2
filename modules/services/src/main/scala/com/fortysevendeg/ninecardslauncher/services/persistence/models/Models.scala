@@ -40,8 +40,6 @@ case class Card(
   numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
-
-
 case class User(
   id: Int,
   userId: Option[String],
@@ -58,3 +56,10 @@ case class DockApp(
   intent: String,
   imagePath: String,
   position: Int)
+
+case class Moment(
+  id: Int,
+  collectionId: Option[Int],
+  timeslot: String,
+  wifi: String,
+  headphone: Boolean)

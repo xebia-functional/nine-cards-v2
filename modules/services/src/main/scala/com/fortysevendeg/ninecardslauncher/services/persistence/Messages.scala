@@ -156,4 +156,22 @@ case class DeleteDockAppRequest(dockApp: DockApp)
 
 case class FindDockAppByIdRequest(id: Int)
 
+case class AddMomentRequest(
+  collectionId: Option[Int],
+  timeslot: String,
+  wifi: String,
+  headphone: Boolean)
+
+case class DeleteMomentsRequest(where: String)
+
+case class DeleteMomentRequest(moment: Moment)
+
+case class FindMomentByIdRequest(id: Int)
+
+case class UpdateMomentRequest(
+  id: Int,
+  collectionId: Option[Int],
+  timeslot: String,
+  wifi: String,
+  headphone: Boolean)
 

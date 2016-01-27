@@ -314,4 +314,50 @@ trait PersistenceServices {
     */
   def findDockAppById(request: FindDockAppByIdRequest): ServiceDef2[Option[DockApp], PersistenceServiceException]
 
+  /**
+    * Adds an moment to the repository
+    * @param request includes the necessary data to create a new moment in the repository
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment
+    * @throws PersistenceServiceException if exist some problem creating the moment
+    */
+  def addMoment(request: AddMomentRequest): ServiceDef2[Moment, PersistenceServiceException]
+
+  /**
+    * Deletes all moments from the repository by the where clause
+    * @return an Int if the moments has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the moments
+    */
+  def deleteAllMoments(): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+    * Deletes an moment from the repository by the moment
+    * @param request includes the moment to delete
+    * @return an Int if the moment has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the moment
+    */
+  def deleteMoment(request: DeleteMomentRequest): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+    * Obtains all the moments from the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
+    * @throws PersistenceServiceException if exist some problem obtaining the moments
+    */
+  def fetchMoments: ServiceDef2[Seq[Moment], PersistenceServiceException]
+
+  /**
+    * Obtains an moment from the repository by the id
+    * @param request includes the moment id  of the moment to get
+    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
+    * @throws PersistenceServiceException if exist some problem obtaining the moment
+    */
+  def findMomentById(request: FindMomentByIdRequest): ServiceDef2[Option[Moment], PersistenceServiceException]
+
+  /**
+    * Updates the data of an moment from the repository
+    * @param request includes the data to update the moment
+    * @return an Int if the moment has been updated correctly
+    * @throws PersistenceServiceException if exist some problem updating the moment
+    */
+  def updateMoment(request: UpdateMomentRequest): ServiceDef2[Int, PersistenceServiceException]
+
 }

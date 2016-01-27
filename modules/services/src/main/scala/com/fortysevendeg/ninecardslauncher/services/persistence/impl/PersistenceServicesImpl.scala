@@ -10,6 +10,7 @@ class PersistenceServicesImpl(
   val cardRepository: CardRepository,
   val collectionRepository: CollectionRepository,
   val dockAppRepository: DockAppRepository,
+  val momentRepository: MomentRepository,
   val userRepository: UserRepository)
   extends PersistenceServices
   with Conversions
@@ -18,6 +19,7 @@ class PersistenceServicesImpl(
   with CardPersistenceServicesImpl
   with CollectionPersistenceServicesImpl
   with DockAppPersistenceServicesImpl
+  with MomentPersistenceServicesImpl
   with UserPersistenceServicesImpl
   with AndroidPersistenceServicesImpl
   with ImplicitsPersistenceServiceExceptions {
@@ -102,4 +104,16 @@ class PersistenceServicesImpl(
   override def findDockAppById(request: FindDockAppByIdRequest) = super.findDockAppById(request)
 
   override def getAndroidId(implicit context: ContextSupport) = super.getAndroidId
+
+  override def addMoment(request: AddMomentRequest) = super.addMoment(request)
+
+  override def deleteAllMoments() = super.deleteAllMoments()
+
+  override def deleteMoment(request: DeleteMomentRequest) = super.deleteMoment(request)
+
+  override def fetchMoments = super.fetchMoments
+
+  override def findMomentById(request: FindMomentByIdRequest) = super.findMomentById(request)
+
+  override def updateMoment(request: UpdateMomentRequest) = super.updateMoment(request)
 }

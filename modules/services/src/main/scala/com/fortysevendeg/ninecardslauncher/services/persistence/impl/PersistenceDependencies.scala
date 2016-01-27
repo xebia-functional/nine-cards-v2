@@ -7,5 +7,6 @@ trait PersistenceDependencies {
   val cardRepository: CardRepository
   val collectionRepository: CollectionRepository
   val dockAppRepository: DockAppRepository
+  val momentRepository: MomentRepository
   val userRepository: UserRepository
 }

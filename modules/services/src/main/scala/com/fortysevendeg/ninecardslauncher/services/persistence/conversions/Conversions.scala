@@ -6,3 +6,4 @@ trait Conversions
   with CollectionConversions
   with UserConversions
   with DockAppConversions
+  with MomentConversions
