@@ -56,6 +56,8 @@ class ApiServicesImpl(
 
   val shareCollectionNotFoundMessage = "Shared Collections not found"
 
+  val createSharedCollectionNotFoundMessage = "Shared Collection not found"
+
   override def login(
     email: String,
     device: GoogleDevice) =
@@ -185,9 +187,22 @@ class ApiServicesImpl(
       sharedCollections <- readOption(response.data, shareCollectionNotFoundMessage)
     } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(sharedCollections.items))).resolve[ApiServiceException]
 
+  override def createSharedCollection(
+    name: String,
+    description: String,
+    author: String,
+    packages: Seq[String],
+    category: String,
+    icon: String,
+    community: Boolean)(implicit requestConfig: RequestConfig) =
+    (for {
+      response <- sharedCollectionsService.shareCollection(toShareCollection(description, author, name, packages, category, icon, community), requestConfig.toHeader)
+      createdCollection <- readOption(response.data, shareCollectionNotFoundMessage)
+    } yield CreateSharedCollectionResponse(response.statusCode, toCreateSharedCollection(createdCollection))).resolve[ApiServiceException]
+
   implicit class RequestHeaderHeader(request: RequestConfig) {
     def toHeader: Seq[(String, String)] =
-      baseHeader :+(headerDevice, request.deviceId) :+(headerToken, request.token)
+      baseHeader :+ ((headerDevice, request.deviceId)) :+ ((headerToken, request.token))
   }
 
   private[this] def readOption[T](maybe: Option[T], msg: String = ""): ServiceDef2[T, ApiServiceException] = Service {

@@ -10,8 +10,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, CollectionType, ContactsCategory, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServiceContact, ContactInfo => ServiceContactInfo, ContactPhone => ServiceContactPhone}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{models => servicesModel}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -81,7 +81,7 @@ trait CollectionProcessImplData {
 
   val collectionId2 = 2
 
-  val collection1 = servicesModel.Collection(
+  val collection1 = ServicesCollection(
     id = collectionId1,
     position = position,
     name = name,
@@ -138,7 +138,7 @@ trait CollectionProcessImplData {
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
     (0 until 5) map (item =>
-      servicesModel.Collection(
+      ServicesCollection(
         id = id + item,
         position = position,
         name = name,
@@ -192,7 +192,7 @@ trait CollectionProcessImplData {
     numDownloads: String = numDownloads,
     notification: String = notification) =
     (1 until 5) map (item =>
-      servicesModel.Card(
+      ServicesCard(
         id = id + item,
         position = position,
         micros = micros,
@@ -225,7 +225,7 @@ trait CollectionProcessImplData {
     }
 
   val seqCard = createSeqCard()
-  val servicesCard = servicesModel.Card(
+  val servicesCard = ServicesCard(
     id = cardId,
     position = position,
     micros = micros,
@@ -257,7 +257,7 @@ trait CollectionProcessImplData {
     if (count >= minAppsToAdd) categoriesUnformedApps :+ ContactsCategory else categoriesUnformedApps
   }
 
-  val collectionForUnformedItem = servicesModel.Collection(
+  val collectionForUnformedItem = ServicesCollection(
     id = position,
     position = position,
     name = name,
@@ -286,19 +286,19 @@ trait CollectionProcessImplData {
 
   val seqFormedCollection = createSeqFormedCollection()
 
-  def createSeqServiceContact(num: Int = 10) =
+  def createSeqServicesContact(num: Int = 10) =
     (0 until num) map { item =>
-      ServiceContact(
+      ServicesContact(
         name = name,
         lookupKey = lookupKey,
         photoUri = photoUri,
         favorite = true)
     }
 
-  val seqContacts: Seq[ServiceContact] = createSeqServiceContact()
+  val seqContacts: Seq[ServicesContact] = createSeqServicesContact()
 
-  val seqContactsWithPhones: Seq[ServiceContact] = seqContacts map {
-    _.copy(info = Option(ServiceContactInfo(Seq.empty, Seq(ServiceContactPhone(phoneNumber, PhoneHome)))))
+  val seqContactsWithPhones: Seq[ServicesContact] = seqContacts map {
+    _.copy(info = Option(ServicesContactInfo(Seq.empty, Seq(ServicesContactPhone(phoneNumber, PhoneHome)))))
   }
 
   val addCollectionRequest = AddCollectionRequest(
@@ -308,7 +308,7 @@ trait CollectionProcessImplData {
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory))
 
-  val servicesCollectionAdded = servicesModel.Collection(
+  val servicesCollectionAdded = ServicesCollection(
     id = seqServicesCollection.size,
     position = seqServicesCollection.size,
     name = name,

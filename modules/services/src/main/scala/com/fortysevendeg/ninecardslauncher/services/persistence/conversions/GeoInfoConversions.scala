@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo => RepoGeoInfo, GeoInfoData => RepoGeoInfoData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{GeoInfo => RepositoryGeoInfo, GeoInfoData => RepositoryGeoInfoData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo
 
 trait GeoInfoConversions {
 
-  def toGeoInfoSeq(geoInfo: Seq[RepoGeoInfo]): Seq[GeoInfo] = geoInfo map toGeoInfo
+  def toGeoInfoSeq(geoInfo: Seq[RepositoryGeoInfo]): Seq[GeoInfo] = geoInfo map toGeoInfo
 
-  def toGeoInfo(geoInfo: RepoGeoInfo): GeoInfo =
+  def toGeoInfo(geoInfo: RepositoryGeoInfo): GeoInfo =
     GeoInfo(
       id = geoInfo.id,
       constrain = geoInfo.data.constrain,
@@ -18,10 +18,10 @@ trait GeoInfoConversions {
       longitude = geoInfo.data.longitude,
       system = geoInfo.data.system)
 
-  def toRepositoryGeoInfo(geoInfo: GeoInfo): RepoGeoInfo =
-    RepoGeoInfo(
+  def toRepositoryGeoInfo(geoInfo: GeoInfo): RepositoryGeoInfo =
+    RepositoryGeoInfo(
       id = geoInfo.id,
-      data = RepoGeoInfoData(
+      data = RepositoryGeoInfoData(
         constrain = geoInfo.constrain,
         occurrence = geoInfo.occurrence,
         wifi = geoInfo.wifi,
@@ -31,10 +31,10 @@ trait GeoInfoConversions {
       )
     )
 
-  def toRepositoryGeoInfo(request: UpdateGeoInfoRequest): RepoGeoInfo =
-    RepoGeoInfo(
+  def toRepositoryGeoInfo(request: UpdateGeoInfoRequest): RepositoryGeoInfo =
+    RepositoryGeoInfo(
       id = request.id,
-      data = RepoGeoInfoData(
+      data = RepositoryGeoInfoData(
         constrain = request.constrain,
         occurrence = request.occurrence,
         wifi = request.wifi,
@@ -44,8 +44,8 @@ trait GeoInfoConversions {
       )
     )
 
-  def toRepositoryGeoInfoData(request: AddGeoInfoRequest): RepoGeoInfoData =
-    RepoGeoInfoData(
+  def toRepositoryGeoInfoData(request: AddGeoInfoRequest): RepositoryGeoInfoData =
+    RepositoryGeoInfoData(
       constrain = request.constrain,
       occurrence = request.occurrence,
       wifi = request.wifi,
