@@ -5,9 +5,10 @@ import android.support.v7.widget.LinearLayoutManager._
 import android.support.v7.widget.LinearSmoothScroller._
 import android.support.v7.widget.RecyclerView.State
 import android.support.v7.widget.{LinearLayoutManager, LinearSmoothScroller, RecyclerView}
-import android.util.DisplayMetrics
+import android.util.{Log, DisplayMetrics}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerTransformsListener
 import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.Ui
 import macroid.FullDsl._
 

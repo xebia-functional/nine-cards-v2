@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
+import android.graphics.Rect
 import android.graphics.drawable.{Drawable, GradientDrawable}
 import android.os.Build.VERSION._
 import android.os.Build.VERSION_CODES._
@@ -10,12 +11,12 @@ import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, LayoutInflater, MotionEvent}
+import android.view._
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -26,7 +27,7 @@ import macroid.FullDsl._
 import macroid.{Tweak, Ui}
 
 class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends FrameLayout(context, attr, defStyleAttr) {
+  extends FrameLayout(context, attr, defStyleAttr) { self =>
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -106,7 +107,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] var scrollListener: Option[ScrollListener] = None
 
-  val timeToResetScroller = 600
+  val timeToResetScroller = 1000
 
   var statuses = new FastScrollerStatuses
 
@@ -127,13 +128,27 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
     if (statuses.heightScroller != h) {
+      getParent match {
+        case parent: View =>
+          // Try to expand the touch event in the right side to improve the feedback to user
+          val delegateArea = new Rect()
+          getHitRect(delegateArea)
+          delegateArea.right = delegateArea.right + context.getResources.getDimensionPixelOffset(R.dimen.padding_default)
+          parent.setTouchDelegate(new TouchDelegate(delegateArea, this) {
+            override def onTouchEvent(event: MotionEvent): Boolean = touchEvent(event)
+          })
+        case _ =>
+      }
+
       statuses = statuses.copy(heightScroller = h)
       recyclerView foreach (rv => statuses = statuses.resetRecyclerInfo(rv, statuses.heightScroller))
       runUi(changePosition(0))
     }
   }
 
-  override def onTouchEvent(event: MotionEvent): Boolean = {
+  override def onTouchEvent(event: MotionEvent): Boolean = touchEvent(event)
+
+  private[this] def touchEvent(event: MotionEvent): Boolean = {
     val action = MotionEventCompat.getActionMasked(event)
     val y = flatInBoundaries(MotionEventCompat.getY(event, 0))
     (statuses.enabled, action) match {
@@ -142,6 +157,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
         statuses = statuses.startScroll()
         true
       case (_, ACTION_MOVE) =>
+        statuses = statuses.movingScroll()
         runUi(
           changePosition(y) ~
             (if (statuses.usingCounters) showSignal else hideSignal) ~
@@ -344,6 +360,8 @@ case class FastScrollerStatuses(
   def projectToBar(rowFirstItem: Int) = heightScroller * (rowFirstItem.toFloat / maxRows.toFloat)
 
   def startScroll(): FastScrollerStatuses = copy(moving = true)
+
+  def movingScroll(): FastScrollerStatuses = copy(moving = true)
 
   def resetScrollPosition(): FastScrollerStatuses = copy(lastScrollToPosition = -1)
 

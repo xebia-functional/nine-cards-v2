@@ -168,7 +168,6 @@ trait DrawerComposer
         )) <~
         (searchBoxView map drvAddController getOrElse Tweak.blank)) ~
       (scrollerLayout <~
-        drawerContentStyle <~
         fslColor(colorPrimary)) ~
       (pullToTabsView <~
         ptvLinkTabs(
