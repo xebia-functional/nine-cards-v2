@@ -19,7 +19,6 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -107,6 +106,8 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] var scrollListener: Option[ScrollListener] = None
 
+  val timeToResetScroller = 600
+
   var statuses = new FastScrollerStatuses
 
   setClipChildren(false)
@@ -155,7 +156,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
             uiHandlerDelayed({
               statuses = statuses.resetScroll()
               recyclerView <~ rvResetItems
-            }, 600))
+            }, timeToResetScroller))
         true
       case _ => super.onTouchEvent(event)
     }

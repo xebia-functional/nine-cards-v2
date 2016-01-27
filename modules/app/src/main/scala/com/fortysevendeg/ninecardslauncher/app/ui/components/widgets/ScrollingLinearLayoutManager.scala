@@ -17,6 +17,8 @@ trait ScrollingLinearLayoutManager {
 
   var blockScroll = false
 
+  val speedFactor = 12f
+
   override def smoothScrollToPosition(recyclerView: RecyclerView, state: State, position: Int): Unit = {
     val smoothScroller = new TopSmoothScroller(recyclerView, isSmoothScrolling)
     smoothScroller.setTargetPosition(position)
@@ -35,7 +37,7 @@ trait ScrollingLinearLayoutManager {
     protected override def getVerticalSnapPreference: Int = SNAP_TO_START
 
     protected override def calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float =
-      12f / displayMetrics.densityDpi.toFloat
+      speedFactor / displayMetrics.densityDpi.toFloat
 
     override def onStop(): Unit = {
       super.onStop()
