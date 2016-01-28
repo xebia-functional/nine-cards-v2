@@ -146,12 +146,20 @@ class LauncherActivity
 
   override def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
-    Task.fork(di.deviceProcess.getIterableApps(getAppOrder).run).resolveAsyncUi(
-      onResult = (apps: IterableApps) => addApps(apps, getAppOrder, (app: App) => {
-        execute(toNineCardIntent(app))
-      }, (app: App) => {
-        launchSettings(app.packageName)
-      })
+    Task.fork(getLoadApps(getAppOrder).run).resolveAsyncUi(
+      onResult = {
+        case (apps: IterableApps, counters: Seq[TermCounter]) =>
+          addApps(
+            apps = apps,
+            getAppOrder = getAppOrder,
+            counters = counters,
+            clickListener = (app: App) => {
+              execute(toNineCardIntent(app))
+            },
+            longClickListener = (app: App) => {
+              launchSettings(app.packageName)
+            })
+      }
     )
   }
 
@@ -164,10 +172,18 @@ class LauncherActivity
           }))
       case _ =>
         val getContactFilter = toGetContactFilter(contactsMenuOption)
-        Task.fork(di.deviceProcess.getIterableContacts(filter = getContactFilter).run).resolveAsyncUi(
-          onResult = (contacts: IterableContacts) => addContacts(contacts, getContactFilter, (contact: Contact) => {
-            execute(contact)
-          }))
+        Task.fork(getLoadContacts(getContactFilter).run).resolveAsyncUi(
+          onResult = {
+            case (contacts: IterableContacts, counters: Seq[TermCounter]) =>
+              addContacts(
+                contacts = contacts,
+                filter = getContactFilter,
+                counters = counters,
+                clickListener = (contact: Contact) => {
+                  execute(contact)
+                }
+              )
+          })
     }
   }
 

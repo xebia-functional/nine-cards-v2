@@ -11,7 +11,7 @@ trait AppPersistenceServicesImpl {
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 
   def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {
-    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+    val orderByString = toOrderBy(orderBy, ascending)
 
     val appSeq = for {
       apps <- appRepository.fetchApps(orderByString)
@@ -46,7 +46,7 @@ trait AppPersistenceServicesImpl {
     } yield updated).resolve[PersistenceServiceException]
 
   def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {
-    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+    val orderByString = toOrderBy(orderBy, ascending)
 
     val appSeq = for {
       iter <- appRepository.fetchIterableApps(orderBy = orderByString)
@@ -56,7 +56,7 @@ trait AppPersistenceServicesImpl {
   }
 
   def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
-    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+    val orderByString = toOrderBy(orderBy, ascending)
 
     val appSeq = for {
       iter <- appRepository.fetchIterableApps(
@@ -69,7 +69,7 @@ trait AppPersistenceServicesImpl {
   }
 
   def fetchAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
-    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+    val orderByString = toOrderBy(orderBy, ascending)
 
     val appSeq = for {
       apps <- appRepository.fetchAppsByCategory(
@@ -81,7 +81,7 @@ trait AppPersistenceServicesImpl {
   }
 
   def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
-    val orderByString = s"${toStringOrderBy(orderBy)} ${toStringDirection(ascending)} ${toSecondaryOrderBy(orderBy)}"
+    val orderByString = toOrderBy(orderBy, ascending)
 
     val appSeq = for {
       iter <- appRepository.fetchIterableAppsByCategory(
@@ -102,20 +102,14 @@ trait AppPersistenceServicesImpl {
       counters <- appRepository.fetchCategorizedAppsCounter
     } yield toDataCounterSeq(counters)).resolve[PersistenceServiceException]
 
-  private[this] def toStringDirection(ascending: Boolean): String =
-    if (ascending) "ASC" else "DESC"
-
-  private[this] def toSecondaryOrderBy(orderBy: FetchAppOrder): String = orderBy match {
-    case OrderByName => ""
-    case _ => s", ${AppEntity.name} COLLATE NOCASE ASC"
-  }
+  private[this] def toOrderBy(orderBy: FetchAppOrder, ascending: Boolean): String = s"${
+    orderBy match {
+      case OrderByName => s"${AppEntity.name} COLLATE NOCASE"
+      case OrderByInstallDate => AppEntity.dateInstalled
+      case OrderByCategory => AppEntity.category
+    }
+  } ${if (ascending) "ASC" else "DESC"}"
 
   private[this] def toStringWhere(keyword: String): String = s"${AppEntity.name} LIKE '%$keyword%' "
-
-  private[this] def toStringOrderBy(orderBy: FetchAppOrder): String = orderBy match {
-    case OrderByName => s"${AppEntity.name} COLLATE NOCASE"
-    case OrderByInstallDate => AppEntity.dateInstalled
-    case OrderByCategory => AppEntity.category
-  }
 
 }

@@ -29,7 +29,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.ALL_CONTACTS_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
         }
       }
     }
@@ -64,7 +64,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.ALL_CONTACTS_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
         }
       }
     }
@@ -78,7 +78,7 @@ class ContactsServicesImpl(
             projection = allFields,
             where = Fields.CONTACTS_BY_KEYWORD_SELECTION,
             whereParams = Seq(keyword),
-            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
         }
       }
     }
@@ -146,7 +146,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.STARRED_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
         }
       }
     }
@@ -159,7 +159,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.STARRED_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
         }
       }
     }
@@ -172,7 +172,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.HAS_PHONE_NUMBER_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
         }
       }
     }
@@ -185,7 +185,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.HAS_PHONE_NUMBER_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
         }
       }
     }
@@ -195,7 +195,7 @@ class ContactsServicesImpl(
       uri = Fields.CONTENT_URI,
       projection = Seq(Fields.DISPLAY_NAME),
       where = Fields.ALL_CONTACTS_SELECTION,
-      orderBy = s"${Fields.DISPLAY_NAME} COLLATE NOCASE ASC"))
+      orderBy = Fields.CONTACTS_ORDER_BY_ASC))
   }
 
 }

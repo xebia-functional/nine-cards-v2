@@ -11,12 +11,13 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.LastCallsContact
 import com.fortysevendeg.ninecardslauncher.process.device.types._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import org.ocpsoft.prettytime.PrettyTime
@@ -43,7 +44,7 @@ case class LastCallsAdapter(
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.last_call_item, parent, false)
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
-        Option(v.getTag) foreach (tag => clickListener(contacts(Int.unbox(tag))))
+        v.getPosition foreach (tag => clickListener(contacts(tag)))
       }
     })
     LastCallsContactHolder(view)
@@ -58,7 +59,6 @@ case class LastCallsAdapter(
 
   override def getColumns: Int = 1
 
-  override def getElement(position: Int): Option[String] = Option(contacts(position).title.substring(0, 1))
 }
 
 case class LastCallsContactHolder(content: View)
@@ -84,7 +84,7 @@ case class LastCallsContactHolder(content: View)
       (name <~ tvText(contact.title)) ~
       (hour <~ tvText(time)) ~
       (callTypes <~ addCallTypesView(contact.calls take maxCalls map (_.callType))) ~
-      (content <~ vTag2(position))
+      (content <~ vSetPosition(position))
   }
 
   private[this] def addCallTypesView(callTypes: Seq[CallType])(implicit context: ActivityContextWrapper) = {

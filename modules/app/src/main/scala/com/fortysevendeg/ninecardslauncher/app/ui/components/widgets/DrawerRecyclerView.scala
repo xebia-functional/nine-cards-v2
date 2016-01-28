@@ -2,22 +2,30 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.{MotionEvent, ViewConfiguration}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, ViewState}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FastScrollerTransformsListener, SearchBoxAnimatedController}
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.HighlightSnails._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import macroid.{ContextWrapper, Ui}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
-  extends RecyclerView(context, attr, defStyleAttr) {
+  extends RecyclerView(context, attr, defStyleAttr)
+  with FastScrollerTransformsListener {
 
   def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
+
+  val scalePixels = resGetDimensionPixelSize(R.dimen.padding_default)
 
   var drawerRecyclerListener = DrawerRecyclerViewListener()
 
@@ -110,12 +118,29 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ =>
   }
 
+  override def feedbackItems(from: Int, count: Int): Ui[_] =
+    getLayoutManager match {
+      case lm: LinearLayoutManager =>
+        Ui.sequence(0 to getChildCount map { item =>
+          val view = Option(getChildAt(item))
+          val position = view flatMap (_.getPosition)
+          val animate = position exists (p => p >= from && p < from + count)
+          val magnify = if (animate) {
+            view map { v =>
+              val w = v.getWidth.toFloat
+              val wScaled = w + scalePixels
+              wScaled / w
+            } getOrElse 1f
+          } else 1f
+          view <~~ highlight(magnify)
+        }:_*)
+      case _ => Ui.nop
+    }
 }
 
 case class DrawerRecyclerViewListener(
   start: () => Ui[_] = () => Ui.nop,
-  end: () => Ui[_] = () => Ui.nop
-)
+  end: () => Ui[_] = () => Ui.nop)
 
 case class DrawerRecyclerStatuses(
   disableScroll: Boolean = false,
