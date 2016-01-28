@@ -89,12 +89,6 @@ trait UserConfigProcessData {
       )
     ),
     devices = createUserConfigDevice(),
-    geoInfo = UserConfigGeoInfo(
-      homeMorning = None,
-      homeNight = None,
-      work = None,
-      current = None
-    ),
     status = UserConfigStatusInfo(
       products = Seq.empty,
       friendsReferred = 0,
