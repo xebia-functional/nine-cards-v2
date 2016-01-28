@@ -170,7 +170,6 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
             changePosition(y) ~
             hideSignal ~
             uiHandlerDelayed({
-              statuses = statuses.resetScroll()
               recyclerView <~ rvResetItems
             }, timeToResetScroller))
         true
@@ -290,6 +289,8 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
     private[this] var offsetY = 0f
 
+    private[this] var oldState = RecyclerView.SCROLL_STATE_IDLE
+
     override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit =
       if (!statuses.moving) {
         val rowFirstItem = getRowFirstItem(recyclerView)
@@ -308,6 +309,14 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
         }
         runUi(changePosition(move))
       }
+
+    override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
+      if (statuses.moving && oldState == RecyclerView.SCROLL_STATE_SETTLING && newState == RecyclerView.SCROLL_STATE_IDLE) {
+        statuses = statuses.resetScroll()
+      }
+      oldState = newState
+      super.onScrollStateChanged(recyclerView, newState)
+    }
 
     def reset(): Unit = {
       lastRowFirstItem = 0
@@ -344,7 +353,7 @@ case class FastScrollerStatuses(
       case Some(adapter) => adapter.getItemCount
       case _ => 0
     }
-    copy(heightAllRows = allRows, heightRow = item, totalItems = total, columns = columns, visibleRows = 0)
+    copy(heightAllRows = allRows, heightRow = item, totalItems = total, columns = columns, visibleRows = 0, moving = false)
   }
 
   // Number of rows of recyclerview given the number of columns
