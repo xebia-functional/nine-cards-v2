@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, User => RepositoryUser, UserData => RepositoryUserData}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, User, _}
+import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, User => RepositoryUser, UserData => RepositoryUserData, Moment => RepositoryMoment, MomentData => RepositoryMomentData}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, Moment, _}
 
 import scala.util.Random
 
@@ -27,14 +27,6 @@ trait PersistenceServicesData {
   val numDownloads: String = Random.nextString(5)
   val ratingsCount: Int = Random.nextInt(10)
   val commentCount: Int = Random.nextInt(10)
-
-  val constrain: String = Random.nextString(5)
-  val nonExistentConstrain: String = "nonExistentPackageName"
-  val occurrence: String = Random.nextString(5)
-  val wifi: String = Random.nextString(5)
-  val longitude: Double = Random.nextDouble()
-  val latitude: Double = Random.nextDouble()
-  val system: Boolean = Random.nextBoolean()
 
   val collectionId: Int = Random.nextInt(10)
   val nonExistentCollectionId: Int = Random.nextInt(10) + 100
@@ -72,6 +64,12 @@ trait PersistenceServicesData {
   val dockAppId: Int = Random.nextInt(10)
   val nonExistentDockAppId: Int = Random.nextInt(10) + 100
   val dockType: String = Random.nextString(5)
+
+  val momentId: Int = Random.nextInt(10)
+  val nonExistentMomentId: Int = Random.nextInt(10) + 100
+  val timeslot: String = Random.nextString(5)
+  val wifi: String = Random.nextString(5)
+  val headphone: Boolean = Random.nextBoolean()
 
   def createSeqApp(
     num: Int = 5,
@@ -342,6 +340,38 @@ trait PersistenceServicesData {
       imagePath = imagePath,
       position = position)
 
+  def createSeqMoment(
+    num: Int = 5,
+    id: Int = momentId,
+    collectionId: Int = collectionId,
+    timeslot: String = timeslot,
+    wifi: String = wifi,
+    headphone: Boolean = headphone): Seq[Moment] = List.tabulate(num)(
+    item =>
+      Moment(
+        id = id + item,
+        collectionId = Option(collectionId),
+        timeslot = timeslot,
+        wifi = wifi,
+        headphone = headphone))
+
+  def createSeqRepoMoment(
+    num: Int = 5,
+    id: Int = momentId,
+    data: RepositoryMomentData = createRepoMomentData()): Seq[RepositoryMoment] =
+    List.tabulate(num)(item => RepositoryMoment(id = id + item, data = data))
+
+  def createRepoMomentData(
+    collectionId: Int = collectionId,
+    timeslot: String = timeslot,
+    wifi: String = wifi,
+    headphone: Boolean = headphone): RepositoryMomentData =
+    RepositoryMomentData(
+      collectionId = Option(collectionId),
+      timeslot = timeslot,
+      wifi = wifi,
+      headphone = headphone)
+
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp(0)
   val repoAppData: RepositoryAppData = createRepoAppData()
@@ -371,6 +401,12 @@ trait PersistenceServicesData {
   val repoDockAppData: RepositoryDockAppData = createRepoDockAppData()
   val seqRepoDockApp: Seq[RepositoryDockApp] = createSeqRepoDockApp(data = repoDockAppData)
   val repoDockApp: RepositoryDockApp = seqRepoDockApp(0)
+
+  val seqMoment: Seq[Moment] = createSeqMoment()
+  val moment: Moment = seqMoment(0)
+  val repoMomentData: RepositoryMomentData = createRepoMomentData()
+  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
+  val repoMoment: RepositoryMoment = seqRepoMoment(0)
 
   val where: String = ""
 
@@ -614,5 +650,35 @@ trait PersistenceServicesData {
   val iterableDockApps = new IterableDockApps(iterableCursorDockApps)
 
   val keyword = "fake-keyword"
+
+  def createAddMomentRequest(
+    collectionId: Int = collectionId,
+    timeslot: String = timeslot,
+    wifi: String = wifi,
+    headphone: Boolean = headphone): AddMomentRequest =
+    AddMomentRequest(
+      collectionId = Option(collectionId),
+      timeslot = timeslot,
+      wifi = wifi,
+      headphone = headphone)
+
+  def createDeleteMomentRequest(moment: Moment): DeleteMomentRequest =
+    DeleteMomentRequest(moment = moment)
+
+  def createFindMomentByIdRequest(id: Int): FindMomentByIdRequest =
+    FindMomentByIdRequest(id = id)
+
+  def createUpdateMomentRequest(
+    id: Int = momentId,
+    collectionId: Int = collectionId,
+    timeslot: String = timeslot,
+    wifi: String = wifi,
+    headphone: Boolean = headphone): UpdateMomentRequest =
+    UpdateMomentRequest(
+      id = id,
+      collectionId = Option(collectionId),
+      timeslot = timeslot,
+      wifi = wifi,
+      headphone = headphone)
 
 }

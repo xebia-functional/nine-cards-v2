@@ -30,6 +30,8 @@ trait PersistenceServicesSpecification
 
     val mockDockAppRepository = mock[DockAppRepository]
 
+    val mockMomentRepository = mock[MomentRepository]
+
     val mockUserRepository = mock[UserRepository]
 
     val persistenceServices = new PersistenceServicesImpl(
@@ -37,6 +39,7 @@ trait PersistenceServicesSpecification
       cardRepository = mockCardRepository,
       collectionRepository = mockCollectionRepository,
       dockAppRepository = mockDockAppRepository,
+      momentRepository = mockMomentRepository,
       userRepository = mockUserRepository)
   }
 
@@ -137,6 +140,20 @@ trait PersistenceServicesSpecification
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.answer(None)))
 
     mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
+
+    mockMomentRepository.addMoment(repoMomentData) returns Service(Task(Result.answer(repoMoment)))
+
+    mockMomentRepository.deleteMoments() returns Service(Task(Result.answer(items)))
+
+    mockMomentRepository.deleteMoment(repoMoment) returns Service(Task(Result.answer(item)))
+
+    mockMomentRepository.fetchMoments() returns Service(Task(Result.answer(seqRepoMoment)))
+
+    mockMomentRepository.findMomentById(momentId) returns Service(Task(Result.answer(Option(repoMoment))))
+
+    mockMomentRepository.findMomentById(nonExistentMomentId) returns Service(Task(Result.answer(None)))
+
+    mockMomentRepository.updateMoment(repoMoment) returns Service(Task(Result.answer(item)))
   }
 
   trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
@@ -228,6 +245,20 @@ trait PersistenceServicesSpecification
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.addMoment(repoMomentData) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.deleteMoments() returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.deleteMoment(repoMoment) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.fetchMoments() returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.findMomentById(momentId) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.findMomentById(nonExistentMomentId) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.updateMoment(repoMoment) returns Service(Task(Result.errata(exception)))
   }
 
 }
@@ -1313,6 +1344,162 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findDockAppById(createFindDockAppByIdRequest(id = dockAppId)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "addMoment" should {
+
+    "return a Moment value for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addMoment(createAddMomentRequest()).run.run
+
+      result must beLike {
+        case Answer(moment) =>
+          moment.id shouldEqual momentId
+          moment.wifi shouldEqual wifi
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addMoment(createAddMomentRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteAllMoments" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllMoments().run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual items
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllMoments().run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteMoment" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteMoment(createDeleteMomentRequest(moment = moment)).run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual item
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteMoment(createDeleteMomentRequest(moment = moment)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchMoments" should {
+
+    "return a list of Moment elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchMoments.run.run
+
+      result must beLike {
+        case Answer(momentItems) =>
+          momentItems.size shouldEqual seqMoment.size
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchMoments.run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "findMomentById" should {
+
+    "return a Moment for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findMomentById(createFindMomentByIdRequest(id = momentId)).run.run
+
+      result must beLike {
+        case Answer(maybeMoment) =>
+          maybeMoment must beSome[Moment].which { moment =>
+            moment.id shouldEqual momentId
+          }
+      }
+    }
+
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findMomentById(createFindMomentByIdRequest(id = nonExistentMomentId)).run.run
+
+      result must beLike {
+        case Answer(maybeMoment) =>
+          maybeMoment must beNone
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findMomentById(createFindMomentByIdRequest(id = momentId)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "updateMoment" should {
+
+    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.updateMoment(createUpdateMomentRequest()).run.run
+
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual item
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateMoment(createUpdateMomentRequest()).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
