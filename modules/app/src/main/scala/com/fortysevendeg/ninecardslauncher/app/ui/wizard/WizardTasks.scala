@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 import android.accounts.{OperationCanceledException, Account, AccountManager}
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserPermissions, UserCloudDevices}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -23,39 +23,42 @@ import scalaz.{-\/, \/-, \/}
 import scalaz.concurrent.Task
 
 trait WizardTasks
-  extends ImplicitsWizardTasksExceptions
-  with ImplicitsCloudStorageProcessExceptions {
+  extends ImplicitsCloudStorageProcessExceptions {
 
   self: WizardActivity =>
 
-  def loadDevices(
+  def requestUserPermissions(
     accountManager: AccountManager,
     account: Account,
-    client: GoogleApiClient): ServiceDef2[UserCloudDevices, AuthTokenException with AuthTokenOperationCancelledException with ServiceConnectionException] = {
+    client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] = {
     val oauthScopes = "androidmarket" // TODO - This should be removed when we switch off the server v1
     val driveScope = resGetString(R.string.oauth_scopes)
     for {
       token <- getAuthToken(accountManager, account, oauthScopes)
       _ = setToken(token)
-      _ <- getAuthToken(accountManager, account, driveScope)
-      device = Device(
-        name = Build.MODEL,
-        deviceId = androidId,
-        secretToken = token,
-        permissions = Seq(oauthScopes))
-      userCloudDevices <- signInUser(client, account.name, device)
-    } yield userCloudDevices
+      token2 <- getAuthToken(accountManager, account, driveScope)
+    } yield UserPermissions(token, Seq(oauthScopes))
 
   }
 
-  private[this] def signInUser(client: GoogleApiClient, username: String, device: Device): ServiceDef2[UserCloudDevices, ServiceConnectionException] = {
-      val cloudStorageProcess = di.createCloudStorageProcess(client, username)
-      (for {
-        response <- di.userProcess.signIn(username, device)
-        cloudcloudStorageResources <- cloudStorageProcess.getCloudStorageDevices()
-        userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudcloudStorageResources)
-      } yield userCloudDevices).resolve[ServiceConnectionException]
-    }
+  def loadUserDevices(
+    client: GoogleApiClient,
+    androidId: String,
+    username: String,
+    userPermissions: UserPermissions): ServiceDef2[UserCloudDevices, UserException with UserConfigException with CloudStorageProcessException] = {
+    val cloudStorageProcess = di.createCloudStorageProcess(client, username)
+    val device = Device(
+        name = Build.MODEL,
+        deviceId = androidId,
+        secretToken = userPermissions.token,
+        permissions = userPermissions.oauthScopes)
+    for {
+      response <- di.userProcess.signIn(username, device)
+      cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices()
+      userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudStorageResources)
+    } yield userCloudDevices
+
+  }
 
   private[this] def verifyAndUpdate(
     cloudStorageProcess: CloudStorageProcess,
