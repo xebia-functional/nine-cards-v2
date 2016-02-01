@@ -39,7 +39,7 @@ trait MomentRepositoryTestData {
         headphone = testHeadphone)))
 
   def createMomentValues = Map[String, Any](
-    MomentEntity.collectionId -> testCollectionIdOption,
+    MomentEntity.collectionId -> (testCollectionIdOption orNull),
     MomentEntity.timeslot -> testTimeslot,
     MomentEntity.wifi -> testWifi,
     MomentEntity.headphone -> testHeadphone)
