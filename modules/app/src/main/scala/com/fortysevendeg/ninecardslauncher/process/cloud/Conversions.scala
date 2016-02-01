@@ -6,6 +6,10 @@ import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFil
 trait Conversions {
 
   def toDriveDevice(driveServiceFile: DriveServiceFile): CloudStorageResource =
-    CloudStorageResource(driveServiceFile.driveId, driveServiceFile.title)
+    CloudStorageResource(
+      resourceId = driveServiceFile.driveId,
+      title = driveServiceFile.title,
+      createdDate = driveServiceFile.createdDate,
+      modifiedDate = driveServiceFile.modifiedDate)
 
 }

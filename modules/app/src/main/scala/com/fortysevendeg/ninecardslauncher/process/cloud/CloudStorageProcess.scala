@@ -28,3 +28,9 @@ trait CloudStorageProcess {
   def createOrUpdateCloudStorageDevice(cloudStorageDevice: CloudStorageDevice): ServiceDef2[Unit, CloudStorageProcessException]
 
 }
+
+object CloudStorageProcess {
+
+  val actualDocumentVersion = 1
+
+}

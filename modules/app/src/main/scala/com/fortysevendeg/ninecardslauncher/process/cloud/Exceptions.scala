@@ -17,7 +17,7 @@ case class CloudStorageProcessException(
   cause: Option[Throwable] = None,
   driveError: Option[CloudStorageError] = None) extends RuntimeException(message) {
 
-  cause map initCause
+  cause foreach initCause
 
 }
 
