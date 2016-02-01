@@ -113,7 +113,7 @@ class MomentRepository(
       Task {
         CatchAll[RepositoryException] {
           val values = Map[String, Any](
-            collectionId -> item.data.collectionId,
+            collectionId -> (item.data.collectionId orNull),
             timeslot -> item.data.timeslot,
             wifi -> item.data.wifi,
             headphone -> item.data.headphone)

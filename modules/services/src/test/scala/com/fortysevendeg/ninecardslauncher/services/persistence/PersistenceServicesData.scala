@@ -77,7 +77,7 @@ trait PersistenceServicesData {
   val headphone: Boolean = Random.nextBoolean()
   val wifiSeq: Seq[String] = Seq(wifi1, wifi2, wifi3)
   val wifiString: String = wifiSeq.mkString(",")
-  val timeslotJson: String = """ [{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}] """
+  val timeslotJson: String = """[{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}]"""
 
   def createSeqApp(
     num: Int = 5,

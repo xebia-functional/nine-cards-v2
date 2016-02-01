@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.model.MomentData
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, AppEntity}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
@@ -1363,7 +1364,7 @@ class PersistenceServicesSpec
       result must beLike {
         case Answer(moment) =>
           moment.id shouldEqual momentId
-          moment.wifi shouldEqual wifi1
+          moment.wifi shouldEqual wifiSeq
       }
     }
 
