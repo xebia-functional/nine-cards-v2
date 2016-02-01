@@ -5,10 +5,9 @@ import android.support.v7.widget.LinearLayoutManager._
 import android.support.v7.widget.LinearSmoothScroller._
 import android.support.v7.widget.RecyclerView.State
 import android.support.v7.widget.{LinearLayoutManager, LinearSmoothScroller, RecyclerView}
-import android.util.{Log, DisplayMetrics}
+import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerTransformsListener
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.Ui
 import macroid.FullDsl._
 
@@ -18,10 +17,21 @@ trait ScrollingLinearLayoutManager {
 
   var blockScroll = false
 
-  val speedFactor = 12f
+  val maxPositions = 50f
+
+  val minSpeedFactor = 5f
+
+  val maxSpeedFactor = 25f
+
+  val varSpeedFactor = maxSpeedFactor - minSpeedFactor
 
   override def smoothScrollToPosition(recyclerView: RecyclerView, state: State, position: Int): Unit = {
-    val smoothScroller = new TopSmoothScroller(recyclerView, isSmoothScrolling)
+    val steps = math.min(recyclerView.getLayoutManager match {
+      case lm: LinearLayoutManager => math.abs(position - lm.findFirstVisibleItemPosition()).toFloat
+      case _ => 1
+    }, maxPositions)
+    val speedFactor: Float = (varSpeedFactor - (steps * varSpeedFactor / maxPositions)) + minSpeedFactor
+    val smoothScroller = new TopSmoothScroller(recyclerView, speedFactor, isSmoothScrolling)
     smoothScroller.setTargetPosition(position)
     startSmoothScroll(smoothScroller)
   }
@@ -30,6 +40,7 @@ trait ScrollingLinearLayoutManager {
 
   class TopSmoothScroller(
     recyclerView: RecyclerView,
+    speedFactor: Float,
     var flagScrolling: Boolean) // If the previous call is scrolling, we don't want to onStop in startSmoothScroll
     extends LinearSmoothScroller(recyclerView.getContext) {
 

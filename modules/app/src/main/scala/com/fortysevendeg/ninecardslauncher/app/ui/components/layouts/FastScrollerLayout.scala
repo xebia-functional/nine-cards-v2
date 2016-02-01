@@ -165,6 +165,13 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
         true
       case (_, ACTION_UP | ACTION_CANCEL) =>
         statuses = statuses.resetScrollPosition()
+        // If the ScrollState of Recycler is SCROLL_STATE_SETTLING, we wait to resetScroll
+        // when the animation is finished using method onScrollStateChanged in OnScrollListener class
+        recyclerView foreach { rv =>
+          if (rv.getScrollState != RecyclerView.SCROLL_STATE_SETTLING) {
+            statuses = statuses.resetScroll()
+          }
+        }
         runUi(
           (recyclerView <~ rvResetItems) ~
             changePosition(y) ~
