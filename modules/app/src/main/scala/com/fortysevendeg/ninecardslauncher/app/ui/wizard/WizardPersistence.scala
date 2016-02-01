@@ -9,11 +9,10 @@ trait WizardPersistence {
 
   self: AppCompatActivity =>
 
-  val googleKeyPreferences = "__google_auth__"
-  val googleKeyToken = "__google_token__"
-  val accountType = "com.google"
-  val androidId = "android_id"
-  val contentGServices = "content://com.google.android.gsf.gservices"
+  private[this] val googleKeyPreferences = "__google_auth__"
+  private[this] val googleKeyToken = "__google_token__"
+  private[this] val androidId = "android_id"
+  private[this] val contentGServices = "content://com.google.android.gsf.gservices"
 
   lazy val preferences = getSharedPreferences(googleKeyPreferences, Context.MODE_PRIVATE)
 

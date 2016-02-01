@@ -6,12 +6,11 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveResourceNotAvailable, DriveRateLimitExceeded, DriveSigInRequired}
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import com.fortysevendeg.ninecardslauncher.services.drive.{Conversions, DriveServicesException, DriveServices}
 import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, PendingResult, Result}
 import com.google.android.gms.drive._
 import com.google.android.gms.drive.metadata.CustomPropertyKey
-import com.google.android.gms.drive.query.{Filters, Query}
+import com.google.android.gms.drive.query.{SortableField, SortOrder, Filters, Query}
 import rapture.core
 import rapture.core.{Answer, Errata}
 
@@ -33,9 +32,13 @@ class DriveServicesImpl(client: GoogleApiClient)
   private[this] def propertyFileId = new CustomPropertyKey(customFileId, CustomPropertyKey.PRIVATE)
 
   def listFiles(maybeFileType: Option[String]) = {
+    val sortOrder = new SortOrder.Builder()
+      .addSortAscending(SortableField.MODIFIED_DATE)
+      .build()
     val maybeQuery = maybeFileType map { fileType =>
       new Query.Builder()
         .addFilter(Filters.eq(propertyFileType, fileType))
+        .setSortOrder(sortOrder)
         .build()
     }
     searchFiles(maybeQuery)(_ map toGoogleDriveFile)
@@ -51,26 +54,20 @@ class DriveServicesImpl(client: GoogleApiClient)
   def readFile(driveId: String) =
     openDriveFile(driveId) { driveContentsResult =>
       val contents = driveContentsResult.getDriveContents
-      Answer(scala.io.Source.fromInputStream(contents.getInputStream).mkString)
-    }
-
-  def openFile(driveId: String) =
-    openDriveFile(driveId) { driveContentsResult =>
-      val contents = driveContentsResult.getDriveContents
-      Answer(contents.getInputStream)
+      val stringContent = scala.io.Source.fromInputStream(contents.getInputStream).mkString
+      contents.discard(client)
+      Answer(stringContent)
     }
 
   def createFile(title: String, content: String, fileId: String, fileType: String, mimeType: String) =
-    for {
-      file <- createNewFile(title, fileId, fileType, mimeType)
-      update <- updateFile(file.driveId, content)
-    } yield update
+    createNewFile(title, fileId, fileType, mimeType, _.write(content)) map (_ => ())
 
   def createFile(title: String, content: InputStream, fileId: String, fileType: String, mimeType: String) =
-    for {
-      file <- createNewFile(title, fileId, fileType, mimeType)
-      update <- updateFile(file.driveId, content)
-    } yield update
+    createNewFile(title, fileId, fileType, mimeType,
+        writer => Iterator
+          .continually(content.read)
+          .takeWhile(_ != -1)
+          .foreach(writer.write)) map (_ => ())
 
   def updateFile(driveId: String, content: String) =
     updateFile(driveId, _.write(content))
@@ -97,7 +94,7 @@ class DriveServicesImpl(client: GoogleApiClient)
 
   private[this] def appFolder = Drive.DriveApi.getAppFolder(client)
 
-  private[this] def createNewFile(title: String, fileId: String, fileType: String, mimeType: String) = Service {
+  private[this] def createNewFile(title: String, fileId: String, fileType: String, mimeType: String, f: (OutputStreamWriter) => Unit) = Service {
     Task {
       Drive.DriveApi
         .newDriveContents(client)
@@ -109,9 +106,16 @@ class DriveServicesImpl(client: GoogleApiClient)
             .setCustomProperty(propertyFileType, fileType)
             .build()
 
+          val driveContents = r.getDriveContents
+          val writer = new OutputStreamWriter(driveContents.getOutputStream)
+          f(writer)
+          writer.close()
+
           appFolder
-            .createFile(client, changeSet, r.getDriveContents)
-            .withResult(nr => Answer(toGoogleDriveFile(title, nr.getDriveFile)))
+            .createFile(client, changeSet, driveContents)
+            .withResult { nr =>
+              Answer(nr.getDriveFile)
+            }
         }
 
     }
@@ -145,19 +149,24 @@ object Extensions {
 
   implicit class PendingResultOps[T <: Result](pendingResult: PendingResult[T]) {
 
-    def withResult[R](f: (T) => core.Result[R, DriveServicesException]): core.Result[R, DriveServicesException] = {
-      val result = pendingResult.await()
-      if (result.getStatus.isSuccess) {
-        Try(f(result)) match {
-          case Success(r) => r
-          case Failure(e) => Errata(DriveServicesException(e.getMessage, cause = Some(e)))
-        }
-      } else {
-        Errata(DriveServicesException(
-          googleDriveError = statusCodeToError(result.getStatus.getStatusCode),
-          message = result.getStatus.getStatusMessage))
+    def withResult[R](f: (T) => core.Result[R, DriveServicesException]): core.Result[R, DriveServicesException] =
+      fetchResult match {
+        case Some(result) if result.getStatus.isSuccess =>
+          Try(f(result)) match {
+            case Success(r) => r
+            case Failure(e) => Errata(DriveServicesException(e.getMessage, cause = Some(e)))
+          }
+        case Some(result) =>
+          Errata(DriveServicesException(
+            googleDriveError = statusCodeToError(result.getStatus.getStatusCode),
+            message = result.getStatus.getStatusMessage))
+        case _ =>
+          Errata(DriveServicesException(
+            message = "Received a null reference in pending result",
+            cause = new NullPointerException().some))
       }
-    }
+
+    private[this] def fetchResult: Option[T] = Option(pendingResult) map (_.await())
 
     private[this] def statusCodeToError(statusCode: Int) = statusCode match {
       case CommonStatusCodes.SIGN_IN_REQUIRED => DriveSigInRequired.some

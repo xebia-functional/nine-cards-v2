@@ -38,6 +38,7 @@
 
     <string name="canceledGooglePermission">El permiso de Android Market es obligatorio para poder usar 9 Cards</string>
 
+    <string name="errorLoginUser">Error al acceder al servidor. Por favor inténtelo más tarde</string>
     <string name="errorConnectingGoogle">Error conectando con Google. Por favor inténtelo más tarde</string>
     <string name="goTo9Cards">¡Entrar en 9 Cards!</string>
     <string name="workingNotificationTitle">Espera un momento…</string>
