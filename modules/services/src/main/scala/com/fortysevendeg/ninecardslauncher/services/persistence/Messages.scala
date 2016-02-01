@@ -158,8 +158,8 @@ case class FindDockAppByIdRequest(id: Int)
 
 case class AddMomentRequest(
   collectionId: Option[Int],
-  timeslot: String,
-  wifi: String,
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
   headphone: Boolean)
 
 case class DeleteMomentsRequest(where: String)
@@ -171,7 +171,7 @@ case class FindMomentByIdRequest(id: Int)
 case class UpdateMomentRequest(
   id: Int,
   collectionId: Option[Int],
-  timeslot: String,
-  wifi: String,
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
   headphone: Boolean)
 

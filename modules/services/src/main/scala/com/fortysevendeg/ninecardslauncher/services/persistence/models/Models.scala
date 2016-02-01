@@ -60,6 +60,11 @@ case class DockApp(
 case class Moment(
   id: Int,
   collectionId: Option[Int],
-  timeslot: String,
-  wifi: String,
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
   headphone: Boolean)
+
+case class MomentTimeSlot(
+  from: String,
+  to: String,
+  days: Seq[Int])
