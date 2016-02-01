@@ -6,15 +6,15 @@ sealed trait Screen {
   def name: String
 }
 
-case class WizardScreen() extends Screen {
+case object WizardScreen extends Screen {
   override def name: String = wizardName
 }
 
-case class LauncherScreen() extends Screen {
+case object LauncherScreen extends Screen {
   override def name: String = launcherName
 }
 
-case class CollectionDetailScreen() extends Screen {
+case object CollectionDetailScreen extends Screen {
   override def name: String = collectionDetailName
 }
 

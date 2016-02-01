@@ -6,14 +6,14 @@ sealed trait Action {
   def name: String
 }
 
-case class OpenAction() extends Action {
+case object OpenAction extends Action {
   override def name: String = openName
 }
-case class AddedToCollectionAction() extends Action {
+case object AddedToCollectionAction extends Action {
   override def name: String = addedToCollectionName
 }
 
-case class RemovedInCollectionAction() extends Action {
+case object RemovedInCollectionAction extends Action {
   override def name: String = removedInCollectionName
 }
 

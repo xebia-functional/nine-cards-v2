@@ -29,7 +29,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
         pos = Int.unbox(tag)
         card <- collection.cards.lift(pos)
       } yield {
-        trackCard(card, OpenAction())
+        trackCard(card, OpenAction)
         execute(card.intent)
       }
     })
@@ -55,14 +55,14 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   }
 
   def addCards(cards: Seq[Card]) = {
-    cards foreach (card => trackCard(card, AddedToCollectionAction()))
+    cards foreach (card => trackCard(card, AddedToCollectionAction))
     collection = collection.copy(cards = collection.cards ++ cards)
     val count = cards.length
     notifyItemRangeInserted(collection.cards.length - count, count)
   }
 
   def removeCard(card: Card) = {
-    trackCard(card, RemovedInCollectionAction())
+    trackCard(card, RemovedInCollectionAction)
     val position = collection.cards.indexOf(card)
     collection = collection.copy(cards = collection.cards.filterNot(c => card == c))
     notifyItemRangeRemoved(position, 1)
@@ -81,7 +81,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
       } yield {
         self !>>
           TrackEvent(
-            screen = CollectionDetailScreen(),
+            screen = CollectionDetailScreen,
             category = AppCategory(category),
             action = action,
             label = Some(ProvideLabel(packageName)))

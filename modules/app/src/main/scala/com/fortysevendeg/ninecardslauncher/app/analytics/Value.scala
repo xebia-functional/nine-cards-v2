@@ -4,23 +4,23 @@ sealed trait Value {
   def value: Long
 }
 
-case class VeryLowValue() extends Value {
+case object VeryLowValue extends Value {
   override def value: Long = 1
 }
 
-case class LowValue() extends Value {
+case object LowValue extends Value {
   override def value: Long = 2
 }
 
-case class MediumValue() extends Value {
+case object MediumValue extends Value {
   override def value: Long = 3
 }
 
-case class HighValue() extends Value {
+case object HighValue extends Value {
   override def value: Long = 4
 }
 
-case class VeryHighValue() extends Value {
+case object VeryHighValue extends Value {
   override def value: Long = 5
 }
 

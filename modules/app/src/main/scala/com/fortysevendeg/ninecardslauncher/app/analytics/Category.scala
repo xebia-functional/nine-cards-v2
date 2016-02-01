@@ -13,11 +13,11 @@ case class AppCategory(nineCardCategory: NineCardCategory) extends Category {
   override def name: String = nineCardCategory.name
 }
 
-case class MomentCategory() extends Category { // TODO Add Moments here
+case object MomentCategory extends Category { // TODO Add Moments here
   override def name: String = toString
 }
 
-case class FreeCategory() extends Category {
+case object FreeCategory extends Category {
   override def name: String = freeName
 }
 
