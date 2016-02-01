@@ -31,7 +31,7 @@
         <item name="colorControlHighlight">@color/color_control_highlight</item>
     </style>
 
-    <style name="AppThemeToolbar" parent="Theme.AppCompat.Light">
+    <style name="AppThemeToolbar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>

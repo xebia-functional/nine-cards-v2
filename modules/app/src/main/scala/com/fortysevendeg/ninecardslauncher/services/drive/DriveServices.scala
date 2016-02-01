@@ -32,14 +32,6 @@ trait DriveServices {
   def readFile(driveId: String): ServiceDef2[String, DriveServicesException]
 
   /**
-    * Returns the content of a file as InputStream
-    * @param driveId that identifies the file to be read
-    * @return the file content as String
-    * @throws DriveServicesException if there was an error with the request GoogleDrive api
-    */
-  def openFile(driveId: String): ServiceDef2[InputStream, DriveServicesException]
-
-  /**
     * Creates a new text file
     * @param title the file title
     * @param content the content as String

@@ -42,6 +42,7 @@
 
     <string name="canceledGooglePermission">The Android Market permission is required in order to use <xliff:g id="app_name">9 Cards</xliff:g></string>
 
+    <string name="errorLoginUser">Error accessing to server. Please try again later</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
     <string name="goTo9Cards">Dive in!</string>
     <string name="workingNotificationTitle">Wait a moment…</string>
@@ -194,5 +195,10 @@
     <string name="game_trivia">Trivia</string>
     <string name="game_widgets">Widgets Games</string>
     <string name="game_word">Word</string>
+
+    <!-- Profile -->
+    <string name="publications">PUBLICATIONS</string>
+    <string name="subscriptions">SUBSCRIPTIONS</string>
+    <string name="accounts">ACCOUNTS</string>
 
 </resources>

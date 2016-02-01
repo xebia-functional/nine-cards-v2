@@ -5,7 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.graphics.{Color, Outline, PorterDuff, Typeface}
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
-import android.support.design.widget.{FloatingActionButton, NavigationView, Snackbar}
+import android.support.design.widget._
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.{GravityCompat, TintableBackgroundView}
 import android.support.v4.widget.DrawerLayout
@@ -157,6 +157,8 @@ object ExtraTweaks {
 
   def dlStatusBarBackground(res: Int) = Tweak[DrawerLayout](_.setStatusBarBackground(res))
 
+  def clStatusBarBackground(res: Int) = Tweak[CoordinatorLayout](_.setStatusBarBackgroundResource(res))
+
   def dlOpenDrawer = Tweak[DrawerLayout](_.openDrawer(GravityCompat.START))
 
   def dlCloseDrawer = Tweak[DrawerLayout](_.closeDrawer(GravityCompat.START))
@@ -238,6 +240,12 @@ object ExtraTweaks {
 
   def uiSnackbarIndefinite(message: String) = Tweak[View] { view =>
     runUi(Ui(Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).show()))
+  }
+
+  def tlAddTabs(titles: String*) = Tweak[TabLayout] { view =>
+    titles foreach { title =>
+      view.addTab(view.newTab().setText(title))
+    }
   }
 
 }

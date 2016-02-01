@@ -11,7 +11,6 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{Snail, ContextWrapper}
 
 import scala.concurrent.Promise
-import scala.util.{Failure, Success, Try}
 
 object SnailsCommons {
 
@@ -164,6 +163,51 @@ object SnailsCommons {
         }
       })
       valueAnimator.start()
+      animPromise.future
+  }
+
+  def fadeIn(maybeDuration: Option[Int] = None)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+    view =>
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+      val animPromise = Promise[Unit]()
+      view.setAlpha(0)
+      val duration = maybeDuration getOrElse resGetInteger(R.integer.anim_duration_normal)
+      view
+        .animate
+        .setDuration(duration)
+        .setInterpolator(new DecelerateInterpolator())
+        .alpha(1f)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+            view.setVisibility(View.VISIBLE)
+            animPromise.success()
+          }
+        }).start()
+      animPromise.future
+  }
+
+  def fadeOut(maybeDuration: Option[Int] = None)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+    view =>
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+      val animPromise = Promise[Unit]()
+      val duration = maybeDuration getOrElse resGetInteger(R.integer.anim_duration_normal)
+      view
+        .animate
+        .setDuration(duration)
+        .setInterpolator(new AccelerateDecelerateInterpolator())
+        .alpha(0f)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+            view.setVisibility(View.INVISIBLE)
+            animPromise.success()
+          }
+        }).start()
       animPromise.future
   }
 
