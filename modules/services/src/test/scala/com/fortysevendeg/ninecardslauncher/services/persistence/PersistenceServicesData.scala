@@ -1,12 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, User => RepositoryUser, UserData => RepositoryUserData, Moment => RepositoryMoment, MomentData => RepositoryMomentData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, Moment, _}
+import com.fortysevendeg.ninecardslauncher.services.persistence.reads.MomentImplicits
+import play.api.libs.json.Json
 
 import scala.util.Random
 
 trait PersistenceServicesData {
+
+  import MomentImplicits._
 
   val items = 5
   val item = 1
@@ -67,9 +71,13 @@ trait PersistenceServicesData {
 
   val momentId: Int = Random.nextInt(10)
   val nonExistentMomentId: Int = Random.nextInt(10) + 100
-  val timeslot: String = Random.nextString(5)
-  val wifi: String = Random.nextString(5)
+  val wifi1: String = Random.nextString(5)
+  val wifi2: String = Random.nextString(5)
+  val wifi3: String = Random.nextString(5)
   val headphone: Boolean = Random.nextBoolean()
+  val wifiSeq: Seq[String] = Seq(wifi1, wifi2, wifi3)
+  val wifiString: String = wifiSeq.mkString(",")
+  val timeslotJson: String = """ [{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}] """
 
   def createSeqApp(
     num: Int = 5,
@@ -344,8 +352,8 @@ trait PersistenceServicesData {
     num: Int = 5,
     id: Int = momentId,
     collectionId: Int = collectionId,
-    timeslot: String = timeslot,
-    wifi: String = wifi,
+    timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
+    wifi: Seq[String] = wifiSeq,
     headphone: Boolean = headphone): Seq[Moment] = List.tabulate(num)(
     item =>
       Moment(
@@ -363,13 +371,13 @@ trait PersistenceServicesData {
 
   def createRepoMomentData(
     collectionId: Int = collectionId,
-    timeslot: String = timeslot,
-    wifi: String = wifi,
+    timeslot: String = timeslotJson,
+    wifiString: String = wifiString,
     headphone: Boolean = headphone): RepositoryMomentData =
     RepositoryMomentData(
       collectionId = Option(collectionId),
       timeslot = timeslot,
-      wifi = wifi,
+      wifi = wifiString,
       headphone = headphone)
 
   val seqApp: Seq[App] = createSeqApp()
@@ -653,8 +661,8 @@ trait PersistenceServicesData {
 
   def createAddMomentRequest(
     collectionId: Int = collectionId,
-    timeslot: String = timeslot,
-    wifi: String = wifi,
+    timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
+    wifi: Seq[String] = wifiSeq,
     headphone: Boolean = headphone): AddMomentRequest =
     AddMomentRequest(
       collectionId = Option(collectionId),
@@ -671,8 +679,8 @@ trait PersistenceServicesData {
   def createUpdateMomentRequest(
     id: Int = momentId,
     collectionId: Int = collectionId,
-    timeslot: String = timeslot,
-    wifi: String = wifi,
+    timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
+    wifi: Seq[String] = wifiSeq,
     headphone: Boolean = headphone): UpdateMomentRequest =
     UpdateMomentRequest(
       id = id,

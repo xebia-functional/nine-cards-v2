@@ -1363,7 +1363,7 @@ class PersistenceServicesSpec
       result must beLike {
         case Answer(moment) =>
           moment.id shouldEqual momentId
-          moment.wifi shouldEqual wifi
+          moment.wifi shouldEqual wifi1
       }
     }
 
