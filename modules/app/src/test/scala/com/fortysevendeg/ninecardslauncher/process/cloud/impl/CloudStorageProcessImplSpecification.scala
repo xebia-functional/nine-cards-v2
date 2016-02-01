@@ -165,7 +165,7 @@ class CloudStorageProcessImplSpec
       "call to update file in Service with a valid Json when the file does exists" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-          driveServices.findFile(deviceId) returns Service(Task(Answer(Some(DriveServiceFile(deviceId, deviceName)))))
+          driveServices.findFile(deviceId) returns Service(Task(Answer(driveServiceFileSeq.headOption)))
           driveServices.updateFile(
             anyString,
             anArgThat(new JsonMatcher(validCloudStorageDeviceJson))) returns Service(Task(Answer(())))

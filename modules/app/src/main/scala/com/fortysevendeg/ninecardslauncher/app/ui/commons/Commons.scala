@@ -52,6 +52,8 @@ object ActivityResult {
 
   val selectInfoColor = 5
 
+  val resolveGooglePlayConnection = 6
+
 }
 
 object WizardState {
