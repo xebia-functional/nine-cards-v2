@@ -16,6 +16,8 @@ object ViewOps {
     def isPosition(item: Int): Boolean =
       Option(view.getTag(positionId)).isDefined && Int.unbox(view.getTag(positionId)).equals(item)
 
+    def getType: Option[String] = Option(view.getTag(viewTypeId)) map (_.toString)
+
     def isType(t: String): Boolean =
       Option(view.getTag(viewTypeId)).isDefined && view.getTag(viewTypeId).equals(t)
 

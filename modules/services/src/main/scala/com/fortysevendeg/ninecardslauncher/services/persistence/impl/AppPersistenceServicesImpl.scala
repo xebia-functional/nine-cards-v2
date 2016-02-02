@@ -61,7 +61,6 @@ trait AppPersistenceServicesImpl {
     val appSeq = for {
       iter <- appRepository.fetchIterableApps(
         where = toStringWhere(keyword),
-        whereParams = Seq(keyword),
         orderBy = orderByString)
     } yield new IterableApps(iter)
 
@@ -73,7 +72,7 @@ trait AppPersistenceServicesImpl {
 
     val appSeq = for {
       apps <- appRepository.fetchAppsByCategory(
-        category = toStringWhere(category),
+        category = category,
         orderBy = orderByString)
     } yield apps map toApp
 
@@ -85,7 +84,7 @@ trait AppPersistenceServicesImpl {
 
     val appSeq = for {
       iter <- appRepository.fetchIterableAppsByCategory(
-        category = toStringWhere(category),
+        category = category,
         orderBy = orderByString)
     } yield new IterableApps(iter)
 

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportProvider, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
@@ -151,19 +152,19 @@ class LauncherActivity
         case (apps: IterableApps, counters: Seq[TermCounter]) =>
           addApps(
             apps = apps,
-            getAppOrder = getAppOrder,
-            counters = counters,
             clickListener = (app: App) => {
               execute(toNineCardIntent(app))
             },
             longClickListener = (app: App) => {
               launchSettings(app.packageName)
-            })
+            },
+            getAppOrder = getAppOrder,
+            counters = counters)
       }
     )
   }
 
-  override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
+  override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit =
     contactsMenuOption match {
       case ContactsByLastCall =>
         Task.fork(di.deviceProcess.getLastCalls.run).resolveAsyncUi(
@@ -185,6 +186,27 @@ class LauncherActivity
               )
           })
     }
-  }
+
+  override def loadAppsByKeyword(keyword: String): Unit =
+    Task.fork(di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName).run).resolveAsyncUi(
+      onResult = {
+        case (apps: IterableApps) =>
+          Log.d("9cards", s"apps: ${apps.count()}")
+          addApps(
+            apps = apps,
+            clickListener = (app: App) => {
+              execute(toNineCardIntent(app))
+            },
+            longClickListener = (app: App) => {
+              launchSettings(app.packageName)
+            })
+      })
+
+  override def loadContactsByKeyword(keyword: String): Unit =
+    Task.fork(di.deviceProcess.getIterableContactsByKeyWord(keyword).run).resolveAsyncUi(
+      onResult = {
+        case (contacts: IterableContacts) =>
+          Ui.nop
+      })
 
 }

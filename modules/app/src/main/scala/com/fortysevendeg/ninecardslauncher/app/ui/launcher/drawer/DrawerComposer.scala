@@ -153,7 +153,19 @@ trait DrawerComposer
 
   private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
     val colorPrimary = resGetColor(R.color.primary)
-    (searchBoxView <~ sbavChangeListener(self)) ~
+    (searchBoxView <~
+      sbavChangeListener(self) <~
+      sbavOnChangeText((text: String, boxView: BoxView) => {
+        (boxView, text, getStatus) match {
+          case (AppsView, "", Some(status)) =>
+            AppsMenuOption(status) foreach loadApps
+          case (ContactView, "", Some(status)) =>
+            ContactsMenuOption(status) foreach loadContacts
+          case (AppsView, t, _) => loadAppsByKeyword(t)
+          case (ContactView, t, _) => loadAppsByKeyword(t)
+          case _ =>
+        }
+      })) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         (if (getItemsCount == 0) {
           loadAppsAlphabetical
@@ -179,7 +191,7 @@ trait DrawerComposer
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
             runUi(
-              getTypeView() match {
+              getTypeView match {
                 case Some(AppsView) =>
                   AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
                 case Some(ContactView) =>
@@ -202,7 +214,12 @@ trait DrawerComposer
     (searchPanel <~ vVisible) ~
       (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData))
 
-  def addApps(apps: IterableApps, getAppOrder: GetAppOrder, counters: Seq[TermCounter], clickListener: (App) => Unit, longClickListener: (App) => Unit)
+  def addApps(
+    apps: IterableApps,
+    clickListener: (App) => Unit,
+    longClickListener: (App) => Unit,
+    getAppOrder: GetAppOrder = GetByName,
+    counters: Seq[TermCounter] = Seq.empty)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val appsAdapter = new AppsAdapter(
       apps = apps,
@@ -218,7 +235,9 @@ trait DrawerComposer
       })
   }
 
-  private[this] def getTypeView(): Option[BoxView] = searchBoxView map (_.statuses.currentItem)
+  private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
+
+  private[this] def getTypeView: Option[BoxView] = searchBoxView map (_.statuses.currentItem)
 
   private[this] def getItemsCount: Int = (for {
     rv <- recycler
