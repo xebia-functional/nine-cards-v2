@@ -144,6 +144,10 @@ trait PersistenceServicesSpecification
 
     mockMomentRepository.addMoment(repoMomentData) returns Service(Task(Result.answer(repoMoment)))
 
+    mockMomentRepository.addMoment(createRepoMomentData(wifiString = "")) returns Service(Task(Result.answer(createSeqRepoMoment(data = createRepoMomentData(wifiString = ""))(0))))
+
+    mockMomentRepository.addMoment(createRepoMomentData(timeslot = "[]")) returns Service(Task(Result.answer(createSeqRepoMoment(data = createRepoMomentData(timeslot = "[]"))(0))))
+
     mockMomentRepository.deleteMoments() returns Service(Task(Result.answer(items)))
 
     mockMomentRepository.deleteMoment(repoMoment) returns Service(Task(Result.answer(item)))
@@ -1358,13 +1362,34 @@ class PersistenceServicesSpec
 
   "addMoment" should {
 
-    "return a Moment value for a valid request" in new ValidRepositoryServicesResponses {
+    "return a Moment for a valid request" in new ValidRepositoryServicesResponses {
       val result = persistenceServices.addMoment(createAddMomentRequest()).run.run
 
       result must beLike {
         case Answer(moment) =>
           moment.id shouldEqual momentId
           moment.wifi shouldEqual wifiSeq
+      }
+    }
+
+    "return a Moment with a empty wifi sequence for a valid request with a empty wifi sequence" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addMoment(createAddMomentRequest(wifi = Seq.empty)).run.run
+
+      result must beLike {
+        case Answer(moment) =>
+          moment.id shouldEqual momentId
+          moment.wifi shouldEqual Seq.empty
+      }
+    }
+
+    "return a Moment with an empty timeslot sequence for a valid request with an empty timeslot" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addMoment(createAddMomentRequest(timeslot = Seq.empty)).run.run
+
+      result must beLike {
+        case Answer(moment) =>
+          moment.id shouldEqual momentId
+          moment.wifi shouldEqual wifiSeq
+          moment.timeslot shouldEqual Seq.empty
       }
     }
 

@@ -84,6 +84,16 @@ trait MomentRepositorySpecification
       f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
   }
 
+  trait ValidMomentRepositoryCollectionResponses
+    extends MomentRepositoryTestData {
+
+    self: MomentRepositoryScope =>
+
+    uriCreator.parse(any) returns mockUri
+
+    contentResolverWrapper.insert(mockUri, createMomentValuesCollection) returns testId
+  }
+
   trait ErrorMomentRepositoryResponses
     extends MomentRepositoryTestData {
 
@@ -163,6 +173,19 @@ class MomentRepositorySpec
             case Answer(momentResult) =>
               momentResult.id shouldEqual testId
               momentResult.data.collectionId shouldEqual testCollectionIdOption
+          }
+        }
+
+      "return a Moment object with a collectionId = None with a valid request with a collectionId = None" in
+        new MomentRepositoryScope
+          with ValidMomentRepositoryCollectionResponses {
+
+          val result = momentRepository.addMoment(data = createMomentDataCollection).run.run
+
+          result must beLike {
+            case Answer(momentResult) =>
+              momentResult.id shouldEqual testId
+              momentResult.data.collectionId shouldEqual None
           }
         }
 

@@ -49,4 +49,16 @@ trait MomentRepositoryTestData {
     timeslot = testTimeslot,
     wifi = testWifi,
     headphone = testHeadphone)
+
+  def createMomentValuesCollection = Map[String, Any](
+    MomentEntity.collectionId -> (None orNull),
+    MomentEntity.timeslot -> testTimeslot,
+    MomentEntity.wifi -> testWifi,
+    MomentEntity.headphone -> testHeadphone)
+
+  def createMomentDataCollection = MomentData(
+    collectionId = None,
+    timeslot = testTimeslot,
+    wifi = testWifi,
+    headphone = testHeadphone)
 }

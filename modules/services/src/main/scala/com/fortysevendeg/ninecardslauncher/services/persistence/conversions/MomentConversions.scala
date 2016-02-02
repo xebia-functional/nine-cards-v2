@@ -17,7 +17,7 @@ trait MomentConversions {
       id = moment.id,
       collectionId = moment.data.collectionId,
       timeslot = Json.parse(moment.data.timeslot).as[Seq[MomentTimeSlot]],
-      wifi = moment.data.wifi.split(","),
+      wifi = if (moment.data.wifi.isEmpty) List.empty else moment.data.wifi.split(",").toList,
       headphone = moment.data.headphone)
 
   def toRepositoryMoment(moment: Moment): RepositoryMoment =
