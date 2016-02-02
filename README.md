@@ -1,8 +1,4 @@
 # 9Cards v2
-[![Codacy
-Badge](https://api.codacy.com/project/badge/grade/473a0aeaf6734503b3b0f67a44b78887)](https://www.codacy.com)
-[![Codacy
-Badge](https://api.codacy.com/project/badge/coverage/473a0aeaf6734503b3b0f67a44b78887)](https://www.codacy.com)
 
 9 Cards does the bulk of the work for you, organizing your apps into collections. Get quick and easy access to the apps you need most
 

@@ -13,6 +13,9 @@
     <!-- Google Play -->
     <string name="google_play_url">http://play.google.com/store/apps/details?id=%1$s</string>
 
+    <!-- Google Analytics -->
+    <string name="google_analytics_id">${google_analytics_id}</string>
+
     <!-- 9Cards -->
     <string name="icons_apps_folder">icons_apps</string>
     <string name="shared_preferences_key">ninecards-shared-preferences</string>

@@ -34,7 +34,6 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION "project app" coverage test
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
-  - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:codacyCoverage
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" android:packageRelease
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-generateLink
