@@ -60,7 +60,8 @@ trait AppPersistenceServicesImpl {
 
     val appSeq = for {
       iter <- appRepository.fetchIterableApps(
-        where = toStringWhere(keyword),
+        where = toStringWhere,
+        whereParams = Seq(s"%$keyword%"),
         orderBy = orderByString)
     } yield new IterableApps(iter)
 
@@ -109,6 +110,6 @@ trait AppPersistenceServicesImpl {
     }
   } ${if (ascending) "ASC" else "DESC"}"
 
-  private[this] def toStringWhere(keyword: String): String = s"${AppEntity.name} LIKE '%$keyword%' "
+  private[this] def toStringWhere: String = s"${AppEntity.name} LIKE ? "
 
 }

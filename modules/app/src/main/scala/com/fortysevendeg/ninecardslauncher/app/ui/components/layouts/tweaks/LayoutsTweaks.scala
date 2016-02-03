@@ -161,6 +161,8 @@ object SearchBoxesAnimatedViewTweak {
   def sbavUpdateContactsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateContactsIcon(resourceId)))
 
   def sbavOnChangeText(onChangeText: (String, BoxView) => Unit) = Tweak[SearchBoxesAnimatedView] (_.addTextChangedListener(onChangeText))
+
+  def sbavClean = Tweak[SearchBoxesAnimatedView] (view => runUi(view.clean))
 }
 
 object PullToTabsViewTweaks {

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportProvider, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
@@ -178,12 +177,10 @@ class LauncherActivity
             case (contacts: IterableContacts, counters: Seq[TermCounter]) =>
               addContacts(
                 contacts = contacts,
-                filter = getContactFilter,
-                counters = counters,
                 clickListener = (contact: Contact) => {
                   execute(contact)
-                }
-              )
+                },
+                counters = counters)
           })
     }
 
@@ -191,7 +188,6 @@ class LauncherActivity
     Task.fork(di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName).run).resolveAsyncUi(
       onResult = {
         case (apps: IterableApps) =>
-          Log.d("9cards", s"apps: ${apps.count()}")
           addApps(
             apps = apps,
             clickListener = (app: App) => {
@@ -206,7 +202,11 @@ class LauncherActivity
     Task.fork(di.deviceProcess.getIterableContactsByKeyWord(keyword).run).resolveAsyncUi(
       onResult = {
         case (contacts: IterableContacts) =>
-          Ui.nop
+          addContacts(
+            contacts = contacts,
+            clickListener = (contact: Contact) => {
+              execute(contact)
+            })
       })
 
 }

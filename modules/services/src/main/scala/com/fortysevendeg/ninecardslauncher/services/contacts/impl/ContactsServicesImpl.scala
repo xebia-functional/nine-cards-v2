@@ -77,7 +77,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.CONTACTS_BY_KEYWORD_SELECTION,
-            whereParams = Seq(keyword),
+            whereParams = Seq(s"%$keyword%"),
             orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
         }
       }

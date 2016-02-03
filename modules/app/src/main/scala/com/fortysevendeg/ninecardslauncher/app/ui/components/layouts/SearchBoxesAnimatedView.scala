@@ -147,6 +147,8 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     contactBox.addTextChangedListener(onChangeText)
   }
 
+  def clean: Ui[_] = appBox.clean ~ contactBox.clean
+
   private[this] def applyTranslation(view: View, translate: Float): Ui[_] =
     view <~ vTranslationX(translate)
 
@@ -314,10 +316,14 @@ case class BoxViewHolder(
 
   def updateHeader(resourceId: Int): Ui[_] = headerIcon <~ searchBoxButtonStyle(resourceId)
 
+  def clean: Ui[_] = editText <~ (if (isEmpty) Tweak.blank else tvText("")) <~ etHideKeyboard
+
   def addTextChangedListener(onChangeText: (String, BoxView) => Unit): Unit =
     runUi(editText <~
       etAddTextChangedListener(
         (text: String, start: Int, before: Int, count: Int) => onChangeText(text, boxView)))
+
+  def isEmpty: Boolean = editText exists (_.getText.toString == "")
 
   private[this] def iconTweak = boxView match {
     case AppsView =>
