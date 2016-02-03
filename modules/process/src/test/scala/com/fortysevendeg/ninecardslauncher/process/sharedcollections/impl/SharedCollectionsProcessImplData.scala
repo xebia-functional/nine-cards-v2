@@ -8,7 +8,7 @@ import scala.util.Random
 
 trait SharedCollectionsProcessImplData {
 
-  val requestConfig = RequestConfig("fake-device-id", "fake-token")
+  val requestConfig = RequestConfig("fake-device-id", "fake-token", Some("fake-android-token"))
 
   val category = Communication
 
