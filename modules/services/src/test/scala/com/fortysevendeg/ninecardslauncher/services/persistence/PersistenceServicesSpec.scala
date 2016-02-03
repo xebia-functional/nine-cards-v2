@@ -50,6 +50,10 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.fetchIterableApps(any, any, any) returns Service(Task(Result.answer(iterableCursorApp)))
 
+    mockAppRepository.fetchAlphabeticalAppsCounter returns Service(Task(Result.answer(dataCounters)))
+
+    mockAppRepository.fetchCategorizedAppsCounter returns Service(Task(Result.answer(dataCounters)))
+
     mockAppRepository.fetchAppsByCategory(any, any) returns Service(Task(Result.answer(seqRepoApp)))
 
     mockAppRepository.fetchIterableAppsByCategory(any, any) returns Service(Task(Result.answer(iterableCursorApp)))
@@ -168,6 +172,10 @@ trait PersistenceServicesSpecification
     mockAppRepository.fetchApps(any) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.fetchIterableApps(any, any, any) returns Service(Task(Result.errata(exception)))
+
+    mockAppRepository.fetchAlphabeticalAppsCounter returns Service(Task(Result.errata(exception)))
+
+    mockAppRepository.fetchCategorizedAppsCounter returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.fetchAppsByCategory(any, any) returns Service(Task(Result.errata(exception)))
 
@@ -475,6 +483,54 @@ class PersistenceServicesSpec
       val result = persistenceServices.fetchIterableAppsByCategory(category, OrderByName).run.run
 
       result must beLike[Result[IterableApps, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchAlphabeticalAppsCounter" should {
+
+    "return a sequence of DataCounter sort alphabetically" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchAlphabeticalAppsCounter.run.run
+
+      result must beLike[Result[Seq[DataCounter], PersistenceServiceException]] {
+        case Answer(counters) =>
+          counters map (_.term) shouldEqual (dataCounters map (_.term))
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchAlphabeticalAppsCounter.run.run
+
+      result must beLike[Result[Seq[DataCounter], PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchCategorizedAppsCounter" should {
+
+    "return a sequence of DataCounter by category sort alphabetically" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCategorizedAppsCounter.run.run
+
+      result must beLike[Result[Seq[DataCounter], PersistenceServiceException]] {
+        case Answer(counters) =>
+          counters map (_.term) shouldEqual (dataCounters map (_.term))
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchCategorizedAppsCounter.run.run
+
+      result must beLike[Result[Seq[DataCounter], PersistenceServiceException]] {
         case Errata(e) => e.headOption must beSome.which {
           case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
             case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)

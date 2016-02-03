@@ -1,7 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{
+  AppData => RepositoryAppData,
+  App => RepositoryApp,
+  Collection => RepositoryCollection,
+  DataCounter => RepositoryDataCounter,
+  CollectionData => RepositoryCollectionData,
+  Card => RepositoryCard,
+  CardData => RepositoryCardData,
+  DockApp => RepositoryDockApp,
+  DockAppData => RepositoryDockAppData,
+  User => RepositoryUser,
+  UserData => RepositoryUserData,
+  Moment => RepositoryMoment,
+  MomentData => RepositoryMomentData
+}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, Moment, _}
 import com.fortysevendeg.ninecardslauncher.services.persistence.reads.MomentImplicits
 import play.api.libs.json.Json
@@ -79,6 +93,9 @@ trait PersistenceServicesData {
   val wifiString: String = wifiSeq.mkString(",")
   val timeslotJson: String = """[{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}]"""
   val collectionIdOption = Option(collectionId)
+
+  val termDataCounter: String = Random.nextString(1)
+  val countDataCounter: Int = Random.nextInt(2)
 
   def createSeqApp(
     num: Int = 5,
@@ -644,6 +661,12 @@ trait PersistenceServicesData {
   def createFindDockAppByIdRequest(id: Int): FindDockAppByIdRequest =
     FindDockAppByIdRequest(id = id)
 
+  def createDataCounter(i: Int): RepositoryDataCounter =
+    RepositoryDataCounter(
+      term = s"$i - $termDataCounter",
+      count = countDataCounter
+    )
+
   val iterableCursorApp = new IterableCursor[RepositoryApp] {
     override def count(): Int = seqRepoApp.length
     override def moveToPosition(pos: Int): RepositoryApp = seqRepoApp(pos)
@@ -689,5 +712,7 @@ trait PersistenceServicesData {
       timeslot = timeslot,
       wifi = wifi,
       headphone = headphone)
+
+  val dataCounters = 1 to 10 map createDataCounter
 
 }

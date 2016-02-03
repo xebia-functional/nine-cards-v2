@@ -18,7 +18,10 @@ import rapture.core.{Answer, Errata}
 trait AppRepositorySpecification
   extends Specification
   with DisjunctionMatchers
-  with Mockito {
+  with Mockito
+  with AppRepositoryTestData {
+
+  val contentResolverException = new RuntimeException("Irrelevant message")
 
   trait AppRepositoryScope
     extends Scope {
@@ -27,13 +30,29 @@ trait AppRepositorySpecification
 
     lazy val uriCreator = mock[UriCreator]
 
-    lazy val appRepository = new AppRepository(contentResolverWrapper, uriCreator)
+    lazy val appRepository = new AppRepository(contentResolverWrapper, uriCreator) {
+      override protected def getNamesAlphabetically: Seq[String] = appsDataSequence
+      override protected def getCategoriesAlphabetically: Seq[String] = categoryDataSequence
+    }
 
     lazy val mockUri = mock[Uri]
   }
 
-  trait ValidAppRepositoryResponses
-    extends AppRepositoryTestData {
+  trait ErrorCounterAppRepositoryResponses {
+
+    self: AppRepositoryScope =>
+
+    lazy val appRepositoryException = new AppRepository(contentResolverWrapper, uriCreator) {
+      override protected def getNamesAlphabetically: Seq[String] =
+        throw contentResolverException
+      override protected def getCategoriesAlphabetically: Seq[String] =
+        throw contentResolverException
+    }
+
+
+  }
+
+  trait ValidAppRepositoryResponses {
 
     self: AppRepositoryScope =>
 
@@ -103,12 +122,9 @@ trait AppRepositorySpecification
     contentResolverWrapper.updateById(mockUri, testAppId, createAppValues) returns 1
   }
 
-  trait ErrorAppRepositoryResponses
-    extends AppRepositoryTestData {
+  trait ErrorAppRepositoryResponses {
 
     self: AppRepositoryScope =>
-
-    val contentResolverException = new RuntimeException("Irrelevant message")
 
     uriCreator.parse(any) returns mockUri
 
@@ -222,6 +238,66 @@ class AppRepositorySpec
           with ErrorAppRepositoryResponses {
 
           val result = appRepository.addApp(data = createAppData).run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "fetchAlphabeticalAppsCounter" should {
+
+      "return a sequence of DataCounter sort alphabetically" in
+        new AppRepositoryScope
+          with ValidAppRepositoryResponses {
+
+          val result = appRepository.fetchAlphabeticalAppsCounter.run.run
+
+          result must beLike {
+            case Answer(counters) =>
+              counters shouldEqual appsDataCounters
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new AppRepositoryScope
+          with ErrorCounterAppRepositoryResponses {
+
+          val result = appRepositoryException.fetchAlphabeticalAppsCounter.run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "fetchCategorizedAppsCounter" should {
+
+      "return a sequence of DataCounter sort by category" in
+        new AppRepositoryScope
+          with ValidAppRepositoryResponses {
+
+          val result = appRepository.fetchCategorizedAppsCounter.run.run
+
+          result must beLike {
+            case Answer(counters) =>
+              counters shouldEqual categoryDataCounters
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new AppRepositoryScope
+          with ErrorCounterAppRepositoryResponses {
+
+          val result = appRepositoryException.fetchCategorizedAppsCounter.run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

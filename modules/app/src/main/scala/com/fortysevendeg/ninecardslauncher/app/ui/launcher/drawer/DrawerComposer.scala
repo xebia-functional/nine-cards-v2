@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.{ViewHolder, Adapter, LayoutManager}
+import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import android.widget.{ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -10,9 +10,10 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
@@ -25,7 +26,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Draw
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{DrawerRecyclerView, DrawerRecyclerViewListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -66,17 +66,17 @@ trait DrawerComposer
 
   var searchBoxView: Option[SearchBoxesAnimatedView] = None
 
-  def appTabs(implicit context: ActivityContextWrapper) = Seq(
-    TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.apps_alphabetical)),
-    TabInfo(R.drawable.app_drawer_filter_categories, resGetString(R.string.apps_categories)),
-    TabInfo(R.drawable.app_drawer_filter_installation_date, resGetString(R.string.apps_date))
-  )
+  lazy val appTabs = AppsMenuOption.list map {
+    case AppsAlphabetical => TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.apps_alphabetical))
+    case AppsByCategories => TabInfo(R.drawable.app_drawer_filter_categories, getString(R.string.apps_categories))
+    case AppsByLastInstall => TabInfo(R.drawable.app_drawer_filter_installation_date, getString(R.string.apps_date))
+  }
 
-  def contactsTabs(implicit context: ActivityContextWrapper) = Seq(
-    TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.contacts_alphabetical)),
-    TabInfo(R.drawable.app_drawer_filter_favorites, resGetString(R.string.contacts_favorites)),
-    TabInfo(R.drawable.app_drawer_filter_last_call, resGetString(R.string.contacts_last))
-  )
+  lazy val contactsTabs = ContactsMenuOption.list map {
+    case ContactsAlphabetical => TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.contacts_alphabetical))
+    case ContactsFavorites => TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites))
+    case ContactsByLastCall => TabInfo(R.drawable.app_drawer_filter_last_call, getString(R.string.contacts_last))
+  }
 
   override def onChangeBoxView(boxView: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit =
     runUi(
@@ -98,27 +98,41 @@ trait DrawerComposer
         case _ =>
       }})
 
-  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] =
-    Ui(loadApps(option)) ~ (recycler <~ vSetType(option.name))
+  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] = {
+    val maybeDrawable = appTabs.lift(AppsMenuOption(option)) map (_.drawable)
+    Ui(loadApps(option)) ~
+      (searchBoxView <~ (maybeDrawable map sbavUpdateAppsIcon getOrElse Tweak.blank)) ~
+      (recycler <~ vSetType(option.name))
+  }
 
-  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] =
-    Ui(loadContacts(option)) ~ (recycler <~ vSetType(option.name))
+  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] = {
+    val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
+    Ui(loadContacts(option)) ~
+      (searchBoxView <~ (maybeDrawable map sbavUpdateContactsIcon getOrElse Tweak.blank)) ~
+      (recycler <~ vSetType(option.name))
+  }
 
-  private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val maybeDrawable = contactsTabs.lift(ContactsMenuOption(ContactsAlphabetical)) map (_.drawable)
     loadAppsAndSaveStatus(AppsAlphabetical) ~
       (recycler <~ vSetType(AppsAlphabetical.name)) ~
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
-        ptvAddTabsAndActivate(appTabs, 0))
+        ptvAddTabsAndActivate(appTabs, 0)) ~
+      (searchBoxView <~ (maybeDrawable map sbavUpdateContactsIcon getOrElse Tweak.blank))
+  }
 
-  private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val maybeDrawable = appTabs.lift(AppsMenuOption(AppsAlphabetical)) map (_.drawable)
     loadContactsAndSaveStatus(ContactsAlphabetical) ~
       (recycler <~ vSetType(ContactsAlphabetical.name)) ~
       (paginationDrawerPanel <~ reloadPager(1)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
-        ptvAddTabsAndActivate(contactsTabs, 0))
+        ptvAddTabsAndActivate(contactsTabs, 0)) ~
+      (searchBoxView <~ (maybeDrawable map sbavUpdateAppsIcon getOrElse Tweak.blank))
+  }
 
   private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (searchBoxContentPanel <~
@@ -142,7 +156,7 @@ trait DrawerComposer
     (searchBoxView <~ sbavChangeListener(self)) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         (if (getItemsCount == 0) {
-          Ui(loadApps(AppsAlphabetical))
+          loadAppsAlphabetical
         } else {
           Ui.nop
         }) ~ revealInDrawer ~~ (searchPanel <~ vGone)
@@ -154,7 +168,6 @@ trait DrawerComposer
         )) <~
         (searchBoxView map drvAddController getOrElse Tweak.blank)) ~
       (scrollerLayout <~
-        drawerContentStyle <~
         fslColor(colorPrimary)) ~
       (pullToTabsView <~
         ptvLinkTabs(
@@ -164,19 +177,18 @@ trait DrawerComposer
         ptvAddTabsAndActivate(appTabs, 0) <~
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
-          changeItem = (pos: Int) =>
-            runUi((pos, getTypeView()) match {
-              case (0, Some(AppsView)) => loadAppsAndSaveStatus(AppsAlphabetical)
-              case (1, Some(AppsView)) => loadAppsAndSaveStatus(AppsByCategories)
-              case (2, Some(AppsView)) => loadAppsAndSaveStatus(AppsByLastInstall)
-              case (0, Some(ContactView)) => loadContactsAndSaveStatus(ContactsAlphabetical)
-              case (1, Some(ContactView)) => loadContactsAndSaveStatus(ContactsFavorites)
-              case (2, Some(ContactView)) => loadContactsAndSaveStatus(ContactsByLastCall)
-              case _ => Ui.nop
-            }
-            )))) ~
+          changeItem = (pos: Int) => {
+            runUi(
+              getTypeView() match {
+                case Some(AppsView) =>
+                  AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
+                case Some(ContactView) =>
+                  ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
+              })
+          }
+        ))) ~
       (drawerContent <~ vGone) ~
-      Ui(loadApps(AppsAlphabetical))
+      loadAppsAlphabetical
   }
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
@@ -190,7 +202,7 @@ trait DrawerComposer
     (searchPanel <~ vVisible) ~
       (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData))
 
-  def addApps(apps: IterableApps, getAppOrder: GetAppOrder, clickListener: (App) => Unit, longClickListener: (App) => Unit)
+  def addApps(apps: IterableApps, getAppOrder: GetAppOrder, counters: Seq[TermCounter], clickListener: (App) => Unit, longClickListener: (App) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val appsAdapter = new AppsAdapter(
       apps = apps,
@@ -199,7 +211,11 @@ trait DrawerComposer
     swipeAdapter(
       adapter = appsAdapter,
       layoutManager = appsAdapter.getLayoutManager,
-      fastScrollerVisible = isScrollerLayoutVisible(getAppOrder))
+      counters = counters,
+      signalType = getAppOrder match {
+        case GetByCategory => FastScrollerCategory
+        case _ => FastScrollerText
+      })
   }
 
   private[this] def getTypeView(): Option[BoxView] = searchBoxView map (_.statuses.currentItem)
@@ -226,17 +242,7 @@ trait DrawerComposer
 
   private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.name))
 
-  private[this] def isScrollerLayoutVisible(getAppOrder: GetAppOrder) = getAppOrder match {
-    case v: GetByInstallDate => false
-    case _ => true
-  }
-
-  private[this] def isScrollerLayoutVisible(filter: ContactsFilter) = filter match {
-    case FavoriteContacts => false
-    case _ => true
-  }
-
-  def addContacts(contacts: IterableContacts, filter: ContactsFilter, clickListener: (Contact) => Unit)
+  def addContacts(contacts: IterableContacts, filter: ContactsFilter, counters: Seq[TermCounter], clickListener: (Contact) => Unit)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val contactAdapter = new ContactsAdapter(
       contacts = contacts,
@@ -245,7 +251,7 @@ trait DrawerComposer
     swipeAdapter(
       contactAdapter,
       contactAdapter.getLayoutManager,
-      isScrollerLayoutVisible(filter))
+      counters)
   }
 
   def addLastCallContacts(contacts: Seq[LastCallsContact], clickListener: (LastCallsContact) => Unit)
@@ -256,26 +262,23 @@ trait DrawerComposer
     swipeAdapter(
       contactAdapter,
       contactAdapter.getLayoutManager,
-      fastScrollerVisible = false)
+      Seq.empty)
   }
 
   private[this] def swipeAdapter(
     adapter: RecyclerView.Adapter[_],
     layoutManager: LayoutManager,
-    fastScrollerVisible: Boolean
-  ) =
+    counters: Seq[TermCounter],
+    signalType: FastScrollerSignalType = FastScrollerText) =
     (recycler <~
       rvLayoutManager(layoutManager) <~
       rvAdapter(adapter) <~
       rvScrollToTop) ~
-      scrollerLayoutUi(fastScrollerVisible)
+      scrollerLayoutUi(counters, signalType)
 
-  def scrollerLayoutUi(fastScrollerVisible: Boolean): Ui[_] = if (fastScrollerVisible) {
+  private[this] def scrollerLayoutUi(counters: Seq[TermCounter], signalType: FastScrollerSignalType): Ui[_] =
     recycler map { rv =>
-      scrollerLayout <~ fslEnabledScroller(true) <~ fslLinkRecycler(rv) <~ fslReset
+      scrollerLayout <~ fslEnabledScroller(true) <~ fslLinkRecycler(rv) <~ fslReset <~ fslCounters(counters) <~ fslSignalType(signalType)
     } getOrElse showGeneralError
-  } else {
-    scrollerLayout <~ fslEnabledScroller(false)
-  }
 
 }

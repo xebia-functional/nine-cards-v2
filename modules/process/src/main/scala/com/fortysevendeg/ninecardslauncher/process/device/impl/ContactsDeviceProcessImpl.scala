@@ -3,9 +3,10 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.{CatchAll, _}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactCounter}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ImplicitsContactsServiceExceptions}
 import rapture.core.Answer
 
@@ -17,6 +18,9 @@ trait ContactsDeviceProcessImpl {
     with DeviceProcessDependencies
     with ImplicitsDeviceException
     with ImplicitsContactsServiceExceptions =>
+
+  val emptyContactCounterService: ServiceDef2[Seq[ContactCounter], ContactsServiceException] =
+    Service(Task(Answer(Seq.empty)))
 
   def getFavoriteContacts(implicit context: ContextSupport) =
     (for {
@@ -32,6 +36,15 @@ trait ContactsDeviceProcessImpl {
         case ContactsWithPhoneNumber => contactsServices.getContactsWithPhone
       }
     } yield toContactSeq(contacts)).resolve[ContactException]
+
+  def getCounterForIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
+    (for {
+      counters <- filter match {
+        case AllContacts => contactsServices.getAlphabeticalCounterContacts
+        case FavoriteContacts => emptyContactCounterService
+        case ContactsWithPhoneNumber => emptyContactCounterService
+      }
+    } yield counters map toTermCounter).resolve[ContactException]
 
   def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
     (for {

@@ -15,6 +15,8 @@ trait ContactsServicesSpecification
   with Mockito
   with ContactsServicesImplData {
 
+  val contentResolverException = new RuntimeException("Irrelevant message")
+
   trait ContactsServicesScope
     extends Scope {
 
@@ -30,8 +32,9 @@ trait ContactsServicesSpecification
 
     uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, nonExistentPhone) returns nonExistentMockUri
 
-    lazy val contactsServices = new ContactsServicesImpl(contentResolverWrapper, uriCreator)
-
+    lazy val contactsServices = new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
+      override protected def getNamesAlphabetically: Seq[String] = contactsIterator
+    }
 
   }
 
@@ -42,7 +45,7 @@ trait ContactsServicesSpecification
       uri = Fields.CONTENT_URI,
       projection = allFields,
       where = Fields.ALL_CONTACTS_SELECTION,
-      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
+      orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor)) returns contacts
 
     contentResolverWrapper.fetch(
       uri = Fields.EMAIL_CONTENT_URI,
@@ -94,13 +97,11 @@ trait ContactsServicesSpecification
     extends ContactsServicesScope
     with ContactsServicesImplData {
 
-    val contentResolverException = new RuntimeException("Irrelevant message")
-
     contentResolverWrapper.fetchAll(
       uri = Fields.CONTENT_URI,
       projection = allFields,
       where = Fields.ALL_CONTACTS_SELECTION,
-      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
+      orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       uri = Fields.EMAIL_CONTENT_URI,
@@ -120,6 +121,16 @@ trait ContactsServicesSpecification
 
   }
 
+  trait ErrorIteratorContactsServicesResponses
+    extends ContactsServicesScope
+    with ContactsServicesImplData {
+
+    lazy val contactsServicesException = new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
+      override protected def getNamesAlphabetically: Seq[String] =
+        throw contentResolverException
+    }
+  }
+
   trait FavoriteContactsServicesResponses
     extends ContactsServicesScope
     with ContactsServicesImplData {
@@ -128,7 +139,7 @@ trait ContactsServicesSpecification
       Fields.CONTENT_URI,
       allFields,
       where = Fields.STARRED_SELECTION,
-      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
+      orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor)) returns contacts
   }
 
   trait ErrorFavoriteContactsServicesResponses
@@ -139,7 +150,7 @@ trait ContactsServicesSpecification
       Fields.CONTENT_URI,
       allFields,
       where = Fields.STARRED_SELECTION,
-      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
+      orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor)) throws contentResolverException
 
   }
 
@@ -151,7 +162,7 @@ trait ContactsServicesSpecification
       Fields.CONTENT_URI,
       allFields,
       where = Fields.HAS_PHONE_NUMBER_SELECTION,
-      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) returns contacts
+      orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor)) returns contacts
   }
 
   trait ErrorContactsWithPhoneServicesResponses
@@ -162,7 +173,7 @@ trait ContactsServicesSpecification
       Fields.CONTENT_URI,
       allFields,
       where = Fields.HAS_PHONE_NUMBER_SELECTION,
-      orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor)) throws contentResolverException
+      orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor)) throws contentResolverException
 
   }
 
@@ -187,6 +198,32 @@ class ContactsServicesImplSpec
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ErrorContactsServicesResponses {
           val result = contactsServices.getContacts.run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, exception)) => exception must beLike {
+                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+
+    }
+
+    "getAlphabeticalCounterContacts" should {
+
+      "return a sequence of ContactCounter sort alphabetically" in
+        new ValidContactsServicesResponses {
+          val result = contactsServices.getAlphabeticalCounterContacts.run.run
+
+          result must beLike {
+            case Answer(seq) => seq shouldEqual contactCounters
+          }
+        }
+
+      "return a ContactsServiceException when the content resolver throws an exception" in
+        new ErrorIteratorContactsServicesResponses {
+          val result = contactsServicesException.getAlphabeticalCounterContacts.run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository.app
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{AppData, App}
+import com.fortysevendeg.ninecardslauncher.repository.model.{DataCounter, AppData, App}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntityData, AppEntity}
 
 import scala.util.Random
@@ -80,4 +80,49 @@ trait AppRepositoryTestData {
     dateUpdate = testDateUpdate,
     version = testVersion,
     installedFromGooglePlay = testInstalledFromGooglePlay)
+
+  val appsDataSequence: Seq[String] =
+    Seq(
+      "!aaa",
+      "2bbb",
+      "?ccc",
+      "1ddd",
+      "#eeee",
+      "Abc",
+      "Acd",
+      "Ade",
+      "Bcd",
+      "Bde",
+      "Bef",
+      "Cde")
+
+  val appsDataCounters = Seq(
+    DataCounter("#", 5),
+    DataCounter("A", 3),
+    DataCounter("B", 3),
+    DataCounter("C", 1)
+  )
+
+  val categoryDataSequence: Seq[String] =
+    Seq(
+      "COMMUNICATION",
+      "COMMUNICATION",
+      "COMMUNICATION",
+      "GAMES",
+      "GAMES",
+      "GAMES",
+      "SOCIAL",
+      "SOCIAL",
+      "SOCIAL",
+      "SOCIAL",
+      "TOOLS",
+      "TOOLS")
+
+  val categoryDataCounters = Seq(
+    DataCounter("COMMUNICATION", 3),
+    DataCounter("GAMES", 3),
+    DataCounter("SOCIAL", 4),
+    DataCounter("TOOLS", 2)
+  )
+
 }

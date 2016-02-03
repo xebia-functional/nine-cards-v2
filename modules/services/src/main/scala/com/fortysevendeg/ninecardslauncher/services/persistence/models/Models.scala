@@ -68,3 +68,5 @@ case class MomentTimeSlot(
   from: String,
   to: String,
   days: Seq[Int])
+
+case class DataCounter(term: String, count: Int)
