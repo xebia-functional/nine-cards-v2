@@ -40,13 +40,13 @@
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity"/>
 
         <activity
-            android:theme="@style/AppThemeWizard"
+            android:theme="@style/AppThemeSolid"
             android:screenOrientation="portrait"
             android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity"/>
 
         <activity
-            android:theme="@style/AppThemeToolbar"
+            android:theme="@style/AppThemeSolid"
             android:screenOrientation="portrait"
             android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity"/>

@@ -242,11 +242,14 @@ object ExtraTweaks {
     runUi(Ui(Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).show()))
   }
 
-  def tlAddTabs(titles: String*) = Tweak[TabLayout] { view =>
-    titles foreach { title =>
-      view.addTab(view.newTab().setText(title))
+  def tlAddTabs(titles: (String, AnyRef)*) = Tweak[TabLayout] { view =>
+    titles foreach { case (title, tag) =>
+      view.addTab(view.newTab().setText(title).setTag(tag))
     }
   }
+
+  def tlSetListener(listener: TabLayout.OnTabSelectedListener) =
+    Tweak[TabLayout](_.setOnTabSelectedListener(listener))
 
 }
 

@@ -5,9 +5,9 @@
 
     <style name="AppTheme" parent="AppThemeBase" />
 
-    <style name="AppThemeWizardBase" parent="AppThemeCommons"/>
+    <style name="AppThemeSolidBase" parent="AppThemeCommons"/>
 
-    <style name="AppThemeWizard" parent="AppThemeBase"/>
+    <style name="AppThemeSolid" parent="AppThemeBase"/>
 
     <style name="AppThemeWallpaperBase" parent="AppThemeCommons">
         <!-- Show Wallpaper -->
@@ -25,13 +25,6 @@
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
 
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="colorControlHighlight">@color/color_control_highlight</item>
-    </style>
-
-    <style name="AppThemeToolbar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>

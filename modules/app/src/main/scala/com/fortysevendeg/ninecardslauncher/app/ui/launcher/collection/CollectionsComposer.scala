@@ -112,7 +112,7 @@ trait CollectionsComposer
   private[this] def transformCollections(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
-        runUi(goToMenuOption(itemId))
+        runUi(goToMenuOption(itemId) ~ closeMenu())
         true
       })) ~
       (menuCollectionRoot <~ vGone) ~
@@ -189,8 +189,7 @@ trait CollectionsComposer
 
   def goToWorkspace(page: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (workspaces <~ lwsSelect(page)) ~
-      (paginationPanel <~ reloadPager(page)) ~
-      closeMenu()
+      (paginationPanel <~ reloadPager(page))
 
   protected def goToMenuOption(itemId: Int)
     (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = itemId match {

@@ -24,6 +24,7 @@ class ProfileActivity
   with ContextSupportProvider
   with TypedFindView
   with SystemBarsTint
+  with ProfileTabListener
   with ProfileComposer
   with AppBarLayout.OnOffsetChangedListener {
 
@@ -67,6 +68,20 @@ class ProfileActivity
     val percentage = Math.abs(offset) / maxScroll
 
     runUi(handleToolbarVisibility(percentage) ~ handleProfileVisibility(percentage))
+  }
+
+  def sampleItems(tab: String) = 1 to 20 map (i => s"$tab Item $i")
+
+  override def onProfileTabSelected(profileTab: ProfileTab): Unit = profileTab match {
+    case PublicationsTab =>
+      // TODO - Load publications and set adapter
+      runUi(setPublicationsAdapter(sampleItems("Publication")))
+    case SubscriptionsTab =>
+      // TODO - Load subscriptions and set adapter
+      runUi(setSubscriptionsAdapter(sampleItems("Subscription")))
+    case AccountsTab =>
+      // TODO - Load accounts and set adapter
+      runUi(setAccountsAdapter(sampleItems("Account")))
   }
 
   private[this] def loadUserInfo(implicit uiContext: UiContext[_]) = Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(

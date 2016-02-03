@@ -183,7 +183,7 @@ object SnailsCommons {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             view.setVisibility(View.VISIBLE)
-            animPromise.success()
+            animPromise.trySuccess()
           }
         }).start()
       animPromise.future
@@ -205,7 +205,7 @@ object SnailsCommons {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             view.setVisibility(View.INVISIBLE)
-            animPromise.success()
+            animPromise.trySuccess()
           }
         }).start()
       animPromise.future
