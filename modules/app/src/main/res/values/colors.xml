@@ -49,6 +49,8 @@
     <color name="drawer_pager_current">#ffffff</color>
     <color name="drawer_pager_default">#6bffffff</color>
 
+    <color name="divider_color_search_box">#1f000000</color>
+
     <!-- Menu -->
     <color name="background_menu">#ffffff</color>
     <color name="background_menu_header">#3F51B5</color>
@@ -99,7 +101,6 @@
     <color name="fastscroller_bar_background">#D8D8D8</color>
 
     <!-- PullToTabsView -->
-    <color name="pulltotabs_background">#0a000000</color>
     <color name="pulltotabs_line">#24000000</color>
 
     <!-- Drawer -->

@@ -51,7 +51,6 @@
     <style name="TabItemRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/pulltotabs_background</item>
     </style>
 
     <style name="TabItemContent">

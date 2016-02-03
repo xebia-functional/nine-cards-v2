@@ -32,12 +32,10 @@ trait DrawerStyles {
     } getOrElse tivPressedColor(theme.get(AppDrawerPressedColor))
   }
 
-  def drawerContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FastScrollerLayout] =
-    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
-
-  def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = {
+  def recyclerStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[RecyclerView] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-    rvFixedSize +
+    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor)) +
+      rvFixedSize +
       vPaddings(padding) +
       vgClipToPadding(false) +
       vOverScrollMode(View.OVER_SCROLL_NEVER)

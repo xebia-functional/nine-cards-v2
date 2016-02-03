@@ -1,9 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{AppData => RepositoryAppData, App => RepositoryApp, GeoInfo => RepositoryGeoInfo, GeoInfoData => RepositoryGeoInfoData,
-Collection => RepositoryCollection, CollectionData => RepositoryCollectionData,Card => RepositoryCard, CardData => RepositoryCardData, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData,
-User => RepositoryUser, UserData => RepositoryUserData
+import com.fortysevendeg.ninecardslauncher.repository.model.{
+  AppData => RepositoryAppData,
+  App => RepositoryApp,
+  GeoInfo => RepositoryGeoInfo,
+  GeoInfoData => RepositoryGeoInfoData,
+  Collection => RepositoryCollection,
+  DataCounter => RepositoryDataCounter,
+  CollectionData => RepositoryCollectionData,
+  Card => RepositoryCard,
+  CardData => RepositoryCardData,
+  DockApp => RepositoryDockApp,
+  DockAppData => RepositoryDockAppData,
+  User => RepositoryUser,
+  UserData => RepositoryUserData
 }
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User, _}
 
@@ -77,6 +88,9 @@ trait PersistenceServicesData {
   val dockAppId: Int = Random.nextInt(10)
   val nonExistentDockAppId: Int = Random.nextInt(10) + 100
   val dockType: String = Random.nextString(5)
+
+  val termDataCounter: String = Random.nextString(1)
+  val countDataCounter: Int = Random.nextInt(2)
 
   def createSeqApp(
     num: Int = 5,
@@ -691,6 +705,12 @@ trait PersistenceServicesData {
   def createFindDockAppByIdRequest(id: Int): FindDockAppByIdRequest =
     FindDockAppByIdRequest(id = id)
 
+  def createDataCounter(i: Int): RepositoryDataCounter =
+    RepositoryDataCounter(
+      term = s"$i - $termDataCounter",
+      count = countDataCounter
+    )
+
   val iterableCursorApp = new IterableCursor[RepositoryApp] {
     override def count(): Int = seqRepoApp.length
     override def moveToPosition(pos: Int): RepositoryApp = seqRepoApp(pos)
@@ -706,5 +726,7 @@ trait PersistenceServicesData {
   val iterableDockApps = new IterableDockApps(iterableCursorDockApps)
 
   val keyword = "fake-keyword"
+
+  val dataCounters = 1 to 10 map createDataCounter
 
 }

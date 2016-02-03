@@ -20,6 +20,12 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="FastScrollerIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
     <style name="FastScrollerBarContent">
         <item name="android:layout_width">@dimen/fastscroller_bar_width</item>
         <item name="android:layout_height">match_parent</item>

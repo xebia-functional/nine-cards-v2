@@ -13,6 +13,9 @@ object ContactsContentProvider {
     Fields.HAS_PHONE_NUMBER,
     Fields.STARRED)
 
+  def nameFromCursor(cursor: Cursor): String =
+    cursor.getString(cursor.getColumnIndex(Fields.DISPLAY_NAME))
+
   def contactFromCursor(cursor: Cursor) =
     readContact(
       cursor = cursor,

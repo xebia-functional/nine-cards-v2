@@ -7,11 +7,12 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -37,13 +38,13 @@ case class AppsAdapter(
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.app_item, parent, false)
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
-        Option(v.getTag) foreach (tag => clickListener(apps.moveToPosition(Int.unbox(tag))))
+        v.getPosition foreach (tag => clickListener(apps.moveToPosition(tag)))
       }
     })
     longClickListener foreach { listener =>
       view.setOnLongClickListener(new OnLongClickListener {
         override def onLongClick(v: View): Boolean = {
-          Option(v.getTag) foreach (tag => listener(apps.moveToPosition(Int.unbox(tag))))
+          v.getPosition foreach (tag => listener(apps.moveToPosition(tag)))
           true
         }
       })
@@ -68,7 +69,6 @@ case class AppsAdapter(
 
   override def getColumns: Int = columnsLists
 
-  override def getElement(position: Int): Option[String] = Option(apps.moveToPosition(position).name.substring(0, 1))
 }
 
 case class AppsIterableHolder(content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
@@ -82,7 +82,7 @@ case class AppsIterableHolder(content: ViewGroup)(implicit context: ActivityCont
   def bind(app: App, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     (icon <~ ivCardUri(app.imagePath, app.name)) ~
       (name <~ tvText(app.name)) ~
-      (content <~ vTag2(position))
+      (content <~ vSetPosition(position))
 
   override def findViewById(id: Int): View = content.findViewById(id)
 }

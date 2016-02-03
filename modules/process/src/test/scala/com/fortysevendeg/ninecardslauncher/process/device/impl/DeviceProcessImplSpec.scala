@@ -109,6 +109,12 @@ trait DeviceProcessSpecification
     mockPersistenceServices.fetchIterableApps(any, any) returns
       Service(Task(Result.answer(iterableCursorApps)))
 
+    mockPersistenceServices.fetchAlphabeticalAppsCounter returns
+      Service(Task(Result.answer(appsCounters)))
+
+    mockPersistenceServices.fetchCategorizedAppsCounter returns
+      Service(Task(Result.answer(categoryCounters)))
+
     mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns
       Service(Task(Result.answer(iterableCursorApps)))
 
@@ -139,6 +145,9 @@ trait DeviceProcessSpecification
 
     mockContactsServices.getIterableContacts returns
       Service(Task(Result.answer(iterableCursorContact)))
+
+    mockContactsServices.getAlphabeticalCounterContacts returns
+      Service(Task(Result.answer(contactsCounters)))
 
     mockContactsServices.getIterableFavoriteContacts returns
       Service(Task(Result.answer(iterableCursorContact)))
@@ -289,6 +298,14 @@ trait DeviceProcessSpecification
     }
 
     mockPersistenceServices.fetchIterableApps(any, any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.fetchAlphabeticalAppsCounter returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.fetchCategorizedAppsCounter returns Service {
       Task(Errata(persistenceServiceException))
     }
 
@@ -624,6 +641,46 @@ class DeviceProcessImplSpec
 
   }
 
+  "getCounterForIterableContacts" should {
+
+    "get term counters for contacts by name" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getCounterForIterableContacts()(contextSupport).run.run
+        result must beLike {
+          case Answer(counters) =>
+            counters map (_.term) shouldEqual (contactsCounters map (_.term))
+        }
+        there was one(mockContactsServices).getAlphabeticalCounterContacts
+      }
+
+    "get term counters for contacts by favorite" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getCounterForIterableContacts(FavoriteContacts)(contextSupport).run.run
+        result must beLike {
+          case Answer(counters) => counters shouldEqual Seq.empty
+        }
+      }
+
+    "get term counters for apps by contacts with phone number" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getCounterForIterableContacts(ContactsWithPhoneNumber)(contextSupport).run.run
+        result must beLike {
+          case Answer(counters) => counters shouldEqual Seq.empty
+        }
+      }
+
+    "returns AppException if persistence service fails " in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+  }
+
   "Save shortcut icon" should {
 
     "get path of icon stored" in
@@ -846,6 +903,48 @@ class DeviceProcessImplSpec
     "returns AppException if persistence service fails " in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.getIterableApps(GetByName)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+  }
+
+  "getTermCountersForApps" should {
+
+    "get term counters for apps by name" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).run.run
+        result must beLike {
+          case Answer(counters) =>
+            counters map (_.term) shouldEqual (appsCounters map (_.term))
+        }
+        there was one(mockPersistenceServices).fetchAlphabeticalAppsCounter
+      }
+
+    "get term counters for apps by installation date" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getTermCountersForApps(GetByInstallDate)(contextSupport).run.run
+        result must beLike {
+          case Answer(counters) => counters shouldEqual Seq.empty
+        }
+      }
+
+    "get term counters for apps by category" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getTermCountersForApps(GetByCategory)(contextSupport).run.run
+        result must beLike {
+          case Answer(counters) =>
+            counters map (_.term) shouldEqual (categoryCounters map (_.term))
+        }
+        there was one(mockPersistenceServices).fetchCategorizedAppsCounter
+      }
+
+    "returns AppException if persistence service fails " in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]

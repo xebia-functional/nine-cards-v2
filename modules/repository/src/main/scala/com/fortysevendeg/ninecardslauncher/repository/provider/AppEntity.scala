@@ -44,6 +44,12 @@ object AppEntity {
     version,
     installedFromGooglePlay)
 
+  def nameFromCursor(cursor: Cursor): String =
+    cursor.getString(cursor.getColumnIndex(name))
+
+  def categoryFromCursor(cursor: Cursor): String =
+    cursor.getString(cursor.getColumnIndex(category))
+
   def appEntityFromCursor(cursor: Cursor): AppEntity =
     AppEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),

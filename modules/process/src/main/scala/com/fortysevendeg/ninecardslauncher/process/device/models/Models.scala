@@ -82,4 +82,7 @@ case class WidgetDimensions(
   minResizeCellWidth: Int,
   minCellWidth: Int)
 
+case class TermCounter(
+  term: String,
+  count: Int)
 

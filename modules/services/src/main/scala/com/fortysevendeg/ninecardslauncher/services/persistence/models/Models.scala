@@ -65,3 +65,5 @@ case class DockApp(
   intent: String,
   imagePath: String,
   position: Int)
+
+case class DataCounter(term: String, count: Int)

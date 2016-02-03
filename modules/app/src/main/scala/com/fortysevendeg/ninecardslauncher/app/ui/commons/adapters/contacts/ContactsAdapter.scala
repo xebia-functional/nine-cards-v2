@@ -8,12 +8,13 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
@@ -38,13 +39,13 @@ case class ContactsAdapter(
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.contact_item, parent, false)
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = {
-        Option(v.getTag) foreach (tag => clickListener(contacts.moveToPosition(Int.unbox(tag))))
+        v.getPosition foreach (tag => clickListener(contacts.moveToPosition(tag)))
       }
     })
     longClickListener foreach { listener =>
       view.setOnLongClickListener(new OnLongClickListener {
         override def onLongClick(v: View): Boolean = {
-          Option(v.getTag) foreach (tag => listener(contacts.moveToPosition(Int.unbox(tag))))
+          v.getPosition foreach (tag => listener(contacts.moveToPosition(tag)))
           true
         }
       })
@@ -69,7 +70,6 @@ case class ContactsAdapter(
 
   override def getColumns: Int = 1
 
-  override def getElement(position: Int): Option[String] = Option(contacts.moveToPosition(position).name.substring(0, 1))
 }
 
 case class ContactsIterableHolder(content: View)
@@ -88,7 +88,7 @@ case class ContactsIterableHolder(content: View)
     val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
     (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
       (name <~ tvText(contactName)) ~
-      (content <~ vTag2(position)) ~
+      (content <~ vSetPosition(position)) ~
       (favorite <~ (if (contact.favorite) vVisible else vGone))
   }
 
