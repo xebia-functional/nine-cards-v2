@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactInfo
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactCounter, ContactInfo}
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 
 import scalaz.concurrent.Task
@@ -17,6 +17,10 @@ class ContactsServicesImpl(
   extends ContactsServices
   with ImplicitsContactsServiceExceptions {
 
+  val abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
+
+  val wildcard = "#"
+
   override def getContacts =
     Service {
       Task {
@@ -25,7 +29,29 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.ALL_CONTACTS_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
+        }
+      }
+    }
+
+  override def getAlphabeticalCounterContacts =
+    Service {
+      Task {
+        CatchAll[ContactsServiceException] {
+          val iterator = getNamesAlphabetically
+          iterator.foldLeft(Seq.empty[ContactCounter]) { (acc, name) =>
+            val term = name.substring(0, 1).toUpperCase match {
+              case t if abc.contains(t) => t
+              case _ => wildcard
+            }
+            val lastWithSameTerm = acc.lastOption flatMap {
+              case last if last.term == term => Some(last)
+              case _ => None
+            }
+            lastWithSameTerm map { c =>
+              acc.dropRight(1) :+ c.copy(count = c.count + 1)
+            } getOrElse acc :+ ContactCounter(term, 1)
+          }
         }
       }
     }
@@ -38,7 +64,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.ALL_CONTACTS_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
         }
       }
     }
@@ -52,7 +78,7 @@ class ContactsServicesImpl(
             projection = allFields,
             where = Fields.CONTACTS_BY_KEYWORD_SELECTION,
             whereParams = Seq(keyword),
-            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
         }
       }
     }
@@ -120,7 +146,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.STARRED_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
         }
       }
     }
@@ -133,7 +159,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.STARRED_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
         }
       }
     }
@@ -146,7 +172,7 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.HAS_PHONE_NUMBER_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc")(getListFromCursor(contactFromCursor))
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
         }
       }
     }
@@ -159,8 +185,17 @@ class ContactsServicesImpl(
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.HAS_PHONE_NUMBER_SELECTION,
-            orderBy = s"${Fields.DISPLAY_NAME} asc").toIterator(contactFromCursor)
+            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
         }
       }
     }
+
+  protected def getNamesAlphabetically: Seq[String] = {
+    getListFromCursor(nameFromCursor)(contentResolverWrapper.getCursor(
+      uri = Fields.CONTENT_URI,
+      projection = Seq(Fields.DISPLAY_NAME),
+      where = Fields.ALL_CONTACTS_SELECTION,
+      orderBy = Fields.CONTACTS_ORDER_BY_ASC))
+  }
+
 }

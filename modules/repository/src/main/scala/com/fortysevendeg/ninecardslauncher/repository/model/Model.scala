@@ -83,3 +83,5 @@ case class UserData(
   deviceToken: Option[String],
   androidToken: Option[String])
 
+case class DataCounter(term: String, count: Int)
+

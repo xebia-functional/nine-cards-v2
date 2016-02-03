@@ -10,11 +10,12 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchIconsColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{SearchBackgroundColor, NineCardsTheme, SearchIconsColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Transformer, Tweak, Ui}
@@ -99,7 +100,10 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
 
     lazy val name = findView(TR.tab_item_name)
 
+    val backgroundColor = getColorDark(theme.get(SearchBackgroundColor), 0.05f)
+
     runUi(
+      (this <~ vBackgroundColor(backgroundColor)) ~
       (icon <~ ivSrc(item.drawable)) ~
         (name <~ tvText(item.name)) ~
         (if (selected) {

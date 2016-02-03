@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.contacts
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactCounter, Contact}
 
 trait ContactsServices {
 
@@ -14,6 +14,15 @@ trait ContactsServices {
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def getContacts: ServiceDef2[Seq[Contact], ContactsServiceException]
+
+  /**
+    * Returns the number of times the first letter of a contact is repeated alphabetically
+    *
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter] contains
+    *         information about the times is repeated a contacts
+    * @throws ContactsServiceException if exist some problem accessing to contact provider
+    */
+  def getAlphabeticalCounterContacts: ServiceDef2[Seq[ContactCounter], ContactsServiceException]
 
   /**
     * Get iterable contacts sort by name. The info field is not filled

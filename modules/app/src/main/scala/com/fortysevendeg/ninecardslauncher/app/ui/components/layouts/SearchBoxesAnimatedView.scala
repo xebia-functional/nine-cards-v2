@@ -2,10 +2,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
+import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
+import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view._
-import android.widget.{EditText, FrameLayout, LinearLayout}
+import android.widget.{TextView, EditText, FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -138,6 +140,10 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
       applyTranslation(getActiveView, 0) ~
       applyTranslation(getInactiveView, 0) ~
       (getInactiveView <~ vGone)
+
+  def updateAppsIcon(resourceId: Int): Ui[_] = appBox.updateHeader(resourceId)
+
+  def updateContactsIcon(resourceId: Int): Ui[_] = contactBox.updateHeader(resourceId)
 
   private[this] def applyTranslation(view: View, translate: Float): Ui[_] =
     view <~ vTranslationX(translate)
@@ -292,6 +298,8 @@ case class BoxViewHolder(boxView: BoxView, content: LinearLayout)(implicit conte
 
   lazy val icon = Option(findView(TR.launcher_search_box_icon))
 
+  lazy val headerIcon = Option(findView(TR.launcher_header_icon))
+
   runUi(
     (content <~ searchBoxContentStyle) ~
       (editText <~ searchBoxNameStyle(boxView match {
@@ -299,6 +307,8 @@ case class BoxViewHolder(boxView: BoxView, content: LinearLayout)(implicit conte
         case ContactView => R.string.searchContacts
       })) ~
       (icon <~ iconTweak))
+
+  def updateHeader(resourceId: Int): Ui[_] = headerIcon <~ searchBoxButtonStyle(resourceId)
 
   private[this] def iconTweak = boxView match {
     case AppsView =>
@@ -317,11 +327,14 @@ trait Styles {
   def searchBoxContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =
     vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
 
-  def searchBoxNameStyle(res: Int)(implicit context: ContextWrapper): Tweak[EditText] =
-    tvHint(res)
+  def searchBoxCharStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
+    tvColor(theme.get(SearchIconsColor))
 
-  def searchBoxButtonStyle(res: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    ivSrc(res) +
+  def searchBoxNameStyle(resourceId: Int)(implicit context: ContextWrapper): Tweak[EditText] =
+    tvHint(resourceId)
+
+  def searchBoxButtonStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+    ivSrc(resourceId) +
       tivDefaultColor(theme.get(SearchIconsColor)) +
       tivPressedColor(theme.get(SearchPressedColor))
 }

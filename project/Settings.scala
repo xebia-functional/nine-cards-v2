@@ -92,6 +92,7 @@ object Settings {
     aar(androidCardView),
     aar(androidDesign),
     aar(playServicesBase),
+    aar(playServicesAnalytics),
     aar(playServicesDrive),
     aar(multiDexLib),
     aar(crashlytics),

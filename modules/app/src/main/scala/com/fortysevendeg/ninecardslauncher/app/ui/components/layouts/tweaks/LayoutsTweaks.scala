@@ -11,6 +11,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak, Ui}
@@ -135,7 +136,7 @@ object WorkSpaceItemMenuTweaks {
       }
   })
 
-  def wimSrc(res: Int) = Tweak[W](_.icon foreach (_.setImageResource(res)))
+  def wimSrc(resourceId: Int) = Tweak[W](_.icon foreach (_.setImageResource(resourceId)))
 
   def wimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
 
@@ -157,6 +158,9 @@ object SearchBoxesAnimatedViewTweak {
     view.statuses = view.statuses.copy(enabled = enabled)
   }
 
+  def sbavUpdateAppsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateAppsIcon(resourceId)))
+
+  def sbavUpdateContactsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateContactsIcon(resourceId)))
 }
 
 object PullToTabsViewTweaks {
@@ -213,6 +217,10 @@ object FastScrollerLayoutTweak {
 
   def fslReset = Tweak[FastScrollerLayout](_.reset)
 
+  def fslCounters(counters: Seq[TermCounter]) = Tweak[FastScrollerLayout](_.setCounters(counters))
+
+  def fslSignalType(signalType: FastScrollerSignalType) = Tweak[FastScrollerLayout](_.setSignalType(signalType))
+
 }
 
 object SlidingTabLayoutTweaks {
@@ -245,8 +253,8 @@ object DialogToolbarTweaks {
     runUi(view.addExtendedView(viewToAdd))
   }
 
-  def dtbChangeText(res: Int) = Tweak[W] { view =>
-    runUi(view.changeText(res))
+  def dtbChangeText(resourceId: Int) = Tweak[W] { view =>
+    runUi(view.changeText(resourceId))
   }
 
   def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W]{ view =>

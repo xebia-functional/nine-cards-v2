@@ -45,6 +45,9 @@ class DeviceProcessImpl(
 
   override def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) = super.getIterableApps(orderBy)
 
+  override def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
+    super.getTermCountersForApps(orderBy)
+
   override def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport) =
     super.getIterableAppsByKeyWord(keyword, orderBy)
 
@@ -63,6 +66,9 @@ class DeviceProcessImpl(
     super.saveShortcutIcon(name, bitmap)
 
   override def getFavoriteContacts(implicit context: ContextSupport) = super.getFavoriteContacts
+
+  override def getTermCountersForContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
+    super.getCounterForIterableContacts(filter)
 
   override def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
     super.getContacts(filter)
