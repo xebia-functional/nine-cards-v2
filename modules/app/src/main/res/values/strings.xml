@@ -197,8 +197,8 @@
     <string name="game_word">Word</string>
 
     <!-- Profile -->
-    <string name="publications">PUBLICATIONS</string>
-    <string name="subscriptions">SUBSCRIPTIONS</string>
-    <string name="accounts">ACCOUNTS</string>
+    <string name="publications">Publications</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="accounts">Accounts</string>
 
 </resources>

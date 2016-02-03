@@ -44,8 +44,10 @@ class ProfileActivity
     runUi(initUi)
 
     toolbar foreach setSupportActionBar
-    getSupportActionBar.setDisplayHomeAsUpEnabled(true)
-    getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
+    Option(getSupportActionBar) foreach { actionBar =>
+      actionBar.setDisplayHomeAsUpEnabled(true)
+      actionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
+    }
 
     barLayout foreach (_.addOnOffsetChangedListener(this))
   }

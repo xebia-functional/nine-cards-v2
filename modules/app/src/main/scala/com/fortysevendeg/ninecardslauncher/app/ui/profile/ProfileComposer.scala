@@ -8,6 +8,7 @@ import android.view.View
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionItemDecorator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -67,15 +68,14 @@ trait ProfileComposer
       (userAvatar <~ ivUri(avatarUrl))
 
   def handleToolbarVisibility(percentage: Float): Ui[_] = toolbar match {
-    case Some(t) if percentage >= 0.5 && t.getVisibility == View.VISIBLE => toolbar <~ SnailsCommons.fadeOut(Some(100))
-    case Some(t) if percentage < 0.5 && t.getVisibility == View.INVISIBLE => toolbar <~ SnailsCommons.fadeIn(Some(100))
+    case Some(t) if percentage >= 0.5 && t.getVisibility == View.VISIBLE => toolbar <~ SnailsCommons.fadeOut()
+    case Some(t) if percentage < 0.5 && t.getVisibility == View.INVISIBLE => toolbar <~ SnailsCommons.fadeIn()
     case _ => Ui.nop
   }
 
-  def handleProfileVisibility(percentage: Float)(implicit context: ContextWrapper): Ui[_] = userContainer match {
-    case Some(c) if percentage <= 0.5f => Ui(c.setAlpha(1f - (percentage * 2)))
-    case Some(c) if percentage > 0.5f => Ui(c.setAlpha(0f))
-    case _ => Ui.nop
+  def handleProfileVisibility(percentage: Float)(implicit context: ContextWrapper): Ui[_] = {
+    val alpha = if (percentage <= 0.5f) 1f - (percentage * 2)  else 0f
+    userContainer <~ vAlpha(alpha)
   }
 
   def setPublicationsAdapter(items: Seq[String])

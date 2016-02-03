@@ -188,8 +188,8 @@
     <string name="game_word">Palabras</string>
 
     <!-- Profile -->
-    <string name="publications">PUBLICACIONES</string>
-    <string name="subscriptions">SUBSCRIPCIONES</string>
-    <string name="accounts">CUENTAS</string>
+    <string name="publications">Publicaciones</string>
+    <string name="subscriptions">Subscripciones</string>
+    <string name="accounts">Cuentas</string>
 
 </resources>
