@@ -323,7 +323,7 @@ case class BoxViewHolder(
       etAddTextChangedListener(
         (text: String, start: Int, before: Int, count: Int) => onChangeText(text, boxView)))
 
-  def isEmpty: Boolean = editText exists (_.getText.toString == "")
+  private[this] def isEmpty: Boolean = editText exists (_.getText.toString == "")
 
   private[this] def iconTweak = boxView match {
     case AppsView =>
