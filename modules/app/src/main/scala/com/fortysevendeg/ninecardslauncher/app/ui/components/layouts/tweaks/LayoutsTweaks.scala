@@ -150,9 +150,7 @@ object SearchBoxesAnimatedViewTweak {
     runUi(view.forceAppsView ~ view.reset)
   }
 
-  def sbavChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxesAnimatedView] { view =>
-    view.listener = Some(listener)
-  }
+  def sbavChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxesAnimatedView] (_.listener = Some(listener))
 
   def sbavEnabled(enabled: Boolean) = Tweak[SearchBoxesAnimatedView] { view =>
     view.statuses = view.statuses.copy(enabled = enabled)
@@ -161,6 +159,10 @@ object SearchBoxesAnimatedViewTweak {
   def sbavUpdateAppsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateAppsIcon(resourceId)))
 
   def sbavUpdateContactsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateContactsIcon(resourceId)))
+
+  def sbavOnChangeText(onChangeText: (String, BoxView) => Unit) = Tweak[SearchBoxesAnimatedView] (_.addTextChangedListener(onChangeText))
+
+  def sbavClean = Tweak[SearchBoxesAnimatedView] (view => runUi(view.clean))
 }
 
 object PullToTabsViewTweaks {

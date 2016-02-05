@@ -151,19 +151,19 @@ class LauncherActivity
         case (apps: IterableApps, counters: Seq[TermCounter]) =>
           addApps(
             apps = apps,
-            getAppOrder = getAppOrder,
-            counters = counters,
             clickListener = (app: App) => {
               execute(toNineCardIntent(app))
             },
             longClickListener = (app: App) => {
               launchSettings(app.packageName)
-            })
+            },
+            getAppOrder = getAppOrder,
+            counters = counters)
       }
     )
   }
 
-  override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
+  override def loadContacts(contactsMenuOption: ContactsMenuOption): Unit =
     contactsMenuOption match {
       case ContactsByLastCall =>
         Task.fork(di.deviceProcess.getLastCalls.run).resolveAsyncUi(
@@ -177,14 +177,36 @@ class LauncherActivity
             case (contacts: IterableContacts, counters: Seq[TermCounter]) =>
               addContacts(
                 contacts = contacts,
-                filter = getContactFilter,
-                counters = counters,
                 clickListener = (contact: Contact) => {
                   execute(contact)
-                }
-              )
+                },
+                counters = counters)
           })
     }
-  }
+
+  override def loadAppsByKeyword(keyword: String): Unit =
+    Task.fork(di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName).run).resolveAsyncUi(
+      onResult = {
+        case (apps: IterableApps) =>
+          addApps(
+            apps = apps,
+            clickListener = (app: App) => {
+              execute(toNineCardIntent(app))
+            },
+            longClickListener = (app: App) => {
+              launchSettings(app.packageName)
+            })
+      })
+
+  override def loadContactsByKeyword(keyword: String): Unit =
+    Task.fork(di.deviceProcess.getIterableContactsByKeyWord(keyword).run).resolveAsyncUi(
+      onResult = {
+        case (contacts: IterableContacts) =>
+          addContacts(
+            contacts = contacts,
+            clickListener = (contact: Contact) => {
+              execute(contact)
+            })
+      })
 
 }

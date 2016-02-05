@@ -23,6 +23,8 @@ object AppsMenuOption {
   val list = Seq(AppsAlphabetical, AppsByCategories, AppsByLastInstall)
 
   def apply(o: AppsMenuOption): Int = list.indexOf(o)
+
+  def apply(status: String): Option[AppsMenuOption] = list find (_.name == status)
 }
 
 object AppsAlphabeticalNames {
@@ -51,6 +53,8 @@ object ContactsMenuOption {
   val list = Seq(ContactsAlphabetical, ContactsFavorites, ContactsByLastCall)
 
   def apply(o: ContactsMenuOption): Int = list.indexOf(o)
+
+  def apply(status: String): Option[ContactsMenuOption] = list find (_.name == status)
 
 }
 
