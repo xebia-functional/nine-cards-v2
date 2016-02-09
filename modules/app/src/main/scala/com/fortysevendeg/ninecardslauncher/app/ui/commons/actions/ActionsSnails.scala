@@ -3,11 +3,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.annotation.TargetApi
 import android.os.Build
-import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInterpolator}
+import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail}
@@ -16,42 +17,20 @@ import scala.concurrent.Promise
 
 object ActionsSnails {
 
-  def revealIn(x: Int, y: Int, w: Int, h: Int, sizeIcon: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      val duration = resGetInteger(R.integer.anim_duration_normal)
+  def revealIn(x: Int, y: Int, w: Int, h: Int, sizeIcon: Int)(implicit context: ContextWrapper): Snail[View] =
+    Lollipop ifSupportedThen {
+      val startRadius = sizeIcon / 2
+      revealIn(x, y, w, h, startRadius, resGetInteger(R.integer.anim_duration_normal))
+    } getOrElse {
+      fadeIn()
+    }
 
-      Lollipop ifSupportedThen {
-        val startRadius = sizeIcon / 2
-        val endRadius = SnailsUtils.calculateRadius(x, y, w, h)
-        circularReveal(view, x, y, w, h, duration, startRadius, endRadius, animPromise.success())
-      } getOrElse {
-        fadeIn(view, duration, animPromise.success())
-      }
-      animPromise.future
-  }
-
-  def revealOut(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      val duration = resGetInteger(R.integer.anim_duration_normal)
-
-      Lollipop ifSupportedThen {
-        val startRadius = SnailsUtils.calculateRadius(x, y, w, h)
-        circularReveal(view, x, y, w, h, duration, startRadius, 0, {
-          view.setVisibility(View.GONE)
-          animPromise.success()
-        })
-      } getOrElse {
-        fadeOut(view, duration, animPromise.success())
-      }
-
-      animPromise.future
-  }
+  def revealOut(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] =
+    Lollipop ifSupportedThen {
+      revealOut(x, y, w, h, resGetInteger(R.integer.anim_duration_normal))
+    } getOrElse {
+      fadeOut()
+    }
 
   def scaleToToolbar(radioScale: Float)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
@@ -149,35 +128,27 @@ object ActionsSnails {
     reveal.start()
   }
 
-  private[this] def fadeIn(view: View, duration: Int, animationEnd: => Unit) = {
-    view.setAlpha(0)
-    view
-      .animate
-      .setDuration(duration)
-      .setInterpolator(new DecelerateInterpolator())
-      .alpha(1f)
-      .setListener(new AnimatorListenerAdapter {
-        override def onAnimationEnd(animation: Animator) {
-          super.onAnimationEnd(animation)
-          view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-          animationEnd
-        }
-      }).start()
+  private[this] def revealIn(x: Int, y: Int, w: Int, h: Int, startRadius: Int, duration: Int): Snail[View] = Snail[View] {
+    view =>
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+      val animPromise = Promise[Unit]()
+      val endRadius = SnailsUtils.calculateRadius(x, y, w, h)
+      circularReveal(view, x, y, w, h, duration, startRadius, endRadius, animPromise.success())
+      animPromise.future
   }
 
-  private[this] def fadeOut(view: View, duration: Int, animationEnd: => Unit) = {
-    view
-      .animate
-      .setDuration(duration)
-      .setInterpolator(new AccelerateDecelerateInterpolator())
-      .alpha(0f)
-      .setListener(new AnimatorListenerAdapter {
-        override def onAnimationEnd(animation: Animator) {
-          super.onAnimationEnd(animation)
-          view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-          animationEnd
-        }
-      }).start()
+  private[this] def revealOut(x: Int, y: Int, w: Int, h: Int, duration: Int): Snail[View] = Snail[View] {
+    view =>
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+      val animPromise = Promise[Unit]()
+      val startRadius = SnailsUtils.calculateRadius(x, y, w, h)
+      circularReveal(view, x, y, w, h, duration, startRadius, 0, {
+        view.setVisibility(View.GONE)
+        animPromise.success()
+      })
+      animPromise.future
   }
 
 }

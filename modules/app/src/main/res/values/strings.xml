@@ -196,4 +196,9 @@
     <string name="game_widgets">Widgets Games</string>
     <string name="game_word">Word</string>
 
+    <!-- Profile -->
+    <string name="publications">Publications</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="accounts">Accounts</string>
+
 </resources>

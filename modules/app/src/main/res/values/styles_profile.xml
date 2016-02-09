@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ProfileRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="ProfileCoordinator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="ProfileAppBarBase">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="ProfileAppBar" parent="ProfileAppBarBase"/>
+
+    <style name="ProfileCollapsingToolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_scrollFlags">scroll|exitUntilCollapsed|snap</item>
+    </style>
+
+    <style name="ProfileUserFrameLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_profile_user</item>
+        <item name="android:layout_gravity">bottom|center_horizontal</item>
+        <item name="android:background">@color/primary</item>
+        <item name="layout_collapseMode">parallax</item>
+        <item name="layout_collapseParallaxMultiplier">0.3</item>
+    </style>
+
+    <style name="ProfileUserLinearLayout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="ProfileUserAvatar">
+        <item name="android:layout_width">@dimen/menu_size_avatar</item>
+        <item name="android:layout_height">@dimen/menu_size_avatar</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="ProfileUserName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">bottom|center</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+    
+    <style name="ProfileTabLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabIndicatorColor">@android:color/white</item>
+    </style>
+    
+    <style name="ProfileRecyclerView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scrollbars">none</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+    
+    <style name="ProfileToolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+</resources>
