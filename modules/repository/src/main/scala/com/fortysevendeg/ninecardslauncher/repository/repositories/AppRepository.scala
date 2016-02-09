@@ -26,6 +26,8 @@ class AppRepository(
 
   val wildcard = "#"
 
+  val game = "GAME"
+
   def addApp(data: AppData): ServiceDef2[App, RepositoryException] =
     Service {
       Task {
@@ -118,14 +120,19 @@ class AppRepository(
 
   def fetchAlphabeticalAppsCounter: ServiceDef2[Seq[DataCounter], RepositoryException] =
     toDataCounter(
-      getNamesAlphabetically,
-      (name: String) => name.substring(0, 1).toUpperCase match {
+      fetchData = getNamesAlphabetically,
+      normalize = (name: String) => name.substring(0, 1).toUpperCase match {
         case t if abc.contains(t) => t
         case _ => wildcard
       })
 
   def fetchCategorizedAppsCounter: ServiceDef2[Seq[DataCounter], RepositoryException] =
-    toDataCounter(getCategoriesAlphabetically)
+    toDataCounter(
+      fetchData = getCategoriesAlphabetically,
+      normalize = {
+        case t if t.startsWith(game) => game
+        case t => t
+      })
 
   def findAppById(id: Int): ServiceDef2[Option[App], RepositoryException] =
     Service {

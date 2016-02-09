@@ -59,7 +59,7 @@ trait ScrollingLinearLayoutManager {
         runUi(recyclerView match {
           case listener: FastScrollerTransformsListener =>
             Option(recyclerView.getTag(R.id.max)) map { max =>
-              listener.feedbackItems(getTargetPosition, Int.unbox(max))
+              listener.activeItems(getTargetPosition, Int.unbox(max))
             } getOrElse Ui.nop
           case _ => Ui.nop
         })

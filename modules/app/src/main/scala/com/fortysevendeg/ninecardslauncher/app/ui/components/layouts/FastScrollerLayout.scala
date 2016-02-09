@@ -19,6 +19,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
@@ -164,6 +165,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
             (recyclerView <~ rvScrollToPosition(y)))
         true
       case (_, ACTION_UP | ACTION_CANCEL) =>
+        runUi(recyclerView <~ rvInactiveItems)
         statuses = statuses.resetScrollPosition()
         // If the ScrollState of Recycler is SCROLL_STATE_SETTLING, we wait to resetScroll
         // when the animation is finished using method onScrollStateChanged in OnScrollListener class
@@ -236,6 +238,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       if (statuses.usingCounters) {
         val item = statuses.counters(position)
         val count = (statuses.counters take position map (_.count)).sum
+        runUi(recyclerView <~ rvActiveItems(count, item.count))
         view.setTag(R.id.max, item.count)
         view.smoothScrollToPosition(count)
         runUi(updateSignal(item.term))
@@ -247,19 +250,43 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     }
   }
 
-  private[this] def updateSignal(term: String): Ui[_] = statuses.fastScrollerSignalType match {
-    case FastScrollerText => text <~ tvText(term)
-    case FastScrollerCategory => icon <~ ivSrc(getResource(NineCardCategory(term).getIconResource))
+  private[this] def rvActiveItems(from: Int, count: Int) = Tweak[RecyclerView] { view =>
+    Option(view.getAdapter) match {
+      case Some(listener: FastScrollerListener) =>
+        listener.activeItems(from, count)
+      case _ =>
+    }
   }
 
-  private[this] def getResource(name: String) = {
+  private[this] def rvInactiveItems = Tweak[RecyclerView] { view =>
+    Option(view.getAdapter) match {
+      case Some(listener: FastScrollerListener) =>
+        listener.inactiveItems()
+      case _ =>
+    }
+  }
+
+  private[this] def updateSignal(term: String): Ui[_] = statuses.fastScrollerSignalType match {
+    case FastScrollerText => text <~ tvText(term)
+    case FastScrollerCategory =>
+      icon <~
+        tvCompoundDrawablesWithIntrinsicBounds2Resources(top = getIconResource(NineCardCategory(term).getIconResource)) <~
+        tvText(getStringResource(NineCardCategory(term).getStringResource))
+  }
+
+  private[this] def getIconResource(name: String) = {
     val resourceName = s"icon_collection_${name}_detail"
     val resource = getResources.getIdentifier(resourceName, "drawable", context.getPackageName)
     if (resource == 0) R.drawable.icon_collection_default_detail else resource
   }
 
+  private[this] def getStringResource(name: String) = {
+    val resource = getResources.getIdentifier(name, "string", context.getPackageName)
+    if (resource == 0) R.string.app_name else resource
+  }
+
   private[this] def rvResetItems = Tweak[RecyclerView] {
-    case v: FastScrollerTransformsListener => if (statuses.usingCounters) runUi(v.feedbackItems(0, 0))
+    case v: FastScrollerTransformsListener => if (statuses.usingCounters) runUi(v.inactiveItems)
   }
 
   private[this] def getPosition(y: Float) = if (statuses.usingCounters) {
@@ -395,11 +422,17 @@ trait FastScrollerListener {
 
   def getColumns: Int
 
+  def activeItems(from: Int, count: Int): Unit
+
+  def inactiveItems(): Unit
+
 }
 
 trait FastScrollerTransformsListener {
 
-  def feedbackItems(from: Int, count: Int): Ui[_]
+  def activeItems(from: Int, count: Int): Ui[_]
+
+  def inactiveItems: Ui[_]
 
 }
 

@@ -61,6 +61,8 @@
     <dimen name="drawer_size_pager">6dp</dimen>
     <dimen name="margin_pager_drawer">2dp</dimen>
 
+    <integer name="appdrawer_alpha_unselected_item_percentage">10</integer>
+
     <!-- Menu -->
     <dimen name="menu_height">170dp</dimen>
     <dimen name="menu_size_avatar">54dp</dimen>
