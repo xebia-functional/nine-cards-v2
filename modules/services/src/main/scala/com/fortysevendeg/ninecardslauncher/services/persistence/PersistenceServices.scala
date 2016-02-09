@@ -232,60 +232,6 @@ trait PersistenceServices {
   def updateCollection(request: UpdateCollectionRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
-    * Adds an geoInfo item to the repository
-    * @param request includes the necessary data to create a new geoInfo item in the repository
-    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo
-    * @throws PersistenceServiceException if exist some problem creating the geoInfo item
-    */
-  def addGeoInfo(request: AddGeoInfoRequest): ServiceDef2[GeoInfo, PersistenceServiceException]
-
-  /**
-    * Deletes all geoInfo items from the repository by the where clause
-    * @return an Int if the geoInfo items has been deleted correctly
-    * @throws PersistenceServiceException if exist some problem deleting the geoInfo items
-    */
-  def deleteAllGeoInfoItems(): ServiceDef2[Int, PersistenceServiceException]
-
-  /**
-    * Deletes a geoInfo item from the repository by the geoInfo item
-    * @param request includes the geoInfo item to delete
-    * @return an Int if the geoInfo item has been deleted correctly
-    * @throws PersistenceServiceException if exist some problem deleting the geoInfo item
-    */
-  def deleteGeoInfo(request: DeleteGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException]
-
-  /**
-    * Obtains the geoInfo item from the repository by the constrain
-    * @param request includes the constrain of the geoInfo item to find
-    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo]
-    * @throws PersistenceServiceException if exist some problem obtaining the geoInfo item
-    */
-  def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest): ServiceDef2[Option[GeoInfo], PersistenceServiceException]
-
-  /**
-    * Obtains all the geoInfo items from the repository
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo]
-    * @throws PersistenceServiceException if exist some problem obtaining the geoInfo items
-    */
-  def fetchGeoInfoItems: ServiceDef2[Seq[GeoInfo], PersistenceServiceException]
-
-  /**
-    * Obtains the geoInfo item from the repository by the id
-    * @param request includes the id of the geoInfo item to find
-    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.GeoInfo]
-    * @throws PersistenceServiceException if exist some problem obtaining the geoInfo item
-    */
-  def findGeoInfoById(request: FindGeoInfoByIdRequest): ServiceDef2[Option[GeoInfo], PersistenceServiceException]
-
-  /**
-    * Updates the data of an geoInfo item from the repository
-    * @param request includes the data to update the geoInfo item
-    * @return an Int if the geoInfo item has been updated correctly
-    * @throws PersistenceServiceException if exist some problem updating the geoInfo item
-    */
-  def updateGeoInfo(request: UpdateGeoInfoRequest): ServiceDef2[Int, PersistenceServiceException]
-
-  /**
     * Obtains the android id from the repository
     * @return an String with the android id
     * @throws AndroidIdNotFoundException if exist some problem obtaining the android id
@@ -381,5 +327,51 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem obtaining the dock app
     */
   def findDockAppById(request: FindDockAppByIdRequest): ServiceDef2[Option[DockApp], PersistenceServiceException]
+
+  /**
+    * Adds an moment to the repository
+    * @param request includes the necessary data to create a new moment in the repository
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment
+    * @throws PersistenceServiceException if exist some problem creating the moment
+    */
+  def addMoment(request: AddMomentRequest): ServiceDef2[Moment, PersistenceServiceException]
+
+  /**
+    * Deletes all moments from the repository by the where clause
+    * @return an Int if the moments has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the moments
+    */
+  def deleteAllMoments(): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+    * Deletes an moment from the repository by the moment
+    * @param request includes the moment to delete
+    * @return an Int if the moment has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the moment
+    */
+  def deleteMoment(request: DeleteMomentRequest): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+    * Obtains all the moments from the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
+    * @throws PersistenceServiceException if exist some problem obtaining the moments
+    */
+  def fetchMoments: ServiceDef2[Seq[Moment], PersistenceServiceException]
+
+  /**
+    * Obtains an moment from the repository by the id
+    * @param request includes the moment id  of the moment to get
+    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
+    * @throws PersistenceServiceException if exist some problem obtaining the moment
+    */
+  def findMomentById(request: FindMomentByIdRequest): ServiceDef2[Option[Moment], PersistenceServiceException]
+
+  /**
+    * Updates the data of an moment from the repository
+    * @param request includes the data to update the moment
+    * @return an Int if the moment has been updated correctly
+    * @throws PersistenceServiceException if exist some problem updating the moment
+    */
+  def updateMoment(request: UpdateMomentRequest): ServiceDef2[Int, PersistenceServiceException]
 
 }

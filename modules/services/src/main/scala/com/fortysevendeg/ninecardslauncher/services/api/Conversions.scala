@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
-import com.fortysevendeg.ninecardslauncher.api.model.{AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, GooglePlayPackage => ApiGooglePlayPackage, GooglePlayRecommendation, GooglePlaySimplePackage => ApiGooglePlaySimplePackage, GooglePlaySimplePackages => ApiGooglePlaySimplePackages, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, SharedCollection, SharedCollectionPackage, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigGeoInfo => ApiUserConfigGeoInfo, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
+import com.fortysevendeg.ninecardslauncher.api.model.{AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, GooglePlayPackage => ApiGooglePlayPackage, GooglePlayRecommendation, GooglePlaySimplePackage => ApiGooglePlaySimplePackage, GooglePlaySimplePackages => ApiGooglePlaySimplePackages, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, SharedCollection, SharedCollectionPackage, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json._
 
@@ -190,7 +190,6 @@ trait Conversions {
       email = apiUserConfig.email,
       plusProfile = toUserConfigPlusProfile(apiUserConfig.plusProfile),
       devices = apiUserConfig.devices map toUserConfigDevice,
-      geoInfo = toUserConfigGeoInfo(apiUserConfig.geoInfo),
       status = toUserConfigStatusInfo(apiUserConfig.status))
 
   def toUserConfigPlusProfile(apiPlusProfile: ApiUserConfigPlusProfile): UserConfigPlusProfile =
@@ -233,13 +232,6 @@ trait Conversions {
       title = apiCollectionItem.title,
       metadata = apiCollectionItem.metadata,
       categories = apiCollectionItem.categories)
-
-  def toUserConfigGeoInfo(apiGeoInfo: ApiUserConfigGeoInfo): UserConfigGeoInfo =
-    UserConfigGeoInfo(
-      homeMorning = apiGeoInfo.homeMorning map toUserConfigUserLocation,
-      homeNight = apiGeoInfo.homeNight map toUserConfigUserLocation,
-      work = apiGeoInfo.work map toUserConfigUserLocation,
-      current = apiGeoInfo.current map toUserConfigUserLocation)
 
   def toUserConfigUserLocation(apiUserLocation: ApiUserConfigUserLocation): UserConfigUserLocation =
     UserConfigUserLocation(
@@ -296,13 +288,6 @@ trait Conversions {
       title = collectionItem.title,
       metadata = Json.parse("{\"name\": \"test\"}"), // TODO Create metadata for item
       categories = collectionItem.categories)
-
-  def toUserConfigGeoInfo(apiGeoInfo: UserConfigGeoInfo): ApiUserConfigGeoInfo =
-    ApiUserConfigGeoInfo(
-      homeMorning = apiGeoInfo.homeMorning map fromUserConfigUserLocation,
-      homeNight = apiGeoInfo.homeNight map fromUserConfigUserLocation,
-      work = apiGeoInfo.work map fromUserConfigUserLocation,
-      current = apiGeoInfo.current map fromUserConfigUserLocation)
 
   def fromUserConfigUserLocation(apiUserLocation: UserConfigUserLocation): ApiUserConfigUserLocation =
     ApiUserConfigUserLocation(

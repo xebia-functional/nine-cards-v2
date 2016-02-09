@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
 import com.fortysevendeg.ninecardslauncher.repository.model.DockApp
-import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions._
 
 case class DockAppEntity(id: Int, data: DockAppEntityData)

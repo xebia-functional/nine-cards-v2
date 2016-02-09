@@ -47,15 +47,22 @@ object Conversions {
       sharedCollectionId = Option[String](collectionEntity.data.sharedCollectionId),
       sharedCollectionSubscribed = Option[Boolean](collectionEntity.data.sharedCollectionSubscribed)))
 
-  def toGeoInfo(geoInfoEntity: GeoInfoEntity): GeoInfo = GeoInfo(
-    id = geoInfoEntity.id,
-    data = GeoInfoData(
-      constrain = geoInfoEntity.data.constrain,
-      occurrence = geoInfoEntity.data.occurrence,
-      wifi = geoInfoEntity.data.wifi,
-      latitude = geoInfoEntity.data.latitude,
-      longitude = geoInfoEntity.data.longitude,
-      system = geoInfoEntity.data.system))
+  def toDockApp(dockAppEntity: DockAppEntity): DockApp = DockApp(
+    id = dockAppEntity.id,
+    data = DockAppData(
+      name = dockAppEntity.data.name,
+      dockType = dockAppEntity.data.dockType,
+      intent = dockAppEntity.data.intent,
+      imagePath = dockAppEntity.data.imagePath,
+      position = dockAppEntity.data.position))
+
+  def toMoment(momentEntity: MomentEntity): Moment = Moment(
+    id = momentEntity.id,
+    data = MomentData(
+      collectionId = Option[Int](momentEntity.data.collectionId),
+      timeslot = momentEntity.data.timeslot,
+      wifi = momentEntity.data.wifi,
+      headphone = momentEntity.data.headphone))
 
   def toUser(userEntity: UserEntity): User = User(
     id = userEntity.id,
@@ -67,12 +74,4 @@ object Conversions {
       deviceToken = Option[String](userEntity.data.deviceToken),
       androidToken = Option[String](userEntity.data.androidToken)))
 
-  def toDockApp(dockAppEntity: DockAppEntity): DockApp = DockApp(
-    id = dockAppEntity.id,
-    data = DockAppData(
-      name = dockAppEntity.data.name,
-      dockType = dockAppEntity.data.dockType,
-      intent = dockAppEntity.data.intent,
-      imagePath = dockAppEntity.data.imagePath,
-      position = dockAppEntity.data.position))
 }

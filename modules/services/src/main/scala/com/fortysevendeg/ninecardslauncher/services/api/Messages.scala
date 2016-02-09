@@ -41,10 +41,6 @@ case class SaveDeviceResponse(
   statusCode: Int,
   userConfig: UserConfig) extends UserConfigResponse
 
-case class SaveGeoInfoResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
 case class CheckpointPurchaseProductResponse(
   statusCode: Int,
   userConfig: UserConfig) extends UserConfigResponse

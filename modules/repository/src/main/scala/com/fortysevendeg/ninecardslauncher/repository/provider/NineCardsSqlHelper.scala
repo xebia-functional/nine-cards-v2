@@ -14,14 +14,11 @@ class NineCardsSqlHelper(context: Context)
     db.execSQL(AppEntity.createTableSQL)
     db.execSQL(CollectionEntity.createTableSQL)
     db.execSQL(CardEntity.createTableSQL)
-    db.execSQL(GeoInfoEntity.createTableSQL)
-    db.execSQL(UserEntity.createTableSQL)
     db.execSQL(DockAppEntity.createTableSQL)
+    db.execSQL(MomentEntity.createTableSQL)
+    db.execSQL(UserEntity.createTableSQL)
 
-    new Handler().postDelayed(
-      new Runnable() {
-        override def run() = execAllVersionsDB()
-      }, 0)
+    new Handler().postDelayed(() => execAllVersionsDB(), 0)
   }
 
   override def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = {
@@ -39,17 +36,17 @@ class NineCardsSqlHelper(context: Context)
       case 6 => db.execSQL("DROP TABLE CacheCategory")
       case 7 => db.execSQL(UserEntity.createTableSQL)
       case 8 => db.execSQL(DockAppEntity.createTableSQL)
+      case 9 =>
+        db.execSQL("DROP TABLE GeoInfo")
+        db.execSQL(MomentEntity.createTableSQL)
     }
 
-    new Handler().post(
-      new Runnable() {
-        override def run() = execVersionsDB(oldVersion, newVersion)
-      })
+    new Handler().post(() => execVersionsDB(oldVersion, newVersion))
   }
 }
 
 object NineCardsSqlHelper {
   val id = "_id"
   val databaseName = "nineCards"
-  val databaseVersion = 8
+  val databaseVersion = 9
 }

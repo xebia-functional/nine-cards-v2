@@ -132,14 +132,6 @@ class ApiServicesImpl(
       userConfig <- readOption(response.data, userConfigNotFoundMessage)
     } yield SaveDeviceResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
-  override def saveGeoInfo(userConfigGeoInfo: UserConfigGeoInfo)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.saveGeoInfo(
-        toUserConfigGeoInfo(userConfigGeoInfo),
-        requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield SaveGeoInfoResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
   override def checkpointPurchaseProduct(productId: String)(implicit requestConfig: RequestConfig) =
     (for {
       response <- userConfigService.checkpointPurchaseProduct(
