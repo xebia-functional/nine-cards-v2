@@ -108,9 +108,9 @@ trait AppRepositoryTestData {
       "COMMUNICATION",
       "COMMUNICATION",
       "COMMUNICATION",
-      "GAMES",
-      "GAMES",
-      "GAMES",
+      "GAME_SIMULATION",
+      "GAME_BOARD",
+      "GAME_CARD",
       "SOCIAL",
       "SOCIAL",
       "SOCIAL",
@@ -120,7 +120,7 @@ trait AppRepositoryTestData {
 
   val categoryDataCounters = Seq(
     DataCounter("COMMUNICATION", 3),
-    DataCounter("GAMES", 3),
+    DataCounter("GAME", 3),
     DataCounter("SOCIAL", 4),
     DataCounter("TOOLS", 2)
   )

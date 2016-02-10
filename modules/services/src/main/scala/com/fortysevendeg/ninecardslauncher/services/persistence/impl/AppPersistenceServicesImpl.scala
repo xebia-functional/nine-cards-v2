@@ -102,13 +102,14 @@ trait AppPersistenceServicesImpl {
       counters <- appRepository.fetchCategorizedAppsCounter
     } yield toDataCounterSeq(counters)).resolve[PersistenceServiceException]
 
-  private[this] def toOrderBy(orderBy: FetchAppOrder, ascending: Boolean): String = s"${
+  private[this] def toOrderBy(orderBy: FetchAppOrder, ascending: Boolean): String = {
+    val sort = if (ascending) "ASC" else "DESC"
     orderBy match {
-      case OrderByName => s"${AppEntity.name} COLLATE NOCASE"
-      case OrderByInstallDate => AppEntity.dateInstalled
-      case OrderByCategory => AppEntity.category
+      case OrderByName => s"${AppEntity.name} COLLATE NOCASE $sort"
+      case OrderByInstallDate => s"${AppEntity.dateInstalled} $sort"
+      case OrderByCategory => s"${AppEntity.category} $sort, ${AppEntity.name} $sort"
     }
-  } ${if (ascending) "ASC" else "DESC"}"
+  }
 
   private[this] def toStringWhere: String = s"${AppEntity.name} LIKE ? "
 
