@@ -102,6 +102,11 @@ trait AppPersistenceServicesImpl {
       counters <- appRepository.fetchCategorizedAppsCounter
     } yield toDataCounterSeq(counters)).resolve[PersistenceServiceException]
 
+  def fetchInstallationDateAppsCounter =
+    (for {
+      counters <- appRepository.fetchInstallationDateAppsCounter
+    } yield toDataCounterSeq(counters)).resolve[PersistenceServiceException]
+
   private[this] def toOrderBy(orderBy: FetchAppOrder, ascending: Boolean): String = {
     val sort = if (ascending) "ASC" else "DESC"
     orderBy match {

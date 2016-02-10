@@ -69,6 +69,13 @@ trait PersistenceServices {
   def fetchCategorizedAppsCounter: ServiceDef2[Seq[DataCounter], PersistenceServiceException]
 
   /**
+    * Returns the number of times by installation date
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.DataCounter]
+    * @throws PersistenceServiceException if exist some problem obtaining the apps
+    */
+  def fetchInstallationDateAppsCounter: ServiceDef2[Seq[DataCounter], PersistenceServiceException]
+
+  /**
    * Obtains an app from the repository by the package name
    * @param packageName the package name of the app to get
    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
