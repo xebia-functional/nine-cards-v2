@@ -233,6 +233,7 @@ trait DrawerComposer
       layoutManager = appsAdapter.getLayoutManager,
       counters = counters,
       signalType = getAppOrder match {
+        case GetByInstallDate => FastScrollerInstallationDate
         case GetByCategory => FastScrollerCategory
         case _ => FastScrollerText
       })

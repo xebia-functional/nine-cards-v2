@@ -232,7 +232,7 @@ class AppRepository(
     getListFromCursor(dateInstalledFromCursor)(contentResolverWrapper.getCursor(
       uri = appUri,
       projection = Seq(dateInstalled),
-      orderBy = s"$dateInstalled ASC"))
+      orderBy = s"$dateInstalled DESC"))
 
   private[this] def toDataCounter(
     fetchData: => Seq[String],
@@ -261,12 +261,14 @@ class AppRepository(
       Task {
         CatchAll[RepositoryException] {
           val now = new DateTime()
-          val moreOfTwoMoths = "MoreOfTwoMoths"
+          val moreOfTwoMoths = "moreOfTwoMoths"
           val dates = Seq(
-            InstallationDateInterval("OneWeek", now.minusWeeks(1)),
-            InstallationDateInterval("TwoWeeks", now.minusWeeks(2)),
-            InstallationDateInterval("OneMoth", now.minusMonths(1)),
-            InstallationDateInterval("TwoMoths", now.minusMonths(2)))
+            InstallationDateInterval("oneWeek", now.minusWeeks(1)),
+            InstallationDateInterval("twoWeeks", now.minusWeeks(2)),
+            InstallationDateInterval("oneMoth", now.minusMonths(1)),
+            InstallationDateInterval("twoMoths", now.minusMonths(2)),
+            InstallationDateInterval("fourMoths", now.minusMonths(4)),
+            InstallationDateInterval("sixMoths", now.minusMonths(6)))
           val data = fetchData
           data.foldLeft(Seq.empty[DataCounter]) { (acc, date) =>
             val installationDate = new DateTime(date)

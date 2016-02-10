@@ -139,10 +139,10 @@ trait AppRepositoryTestData {
     now.minusMonths(2).minusWeeks(1).minusDays(3).getMillis)
 
   val installationDateDateCounters = Seq(
-    DataCounter("OneWeek", 2),
-    DataCounter("TwoWeeks", 2),
-    DataCounter("OneMoth", 1),
-    DataCounter("TwoMoths", 1),
-    DataCounter("MoreOfTwoMoths", 2))
+    DataCounter("oneWeek", 2),
+    DataCounter("twoWeeks", 2),
+    DataCounter("oneMoth", 1),
+    DataCounter("twoMoths", 1),
+    DataCounter("fourMoths", 2))
 
 }

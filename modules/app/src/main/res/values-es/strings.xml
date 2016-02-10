@@ -126,10 +126,13 @@
     <string name="contacts_alphabetical">Alfabético</string>
     <string name="contacts_favorites">Favoritos</string>
     <string name="contacts_last">Últimas llamadas</string>
-    <string name="apps_header_updated_1">Hoy</string>
-    <string name="apps_header_updated_2">Menos de 7 días</string>
-    <string name="apps_header_updated_3">Menos de 30 días</string>
-    <string name="apps_header_updated_4">Más de 30 días</string>
+    <string name="oneWeek">1 semana</string>
+    <string name="twoWeeks">2 semanas</string>
+    <string name="oneMoth">1 mes</string>
+    <string name="twoMoths">2 meses</string>
+    <string name="fourMoths">4 meses</string>
+    <string name="sixMoths">6 meses</string>
+    <string name="moreOfTwoMoths">Más</string>
 
     <!-- Categories -->
 

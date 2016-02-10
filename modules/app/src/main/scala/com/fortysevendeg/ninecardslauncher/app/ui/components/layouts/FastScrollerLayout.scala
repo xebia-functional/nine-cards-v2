@@ -199,6 +199,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     signalType match {
       case FastScrollerText => runUi((icon <~ vGone) ~ (text <~ vVisible))
       case FastScrollerCategory => runUi((icon <~ vVisible) ~ (text <~ vGone))
+      case FastScrollerInstallationDate => runUi((icon <~ vVisible) ~ (text <~ vGone))
     }
   }
 
@@ -272,6 +273,10 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       icon <~
         tvCompoundDrawablesWithIntrinsicBounds2Resources(top = getIconResource(NineCardCategory(term).getIconResource)) <~
         tvText(getStringResource(NineCardCategory(term).getStringResource))
+    case FastScrollerInstallationDate =>
+      icon <~
+        tvCompoundDrawablesWithIntrinsicBounds2Resources(top = R.drawable.app_drawer_filter_installation_date) <~
+        tvText(getStringResource(term))
   }
 
   private[this] def getIconResource(name: String) = {
@@ -439,5 +444,7 @@ trait FastScrollerTransformsListener {
 sealed trait FastScrollerSignalType
 
 case object FastScrollerCategory extends FastScrollerSignalType
+
+case object FastScrollerInstallationDate extends FastScrollerSignalType
 
 case object FastScrollerText extends FastScrollerSignalType

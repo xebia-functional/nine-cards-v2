@@ -668,9 +668,9 @@ trait DeviceProcessData
     ContactCounter("Z", 3))
 
   val installationAppsCounters = Seq(
-    ServicesDataCounter("OneWeek", 4),
-    ServicesDataCounter("TwoWeeks", 1),
-    ServicesDataCounter("OneMonth", 6),
-    ServicesDataCounter("TwoMonths", 5))
+    ServicesDataCounter("oneWeek", 4),
+    ServicesDataCounter("twoWeeks", 1),
+    ServicesDataCounter("oneMonth", 6),
+    ServicesDataCounter("twoMonths", 5))
 
 }
