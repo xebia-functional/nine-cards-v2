@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import org.joda.time.DateTime
 
 import scalaz.concurrent.Task
 
@@ -134,6 +135,9 @@ class AppRepository(
         case t => t
       })
 
+  def fetchInstallationDateAppsCounter: ServiceDef2[Seq[DataCounter], RepositoryException] =
+    toInstallationDateDataCounter(fetchData = getInstallationDate)
+
   def findAppById(id: Int): ServiceDef2[Option[App], RepositoryException] =
     Service {
       Task {
@@ -224,6 +228,12 @@ class AppRepository(
       projection = Seq(category),
       orderBy = s"$category COLLATE NOCASE ASC"))
 
+  protected def getInstallationDate: Seq[Long] =
+    getListFromCursor(dateInstalledFromCursor)(contentResolverWrapper.getCursor(
+      uri = appUri,
+      projection = Seq(dateInstalled),
+      orderBy = s"$dateInstalled ASC"))
+
   private[this] def toDataCounter(
     fetchData: => Seq[String],
     normalize: (String) => String = (term) => term): ServiceDef2[Seq[DataCounter], RepositoryException] =
@@ -244,5 +254,40 @@ class AppRepository(
         }
       }
     }
+
+  private[this] def toInstallationDateDataCounter(
+   fetchData: => Seq[Long]): ServiceDef2[Seq[DataCounter], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          val now = new DateTime()
+          val moreOfTwoMoths = "MoreOfTwoMoths"
+          val dates = Seq(
+            InstallationDateInterval("OneWeek", now.minusWeeks(1)),
+            InstallationDateInterval("TwoWeeks", now.minusWeeks(2)),
+            InstallationDateInterval("OneMoth", now.minusMonths(1)),
+            InstallationDateInterval("TwoMoths", now.minusMonths(2)))
+          val data = fetchData
+          data.foldLeft(Seq.empty[DataCounter]) { (acc, date) =>
+            val installationDate = new DateTime(date)
+            val term = termInterval(installationDate, dates) map (_.term) getOrElse moreOfTwoMoths
+            val lastWithSameTerm = acc.lastOption flatMap {
+              case last if last.term == term => Some(last)
+              case _ => None
+            }
+            lastWithSameTerm map { c =>
+              acc.dropRight(1) :+ c.copy(count = c.count + 1)
+            } getOrElse acc :+ DataCounter(term, 1)
+          }
+        }
+      }
+    }
+
+  private[this] def termInterval(installationDate: DateTime, intervals: Seq[InstallationDateInterval]): Option[InstallationDateInterval] =
+    intervals find { interval =>
+      installationDate.isAfter(interval.date)
+    }
+
+  case class InstallationDateInterval(term: String, date: DateTime)
 
 }
