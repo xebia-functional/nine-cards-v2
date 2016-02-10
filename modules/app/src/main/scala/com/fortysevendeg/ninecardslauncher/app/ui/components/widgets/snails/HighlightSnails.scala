@@ -22,6 +22,8 @@ object HighlightSnails {
 
       view.animate().
         alpha(default).
+        scaleX(default).
+        scaleY(default).
         setDuration(duration).
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator): Unit = {

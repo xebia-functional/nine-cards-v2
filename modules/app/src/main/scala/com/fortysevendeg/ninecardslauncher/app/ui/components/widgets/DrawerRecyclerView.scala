@@ -29,8 +29,6 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   val unselected = resGetInteger(R.integer.appdrawer_alpha_unselected_item_percentage).toFloat / 100
 
-  val scalePixels = resGetDimensionPixelSize(R.dimen.padding_default)
-
   var drawerRecyclerListener = DrawerRecyclerViewListener()
 
   var animatedController: Option[SearchBoxAnimatedController] = None
@@ -129,7 +127,12 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
           val view = Option(getChildAt(item))
           val position = view flatMap (_.getPosition)
           val animate = position exists (p => p >= from && p < from + count)
-          view <~ vAlpha(if (animate) default else unselected)
+          val selectedScale = view map { v =>
+            v.calculateDefaultScale
+          } getOrElse 1f
+          val scale = if (animate) selectedScale else default
+          val alpha = if (animate) default else unselected
+          view <~ vAlpha(alpha) <~ vScaleX(scale) <~ vScaleY(scale)
         }:_*)
       case _ => Ui.nop
     }

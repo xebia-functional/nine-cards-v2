@@ -10,7 +10,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.CounterStatuses
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{AdapterStyles, CounterStatuses}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
@@ -35,7 +35,7 @@ case class ContactsAdapter(
   override def getItemCount: Int = contacts.count()
 
   override def onBindViewHolder(vh: ContactsIterableHolder, position: Int): Unit = {
-    runUi(vh.bind(contacts.moveToPosition(position), position, statuses.isActive(position)))
+    runUi(vh.bind(contacts.moveToPosition(position), position, statuses.selectItems, statuses.isActive(position)))
   }
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): ContactsIterableHolder = {
@@ -63,7 +63,7 @@ case class ContactsAdapter(
     contacts.close()
     contacts = iter
     notifyDataSetChanged()
-    statuses = statuses.reset(count = getItemCount)
+    statuses = statuses.reset
   }
 
   def close() = contacts.close()
@@ -74,19 +74,18 @@ case class ContactsAdapter(
 
   override def getColumns: Int = 1
 
-  override def activeItems(f: Int, c: Int): Unit = statuses = statuses.copy(from = f, count = c)
+  override def activeItems(f: Int, c: Int): Unit = statuses = statuses.active(from = f, count = c)
 
-  override def inactiveItems(): Unit = statuses = statuses.reset(count = getItemCount)
+  override def inactiveItems(): Unit = statuses = statuses.reset
 
 }
 
 case class ContactsIterableHolder(content: View)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+  with TypedFindView
+  with AdapterStyles {
 
-  val default = 1f
-
-  val unselected = resGetInteger(R.integer.appdrawer_alpha_unselected_item_percentage).toFloat / 100
+  override val unselectedAlpha = resGetInteger(R.integer.appdrawer_alpha_unselected_item_percentage).toFloat / 100
 
   lazy val icon = Option(findView(TR.contact_item_icon))
 
@@ -96,9 +95,9 @@ case class ContactsIterableHolder(content: View)(implicit context: ActivityConte
 
   runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
 
-  def bind(contact: Contact, position: Int, active: Boolean): Ui[_] = {
+  def bind(contact: Contact, position: Int, selectItems: Boolean, active: Boolean): Ui[_] = {
     val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
-    (content <~ (if (active) vAlpha(default) else vAlpha(unselected))) ~
+    (content <~ contentStyle(selectItems, active)) ~
       (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
       (name <~ tvText(contactName)) ~
       (content <~ vSetPosition(position)) ~
