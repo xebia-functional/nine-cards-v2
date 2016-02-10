@@ -27,8 +27,6 @@ trait AppsDeviceProcessImpl {
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  val emptyDataCounterService: ServiceDef2[Seq[DataCounter], PersistenceServiceException] = Service(Task(Answer(Seq.empty)))
-
   def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
       apps <- persistenceServices.fetchApps(toFetchAppOrder(orderBy), orderBy.ascending)
@@ -44,7 +42,7 @@ trait AppsDeviceProcessImpl {
       counters <- orderBy match {
         case GetByName => persistenceServices.fetchAlphabeticalAppsCounter
         case GetByCategory => persistenceServices.fetchCategorizedAppsCounter
-        case _ => emptyDataCounterService
+        case _ => persistenceServices.fetchInstallationDateAppsCounter
       }
     } yield counters map toTermCounter).resolve[AppException]
 

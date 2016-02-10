@@ -651,23 +651,26 @@ trait DeviceProcessData
     ServicesDataCounter("B", 1),
     ServicesDataCounter("E", 6),
     ServicesDataCounter("F", 5),
-    ServicesDataCounter("Z", 3)
-  )
+    ServicesDataCounter("Z", 3))
 
   val categoryCounters = Seq(
     ServicesDataCounter("COMMUNICATION", 4),
     ServicesDataCounter("GAMES", 1),
     ServicesDataCounter("SOCIAL", 6),
     ServicesDataCounter("TOOLS", 5),
-    ServicesDataCounter("WEATHER", 3)
-  )
+    ServicesDataCounter("WEATHER", 3))
 
   val contactsCounters = Seq(
     ContactCounter("#", 4),
     ContactCounter("B", 1),
     ContactCounter("E", 6),
     ContactCounter("F", 5),
-    ContactCounter("Z", 3)
-  )
+    ContactCounter("Z", 3))
+
+  val installationAppsCounters = Seq(
+    ServicesDataCounter("OneWeek", 4),
+    ServicesDataCounter("TwoWeeks", 1),
+    ServicesDataCounter("OneMonth", 6),
+    ServicesDataCounter("TwoMonths", 5))
 
 }
