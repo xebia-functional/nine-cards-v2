@@ -23,7 +23,7 @@ import macroid.{ContextWrapper, Transformer, Tweak, Ui}
 class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends PullToDownView(context) {
 
-  val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_height)
+  val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_max_height)
 
   val distanceChangeTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_distance_change_tabs)
 
@@ -146,7 +146,7 @@ case class PullToTabsStatuses(
 trait PullToTabsViewStyles {
 
   def tabContentStyles(paddingRight: Int = 0)(implicit context: ContextWrapper): Tweak[LinearLayout] = {
-    val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_height)
+    val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_max_height)
     vContentSizeMatchWidth(heightTabs) +
       vPadding(paddingRight = paddingRight) +
       vGone

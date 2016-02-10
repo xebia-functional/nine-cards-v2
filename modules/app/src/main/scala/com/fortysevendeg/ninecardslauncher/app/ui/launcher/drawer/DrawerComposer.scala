@@ -87,10 +87,21 @@ trait DrawerComposer
           case ContactView => loadContactsAlphabetical
         }))
 
+  override def onHeaderIconClick(implicit context: ActivityContextWrapper): Unit =
+    runUi(if (isTabsOpened) closeTabs else openTabs)
+
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     addWidgetsDrawer ~ transformDrawerUi
+
+  private[this] def openTabs(implicit context: ActivityContextWrapper): Ui[_] =
+    (tabs <~ vSetType("open") <~ showTabs) ~
+      (recycler <~ hideList)
+
+  private[this] def closeTabs(implicit context: ActivityContextWrapper): Ui[_] =
+    (tabs <~ vSetType("close") <~ hideTabs) ~
+      (recycler <~ showList)
 
   private[this] def closeCursorAdapter: Ui[_] =
     Ui(
@@ -142,6 +153,7 @@ trait DrawerComposer
       (scrollerLayout <~
         vgAddView(getUi(
           l[LinearLayout]() <~
+            vSetType("close") <~
             tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
             wire(tabs))) <~
         vgAddViewByIndex(getUi(
@@ -240,6 +252,8 @@ trait DrawerComposer
   }
 
   private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
+
+  private[this] def isTabsOpened: Boolean = tabs exists (rv => rv.getType exists(_ == "open"))
 
   private[this] def getTypeView: Option[BoxView] = searchBoxView map (_.statuses.currentItem)
 

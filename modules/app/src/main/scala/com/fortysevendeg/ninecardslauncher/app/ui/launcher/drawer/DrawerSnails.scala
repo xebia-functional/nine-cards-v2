@@ -3,17 +3,108 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.annotation.TargetApi
 import android.os.Build
+import android.support.v7.widget.RecyclerView
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
 
 object DrawerSnails {
+
+  def showTabs(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+    view =>
+      val maxHeight = resGetDimensionPixelSize(R.dimen.pulltotabs_max_height)
+      val height = resGetDimensionPixelSize(R.dimen.pulltotabs_height)
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+      val animPromise = Promise[Unit]()
+
+      view.setY(-maxHeight)
+      view.setVisibility(View.VISIBLE)
+
+      view.animate()
+        .setInterpolator(new DecelerateInterpolator)
+        .y(height-maxHeight)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+            animPromise.trySuccess()
+          }
+        }).start()
+
+      animPromise.future
+  }
+
+  def hideTabs(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+    view =>
+      val maxHeight = resGetDimensionPixelSize(R.dimen.pulltotabs_max_height)
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+      val animPromise = Promise[Unit]()
+
+      view.animate()
+        .setInterpolator(new DecelerateInterpolator)
+        .y(-maxHeight)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+            view.setVisibility(View.GONE)
+            animPromise.trySuccess()
+          }
+        }).start()
+
+      animPromise.future
+  }
+
+  def hideList(implicit context: ContextWrapper): Snail[RecyclerView] = Snail[RecyclerView] {
+    view =>
+      val height = resGetDimensionPixelSize(R.dimen.pulltotabs_height)
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+      val animPromise = Promise[Unit]()
+
+      view.animate()
+        .setInterpolator(new DecelerateInterpolator)
+        .y(height)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+            animPromise.trySuccess()
+          }
+        }).start()
+
+      animPromise.future
+  }
+
+  def showList(implicit context: ContextWrapper): Snail[RecyclerView] = Snail[RecyclerView] {
+    view =>
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+      val animPromise = Promise[Unit]()
+
+      view.animate()
+        .setInterpolator(new DecelerateInterpolator)
+        .y(0)
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+            animPromise.trySuccess()
+          }
+        }).start()
+
+      animPromise.future
+  }
 
   def revealInAppDrawer(source: View)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
@@ -22,9 +113,9 @@ object DrawerSnails {
       val animPromise = Promise[Unit]()
 
       Lollipop.ifSupportedThen {
-        reveal(source, view)(animPromise.success())
+        reveal(source, view)(animPromise.trySuccess())
       } getOrElse {
-        fadeIn(view)(animPromise.success())
+        fadeIn(view)(animPromise.trySuccess())
       }
 
       animPromise.future
@@ -37,9 +128,9 @@ object DrawerSnails {
       val animPromise = Promise[Unit]()
 
       Lollipop.ifSupportedThen {
-        reveal(source, view, in = false)(animPromise.success())
+        reveal(source, view, in = false)(animPromise.trySuccess())
       } getOrElse {
-        fadeOut(view)(animPromise.success())
+        fadeOut(view)(animPromise.trySuccess())
       }
 
       animPromise.future
