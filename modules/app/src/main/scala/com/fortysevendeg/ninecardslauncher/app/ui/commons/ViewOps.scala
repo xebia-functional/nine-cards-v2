@@ -11,10 +11,16 @@ object ViewOps {
 
   val useLayerHardwareId = R.id.use_layer_hardware
 
+  val fieldsMap = R.id.fields_map
+
   implicit class ViewExtras(view: View) {
 
     def isPosition(item: Int): Boolean =
       Option(view.getTag(positionId)).isDefined && Int.unbox(view.getTag(positionId)).equals(item)
+
+    def getFieldsMap: Map[String, Any] = Option(view.getTag(fieldsMap)) map (_.asInstanceOf[Map[String, Any]]) getOrElse Map.empty
+
+    def getField[T](key: String): Option[T] = getFieldsMap find(_._1 == key) map (_._2.asInstanceOf[T])
 
     def getType: Option[String] = Option(view.getTag(viewTypeId)) map (_.toString)
 

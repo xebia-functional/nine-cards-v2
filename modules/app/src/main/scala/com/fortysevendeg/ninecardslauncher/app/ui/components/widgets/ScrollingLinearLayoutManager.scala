@@ -6,8 +6,8 @@ import android.support.v7.widget.LinearSmoothScroller._
 import android.support.v7.widget.RecyclerView.State
 import android.support.v7.widget.{LinearLayoutManager, LinearSmoothScroller, RecyclerView}
 import android.util.DisplayMetrics
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerTransformsListener
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FastScrollerLayout, FastScrollerTransformsListener}
 import macroid.Ui
 import macroid.FullDsl._
 
@@ -58,8 +58,8 @@ trait ScrollingLinearLayoutManager {
       } else {
         runUi(recyclerView match {
           case listener: FastScrollerTransformsListener =>
-            Option(recyclerView.getTag(R.id.max)) map { max =>
-              listener.activeItems(getTargetPosition, Int.unbox(max))
+            recyclerView.getField[Int](FastScrollerLayout.maxField) map { max =>
+              listener.activeItems(getTargetPosition, max)
             } getOrElse Ui.nop
           case _ => Ui.nop
         })
