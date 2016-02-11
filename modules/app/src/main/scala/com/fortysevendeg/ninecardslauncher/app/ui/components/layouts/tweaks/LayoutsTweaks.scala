@@ -177,7 +177,7 @@ object PullToTabsViewTweaks {
 
   def ptvClearTabs() = Tweak[PullToTabsView](_.clear())
 
-  def ptvActivate(item: Int) = Tweak[PullToTabsView](_.activate(item))
+  def ptvActivate(item: Int) = Tweak[PullToTabsView](_.activateItem(item))
 
   def ptvListener(pullToTabsListener: PullToTabsListener) =
     Tweak[PullToTabsView] (_.tabsListener = pullToTabsListener)

@@ -48,6 +48,8 @@ trait DrawerComposer
 
   val resistance = 2.4f
 
+  val openedField = "opened"
+
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
   lazy val drawerContent = Option(findView(TR.launcher_drawer_content))
@@ -96,11 +98,11 @@ trait DrawerComposer
     addWidgetsDrawer ~ transformDrawerUi
 
   private[this] def openTabs(implicit context: ActivityContextWrapper): Ui[_] =
-    (tabs <~ vSetType("open") <~ showTabs) ~
+    (tabs <~ vAddField(openedField, true) <~ showTabs) ~
       (recycler <~ hideList)
 
   private[this] def closeTabs(implicit context: ActivityContextWrapper): Ui[_] =
-    (tabs <~ vSetType("close") <~ hideTabs) ~
+    (tabs <~ vAddField(openedField, false) <~ hideTabs) ~
       (recycler <~ showList)
 
   private[this] def closeCursorAdapter: Ui[_] =
@@ -153,7 +155,7 @@ trait DrawerComposer
       (scrollerLayout <~
         vgAddView(getUi(
           l[LinearLayout]() <~
-            vSetType("close") <~
+            vAddField(openedField, false) <~
             tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
             wire(tabs))) <~
         vgAddViewByIndex(getUi(
@@ -205,13 +207,13 @@ trait DrawerComposer
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
             runUi(
-              getTypeView match {
+              (getTypeView match {
                 case Some(AppsView) =>
                   AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
                 case Some(ContactView) =>
                   ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
                 case _ => Ui.nop
-              })
+              }) ~ (if (isTabsOpened) closeTabs else Ui.nop))
           }
         ))) ~
       (drawerContent <~ vGone) ~
@@ -253,7 +255,7 @@ trait DrawerComposer
 
   private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
 
-  private[this] def isTabsOpened: Boolean = tabs exists (rv => rv.getType exists(_ == "open"))
+  private[this] def isTabsOpened: Boolean = tabs exists (rv => rv.getField[Boolean](openedField) getOrElse false)
 
   private[this] def getTypeView: Option[BoxView] = searchBoxView map (_.statuses.currentItem)
 
