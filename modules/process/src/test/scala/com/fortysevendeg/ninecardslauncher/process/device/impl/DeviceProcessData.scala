@@ -306,7 +306,7 @@ trait DeviceProcessData
     ratingCount = 5000,
     commentCount = 40000)
 
-  val requestConfig = RequestConfig("fake-device-id", "fake-token")
+  val requestConfig = RequestConfig("fake-device-id", "fake-token", Some("fake-android-token"))
 
   val packageNameForCreateImage = "com.example"
 

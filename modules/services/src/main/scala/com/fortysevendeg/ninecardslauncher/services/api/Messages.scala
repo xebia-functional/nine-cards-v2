@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
-case class RequestConfig(deviceId: String, token: String)
+case class RequestConfig(deviceId: String, token: String, androidToken: Option[String])
 
 case class LoginResponse(
   statusCode: Int,
