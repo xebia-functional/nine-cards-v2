@@ -9,7 +9,7 @@ trait UserConfigProcessData {
 
   val statusCodeOk = 200
 
-  val requestConfig = RequestConfig("fake-device-id", "fake-token")
+  val requestConfig = RequestConfig("fake-device-id", "fake-token", Some("fake-android-token"))
 
   val email = "example@47deg.com"
 
