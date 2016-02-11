@@ -97,11 +97,11 @@ trait DrawerComposer
   def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     addWidgetsDrawer ~ transformDrawerUi
 
-  private[this] def openTabs(implicit context: ActivityContextWrapper): Ui[_] =
+  protected def openTabs(implicit context: ActivityContextWrapper): Ui[_] =
     (tabs <~ vAddField(openedField, true) <~ showTabs) ~
       (recycler <~ hideList)
 
-  private[this] def closeTabs(implicit context: ActivityContextWrapper): Ui[_] =
+  protected def closeTabs(implicit context: ActivityContextWrapper): Ui[_] =
     (tabs <~ vAddField(openedField, false) <~ hideTabs) ~
       (recycler <~ showList)
 
@@ -253,9 +253,9 @@ trait DrawerComposer
       })
   }
 
-  private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
+  protected def isTabsOpened: Boolean = tabs exists (rv => rv.getField[Boolean](openedField) getOrElse false)
 
-  private[this] def isTabsOpened: Boolean = tabs exists (rv => rv.getField[Boolean](openedField) getOrElse false)
+  private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
 
   private[this] def getTypeView: Option[BoxView] = searchBoxView map (_.statuses.currentItem)
 
