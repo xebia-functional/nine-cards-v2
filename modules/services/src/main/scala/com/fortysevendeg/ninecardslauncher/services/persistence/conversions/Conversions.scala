@@ -7,8 +7,8 @@ trait Conversions
   extends AppConversions
   with CardConversions
   with CollectionConversions
-  with GeoInfoConversions
   with UserConversions
+  with MomentConversions
   with DockAppConversions {
 
   def toDataCounterSeq(items: Seq[RepoDataCounter]): Seq[DataCounter] = items map toDataCounter

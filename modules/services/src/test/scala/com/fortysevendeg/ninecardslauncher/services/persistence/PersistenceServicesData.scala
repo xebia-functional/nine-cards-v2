@@ -4,8 +4,6 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCurso
 import com.fortysevendeg.ninecardslauncher.repository.model.{
   AppData => RepositoryAppData,
   App => RepositoryApp,
-  GeoInfo => RepositoryGeoInfo,
-  GeoInfoData => RepositoryGeoInfoData,
   Collection => RepositoryCollection,
   DataCounter => RepositoryDataCounter,
   CollectionData => RepositoryCollectionData,
@@ -14,13 +12,19 @@ import com.fortysevendeg.ninecardslauncher.repository.model.{
   DockApp => RepositoryDockApp,
   DockAppData => RepositoryDockAppData,
   User => RepositoryUser,
-  UserData => RepositoryUserData
+  UserData => RepositoryUserData,
+  Moment => RepositoryMoment,
+  MomentData => RepositoryMomentData
 }
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, GeoInfo, User, _}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, Moment, _}
+import com.fortysevendeg.ninecardslauncher.services.persistence.reads.MomentImplicits
+import play.api.libs.json.Json
 
 import scala.util.Random
 
 trait PersistenceServicesData {
+
+  import MomentImplicits._
 
   val items = 5
   val item = 1
@@ -41,16 +45,6 @@ trait PersistenceServicesData {
   val numDownloads: String = Random.nextString(5)
   val ratingsCount: Int = Random.nextInt(10)
   val commentCount: Int = Random.nextInt(10)
-
-  val geoInfoId: Int = Random.nextInt(10)
-  val nonExistentGeoInfoId: Int = Random.nextInt(10) + 100
-  val constrain: String = Random.nextString(5)
-  val nonExistentConstrain: String = "nonExistentPackageName"
-  val occurrence: String = Random.nextString(5)
-  val wifi: String = Random.nextString(5)
-  val longitude: Double = Random.nextDouble()
-  val latitude: Double = Random.nextDouble()
-  val system: Boolean = Random.nextBoolean()
 
   val collectionId: Int = Random.nextInt(10)
   val nonExistentCollectionId: Int = Random.nextInt(10) + 100
@@ -88,6 +82,17 @@ trait PersistenceServicesData {
   val dockAppId: Int = Random.nextInt(10)
   val nonExistentDockAppId: Int = Random.nextInt(10) + 100
   val dockType: String = Random.nextString(5)
+
+  val momentId: Int = Random.nextInt(10)
+  val nonExistentMomentId: Int = Random.nextInt(10) + 100
+  val wifi1: String = Random.nextString(5)
+  val wifi2: String = Random.nextString(5)
+  val wifi3: String = Random.nextString(5)
+  val headphone: Boolean = Random.nextBoolean()
+  val wifiSeq: Seq[String] = Seq(wifi1, wifi2, wifi3)
+  val wifiString: String = wifiSeq.mkString(",")
+  val timeslotJson: String = """[{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}]"""
+  val collectionIdOption = Option(collectionId)
 
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
@@ -145,46 +150,6 @@ trait PersistenceServicesData {
     dateUpdate = dateUpdate,
     version = version,
     installedFromGooglePlay = installedFromGooglePlay)
-
-  def createSeqGeoInfo(
-    num: Int = 5,
-    id: Int = geoInfoId,
-    constrain: String = constrain,
-    occurrence: String = occurrence,
-    wifi: String = wifi,
-    longitude: Double = longitude,
-    latitude: Double = latitude,
-    system: Boolean = system): Seq[GeoInfo] = List.tabulate(num)(
-    item =>
-      GeoInfo(
-        id = id + item,
-        constrain = constrain,
-        occurrence = occurrence,
-        wifi = wifi,
-        longitude = longitude,
-        latitude = latitude,
-        system = system))
-
-  def createSeqRepoGeoInfo(
-    num: Int = 5,
-    id: Int = geoInfoId,
-    data: RepositoryGeoInfoData = createRepoGeoInfoData()): Seq[RepositoryGeoInfo] =
-    List.tabulate(num)(item => RepositoryGeoInfo(id = id + item, data = data))
-
-  def createRepoGeoInfoData(
-    constrain: String = constrain,
-    occurrence: String = occurrence,
-    wifi: String = wifi,
-    longitude: Double = longitude,
-    latitude: Double = latitude,
-    system: Boolean = system): RepositoryGeoInfoData =
-    RepositoryGeoInfoData(
-      constrain = constrain,
-      occurrence = occurrence,
-      wifi = wifi,
-      longitude = longitude,
-      latitude = latitude,
-      system = system)
 
   def createSeqCollection(
     num: Int = 5,
@@ -401,17 +366,43 @@ trait PersistenceServicesData {
       imagePath = imagePath,
       position = position)
 
+  def createSeqMoment(
+    num: Int = 5,
+    id: Int = momentId,
+    collectionId: Option[Int] = collectionIdOption,
+    timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
+    wifi: Seq[String] = wifiSeq,
+    headphone: Boolean = headphone): Seq[Moment] = List.tabulate(num)(
+    item =>
+      Moment(
+        id = id + item,
+        collectionId = collectionId,
+        timeslot = timeslot,
+        wifi = wifi,
+        headphone = headphone))
+
+  def createSeqRepoMoment(
+    num: Int = 5,
+    id: Int = momentId,
+    data: RepositoryMomentData = createRepoMomentData()): Seq[RepositoryMoment] =
+    List.tabulate(num)(item => RepositoryMoment(id = id + item, data = data))
+
+  def createRepoMomentData(
+    collectionId: Option[Int] = collectionIdOption,
+    timeslot: String = timeslotJson,
+    wifiString: String = wifiString,
+    headphone: Boolean = headphone): RepositoryMomentData =
+    RepositoryMomentData(
+      collectionId = collectionId,
+      timeslot = timeslot,
+      wifi = wifiString,
+      headphone = headphone)
+
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp(0)
   val repoAppData: RepositoryAppData = createRepoAppData()
   val seqRepoApp: Seq[RepositoryApp] = createSeqRepoApp(data = repoAppData)
   val repoApp: RepositoryApp = seqRepoApp(0)
-
-  val seqGeoInfo: Seq[GeoInfo] = createSeqGeoInfo()
-  val geoInfo: GeoInfo = seqGeoInfo(0)
-  val repoGeoInfoData: RepositoryGeoInfoData = createRepoGeoInfoData()
-  val seqRepoGeoInfo: Seq[RepositoryGeoInfo] = createSeqRepoGeoInfo(data = repoGeoInfoData)
-  val repoGeoInfo: RepositoryGeoInfo = seqRepoGeoInfo(0)
 
   val seqCard: Seq[Card] = createSeqCard()
   val card: Card = seqCard(0)
@@ -436,6 +427,12 @@ trait PersistenceServicesData {
   val repoDockAppData: RepositoryDockAppData = createRepoDockAppData()
   val seqRepoDockApp: Seq[RepositoryDockApp] = createSeqRepoDockApp(data = repoDockAppData)
   val repoDockApp: RepositoryDockApp = seqRepoDockApp(0)
+
+  val seqMoment: Seq[Moment] = createSeqMoment()
+  val moment: Moment = seqMoment(0)
+  val repoMomentData: RepositoryMomentData = createRepoMomentData()
+  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
+  val repoMoment: RepositoryMoment = seqRepoMoment(0)
 
   val where: String = ""
 
@@ -486,47 +483,6 @@ trait PersistenceServicesData {
       dateUpdate = dateUpdate,
       version = version,
       installedFromGooglePlay = installedFromGooglePlay)
-
-  def createAddGeoInfoRequest(
-    constrain: String = constrain,
-    occurrence: String = occurrence,
-    wifi: String = wifi,
-    longitude: Double = longitude,
-    latitude: Double = latitude,
-    system: Boolean = system): AddGeoInfoRequest =
-    AddGeoInfoRequest(
-      constrain = constrain,
-      occurrence = occurrence,
-      wifi = wifi,
-      longitude = longitude,
-      latitude = latitude,
-      system = system)
-
-  def createDeleteGeoInfoRequest(geoInfo: GeoInfo): DeleteGeoInfoRequest =
-    DeleteGeoInfoRequest(geoInfo = geoInfo)
-
-  def createFetchGeoInfoByConstrainRequest(constrain: String): FetchGeoInfoByConstrainRequest =
-    FetchGeoInfoByConstrainRequest(constrain = constrain)
-
-  def createFindGeoInfoByIdRequest(id: Int): FindGeoInfoByIdRequest =
-    FindGeoInfoByIdRequest(id = id)
-
-  def createUpdateGeoInfoRequest(
-    id: Int = geoInfoId,
-    constrain: String = constrain,
-    occurrence: String = occurrence,
-    wifi: String = wifi,
-    longitude: Double = longitude,
-    latitude: Double = latitude,
-    system: Boolean = system): UpdateGeoInfoRequest =
-    UpdateGeoInfoRequest(
-      id = id,
-      constrain = constrain,
-      occurrence = occurrence,
-      wifi = wifi,
-      longitude = longitude,
-      latitude = latitude,
-      system = system)
 
   def createAddCardRequest(
     collectionId: Int = collectionId,
@@ -726,6 +682,36 @@ trait PersistenceServicesData {
   val iterableDockApps = new IterableDockApps(iterableCursorDockApps)
 
   val keyword = "fake-keyword"
+
+  def createAddMomentRequest(
+    collectionId: Option[Int] = collectionIdOption,
+    timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
+    wifi: Seq[String] = wifiSeq,
+    headphone: Boolean = headphone): AddMomentRequest =
+    AddMomentRequest(
+      collectionId = collectionId,
+      timeslot = timeslot,
+      wifi = wifi,
+      headphone = headphone)
+
+  def createDeleteMomentRequest(moment: Moment): DeleteMomentRequest =
+    DeleteMomentRequest(moment = moment)
+
+  def createFindMomentByIdRequest(id: Int): FindMomentByIdRequest =
+    FindMomentByIdRequest(id = id)
+
+  def createUpdateMomentRequest(
+    id: Int = momentId,
+    collectionId: Option[Int] = collectionIdOption,
+    timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
+    wifi: Seq[String] = wifiSeq,
+    headphone: Boolean = headphone): UpdateMomentRequest =
+    UpdateMomentRequest(
+      id = id,
+      collectionId = collectionId,
+      timeslot = timeslot,
+      wifi = wifi,
+      headphone = headphone)
 
   val dataCounters = 1 to 10 map createDataCounter
 

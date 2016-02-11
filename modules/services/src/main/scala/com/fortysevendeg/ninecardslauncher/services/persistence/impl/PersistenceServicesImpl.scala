@@ -10,7 +10,7 @@ class PersistenceServicesImpl(
   val cardRepository: CardRepository,
   val collectionRepository: CollectionRepository,
   val dockAppRepository: DockAppRepository,
-  val geoInfoRepository: GeoInfoRepository,
+  val momentRepository: MomentRepository,
   val userRepository: UserRepository)
   extends PersistenceServices
   with Conversions
@@ -19,7 +19,7 @@ class PersistenceServicesImpl(
   with CardPersistenceServicesImpl
   with CollectionPersistenceServicesImpl
   with DockAppPersistenceServicesImpl
-  with GeoInfoPersistenceServicesImpl
+  with MomentPersistenceServicesImpl
   with UserPersistenceServicesImpl
   with AndroidPersistenceServicesImpl
   with ImplicitsPersistenceServiceExceptions {
@@ -83,20 +83,6 @@ class PersistenceServicesImpl(
 
   override def updateCollection(request: UpdateCollectionRequest) = super.updateCollection(request)
 
-  override def addGeoInfo(request: AddGeoInfoRequest) = super.addGeoInfo(request)
-
-  override def deleteAllGeoInfoItems() = super.deleteAllGeoInfoItems()
-
-  override def deleteGeoInfo(request: DeleteGeoInfoRequest) = super.deleteGeoInfo(request)
-
-  override def fetchGeoInfoByConstrain(request: FetchGeoInfoByConstrainRequest) = super.fetchGeoInfoByConstrain(request)
-
-  override def fetchGeoInfoItems = super.fetchGeoInfoItems
-
-  override def findGeoInfoById(request: FindGeoInfoByIdRequest) = super.findGeoInfoById(request)
-
-  override def updateGeoInfo(request: UpdateGeoInfoRequest) = super.updateGeoInfo(request)
-
   override def addUser(request: AddUserRequest) = super.addUser(request)
 
   override def deleteAllUsers() = super.deleteAllUsers()
@@ -122,4 +108,16 @@ class PersistenceServicesImpl(
   override def findDockAppById(request: FindDockAppByIdRequest) = super.findDockAppById(request)
 
   override def getAndroidId(implicit context: ContextSupport) = super.getAndroidId
+
+  override def addMoment(request: AddMomentRequest) = super.addMoment(request)
+
+  override def deleteAllMoments() = super.deleteAllMoments()
+
+  override def deleteMoment(request: DeleteMomentRequest) = super.deleteMoment(request)
+
+  override def fetchMoments = super.fetchMoments
+
+  override def findMomentById(request: FindMomentByIdRequest) = super.findMomentById(request)
+
+  override def updateMoment(request: UpdateMomentRequest) = super.updateMoment(request)
 }

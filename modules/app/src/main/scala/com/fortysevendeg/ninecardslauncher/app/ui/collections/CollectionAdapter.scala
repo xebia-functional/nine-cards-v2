@@ -86,6 +86,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
             action = action,
             label = Some(ProvideLabel(packageName)))
       }
+    case _ =>
   }
 
   override def getApplicationContext: Context = activityContext.bestAvailable

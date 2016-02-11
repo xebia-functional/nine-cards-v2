@@ -2,12 +2,10 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
-import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
-import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view._
-import android.widget.{TextView, EditText, FrameLayout, LinearLayout}
+import android.widget.{EditText, FrameLayout, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -51,8 +49,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     update = (value: Float) => {
       statuses = statuses.copy(displacement = value)
       transformPanelCanvas()
-    }
-  )
+    })
 
   var listener: Option[SearchBoxAnimatedListener] = None
 
@@ -144,6 +141,13 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   def updateAppsIcon(resourceId: Int): Ui[_] = appBox.updateHeader(resourceId)
 
   def updateContactsIcon(resourceId: Int): Ui[_] = contactBox.updateHeader(resourceId)
+
+  def addTextChangedListener(onChangeText: (String, BoxView) => Unit): Unit = {
+    appBox.addTextChangedListener(onChangeText)
+    contactBox.addTextChangedListener(onChangeText)
+  }
+
+  def clean: Ui[_] = appBox.clean ~ contactBox.clean
 
   private[this] def applyTranslation(view: View, translate: Float): Ui[_] =
     view <~ vTranslationX(translate)
@@ -289,7 +293,9 @@ case class SearchBoxesStatuses(
   def calculatePercent(width: Int) = math.abs(displacement) / width
 }
 
-case class BoxViewHolder(boxView: BoxView, content: LinearLayout)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+case class BoxViewHolder(
+  boxView: BoxView,
+  content: LinearLayout)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
   extends TypedFindView
   with LauncherExecutor
   with Styles {
@@ -309,6 +315,15 @@ case class BoxViewHolder(boxView: BoxView, content: LinearLayout)(implicit conte
       (icon <~ iconTweak))
 
   def updateHeader(resourceId: Int): Ui[_] = headerIcon <~ searchBoxButtonStyle(resourceId)
+
+  def clean: Ui[_] = editText <~ (if (isEmpty) Tweak.blank else tvText("")) <~ etHideKeyboard
+
+  def addTextChangedListener(onChangeText: (String, BoxView) => Unit): Unit =
+    runUi(editText <~
+      etAddTextChangedListener(
+        (text: String, start: Int, before: Int, count: Int) => onChangeText(text, boxView)))
+
+  private[this] def isEmpty: Boolean = editText exists (_.getText.toString == "")
 
   private[this] def iconTweak = boxView match {
     case AppsView =>

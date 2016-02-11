@@ -25,7 +25,7 @@ public interface Fields {
     String CONTACTS_ORDER_BY_ASC = DISPLAY_NAME + " COLLATE NOCASE ASC";
     String CONTACTS_BY_KEYWORD_SELECTION = ContactsContract.Contacts.IN_VISIBLE_GROUP + " = 1 " +
             " AND " +
-            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE '%?%' " +
+            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ? " +
             " AND " +
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " NOT NULL " +
             " AND " +

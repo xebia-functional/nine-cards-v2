@@ -5,12 +5,13 @@ import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.graphics.{Color, Outline, PorterDuff, Typeface}
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener
-import android.support.design.widget.{FloatingActionButton, NavigationView, Snackbar}
+import android.support.design.widget._
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.{GravityCompat, TintableBackgroundView}
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener
 import android.support.v7.widget.{ListPopupWindow, PopupMenu, RecyclerView, SwitchCompat, Toolbar}
+import android.text.{Editable, TextWatcher}
 import android.view.View.OnClickListener
 import android.view.inputmethod.InputMethodManager
 import android.view.{MenuItem, View, ViewGroup, ViewOutlineProvider}
@@ -157,6 +158,8 @@ object ExtraTweaks {
 
   def dlStatusBarBackground(res: Int) = Tweak[DrawerLayout](_.setStatusBarBackground(res))
 
+  def clStatusBarBackground(res: Int) = Tweak[CoordinatorLayout](_.setStatusBarBackgroundResource(res))
+
   def dlOpenDrawer = Tweak[DrawerLayout](_.openDrawer(GravityCompat.START))
 
   def dlCloseDrawer = Tweak[DrawerLayout](_.closeDrawer(GravityCompat.START))
@@ -205,11 +208,12 @@ object ExtraTweaks {
 
   def scChecked(checked: Boolean)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat](_.setChecked(checked))
 
-  def scCheckedChangeListener(onCheckedChange: (Boolean) => Unit)(implicit contextWrapper: ContextWrapper) = Tweak[SwitchCompat](
-    _.setOnCheckedChangeListener(new OnCheckedChangeListener {
-      override def onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean): Unit = onCheckedChange(isChecked)
-    })
-  )
+  def scCheckedChangeListener(onCheckedChange: (Boolean) => Unit)(implicit contextWrapper: ContextWrapper) =
+    Tweak[SwitchCompat](
+      _.setOnCheckedChangeListener(new OnCheckedChangeListener {
+        override def onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean): Unit = onCheckedChange(isChecked)
+      })
+    )
 
   def rvSwapAdapter[VH <: RecyclerView.ViewHolder](adapter: RecyclerView.Adapter[VH]): Tweak[RecyclerView] =
     Tweak[RecyclerView](_.swapAdapter(adapter, false))
@@ -239,6 +243,26 @@ object ExtraTweaks {
   def uiSnackbarIndefinite(message: String) = Tweak[View] { view =>
     runUi(Ui(Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).show()))
   }
+
+  def etAddTextChangedListener(onChanged: (String, Int, Int, Int) => Unit) = Tweak[EditText] { view =>
+    view.addTextChangedListener(new TextWatcher {
+      override def beforeTextChanged(charSequence: CharSequence, start: Int, count: Int, after: Int): Unit = {}
+
+      override def onTextChanged(charSequence: CharSequence, start: Int, before: Int, count: Int): Unit =
+        onChanged(charSequence.toString, start, before, count)
+
+      override def afterTextChanged(editable: Editable): Unit = {}
+    })
+  }
+
+  def tlAddTabs(titles: (String, AnyRef)*) = Tweak[TabLayout] { view =>
+    titles foreach { case (title, tag) =>
+      view.addTab(view.newTab().setText(title).setTag(tag))
+    }
+  }
+
+  def tlSetListener(listener: TabLayout.OnTabSelectedListener) =
+    Tweak[TabLayout](_.setOnTabSelectedListener(listener))
 
 }
 

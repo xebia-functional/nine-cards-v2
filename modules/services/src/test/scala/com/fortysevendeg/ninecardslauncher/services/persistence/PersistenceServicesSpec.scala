@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.model.MomentData
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, AppEntity}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
@@ -30,7 +31,7 @@ trait PersistenceServicesSpecification
 
     val mockDockAppRepository = mock[DockAppRepository]
 
-    val mockGeoInfoRepository = mock[GeoInfoRepository]
+    val mockMomentRepository = mock[MomentRepository]
 
     val mockUserRepository = mock[UserRepository]
 
@@ -39,7 +40,7 @@ trait PersistenceServicesSpecification
       cardRepository = mockCardRepository,
       collectionRepository = mockCollectionRepository,
       dockAppRepository = mockDockAppRepository,
-      geoInfoRepository = mockGeoInfoRepository,
+      momentRepository = mockMomentRepository,
       userRepository = mockUserRepository)
   }
 
@@ -68,24 +69,6 @@ trait PersistenceServicesSpecification
     mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(item)))
 
     mockAppRepository.updateApp(repoApp) returns Service(Task(Result.answer(item)))
-
-    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.answer(repoGeoInfo)))
-
-    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.answer(items)))
-
-    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(item)))
-
-    mockGeoInfoRepository.fetchGeoInfoItems returns Service(Task(Result.answer(seqRepoGeoInfo)))
-
-    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Service(Task(Result.answer(Option(repoGeoInfo))))
-
-    mockGeoInfoRepository.fetchGeoInfoByConstrain(nonExistentConstrain) returns Service(Task(Result.answer(None)))
-
-    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Service(Task(Result.answer(Option(repoGeoInfo))))
-
-    mockGeoInfoRepository.findGeoInfoById(nonExistentGeoInfoId) returns Service(Task(Result.answer(None)))
-
-    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.answer(item)))
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.answer(repoCard)))
 
@@ -162,6 +145,24 @@ trait PersistenceServicesSpecification
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.answer(None)))
 
     mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
+
+    mockMomentRepository.addMoment(repoMomentData) returns Service(Task(Result.answer(repoMoment)))
+
+    mockMomentRepository.addMoment(createRepoMomentData(wifiString = "")) returns Service(Task(Result.answer(createSeqRepoMoment(data = createRepoMomentData(wifiString = ""))(0))))
+
+    mockMomentRepository.addMoment(createRepoMomentData(timeslot = "[]")) returns Service(Task(Result.answer(createSeqRepoMoment(data = createRepoMomentData(timeslot = "[]"))(0))))
+
+    mockMomentRepository.deleteMoments() returns Service(Task(Result.answer(items)))
+
+    mockMomentRepository.deleteMoment(repoMoment) returns Service(Task(Result.answer(item)))
+
+    mockMomentRepository.fetchMoments() returns Service(Task(Result.answer(seqRepoMoment)))
+
+    mockMomentRepository.findMomentById(momentId) returns Service(Task(Result.answer(Option(repoMoment))))
+
+    mockMomentRepository.findMomentById(nonExistentMomentId) returns Service(Task(Result.answer(None)))
+
+    mockMomentRepository.updateMoment(repoMoment) returns Service(Task(Result.answer(item)))
   }
 
   trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
@@ -189,20 +190,6 @@ trait PersistenceServicesSpecification
     mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.updateApp(repoApp) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.addGeoInfo(repoGeoInfoData) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.deleteGeoInfoItems() returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.deleteGeoInfo(repoGeoInfo) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.fetchGeoInfoItems returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.fetchGeoInfoByConstrain(constrain) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.findGeoInfoById(geoInfoId) returns Service(Task(Result.errata(exception)))
-
-    mockGeoInfoRepository.updateGeoInfo(repoGeoInfo) returns Service(Task(Result.errata(exception)))
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.errata(exception)))
 
@@ -271,6 +258,20 @@ trait PersistenceServicesSpecification
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.addMoment(repoMomentData) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.deleteMoments() returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.deleteMoment(repoMoment) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.fetchMoments() returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.findMomentById(momentId) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.findMomentById(nonExistentMomentId) returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.updateMoment(repoMoment) returns Service(Task(Result.errata(exception)))
   }
 
 }
@@ -661,197 +662,6 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateApp(createUpdateAppRequest()).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "addGeoInfo" should {
-
-    "return a GeoInfo value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest()).run.run
-
-      result must beLike {
-        case Answer(geoInfo) =>
-          geoInfo.id shouldEqual geoInfoId
-          geoInfo.constrain shouldEqual constrain
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addGeoInfo(createAddGeoInfoRequest()).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "deleteAllGeoInfoItems" should {
-
-    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteAllGeoInfoItems().run.run
-
-      result must beLike {
-        case Answer(deleted) =>
-          deleted shouldEqual items
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteAllGeoInfoItems().run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "deleteGeoInfo" should {
-
-    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo)).run.run
-
-      result must beLike {
-        case Answer(deleted) =>
-          deleted shouldEqual item
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteGeoInfo(createDeleteGeoInfoRequest(geoInfo = geoInfo)).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "fetchGeoInfoItems" should {
-
-    "return a list of GeoInfo elements for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoItems.run.run
-
-      result must beLike {
-        case Answer(geoInfoItems) =>
-          geoInfoItems.size shouldEqual seqGeoInfo.size
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoItems.run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "fetchGeoInfoByConstrain" should {
-
-    "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)).run.run
-
-      result must beLike {
-        case Answer(maybeGeoInfo) =>
-          maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
-            geoInfo.constrain shouldEqual constrain
-          }
-      }
-    }
-
-    "return None when a non-existent packageName is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = nonExistentConstrain)).run.run
-
-      result must beLike {
-        case Answer(maybeGeoInfo) =>
-          maybeGeoInfo must beNone
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchGeoInfoByConstrain(createFetchGeoInfoByConstrainRequest(constrain = constrain)).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "findGeoInfoById" should {
-
-    "return a GeoInfo for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)).run.run
-
-      result must beLike {
-        case Answer(maybeGeoInfo) =>
-          maybeGeoInfo must beSome[GeoInfo].which { geoInfo =>
-            geoInfo.id shouldEqual geoInfoId
-          }
-      }
-    }
-
-    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = nonExistentGeoInfoId)).run.run
-
-      result must beLike {
-        case Answer(maybeGeoInfo) =>
-          maybeGeoInfo must beNone
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.findGeoInfoById(createFindGeoInfoByIdRequest(id = geoInfoId)).run.run
-
-      result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
-            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
-      }
-    }
-  }
-
-  "updateGeoInfo" should {
-
-    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest()).run.run
-
-      result must beLike {
-        case Answer(updated) =>
-          updated shouldEqual item
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.updateGeoInfo(createUpdateGeoInfoRequest()).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -1595,6 +1405,183 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.findDockAppById(createFindDockAppByIdRequest(id = dockAppId)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "addMoment" should {
+
+    "return a Moment for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addMoment(createAddMomentRequest()).run.run
+
+      result must beLike {
+        case Answer(moment) =>
+          moment.id shouldEqual momentId
+          moment.wifi shouldEqual wifiSeq
+      }
+    }
+
+    "return a Moment with a empty wifi sequence for a valid request with a empty wifi sequence" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addMoment(createAddMomentRequest(wifi = Seq.empty)).run.run
+
+      result must beLike {
+        case Answer(moment) =>
+          moment.id shouldEqual momentId
+          moment.wifi shouldEqual Seq.empty
+      }
+    }
+
+    "return a Moment with an empty timeslot sequence for a valid request with an empty timeslot" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addMoment(createAddMomentRequest(timeslot = Seq.empty)).run.run
+
+      result must beLike {
+        case Answer(moment) =>
+          moment.id shouldEqual momentId
+          moment.wifi shouldEqual wifiSeq
+          moment.timeslot shouldEqual Seq.empty
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addMoment(createAddMomentRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteAllMoments" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllMoments().run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual items
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteAllMoments().run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "deleteMoment" should {
+
+    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.deleteMoment(createDeleteMomentRequest(moment = moment)).run.run
+
+      result must beLike {
+        case Answer(deleted) =>
+          deleted shouldEqual item
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.deleteMoment(createDeleteMomentRequest(moment = moment)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchMoments" should {
+
+    "return a list of Moment elements for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchMoments.run.run
+
+      result must beLike {
+        case Answer(momentItems) =>
+          momentItems.size shouldEqual seqMoment.size
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchMoments.run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "findMomentById" should {
+
+    "return a Moment for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findMomentById(createFindMomentByIdRequest(id = momentId)).run.run
+
+      result must beLike {
+        case Answer(maybeMoment) =>
+          maybeMoment must beSome[Moment].which { moment =>
+            moment.id shouldEqual momentId
+          }
+      }
+    }
+
+    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.findMomentById(createFindMomentByIdRequest(id = nonExistentMomentId)).run.run
+
+      result must beLike {
+        case Answer(maybeMoment) =>
+          maybeMoment must beNone
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.findMomentById(createFindMomentByIdRequest(id = momentId)).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "updateMoment" should {
+
+    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.updateMoment(createUpdateMomentRequest()).run.run
+
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual item
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateMoment(createUpdateMomentRequest()).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {

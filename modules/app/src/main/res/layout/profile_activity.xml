@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/ProfileRoot"
+    tools:ignore="RtlHardcoded">
+
+    <android.support.design.widget.CoordinatorLayout
+        style="@style/ProfileCoordinator">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/profile_appbar"
+            style="@style/ProfileAppBar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                style="@style/ProfileCollapsingToolbar">
+
+                <FrameLayout
+                    android:id="@+id/profile_user_container_layout"
+                    style="@style/ProfileUserFrameLayout">
+
+                    <LinearLayout
+                        android:id="@+id/profile_user_container"
+                        style="@style/ProfileUserLinearLayout">
+
+                        <ImageView
+                            android:id="@+id/profile_user_avatar"
+                            style="@style/ProfileUserAvatar"/>
+
+                        <TextView
+                            android:id="@+id/profile_user_name"
+                            style="@style/ProfileUserName"/>
+
+                    </LinearLayout>
+                </FrameLayout>
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/profile_tabs"
+                style="@style/ProfileTabLayout"/>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/profile_recycler"
+            style="@style/ProfileRecyclerView"/>
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/profile_toolbar"
+            app:layout_anchor="@id/profile_user_container_layout"
+            style="@style/ProfileToolbar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    </android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

@@ -155,4 +155,7 @@
     <dimen name="pulltotabs_height_selected_line">4dp</dimen>
     <dimen name="pulltotabs_height_line">1dp</dimen>
 
+    <!-- Profile -->
+    <dimen name="height_profile_user">180dp</dimen>
+
 </resources>

@@ -15,7 +15,7 @@
 
     </style>
 
-    <style name="AppThemeWizard" parent="AppThemeWizardBase">
+    <style name="AppThemeSolid" parent="AppThemeSolidBase">
         <!-- Specifics for API 21 -->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
