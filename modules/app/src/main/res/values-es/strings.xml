@@ -128,11 +128,11 @@
     <string name="contacts_last">Últimas llamadas</string>
     <string name="oneWeek">1 semana</string>
     <string name="twoWeeks">2 semanas</string>
-    <string name="oneMoth">1 mes</string>
-    <string name="twoMoths">2 meses</string>
-    <string name="fourMoths">4 meses</string>
-    <string name="sixMoths">6 meses</string>
-    <string name="moreOfTwoMoths">Más</string>
+    <string name="oneMonth">1 mes</string>
+    <string name="twoMonths">2 meses</string>
+    <string name="fourMonths">4 meses</string>
+    <string name="sixMonths">6 meses</string>
+    <string name="moreOfTwoMonths">Más</string>
 
     <!-- Categories -->
 

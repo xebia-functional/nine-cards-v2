@@ -265,10 +265,10 @@ class AppRepository(
           val dates = Seq(
             InstallationDateInterval("oneWeek", now.minusWeeks(1)),
             InstallationDateInterval("twoWeeks", now.minusWeeks(2)),
-            InstallationDateInterval("oneMoth", now.minusMonths(1)),
-            InstallationDateInterval("twoMoths", now.minusMonths(2)),
-            InstallationDateInterval("fourMoths", now.minusMonths(4)),
-            InstallationDateInterval("sixMoths", now.minusMonths(6)))
+            InstallationDateInterval("oneMonth", now.minusMonths(1)),
+            InstallationDateInterval("twoMonths", now.minusMonths(2)),
+            InstallationDateInterval("fourMonths", now.minusMonths(4)),
+            InstallationDateInterval("sixMonths", now.minusMonths(6)))
           val data = fetchData
           data.foldLeft(Seq.empty[DataCounter]) { (acc, date) =>
             val installationDate = new DateTime(date)

@@ -141,8 +141,8 @@ trait AppRepositoryTestData {
   val installationDateDateCounters = Seq(
     DataCounter("oneWeek", 2),
     DataCounter("twoWeeks", 2),
-    DataCounter("oneMoth", 1),
-    DataCounter("twoMoths", 1),
-    DataCounter("fourMoths", 2))
+    DataCounter("oneMonth", 1),
+    DataCounter("twoMonths", 1),
+    DataCounter("fourMonths", 2))
 
 }

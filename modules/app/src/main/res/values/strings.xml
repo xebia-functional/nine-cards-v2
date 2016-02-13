@@ -137,11 +137,11 @@
     <string name="contacts_last">Last calls</string>
     <string name="oneWeek">1 week</string>
     <string name="twoWeeks">2 weeks</string>
-    <string name="oneMoth">1 month</string>
-    <string name="twoMoths">2 months</string>
-    <string name="fourMoths">4 months</string>
-    <string name="sixMoths">6 months</string>
-    <string name="moreOfTwoMoths">More</string>
+    <string name="oneMonth">1 month</string>
+    <string name="twoMonths">2 months</string>
+    <string name="fourMonths">4 months</string>
+    <string name="sixMonths">6 months</string>
+    <string name="moreOfTwoMonths">More</string>
 
     <!-- Categories -->
 
