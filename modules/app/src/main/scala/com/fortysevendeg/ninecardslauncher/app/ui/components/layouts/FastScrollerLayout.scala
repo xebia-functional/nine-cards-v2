@@ -435,8 +435,6 @@ trait FastScrollerListener {
 
 trait FastScrollerTransformsListener {
 
-  def activeItems(from: Int, count: Int): Ui[_]
-
   def inactiveItems: Ui[_]
 
 }

@@ -85,6 +85,8 @@ case class ContactsIterableHolder(content: View)(implicit context: ActivityConte
   with TypedFindView
   with AdapterStyles {
 
+  override val selectedScale: Float = 1f
+
   override val unselectedAlpha = resGetInteger(R.integer.appdrawer_alpha_unselected_item_percentage).toFloat / 100
 
   lazy val icon = Option(findView(TR.contact_item_icon))

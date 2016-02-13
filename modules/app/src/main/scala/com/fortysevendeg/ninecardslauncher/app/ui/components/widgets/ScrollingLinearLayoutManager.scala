@@ -56,13 +56,7 @@ trait ScrollingLinearLayoutManager {
       if (flagScrolling) {
         flagScrolling = false
       } else {
-        runUi(recyclerView match {
-          case listener: FastScrollerTransformsListener =>
-            recyclerView.getField[Int](FastScrollerLayout.maxField) map { max =>
-              listener.activeItems(getTargetPosition, max)
-            } getOrElse Ui.nop
-          case _ => Ui.nop
-        })
+        recyclerView.getAdapter.notifyDataSetChanged()
       }
     }
   }

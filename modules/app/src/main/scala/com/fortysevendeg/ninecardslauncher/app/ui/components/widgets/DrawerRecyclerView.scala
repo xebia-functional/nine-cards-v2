@@ -25,10 +25,6 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  val default = 1f
-
-  val unselected = resGetInteger(R.integer.appdrawer_alpha_unselected_item_percentage).toFloat / 100
-
   var drawerRecyclerListener = DrawerRecyclerViewListener()
 
   var animatedController: Option[SearchBoxAnimatedController] = None
@@ -119,23 +115,6 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     case lm: ScrollingLinearLayoutManager => lm.blockScroll = bs
     case _ =>
   }
-
-  override def activeItems(from: Int, count: Int): Ui[_] =
-    getLayoutManager match {
-      case lm: LinearLayoutManager =>
-        Ui.sequence(0 to getChildCount map { item =>
-          val view = Option(getChildAt(item))
-          val position = view flatMap (_.getPosition)
-          val animate = position exists (p => p >= from && p < from + count)
-          val selectedScale = view map { v =>
-            v.calculateDefaultScale
-          } getOrElse 1f
-          val scale = if (animate) selectedScale else default
-          val alpha = if (animate) default else unselected
-          view <~ vAlpha(alpha) <~ vScaleX(scale) <~ vScaleY(scale)
-        }:_*)
-      case _ => Ui.nop
-    }
 
   override def inactiveItems: Ui[_] =
     getLayoutManager match {

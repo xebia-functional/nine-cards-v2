@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters
 
-import android.view.View
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import macroid.Tweak
 
 trait AdapterStyles {
+
+  val selectedScale: Float
 
   val normalScale: Float = 1f
 
@@ -19,16 +19,14 @@ trait AdapterStyles {
     case _ => normal
   }
 
-  private[this] def normal = vAlpha(normalAlpha) + vScaleX(normalScale) + vScaleY(normalScale)
+  private[this] def normal = vAlpha(normalAlpha) + vNormalScale
 
-  private[this] def selected = vAlpha(normalAlpha) + scale
+  private[this] def selected = vAlpha(normalAlpha) + vSelectedScale
 
-  private[this] def unselected = vAlpha(unselectedAlpha) + vScaleX(normalScale) + vScaleY(normalScale)
+  private[this] def unselected = vAlpha(unselectedAlpha) + vNormalScale
 
-  private[this] def scale = Tweak[View] { view =>
-    val scale = view.calculateDefaultScale
-    view.setScaleX(scale)
-    view.setScaleY(scale)
-  }
+  private[this] def vSelectedScale = if (selectedScale == 1f) Tweak.blank else vScaleX(selectedScale) + vScaleY(selectedScale)
+
+  private[this] def vNormalScale = if (selectedScale == 1f) Tweak.blank else vScaleX(normalScale) + vScaleY(normalScale)
 
 }

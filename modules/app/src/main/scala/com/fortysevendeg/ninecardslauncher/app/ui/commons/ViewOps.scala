@@ -31,13 +31,6 @@ object ViewOps {
 
     def hasLayerHardware: Boolean = Option(view.getTag(useLayerHardwareId)).isDefined
 
-    def calculateDefaultScale: Float = {
-      val scalePixels = view.getResources.getDimensionPixelOffset(R.dimen.padding_default)
-      val w = view.getWidth.toFloat
-      val wScaled = w + scalePixels
-      wScaled / w
-    }
-
   }
 
 }
