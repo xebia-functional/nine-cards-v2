@@ -17,7 +17,8 @@ trait CloudStorageProcessImplData {
 
   def generateDriveServiceFile =
     DriveServiceFile(
-      driveId = Random.nextString(10),
+      googleDriveId = Random.nextString(10),
+      fileId = Random.nextString(10).some,
       title = Random.nextString(10),
       createdDate = DateTime.now().minusMonths(6).toDate,
       modifiedDate = DateTime.now().minusMonths(3).toDate)

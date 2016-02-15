@@ -148,7 +148,7 @@ class Injector(implicit contextSupport: ContextSupport) {
 
   def createCloudStorageProcess(client: GoogleApiClient, account: String) = {
     val services = new DriveServicesImpl(client)
-    new CloudStorageProcessImpl(services)
+    new CloudStorageProcessImpl(services, persistenceServices)
   }
 
 }

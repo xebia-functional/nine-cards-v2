@@ -66,7 +66,7 @@ class CloudStorageProcessImplSpec
           case Answer(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual driveServiceFileSeq.size
             resultSeqCollection.map(_.title) shouldEqual driveServiceFileSeq.map(_.title)
-            resultSeqCollection.map(_.resourceId) shouldEqual driveServiceFileSeq.map(_.driveId)
+            resultSeqCollection.map(_.resourceId) shouldEqual driveServiceFileSeq.map(_.googleDriveId)
         }
 
       }

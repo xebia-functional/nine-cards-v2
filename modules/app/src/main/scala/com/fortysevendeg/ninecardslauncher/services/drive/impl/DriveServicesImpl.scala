@@ -5,6 +5,7 @@ import java.io.{InputStream, OutputStreamWriter}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveResourceNotAvailable, DriveRateLimitExceeded, DriveSigInRequired}
+import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
 import com.fortysevendeg.ninecardslauncher.services.drive.{Conversions, DriveServicesException, DriveServices}
 import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, PendingResult, Result}
@@ -22,14 +23,6 @@ import scalaz.Scalaz._
 class DriveServicesImpl(client: GoogleApiClient)
   extends DriveServices
   with Conversions {
-
-  private[this] val customFileType = "FILE_TYPE"
-
-  private[this] val customFileId = "FILE_ID"
-
-  private[this] def propertyFileType = new CustomPropertyKey(customFileType, CustomPropertyKey.PRIVATE)
-
-  private[this] def propertyFileId = new CustomPropertyKey(customFileId, CustomPropertyKey.PRIVATE)
 
   def listFiles(maybeFileType: Option[String]) = {
     val sortOrder = new SortOrder.Builder()
@@ -143,6 +136,17 @@ class DriveServicesImpl(client: GoogleApiClient)
     }
   }
 
+}
+
+object DriveServicesImpl {
+
+  private[this] val customFileType = "FILE_TYPE"
+
+  private[this] val customFileId = "FILE_ID"
+
+  def propertyFileType = new CustomPropertyKey(customFileType, CustomPropertyKey.PRIVATE)
+
+  def propertyFileId = new CustomPropertyKey(customFileId, CustomPropertyKey.PRIVATE)
 }
 
 object Extensions {

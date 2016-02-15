@@ -6,10 +6,11 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserPermissions, UserCloudDevices}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.{ImplicitsCloudStorageProcessExceptions, CloudStorageProcess, CloudStorageProcessException}
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollectionItem, CloudStorageCollection, CloudStorageDevice, CloudStorageResource}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollectionItem, CloudStorageCollection, CloudStorageDevice, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
@@ -54,7 +55,7 @@ trait WizardTasks
         permissions = userPermissions.oauthScopes)
     for {
       response <- di.userProcess.signIn(username, device)
-      cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices()
+      cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
       userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudStorageResources)
     } yield userCloudDevices
 
@@ -63,7 +64,7 @@ trait WizardTasks
   private[this] def verifyAndUpdate(
     cloudStorageProcess: CloudStorageProcess,
     name: String,
-    cloudStorageResources: Seq[CloudStorageResource]): ServiceDef2[UserCloudDevices, UserConfigException with CloudStorageProcessException] = {
+    cloudStorageResources: Seq[CloudStorageDeviceSummary]): ServiceDef2[UserCloudDevices, UserConfigException with CloudStorageProcessException] = {
     if (cloudStorageResources.isEmpty) {
       for {
         userInfo <- di.userConfigProcess.getUserInfo
@@ -83,7 +84,7 @@ trait WizardTasks
     Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r}))
   }
 
-  private[this] def loadFromCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageResources: Seq[CloudStorageResource]) = Service {
+  private[this] def loadFromCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageResources: Seq[CloudStorageDeviceSummary]) = Service {
     val tasks = cloudStorageResources map (r => cloudStorageProcess.getCloudStorageDevice(r.resourceId).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r}))
   }
