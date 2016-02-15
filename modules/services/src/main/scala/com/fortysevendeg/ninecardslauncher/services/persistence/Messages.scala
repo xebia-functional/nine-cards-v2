@@ -120,31 +120,6 @@ case class UpdateCollectionRequest(
   sharedCollectionSubscribed: Option[Boolean],
   cards: Seq[Card])
 
-case class AddGeoInfoRequest(
-  constrain: String,
-  occurrence: String,
-  wifi: String,
-  latitude: Double,
-  longitude: Double,
-  system: Boolean)
-
-case class DeleteGeoInfoItemsRequest(where: String)
-
-case class DeleteGeoInfoRequest(geoInfo: GeoInfo)
-
-case class FindGeoInfoByIdRequest(id: Int)
-
-case class FetchGeoInfoByConstrainRequest(constrain: String)
-
-case class UpdateGeoInfoRequest(
-  id: Int,
-  constrain: String,
-  occurrence: String,
-  wifi: String,
-  latitude: Double,
-  longitude: Double,
-  system: Boolean)
-
 case class AddUserRequest(
   userId: Option[String],
   email: Option[String],
@@ -181,4 +156,22 @@ case class DeleteDockAppRequest(dockApp: DockApp)
 
 case class FindDockAppByIdRequest(id: Int)
 
+case class AddMomentRequest(
+  collectionId: Option[Int],
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
+  headphone: Boolean)
+
+case class DeleteMomentsRequest(where: String)
+
+case class DeleteMomentRequest(moment: Moment)
+
+case class FindMomentByIdRequest(id: Int)
+
+case class UpdateMomentRequest(
+  id: Int,
+  collectionId: Option[Int],
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
+  headphone: Boolean)
 

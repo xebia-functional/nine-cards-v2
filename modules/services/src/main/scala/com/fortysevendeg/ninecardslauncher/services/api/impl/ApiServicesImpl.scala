@@ -39,6 +39,8 @@ class ApiServicesImpl(
 
   val headerLocalization = "X-Android-Market-Localization"
 
+  val headerGooglePlayToken = "X-Google-Play-Token"
+
   val baseHeader: Seq[(String, String)] = Seq(
     (headerAppId, apiServicesConfig.appId),
     (headerAppKey, apiServicesConfig.appKey),
@@ -95,14 +97,14 @@ class ApiServicesImpl(
   override def googlePlayPackage(
     packageName: String)(implicit requestConfig: RequestConfig) =
     (for {
-      response <- googlePlayService.getGooglePlayPackage(packageName, requestConfig.toHeader)
+      response <- googlePlayService.getGooglePlayPackage(packageName, requestConfig.toGooglePlayHeader)
       playApp <- readOption(response.data, playAppNotFoundMessage)
     } yield GooglePlayPackageResponse(response.statusCode, toGooglePlayApp(playApp.docV2))).resolve[ApiServiceException]
 
   override def googlePlayPackages(
     packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
     (for {
-      response <- googlePlayService.getGooglePlayPackages(PackagesRequest(packageNames), requestConfig.toHeader)
+      response <- googlePlayService.getGooglePlayPackages(PackagesRequest(packageNames), requestConfig.toGooglePlayHeader)
     } yield GooglePlayPackagesResponse(
         statusCode = response.statusCode,
         packages = response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)).resolve[ApiServiceException]
@@ -110,7 +112,7 @@ class ApiServicesImpl(
   override def googlePlaySimplePackages(
     packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
     (for {
-      response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(packageNames), requestConfig.toHeader)
+      response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(packageNames), requestConfig.toGooglePlayHeader)
     } yield {
         val packages = response.data.map(playApp => toGooglePlaySimplePackages(playApp))
         GooglePlaySimplePackagesResponse(
@@ -131,14 +133,6 @@ class ApiServicesImpl(
         requestConfig.toHeader)
       userConfig <- readOption(response.data, userConfigNotFoundMessage)
     } yield SaveDeviceResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def saveGeoInfo(userConfigGeoInfo: UserConfigGeoInfo)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.saveGeoInfo(
-        toUserConfigGeoInfo(userConfigGeoInfo),
-        requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield SaveGeoInfoResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def checkpointPurchaseProduct(productId: String)(implicit requestConfig: RequestConfig) =
     (for {
@@ -203,6 +197,8 @@ class ApiServicesImpl(
   implicit class RequestHeaderHeader(request: RequestConfig) {
     def toHeader: Seq[(String, String)] =
       baseHeader :+ ((headerDevice, request.deviceId)) :+ ((headerToken, request.token))
+
+    def toGooglePlayHeader: Seq[(String, String)] = request.androidToken.map((headerGooglePlayToken, _)) ++: toHeader
   }
 
   private[this] def readOption[T](maybe: Option[T], msg: String = ""): ServiceDef2[T, ApiServiceException] = Service {

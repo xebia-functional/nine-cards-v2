@@ -80,10 +80,12 @@ trait DrawerComposer
 
   override def onChangeBoxView(boxView: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit =
     runUi(
-      closeCursorAdapter ~ (boxView match {
-        case AppsView => loadAppsAlphabetical
-        case ContactView => loadContactsAlphabetical
-      }))
+      (searchBoxView <~ sbavClean) ~
+        closeCursorAdapter ~
+        (boxView match {
+          case AppsView => loadAppsAlphabetical
+          case ContactView => loadContactsAlphabetical
+        }))
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
@@ -153,7 +155,19 @@ trait DrawerComposer
 
   private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
     val colorPrimary = resGetColor(R.color.primary)
-    (searchBoxView <~ sbavChangeListener(self)) ~
+    (searchBoxView <~
+      sbavChangeListener(self) <~
+      sbavOnChangeText((text: String, boxView: BoxView) => {
+        (boxView, text, getStatus, getTypeView) match {
+          case (AppsView, "", Some(status), Some(AppsView)) =>
+            AppsMenuOption(status) foreach loadApps
+          case (ContactView, "", Some(status), Some(ContactView)) =>
+            ContactsMenuOption(status) foreach loadContacts
+          case (AppsView, t, _, _) => loadAppsByKeyword(t)
+          case (ContactView, t, _, _) => loadContactsByKeyword(t)
+          case _ =>
+        }
+      })) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         (if (getItemsCount == 0) {
           loadAppsAlphabetical
@@ -179,11 +193,12 @@ trait DrawerComposer
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
             runUi(
-              getTypeView() match {
+              getTypeView match {
                 case Some(AppsView) =>
                   AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
                 case Some(ContactView) =>
                   ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
+                case _ => Ui.nop
               })
           }
         ))) ~
@@ -202,7 +217,12 @@ trait DrawerComposer
     (searchPanel <~ vVisible) ~
       (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData))
 
-  def addApps(apps: IterableApps, getAppOrder: GetAppOrder, counters: Seq[TermCounter], clickListener: (App) => Unit, longClickListener: (App) => Unit)
+  def addApps(
+    apps: IterableApps,
+    clickListener: (App) => Unit,
+    longClickListener: (App) => Unit,
+    getAppOrder: GetAppOrder = GetByName,
+    counters: Seq[TermCounter] = Seq.empty)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val appsAdapter = new AppsAdapter(
       apps = apps,
@@ -218,7 +238,9 @@ trait DrawerComposer
       })
   }
 
-  private[this] def getTypeView(): Option[BoxView] = searchBoxView map (_.statuses.currentItem)
+  private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
+
+  private[this] def getTypeView: Option[BoxView] = searchBoxView map (_.statuses.currentItem)
 
   private[this] def getItemsCount: Int = (for {
     rv <- recycler
@@ -242,7 +264,10 @@ trait DrawerComposer
 
   private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.name))
 
-  def addContacts(contacts: IterableContacts, filter: ContactsFilter, counters: Seq[TermCounter], clickListener: (Contact) => Unit)
+  def addContacts(
+    contacts: IterableContacts,
+    clickListener: (Contact) => Unit,
+    counters: Seq[TermCounter] = Seq.empty)
     (implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val contactAdapter = new ContactsAdapter(
       contacts = contacts,

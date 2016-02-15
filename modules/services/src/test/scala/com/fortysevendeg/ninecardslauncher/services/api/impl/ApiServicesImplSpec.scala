@@ -22,7 +22,8 @@ trait ApiServicesSpecification
 
   implicit val requestConfig = RequestConfig(
     deviceId = Random.nextString(10),
-    token = Random.nextString(10))
+    token = Random.nextString(10),
+    androidToken = Option(Random.nextString(10)))
 
   val apiServicesConfig = ApiServicesConfig(
     appId = Random.nextString(10),
@@ -51,7 +52,6 @@ trait ApiServicesSpecification
       userConfigService, 
       apiRecommendationService,
       apiSharedCollectionsService)
-
   }
 
   trait ValidApiServicesImplResponses
@@ -101,11 +101,6 @@ trait ApiServicesSpecification
       }
 
     userConfigService.saveDevice(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.saveGeoInfo(any, any)(any, any) returns
       Service {
         Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
       }
@@ -192,10 +187,6 @@ trait ApiServicesSpecification
     }
 
     userConfigService.saveDevice(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.saveGeoInfo(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
 
@@ -457,32 +448,6 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.saveDevice(UserConfigDevice("", "", Seq.empty)).run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "saveGeoInfo" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.saveGeoInfo(UserConfigGeoInfo(None, None, None, None)).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.saveGeoInfo(UserConfigGeoInfo(None, None, None, None)).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {

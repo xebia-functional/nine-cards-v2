@@ -6,6 +6,8 @@
     <string name="api_app_key">${appsly.appkey}</string>
     <string name="api_localization">en-EN</string>
 
+    <string name="api_google_play_url">${googleplay.url}</string>
+
     <!-- Google -->
     <string name="client_client_id">${google_client_id}</string>
     <string name="oauth_scopes">${google_oauth_scopes}</string>

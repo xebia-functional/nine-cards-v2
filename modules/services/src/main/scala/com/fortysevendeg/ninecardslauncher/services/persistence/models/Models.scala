@@ -40,15 +40,6 @@ case class Card(
   numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
-case class GeoInfo(
-  id: Int,
-  constrain: String,
-  occurrence: String,
-  wifi: String,
-  latitude: Double,
-  longitude: Double,
-  system: Boolean)
-
 case class User(
   id: Int,
   userId: Option[String],
@@ -65,5 +56,17 @@ case class DockApp(
   intent: String,
   imagePath: String,
   position: Int)
+
+case class Moment(
+  id: Int,
+  collectionId: Option[Int],
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
+  headphone: Boolean)
+
+case class MomentTimeSlot(
+  from: String,
+  to: String,
+  days: Seq[Int])
 
 case class DataCounter(term: String, count: Int)

@@ -9,7 +9,7 @@ trait UserConfigProcessData {
 
   val statusCodeOk = 200
 
-  val requestConfig = RequestConfig("fake-device-id", "fake-token")
+  val requestConfig = RequestConfig("fake-device-id", "fake-token", Some("fake-android-token"))
 
   val email = "example@47deg.com"
 
@@ -89,12 +89,6 @@ trait UserConfigProcessData {
       )
     ),
     devices = createUserConfigDevice(),
-    geoInfo = UserConfigGeoInfo(
-      homeMorning = None,
-      homeNight = None,
-      work = None,
-      current = None
-    ),
     status = UserConfigStatusInfo(
       products = Seq.empty,
       friendsReferred = 0,

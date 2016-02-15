@@ -47,9 +47,15 @@ class Injector(implicit contextSupport: ContextSupport) {
 
   // Services
 
+  private[this] lazy val serviceHttpClient = createHttpClient
+
   private[this] lazy val serviceClient = new ServiceClient(
-    httpClient = createHttpClient,
+    httpClient = serviceHttpClient,
     baseUrl = resources.getString(R.string.api_base_url))
+
+  private[this] lazy val googlePlayServiceClient = new ServiceClient(
+    httpClient = serviceHttpClient,
+    baseUrl = resources.getString(R.string.api_google_play_url))
 
   private[this] lazy val apiServicesConfig = ApiServicesConfig(
     appId = resources.getString(R.string.api_app_id),
@@ -59,7 +65,7 @@ class Injector(implicit contextSupport: ContextSupport) {
   private[this] lazy val apiServices = new ApiServicesImpl(
     apiServicesConfig = apiServicesConfig,
     apiUserService = new ApiUserService(serviceClient),
-    googlePlayService = new ApiGooglePlayService(serviceClient),
+    googlePlayService = new ApiGooglePlayService(googlePlayServiceClient),
     userConfigService = new ApiUserConfigService(serviceClient),
     recommendationService = new ApiRecommendationService(serviceClient),
     sharedCollectionsService = new ApiSharedCollectionsService(serviceClient))
@@ -74,7 +80,7 @@ class Injector(implicit contextSupport: ContextSupport) {
     cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
     collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
     dockAppRepository = new DockAppRepository(contentResolverWrapper, uriCreator),
-    geoInfoRepository = new GeoInfoRepository(contentResolverWrapper, uriCreator),
+    momentRepository = new MomentRepository(contentResolverWrapper, uriCreator),
     userRepository = new UserRepository(contentResolverWrapper, uriCreator))
 
   private[this] lazy val appsServices = new AppsServicesImpl()
