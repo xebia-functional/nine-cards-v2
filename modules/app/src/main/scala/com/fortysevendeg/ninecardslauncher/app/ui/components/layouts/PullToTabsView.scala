@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{SearchBackgroundColor, NineCardsTheme, SearchIconsColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, SearchBackgroundColor, NineCardsTheme, SearchIconsColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Transformer, Tweak, Ui}
@@ -27,7 +27,7 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
 
   val distanceChangeTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_distance_change_tabs)
 
-  val primaryColor = resGetColor(R.color.primary)
+  val primaryColor = theme.get(PrimaryColor)
 
   val defaultColor = theme.get(SearchIconsColor)
 

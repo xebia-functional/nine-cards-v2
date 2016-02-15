@@ -8,15 +8,19 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ActionsSnails._
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
+import rapture.core.Answer
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
@@ -30,7 +34,16 @@ trait BaseActionFragment
 
   val defaultValue = 0
 
-  private[this] lazy val defaultColor = fragmentContextWrapper.application.getResources.getColor(R.color.primary)
+  implicit lazy val di: Injector = new Injector
+
+  implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
+
+  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
+    case Answer(t) => t
+    case _ => getDefaultTheme
+  }
+
+  private[this] lazy val defaultColor = theme.get(PrimaryColor)
 
   var actionsScreenListener: Option[ActionsScreenListener] = None
 

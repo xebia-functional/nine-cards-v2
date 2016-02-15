@@ -28,7 +28,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
@@ -154,7 +154,7 @@ trait DrawerComposer
       createDrawerPagers
 
   private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
-    val colorPrimary = resGetColor(R.color.primary)
+    val colorPrimary = theme.get(PrimaryColor)
     (searchBoxView <~
       sbavChangeListener(self) <~
       sbavOnChangeText((text: String, boxView: BoxView) => {
