@@ -6,14 +6,10 @@ import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.{MotionEvent, ViewConfiguration}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, ViewState}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FastScrollerTransformsListener, SearchBoxAnimatedController}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.HighlightSnails
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Ui}
 

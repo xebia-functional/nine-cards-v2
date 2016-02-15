@@ -18,7 +18,6 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -239,14 +238,13 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       statuses = statuses.copy(lastScrollToPosition = position)
       if (statuses.usingCounters) {
         val item = statuses.counters(position)
-        val count = (statuses.counters take position map (_.count)).sum
-        runUi(recyclerView <~ rvActiveItems(count, item.count) <~ vAddField(FastScrollerLayout.maxField, item.count))
-        view.smoothScrollToPosition(count)
-        runUi(updateSignal(item.term))
+        val toPosition = (statuses.counters take position map (_.count)).sum
+        runUi((recyclerView <~ rvActiveItems(toPosition, item.count)) ~ updateSignal(item.term))
+        view.getAdapter.notifyDataSetChanged()
+        view.smoothScrollToPosition(toPosition)
       } else {
-        val count = position * statuses.columns
-        runUi(recyclerView <~ vRemoveField(FastScrollerLayout.maxField))
-        view.smoothScrollToPosition(count)
+        val toPosition = position * statuses.columns
+        view.smoothScrollToPosition(toPosition)
       }
     }
   }
@@ -446,7 +444,3 @@ case object FastScrollerCategory extends FastScrollerSignalType
 case object FastScrollerInstallationDate extends FastScrollerSignalType
 
 case object FastScrollerText extends FastScrollerSignalType
-
-object FastScrollerLayout {
-  val maxField = "max"
-}
