@@ -25,7 +25,7 @@ before_install:
   - mv local.properties modules/app/local.properties
   - export GIT_BRANCH=${TRAVIS_BRANCH}
   - export GIT_PR=${TRAVIS_PULL_REQUEST}
-  - pip install --user codecov
+  - pip install --user codecov && codecov -t ${CODECOV_TOKEN}
 script:
   - sbt ++$TRAVIS_SCALA_VERSION "project commons" coverage test
   - sbt ++$TRAVIS_SCALA_VERSION "project api" coverage test
