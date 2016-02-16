@@ -259,6 +259,11 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     case ContactView => -getWidth
   }
 
+  def isEmpty: Boolean = statuses.currentItem match {
+    case AppsView => appBox.isEmpty
+    case ContactView => contactBox.isEmpty
+  }
+
 }
 
 trait SearchBoxAnimatedController {
@@ -333,7 +338,7 @@ case class BoxViewHolder(
       etAddTextChangedListener(
         (text: String, start: Int, before: Int, count: Int) => onChangeText(text, boxView)))
 
-  private[this] def isEmpty: Boolean = editText exists (_.getText.toString == "")
+  def isEmpty: Boolean = editText exists (_.getText.toString == "")
 
   private[this] def iconTweak = boxView match {
     case AppsView =>

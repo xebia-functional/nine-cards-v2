@@ -227,9 +227,12 @@ trait DrawerComposer
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
 
-  def revealOutDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def revealOutDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val searchIsEmpty = searchBoxView exists (_.isEmpty)
     (searchPanel <~ vVisible) ~
-      (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData))
+      (searchBoxView <~ sbavClean) ~
+      (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData(searchIsEmpty)))
+  }
 
   def addApps(
     apps: IterableApps,
@@ -273,11 +276,12 @@ trait DrawerComposer
     paginationDrawerPanel <~ vgAddViews(pagerViews)
   }
 
-  private[this] def resetData(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = if (isShowingAppsAlphabetical) {
-    (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
-  } else {
-    loadAppsAlphabetical
-  }
+  private[this] def resetData(searchIsEmpty: Boolean)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+    if (searchIsEmpty && isShowingAppsAlphabetical) {
+      (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
+    } else {
+      closeCursorAdapter ~ loadAppsAlphabetical
+    }
 
   private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.name))
 
