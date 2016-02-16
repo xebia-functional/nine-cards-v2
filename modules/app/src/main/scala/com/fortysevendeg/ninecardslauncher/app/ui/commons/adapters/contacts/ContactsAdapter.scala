@@ -10,6 +10,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{AdapterStyles, CounterStatuses}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
@@ -29,10 +30,12 @@ case class ContactsAdapter(
 
   val heightItem = resGetDimensionPixelSize(R.dimen.height_contact_item)
 
+  var statuses = CounterStatuses(count = contacts.count())
+
   override def getItemCount: Int = contacts.count()
 
   override def onBindViewHolder(vh: ContactsIterableHolder, position: Int): Unit = {
-    runUi(vh.bind(contacts.moveToPosition(position), position))
+    runUi(vh.bind(contacts.moveToPosition(position), position, statuses.selectItems, statuses.isActive(position)))
   }
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): ContactsIterableHolder = {
@@ -60,6 +63,7 @@ case class ContactsAdapter(
     contacts.close()
     contacts = iter
     notifyDataSetChanged()
+    statuses = statuses.reset
   }
 
   def close() = contacts.close()
@@ -70,11 +74,20 @@ case class ContactsAdapter(
 
   override def getColumns: Int = 1
 
+  override def activeItems(f: Int, c: Int): Unit = statuses = statuses.active(from = f, count = c)
+
+  override def inactiveItems(): Unit = statuses = statuses.reset
+
 }
 
-case class ContactsIterableHolder(content: View)
+case class ContactsIterableHolder(content: View)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+  with TypedFindView
+  with AdapterStyles {
+
+  override val selectedScale: Float = 1f
+
+  override val unselectedAlpha = resGetInteger(R.integer.appdrawer_alpha_unselected_item_percentage).toFloat / 100
 
   lazy val icon = Option(findView(TR.contact_item_icon))
 
@@ -84,9 +97,10 @@ case class ContactsIterableHolder(content: View)
 
   runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
 
-  def bind(contact: Contact, position: Int)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
+  def bind(contact: Contact, position: Int, selectItems: Boolean, active: Boolean): Ui[_] = {
     val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
-    (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
+    (content <~ contentStyle(selectItems, active)) ~
+      (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
       (name <~ tvText(contactName)) ~
       (content <~ vSetPosition(position)) ~
       (favorite <~ (if (contact.favorite) vVisible else vGone))

@@ -135,10 +135,13 @@
     <string name="contacts_alphabetical">Alphabetical</string>
     <string name="contacts_favorites">Favorites</string>
     <string name="contacts_last">Last calls</string>
-    <string name="apps_header_updated_1">Today</string>
-    <string name="apps_header_updated_2">Less than 7 days</string>
-    <string name="apps_header_updated_3">Less than 30 days</string>
-    <string name="apps_header_updated_4">More than 30 days</string>
+    <string name="oneWeek">1 week</string>
+    <string name="twoWeeks">2 weeks</string>
+    <string name="oneMonth">1 month</string>
+    <string name="twoMonths">2 months</string>
+    <string name="fourMonths">4 months</string>
+    <string name="sixMonths">6 months</string>
+    <string name="moreOfTwoMonths">More</string>
 
     <!-- Categories -->
 
@@ -163,7 +166,7 @@
     <string name="medical">Medical</string>
     <string name="music_and_audio">Music and Audio</string>
     <string name="news_and_magazines">News and Magazines</string>
-    <string name="personalization">Customization</string>
+    <string name="personalization">Personalization</string>
     <string name="photography">Photography</string>
     <string name="productivity">Productivity</string>
     <string name="shopping">Shopping</string>

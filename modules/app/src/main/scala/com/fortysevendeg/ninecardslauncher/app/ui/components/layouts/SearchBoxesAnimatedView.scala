@@ -63,10 +63,14 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   }
 
   val appBox = BoxViewHolder(
-    AppsView, LayoutInflater.from(getContext).inflate(TR.layout.search_box_panel, self, false))
+    boxView = AppsView,
+    content = LayoutInflater.from(getContext).inflate(TR.layout.search_box_panel, self, false),
+    onHeaderIconClick = (boxView: BoxView) => listener foreach (_.onHeaderIconClick))
 
   val contactBox = BoxViewHolder(
-    ContactView, LayoutInflater.from(getContext).inflate(TR.layout.search_box_panel, self, false))
+    boxView = ContactView,
+    content = LayoutInflater.from(getContext).inflate(TR.layout.search_box_panel, self, false),
+    onHeaderIconClick = (boxView: BoxView) => listener foreach (_.onHeaderIconClick))
 
   runUi((self <~ vgAddViews(Seq(appBox.content, contactBox.content))) ~ reset)
 
@@ -267,6 +271,7 @@ trait SearchBoxAnimatedController {
 
 trait SearchBoxAnimatedListener {
   def onChangeBoxView(state: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit
+  def onHeaderIconClick(implicit context: ActivityContextWrapper): Unit
 }
 
 case class SearchBoxesStatuses(
@@ -295,7 +300,8 @@ case class SearchBoxesStatuses(
 
 case class BoxViewHolder(
   boxView: BoxView,
-  content: LinearLayout)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+  content: LinearLayout,
+  onHeaderIconClick: (BoxView) => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
   extends TypedFindView
   with LauncherExecutor
   with Styles {
@@ -312,7 +318,11 @@ case class BoxViewHolder(
         case AppsView => R.string.searchApps
         case ContactView => R.string.searchContacts
       })) ~
-      (icon <~ iconTweak))
+      (icon <~ iconTweak) ~
+      (headerIcon <~
+        On.click {
+          Ui(onHeaderIconClick(boxView))
+        }))
 
   def updateHeader(resourceId: Int): Ui[_] = headerIcon <~ searchBoxButtonStyle(resourceId)
 

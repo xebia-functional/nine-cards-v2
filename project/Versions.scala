@@ -21,4 +21,5 @@ object Versions {
   val mockServerV = "3.9.2"
   val stethoV = "1.2.0"
   val crashlyticsV = "2.5.2"
+  val jodaTimeV = "2.9.2"
 }

@@ -33,6 +33,7 @@ trait AppRepositorySpecification
     lazy val appRepository = new AppRepository(contentResolverWrapper, uriCreator) {
       override protected def getNamesAlphabetically: Seq[String] = appsDataSequence
       override protected def getCategoriesAlphabetically: Seq[String] = categoryDataSequence
+      override protected def getInstallationDate: Seq[Long] = installationDateDataSequence
     }
 
     lazy val mockUri = mock[Uri]
@@ -46,6 +47,8 @@ trait AppRepositorySpecification
       override protected def getNamesAlphabetically: Seq[String] =
         throw contentResolverException
       override protected def getCategoriesAlphabetically: Seq[String] =
+        throw contentResolverException
+      override protected def getInstallationDate: Seq[Long] =
         throw contentResolverException
     }
 
@@ -298,6 +301,36 @@ class AppRepositorySpec
           with ErrorCounterAppRepositoryResponses {
 
           val result = appRepositoryException.fetchCategorizedAppsCounter.run.run
+
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, repositoryException)) => repositoryException must beLike {
+                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+              }
+            }
+          }
+        }
+    }
+
+    "fetchInstallationDateAppsCounter" should {
+
+      "return a sequence of DataCounter sort by installation date" in
+        new AppRepositoryScope
+          with ValidAppRepositoryResponses {
+
+          val result = appRepository.fetchInstallationDateAppsCounter.run.run
+
+          result must beLike {
+            case Answer(counters) =>
+              counters shouldEqual installationDateDateCounters
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new AppRepositoryScope
+          with ErrorCounterAppRepositoryResponses {
+
+          val result = appRepositoryException.fetchInstallationDateAppsCounter.run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

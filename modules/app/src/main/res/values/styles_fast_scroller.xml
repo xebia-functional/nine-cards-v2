@@ -23,7 +23,14 @@
     <style name="FastScrollerIcon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textColor">@color/fastscroller_text</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:drawablePadding">@dimen/padding_small</item>
     </style>
 
     <style name="FastScrollerBarContent">

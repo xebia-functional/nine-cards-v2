@@ -51,6 +51,8 @@ class PersistenceServicesImpl(
 
   override def fetchCategorizedAppsCounter = super.fetchCategorizedAppsCounter
 
+  override def fetchInstallationDateAppsCounter = super.fetchInstallationDateAppsCounter
+
   override def addCard(request: AddCardRequest) = super.addCard(request)
 
   override def deleteAllCards() = super.deleteAllCards()
