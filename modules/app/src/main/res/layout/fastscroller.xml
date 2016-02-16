@@ -11,7 +11,7 @@
             android:id="@+id/fastscroller_signal_text"
             style="@style/FastScrollerText"/>
 
-        <ImageView
+        <TextView
             android:id="@+id/fastscroller_signal_icon"
             style="@style/FastScrollerIcon"/>
 

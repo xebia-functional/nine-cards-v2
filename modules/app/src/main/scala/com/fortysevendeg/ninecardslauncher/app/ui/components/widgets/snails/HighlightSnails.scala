@@ -13,7 +13,7 @@ object HighlightSnails {
 
   val default = 1f
 
-  def highlight(magnify: Float)(implicit contextWrapper: ContextWrapper) = Snail[View] {
+  def opaque(implicit contextWrapper: ContextWrapper) = Snail[View] {
     view =>
       val duration = resGetInteger(R.integer.anim_duration_normal)
       view.clearAnimation()
@@ -21,8 +21,9 @@ object HighlightSnails {
       val animPromise = Promise[Unit]()
 
       view.animate().
-        scaleX(magnify).
-        scaleY(magnify).
+        alpha(default).
+        scaleX(default).
+        scaleY(default).
         setDuration(duration).
         setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator): Unit = {

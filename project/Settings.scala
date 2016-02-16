@@ -124,6 +124,7 @@ object Settings {
     mockServer)
 
   lazy val repositoryDependencies = Seq(
+    jodaTime,
     androidProvidedLib,
     specs2,
     mockito)

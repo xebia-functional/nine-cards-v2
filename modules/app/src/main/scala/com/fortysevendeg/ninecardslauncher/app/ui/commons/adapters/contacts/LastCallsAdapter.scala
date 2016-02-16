@@ -59,6 +59,9 @@ case class LastCallsAdapter(
 
   override def getColumns: Int = 1
 
+  override def activeItems(from: Int, count: Int): Unit = {}
+
+  override def inactiveItems(): Unit = {}
 }
 
 case class LastCallsContactHolder(content: View)

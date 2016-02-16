@@ -54,6 +54,8 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.fetchCategorizedAppsCounter returns Service(Task(Result.answer(dataCounters)))
 
+    mockAppRepository.fetchInstallationDateAppsCounter returns Service(Task(Result.answer(dataCounters)))
+
     mockAppRepository.fetchAppsByCategory(any, any) returns Service(Task(Result.answer(seqRepoApp)))
 
     mockAppRepository.fetchIterableAppsByCategory(any, any) returns Service(Task(Result.answer(iterableCursorApp)))
@@ -176,6 +178,8 @@ trait PersistenceServicesSpecification
     mockAppRepository.fetchAlphabeticalAppsCounter returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.fetchCategorizedAppsCounter returns Service(Task(Result.errata(exception)))
+
+    mockAppRepository.fetchInstallationDateAppsCounter returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.fetchAppsByCategory(any, any) returns Service(Task(Result.errata(exception)))
 
@@ -529,6 +533,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.fetchCategorizedAppsCounter.run.run
+
+      result must beLike[Result[Seq[DataCounter], PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "fetchInstallationDateAppsCounter" should {
+
+    "return a sequence of DataCounter by installation date" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchInstallationDateAppsCounter.run.run
+
+      result must beLike[Result[Seq[DataCounter], PersistenceServiceException]] {
+        case Answer(counters) =>
+          counters map (_.term) shouldEqual (dataCounters map (_.term))
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.fetchInstallationDateAppsCounter.run.run
 
       result must beLike[Result[Seq[DataCounter], PersistenceServiceException]] {
         case Errata(e) => e.headOption must beSome.which {

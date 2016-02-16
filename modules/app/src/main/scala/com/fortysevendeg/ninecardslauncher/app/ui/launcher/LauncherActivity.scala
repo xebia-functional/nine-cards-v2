@@ -152,10 +152,18 @@ class LauncherActivity
           addApps(
             apps = apps,
             clickListener = (app: App) => {
-              execute(toNineCardIntent(app))
+              if (isTabsOpened) {
+                runUi(closeTabs)
+              } else {
+                execute(toNineCardIntent(app))
+              }
             },
             longClickListener = (app: App) => {
-              launchSettings(app.packageName)
+              if (isTabsOpened) {
+                runUi(closeTabs)
+              } else {
+                launchSettings(app.packageName)
+              }
             },
             getAppOrder = getAppOrder,
             counters = counters)
@@ -168,7 +176,11 @@ class LauncherActivity
       case ContactsByLastCall =>
         Task.fork(di.deviceProcess.getLastCalls.run).resolveAsyncUi(
           onResult = (contacts: Seq[LastCallsContact]) => addLastCallContacts(contacts, (contact: LastCallsContact) => {
-            execute(phoneToNineCardIntent(contact.number))
+            if (isTabsOpened) {
+              runUi(closeTabs)
+            } else {
+              execute(phoneToNineCardIntent(contact.number))
+            }
           }))
       case _ =>
         val getContactFilter = toGetContactFilter(contactsMenuOption)
@@ -178,7 +190,11 @@ class LauncherActivity
               addContacts(
                 contacts = contacts,
                 clickListener = (contact: Contact) => {
-                  execute(contact)
+                  if (isTabsOpened) {
+                    runUi(closeTabs)
+                  } else {
+                    execute(contact)
+                  }
                 },
                 counters = counters)
           })

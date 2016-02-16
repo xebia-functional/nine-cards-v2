@@ -25,7 +25,9 @@ trait LauncherComposer
     prepareBars ~ initCollectionsUi ~ initDrawerUi
 
   def backByPriority(implicit context: ActivityContextWrapper, manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme): Ui[_] =
-    if (isMenuVisible) {
+    if (isTabsOpened) {
+      closeTabs
+    } else if (isMenuVisible) {
       closeMenu()
     } else if (isDrawerVisible) {
       revealOutDrawer

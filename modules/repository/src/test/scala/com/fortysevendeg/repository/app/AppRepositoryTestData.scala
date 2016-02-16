@@ -1,7 +1,10 @@
 package com.fortysevendeg.repository.app
 
+import java.util.Date
+
 import com.fortysevendeg.ninecardslauncher.repository.model.{DataCounter, AppData, App}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntityData, AppEntity}
+import org.joda.time.DateTime
 
 import scala.util.Random
 
@@ -100,17 +103,16 @@ trait AppRepositoryTestData {
     DataCounter("#", 5),
     DataCounter("A", 3),
     DataCounter("B", 3),
-    DataCounter("C", 1)
-  )
+    DataCounter("C", 1))
 
   val categoryDataSequence: Seq[String] =
     Seq(
       "COMMUNICATION",
       "COMMUNICATION",
       "COMMUNICATION",
-      "GAMES",
-      "GAMES",
-      "GAMES",
+      "GAME_SIMULATION",
+      "GAME_BOARD",
+      "GAME_CARD",
       "SOCIAL",
       "SOCIAL",
       "SOCIAL",
@@ -120,9 +122,27 @@ trait AppRepositoryTestData {
 
   val categoryDataCounters = Seq(
     DataCounter("COMMUNICATION", 3),
-    DataCounter("GAMES", 3),
+    DataCounter("GAME", 3),
     DataCounter("SOCIAL", 4),
-    DataCounter("TOOLS", 2)
-  )
+    DataCounter("TOOLS", 2))
+
+  val now = new DateTime()
+
+  val installationDateDataSequence: Seq[Long] = Seq(
+    now.minusDays(1).getMillis,
+    now.minusDays(2).getMillis,
+    now.minusWeeks(1).minusDays(1).getMillis,
+    now.minusWeeks(1).minusDays(3).getMillis,
+    now.minusWeeks(2).minusDays(4).getMillis,
+    now.minusMonths(1).minusWeeks(1).getMillis,
+    now.minusMonths(2).minusWeeks(1).getMillis,
+    now.minusMonths(2).minusWeeks(1).minusDays(3).getMillis)
+
+  val installationDateDateCounters = Seq(
+    DataCounter("oneWeek", 2),
+    DataCounter("twoWeeks", 2),
+    DataCounter("oneMonth", 1),
+    DataCounter("twoMonths", 1),
+    DataCounter("fourMonths", 2))
 
 }
