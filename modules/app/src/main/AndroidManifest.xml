@@ -20,7 +20,6 @@
             android:clearTaskOnLaunch="true"
             android:stateNotNeeded="true"
             android:windowSoftInputMode="adjustPan"
-            android:enabled="true"
             android:screenOrientation="portrait"
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity">
             <intent-filter>
@@ -36,19 +35,17 @@
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
             android:screenOrientation="portrait"
-            android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity"/>
 
         <activity
             android:theme="@style/AppThemeSolid"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:label=""
-            android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity"/>
+            android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity" />
 
         <activity
             android:theme="@style/AppThemeSolid"
             android:screenOrientation="portrait"
-            android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity"/>
 
         <service
