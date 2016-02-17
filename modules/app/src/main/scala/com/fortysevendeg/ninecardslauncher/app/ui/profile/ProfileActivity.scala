@@ -8,15 +8,21 @@ import android.view.{MenuItem, Menu}
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext, SystemBarsTint}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GoogleApiClientProvider, ActivityUiContext, UiContext, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import macroid.Contexts
+import com.google.android.gms.common.api.GoogleApiClient
+import macroid.{Ui, Contexts}
 import macroid.FullDsl._
 import rapture.core.Answer
 
+import scala.util.Try
 import scalaz.concurrent.Task
+
+case class GoogleApiClientStatuses(
+  apiClient: Option[GoogleApiClient] = None,
+  username: Option[String] = None)
 
 class ProfileActivity
   extends AppCompatActivity
@@ -26,6 +32,8 @@ class ProfileActivity
   with SystemBarsTint
   with ProfileTabListener
   with ProfileComposer
+  with ProfileTasks
+  with GoogleApiClientProvider
   with AppBarLayout.OnOffsetChangedListener {
 
   implicit lazy val di = new Injector
@@ -36,6 +44,8 @@ class ProfileActivity
     case Answer(t) => t
     case _ => getDefaultTheme
   }
+
+  var clientStatuses = GoogleApiClientStatuses()
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
@@ -50,6 +60,14 @@ class ProfileActivity
     }
 
     barLayout foreach (_.addOnOffsetChangedListener(this))
+  }
+
+  override def onStop(): Unit = {
+    clientStatuses match {
+      case GoogleApiClientStatuses(Some(client), _) => Try(client.disconnect())
+      case _ =>
+    }
+    super.onStop()
   }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
@@ -72,6 +90,23 @@ class ProfileActivity
     runUi(handleToolbarVisibility(percentage) ~ handleProfileVisibility(percentage))
   }
 
+  override def onRequestConnectionError(errorCode: Int): Unit =
+    showError(R.string.errorConnectingGoogle, () => tryToConnect())
+
+  override def onResolveConnectionError(): Unit =
+    showError(R.string.errorConnectingGoogle, () => tryToConnect())
+
+  override def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
+
+  override def onConnected(bundle: Bundle): Unit = {
+    super.onConnected(bundle)
+    clientStatuses match {
+      case GoogleApiClientStatuses(Some(client), Some(email)) if client.isConnected =>
+        loadUserAccounts(client, email)
+      case _ => showError(R.string.errorConnectingGoogle, () => tryToConnect())
+    }
+  }
+
   def sampleItems(tab: String) = 1 to 20 map (i => s"$tab Item $i")
 
   override def onProfileTabSelected(profileTab: ProfileTab): Unit = profileTab match {
@@ -82,12 +117,42 @@ class ProfileActivity
       // TODO - Load subscriptions and set adapter
       runUi(setSubscriptionsAdapter(sampleItems("Subscription")))
     case AccountsTab =>
-      // TODO - Load accounts and set adapter
-      runUi(setAccountsAdapter(sampleItems("Account")))
+      clientStatuses match {
+        case GoogleApiClientStatuses(Some(client), Some(email)) if client.isConnected =>
+          loadUserAccounts(client, email)
+        case GoogleApiClientStatuses(Some(client), Some(email)) =>
+          tryToConnect()
+        case _ =>
+          loadUserEmail()
+      }
   }
 
-  private[this] def loadUserInfo(implicit uiContext: UiContext[_]) = Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
-    onResult = (userInfo) => userProfile(userInfo.email, userInfo.imageUrl)
-  )
+  private[this] def loadUserInfo(implicit uiContext: UiContext[_]): Unit =
+    Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
+      onResult = userInfo => userProfile(userInfo.email, userInfo.imageUrl),
+      onException = (_) => showError(R.string.errorLoadingUser, () => loadUserInfo(uiContext)),
+      onPreTask = () => showLoading
+    )
+
+  private[this] def loadUserEmail(): Unit =
+    Task.fork(loadSingedEmail.run).resolveAsyncUi(
+      onResult = email => {
+        val client = createGoogleDriveClient(email)
+        clientStatuses = clientStatuses.copy(
+          apiClient = Some(client),
+          username = Some(email))
+        client.connect()
+        showLoading
+      },
+      onException = (_) => showError(R.string.errorLoadingUser, () => loadUserEmail()),
+      onPreTask = () => showLoading
+    )
+
+  private[this] def loadUserAccounts(client: GoogleApiClient, username: String): Unit =
+    Task.fork(loadAccounts(client, username).run).resolveAsyncUi(
+      onResult = accountSyncs => setAccountsAdapter(accountSyncs),
+      onException = (_) => showError(R.string.errorConnectingGoogle, () => loadUserAccounts(client, username)),
+      onPreTask = () => showLoading
+    )
 
 }

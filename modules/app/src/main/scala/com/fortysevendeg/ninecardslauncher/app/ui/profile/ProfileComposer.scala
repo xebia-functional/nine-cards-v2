@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiCon
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.PathMorphDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, SubscriptionsAdapter, PublicationsAdapter}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
@@ -45,6 +46,14 @@ trait ProfileComposer
 
   lazy val recyclerView = Option(findView(TR.profile_recycler))
 
+  lazy val loadingView = Option(findView(TR.profile_loading))
+
+  lazy val errorLayout = Option(findView(TR.profile_error_layout))
+
+  lazy val errorMessage = Option(findView(TR.profile_error_message))
+
+  lazy val errorButton = Option(findView(TR.profile_error_button))
+
   lazy val iconIndicatorDrawable = new PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
@@ -56,6 +65,8 @@ trait ProfileComposer
         (getString(R.string.subscriptions), SubscriptionsTab),
         (getString(R.string.accounts), AccountsTab))) ~
       (tabs <~ tlSetListener(this)) ~
+      (loadingView <~ vGone) ~
+      (errorLayout <~ vGone) ~
       (recyclerView <~
         rvLayoutManager(new GridLayoutManager(activityContextWrapper.application, 1)) <~
         rvFixedSize <~
@@ -78,17 +89,30 @@ trait ProfileComposer
     userContainer <~ vAlpha(alpha)
   }
 
+  def showLoading: Ui[_] = loadingView <~ vVisible
+
+  def showError(message: Int, clickAction: () => Unit): Ui[_] =
+    (errorLayout <~ vVisible) ~
+      (errorMessage <~ tvText(message)) ~
+      (errorButton <~ On.click {
+        clickAction()
+        errorLayout <~ vGone
+      })
+
   def setPublicationsAdapter(items: Seq[String])
       (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    recyclerView <~ rvAdapter(new PublicationsAdapter(items))
+    (recyclerView <~ rvAdapter(new PublicationsAdapter(items))) ~
+      (loadingView <~ vGone)
 
   def setSubscriptionsAdapter(items: Seq[String])
       (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    recyclerView <~ rvAdapter(new SubscriptionsAdapter(items))
+    (recyclerView <~ rvAdapter(new SubscriptionsAdapter(items))) ~
+      (loadingView <~ vGone)
 
-  def setAccountsAdapter(items: Seq[String])
+  def setAccountsAdapter(items: Seq[AccountSync])
       (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    recyclerView <~ rvAdapter(new AccountsAdapter(items))
+    (recyclerView <~ rvAdapter(new AccountsAdapter(items))) ~
+      (loadingView <~ vGone)
 
   override def onTabReselected(tab: Tab): Unit = {}
 

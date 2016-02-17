@@ -24,7 +24,6 @@ class CloudStorageProcessImpl(
   with Conversions
   with ImplicitsCloudStorageProcessExceptions {
 
-
   private[this] val userDeviceType = "USER_DEVICE"
 
   private[this] val jsonMimeType = "application/json"

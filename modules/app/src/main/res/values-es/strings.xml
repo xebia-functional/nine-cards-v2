@@ -192,4 +192,11 @@
     <string name="subscriptions">Subscripciones</string>
     <string name="accounts">Cuentas</string>
 
+    <string name="sync_header_devices">Dispositivos</string>
+    <string name="sync_header_synchronize">Sincronización</string>
+    <string name="sync_current">Dispositivo actual</string>
+    <string name="sync_last_synced">Última sincronización: $s</string>
+
+    <string name="errorLoadingUser">Error cargando usuario</string>
+
 </resources>

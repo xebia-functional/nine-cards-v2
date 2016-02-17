@@ -21,6 +21,7 @@ import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 
+import scala.util.Try
 import scalaz.concurrent.Task
 
 case class GoogleApiClientStatuses(
@@ -74,6 +75,14 @@ class WizardActivity
   override def onPause(): Unit = {
     super.onPause()
     unregisterDispatcher
+  }
+
+  override def onStop(): Unit = {
+    clientStatuses match {
+      case GoogleApiClientStatuses(Some(client), _, _) => Try(client.disconnect())
+      case _ =>
+    }
+    super.onStop()
   }
 
   override def onBackPressed(): Unit = {}
