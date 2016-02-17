@@ -51,6 +51,12 @@
             android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity"/>
 
+        <activity
+                android:theme="@style/Theme.AppCompat.Light"
+                android:screenOrientation="portrait"
+                android:label=""
+                android:name="com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity"/>
+
         <service
             android:name="com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService"/>
 
