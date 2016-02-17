@@ -20,10 +20,6 @@ class RecommendationsFragment
   with RecommendationsComposer
   with NineCardIntentConversions {
 
-  implicit lazy val di: Injector = new Injector
-
-  implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
-
   lazy val nineCardCategory = NineCardCategory(getString(Seq(getArguments), RecommendationsFragment.categoryKey, ""))
 
   lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])

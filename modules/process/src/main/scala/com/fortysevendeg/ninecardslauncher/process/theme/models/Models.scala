@@ -11,6 +11,8 @@ case class ThemeStyle(styleType: ThemeStyleType, color: Int)
 
 sealed trait ThemeStyleType
 
+case object PrimaryColor extends ThemeStyleType
+
 case object AppDrawerPressedColor extends ThemeStyleType
 
 case object CollectionDetailBackgroundColor extends ThemeStyleType
@@ -38,6 +40,7 @@ object NineCardsThemeImplicits {
   implicit val themeStyleTypeReads = new Reads[ThemeStyleType] {
 
     def reads(js: JsValue) = js.as[String] match {
+      case "PrimaryColor" => JsSuccess(PrimaryColor)
       case "AppDrawerPressedColor" => JsSuccess(AppDrawerPressedColor)
       case "CollectionDetailBackgroundColor" => JsSuccess(CollectionDetailBackgroundColor)
       case "CollectionDetailCardBackgroundColor" => JsSuccess(CollectionDetailCardBackgroundColor)
@@ -56,6 +59,7 @@ object NineCardsThemeImplicits {
   implicit val themeStyleTypeWrites = new Writes[ThemeStyleType] {
 
     def writes(styleType: ThemeStyleType) = styleType match {
+      case PrimaryColor => Json.toJson("PrimaryColor")
       case AppDrawerPressedColor => Json.toJson("AppDrawerPressedColor")
       case CollectionDetailBackgroundColor => Json.toJson("CollectionDetailBackgroundColor")
       case CollectionDetailCardBackgroundColor => Json.toJson("CollectionDetailCardBackgroundColor")
