@@ -8,7 +8,6 @@ import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportProvider, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
@@ -57,14 +56,12 @@ class LauncherActivity
     setContentView(R.layout.launcher_activity)
     runUi(initUi)
     initAllSystemBarsTint
-    loadCollectionsAndDockApps()
   }
 
-  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
-    super.onActivityResult(requestCode, resultCode, data)
-    (requestCode, resultCode) match {
-      case (`wizard`, Activity.RESULT_OK) => loadCollectionsAndDockApps()
-      case _ =>
+  override def onResume(): Unit = {
+    super.onResume()
+    if (isEmptyCollections) {
+      loadCollectionsAndDockApps()
     }
   }
 
@@ -115,22 +112,22 @@ class LauncherActivity
   private[this] def loadCollectionsAndDockApps(): Unit = Task.fork(getLauncherApps.run).resolveAsyncUi(
     onResult = {
       // Check if there are collections in DB, if there aren't we go to wizard
-      case (Nil, Nil) => goToWizard()
+      case (Nil, _) => goToWizard()
       case (collections, apps) =>
-        getUserInfo()
+        getUserInfo
         createCollections(collections, apps)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading
   )
 
-  private[this] def getUserInfo() = Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
+  private[this] def getUserInfo = Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
     onResult = userInfoMenu
   )
 
   private[this] def goToWizard(): Ui[_] = Ui {
     val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])
-    startActivityForResult(wizardIntent, wizard)
+    startActivity(wizardIntent)
   }
 
   private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
