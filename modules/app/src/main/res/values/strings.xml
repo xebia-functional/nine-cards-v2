@@ -206,150 +206,148 @@
 
     <!-- Preferences -->
 
-        <!-- Preferences Default Launcher -->
-        <string name="defaultLauncher">Set as the default launcher</string>
+    <!-- Preferences Default Launcher -->
+    <string name="defaultLauncher">Set as the default launcher</string>
 
-        <!-- Preferences Personalization -->
-        <string name="personalizationPreferences">Personalization</string>
+    <!-- Preferences Personalization -->
+    <string name="personalizationPreferences">Personalization</string>
 
-            <string name="themesPreferences">Themes</string>
-            <string name="themes">Themes</string>
+    <string name="themesPreferences">Themes</string>
+    <string name="themes">Themes</string>
 
-                <string name="themesTitle">Themes</string>
-                <string name="themesSummary">Themes Summary</string>
+    <string name="themesTitle">Themes</string>
+    <string name="themesSummary">Themes Summary</string>
 
-                    <string name="themesDark">Dark</string>
-                    <string name="themesLight">Light</string>
-                    <string name="themesMaterial">Material</string>
-                    <string name="themes9Cards">9Cards</string>
+    <string name="themesDark">Dark</string>
+    <string name="themesLight">Light</string>
+    <string name="themesMaterial">Material</string>
+    <string name="themes9Cards">9Cards</string>
 
-                <string name="googleLogoTitle">Google Logo</string>
-                <string name="googleLogoSummary">Google Logo Summary</string>
+    <string name="googleLogoTitle">Google Logo</string>
+    <string name="googleLogoSummary">Google Logo Summary</string>
 
-                    <string name="colouredGoogleLogo">Coloured</string>
-                    <string name="themeColourGoogleLogo">Theme\'s Colour</string>
+    <string name="colouredGoogleLogo">Coloured</string>
+    <string name="themeColourGoogleLogo">Theme\'s Colour</string>
 
-            <string name="appDrawerPreferences">App Drawer</string>
-            <string name="appDrawer">App Drawer</string>
+    <string name="appDrawerPreferences">App Drawer</string>
+    <string name="appDrawer">App Drawer</string>
 
-                <string name="defaultWindowTitle">Default Window Open</string>
-                <string name="defaultWindowSummary">Default Window Summary</string>
+    <string name="defaultWindowTitle">Default Window Open</string>
+    <string name="defaultWindowSummary">Default Window Summary</string>
 
-                    <string name="defaultWindowApps">Apps</string>
-                    <string name="defaultWindowContacts">Contacts</string>
+    <string name="defaultWindowApps">Apps</string>
+    <string name="defaultWindowContacts">Contacts</string>
 
-                <string name="letterAnimationTitle">Letter Animation</string>
-                <string name="letterAnimationSummary">Animations to show the selected letter</string>
+    <string name="letterAnimationTitle">Letter Animation</string>
+    <string name="letterAnimationSummary">Animations to show the selected letter</string>
 
-                    <string name="letterAnimations1">TBD 1</string>
-                    <string name="letterAnimations2">TBD 2</string>
-                    <string name="letterAnimations3">TBD 3</string>
+    <string name="letterAnimations1">TBD 1</string>
+    <string name="letterAnimations2">TBD 2</string>
+    <string name="letterAnimations3">TBD 3</string>
 
-                <string name="windowIconTitle">Window Icon</string>
-                <string name="windowIconSummary">Icon to access to window</string>
+    <string name="windowIconTitle">Window Icon</string>
+    <string name="windowIconSummary">Icon to access to window</string>
 
-                    <string name="windowIconsClassic">Classic</string>
-                    <string name="windowIconsNineCards">9Cards</string>
+    <string name="windowIconsClassic">Classic</string>
+    <string name="windowIconsNineCards">9Cards</string>
 
+    <string name="sizesPreferences">Sizes</string>
+    <string name="sizes">Sizes</string>
 
-            <string name="sizesPreferences">Sizes</string>
-            <string name="sizes">Sizes</string>
+    <string name="fontsTitle">Fonts</string>
+    <string name="fontsSummary">Fonts Summary</string>
 
-                <string name="fontsTitle">Fonts</string>
-                <string name="fontsSummary">Fonts Summary</string>
+    <string name="fontsSmall">Small</string>
+    <string name="fontsMedium">Medium</string>
+    <string name="fontsBigger">Bigger</string>
 
-                    <string name="fontsSmall">Small</string>
-                    <string name="fontsMedium">Medium</string>
-                    <string name="fontsBigger">Bigger</string>
+    <string name="iconsTitle">Icons</string>
+    <string name="iconsSummary">Icons Summary</string>
 
-                <string name="iconsTitle">Icons</string>
-                <string name="iconsSummary">Icons Summary</string>
+    <string name="iconsSmall">Small</string>
+    <string name="iconsMedium">Medium</string>
+    <string name="iconsBigger">Bigger</string>
 
-                    <string name="iconsSmall">Small</string>
-                    <string name="iconsMedium">Medium</string>
-                    <string name="iconsBigger">Bigger</string>
+    <string name="cardPaddingsTitle">Card Paddings</string>
+    <string name="cardPaddingsSummary">Card Paddings Summary</string>
 
-                <string name="cardPaddingsTitle">Card Paddings</string>
-                <string name="cardPaddingsSummary">Card Paddings Summary</string>
+    <string name="cardPaddingsSmall">Small</string>
+    <string name="cardPaddingsMedium">Medium</string>
+    <string name="cardPaddingsBigger">Bigger</string>
 
-                    <string name="cardPaddingsSmall">Small</string>
-                    <string name="cardPaddingsMedium">Medium</string>
-                    <string name="cardPaddingsBigger">Bigger</string>
+    <string name="animationsPreferences">Animations</string>
+    <string name="animations">Animations</string>
 
-            <string name="animationsPreferences">Animations</string>
-            <string name="animations">Animations</string>
+    <string name="speedTitle">Speed</string>
+    <string name="speedSummary">Speed Summary</string>
 
-                <string name="speedTitle">Speed</string>
-                <string name="speedSummary">Speed Summary</string>
+    <string name="speedsSlow">Slow</string>
+    <string name="speedsNormal">Normal</string>
+    <string name="speedsFast">Fast</string>
 
-                    <string name="speedsSlow">Slow</string>
-                    <string name="speedsNormal">Normal</string>
-                    <string name="speedsFast">Fast</string>
+    <string name="collectionOpeningTitle">Opening Collection</string>
+    <string name="collectionOpeningSummary">Opening Collection Summary</string>
 
-                <string name="collectionOpeningTitle">Opening Collection</string>
-                <string name="collectionOpeningSummary">Opening Collection Summary</string>
+    <string name="collectionOpeningsMoveIcon">Move Icon</string>
+    <string name="collectionOpeningsCircleReveal">Circle Reveal</string>
+    <string name="collectionOpeningsSimple">Simple</string>
+    <string name="collectionOpeningsNoAnimation">No Animation</string>
 
-                    <string name="collectionOpeningsMoveIcon">Move Icon</string>
-                    <string name="collectionOpeningsCircleReveal">Circle Reveal</string>
-                    <string name="collectionOpeningsSimple">Simple</string>
-                    <string name="collectionOpeningsNoAnimation">No Animation</string>
+    <string name="appDrawerOpeningTitle">Opening AppDrawer</string>
+    <string name="appDrawerOpeningSummary">Opening AppDrawer Summary</string>
 
-                <string name="appDrawerOpeningTitle">Opening AppDrawer</string>
-                <string name="appDrawerOpeningSummary">Opening AppDrawer Summary</string>
+    <string name="appDrawerOpeningsCircleReveal">Circle Reveal</string>
+    <string name="appDrawerOpeningsFade">Fade</string>
+    <string name="appDrawerOpeningsNoAnimation">No Animation</string>
 
-                    <string name="appDrawerOpeningsCircleReveal">Circle Reveal</string>
-                    <string name="appDrawerOpeningsFade">Fade</string>
-                    <string name="appDrawerOpeningsNoAnimation">No Animation</string>
+    <string name="workspaceAnimationTitle">Workspace Animation</string>
+    <string name="workspaceAnimationSummary">Workspace Animation Summary</string>
 
-                <string name="workspaceAnimationTitle">Workspace Animation</string>
-                <string name="workspaceAnimationSummary">Workspace Animation Summary</string>
+    <string name="workspaceAnimationsHorizontalSlide">Horizontal Slide</string>
+    <string name="workspaceAnimationsTBD">TBD</string>
 
-                    <string name="workspaceAnimationsHorizontalSlide">Horizontal Slide</string>
-                    <string name="workspaceAnimationsTBD">TBD</string>
+    <string name="appDrawerAppsAnimationTitle">Apps Animation in AppDrawer</string>
+    <string name="appDrawerAppsAnimationSummary">Opening AppDrawer Summary</string>
 
-                <string name="appDrawerAppsAnimationTitle">Apps Animation in AppDrawer</string>
-                <string name="appDrawerAppsAnimationSummary">Opening AppDrawer Summary</string>
+    <string name="appDrawerAppsAnimationsSlide">Slide from the bottom</string>
+    <string name="appDrawerAppsAnimationsTBD">TBD</string>
+    <string name="appDrawerAppsAnimationsNoAnimation">No Animation</string>
 
-                    <string name="appDrawerAppsAnimationsSlide">Slide from the bottom</string>
-                    <string name="appDrawerAppsAnimationsTBD">TBD</string>
-                    <string name="appDrawerAppsAnimationsNoAnimation">No Animation</string>
+    <string name="collectionDetailCardAnimationTitle">Cards Animation in Collection Detail</string>
+    <string name="collectionDetailCardAnimationSummary">Cards Animation in Collection Detail Summary</string>
 
-                <string name="collectionDetailCardAnimationTitle">Cards Animation in Collection Detail</string>
-                <string name="collectionDetailCardAnimationSummary">Cards Animation in Collection Detail Summary</string>
+    <string name="collectionDetailCardAnimationsSlide">Slide from the bottom</string>
+    <string name="collectionDetailCardAnimationsTBD">TBD</string>
+    <string name="collectionDetailCardAnimationsNoAnimation">No Animation</string>
 
-                    <string name="collectionDetailCardAnimationsSlide">Slide from the bottom</string>
-                    <string name="collectionDetailCardAnimationsTBD">TBD</string>
-                    <string name="collectionDetailCardAnimationsNoAnimation">No Animation</string>
+    <string name="newAppPreferences">TBD</string>
+    <string name="installNewAppTBD">TBD</string>
 
-           <string name="newAppPreferences">TBD</string>
-           <string name="installNewAppTBD">TBD</string>
+    <!-- Preferences About -->
+    <string name="others">Others</string>
 
-        <!-- Preferences About -->
-        <string name="others">Others</string>
+    <!-- Preferences About -->
+    <string name="about">About</string>
 
-            <!-- Preferences About -->
-            <string name="about">About</string>
+    <string name="rateGooglePlay">Rate it in Google Play</string>
 
-                <string name="rateGooglePlay">Rate it in Google Play</string>
+    <string name="knowTeam">Know the team</string>
+    <string name="followTwitter">Follow us in Twitter</string>
+    <string name="followFacebook">Follow us in Facebook</string>
+    <string name="followGooglePlus">Follow us in Google Plus</string>
 
-                <string name="knowTeam">Know the team</string>
-                    <string name="followTwitter">Follow us in Twitter</string>
-                    <string name="followFacebook">Follow us in Facebook</string>
-                    <string name="followGooglePlus">Follow us in Google Plus</string>
+    <string name="openSource">We are Open Source!</string>
+    <string name="openSourceSummary">Know about the Open Source Project</string>
+    <string name="inviteUsBeer">Do you like it? Do you wanna invite us to a beer?</string>
 
-                <string name="openSource">We are Open Source!</string>
-                <string name="openSourceSummary">Know about the Open Source Project</string>
-                <string name="inviteUsBeer">Do you like it? Do you wanna invite us to a beer?</string>
+    <!-- Preferences Help -->
+    <string name="help">Help</string>
 
-
-            <!-- Preferences Help -->
-            <string name="help">Help</string>
-
-                <string name="userCommunity">9 Cards Users Community</string>
-                <string name="videoChannel">See the video channel about 9 Cards</string>
-                <string name="sendFeedback">Send a Feedback (Launch AppTentive)</string>
-                <string name="tutorial">See the Tutorial</string>
-                <string name="tos">Terms of Use</string>
+    <string name="userCommunity">9 Cards Users Community</string>
+    <string name="videoChannel">See the video channel about 9 Cards</string>
+    <string name="sendFeedback">Send a Feedback (Launch AppTentive)</string>
+    <string name="tutorial">See the Tutorial</string>
+    <string name="tos">Terms of Use</string>
 
 
 </resources>

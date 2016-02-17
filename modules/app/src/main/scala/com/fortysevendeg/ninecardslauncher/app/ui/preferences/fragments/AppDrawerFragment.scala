@@ -11,5 +11,4 @@ class AppDrawerFragment extends PreferenceFragment {
     addPreferencesFromResource(R.xml.preferences_app_drawer)
   }
 
-
 }

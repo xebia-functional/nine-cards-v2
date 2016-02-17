@@ -5,7 +5,7 @@
             android:title="@string/rateGooglePlay">
         <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+                android:data="@string/nine_cards_google_play"/>
     </PreferenceScreen>
 
     <PreferenceCategory android:title="@string/knowTeam">
@@ -14,21 +14,21 @@
                 android:title="@string/followTwitter">
             <intent
                     android:action="android.intent.action.VIEW"
-                    android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+                    android:data="@string/follow_us_twitter"/>
         </PreferenceScreen>
 
         <PreferenceScreen
                 android:title="@string/followFacebook">
             <intent
                     android:action="android.intent.action.VIEW"
-                    android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+                    android:data="@string/follow_us_facebook"/>
         </PreferenceScreen>
 
         <PreferenceScreen
                 android:title="@string/followGooglePlus">
             <intent
                     android:action="android.intent.action.VIEW"
-                    android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+                    android:data="@string/follow_us_google_plus"/>
         </PreferenceScreen>
 
     </PreferenceCategory>
@@ -38,14 +38,14 @@
             android:summary="@string/openSourceSummary">
         <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+                android:data="@string/open_source"/>
     </PreferenceScreen>
 
     <PreferenceScreen
             android:title="@string/inviteUsBeer">
         <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+                android:data="@string/invite_us_beer"/>
     </PreferenceScreen>
 
 </PreferenceScreen>

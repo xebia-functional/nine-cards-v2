@@ -5,35 +5,35 @@
             android:title="@string/userCommunity">
         <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+                android:data="@string/user_community"/>
     </PreferenceScreen>
 
     <PreferenceScreen
             android:title="@string/videoChannel">
         <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://9cards.io"/>
+                android:data="@string/video_channel"/>
     </PreferenceScreen>
 
     <PreferenceScreen
             android:title="@string/sendFeedback">
         <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://9cards.io/tos"/>
+                android:data="@string/send_feedback"/>
     </PreferenceScreen>
 
     <PreferenceScreen
             android:title="@string/tutorial">
         <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://9cards.io"/>
+                android:data="@string/ninecards_tutorial"/>
     </PreferenceScreen>
 
     <PreferenceScreen
             android:title="@string/tos">
         <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://9cards.io/tos"/>
+                android:data="@string/ninecards_tos"/>
     </PreferenceScreen>
 
 </PreferenceScreen>
