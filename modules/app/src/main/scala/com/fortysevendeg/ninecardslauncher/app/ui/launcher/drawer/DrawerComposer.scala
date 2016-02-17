@@ -28,7 +28,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
@@ -47,6 +47,8 @@ trait DrawerComposer
   val pages = 2
 
   val resistance = 2.4f
+
+  val openedField = "opened"
 
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
@@ -87,10 +89,21 @@ trait DrawerComposer
           case ContactView => loadContactsAlphabetical
         }))
 
+  override def onHeaderIconClick(implicit context: ActivityContextWrapper): Unit =
+    runUi(if (isTabsOpened) closeTabs else openTabs)
+
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
   def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     addWidgetsDrawer ~ transformDrawerUi
+
+  protected def openTabs(implicit context: ActivityContextWrapper): Ui[_] =
+    (tabs <~ vAddField(openedField, true) <~ showTabs) ~
+      (recycler <~ hideList)
+
+  protected def closeTabs(implicit context: ActivityContextWrapper): Ui[_] =
+    (tabs <~ vAddField(openedField, false) <~ hideTabs) ~
+      (recycler <~ showList)
 
   private[this] def closeCursorAdapter: Ui[_] =
     Ui(
@@ -142,6 +155,7 @@ trait DrawerComposer
       (scrollerLayout <~
         vgAddView(getUi(
           l[LinearLayout]() <~
+            vAddField(openedField, false) <~
             tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
             wire(tabs))) <~
         vgAddViewByIndex(getUi(
@@ -154,7 +168,7 @@ trait DrawerComposer
       createDrawerPagers
 
   private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
-    val colorPrimary = resGetColor(R.color.primary)
+    val colorPrimary = theme.get(PrimaryColor)
     (searchBoxView <~
       sbavChangeListener(self) <~
       sbavOnChangeText((text: String, boxView: BoxView) => {
@@ -193,13 +207,13 @@ trait DrawerComposer
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
             runUi(
-              getTypeView match {
+              (getTypeView match {
                 case Some(AppsView) =>
                   AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
                 case Some(ContactView) =>
                   ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
                 case _ => Ui.nop
-              })
+              }) ~ (if (isTabsOpened) closeTabs else Ui.nop))
           }
         ))) ~
       (drawerContent <~ vGone) ~
@@ -213,9 +227,12 @@ trait DrawerComposer
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
 
-  def revealOutDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def revealOutDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val searchIsEmpty = searchBoxView exists (_.isEmpty)
     (searchPanel <~ vVisible) ~
-      (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData))
+      (searchBoxView <~ sbavClean) ~
+      (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData(searchIsEmpty)))
+  }
 
   def addApps(
     apps: IterableApps,
@@ -233,10 +250,13 @@ trait DrawerComposer
       layoutManager = appsAdapter.getLayoutManager,
       counters = counters,
       signalType = getAppOrder match {
+        case GetByInstallDate => FastScrollerInstallationDate
         case GetByCategory => FastScrollerCategory
         case _ => FastScrollerText
       })
   }
+
+  protected def isTabsOpened: Boolean = tabs exists (rv => rv.getField[Boolean](openedField) getOrElse false)
 
   private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
 
@@ -256,11 +276,12 @@ trait DrawerComposer
     paginationDrawerPanel <~ vgAddViews(pagerViews)
   }
 
-  private[this] def resetData(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = if (isShowingAppsAlphabetical) {
-    (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
-  } else {
-    loadAppsAlphabetical
-  }
+  private[this] def resetData(searchIsEmpty: Boolean)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+    if (searchIsEmpty && isShowingAppsAlphabetical) {
+      (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
+    } else {
+      closeCursorAdapter ~ loadAppsAlphabetical
+    }
 
   private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.name))
 

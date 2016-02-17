@@ -33,6 +33,14 @@ object CommonsTweak {
 
   def vSetType(t: String) = vTag(R.id.view_type, t)
 
+  def vAddField[T](key: String, value: T) = Tweak[View] { view =>
+    view.setTag(R.id.fields_map, view.getFieldsMap + ((key, value)))
+  }
+
+  def vRemoveField(key: String) = Tweak[View] { view =>
+    view.setTag(R.id.fields_map, view.getFieldsMap - key)
+  }
+
   def vUseLayerHardware = vTag(R.id.use_layer_hardware, "")
 
   def vLayerHardware(activate: Boolean) = Transformer {

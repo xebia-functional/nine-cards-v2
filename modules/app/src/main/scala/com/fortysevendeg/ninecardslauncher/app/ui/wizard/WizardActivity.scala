@@ -10,16 +10,16 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.GoogleApiClientProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserPermissions
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.FullDsl._
 import macroid.{Contexts, Ui}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 
 import scala.util.Try
 import scalaz.concurrent.Task

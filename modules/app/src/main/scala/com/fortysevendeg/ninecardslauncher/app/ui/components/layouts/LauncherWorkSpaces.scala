@@ -37,13 +37,20 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   lazy val sizeCalculateMovement = getHeight
 
-  def isMomentWorkSpace = data(statuses.currentItem).workSpaceType.isMomentWorkSpace
+  def getCountCollections: Int = data map {
+    case item@LauncherData(CollectionsWorkSpace, _) => item.collections.length
+    case _ => 0
+  } sum
 
-  def isMomentWorkSpace(page: Int) = data(page).workSpaceType.isMomentWorkSpace
+  def isEmptyCollections: Boolean = getCountCollections == 0
 
-  def isCollectionWorkSpace = !isMomentWorkSpace
+  def isMomentWorkSpace: Boolean = data(statuses.currentItem).workSpaceType.isMomentWorkSpace
 
-  def isCollectionWorkSpace(page: Int) = !isMomentWorkSpace(page)
+  def isMomentWorkSpace(page: Int): Boolean = data(page).workSpaceType.isMomentWorkSpace
+
+  def isCollectionWorkSpace: Boolean = !isMomentWorkSpace
+
+  def isCollectionWorkSpace(page: Int): Boolean = !isMomentWorkSpace(page)
 
   override def getItemViewTypeCount: Int = 2
 

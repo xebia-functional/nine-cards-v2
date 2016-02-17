@@ -50,6 +50,9 @@ object AppEntity {
   def categoryFromCursor(cursor: Cursor): String =
     cursor.getString(cursor.getColumnIndex(category))
 
+  def dateInstalledFromCursor(cursor: Cursor): Long =
+    cursor.getLong(cursor.getColumnIndex(dateInstalled))
+
   def appEntityFromCursor(cursor: Cursor): AppEntity =
     AppEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),

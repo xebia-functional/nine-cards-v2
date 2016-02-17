@@ -25,6 +25,7 @@ before_install:
   - mv local.properties modules/app/local.properties
   - export GIT_BRANCH=${TRAVIS_BRANCH}
   - export GIT_PR=${TRAVIS_PULL_REQUEST}
+  - pip install --user codecov && codecov -t ${CODECOV_TOKEN}
 script:
   - sbt ++$TRAVIS_SCALA_VERSION "project commons" coverage test
   - sbt ++$TRAVIS_SCALA_VERSION "project api" coverage test
@@ -34,6 +35,7 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION "project app" coverage test
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
+  - codecov
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" android:packageRelease
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-generateLink

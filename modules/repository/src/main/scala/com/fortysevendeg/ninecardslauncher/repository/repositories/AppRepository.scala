@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import org.joda.time.DateTime
 
 import scalaz.concurrent.Task
 
@@ -25,6 +26,8 @@ class AppRepository(
   val abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
 
   val wildcard = "#"
+
+  val game = "GAME"
 
   def addApp(data: AppData): ServiceDef2[App, RepositoryException] =
     Service {
@@ -118,14 +121,22 @@ class AppRepository(
 
   def fetchAlphabeticalAppsCounter: ServiceDef2[Seq[DataCounter], RepositoryException] =
     toDataCounter(
-      getNamesAlphabetically,
-      (name: String) => name.substring(0, 1).toUpperCase match {
+      fetchData = getNamesAlphabetically,
+      normalize = (name: String) => name.substring(0, 1).toUpperCase match {
         case t if abc.contains(t) => t
         case _ => wildcard
       })
 
   def fetchCategorizedAppsCounter: ServiceDef2[Seq[DataCounter], RepositoryException] =
-    toDataCounter(getCategoriesAlphabetically)
+    toDataCounter(
+      fetchData = getCategoriesAlphabetically,
+      normalize = {
+        case t if t.startsWith(game) => game
+        case t => t
+      })
+
+  def fetchInstallationDateAppsCounter: ServiceDef2[Seq[DataCounter], RepositoryException] =
+    toInstallationDateDataCounter(fetchData = getInstallationDate)
 
   def findAppById(id: Int): ServiceDef2[Option[App], RepositoryException] =
     Service {
@@ -217,6 +228,12 @@ class AppRepository(
       projection = Seq(category),
       orderBy = s"$category COLLATE NOCASE ASC"))
 
+  protected def getInstallationDate: Seq[Long] =
+    getListFromCursor(dateInstalledFromCursor)(contentResolverWrapper.getCursor(
+      uri = appUri,
+      projection = Seq(dateInstalled),
+      orderBy = s"$dateInstalled DESC"))
+
   private[this] def toDataCounter(
     fetchData: => Seq[String],
     normalize: (String) => String = (term) => term): ServiceDef2[Seq[DataCounter], RepositoryException] =
@@ -237,5 +254,42 @@ class AppRepository(
         }
       }
     }
+
+  private[this] def toInstallationDateDataCounter(
+   fetchData: => Seq[Long]): ServiceDef2[Seq[DataCounter], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          val now = new DateTime()
+          val moreOfTwoMoths = "moreOfTwoMoths"
+          val dates = Seq(
+            InstallationDateInterval("oneWeek", now.minusWeeks(1)),
+            InstallationDateInterval("twoWeeks", now.minusWeeks(2)),
+            InstallationDateInterval("oneMonth", now.minusMonths(1)),
+            InstallationDateInterval("twoMonths", now.minusMonths(2)),
+            InstallationDateInterval("fourMonths", now.minusMonths(4)),
+            InstallationDateInterval("sixMonths", now.minusMonths(6)))
+          val data = fetchData
+          data.foldLeft(Seq.empty[DataCounter]) { (acc, date) =>
+            val installationDate = new DateTime(date)
+            val term = termInterval(installationDate, dates) map (_.term) getOrElse moreOfTwoMoths
+            val lastWithSameTerm = acc.lastOption flatMap {
+              case last if last.term == term => Some(last)
+              case _ => None
+            }
+            lastWithSameTerm map { c =>
+              acc.dropRight(1) :+ c.copy(count = c.count + 1)
+            } getOrElse acc :+ DataCounter(term, 1)
+          }
+        }
+      }
+    }
+
+  private[this] def termInterval(installationDate: DateTime, intervals: Seq[InstallationDateInterval]): Option[InstallationDateInterval] =
+    intervals find { interval =>
+      installationDate.isAfter(interval.date)
+    }
+
+  case class InstallationDateInterval(term: String, date: DateTime)
 
 }

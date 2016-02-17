@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{SearchBackgroundColor, NineCardsTheme, SearchIconsColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, SearchBackgroundColor, NineCardsTheme, SearchIconsColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Transformer, Tweak, Ui}
@@ -23,11 +23,11 @@ import macroid.{ContextWrapper, Transformer, Tweak, Ui}
 class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends PullToDownView(context) {
 
-  val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_height)
+  val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_max_height)
 
   val distanceChangeTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_distance_change_tabs)
 
-  val primaryColor = resGetColor(R.color.primary)
+  val primaryColor = theme.get(PrimaryColor)
 
   val defaultColor = theme.get(SearchIconsColor)
 
@@ -44,7 +44,7 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
       val newPos = pullToTabsStatuses.calculatePosition(pos, getTabsCount)
       if (newPos != pullToTabsStatuses.selectedItem) {
         pullToTabsStatuses = pullToTabsStatuses.copy(selectedItem = newPos)
-        runUi(tabs <~ activate(newPos))
+        runUi(tabs <~ activateItem(newPos))
       }
     }
     super.dispatchTouchEvent(event)
@@ -72,7 +72,7 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
       )
   }
 
-  def activate(item: Int): Transformer = Transformer {
+  def activateItem(item: Int): Transformer = Transformer {
     case tab: TabView if tab.isPosition(item) => tab.activate()
     case tab: TabView => tab.deactivate()
   }
@@ -104,14 +104,21 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
 
     runUi(
       (this <~ vBackgroundColor(backgroundColor)) ~
-      (icon <~ ivSrc(item.drawable)) ~
+        (icon <~ ivSrc(item.drawable)) ~
         (name <~ tvText(item.name)) ~
         (if (selected) {
           activate()
         } else {
           deactivate()
         }) ~
-        (this <~ vSetPosition(pos)))
+        (this <~
+          vSetPosition(pos) <~
+          On.click {
+            Ui {
+              pullToTabsStatuses = pullToTabsStatuses.copy(selectedItem = pos)
+              tabsListener.changeItem(pullToTabsStatuses.selectedItem)
+            } ~ (tabs <~ activateItem(pos))
+          }))
 
     def activate(): Ui[_] =
       (icon <~ tivDefaultColor(primaryColor)) ~
@@ -146,7 +153,7 @@ case class PullToTabsStatuses(
 trait PullToTabsViewStyles {
 
   def tabContentStyles(paddingRight: Int = 0)(implicit context: ContextWrapper): Tweak[LinearLayout] = {
-    val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_height)
+    val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_max_height)
     vContentSizeMatchWidth(heightTabs) +
       vPadding(paddingRight = paddingRight) +
       vGone

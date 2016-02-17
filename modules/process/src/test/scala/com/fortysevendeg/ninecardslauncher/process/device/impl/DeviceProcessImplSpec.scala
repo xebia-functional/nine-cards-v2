@@ -115,6 +115,9 @@ trait DeviceProcessSpecification
     mockPersistenceServices.fetchCategorizedAppsCounter returns
       Service(Task(Result.answer(categoryCounters)))
 
+    mockPersistenceServices.fetchInstallationDateAppsCounter returns
+      Service(Task(Result.answer(installationAppsCounters)))
+
     mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns
       Service(Task(Result.answer(iterableCursorApps)))
 
@@ -306,6 +309,10 @@ trait DeviceProcessSpecification
     }
 
     mockPersistenceServices.fetchCategorizedAppsCounter returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.fetchInstallationDateAppsCounter returns Service {
       Task(Errata(persistenceServiceException))
     }
 
@@ -511,7 +518,6 @@ trait DeviceProcessSpecification
 
 class DeviceProcessImplSpec
   extends DeviceProcessSpecification {
-
 
   "Delete saved items" should {
 
@@ -928,7 +934,8 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
         val result = deviceProcess.getTermCountersForApps(GetByInstallDate)(contextSupport).run.run
         result must beLike {
-          case Answer(counters) => counters shouldEqual Seq.empty
+          case Answer(counters) =>
+            counters map (_.term) shouldEqual (installationAppsCounters map (_.term))
         }
       }
 
@@ -942,9 +949,29 @@ class DeviceProcessImplSpec
         there was one(mockPersistenceServices).fetchCategorizedAppsCounter
       }
 
-    "returns AppException if persistence service fails " in
+    "returns AppException if persistence service fails in GetByName" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+    "returns AppException if persistence service fails in GetByCategory" in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.getTermCountersForApps(GetByCategory)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+    "returns AppException if persistence service fails in GetByInstallDate" in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.getTermCountersForApps(GetByInstallDate)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]

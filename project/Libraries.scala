@@ -50,6 +50,7 @@ object Libraries {
 
   object date {
     lazy val prettyTime = "org.ocpsoft.prettytime" % "prettytime" % prettyTimeV
+    val jodaTime = "joda-time" % "joda-time" % jodaTimeV
   }
 
   object test {
