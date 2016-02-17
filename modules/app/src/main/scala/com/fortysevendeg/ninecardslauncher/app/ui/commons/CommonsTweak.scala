@@ -15,16 +15,17 @@ import macroid.{ContextWrapper, Transformer, Tweak}
 
 object CommonsTweak {
 
-  def vBackgroundBoxWorkspace(color: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
+  def vBackgroundBoxWorkspace(color: Int, horizontalPadding: Int = 0)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
     val radius = resGetDimensionPixelSize(R.dimen.radius_default)
     Lollipop.ifSupportedThen {
       vBackgroundColor(color) +
-        ExtraTweaks.vClipBackground(radius) +
+        ExtraTweaks.vClipBackground(radius = radius, horizontalPadding = horizontalPadding) +
         vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
     } getOrElse {
       val s = 0 until 8 map (_ => radius.toFloat)
       val d = new ShapeDrawable(new RoundRectShape(s.toArray, javaNull, javaNull))
       d.getPaint.setColor(color)
+      // TODO We should include horizontal padding
       vBackground(d)
     }
   }

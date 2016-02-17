@@ -3,8 +3,9 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
+import android.util.Log
 import android.view.View
-import android.widget.{ImageView, LinearLayout}
+import android.widget.{FrameLayout, ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -63,6 +64,8 @@ trait DrawerComposer
   var tabs = slot[LinearLayout]
 
   var pullToTabsView = slot[PullToTabsView]
+
+  var screenAnimation = slot[FrameLayout]
 
   lazy val searchBoxContentPanel = Option(findView(TR.launcher_search_box_content_panel))
 
@@ -191,12 +194,13 @@ trait DrawerComposer
       }) ~
       (recycler <~
         drvListener(DrawerRecyclerViewListener(
-          start = () => pullToTabsView <~ pdvEnable(false),
-          end = () => pullToTabsView <~ pdvEnable(true)
+          start = startMovementAppsContacts,
+          move = moveMovementAppsContacts,
+          end = endMovementAppsContacts
         )) <~
         (searchBoxView map drvAddController getOrElse Tweak.blank)) ~
       (scrollerLayout <~
-        fslColor(colorPrimary)) ~
+        scrollableStyle(colorPrimary)) ~
       (pullToTabsView <~
         ptvLinkTabs(
           tabs = tabs,
@@ -216,9 +220,29 @@ trait DrawerComposer
               }) ~ (if (isTabsOpened) closeTabs else Ui.nop))
           }
         ))) ~
-      (drawerContent <~ vGone) ~
+      (drawerContent <~ contentStyle) ~
       loadAppsAlphabetical
   }
+
+  private[this] def startMovementAppsContacts(): Ui[_] =
+    (pullToTabsView <~ pdvEnable(false)) ~
+      (screenAnimation <~
+        vVisible <~
+        (getTypeView map {
+          case AppsView => vTranslationX(getDrawerWidth)
+          case ContactView => vTranslationX(-getDrawerWidth)
+        } getOrElse Tweak.blank))
+
+  private[this] def moveMovementAppsContacts(displacement: Float): Ui[_] = {
+    screenAnimation <~ vTranslationX(displacement)
+  }
+
+  private[this] def endMovementAppsContacts(): Ui[_] =
+    (pullToTabsView <~ pdvEnable(true)) ~
+      (screenAnimation <~ vGone) ~
+      (recycler <~ vTranslationX(0))
+
+  private[this] def getDrawerWidth: Int = drawerContent map (_.getWidth) getOrElse 0
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 

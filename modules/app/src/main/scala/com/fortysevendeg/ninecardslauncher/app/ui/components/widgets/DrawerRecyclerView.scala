@@ -45,7 +45,10 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
           val delta = statuses.deltaX(x)
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
           animatedController foreach { controller =>
-            runUi(controller.movementByOverScroll(delta))
+            runUi(
+              controller.movementByOverScroll(delta) ~
+                drawerRecyclerListener.move(delta))
+            //  Ui(offsetLeftAndRight(controller.getDisplacement.toInt))
           }
         case (ACTION_MOVE, Stopped) =>
           setStateIfNeeded(x, y)
@@ -126,6 +129,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
 case class DrawerRecyclerViewListener(
   start: () => Ui[_] = () => Ui.nop,
+  move: (Float) => Ui[_] = (_) => Ui.nop,
   end: () => Ui[_] = () => Ui.nop)
 
 case class DrawerRecyclerStatuses(

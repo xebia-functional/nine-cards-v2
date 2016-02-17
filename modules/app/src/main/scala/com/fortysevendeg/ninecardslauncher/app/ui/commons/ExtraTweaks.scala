@@ -28,11 +28,16 @@ import macroid.{ContextWrapper, Tweak, Ui}
   */
 object ExtraTweaks {
 
-  def vClipBackground(radius: Int, padding: Int = 0): Tweak[View] = Tweak[View] {
+  def vClipBackground(radius: Int, verticalPadding: Int = 0, horizontalPadding: Int = 0): Tweak[View] = Tweak[View] {
     view =>
       view.setOutlineProvider(new ViewOutlineProvider() {
         override def getOutline(view: View, outline: Outline): Unit =
-          outline.setRoundRect(padding, padding, view.getWidth - padding, view.getHeight - padding, radius)
+          outline.setRoundRect(
+            horizontalPadding,
+            verticalPadding,
+            view.getWidth - horizontalPadding,
+            view.getHeight - verticalPadding,
+            radius)
       })
       view.setClipToOutline(true)
   }

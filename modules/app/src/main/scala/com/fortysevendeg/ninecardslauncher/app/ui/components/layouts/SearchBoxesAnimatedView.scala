@@ -200,6 +200,8 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     statuses = statuses.copy(touchState = Stopped)
   }
 
+  override def getDisplacement: Float = statuses.displacement
+
   private[this] def overScroll(deltaX: Float): Boolean = (statuses.currentItem, getActiveView.getTranslationX, deltaX) match {
     case (AppsView, x, d) if positiveTranslation(x, d) => false
     case (ContactView, x, d) if !positiveTranslation(x, d) => false
@@ -271,6 +273,7 @@ trait SearchBoxAnimatedController {
   def computeFling(): Unit
   def isRunning: Boolean
   def startMovement: Ui[_]
+  def getDisplacement: Float
   def movementByOverScroll(delta: Float): Ui[_]
 }
 
