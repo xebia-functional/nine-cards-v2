@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceScreen
+            android:title="@string/rateGooglePlay">
+        <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+    </PreferenceScreen>
+
+    <PreferenceCategory android:title="@string/knowTeam">
+
+        <PreferenceScreen
+                android:title="@string/followTwitter">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+        </PreferenceScreen>
+
+        <PreferenceScreen
+                android:title="@string/followFacebook">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+        </PreferenceScreen>
+
+        <PreferenceScreen
+                android:title="@string/followGooglePlus">
+            <intent
+                    android:action="android.intent.action.VIEW"
+                    android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+        </PreferenceScreen>
+
+    </PreferenceCategory>
+
+    <PreferenceScreen
+            android:title="@string/openSource"
+            android:summary="@string/openSourceSummary">
+        <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+    </PreferenceScreen>
+
+    <PreferenceScreen
+            android:title="@string/inviteUsBeer">
+        <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://plus.google.com/u/0/communities/106427379572576906483"/>
+    </PreferenceScreen>
+
+</PreferenceScreen>

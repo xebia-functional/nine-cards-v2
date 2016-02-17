@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/animations">
+
+        <ListPreference
+                android:key="speed"
+                android:defaultValue="1"
+                android:entries="@array/speeds"
+                android:entryValues="@array/speedsValues"
+                android:title="@string/speedTitle"
+                android:summary="@string/speedSummary"/>
+
+        <ListPreference
+                android:key="collectionOpening"
+                android:defaultValue="0"
+                android:entries="@array/collectionOpenings"
+                android:entryValues="@array/collectionOpeningsValues"
+                android:title="@string/collectionOpeningTitle"
+                android:summary="@string/collectionOpeningSummary"/>
+
+        <ListPreference
+                android:key="appDrawerOpening"
+                android:defaultValue="0"
+                android:entries="@array/appDrawerOpenings"
+                android:entryValues="@array/appDrawerOpeningsValues"
+                android:title="@string/appDrawerOpeningTitle"
+                android:summary="@string/appDrawerOpeningSummary"/>
+
+        <ListPreference
+                android:key="workspaceAnimation"
+                android:defaultValue="0"
+                android:entries="@array/workspaceAnimations"
+                android:entryValues="@array/workspaceAnimationsValues"
+                android:title="@string/workspaceAnimationTitle"
+                android:summary="@string/workspaceAnimationSummary"/>
+
+        <ListPreference
+                android:key="appDrawerAppsAnimation"
+                android:defaultValue="0"
+                android:entries="@array/appDrawerAppsAnimations"
+                android:entryValues="@array/appDrawerAppsAnimationsValues"
+                android:title="@string/appDrawerAppsAnimationTitle"
+                android:summary="@string/appDrawerAppsAnimationSummary"/>
+
+        <ListPreference
+                android:key="collectionDetailCardAnimation"
+                android:defaultValue="0"
+                android:entries="@array/collectionDetailCardAnimations"
+                android:entryValues="@array/collectionDetailCardAnimationsValues"
+                android:title="@string/collectionDetailCardAnimationTitle"
+                android:summary="@string/collectionDetailCardAnimationSummary"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

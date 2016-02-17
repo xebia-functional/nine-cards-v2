@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <header
+            android:fragment="com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments.DefaultLauncherFragment"
+            android:title="@string/defaultLauncher"/>
+            <!--android:icon="@drawable/setting_icon_default_launcher"></header>-->
+
+    <header android:title="@string/personalizationPreferences" />
+    <header
+            android:fragment="com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments.ThemesFragment"
+            android:title="@string/themesPreferences"/>
+            <!--android:icon="@drawable/setting_icon_personalization"></header>-->
+    <header
+            android:fragment="com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments.AppDrawerFragment"
+            android:title="@string/appDrawerPreferences"/>
+    <!--android:icon="@drawable/setting_icon_personalization"></header>-->
+    <header
+            android:fragment="com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments.SizesFragment"
+            android:title="@string/sizesPreferences"/>
+    <!--android:icon="@drawable/setting_icon_personalization"></header>-->
+    <header
+            android:fragment="com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments.AnimationsFragment"
+            android:title="@string/animationsPreferences"/>
+    <!--android:icon="@drawable/setting_icon_personalization"></header>-->
+    <header
+            android:fragment="com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments.NewAppFragment"
+            android:title="@string/newAppPreferences"/>
+    <!--android:icon="@drawable/setting_icon_personalization"></header>-->
+
+    <header android:title="@string/others" />
+    <header
+            android:fragment="com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments.AboutFragment"
+            android:title="@string/about"/>
+            <!--android:icon="@drawable/setting_icon_about"></header>-->
+
+    <header
+            android:fragment="com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments.HelpFragment"
+            android:title="@string/help"/>
+            <!--android:icon="@drawable/setting_icon_help"></header>-->
+
+</preference-headers>
