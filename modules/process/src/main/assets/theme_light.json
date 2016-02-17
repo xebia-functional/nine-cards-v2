@@ -2,6 +2,10 @@
   "name": "light",
   "styles": [
     {
+      "styleType": "PrimaryColor",
+      "color": "#3F51B5"
+    },
+    {
       "styleType": "SearchBackgroundColor",
       "color": "#ffffff"
     },

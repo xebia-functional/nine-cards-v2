@@ -28,10 +28,6 @@ class AppsFragment
 
   val allApps = AllAppsCategory
 
-  implicit lazy val di: Injector = new Injector
-
-  implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
-
   lazy val category = NineCardCategory(getString(Seq(getArguments), AppsFragment.categoryKey, AllAppsCategory.name))
 
   override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment

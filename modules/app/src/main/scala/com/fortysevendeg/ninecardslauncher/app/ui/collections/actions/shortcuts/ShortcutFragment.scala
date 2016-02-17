@@ -18,8 +18,6 @@ class ShortcutFragment
   with ShortcutComposer
   with NineCardIntentConversions {
 
-  implicit lazy val di: Injector = new Injector
-
   override def getLayoutId: Int = R.layout.list_action_fragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
