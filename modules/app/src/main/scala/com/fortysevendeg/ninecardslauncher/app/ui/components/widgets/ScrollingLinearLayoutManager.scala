@@ -36,7 +36,7 @@ trait ScrollingLinearLayoutManager {
 
   class TopSmoothScroller(
     recyclerView: RecyclerView,
-    speedFactor: Float) // If the previous call is scrolling, we don't want to onStop in startSmoothScroll
+    speedFactor: Float)
     extends LinearSmoothScroller(recyclerView.getContext) {
 
     def computeScrollVectorForPosition(targetPosition: Int): PointF = self.computeScrollVectorForPosition(targetPosition)

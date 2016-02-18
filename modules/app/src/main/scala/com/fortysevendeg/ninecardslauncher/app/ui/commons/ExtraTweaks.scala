@@ -225,6 +225,8 @@ object ExtraTweaks {
 
   def rvScrollToTop: Tweak[RecyclerView] = Tweak[RecyclerView](_.scrollToPosition(0))
 
+  def rvInvalidateItemDecorations: Tweak[RecyclerView] = Tweak[RecyclerView](_.invalidateItemDecorations())
+
   def uiSnackbarShort(res: Int) = Tweak[View] { view =>
     runUi(Ui(Snackbar.make(view, res, Snackbar.LENGTH_SHORT).show()))
   }

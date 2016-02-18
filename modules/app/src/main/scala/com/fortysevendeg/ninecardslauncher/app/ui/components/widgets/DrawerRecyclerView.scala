@@ -2,25 +2,23 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
-import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
+import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.MotionEvent._
-import android.view.{VelocityTracker, MotionEvent, ViewConfiguration}
+import android.view.{MotionEvent, VelocityTracker, ViewConfiguration}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{TranslationAnimator, Scrolling, Stopped, ViewState}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FastScrollerTransformsListener, SearchBoxAnimatedController}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.HighlightSnails
-import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, TranslationAnimator, ViewState}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
+import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
-  extends RecyclerView(context, attr, defStyleAttr)
-  with FastScrollerTransformsListener { self =>
+  extends RecyclerView(context, attr, defStyleAttr) { self =>
 
   def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
 
@@ -127,16 +125,6 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     case lm: ScrollingLinearLayoutManager => lm.blockScroll = bs
     case _ =>
   }
-
-  override def inactiveItems: Ui[_] =
-    getLayoutManager match {
-      case lm: LinearLayoutManager =>
-        Ui.sequence(0 to getChildCount map { item =>
-          val view = Option(getChildAt(item))
-          view <~ HighlightSnails.opaque
-        }:_*)
-      case _ => Ui.nop
-    }
 
   def movementByOverScroll(delta: Float): Ui[_] = if (overScroll(delta)) {
     transformPanelCanvas(0f)

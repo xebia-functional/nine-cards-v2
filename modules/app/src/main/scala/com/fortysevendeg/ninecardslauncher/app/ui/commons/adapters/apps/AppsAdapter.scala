@@ -9,7 +9,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.{AdapterStyles, CounterStatuses}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps}
@@ -29,13 +28,10 @@ case class AppsAdapter(
 
   val heightItem = resGetDimensionPixelSize(R.dimen.height_app_item)
 
-  var statuses = CounterStatuses(count = apps.count())
-
   override def getItemCount: Int = apps.count()
 
-  override def onBindViewHolder(vh: AppsIterableHolder, position: Int): Unit = {
-    runUi(vh.bind(apps.moveToPosition(position), position, statuses.selectItems, statuses.isActive(position)))
-  }
+  override def onBindViewHolder(vh: AppsIterableHolder, position: Int): Unit =
+    runUi(vh.bind(apps.moveToPosition(position), position))
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): AppsIterableHolder = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.app_item, parent, false)
@@ -62,7 +58,6 @@ case class AppsAdapter(
     apps.close()
     apps = iter
     notifyDataSetChanged()
-    statuses = statuses.reset
   }
 
   def close() = apps.close()
@@ -72,28 +67,18 @@ case class AppsAdapter(
   override def getHeightItem: Int = heightItem
 
   override def getColumns: Int = columnsLists
-
-  override def activeItems(f: Int, c: Int): Unit = statuses = statuses.active(from = f, count = c)
-
-  override def inactiveItems(): Unit = statuses = statuses.reset
 }
 
 case class AppsIterableHolder(content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.ViewHolder(content)
-  with TypedFindView
-  with AdapterStyles {
-
-  override val selectedScale: Float = 1.1f
-
-  override val unselectedAlpha = resGetInteger(R.integer.appdrawer_alpha_unselected_item_percentage).toFloat / 100
+  with TypedFindView {
 
   lazy val icon = Option(findView(TR.simple_item_icon))
 
   lazy val name = Option(findView(TR.simple_item_name))
 
-  def bind(app: App, position: Int, selectItems: Boolean, active: Boolean): Ui[_] =
-    (content <~ contentStyle(selectItems, active)) ~
-      (icon <~ ivCardUri(app.imagePath, app.name)) ~
+  def bind(app: App, position: Int): Ui[_] =
+    (icon <~ ivCardUri(app.imagePath, app.name)) ~
       (name <~ tvText(app.name)) ~
       (content <~ vSetPosition(position))
 

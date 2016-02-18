@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
-import android.util.Log
 import android.view.View
 import android.widget.{FrameLayout, ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -18,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
@@ -29,7 +29,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
@@ -198,6 +198,7 @@ trait DrawerComposer
           move = moveMovementAppsContacts,
           end = endMovementAppsContacts
         )) <~
+        rvAddItemDecoration(new SelectedItemDecoration) <~
         (searchBoxView map drvAddController getOrElse Tweak.blank)) ~
       (scrollerLayout <~
         scrollableStyle(colorPrimary)) ~
@@ -342,6 +343,7 @@ trait DrawerComposer
     signalType: FastScrollerSignalType = FastScrollerText) =
     (recycler <~
       rvLayoutManager(layoutManager) <~
+      vAddField(SelectedItemDecoration.showLine, adapter.isInstanceOf[AppsAdapter]) <~
       rvAdapter(adapter) <~
       rvScrollToTop) ~
       scrollerLayoutUi(counters, signalType)
