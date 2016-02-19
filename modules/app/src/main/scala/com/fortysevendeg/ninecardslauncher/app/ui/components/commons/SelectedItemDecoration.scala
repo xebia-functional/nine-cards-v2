@@ -5,6 +5,7 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.{ItemDecoration, State}
+import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
@@ -12,14 +13,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrolle
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailTextCardColor, NineCardsTheme, SearchBackgroundColor}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
-import macroid.FullDsl._
 
 class SelectedItemDecoration(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends ItemDecoration {
 
   val size = resGetDimensionPixelSize(R.dimen.padding_xlarge)
 
-  val stroke = 1 dp
+  val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin)
 
   val line = {
     val d = new ShapeDrawable(new RectShape)
@@ -41,27 +41,28 @@ class SelectedItemDecoration(implicit contextWrapper: ContextWrapper, theme: Nin
       count <- recyclerView.getField[Int](FastScrollerView.fastScrollerCountKey)
     } yield {
       val showLine = recyclerView.getField[Boolean](SelectedItemDecoration.showLine) getOrElse false
-      0 to recyclerView.getChildCount foreach { i =>
-        val maybeChild = recyclerView.getChildAt(i)
-        for {
-          child <- Option(maybeChild)
-          position <- child.getPosition
-          params <- Option(child.getLayoutParams)
-        } yield {
-          if (position < pos || position >= (pos + count)) {
-            divider.setBounds(child.getLeft, child.getTop, child.getRight, child.getBottom)
-            divider.draw(c)
-          } else if (showLine) {
-            val left = child.getLeft + (child.getWidth / 2) - (size / 2)
-            val right = left + size
-            val top = child.getTop + child.getHeight - child.getPaddingBottom
-            val bottom = top + stroke
-            line.setBounds(left, top, right, bottom)
-            line.draw(c)
-          }
-        }
+      (0 to recyclerView.getChildCount flatMap (i => Option(recyclerView.getChildAt(i)))) foreach { view =>
+        draw(c, view, pos, count, showLine)
       }
+    }
+  }
 
+  private[this] def draw(c: Canvas, child: View, pos: Int, count: Int, showLine: Boolean) = {
+    for {
+      position <- child.getPosition
+      params <- Option(child.getLayoutParams)
+    } yield {
+      if (position < pos || position >= (pos + count)) {
+        divider.setBounds(child.getLeft, child.getTop, child.getRight, child.getBottom)
+        divider.draw(c)
+      } else if (showLine) {
+        val left = child.getLeft + (child.getWidth / 2) - (size / 2)
+        val right = left + size
+        val top = child.getTop + child.getHeight - child.getPaddingBottom
+        val bottom = top + stroke
+        line.setBounds(left, top, right, bottom)
+        line.draw(c)
+      }
     }
   }
 

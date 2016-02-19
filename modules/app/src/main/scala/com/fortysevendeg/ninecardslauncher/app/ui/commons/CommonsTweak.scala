@@ -6,7 +6,7 @@ import android.view.View
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import ViewOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -19,14 +19,14 @@ object CommonsTweak {
     val radius = resGetDimensionPixelSize(R.dimen.radius_default)
     Lollipop.ifSupportedThen {
       vBackgroundColor(color) +
-        ExtraTweaks.vClipBackground(radius = radius, horizontalPadding = horizontalPadding) +
+        vClipBackground(radius, horizontalPadding = horizontalPadding) +
         vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
     } getOrElse {
       val s = 0 until 8 map (_ => radius.toFloat)
-      val d = new ShapeDrawable(new RoundRectShape(s.toArray, javaNull, javaNull))
-      d.getPaint.setColor(color)
+      val drawable = new ShapeDrawable(new RoundRectShape(s.toArray, javaNull, javaNull))
+      drawable.getPaint.setColor(color)
       // TODO We should include horizontal padding
-      vBackground(d)
+      vBackground(drawable)
     }
   }
 
