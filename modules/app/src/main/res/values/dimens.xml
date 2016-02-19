@@ -161,5 +161,6 @@
 
     <!-- Profile -->
     <dimen name="height_profile_user">180dp</dimen>
+    <dimen name="margin_bottom_item_heder">36dp</dimen>
 
 </resources>

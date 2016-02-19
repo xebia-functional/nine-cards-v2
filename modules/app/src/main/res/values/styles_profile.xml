@@ -92,6 +92,8 @@
     <style name="ProfileAccountsItemHeader">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:layout_marginBottom">@dimen/margin_bottom_item_heder</item>
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:textColor">@color/text_default_subtitle</item>
     </style>
@@ -99,21 +101,22 @@
     <style name="ProfileAccountsItemLayout">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
         <item name="android:orientation">vertical</item>
     </style>
 
     <style name="ProfileAccountsItemTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:textColor">@color/text_default_subtitle</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/text_default_title</item>
     </style>
 
     <style name="ProfileAccountsItemSubtitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:textColor">@color/text_default_title</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
     </style>
 
 </resources>

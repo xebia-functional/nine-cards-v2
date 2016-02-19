@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters
 import android.support.v7.widget.RecyclerView
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.AccountsAdapterStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{Header, AccountSync}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -23,37 +23,67 @@ case class AccountsAdapter(items: Seq[AccountSync])(implicit activityContext: Ac
   override def onBindViewHolder(viewHolder: ViewHolderAccountsAdapter, position: Int): Unit =
     runUi(viewHolder.bind(items(position), position))
 
-  override def onCreateViewHolder(parent: ViewGroup, position: Int): ViewHolderAccountsAdapter = {
-    val view = LayoutInflater.from(parent.getContext).inflate(getItemViewLayout(position), parent, false)
-    new ViewHolderAccountsAdapter(view)
-  }
+  override def onCreateViewHolder(parent: ViewGroup, position: Int): ViewHolderAccountsAdapter =
+    items(position).accountSyncType match {
+      case `Header` =>
+        android.util.Log.d("9Cards", s"----> Creating header item for ${items(position)}")
+        val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_account_item_header, parent, false)
+        new ViewHolderAccountsHeaderAdapter(view)
+      case _ =>
+        android.util.Log.d("9Cards", s"----> Creating simple item for ${items(position)}")
+        val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_account_item, parent, false)
+        new ViewHolderAccountItemAdapter(view)
+    }
 
   override def getItemViewType(position: Int): Int =
-    if (items(position).accountSyncType == Header) headerType else itemType
-
-  private[this] def getItemViewLayout(position: Int): Int =
-    getItemViewType(position) match {
-      case `headerType` => R.layout.profile_account_item_header
-      case _ => R.layout.profile_account_item
+    if (items(position).accountSyncType == Header) {
+      android.util.Log.d("9Cards", s"----> Return type $headerType item for ${items(position)}")
+      headerType
+    } else {
+      android.util.Log.d("9Cards", s"----> Return type $itemType item for ${items(position)}")
+      itemType
     }
 
 }
 
-case class ViewHolderAccountsAdapter(content: View)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+abstract class ViewHolderAccountsAdapter(content: View)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
-  with AccountsAdapterStyles
   with TypedFindView {
+
+  def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_]
+
+  override def findViewById(id: Int): View = content.findViewById(id)
+
+}
+
+case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+  extends ViewHolderAccountsAdapter(content) {
+
+  lazy val titleView = Option(findView(TR.title))
+
+  def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
+    {
+      android.util.Log.d("9Cards", s"----> Binding header item $accountSync")
+      titleView <~ tvText(accountSync.title)
+    }
+
+}
+
+case class ViewHolderAccountItemAdapter(content: View)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+  extends ViewHolderAccountsAdapter(content) {
 
   lazy val titleView = Option(findView(TR.title))
 
   lazy val subtitleView = Option(findView(TR.subtitle))
 
-  runUi(content <~ rootStyle())
-
   def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
-    (titleView <~ tvText(accountSync.title)) ~
-      (accountSync.subtitle map (s => subtitleView <~ tvText(s)) getOrElse Ui.nop)
-
-  override def findViewById(id: Int): View = content.findViewById(id)
+    {
+      android.util.Log.d("9Cards", s"----> Binding simple item $accountSync")
+      (titleView <~ tvText(accountSync.title)) ~
+        (subtitleView <~ (accountSync.subtitle match {
+          case Some(s) => tvText(s) + vVisible
+          case None => vGone
+        }))
+    }
 
 }

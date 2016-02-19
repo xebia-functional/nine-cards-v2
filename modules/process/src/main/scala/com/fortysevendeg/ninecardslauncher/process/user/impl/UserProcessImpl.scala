@@ -32,7 +32,7 @@ class UserProcessImpl(
       (for {
         loginResponse <- apiServices.login(email, toGoogleDevice(device))
         Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        _ <- persistenceServices.updateUser(toUpdateRequest(id, userDB, loginResponse, device))
+        _ <- persistenceServices.updateUser(toUpdateRequest(id, email, userDB, loginResponse, device))
         _ <- syncInstallation(id, None, loginResponse.user.id, None)
       } yield SignInResponse(loginResponse.statusCode)).resolve[UserException]
     } getOrElse {

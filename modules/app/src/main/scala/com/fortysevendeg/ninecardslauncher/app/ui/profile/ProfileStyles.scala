@@ -33,12 +33,3 @@ trait SubscriptionsAdapterStyles {
     }
 
 }
-
-trait AccountsAdapterStyles {
-
-  def rootStyle()(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
-    Tweak[View] { view =>
-
-    }
-
-}
