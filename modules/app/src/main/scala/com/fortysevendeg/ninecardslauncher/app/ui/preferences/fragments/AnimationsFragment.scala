@@ -8,6 +8,7 @@ class AnimationsFragment extends PreferenceFragment {
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
+    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.animationsTitle)))
     addPreferencesFromResource(R.xml.preferences_animations)
   }
 

@@ -8,6 +8,7 @@ class AboutFragment extends PreferenceFragment {
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
+    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.aboutTitle)))
     addPreferencesFromResource(R.xml.preferences_about)
   }
 

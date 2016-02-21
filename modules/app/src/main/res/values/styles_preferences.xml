@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="PreferencesActionBar" parent="@android:style/Widget.ActionBar">
+        <item name="android:background">@color/primary</item>
+        <item name="android:titleTextStyle">@style/PreferencesTitleBar</item>
+        <item name="titleTextStyle">@style/PreferencesTitleBar</item>
+        <item name="android:homeAsUpIndicator">@drawable/icon_action_bar_arrow_back</item>
+        <item name="homeAsUpIndicator">@drawable/icon_action_bar_arrow_back</item>
+    </style>
+
+    <style name="PreferencesTitleBar" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:textColor">@color/toolbar_title</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:layout_gravity">top</item>
+    </style>
+
+</resources>

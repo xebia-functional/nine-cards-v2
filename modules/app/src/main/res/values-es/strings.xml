@@ -199,13 +199,11 @@
     <!-- Preferences -->
 
     <!-- Preferences Default Launcher -->
-    <string name="defaultLauncher">Establecer como launcher por defecto</string>
+    <string name="defaultLauncherTitle">Lanzador por Defecto</string>
+    <string name="defaultLauncher">Establecer como Lanzador por Defecto</string>
 
     <!-- Preferences Personalization -->
     <string name="personalizationPreferences">Personalización</string>
-
-    <string name="themesPreferences">Temas</string>
-    <string name="themes">Temas</string>
 
     <string name="themesTitle">Temas</string>
     <string name="themesSummary">Resumen de Temas</string>
@@ -221,8 +219,8 @@
     <string name="colouredGoogleLogo">Coloreado</string>
     <string name="themeColourGoogleLogo">Color del Tema</string>
 
-    <string name="appDrawerPreferences">Cajón de Aplicaciones</string>
-    <string name="appDrawer">Cajón de Aplicaciones</string>
+    <string name="appDrawerTitle">Cajón de Aplicaciones</string>
+    <string name="appDrawerSummary">Resumen de Cajón de Aplicaciones</string>
 
     <string name="defaultWindowTitle">Apertura de Ventana por defecto</string>
     <string name="defaultWindowSummary">Resumen de Apertura de Ventana por defecto</string>
@@ -243,8 +241,8 @@
     <string name="windowIconsClassic">Clásico</string>
     <string name="windowIconsNineCards">9Cards</string>
 
-    <string name="sizesPreferences">Tamaños</string>
-    <string name="sizes">Tamaños</string>
+    <string name="sizesTitle">Tamaños</string>
+    <string name="sizesSummary">Resumen de Tamaños</string>
 
     <string name="fontsTitle">Fuentes</string>
     <string name="fontsSummary">Resumen de Fuentes</string>
@@ -267,8 +265,8 @@
     <string name="cardPaddingsMedium">Mediano</string>
     <string name="cardPaddingsBigger">Grande</string>
 
-    <string name="animationsPreferences">Animaciones</string>
-    <string name="animations">Animaciones</string>
+    <string name="animationsTitle">Animaciones</string>
+    <string name="animationsSummary">Resumen de Animaciones</string>
 
     <string name="speedTitle">Velocidad</string>
     <string name="speedSummary">Resumen de Velocidad</string>
@@ -312,14 +310,16 @@
     <string name="collectionDetailCardAnimationsTBD">TBD</string>
     <string name="collectionDetailCardAnimationsNoAnimation">Sin Animación</string>
 
-    <string name="newAppPreferences">TBD</string>
+    <string name="newAppTitle">Nueva aplicación</string>
+    <string name="newAppSummary">Resumen de Nueva Aplicación</string>
     <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->
     <string name="others">Otros</string>
 
     <!-- Preferences About -->
-    <string name="about">Sobre</string>
+    <string name="aboutTitle">Sobre</string>
+    <string name="aboutSummary">Resumen de Sobre</string>
 
     <string name="rateGooglePlay">Puntúa en Google Play</string>
 
@@ -333,7 +333,8 @@
     <string name="inviteUsBeer">¿Te ha gustado? ¿Nos invitas a una cervecita?</string>
 
     <!-- Preferences Help -->
-    <string name="help">Ayuda</string>
+    <string name="helpTitle">Ayuda</string>
+    <string name="helpSummary">Resumen de Ayuda</string>
 
     <string name="userCommunity">Comunidad de Usuarios de 9 Cards </string>
     <string name="videoChannel">Canal de Video sobre 9 Cards</string>

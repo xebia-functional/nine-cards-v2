@@ -22,7 +22,7 @@
     <string name="configurationTitle">Configuration</string>
     <string name="wallpaperTitle">Wallpaper</string>
     <string name="androidSettingsTitle">Android Settings</string>
-    <string name="nineCardsSettingsTitle">9Cards Setting</string>
+    <string name="nineCardsSettingsTitle">9Cards Settings</string>
     <string name="widgetsTitle">Widgets</string>
 
     <!-- Wizard -->
@@ -207,13 +207,11 @@
     <!-- Preferences -->
 
     <!-- Preferences Default Launcher -->
+    <string name="defaultLauncherTitle">Default Launcher</string>
     <string name="defaultLauncher">Set as the default launcher</string>
 
     <!-- Preferences Personalization -->
     <string name="personalizationPreferences">Personalization</string>
-
-    <string name="themesPreferences">Themes</string>
-    <string name="themes">Themes</string>
 
     <string name="themesTitle">Themes</string>
     <string name="themesSummary">Themes Summary</string>
@@ -229,8 +227,8 @@
     <string name="colouredGoogleLogo">Coloured</string>
     <string name="themeColourGoogleLogo">Theme\'s Colour</string>
 
-    <string name="appDrawerPreferences">App Drawer</string>
-    <string name="appDrawer">App Drawer</string>
+    <string name="appDrawerTitle">App Drawer</string>
+    <string name="appDrawerSummary">App Drawer Summary</string>
 
     <string name="defaultWindowTitle">Default Window Open</string>
     <string name="defaultWindowSummary">Default Window Summary</string>
@@ -251,8 +249,8 @@
     <string name="windowIconsClassic">Classic</string>
     <string name="windowIconsNineCards">9Cards</string>
 
-    <string name="sizesPreferences">Sizes</string>
-    <string name="sizes">Sizes</string>
+    <string name="sizesTitle">Sizes</string>
+    <string name="sizesSummary">Sizes Summary</string>
 
     <string name="fontsTitle">Fonts</string>
     <string name="fontsSummary">Fonts Summary</string>
@@ -275,8 +273,8 @@
     <string name="cardPaddingsMedium">Medium</string>
     <string name="cardPaddingsBigger">Bigger</string>
 
-    <string name="animationsPreferences">Animations</string>
-    <string name="animations">Animations</string>
+    <string name="animationsTitle">Animations</string>
+    <string name="animationsSummary">Animations Summary</string>
 
     <string name="speedTitle">Speed</string>
     <string name="speedSummary">Speed Summary</string>
@@ -320,14 +318,16 @@
     <string name="collectionDetailCardAnimationsTBD">TBD</string>
     <string name="collectionDetailCardAnimationsNoAnimation">No Animation</string>
 
-    <string name="newAppPreferences">TBD</string>
+    <string name="newAppTitle">New App</string>
+    <string name="newAppSummary">New App Summary</string>
     <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->
     <string name="others">Others</string>
 
     <!-- Preferences About -->
-    <string name="about">About</string>
+    <string name="aboutTitle">About</string>
+    <string name="aboutSummary">About Summary</string>
 
     <string name="rateGooglePlay">Rate it in Google Play</string>
 
@@ -341,7 +341,8 @@
     <string name="inviteUsBeer">Do you like it? Do you wanna invite us to a beer?</string>
 
     <!-- Preferences Help -->
-    <string name="help">Help</string>
+    <string name="helpTitle">Help</string>
+    <string name="helpSummary">Help Summary</string>
 
     <string name="userCommunity">9 Cards Users Community</string>
     <string name="videoChannel">See the video channel about 9 Cards</string>
