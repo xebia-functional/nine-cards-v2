@@ -42,17 +42,15 @@ object ImageResourceNamed {
 
 object ActivityResult {
 
-  val wizard = 1
+  val shortcutAdded = 1
 
-  val shortcutAdded = 2
+  val selectInfoContact = 2
 
-  val selectInfoContact = 3
+  val selectInfoIcon = 3
 
-  val selectInfoIcon = 4
+  val selectInfoColor = 4
 
-  val selectInfoColor = 5
-
-  val resolveGooglePlayConnection = 6
+  val resolveGooglePlayConnection = 5
 
 }
 

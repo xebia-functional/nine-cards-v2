@@ -210,6 +210,8 @@ trait CollectionsComposer
     }
   }
 
+  protected def isEmptyCollections = workspaces exists (_.isEmptyCollections)
+
   protected def getItemsForFabMenu(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]) = Seq(
     getUi(w[WorkSpaceItemMenu] <~ workspaceButtonCreateCollectionStyle <~ FuncOn.click { view: View =>
       showAction(f[NewCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection))

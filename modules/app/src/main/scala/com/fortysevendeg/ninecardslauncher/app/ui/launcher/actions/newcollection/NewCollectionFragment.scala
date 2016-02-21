@@ -25,8 +25,6 @@ class NewCollectionFragment
   with NewCollectionComposer
   with NineCardIntentConversions {
 
-  implicit lazy val di: Injector = new Injector
-
   override def getLayoutId: Int = R.layout.new_collection
 
   override def useFab: Boolean = true

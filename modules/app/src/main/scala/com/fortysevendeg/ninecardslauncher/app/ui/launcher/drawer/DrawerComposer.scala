@@ -28,7 +28,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Tweak, Ui}
@@ -168,7 +168,7 @@ trait DrawerComposer
       createDrawerPagers
 
   private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
-    val colorPrimary = resGetColor(R.color.primary)
+    val colorPrimary = theme.get(PrimaryColor)
     (searchBoxView <~
       sbavChangeListener(self) <~
       sbavOnChangeText((text: String, boxView: BoxView) => {
@@ -227,9 +227,12 @@ trait DrawerComposer
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
 
-  def revealOutDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  def revealOutDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val searchIsEmpty = searchBoxView exists (_.isEmpty)
     (searchPanel <~ vVisible) ~
-      (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData))
+      (searchBoxView <~ sbavClean) ~
+      (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData(searchIsEmpty)))
+  }
 
   def addApps(
     apps: IterableApps,
@@ -273,11 +276,12 @@ trait DrawerComposer
     paginationDrawerPanel <~ vgAddViews(pagerViews)
   }
 
-  private[this] def resetData(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = if (isShowingAppsAlphabetical) {
-    (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
-  } else {
-    loadAppsAlphabetical
-  }
+  private[this] def resetData(searchIsEmpty: Boolean)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+    if (searchIsEmpty && isShowingAppsAlphabetical) {
+      (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
+    } else {
+      closeCursorAdapter ~ loadAppsAlphabetical
+    }
 
   private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.name))
 

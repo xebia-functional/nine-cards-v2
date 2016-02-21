@@ -1,3 +1,5 @@
+[![codecov.io](https://codecov.io/github/47deg/nine-cards-v2/coverage.svg?token=E9sGVv2ii7&branch=master)](https://codecov.io/github/47deg/nine-cards-v2?branch=master)
+
 # 9Cards v2
 
 9 Cards does the bulk of the work for you, organizing your apps into collections. Get quick and easy access to the apps you need most

@@ -29,10 +29,6 @@ class ContactsFragment
 
   val tagDialog = "dialog"
 
-  implicit lazy val di: Injector = new Injector
-
-  implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
-
   override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {

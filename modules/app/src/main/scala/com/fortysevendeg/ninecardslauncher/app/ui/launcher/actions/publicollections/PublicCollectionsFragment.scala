@@ -23,10 +23,6 @@ class PublicCollectionsFragment
   with PublicCollectionsListener
   with PublicCollectionsTasks {
 
-  implicit lazy val di: Injector = new Injector
-
-  implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
-
   lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
 
   override def getLayoutId: Int = R.layout.list_action_fragment
@@ -46,7 +42,7 @@ class PublicCollectionsFragment
   override def saveSharedCollection(sharedCollection: SharedCollection): Unit =
     Task.fork(addCollection(sharedCollection).run).resolveAsyncUi(
       onResult = (c) => {
-        activity[LauncherActivity] map (_.addCollection(c))
+        activity[LauncherActivity] foreach (_.addCollection(c))
         unreveal()
       },
       onException = (ex) => showError(R.string.contactUsError, loadPublicCollections()))
