@@ -162,7 +162,5 @@
 
     <!-- Profile -->
     <dimen name="height_profile_user">180dp</dimen>
-    <dimen name="margin_bottom_item_header">36dp</dimen>
-    <dimen name="size_small_icon_error">72dp</dimen>
 
 </resources>

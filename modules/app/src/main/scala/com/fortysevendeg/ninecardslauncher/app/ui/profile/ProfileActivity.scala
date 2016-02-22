@@ -135,13 +135,12 @@ class ProfileActivity
 
   private[this] def loadUserEmail(): Unit =
     Task.fork(loadSingedEmail.run).resolveAsyncUi(
-      onResult = email => {
+      onResult = email => Ui {
         val client = createGoogleDriveClient(email)
         clientStatuses = clientStatuses.copy(
           apiClient = Some(client),
           username = Some(email))
         client.connect()
-        Ui.nop
       },
       onException = (_) => showError(R.string.errorLoadingUser, loadUserEmail),
       onPreTask = () => showLoading
