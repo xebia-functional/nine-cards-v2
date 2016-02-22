@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+            android:key="fonts"
+            android:defaultValue="1"
+            android:entries="@array/fonts"
+            android:entryValues="@array/fontsValues"
+            android:title="@string/fontsTitle"
+            android:summary="@string/fontsSummary"/>
+
+    <ListPreference
+            android:key="icons"
+            android:defaultValue="1"
+            android:entries="@array/icons"
+            android:entryValues="@array/iconsValues"
+            android:title="@string/iconsTitle"
+            android:summary="@string/iconsSummary"/>
+
+    <ListPreference
+            android:key="cardPadding"
+            android:defaultValue="1"
+            android:entries="@array/cardPaddings"
+            android:entryValues="@array/cardPaddingsValues"
+            android:title="@string/cardPaddingsTitle"
+            android:summary="@string/cardPaddingsSummary"/>
+
+</PreferenceScreen>
