@@ -202,4 +202,150 @@
 
     <string name="errorLoadingUser">Error cargando usuario</string>
 
+    <!-- Preferences -->
+
+    <!-- Preferences Default Launcher -->
+    <string name="defaultLauncherTitle">Lanzador por Defecto</string>
+    <string name="defaultLauncher">Establecer como Lanzador por Defecto</string>
+
+    <!-- Preferences Personalization -->
+    <string name="personalizationPreferences">Personalización</string>
+
+    <string name="themesTitle">Temas</string>
+    <string name="themesSummary">Resumen de Temas</string>
+
+    <string name="themesDark">Oscuro</string>
+    <string name="themesLight">Claro</string>
+    <string name="themesMaterial">Material</string>
+    <string name="themes9Cards">9Cards</string>
+
+    <string name="googleLogoTitle">Logo de Google</string>
+    <string name="googleLogoSummary">Resumen de Logo de Google</string>
+
+    <string name="colouredGoogleLogo">Coloreado</string>
+    <string name="themeColourGoogleLogo">Color del Tema</string>
+
+    <string name="appDrawerTitle">Cajón de Aplicaciones</string>
+    <string name="appDrawerSummary">Resumen de Cajón de Aplicaciones</string>
+
+    <string name="defaultWindowTitle">Apertura de Ventana por defecto</string>
+    <string name="defaultWindowSummary">Resumen de Apertura de Ventana por defecto</string>
+
+    <string name="defaultWindowApps">Aplicaciones</string>
+    <string name="defaultWindowContacts">Contactos</string>
+
+    <string name="letterAnimationTitle">Animación de la Letra</string>
+    <string name="letterAnimationSummary">Animaciones para mostrar la letra seleccionada</string>
+
+    <string name="letterAnimations1">TBD 1</string>
+    <string name="letterAnimations2">TBD 2</string>
+    <string name="letterAnimations3">TBD 3</string>
+
+    <string name="windowIconTitle">Icono de ventana</string>
+    <string name="windowIconSummary">Icono para acceder a la ventana</string>
+
+    <string name="windowIconsClassic">Clásico</string>
+    <string name="windowIconsNineCards">9Cards</string>
+
+    <string name="sizesTitle">Tamaños</string>
+    <string name="sizesSummary">Resumen de Tamaños</string>
+
+    <string name="fontsTitle">Fuentes</string>
+    <string name="fontsSummary">Resumen de Fuentes</string>
+
+    <string name="fontsSmall">Pequeña</string>
+    <string name="fontsMedium">Mediana</string>
+    <string name="fontsBigger">Grande</string>
+
+    <string name="iconsTitle">Iconos</string>
+    <string name="iconsSummary">Resumen de Iconos</string>
+
+    <string name="iconsSmall">Pequeño</string>
+    <string name="iconsMedium">Mediano</string>
+    <string name="iconsBigger">Grande</string>
+
+    <string name="cardPaddingsTitle">Márgenes de Tarjetas</string>
+    <string name="cardPaddingsSummary">Resumen de Márgenes de Tarjetas</string>
+
+    <string name="cardPaddingsSmall">Pequeño</string>
+    <string name="cardPaddingsMedium">Mediano</string>
+    <string name="cardPaddingsBigger">Grande</string>
+
+    <string name="animationsTitle">Animaciones</string>
+    <string name="animationsSummary">Resumen de Animaciones</string>
+
+    <string name="speedTitle">Velocidad</string>
+    <string name="speedSummary">Resumen de Velocidad</string>
+
+    <string name="speedsSlow">Lenta</string>
+    <string name="speedsNormal">Normal</string>
+    <string name="speedsFast">Rápida</string>
+
+    <string name="collectionOpeningTitle">Abrir Colecciones</string>
+    <string name="collectionOpeningSummary">Resumen de Abrir Colecciones</string>
+
+    <string name="collectionOpeningsMoveIcon">Mover Icono</string>
+    <string name="collectionOpeningsCircleReveal">Círculo</string>
+    <string name="collectionOpeningsSimple">Simple</string>
+    <string name="collectionOpeningsNoAnimation">Sin Animación</string>
+
+    <string name="appDrawerOpeningTitle">Abrir Cajón de Aplicaciones</string>
+    <string name="appDrawerOpeningSummary">Resumen de Abrir Cajón de Aplicaciones</string>
+
+    <string name="appDrawerOpeningsCircleReveal">Círculo</string>
+    <string name="appDrawerOpeningsFade">Desvanecer</string>
+    <string name="appDrawerOpeningsNoAnimation">Sin Animación</string>
+
+    <string name="workspaceAnimationTitle">Animación de Escritorio</string>
+    <string name="workspaceAnimationSummary">Resumen de Animación de Escritorio</string>
+
+    <string name="workspaceAnimationsHorizontalSlide">Deslizamiento Horizontal</string>
+    <string name="workspaceAnimationsTBD">TBD</string>
+
+    <string name="appDrawerAppsAnimationTitle">Animaciones de las Aplicaciones en el Cajón</string>
+    <string name="appDrawerAppsAnimationSummary">Resumen de Animaciones de las Aplicaciones en el Cajón</string>
+
+    <string name="appDrawerAppsAnimationsSlide">Deslizamiento desde el fondo</string>
+    <string name="appDrawerAppsAnimationsTBD">TBD</string>
+    <string name="appDrawerAppsAnimationsNoAnimation">Sin Animación</string>
+
+    <string name="collectionDetailCardAnimationTitle">Animación de las Tarjetas en el Detalle de la Colección</string>
+    <string name="collectionDetailCardAnimationSummary">Resumen de Animación de las Tarjetas en el Detalle de la Colección</string>
+
+    <string name="collectionDetailCardAnimationsSlide">Deslizamiento de las Tarjetas en el Detalle de la Colecció</string>
+    <string name="collectionDetailCardAnimationsTBD">TBD</string>
+    <string name="collectionDetailCardAnimationsNoAnimation">Sin Animación</string>
+
+    <string name="newAppTitle">Nueva aplicación</string>
+    <string name="newAppSummary">Resumen de Nueva Aplicación</string>
+    <string name="installNewAppTBD">TBD</string>
+
+    <!-- Preferences About -->
+    <string name="others">Otros</string>
+
+    <!-- Preferences About -->
+    <string name="aboutTitle">Sobre</string>
+    <string name="aboutSummary">Resumen de Sobre</string>
+
+    <string name="rateGooglePlay">Puntúa en Google Play</string>
+
+    <string name="knowTeam">Conoce al Equipo</string>
+    <string name="followTwitter">Síguenos en Twitter</string>
+    <string name="followFacebook">Síguenos en Facebook</string>
+    <string name="followGooglePlus">Síguenos en Google Plus</string>
+
+    <string name="openSource">¡Somos de Código Abierto!</string>
+    <string name="openSourceSummary">Conoce más sobre el Projecto de Código Abiertot</string>
+    <string name="inviteUsBeer">¿Te ha gustado? ¿Nos invitas a una cervecita?</string>
+
+    <!-- Preferences Help -->
+    <string name="helpTitle">Ayuda</string>
+    <string name="helpSummary">Resumen de Ayuda</string>
+
+    <string name="userCommunity">Comunidad de Usuarios de 9 Cards </string>
+    <string name="videoChannel">Canal de Video sobre 9 Cards</string>
+    <string name="sendFeedback">Envíanos tus opiniones (Lanza AppTentive)</string>
+    <string name="tutorial">Revisa el Tutorial</string>
+    <string name="tos">Términos de Uso</string>
+
 </resources>

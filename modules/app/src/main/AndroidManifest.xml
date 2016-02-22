@@ -35,18 +35,27 @@
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true"
             android:screenOrientation="portrait"
+            android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity"/>
 
         <activity
             android:theme="@style/AppThemeSolid"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
+            android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity" />
 
         <activity
             android:theme="@style/AppThemeSolid"
             android:screenOrientation="portrait"
+            android:label=""
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity"/>
+
+        <activity
+                android:theme="@style/AppThemePreferences"
+                android:screenOrientation="portrait"
+                android:label="@string/nineCardsSettingsTitle"
+                android:name="com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity"/>
 
         <service
             android:name="com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService"/>

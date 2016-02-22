@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceScreen
+            android:title="@string/defaultLauncher"
+            android:key="defaultLauncherKey" />
+
+    <PreferenceCategory android:title="@string/personalizationPreferences">
+
+        <PreferenceScreen
+                android:title="@string/themesTitle"
+                android:key="themesKey"
+                android:summary="@string/themesSummary" />
+
+        <PreferenceScreen
+                android:title="@string/appDrawerTitle"
+                android:key="appDrawerKey"
+                android:summary="@string/appDrawerSummary" />
+
+        <PreferenceScreen
+                android:title="@string/sizesTitle"
+                android:key="sizesKey"
+                android:summary="@string/sizesSummary" />
+
+        <PreferenceScreen
+                android:title="@string/animationsTitle"
+                android:key="animationsKey"
+                android:summary="@string/animationsSummary" />
+
+        <PreferenceScreen
+                android:title="@string/newAppTitle"
+                android:key="newAppKey"
+                android:summary="@string/newAppSummary" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/others">
+
+        <PreferenceScreen
+                android:title="@string/aboutTitle"
+                android:key="aboutKey"
+                android:summary="@string/aboutSummary" />
+
+        <PreferenceScreen
+                android:title="@string/helpTitle"
+                android:key="helpKey"
+                android:summary="@string/helpSummary" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
