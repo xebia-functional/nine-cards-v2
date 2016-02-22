@@ -32,8 +32,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     update = (value: Float) => {
       workSpacesStatuses = workSpacesStatuses.copy(displacement = value)
       updateCanvasMenu()
-    }
-  )
+    })
 
   lazy val sizeCalculateMovement = getHeight
 
