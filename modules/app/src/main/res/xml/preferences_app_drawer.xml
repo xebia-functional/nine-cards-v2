@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+            android:key="defaultWindow"
+            android:defaultValue="0"
+            android:entries="@array/defaultWindows"
+            android:entryValues="@array/defaultWindowsValues"
+            android:title="@string/defaultWindowTitle"
+            android:summary="@string/defaultWindowSummary"/>
+
+    <ListPreference
+            android:key="letterAnimation"
+            android:defaultValue="0"
+            android:entries="@array/letterAnimations"
+            android:entryValues="@array/letterAnimationsValues"
+            android:title="@string/letterAnimationTitle"
+            android:summary="@string/letterAnimationSummary"/>
+
+    <ListPreference
+            android:key="windowIcon"
+            android:defaultValue="0"
+            android:entries="@array/windowIcons"
+            android:entryValues="@array/windowIconsValues"
+            android:title="@string/windowIconTitle"
+            android:summary="@string/windowIconSummary"/>
+
+</PreferenceScreen>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+            android:key="theme"
+            android:defaultValue="3"
+            android:entries="@array/themes"
+            android:entryValues="@array/themesValues"
+            android:title="@string/themesTitle"
+            android:summary="@string/themesSummary"/>
+
+    <ListPreference
+            android:key="googleLogo"
+            android:defaultValue="0"
+            android:entries="@array/googleLogos"
+            android:entryValues="@array/googleLogosValues"
+            android:title="@string/googleLogoTitle"
+            android:summary="@string/googleLogoSummary"/>
+
+</PreferenceScreen>
