@@ -62,12 +62,6 @@
         <item name="tabIndicatorColor">@android:color/white</item>
     </style>
 
-    <style name="ProfileRecyclerLayout">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:scrollbars">none</item>
-    </style>
-
     <style name="ProfileRecyclerView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -122,6 +116,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
+    <style name="ProfileLoading">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
 </resources>

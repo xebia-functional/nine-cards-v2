@@ -31,14 +31,14 @@ object AccountSync {
     AccountSync(
       title = title,
       accountSyncType = Device,
-      subtitle = current.option(context.getResources.getString(R.string.sync_current)))
+      subtitle = current.option(context.getResources.getString(R.string.syncCurrent)))
 
   def syncDevice(title: String, syncDate: Date)(implicit context: ContextSupport) = {
     val time = new PrettyTime().format(syncDate)
     AccountSync(
       title = title,
       accountSyncType = SyncDevice,
-      subtitle = Option(context.getResources.getString(R.string.sync_last_synced, time)))
+      subtitle = Option(context.getResources.getString(R.string.syncLastSynced, time)))
   }
 
 }

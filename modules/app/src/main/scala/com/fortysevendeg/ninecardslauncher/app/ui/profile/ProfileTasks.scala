@@ -24,9 +24,9 @@ trait ProfileTasks {
     val currentDevice = devices.find(_.currentDevice) map { d =>
       AccountSync.syncDevice(title = d.title, d.modifiedDate)
     }
-    ((AccountSync.header(getString(R.string.sync_header_devices)) +:
+    ((AccountSync.header(getString(R.string.syncHeaderDevices)) +:
       createSyncDevices(devices)) :+
-      AccountSync.header(getString(R.string.sync_header_synchronize))) ++
+      AccountSync.header(getString(R.string.syncHeaderSynchronize))) ++
       currentDevice.toSeq
   }
 

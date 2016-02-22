@@ -50,16 +50,14 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/profile_toolbar"
-            app:layout_anchor="@id/profile_user_container_layout"
             style="@style/ProfileToolbar"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_anchor="@id/profile_user_container_layout"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     </android.support.design.widget.CoordinatorLayout>
 
     <ProgressBar
         android:id="@+id/profile_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        style="@style/ProfileLoading"/>
 </FrameLayout>

@@ -82,7 +82,8 @@ trait ProfileComposer
   def showLoading: Ui[_] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
 
   def showError(message: Int, clickAction: () => Unit): Ui[_] =
-    rootLayout <~ uiSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)
+    (rootLayout <~ uiSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
+      (loadingView <~ vInvisible)
 
   def setPublicationsAdapter(items: Seq[String])
       (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
