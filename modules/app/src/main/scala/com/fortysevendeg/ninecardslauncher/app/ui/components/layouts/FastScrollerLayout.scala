@@ -6,7 +6,7 @@ import android.graphics.drawable.{Drawable, GradientDrawable}
 import android.os.Build.VERSION._
 import android.os.Build.VERSION_CODES._
 import android.support.v4.view.MotionEventCompat
-import android.support.v7.widget.RecyclerView.OnScrollListener
+import android.support.v7.widget.RecyclerView._
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.util.AttributeSet
 import android.view.MotionEvent._
@@ -16,9 +16,9 @@ import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
@@ -108,8 +108,6 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] var scrollListener: Option[ScrollListener] = None
 
-  val timeToResetScroller = 1000
-
   var statuses = new FastScrollerStatuses
 
   setClipChildren(false)
@@ -165,26 +163,27 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
             (recyclerView <~ rvScrollToPosition(y)))
         true
       case (_, ACTION_UP | ACTION_CANCEL) =>
-        runUi(recyclerView <~ rvInactiveItems)
         statuses = statuses.resetScrollPosition()
         // If the ScrollState of Recycler is SCROLL_STATE_SETTLING, we wait to resetScroll
         // when the animation is finished using method onScrollStateChanged in OnScrollListener class
         recyclerView foreach { rv =>
-          if (rv.getScrollState != RecyclerView.SCROLL_STATE_SETTLING) {
+          if (rv.getScrollState != SCROLL_STATE_SETTLING) {
             statuses = statuses.resetScroll()
           }
         }
-        runUi(
-          (recyclerView <~ rvResetItems) ~
-            changePosition(y) ~
-            hideSignal ~
-            uiHandlerDelayed({
-              recyclerView <~ rvResetItems
-            }, timeToResetScroller))
+        runUi((recyclerView <~ removeKeys() <~ rvInvalidateItemDecorations) ~ changePosition(y) ~ hideSignal)
         true
       case _ => super.onTouchEvent(event)
     }
   }
+
+  private[this] def addKeys(position: Int, count: Int) =
+    vAddField(FastScrollerView.fastScrollerPositionKey, position) +
+      vAddField(FastScrollerView.fastScrollerCountKey, count)
+
+  private[this] def removeKeys() =
+    vRemoveField(FastScrollerView.fastScrollerPositionKey) +
+      vRemoveField(FastScrollerView.fastScrollerCountKey)
 
   def show: Ui[_] = (signal <~ vGone) ~ (bar <~ vVisible)
 
@@ -239,29 +238,14 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       if (statuses.usingCounters) {
         val item = statuses.counters(position)
         val toPosition = (statuses.counters take position map (_.count)).sum
-        runUi((recyclerView <~ rvActiveItems(toPosition, item.count)) ~ updateSignal(item.term))
-        view.getAdapter.notifyDataSetChanged()
+        runUi(
+          updateSignal(item.term) ~
+            (recyclerView <~ addKeys(toPosition, item.count) <~ rvInvalidateItemDecorations))
         view.smoothScrollToPosition(toPosition)
       } else {
         val toPosition = position * statuses.columns
         view.smoothScrollToPosition(toPosition)
       }
-    }
-  }
-
-  private[this] def rvActiveItems(from: Int, count: Int) = Tweak[RecyclerView] { view =>
-    Option(view.getAdapter) match {
-      case Some(listener: FastScrollerListener) =>
-        listener.activeItems(from, count)
-      case _ =>
-    }
-  }
-
-  private[this] def rvInactiveItems = Tweak[RecyclerView] { view =>
-    Option(view.getAdapter) match {
-      case Some(listener: FastScrollerListener) =>
-        listener.inactiveItems()
-      case _ =>
     }
   }
 
@@ -286,10 +270,6 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   private[this] def getStringResource(name: String) = {
     val resource = getResources.getIdentifier(name, "string", context.getPackageName)
     if (resource == 0) R.string.app_name else resource
-  }
-
-  private[this] def rvResetItems = Tweak[RecyclerView] {
-    case v: FastScrollerTransformsListener => if (statuses.usingCounters) runUi(v.inactiveItems)
   }
 
   private[this] def getPosition(y: Float) = if (statuses.usingCounters) {
@@ -326,7 +306,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
     private[this] var offsetY = 0f
 
-    private[this] var oldState = RecyclerView.SCROLL_STATE_IDLE
+    private[this] var oldState = SCROLL_STATE_IDLE
 
     override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit =
       if (!statuses.moving) {
@@ -345,10 +325,12 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
           y
         }
         runUi(changePosition(move))
+      } else if (recyclerView.getScrollState != statuses.scrollState) {
+        statuses = statuses.copy(scrollState = recyclerView.getScrollState)
       }
 
     override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
-      if (statuses.moving && oldState == RecyclerView.SCROLL_STATE_SETTLING && newState == RecyclerView.SCROLL_STATE_IDLE) {
+      if (statuses.moving && oldState == SCROLL_STATE_SETTLING && newState == SCROLL_STATE_IDLE) {
         statuses = statuses.resetScroll()
       }
       oldState = newState
@@ -364,6 +346,11 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
 }
 
+object FastScrollerView {
+  val fastScrollerPositionKey = "position"
+  val fastScrollerCountKey = "count"
+}
+
 case class FastScrollerStatuses(
   enabled: Boolean = true,
   heightScroller: Int = 0,
@@ -373,6 +360,7 @@ case class FastScrollerStatuses(
   moving: Boolean = false,
   totalItems: Int = 0,
   visibleRows: Int = 0,
+  scrollState: Int = SCROLL_STATE_IDLE,
   lastScrollToPosition: Int = -1,
   fastScrollerSignalType: FastScrollerSignalType = FastScrollerText,
   counters: Seq[TermCounter] = Seq.empty) {
@@ -411,7 +399,7 @@ case class FastScrollerStatuses(
 
   def resetScrollPosition(): FastScrollerStatuses = copy(lastScrollToPosition = -1)
 
-  def resetScroll(): FastScrollerStatuses = copy(moving = false)
+  def resetScroll(): FastScrollerStatuses = copy(moving = false, scrollState = SCROLL_STATE_IDLE)
 
   def usingCounters = counters.nonEmpty
 
@@ -424,16 +412,6 @@ trait FastScrollerListener {
   def getHeightItem: Int
 
   def getColumns: Int
-
-  def activeItems(from: Int, count: Int): Unit
-
-  def inactiveItems(): Unit
-
-}
-
-trait FastScrollerTransformsListener {
-
-  def inactiveItems: Ui[_]
 
 }
 

@@ -6,7 +6,7 @@ import android.view.View
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import ViewOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -15,17 +15,18 @@ import macroid.{ContextWrapper, Transformer, Tweak}
 
 object CommonsTweak {
 
-  def vBackgroundBoxWorkspace(color: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
+  def vBackgroundBoxWorkspace(color: Int, horizontalPadding: Int = 0)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
     val radius = resGetDimensionPixelSize(R.dimen.radius_default)
     Lollipop.ifSupportedThen {
       vBackgroundColor(color) +
-        ExtraTweaks.vClipBackground(radius) +
+        vClipBackground(radius, horizontalPadding = horizontalPadding) +
         vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
     } getOrElse {
       val s = 0 until 8 map (_ => radius.toFloat)
-      val d = new ShapeDrawable(new RoundRectShape(s.toArray, javaNull, javaNull))
-      d.getPaint.setColor(color)
-      vBackground(d)
+      val drawable = new ShapeDrawable(new RoundRectShape(s.toArray, javaNull, javaNull))
+      drawable.getPaint.setColor(color)
+      // TODO We should include horizontal padding
+      vBackground(drawable)
     }
   }
 

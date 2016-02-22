@@ -256,7 +256,7 @@ trait CollectionsComposer
         view.setActivated(activatePosition == position)
         view
       }
-      paginationPanel <~ vgAddViews(pagerViews)
+      paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
   private[this] def reloadPagerAndActiveLast(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =

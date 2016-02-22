@@ -94,6 +94,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     }
     statuses = statuses.copy(currentItem = position)
 
+    removeAllViews()
+
     val (lastItem, nextItem) = if (data.length > 1) (data.length - 1, 1) else (0, 0)
     previewViewType = getItemViewType(data.last, lastItem)
     val previous = createView(previewViewType)
