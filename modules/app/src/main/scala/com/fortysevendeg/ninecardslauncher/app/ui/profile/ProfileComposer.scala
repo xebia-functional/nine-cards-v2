@@ -3,13 +3,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.profile
 import android.support.design.widget.TabLayout
 import android.support.design.widget.TabLayout.Tab
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager}
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionItemDecorator
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
@@ -32,6 +31,8 @@ trait ProfileComposer
     with Contexts[AppCompatActivity]
     with ProfileTabListener =>
 
+  lazy val rootLayout = Option(findView(TR.profile_root))
+
   lazy val barLayout = Option(findView(TR.profile_appbar))
 
   lazy val toolbar = Option(findView(TR.profile_toolbar))
@@ -48,12 +49,6 @@ trait ProfileComposer
 
   lazy val loadingView = Option(findView(TR.profile_loading))
 
-  lazy val errorLayout = Option(findView(TR.profile_error_layout))
-
-  lazy val errorMessage = Option(findView(TR.profile_error_message))
-
-  lazy val errorButton = Option(findView(TR.profile_error_button))
-
   lazy val iconIndicatorDrawable = new PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
@@ -65,13 +60,8 @@ trait ProfileComposer
         (getString(R.string.subscriptions), SubscriptionsTab),
         (getString(R.string.accounts), AccountsTab))) ~
       (tabs <~ tlSetListener(this)) ~
-      (loadingView <~ vGone) ~
-      (errorLayout <~ vGone) ~
       (recyclerView <~
-        rvLayoutManager(new GridLayoutManager(activityContextWrapper.application, 1)) <~
-        rvFixedSize <~
-        rvAddItemDecoration(new CollectionItemDecorator) <~
-        rvItemAnimator(new DefaultItemAnimator)) ~
+        rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
       Ui(onProfileTabSelected(PublicationsTab))
 
   def userProfile(name: String, avatarUrl: String)(implicit uiContext: UiContext[_]): Ui[_] =
@@ -89,30 +79,25 @@ trait ProfileComposer
     userContainer <~ vAlpha(alpha)
   }
 
-  def showLoading: Ui[_] = loadingView <~ vVisible
+  def showLoading: Ui[_] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
 
   def showError(message: Int, clickAction: () => Unit): Ui[_] =
-    (errorLayout <~ vVisible) ~
-      (errorMessage <~ tvText(message)) ~
-      (errorButton <~ On.click {
-        clickAction()
-        errorLayout <~ vGone
-      })
+    rootLayout <~ uiSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)
 
   def setPublicationsAdapter(items: Seq[String])
       (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    (recyclerView <~ rvAdapter(new PublicationsAdapter(items))) ~
-      (loadingView <~ vGone)
+    (recyclerView <~ vVisible <~ rvAdapter(new PublicationsAdapter(items))) ~
+      (loadingView <~ vInvisible)
 
   def setSubscriptionsAdapter(items: Seq[String])
       (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    (recyclerView <~ rvAdapter(new SubscriptionsAdapter(items))) ~
-      (loadingView <~ vGone)
+    (recyclerView <~ vVisible <~ rvAdapter(new SubscriptionsAdapter(items))) ~
+      (loadingView <~ vInvisible)
 
   def setAccountsAdapter(items: Seq[AccountSync])
       (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    (recyclerView <~ rvAdapter(new AccountsAdapter(items))) ~
-      (loadingView <~ vGone)
+    (recyclerView <~ vVisible <~ rvAdapter(new AccountsAdapter(items))) ~
+      (loadingView <~ vInvisible)
 
   override def onTabReselected(tab: Tab): Unit = {}
 

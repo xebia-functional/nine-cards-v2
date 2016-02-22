@@ -54,7 +54,7 @@ class WizardActivity
   override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
-    case (WizardStateActionFilter, Some(`stateSuccess`)) => runUi(finishProcess)
+    case (WizardStateActionFilter, Some(`stateSuccess`)) => storeCloudDevice()
     case (WizardStateActionFilter, Some(`stateFaliure`)) => runUi(showUser)
     case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => runUi(showWizard)
     case _ =>
@@ -140,6 +140,15 @@ class WizardActivity
           userCloudDevices => showLoading ~ searchDevices(userCloudDevices),
           onLoadDevicesException)
       case _ => runUi(backToUser(R.string.errorConnectingGoogle))
+    }
+
+  private[this] def storeCloudDevice(): Unit =
+    (getAndroidId, clientStatuses) match {
+      case (Some(androidId), GoogleApiClientStatuses(Some(client), Some(username), _)) =>
+        Task.fork(storeActualDevice(client, androidId, username).run).resolveAsyncUi(
+          _ => finishProcess,
+          _ => finishProcess)
+      case _ =>
     }
 
   private[this] def getAccountAndAndroidId(username: String): Option[(Account, String)] =

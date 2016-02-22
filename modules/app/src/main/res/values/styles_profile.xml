@@ -3,7 +3,6 @@
     <style name="ProfileRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="ProfileCoordinator">
@@ -55,25 +54,25 @@
         <item name="android:textSize">@dimen/text_large</item>
     </style>
     
-    <style name="ProfileTabLayout">
+    <style name="ProfileTabLayout" parent="Widget.Design.TabLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="tabMode">fixed</item>
+        <item name="tabMode">scrollable</item>
         <item name="tabGravity">fill</item>
         <item name="tabIndicatorColor">@android:color/white</item>
     </style>
-    
+
     <style name="ProfileRecyclerLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:scrollbars">none</item>
-        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
     <style name="ProfileRecyclerView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:scrollbars">none</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
     <style name="ProfileRecyclerLoading">
@@ -93,15 +92,21 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">@dimen/padding_large</item>
-        <item name="android:layout_marginBottom">@dimen/margin_bottom_item_heder</item>
+        <item name="android:paddingRight">@dimen/padding_large</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_large</item>
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:textColor">@color/text_default_subtitle</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="ProfileAccountsItemLayout">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:paddingRight">@dimen/padding_large</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
         <item name="android:orientation">vertical</item>
     </style>
 

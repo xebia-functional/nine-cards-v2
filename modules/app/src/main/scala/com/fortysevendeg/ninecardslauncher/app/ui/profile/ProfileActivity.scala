@@ -122,6 +122,7 @@ class ProfileActivity
           loadUserAccounts(client, email)
         case GoogleApiClientStatuses(Some(client), Some(email)) =>
           tryToConnect()
+          runUi(showLoading)
         case _ =>
           loadUserEmail()
       }
@@ -129,9 +130,7 @@ class ProfileActivity
 
   private[this] def loadUserInfo(implicit uiContext: UiContext[_]): Unit =
     Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
-      onResult = userInfo => userProfile(userInfo.email, userInfo.imageUrl),
-      onException = (_) => showError(R.string.errorLoadingUser, () => loadUserInfo(uiContext)),
-      onPreTask = () => showLoading
+      onResult = userInfo => userProfile(userInfo.email, userInfo.imageUrl)
     )
 
   private[this] def loadUserEmail(): Unit =
@@ -142,9 +141,9 @@ class ProfileActivity
           apiClient = Some(client),
           username = Some(email))
         client.connect()
-        showLoading
+        Ui.nop
       },
-      onException = (_) => showError(R.string.errorLoadingUser, () => loadUserEmail()),
+      onException = (_) => showError(R.string.errorLoadingUser, loadUserEmail),
       onPreTask = () => showLoading
     )
 

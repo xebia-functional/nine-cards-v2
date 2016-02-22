@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile_root"
     style="@style/ProfileRoot"
     tools:ignore="RtlHardcoded">
 
@@ -43,36 +44,9 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <FrameLayout
-            style="@style/ProfileRecyclerLayout">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/profile_recycler"
-                style="@style/ProfileRecyclerView"/>
-
-            <ProgressBar
-                android:id="@+id/profile_loading"
-                style="@style/ProfileRecyclerLoading"/>
-
-            <LinearLayout
-                android:id="@+id/profile_error_layout"
-                style="@style/BaseActionsErrorContent">
-
-                <TextView
-                    android:id="@+id/profile_error_message"
-                    style="@style/BaseActionsErrorMessage"/>
-
-                <ImageView
-                    android:id="@+id/profile_error_icon"
-                    style="@style/BaseActionsErrorIcon"/>
-
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/profile_error_button"
-                    style="@style/BaseActionsErrorButton"/>
-
-            </LinearLayout>
-
-        </FrameLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/profile_recycler"
+            style="@style/ProfileRecyclerView"/>
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/profile_toolbar"
@@ -82,4 +56,10 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     </android.support.design.widget.CoordinatorLayout>
-</LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/profile_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+</FrameLayout>

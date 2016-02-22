@@ -207,7 +207,7 @@
     <string name="sync_header_devices">Devices</string>
     <string name="sync_header_synchronize">Synchronization</string>
     <string name="sync_current">Current device</string>
-    <string name="sync_last_synced">Last synced: $s</string>
+    <string name="sync_last_synced">Last synced: %s</string>
 
     <string name="errorLoadingUser">Error loading user</string>
 

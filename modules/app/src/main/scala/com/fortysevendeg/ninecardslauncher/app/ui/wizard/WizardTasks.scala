@@ -10,13 +10,17 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.{ImplicitsCloudStorageProcessExceptions, CloudStorageProcess, CloudStorageProcessException}
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollectionItem, CloudStorageCollection, CloudStorageDevice, CloudStorageDeviceSummary}
+import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardIntentImplicits, Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollectionItem, UserCollection, UserDevice}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
+import play.api.libs.json.Json
 import rapture.core._
+import NineCardIntentImplicits._
 
 import scala.reflect.ClassTag
 import scalaz.{-\/, \/-, \/}
@@ -58,6 +62,21 @@ trait WizardTasks
       userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudStorageResources)
     } yield userCloudDevices
 
+  }
+
+  def storeActualDevice(
+    client: GoogleApiClient,
+    androidId: String,
+    username: String): ServiceDef2[Unit, CollectionException with CloudStorageProcessException] = {
+    val cloudStorageProcess = di.createCloudStorageProcess(client, username)
+    for {
+      collections <- di.collectionProcess.getCollections
+      device = toCloudStorageDevice(
+        deviceId = androidId,
+        deviceName = Build.MODEL,
+        collections = collections)
+      _ <- cloudStorageProcess.createOrUpdateCloudStorageDevice(device)
+    } yield ()
   }
 
   private[this] def verifyAndUpdate(
@@ -133,4 +152,28 @@ trait WizardTasks
       itemType = userCollectionItem.itemType,
       title = userCollectionItem.title,
       intent = userCollectionItem.intent)
+
+  def toCloudStorageDevice(deviceId: String, deviceName: String, collections: Seq[Collection]) =
+    CloudStorageDevice(
+      deviceId = deviceId,
+      deviceName = deviceName,
+      documentVersion = CloudStorageProcess.actualDocumentVersion,
+      collections map toCloudStorageCollection)
+
+  def toCloudStorageCollection(collection: Collection) =
+    CloudStorageCollection(
+      name = collection.name,
+      originalSharedCollectionId = collection.originalSharedCollectionId,
+      sharedCollectionId = collection.sharedCollectionId,
+      sharedCollectionSubscribed = Some(collection.sharedCollectionSubscribed),
+      items = collection.cards map toCloudStorageCollectionItem,
+      collectionType = collection.collectionType,
+      icon = collection.icon,
+      category = collection.appsCategory)
+
+  def toCloudStorageCollectionItem(card: Card) =
+    CloudStorageCollectionItem(
+      itemType = card.cardType.name,
+      title = card.term,
+      intent = Json.toJson(card.intent).toString())
 }
