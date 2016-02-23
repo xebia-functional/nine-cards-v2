@@ -74,14 +74,8 @@ object CollectionRecyclerViewTweaks {
 object DrawerRecyclerViewTweaks {
   type W = DrawerRecyclerView
 
-  def drvDisableScroll(disable: Boolean) = Tweak[W](view => view.statuses = view.statuses.copy(disableScroll = disable))
-
   def drvAddController(controller: SearchBoxAnimatedController) = Tweak[W](_.animatedController = Some(controller))
 
   def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
-
-  def drvEnabled(enabled: Boolean) = Tweak[W] { view =>
-    view.statuses = view.statuses.copy(enabled = enabled)
-  }
 
 }

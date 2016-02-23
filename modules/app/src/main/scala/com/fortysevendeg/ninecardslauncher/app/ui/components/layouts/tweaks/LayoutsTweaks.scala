@@ -194,12 +194,20 @@ object PullToCloseViewTweaks {
 
 object PullToDownViewTweaks {
 
-  def pdvListener(pullToDownListener: PullToDownListener) =
-    Tweak[PullToDownView] (_.listeners = pullToDownListener)
+  def pdvPullingListener(pullToDownListener: PullingListener) =
+    Tweak[PullToDownView] (_.pullingListeners = pullToDownListener)
+
+  def pdvHorizontalListener(horizontalMovementListener: HorizontalMovementListener) =
+    Tweak[PullToDownView] (_.horizontalListener = horizontalMovementListener)
 
   def pdvEnable(enabled: Boolean) =
     Tweak[PullToDownView] { view =>
       view.pullToDownStatuses = view.pullToDownStatuses.copy(enabled = enabled)
+    }
+
+  def pdvHorizontalEnable(enabled: Boolean) =
+    Tweak[PullToDownView] { view =>
+      view.pullToDownStatuses = view.pullToDownStatuses.copy(scrollHorizontalEnabled = enabled)
     }
 
   def pdvResistance(resistance: Float) =

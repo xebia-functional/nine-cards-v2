@@ -203,10 +203,12 @@ trait DrawerComposer
       (scrollerLayout <~
         scrollableStyle(colorPrimary)) ~
       (pullToTabsView <~
+        pdvHorizontalEnable(true) <~
+        pdvHorizontalListener(recycler.get.horizontalMovementListener) <~
         ptvLinkTabs(
           tabs = tabs,
-          start = recycler <~ drvEnabled(false),
-          end = recycler <~ drvEnabled(true)) <~
+          start = Ui.nop,
+          end = Ui.nop) <~
         ptvAddTabsAndActivate(appTabs, 0) <~
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(

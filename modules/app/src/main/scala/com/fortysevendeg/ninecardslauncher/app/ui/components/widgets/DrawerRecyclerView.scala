@@ -1,16 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
-import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
-import android.view.MotionEvent._
-import android.view.{MotionEvent, VelocityTracker, ViewConfiguration}
+import android.view.MotionEvent
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Scrolling, Stopped, TranslationAnimator, ViewState}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Ui}
@@ -34,141 +32,60 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   var statuses = DrawerRecyclerStatuses()
 
-  val mainAnimator = new TranslationAnimator(
-    update = (value: Float) => {
-      statuses = statuses.copy(displacement = value)
-      transformPanelCanvas(value)
+  val horizontalMovementListener = HorizontalMovementListener(
+    start = () => {
+      animatedController foreach (controller => runUi(controller.startMovement))
+      runUi(drawerRecyclerListener.start())
+      statuses = statuses.copy(disableClickItems = true)
+      blockScroll(true)
+    },
+    end = (swiping: Swiping, displacement: Int) => {
+      statuses = statuses.copy(disableClickItems = false, displacement = displacement)
+      runUi(
+        drawerRecyclerListener.end() ~
+          (swiping match {
+            case NoSwipe() => snapDestination()
+            case s => snap(s)
+          }))
+      blockScroll(false)
+    },
+    scroll = (deltaX: Int) => {
+      offsetLeftAndRight(deltaX)
+      runUi(drawerRecyclerListener.move(-deltaX))
     })
 
-  val (touchSlop, maximumVelocity, minimumVelocity) = {
-    val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
-    (ViewConfigurationCompat.getScaledPagingTouchSlop(configuration),
-      configuration.getScaledMaximumFlingVelocity,
-      configuration.getScaledMinimumFlingVelocity)
-  }
-
-  override def dispatchTouchEvent(ev: MotionEvent): Boolean = statuses.disableScroll || super.dispatchTouchEvent(ev)
+  val mainAnimator = new TranslationAnimator(
+    update = (value: Float) => Ui {
+      val offset = statuses.displacement.toInt - value.toInt
+      statuses = statuses.copy(displacement = statuses.displacement.toInt - offset)
+      offsetLeftAndRight(offset)
+      invalidate()
+    })
 
   addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-    override def onTouchEvent(recyclerView: RecyclerView, event: MotionEvent): Unit = {
-      val x = MotionEventCompat.getX(event, 0)
-      val y = MotionEventCompat.getY(event, 0)
-      initVelocityTracker(event)
-      (MotionEventCompat.getActionMasked(event), statuses.touchState) match {
-        case (ACTION_MOVE, Scrolling) =>
-          requestDisallowInterceptTouchEvent(true)
-          val delta = statuses.deltaX(x)
-          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          runUi(
-            movementByOverScroll(delta) ~
-              drawerRecyclerListener.move(delta))
-        case (ACTION_MOVE, Stopped) =>
-          setStateIfNeeded(x, y)
-        case (ACTION_DOWN, _) =>
-          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        case (ACTION_CANCEL | ACTION_UP, _) =>
-          reset()
-        case _ =>
-      }
-    }
+    override def onTouchEvent(recyclerView: RecyclerView, event: MotionEvent): Unit = {}
 
     override def onInterceptTouchEvent(recyclerView: RecyclerView, event: MotionEvent): Boolean = {
-      initVelocityTracker(event)
-      val x = MotionEventCompat.getX(event, 0)
-      val y = MotionEventCompat.getY(event, 0)
-      (MotionEventCompat.getActionMasked(event), statuses.touchState) match {
-        case (ACTION_MOVE, Scrolling) =>
-          requestDisallowInterceptTouchEvent(true)
-          true
-        case (ACTION_MOVE, _) =>
-          setStateIfNeeded(x, y)
-          statuses.touchState != Stopped
-        case (ACTION_DOWN, _) =>
-          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          false
-        case (ACTION_CANCEL | ACTION_UP, _) =>
-          reset()
-          statuses.touchState != Stopped
-        case _ => statuses.touchState != Stopped
-      }
+      requestDisallowInterceptTouchEvent(statuses.disableClickItems)
+      statuses.disableClickItems
     }
 
     override def onRequestDisallowInterceptTouchEvent(b: Boolean): Unit = {}
   })
-
-  private[this] def reset() = {
-    computeFling()
-    runUi(drawerRecyclerListener.end())
-    statuses = statuses.copy(touchState = Stopped)
-    blockScroll(false)
-  }
-
-  private[this] def setStateIfNeeded(x: Float, y: Float) = {
-    val xDiff = math.abs(x - statuses.lastMotionX)
-    val yDiff = math.abs(y - statuses.lastMotionY)
-
-    val xMoved = xDiff > touchSlop
-
-    if (xMoved) {
-      val isScrolling = (xDiff > yDiff) && !mainAnimator.isRunning && statuses.enabled
-      if (isScrolling) {
-        animatedController foreach (controller => runUi(controller.startMovement))
-        runUi(drawerRecyclerListener.start())
-        statuses = statuses.copy(touchState = Scrolling)
-        blockScroll(true)
-      }
-      statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-    }
-  }
 
   private[this] def blockScroll(bs: Boolean) = getLayoutManager match {
     case lm: ScrollingLinearLayoutManager => lm.blockScroll = bs
     case _ =>
   }
 
-  def movementByOverScroll(delta: Float): Ui[_] = if (overScroll(delta)) {
-    transformPanelCanvas(0f)
-  } else {
-    performScroll(delta)
-  }
-
-  def overScroll(delta: Float) = animatedController exists(_.overScroll(delta))
-
-  private[this] def performScroll(delta: Float): Ui[_] = {
+  private[this] def snap(swiping: Swiping): Ui[_] = {
     mainAnimator.cancel()
-    statuses = statuses.copy(displacement = statuses.calculateDisplacement(getWidth, delta))
-    transformPanelCanvas(statuses.displacement)
-  }
-
-  private[this] def transformPanelCanvas(position: Float) =
-    animatedController map (_.updateMovement(position)) getOrElse Ui.nop
-
-  private[this] def initVelocityTracker(event: MotionEvent): Unit = {
-    if (statuses.velocityTracker.isEmpty) statuses = statuses.copy(velocityTracker = Some(VelocityTracker.obtain()))
-    statuses.velocityTracker foreach (_.addMovement(event))
-  }
-
-  private[this] def computeFling() = {
-    statuses.velocityTracker foreach { tracker =>
-      tracker.computeCurrentVelocity(computeUnitsTracker, maximumVelocity)
-      if (statuses.touchState == Scrolling && !overScroll(-tracker.getXVelocity)) {
-        val velocity = tracker.getXVelocity
-        runUi(if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination())
-      }
-      tracker.recycle()
-      statuses = statuses.copy(velocityTracker = None)
-    }
-    statuses = statuses.copy(touchState = Stopped)
-  }
-
-  private[this] def snap(velocity: Float): Ui[_] = {
-    mainAnimator.cancel()
-    val destiny = (velocity, statuses.displacement) match {
-      case (v, d) if v > 0 && d > 0 => getWidth
-      case (v, d) if v <= 0 && d < 0 => -getWidth
+    val destiny = (swiping, statuses.displacement) match {
+      case (SwipeRight(_), d) if d > 0 => getWidth
+      case (SwipeLeft(_), d) if d < 0 => -getWidth
       case _ => 0
     }
-    animateViews(destiny, calculateDurationByVelocity(velocity, durationAnimation))
+    animateViews(destiny, calculateDurationByVelocity(swiping.getVelocity, durationAnimation))
   }
 
   private[this] def snapDestination(): Ui[_] = {
@@ -197,24 +114,10 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 case class DrawerRecyclerViewListener(
   start: () => Ui[_] = () => Ui.nop,
   move: (Float) => Ui[_] = (_) => Ui.nop,
-  end: () => Ui[_] = () => Ui.nop)
+  end: () => Ui[_] = () => Ui.nop
+)
 
 case class DrawerRecyclerStatuses(
-  disableScroll: Boolean = false,
-  lastMotionX: Float = 0,
-  lastMotionY: Float = 0,
+  disableClickItems: Boolean = false,
   displacement: Float = 0,
-  enabled: Boolean = true,
-  velocityTracker: Option[VelocityTracker] = None,
-  swap: Boolean = false,
-  touchState: ViewState = Stopped) {
-
-  def deltaX(x: Float): Float = lastMotionX - x
-
-  def deltaY(y: Float): Float = lastMotionY - y
-
-  def calculateDisplacement(width: Int, delta: Float): Float = math.max(-width, Math.min(width, displacement - delta))
-
-  def calculatePercent(width: Int) = math.abs(displacement) / width
-
-}
+  swap: Boolean = false)
