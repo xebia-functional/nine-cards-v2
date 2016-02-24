@@ -44,12 +44,12 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   }
 
   val appBox = BoxViewHolder(
-    boxView = AppsView,
+    boxView = AppsView1,
     content = LayoutInflater.from(getContext).inflate(TR.layout.search_box_panel, self, false),
     onHeaderIconClick = (boxView: BoxView) => listener foreach (_.onHeaderIconClick))
 
   val contactBox = BoxViewHolder(
-    boxView = ContactView,
+    boxView = ContactView1,
     content = LayoutInflater.from(getContext).inflate(TR.layout.search_box_panel, self, false),
     onHeaderIconClick = (boxView: BoxView) => listener foreach (_.onHeaderIconClick))
 
@@ -59,7 +59,7 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     applyTranslation(getActiveView, displacement) ~
       applyTranslation(getInactiveView, initialPositionInactiveView + displacement)
 
-  def forceAppsView = Ui (statuses = statuses.copy(currentItem = AppsView)) ~ (getActiveView <~ vVisible)
+  def forceAppsView = Ui (statuses = statuses.copy(currentItem = AppsView1)) ~ (getActiveView <~ vVisible)
 
   def reset: Ui[_] =
     applyTranslation(getActiveView, 0) ~
@@ -78,8 +78,8 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
   def clean: Ui[_] = appBox.clean ~ contactBox.clean
 
   def isEmpty: Boolean = statuses.currentItem match {
-    case AppsView => appBox.isEmpty
-    case ContactView => contactBox.isEmpty
+    case AppsView1 => appBox.isEmpty
+    case ContactView1 => contactBox.isEmpty
   }
 
   override def startMovement: Ui[_] =
@@ -88,8 +88,8 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
       applyTranslation(getInactiveView, initialPositionInactiveView)
 
   override def overScroll(deltaX: Float): Boolean = (statuses.currentItem, getActiveView.getTranslationX, deltaX) match {
-    case (AppsView, x, d) if positiveTranslation(x, d) => false
-    case (ContactView, x, d) if !positiveTranslation(x, d) => false
+    case (AppsView1, x, d) if positiveTranslation(x, d) => false
+    case (ContactView1, x, d) if !positiveTranslation(x, d) => false
     case _ => true
   }
 
@@ -108,18 +108,18 @@ class SearchBoxesAnimatedView(context: Context, attrs: AttributeSet, defStyle: I
     view <~ vTranslationX(translate)
 
   private[this] def getActiveView = statuses.currentItem match {
-    case AppsView => appBox.content
-    case ContactView => contactBox.content
+    case AppsView1 => appBox.content
+    case ContactView1 => contactBox.content
   }
 
   private[this] def getInactiveView = statuses.currentItem match {
-    case AppsView => contactBox.content
-    case ContactView => appBox.content
+    case AppsView1 => contactBox.content
+    case ContactView1 => appBox.content
   }
 
   private[this] def initialPositionInactiveView = statuses.currentItem match {
-    case AppsView => getWidth
-    case ContactView => -getWidth
+    case AppsView1 => getWidth
+    case ContactView1 => -getWidth
   }
 
 }
@@ -137,12 +137,12 @@ trait SearchBoxAnimatedListener {
 }
 
 case class SearchBoxesStatuses(
-  currentItem: BoxView = AppsView,
+  currentItem: BoxView = AppsView1,
   enabled: Boolean = false) {
 
   def swapViews(): SearchBoxesStatuses = copy(currentItem match {
-    case AppsView => ContactView
-    case ContactView => AppsView
+    case AppsView1 => ContactView1
+    case ContactView1 => AppsView1
   })
 
 }
@@ -164,8 +164,8 @@ case class BoxViewHolder(
   runUi(
     (content <~ searchBoxContentStyle) ~
       (editText <~ searchBoxNameStyle(boxView match {
-        case AppsView => R.string.searchApps
-        case ContactView => R.string.searchContacts
+        case AppsView1 => R.string.searchApps
+        case ContactView1 => R.string.searchContacts
       })) ~
       (icon <~ iconTweak) ~
       (headerIcon <~
@@ -185,10 +185,10 @@ case class BoxViewHolder(
   def isEmpty: Boolean = editText exists (_.getText.toString == "")
 
   private[this] def iconTweak = boxView match {
-    case AppsView =>
+    case AppsView1 =>
       searchBoxButtonStyle(R.drawable.app_drawer_icon_google_play) +
         On.click (Ui(launchPlayStore))
-    case ContactView =>
+    case ContactView1 =>
       searchBoxButtonStyle(R.drawable.app_drawer_icon_phone) +
         On.click (Ui(launchDial()))
   }
@@ -215,6 +215,6 @@ trait Styles {
 
 sealed trait BoxView
 
-case object AppsView extends BoxView
+case object AppsView1 extends BoxView
 
-case object ContactView extends BoxView
+case object ContactView1 extends BoxView

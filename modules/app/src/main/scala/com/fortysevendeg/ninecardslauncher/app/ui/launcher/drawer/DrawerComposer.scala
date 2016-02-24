@@ -24,7 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{DrawerRecyclerView, DrawerRecyclerViewListener}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device._
@@ -88,8 +88,8 @@ trait DrawerComposer
       (searchBoxView <~ sbavClean) ~
         closeCursorAdapter ~
         (boxView match {
-          case AppsView => loadAppsAlphabetical
-          case ContactView => loadContactsAlphabetical
+          case AppsView1 => loadAppsAlphabetical
+          case ContactView1 => loadContactsAlphabetical
         }))
 
   override def onHeaderIconClick(implicit context: ActivityContextWrapper): Unit =
@@ -120,20 +120,20 @@ trait DrawerComposer
     val maybeDrawable = appTabs.lift(AppsMenuOption(option)) map (_.drawable)
     Ui(loadApps(option)) ~
       (searchBoxView <~ (maybeDrawable map sbavUpdateAppsIcon getOrElse Tweak.blank)) ~
-      (recycler <~ vSetType(option.name))
+      (recycler <~ drvSetType(option))
   }
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
     Ui(loadContacts(option)) ~
       (searchBoxView <~ (maybeDrawable map sbavUpdateContactsIcon getOrElse Tweak.blank)) ~
-      (recycler <~ vSetType(option.name))
+      (recycler <~ drvSetType(option))
   }
 
   private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(ContactsAlphabetical)) map (_.drawable)
     loadAppsAndSaveStatus(AppsAlphabetical) ~
-      (recycler <~ vSetType(AppsAlphabetical.name)) ~
+      (recycler <~ drvSetType(AppsAlphabetical)) ~
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
@@ -144,7 +144,7 @@ trait DrawerComposer
   private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(AppsAlphabetical)) map (_.drawable)
     loadContactsAndSaveStatus(ContactsAlphabetical) ~
-      (recycler <~ vSetType(ContactsAlphabetical.name)) ~
+      (recycler <~ drvSetType(ContactsAlphabetical)) ~
       (paginationDrawerPanel <~ reloadPager(1)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
@@ -165,26 +165,26 @@ trait DrawerComposer
           l[PullToTabsView](
             w[DrawerRecyclerView] <~
               recyclerStyle <~
-              vSetType(AppsAlphabetical.name) <~
+              drvSetType(AppsAlphabetical) <~
               wire(recycler)
           ) <~ wire(pullToTabsView)), 0)) ~
       createDrawerPagers
 
   private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
     val colorPrimary = theme.get(PrimaryColor)
-    (searchBoxView <~
-      sbavChangeListener(self) <~
-      sbavOnChangeText((text: String, boxView: BoxView) => {
-        (boxView, text, getStatus, getTypeView) match {
-          case (AppsView, "", Some(status), Some(AppsView)) =>
-            AppsMenuOption(status) foreach loadApps
-          case (ContactView, "", Some(status), Some(ContactView)) =>
-            ContactsMenuOption(status) foreach loadContacts
-          case (AppsView, t, _, _) => loadAppsByKeyword(t)
-          case (ContactView, t, _, _) => loadContactsByKeyword(t)
-          case _ =>
-        }
-      })) ~
+//    (searchBoxView <~
+//      sbavChangeListener(self) <~
+//      sbavOnChangeText((text: String, boxView: BoxView) => {
+//        (boxView, text, getStatus, getTypeView) match {
+//          case (AppsView, "", Some(status), Some(AppsView)) =>
+//            AppsMenuOption(status) foreach loadApps
+//          case (ContactView, "", Some(status), Some(ContactView)) =>
+//            ContactsMenuOption(status) foreach loadContacts
+//          case (AppsView, t, _, _) => loadAppsByKeyword(t)
+//          case (ContactView, t, _, _) => loadContactsByKeyword(t)
+//          case _ =>
+//        }
+//      })) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         (if (getItemsCount == 0) {
           loadAppsAlphabetical
@@ -196,7 +196,8 @@ trait DrawerComposer
         drvListener(DrawerRecyclerViewListener(
           start = startMovementAppsContacts,
           move = moveMovementAppsContacts,
-          end = endMovementAppsContacts
+          end = endMovementAppsContacts,
+          changeContentView = changeContentView
         )) <~
         rvAddItemDecoration(new SelectedItemDecoration) <~
         (searchBoxView map drvAddController getOrElse Tweak.blank)) ~
@@ -245,6 +246,15 @@ trait DrawerComposer
       (screenAnimation <~ vGone) ~
       (recycler <~ vTranslationX(0))
 
+  private[this] def changeContentView(contentView: ContentView)
+    (implicit activityContextWrapper: ActivityContextWrapper, nineCardsTheme: NineCardsTheme): Ui[_] =
+    (searchBoxView <~ sbavClean) ~
+      closeCursorAdapter ~
+      (contentView match {
+        case AppsView => loadAppsAlphabetical
+        case ContactView => loadContactsAlphabetical
+      })
+
   private[this] def getDrawerWidth: Int = drawerContent map (_.getWidth) getOrElse 0
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
@@ -287,7 +297,7 @@ trait DrawerComposer
 
   private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
 
-  private[this] def getTypeView: Option[BoxView] = searchBoxView map (_.statuses.currentItem)
+  private[this] def getTypeView: Option[ContentView] = recycler map (_.statuses.contentView)
 
   private[this] def getItemsCount: Int = (for {
     rv <- recycler

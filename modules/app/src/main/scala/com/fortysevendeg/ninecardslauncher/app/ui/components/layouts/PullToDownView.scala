@@ -155,7 +155,7 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
   private[this] def actionMoveHorizontal(ev: MotionEvent, x: Float, y: Float): Boolean = {
     requestDisallowInterceptTouchEvent(true)
     val to = pullToDownStatuses.currentPosY + pullToDownStatuses.offsetX.toInt
-    pullToDownStatuses = pullToDownStatuses.updateCurrentPostY(to)
+    pullToDownStatuses = pullToDownStatuses.updateCurrentPostX(to)
     horizontalListener.scroll(pullToDownStatuses.offsetX.toInt)
     pullToDownStatuses = pullToDownStatuses.move(x, y)
     super.dispatchTouchEvent(ev)
@@ -172,7 +172,7 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
         case _ => NoSwipe()
       }
     } getOrElse NoSwipe()
-    horizontalListener.end(swipe, -pullToDownStatuses.currentPosY)
+    horizontalListener.end(swipe, -pullToDownStatuses.currentPosX)
     pullToDownStatuses = pullToDownStatuses.restart()
     super.dispatchTouchEvent(ev)
   }

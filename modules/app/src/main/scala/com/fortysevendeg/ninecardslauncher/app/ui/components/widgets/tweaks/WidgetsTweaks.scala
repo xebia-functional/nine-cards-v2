@@ -4,10 +4,12 @@ import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.View
 import android.view.ViewGroup.OnHierarchyChangeListener
 import android.view.animation.AnimationUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{ContactsMenuOption, AppsMenuOption}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}
 
@@ -73,6 +75,16 @@ object CollectionRecyclerViewTweaks {
 
 object DrawerRecyclerViewTweaks {
   type W = DrawerRecyclerView
+
+  def drvSetType(option: AppsMenuOption) = Tweak[W] { view =>
+    view.statuses = view.statuses.copy(contentView = AppsView)
+    runUi(view <~ vSetType(option.name))
+  }
+
+  def drvSetType(option: ContactsMenuOption) = Tweak[W] { view =>
+    view.statuses = view.statuses.copy(contentView = ContactView)
+    runUi(view <~ vSetType(option.name))
+  }
 
   def drvAddController(controller: SearchBoxAnimatedController) = Tweak[W](_.animatedController = Some(controller))
 

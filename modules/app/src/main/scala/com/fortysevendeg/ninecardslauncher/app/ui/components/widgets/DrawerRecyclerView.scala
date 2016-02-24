@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.AttributeSet
+import android.util.{Log, AttributeSet}
 import android.view.MotionEvent
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
@@ -22,8 +22,6 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  val computeUnitsTracker = 1000
-
   val durationAnimation = resGetInteger(android.R.integer.config_shortAnimTime)
 
   var drawerRecyclerListener = DrawerRecyclerViewListener()
@@ -40,18 +38,16 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       blockScroll(true)
     },
     end = (swiping: Swiping, displacement: Int) => {
-      statuses = statuses.copy(disableClickItems = false, displacement = displacement)
-      runUi(
-        drawerRecyclerListener.end() ~
-          (swiping match {
-            case NoSwipe() => snapDestination()
-            case s => snap(s)
-          }))
+      statuses = statuses.copy(disableClickItems = false)
+      runUi(drawerRecyclerListener.end() ~ snap(swiping))
       blockScroll(false)
     },
     scroll = (deltaX: Int) => {
-      offsetLeftAndRight(deltaX)
-      runUi(drawerRecyclerListener.move(-deltaX))
+      if (!overScroll(deltaX)) {
+        statuses = statuses.move(deltaX)
+        offsetLeftAndRight(deltaX)
+        runUi(drawerRecyclerListener.move(-deltaX))
+      }
     })
 
   val mainAnimator = new TranslationAnimator(
@@ -79,22 +75,22 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   private[this] def snap(swiping: Swiping): Ui[_] = {
+    Log.d("9cards", s"${statuses.contentView} -- $swiping")
     mainAnimator.cancel()
-    val destiny = (swiping, statuses.displacement) match {
-      case (SwipeRight(_), d) if d > 0 => getWidth
-      case (SwipeLeft(_), d) if d < 0 => -getWidth
-      case _ => 0
+    val (destiny, velocity) = (swiping, statuses.contentView, statuses.displacement) match {
+      case (SwipeRight(_), AppsView, d) if d > 0 =>
+        (getWidth, calculateDurationByVelocity(swiping.getVelocity, durationAnimation))
+      case (SwipeLeft(_), ContactView, d) if d < 0 =>
+        (-getWidth, calculateDurationByVelocity(swiping.getVelocity, durationAnimation))
+      case (NoSwipe(), AppsView, d) if d > getWidth * .6f =>
+        (getWidth, durationAnimation)
+      case (NoSwipe(), ContactView, d) if d < -getWidth * .6f =>
+        (-getWidth, durationAnimation)
+      case _ =>
+        (0, durationAnimation)
     }
-    animateViews(destiny, calculateDurationByVelocity(swiping.getVelocity, durationAnimation))
-  }
-
-  private[this] def snapDestination(): Ui[_] = {
-    val destiny = statuses.displacement match {
-      case d if d > getWidth * .6f => getWidth
-      case d if d < -getWidth * .6f => -getWidth
-      case _ => 0
-    }
-    animateViews(destiny, durationAnimation)
+    statuses = statuses.copy(swap = destiny != 0)
+    animateViews(destiny, velocity)
   }
 
   private[this] def animateViews(dest: Int, duration: Int): Ui[_] = {
@@ -105,19 +101,49 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       finishMovement
   }
 
-  private[this] def finishMovement: Ui[_] =
-    (animatedController map (_.resetAnimationEnd(statuses.swap)) getOrElse Ui.nop) ~
-      Ui(statuses = statuses.copy(displacement = 0f))
+  private[this] def finishMovement: Ui[_] = {
+    val contentView = (statuses.swap, statuses.contentView) match {
+      case (true, AppsView) => ContactView
+      case (true, ContactView) => AppsView
+      case (false, view) => view
+    }
+    (if (statuses.contentView != contentView) drawerRecyclerListener.changeContentView(contentView) else Ui.nop) ~
+      Ui (statuses = statuses.reset) ~
+      (animatedController map (_.resetAnimationEnd(statuses.swap)) getOrElse Ui.nop)
+  }
+
+  private[this] def overScroll(deltaX: Float): Boolean = (statuses.contentView, statuses.displacement, deltaX) match {
+    case (AppsView, x, d) if positiveTranslation(x, d) => false
+    case (ContactView, x, d) if !positiveTranslation(x, d) => false
+    case _ => true
+  }
+
+  private[this] def positiveTranslation(translation: Float, delta: Float): Boolean =
+    translation > 0 || (translation == 0 && delta < 0)
 
 }
 
 case class DrawerRecyclerViewListener(
   start: () => Ui[_] = () => Ui.nop,
   move: (Float) => Ui[_] = (_) => Ui.nop,
-  end: () => Ui[_] = () => Ui.nop
-)
+  end: () => Ui[_] = () => Ui.nop,
+  changeContentView: (ContentView) => Ui[_] = (_) => Ui.nop)
 
 case class DrawerRecyclerStatuses(
+  contentView: ContentView = AppsView,
   disableClickItems: Boolean = false,
   displacement: Float = 0,
-  swap: Boolean = false)
+  swap: Boolean = false) {
+
+  def move(deltaX: Int) = copy(displacement = displacement - deltaX)
+
+  def reset: DrawerRecyclerStatuses =
+    copy(displacement = 0f, swap = false)
+
+}
+
+sealed trait ContentView
+
+case object AppsView extends ContentView
+
+case object ContactView extends ContentView
