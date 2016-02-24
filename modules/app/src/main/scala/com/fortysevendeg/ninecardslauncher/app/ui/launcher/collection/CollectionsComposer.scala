@@ -17,8 +17,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
@@ -34,9 +34,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import ViewOps._
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import macroid.FullDsl._
 import macroid._
 
@@ -129,7 +129,6 @@ trait CollectionsComposer
           onLongClick = () => runUi(drawerLayout <~ dlOpenDrawer))
         )) ~
       (searchPanel <~ searchContentStyle) ~
-      (menuAvatar <~ menuAvatarStyle) ~
       (menuCollectionContent <~ vgAddViews(getItemsForFabMenu)) ~
       (burgerIcon <~ burgerButtonStyle <~ On.click(
         drawerLayout <~ dlOpenDrawer
@@ -169,9 +168,9 @@ trait CollectionsComposer
       createPager(selectedPageDefault)
   }
 
-  def userInfoMenu(userInfo: UserInfo)(implicit uiContext: UiContext[_]): Ui[_] =
-    (menuName <~ tvText(userInfo.email)) ~
-      (menuAvatar <~ ivUri(userInfo.imageUrl))
+  def userProfileMenu(name: String, photoUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
+    (menuName <~ tvText(name)) ~
+      (menuAvatar <~ ivUri(photoUrl) <~ menuAvatarStyle)
 
   def uiActionCollection(action: UiAction, collection: Collection)
     (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =

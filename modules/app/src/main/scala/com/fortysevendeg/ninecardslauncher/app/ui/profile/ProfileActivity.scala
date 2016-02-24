@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.profile
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
@@ -8,7 +9,7 @@ import android.view.{MenuItem, Menu}
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GoogleApiClientProvider, ActivityUiContext, UiContext, SystemBarsTint}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
@@ -34,6 +35,7 @@ class ProfileActivity
   with ProfileComposer
   with ProfileTasks
   with GoogleApiClientProvider
+  with UserProfileProvider
   with AppBarLayout.OnOffsetChangedListener {
 
   implicit lazy val di = new Injector
@@ -49,7 +51,7 @@ class ProfileActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
-    loadUserInfo
+    connectUserProfile("domin.47test@gmail.com")
     setContentView(R.layout.profile_activity)
     runUi(initUi)
 
@@ -128,10 +130,10 @@ class ProfileActivity
       }
   }
 
-  private[this] def loadUserInfo(implicit uiContext: UiContext[_]): Unit =
-    Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
-      onResult = userInfo => userProfile(userInfo.email, userInfo.imageUrl)
-    )
+  override def onConnectedUserProfile(name: String, avatarUrl: String): Unit = runUi(userProfile(name, avatarUrl))
+
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
+    checkUserProfile(resultCode, resultCode, data)
 
   private[this] def loadUserEmail(): Unit =
     Task.fork(loadSingedEmail.run).resolveAsyncUi(

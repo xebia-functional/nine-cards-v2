@@ -35,7 +35,8 @@ class LauncherActivity
   with LauncherTasks
   with SystemBarsTint
   with NineCardIntentConversions
-  with DrawerListeners {
+  with DrawerListeners
+  with UserProfileProvider {
 
   implicit lazy val di: Injector = new Injector
 
@@ -114,16 +115,17 @@ class LauncherActivity
       // Check if there are collections in DB, if there aren't we go to wizard
       case (Nil, _) => goToWizard()
       case (collections, apps) =>
-        getUserInfo
+        connectUserProfile("domin.47test@gmail.com")
         createCollections(collections, apps)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading
   )
 
-  private[this] def getUserInfo = Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
-    onResult = userInfoMenu
-  )
+  override def onConnectedUserProfile(name: String, avatarUrl: String): Unit = runUi(userProfileMenu(name, avatarUrl))
+
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
+    checkUserProfile(resultCode, resultCode, data)
 
   private[this] def goToWizard(): Ui[_] = Ui {
     val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])

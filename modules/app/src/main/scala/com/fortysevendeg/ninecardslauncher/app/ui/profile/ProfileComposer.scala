@@ -54,7 +54,6 @@ trait ProfileComposer
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
   def initUi(implicit uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] =
-    (userAvatar <~ menuAvatarStyle) ~
       (tabs <~ tlAddTabs(
         (getString(R.string.publications), PublicationsTab),
         (getString(R.string.subscriptions), SubscriptionsTab),
@@ -64,9 +63,9 @@ trait ProfileComposer
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
       Ui(onProfileTabSelected(PublicationsTab))
 
-  def userProfile(name: String, avatarUrl: String)(implicit uiContext: UiContext[_]): Ui[_] =
+  def userProfile(name: String, avatarUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
     (userName <~ tvText(name)) ~
-      (userAvatar <~ ivUri(avatarUrl))
+      (userAvatar <~ ivUri(avatarUrl) <~ menuAvatarStyle)
 
   def handleToolbarVisibility(percentage: Float): Ui[_] = toolbar match {
     case Some(t) if percentage >= 0.5 && t.getVisibility == View.VISIBLE => toolbar <~ SnailsCommons.fadeOut()
