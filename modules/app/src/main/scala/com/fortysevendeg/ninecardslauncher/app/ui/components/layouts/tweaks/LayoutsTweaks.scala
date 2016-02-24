@@ -10,6 +10,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher2.R
@@ -146,23 +147,15 @@ object WorkSpaceItemMenuTweaks {
 
 object SearchBoxesAnimatedViewTweak {
 
-  def sbavReset(implicit contextWrapper: ContextWrapper) = Tweak[SearchBoxesAnimatedView] { view =>
-    runUi(view.forceAppsView ~ view.reset)
-  }
+  def sbvUpdateContentView(contentView: ContentView) = Tweak[SearchBoxView] (view => runUi(view.updateContentView(contentView)))
 
-  def sbavChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxesAnimatedView] (_.listener = Some(listener))
+  def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxView] (_.listener = Some(listener))
 
-  def sbavEnabled(enabled: Boolean) = Tweak[SearchBoxesAnimatedView] { view =>
-    view.statuses = view.statuses.copy(enabled = enabled)
-  }
+  def sbvUpdateHeaderIcon(resourceId: Int) = Tweak[SearchBoxView](view => runUi(view.updateHeaderIcon(resourceId)))
 
-  def sbavUpdateAppsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateAppsIcon(resourceId)))
+  def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[SearchBoxView] (_.addTextChangedListener(onChangeText))
 
-  def sbavUpdateContactsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateContactsIcon(resourceId)))
-
-  def sbavOnChangeText(onChangeText: (String, BoxView) => Unit) = Tweak[SearchBoxesAnimatedView] (_.addTextChangedListener(onChangeText))
-
-  def sbavClean = Tweak[SearchBoxesAnimatedView] (view => runUi(view.clean))
+  def sbvClean = Tweak[SearchBoxView] (view => runUi(view.clean))
 }
 
 object PullToTabsViewTweaks {

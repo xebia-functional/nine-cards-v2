@@ -26,13 +26,10 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   var drawerRecyclerListener = DrawerRecyclerViewListener()
 
-  var animatedController: Option[SearchBoxAnimatedController] = None
-
   var statuses = DrawerRecyclerStatuses()
 
   val horizontalMovementListener = HorizontalMovementListener(
     start = () => {
-      animatedController foreach (controller => runUi(controller.startMovement))
       runUi(drawerRecyclerListener.start())
       statuses = statuses.copy(disableClickItems = true)
       blockScroll(true)
@@ -108,8 +105,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       case (false, view) => view
     }
     (if (statuses.contentView != contentView) drawerRecyclerListener.changeContentView(contentView) else Ui.nop) ~
-      Ui (statuses = statuses.reset) ~
-      (animatedController map (_.resetAnimationEnd(statuses.swap)) getOrElse Ui.nop)
+      Ui (statuses = statuses.reset)
   }
 
   private[this] def overScroll(deltaX: Float): Boolean = (statuses.contentView, statuses.displacement, deltaX) match {

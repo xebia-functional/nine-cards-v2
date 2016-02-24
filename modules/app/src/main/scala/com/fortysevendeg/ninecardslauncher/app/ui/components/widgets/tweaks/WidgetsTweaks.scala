@@ -6,7 +6,6 @@ import android.view.ViewGroup.OnHierarchyChangeListener
 import android.view.animation.AnimationUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxAnimatedController
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{ContactsMenuOption, AppsMenuOption}
@@ -85,8 +84,6 @@ object DrawerRecyclerViewTweaks {
     view.statuses = view.statuses.copy(contentView = ContactView)
     runUi(view <~ vSetType(option.name))
   }
-
-  def drvAddController(controller: SearchBoxAnimatedController) = Tweak[W](_.animatedController = Some(controller))
 
   def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
 

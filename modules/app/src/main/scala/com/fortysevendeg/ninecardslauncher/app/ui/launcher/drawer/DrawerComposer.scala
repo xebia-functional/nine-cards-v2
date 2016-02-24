@@ -69,7 +69,7 @@ trait DrawerComposer
 
   lazy val searchBoxContentPanel = Option(findView(TR.launcher_search_box_content_panel))
 
-  var searchBoxView: Option[SearchBoxesAnimatedView] = None
+  var searchBoxView: Option[SearchBoxView] = None
 
   lazy val appTabs = AppsMenuOption.list map {
     case AppsAlphabetical => TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.apps_alphabetical))
@@ -82,15 +82,6 @@ trait DrawerComposer
     case ContactsFavorites => TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites))
     case ContactsByLastCall => TabInfo(R.drawable.app_drawer_filter_last_call, getString(R.string.contacts_last))
   }
-
-  override def onChangeBoxView(boxView: BoxView)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Unit =
-    runUi(
-      (searchBoxView <~ sbavClean) ~
-        closeCursorAdapter ~
-        (boxView match {
-          case AppsView1 => loadAppsAlphabetical
-          case ContactView1 => loadContactsAlphabetical
-        }))
 
   override def onHeaderIconClick(implicit context: ActivityContextWrapper): Unit =
     runUi(if (isTabsOpened) closeTabs else openTabs)
@@ -119,14 +110,14 @@ trait DrawerComposer
   private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(option)) map (_.drawable)
     Ui(loadApps(option)) ~
-      (searchBoxView <~ (maybeDrawable map sbavUpdateAppsIcon getOrElse Tweak.blank)) ~
+      (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
       (recycler <~ drvSetType(option))
   }
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
     Ui(loadContacts(option)) ~
-      (searchBoxView <~ (maybeDrawable map sbavUpdateContactsIcon getOrElse Tweak.blank)) ~
+      (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
       (recycler <~ drvSetType(option))
   }
 
@@ -138,7 +129,7 @@ trait DrawerComposer
       (pullToTabsView <~
         ptvClearTabs() <~
         ptvAddTabsAndActivate(appTabs, 0)) ~
-      (searchBoxView <~ (maybeDrawable map sbavUpdateContactsIcon getOrElse Tweak.blank))
+      (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
   }
 
   private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
@@ -149,12 +140,12 @@ trait DrawerComposer
       (pullToTabsView <~
         ptvClearTabs() <~
         ptvAddTabsAndActivate(contactsTabs, 0)) ~
-      (searchBoxView <~ (maybeDrawable map sbavUpdateAppsIcon getOrElse Tweak.blank))
+      (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
   }
 
   private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
     (searchBoxContentPanel <~
-      vgAddView(getUi(l[SearchBoxesAnimatedView]() <~ wire(searchBoxView) <~ sbavChangeListener(self)))) ~
+      vgAddView(getUi(l[SearchBoxView]() <~ wire(searchBoxView) <~ sbvChangeListener(self)))) ~
       (scrollerLayout <~
         vgAddView(getUi(
           l[LinearLayout]() <~
@@ -172,19 +163,20 @@ trait DrawerComposer
 
   private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
     val colorPrimary = theme.get(PrimaryColor)
-//    (searchBoxView <~
-//      sbavChangeListener(self) <~
-//      sbavOnChangeText((text: String, boxView: BoxView) => {
-//        (boxView, text, getStatus, getTypeView) match {
-//          case (AppsView, "", Some(status), Some(AppsView)) =>
-//            AppsMenuOption(status) foreach loadApps
-//          case (ContactView, "", Some(status), Some(ContactView)) =>
-//            ContactsMenuOption(status) foreach loadContacts
-//          case (AppsView, t, _, _) => loadAppsByKeyword(t)
-//          case (ContactView, t, _, _) => loadContactsByKeyword(t)
-//          case _ =>
-//        }
-//      })) ~
+    (searchBoxView <~
+      sbvUpdateContentView(AppsView) <~
+      sbvChangeListener(self) <~
+      sbvOnChangeText((text: String) => {
+        (text, getStatus, getTypeView) match {
+          case ("", Some(status), Some(AppsView)) =>
+            AppsMenuOption(status) foreach loadApps
+          case ("", Some(status), Some(ContactView)) =>
+            ContactsMenuOption(status) foreach loadContacts
+          case (t, _, Some(AppsView)) => loadAppsByKeyword(t)
+          case (t, _, Some(ContactView)) => loadContactsByKeyword(t)
+          case _ =>
+        }
+      })) ~
       (appDrawerMain <~ appDrawerMainStyle <~ On.click {
         (if (getItemsCount == 0) {
           loadAppsAlphabetical
@@ -199,8 +191,7 @@ trait DrawerComposer
           end = endMovementAppsContacts,
           changeContentView = changeContentView
         )) <~
-        rvAddItemDecoration(new SelectedItemDecoration) <~
-        (searchBoxView map drvAddController getOrElse Tweak.blank)) ~
+        rvAddItemDecoration(new SelectedItemDecoration)) ~
       (scrollerLayout <~
         scrollableStyle(colorPrimary)) ~
       (pullToTabsView <~
@@ -221,7 +212,7 @@ trait DrawerComposer
                 case Some(ContactView) =>
                   ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
                 case _ => Ui.nop
-              }) ~ (if (isTabsOpened) closeTabs else Ui.nop))
+              }) ~ (if (isTabsOpened) closeTabs else Ui.nop) ~ (searchBoxView <~ sbvClean))
           }
         ))) ~
       (drawerContent <~ contentStyle) ~
@@ -248,7 +239,7 @@ trait DrawerComposer
 
   private[this] def changeContentView(contentView: ContentView)
     (implicit activityContextWrapper: ActivityContextWrapper, nineCardsTheme: NineCardsTheme): Ui[_] =
-    (searchBoxView <~ sbavClean) ~
+    (searchBoxView <~ sbvUpdateContentView(contentView) <~ sbvClean) ~
       closeCursorAdapter ~
       (contentView match {
         case AppsView => loadAppsAlphabetical
@@ -260,14 +251,13 @@ trait DrawerComposer
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
   def revealInDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Future[_]] =
-    (searchBoxView <~ sbavReset) ~
-      (paginationDrawerPanel <~ reloadPager(0)) ~
+    (paginationDrawerPanel <~ reloadPager(0)) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
 
   def revealOutDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
     val searchIsEmpty = searchBoxView exists (_.isEmpty)
     (searchPanel <~ vVisible) ~
-      (searchBoxView <~ sbavClean) ~
+      (searchBoxView <~ sbvClean) ~
       (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData(searchIsEmpty)))
   }
 
@@ -317,7 +307,7 @@ trait DrawerComposer
     if (searchIsEmpty && isShowingAppsAlphabetical) {
       (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
     } else {
-      closeCursorAdapter ~ loadAppsAlphabetical
+      closeCursorAdapter ~ loadAppsAlphabetical ~ (searchBoxView <~ sbvUpdateContentView(AppsView))
     }
 
   private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.name))
