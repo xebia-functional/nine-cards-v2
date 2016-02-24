@@ -3,13 +3,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.app.Activity
 import android.app.Activity._
 import android.content.Intent
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult.resolveConnectedUser
 import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.auth.api.signin.{GoogleSignInAccount, GoogleSignInOptions}
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.plus.Plus
-import macroid.Ui
 
 trait UserProfileProvider {
 

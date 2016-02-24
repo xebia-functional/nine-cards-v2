@@ -113,9 +113,11 @@ class LauncherActivity
   private[this] def loadCollectionsAndDockApps(): Unit = Task.fork(getLauncherApps.run).resolveAsyncUi(
     onResult = {
       // Check if there are collections in DB, if there aren't we go to wizard
-      case (Nil, _) => goToWizard()
-      case (collections, apps) =>
-        connectUserProfile("domin.47test@gmail.com")
+      case (Nil, _, _) => goToWizard()
+      case (collections, apps, Some(userEmail)) =>
+        connectUserProfile(userEmail)
+        createCollections(collections, apps)
+      case (collections, apps, None) =>
         createCollections(collections, apps)
     },
     onException = (ex: Throwable) => goToWizard(),

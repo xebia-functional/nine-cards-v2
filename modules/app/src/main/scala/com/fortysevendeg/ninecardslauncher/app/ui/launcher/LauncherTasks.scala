@@ -7,14 +7,16 @@ import com.fortysevendeg.ninecardslauncher.process.collection.CollectionExceptio
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, IterableApps, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, ContactException, ContactsFilter, DockAppException, GetAppOrder}
+import com.fortysevendeg.ninecardslauncher.process.user.UserException
 
 trait LauncherTasks {
 
-  def getLauncherApps(implicit context: ContextSupport, di: Injector): ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
+  def getLauncherApps(implicit context: ContextSupport, di: Injector): ServiceDef2[(Seq[Collection], Seq[DockApp], Option[String]), CollectionException with DockAppException with UserException] =
     for {
       collections <- di.collectionProcess.getCollections
       dockApps <- di.deviceProcess.getDockApps
-    } yield (collections, dockApps)
+      user <- di.userProcess.getUser
+    } yield (collections, dockApps, user.email)
 
   def getLoadApps(order: GetAppOrder)(implicit context: ContextSupport, di: Injector): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
     for {
