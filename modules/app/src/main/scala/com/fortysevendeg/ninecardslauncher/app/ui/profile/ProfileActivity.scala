@@ -5,17 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
-import android.view.{MenuItem, Menu}
+import android.view.{Menu, MenuItem}
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.api.GoogleApiClient
-import macroid.{Ui, Contexts}
 import macroid.FullDsl._
+import macroid.{Contexts, Ui}
 import rapture.core.Answer
 
 import scala.util.Try
@@ -51,7 +52,7 @@ class ProfileActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
-    connectUserProfile("domin.47test@gmail.com")
+    getUserEmail
     setContentView(R.layout.profile_activity)
     runUi(initUi)
 
@@ -153,6 +154,13 @@ class ProfileActivity
       onResult = accountSyncs => setAccountsAdapter(accountSyncs),
       onException = (_) => showError(R.string.errorConnectingGoogle, () => loadUserAccounts(client, username)),
       onPreTask = () => showLoading
+    )
+
+  private[this] def getUserEmail(): Unit =
+    Task.fork(di.userProcess.getUser.run).resolveAsync(
+      onResult = (user: User) => {
+        user.email foreach connectUserProfile
+      }
     )
 
 }
