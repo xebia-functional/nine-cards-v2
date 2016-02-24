@@ -119,8 +119,7 @@ class Injector(implicit contextSupport: ContextSupport) {
     contactsServices = contactsServices,
     imageServices = imageServices,
     widgetsServices = widgetsServices,
-    callsServices = callsServices
-  )
+    callsServices = callsServices)
 
   private[this] lazy val nameCategories: Map[NineCardCategory, String] = (allCategories map {
     category =>
@@ -154,7 +153,7 @@ class Injector(implicit contextSupport: ContextSupport) {
 
   def createCloudStorageProcess(client: GoogleApiClient, account: String) = {
     val services = new DriveServicesImpl(client)
-    new CloudStorageProcessImpl(services)
+    new CloudStorageProcessImpl(services, persistenceServices)
   }
 
 }

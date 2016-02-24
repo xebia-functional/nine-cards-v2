@@ -204,6 +204,13 @@
     <string name="subscriptions">Subscriptions</string>
     <string name="accounts">Accounts</string>
 
+    <string name="syncHeaderDevices">Devices</string>
+    <string name="syncHeaderSynchronize">Synchronization</string>
+    <string name="syncCurrent">Current device</string>
+    <string name="syncLastSynced">Last synced: %s</string>
+
+    <string name="errorLoadingUser">Error loading user</string>
+
     <!-- Preferences -->
 
     <!-- Preferences Default Launcher -->

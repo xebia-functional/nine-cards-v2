@@ -15,11 +15,11 @@ trait Conversions {
       secretToken = device.secretToken,
       permissions = device.permissions)
 
-  def toUpdateRequest(id: Int, user: User, login: LoginResponse, device: Device) =
+  def toUpdateRequest(id: Int, email: String, user: User, login: LoginResponse, device: Device) =
     UpdateUserRequest(
       id = id,
       userId = login.user.id,
-      email = login.user.email,
+      email = Some(email),
       sessionToken = login.user.sessionToken,
       installationId = user.installationId,
       deviceToken = user.deviceToken,
