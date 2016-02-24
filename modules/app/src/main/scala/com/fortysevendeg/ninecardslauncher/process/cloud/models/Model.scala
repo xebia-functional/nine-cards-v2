@@ -4,11 +4,19 @@ import java.util.Date
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, CollectionType}
 
-case class CloudStorageResource(
+trait CloudStorageResource {
+  def resourceId: String
+  def title: String
+  def createdDate: Date
+  def modifiedDate: Date
+}
+
+case class CloudStorageDeviceSummary(
   resourceId: String,
   title: String,
   createdDate: Date,
-  modifiedDate: Date)
+  modifiedDate: Date,
+  currentDevice: Boolean) extends CloudStorageResource
 
 case class CloudStorageDevice(
   deviceId: String,

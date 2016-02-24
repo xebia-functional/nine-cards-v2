@@ -195,6 +195,12 @@
     <string name="subscriptions">Subscripciones</string>
     <string name="accounts">Cuentas</string>
 
+    <string name="syncHeaderDevices">Dispositivos</string>
+    <string name="syncHeaderSynchronize">Sincronización</string>
+    <string name="syncCurrent">Dispositivo actual</string>
+    <string name="syncLastSynced">Última sincronización: %s</string>
+
+    <string name="errorLoadingUser">Error cargando usuario</string>
 
     <!-- Preferences -->
 

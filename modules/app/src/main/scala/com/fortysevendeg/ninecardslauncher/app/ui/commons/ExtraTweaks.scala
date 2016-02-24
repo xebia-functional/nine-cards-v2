@@ -251,6 +251,12 @@ object ExtraTweaks {
     runUi(Ui(Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).show()))
   }
 
+  def uiSnackbarIndefiniteAction(res: Int, buttonText: Int, f: () => Unit) = Tweak[View] { view =>
+    runUi(Ui(Snackbar.make(view, res, Snackbar.LENGTH_INDEFINITE).setAction(buttonText, new OnClickListener {
+      override def onClick(v: View): Unit = f()
+    }).show()))
+  }
+
   def etAddTextChangedListener(onChanged: (String, Int, Int, Int) => Unit) = Tweak[EditText] { view =>
     view.addTextChangedListener(new TextWatcher {
       override def beforeTextChanged(charSequence: CharSequence, start: Int, count: Int, after: Int): Unit = {}

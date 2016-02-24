@@ -1,9 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
+import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
 import org.hamcrest.{Description, TypeSafeMatcher}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -19,12 +21,20 @@ trait CloudStorageProcessImplSpecification
 
   val driveServicesException = new DriveServicesException("")
 
+  val sampleId = "android-id"
+
+  implicit val context = mock[ContextSupport]
+
   trait CloudStorageProcessImplScope
     extends Scope {
 
     val driveServices = mock[DriveServices]
 
-    val cloudStorageProcess = new CloudStorageProcessImpl(driveServices)
+    val persistenceServices = mock[PersistenceServices]
+
+    persistenceServices.getAndroidId returns Service(Task(Answer(sampleId)))
+
+    val cloudStorageProcess = new CloudStorageProcessImpl(driveServices, persistenceServices)
 
   }
 
@@ -61,12 +71,12 @@ class CloudStorageProcessImplSpec
 
         driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSeq)))
 
-        val result = cloudStorageProcess.getCloudStorageDevices().run.run
+        val result = cloudStorageProcess.getCloudStorageDevices.run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual driveServiceFileSeq.size
             resultSeqCollection.map(_.title) shouldEqual driveServiceFileSeq.map(_.title)
-            resultSeqCollection.map(_.resourceId) shouldEqual driveServiceFileSeq.map(_.driveId)
+            resultSeqCollection.map(_.resourceId) shouldEqual driveServiceFileSeq.map(_.googleDriveId)
         }
 
       }
@@ -76,7 +86,7 @@ class CloudStorageProcessImplSpec
 
         driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileEmptySeq)))
 
-        val result = cloudStorageProcess.getCloudStorageDevices().run.run
+        val result = cloudStorageProcess.getCloudStorageDevices.run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
             resultSeqCollection must beEmpty
@@ -87,7 +97,7 @@ class CloudStorageProcessImplSpec
     "return a CloudStorageProcessException when the service return an exception" in
       new CloudStorageProcessImplScope with WithErrorDriveServices {
 
-        val result = cloudStorageProcess.getCloudStorageDevices().run.run
+        val result = cloudStorageProcess.getCloudStorageDevices.run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beLike {
@@ -133,7 +143,7 @@ class CloudStorageProcessImplSpec
     "return a CloudStorageProcessException when the service return an exception" in
       new CloudStorageProcessImplScope with WithErrorDriveServices {
 
-        val result = cloudStorageProcess.getCloudStorageDevices().run.run
+        val result = cloudStorageProcess.getCloudStorageDevices.run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beLike {

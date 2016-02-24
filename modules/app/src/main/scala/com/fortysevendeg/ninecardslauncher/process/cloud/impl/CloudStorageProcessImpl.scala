@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDevice
@@ -8,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageImpl
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, Conversions, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
+import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
 import play.api.libs.json.Json
 import rapture.core.{Answer, Errata}
 
@@ -15,19 +17,21 @@ import scala.util.{Failure, Success, Try}
 import scalaz.Scalaz._
 import scalaz.concurrent.Task
 
-class CloudStorageProcessImpl(driveServices: DriveServices)
+class CloudStorageProcessImpl(
+  driveServices: DriveServices,
+  persistenceServices: PersistenceServices)
   extends CloudStorageProcess
   with Conversions
   with ImplicitsCloudStorageProcessExceptions {
-
 
   private[this] val userDeviceType = "USER_DEVICE"
 
   private[this] val jsonMimeType = "application/json"
 
-  override def getCloudStorageDevices() = (for {
+  override def getCloudStorageDevices(implicit context: ContextSupport) = (for {
     driveServicesSeq <- driveServices.listFiles(userDeviceType.some)
-  } yield driveServicesSeq map toDriveDevice).resolve[CloudStorageProcessException]
+    androidId <- persistenceServices.getAndroidId
+  } yield driveServicesSeq map (file => toDriveDevice(file, androidId))).resolve[CloudStorageProcessException]
 
   override def getCloudStorageDevice(cloudStorageResourceId: String) = (for {
     json <- driveServices.readFile(cloudStorageResourceId)
@@ -64,7 +68,7 @@ class CloudStorageProcessImpl(driveServices: DriveServices)
     content: String,
     fileId: String): ServiceDef2[Unit, DriveServicesException] =
     maybeDriveFile match {
-      case Some(driveFile) => driveServices.updateFile(driveFile.driveId, content)
+      case Some(driveFile) => driveServices.updateFile(driveFile.googleDriveId, content)
       case _ => driveServices.createFile(title, content, fileId, userDeviceType, jsonMimeType)
     }
 }
