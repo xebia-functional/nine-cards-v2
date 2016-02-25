@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
-import android.widget.ImageView
+import android.widget.{LinearLayout, FrameLayout, ImageView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
@@ -11,6 +11,7 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
@@ -55,9 +56,11 @@ trait DrawerStyles {
       ivSrc(R.drawable.drawer_pager)
   }
 
-  def screenAnimationStyle(implicit context: ContextWrapper): Tweak[View] =
+  def screenAnimationStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FrameLayout] = {
+    val color = getColorDark(theme.get(SearchBackgroundColor), 0.05f)
     vMatchParent +
-      vBackground(Color.GRAY) +
+      vBackgroundColor(color) +
       vGone
+  }
 
 }

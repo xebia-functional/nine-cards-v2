@@ -72,8 +72,9 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
   override def dispatchTouchEvent(event: MotionEvent): Boolean = {
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
-    initVelocityTracker(event)
-    (pullToDownStatuses.action, event.getAction) match {
+    val action = MotionEventCompat.getActionMasked(event)
+    updateVelocityTracker(event)
+    (pullToDownStatuses.action, action) match {
       case (_, ACTION_DOWN) => actionDown(event, x, y)
       case (NoMovement, ACTION_MOVE) => actionMoveIdle(event, x, y)
       case (Pulling, ACTION_MOVE) => actionMovePulling(event, x, y)
@@ -208,9 +209,20 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
 
   private[this] def childInTop: Boolean = !content.canScrollVertically(-1)
 
-  private[this] def initVelocityTracker(event: MotionEvent): Unit = {
-    if (pullToDownStatuses.velocityTracker.isEmpty) pullToDownStatuses = pullToDownStatuses.copy(velocityTracker = Some(VelocityTracker.obtain()))
-    pullToDownStatuses.velocityTracker foreach (_.addMovement(event))
+  private[this] def updateVelocityTracker(event: MotionEvent): Unit = {
+    val action = MotionEventCompat.getActionMasked(event)
+    action match {
+      case ACTION_DOWN =>
+        if (pullToDownStatuses.velocityTracker.isEmpty) {
+          pullToDownStatuses = pullToDownStatuses.copy(velocityTracker = Some(VelocityTracker.obtain()))
+        } else {
+          pullToDownStatuses.velocityTracker foreach (_.clear())
+        }
+        pullToDownStatuses.velocityTracker foreach (_.addMovement(event))
+      case ACTION_MOVE =>
+        pullToDownStatuses.velocityTracker foreach (_.addMovement(event))
+      case _ =>
+    }
   }
 
 }

@@ -143,23 +143,29 @@ trait DrawerComposer
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
   }
 
-  private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+  private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val pullTabLayout = l[PullToTabsView](
+      w[DrawerRecyclerView] <~
+        recyclerStyle <~
+        drvSetType(AppsAlphabetical) <~
+        wire(recycler)
+    ) <~ wire(pullToTabsView)
+
+    val tabsLayout = l[LinearLayout]() <~
+      vAddField(openedField, false) <~
+      tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
+      wire(tabs)
+
+    val screenAnimationLayout = l[FrameLayout]() <~
+      screenAnimationStyle <~
+      wire(screenAnimation)
+
     (searchBoxContentPanel <~
       vgAddView(getUi(l[SearchBoxView]() <~ wire(searchBoxView) <~ sbvChangeListener(self)))) ~
       (scrollerLayout <~
-        vgAddView(getUi(
-          l[LinearLayout]() <~
-            vAddField(openedField, false) <~
-            tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
-            wire(tabs))) <~
-        vgAddViewByIndex(getUi(
-          l[PullToTabsView](
-            w[DrawerRecyclerView] <~
-              recyclerStyle <~
-              drvSetType(AppsAlphabetical) <~
-              wire(recycler)
-          ) <~ wire(pullToTabsView)), 0)) ~
+        vgAddViewByIndex(getUi(l[FrameLayout](pullTabLayout, tabsLayout, screenAnimationLayout)), 0)) ~
       createDrawerPagers
+  }
 
   private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
     val colorPrimary = theme.get(PrimaryColor)
@@ -228,14 +234,16 @@ trait DrawerComposer
           case ContactView => vTranslationX(-getDrawerWidth)
         } getOrElse Tweak.blank))
 
-  private[this] def moveMovementAppsContacts(displacement: Float): Ui[_] = {
-    screenAnimation <~ vTranslationX(displacement)
-  }
+  private[this] def moveMovementAppsContacts(displacement: Float): Ui[_] =
+    screenAnimation <~
+      (getTypeView map {
+        case AppsView => vTranslationX(getDrawerWidth - displacement)
+        case ContactView => vTranslationX(-getDrawerWidth - displacement)
+      } getOrElse Tweak.blank)
 
   private[this] def endMovementAppsContacts(): Ui[_] =
     (pullToTabsView <~ pdvEnable(true)) ~
-      (screenAnimation <~ vGone) ~
-      (recycler <~ vTranslationX(0))
+      (screenAnimation <~ vGone)
 
   private[this] def changeContentView(contentView: ContentView)
     (implicit activityContextWrapper: ActivityContextWrapper, nineCardsTheme: NineCardsTheme): Ui[_] =

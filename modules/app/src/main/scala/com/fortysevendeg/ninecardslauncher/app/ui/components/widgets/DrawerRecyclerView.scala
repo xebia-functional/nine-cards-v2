@@ -36,14 +36,14 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     },
     end = (swiping: Swiping, displacement: Int) => {
       statuses = statuses.copy(disableClickItems = false)
-      runUi(drawerRecyclerListener.end() ~ snap(swiping))
+      runUi(snap(swiping))
       blockScroll(false)
     },
     scroll = (deltaX: Int) => {
       if (!overScroll(deltaX)) {
         statuses = statuses.move(deltaX)
         offsetLeftAndRight(deltaX)
-        runUi(drawerRecyclerListener.move(-deltaX))
+        runUi(drawerRecyclerListener.move(statuses.displacement))
       }
     })
 
@@ -53,7 +53,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       statuses = statuses.copy(displacement = statuses.displacement.toInt - offset)
       offsetLeftAndRight(offset)
       invalidate()
-    })
+    } ~ drawerRecyclerListener.move(statuses.displacement))
 
   addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
     override def onTouchEvent(recyclerView: RecyclerView, event: MotionEvent): Unit = {}
@@ -72,7 +72,6 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   private[this] def snap(swiping: Swiping): Ui[_] = {
-    Log.d("9cards", s"${statuses.contentView} -- $swiping")
     mainAnimator.cancel()
     val (destiny, velocity) = (swiping, statuses.contentView, statuses.displacement) match {
       case (SwipeRight(_), AppsView, d) if d > 0 =>
@@ -105,7 +104,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       case (false, view) => view
     }
     (if (statuses.contentView != contentView) drawerRecyclerListener.changeContentView(contentView) else Ui.nop) ~
-      Ui (statuses = statuses.reset)
+      Ui (statuses = statuses.reset) ~ drawerRecyclerListener.end()
   }
 
   private[this] def overScroll(deltaX: Float): Boolean = (statuses.contentView, statuses.displacement, deltaX) match {
