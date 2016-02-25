@@ -129,17 +129,17 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     (self <~
       vInvalidate <~~
       mainAnimator.move(statuses.displacement, dest, duration)) ~~
-      finishMovement
+      finishMovement(duration)
   }
 
-  private[this] def finishMovement: Ui[_] = {
+  private[this] def finishMovement(duration: Int): Ui[_] = {
     val contentView = (statuses.swap, statuses.contentView) match {
       case (true, AppsView) => ContactView
       case (true, ContactView) => AppsView
       case (false, view) => view
     }
     (if (statuses.contentView != contentView) drawerRecyclerListener.changeContentView(contentView) else Ui.nop) ~
-      Ui (statuses = statuses.reset) ~ drawerRecyclerListener.end()
+      Ui (statuses = statuses.reset) ~ drawerRecyclerListener.end(duration)
   }
 
   private[this] def overScroll(deltaX: Float): Boolean = (statuses.contentView, statuses.displacement, deltaX) match {
@@ -156,7 +156,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 case class DrawerRecyclerViewListener(
   start: () => Ui[_] = () => Ui.nop,
   move: (Float) => Ui[_] = (_) => Ui.nop,
-  end: () => Ui[_] = () => Ui.nop,
+  end: (Int) => Ui[_] = (_) => Ui.nop,
   changeContentView: (ContentView) => Ui[_] = (_) => Ui.nop)
 
 case class DrawerRecyclerStatuses(

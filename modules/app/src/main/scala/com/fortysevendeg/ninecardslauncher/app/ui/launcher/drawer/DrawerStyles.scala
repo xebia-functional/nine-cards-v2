@@ -10,7 +10,6 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
@@ -55,11 +54,8 @@ trait DrawerStyles {
       ivSrc(R.drawable.drawer_pager)
   }
 
-  def screenAnimationStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FrameLayout] = {
-    val color = getColorDark(theme.get(SearchBackgroundColor), 0.25f)
+  def screenAnimationStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FrameLayout] =
     vMatchParent +
-      vBackgroundColor(color) +
       vGone
-  }
 
 }

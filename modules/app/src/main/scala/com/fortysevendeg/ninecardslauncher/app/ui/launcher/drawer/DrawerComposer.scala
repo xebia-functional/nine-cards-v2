@@ -13,6 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SwipeAnimatedDrawerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
@@ -23,7 +24,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Fast
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
@@ -66,7 +66,7 @@ trait DrawerComposer
 
   var pullToTabsView = slot[PullToTabsView]
 
-  var screenAnimation = slot[FrameLayout]
+  var screenAnimation = slot[SwipeAnimatedDrawerView]
 
   lazy val searchBoxContentPanel = Option(findView(TR.launcher_search_box_content_panel))
 
@@ -157,14 +157,14 @@ trait DrawerComposer
       tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
       wire(tabs)
 
-    val screenAnimationLayout = l[FrameLayout]() <~
+    val screenAnimationLayout = l[SwipeAnimatedDrawerView]() <~
       screenAnimationStyle <~
       wire(screenAnimation)
 
     (searchBoxContentPanel <~
       vgAddView(getUi(l[SearchBoxView]() <~ wire(searchBoxView) <~ sbvChangeListener(self)))) ~
       (scrollerLayout <~
-        vgAddViewByIndex(getUi(l[FrameLayout](pullTabLayout, tabsLayout, screenAnimationLayout)), 0)) ~
+        vgAddViewByIndex(getUi(l[FrameLayout](screenAnimationLayout, pullTabLayout, tabsLayout)), 0)) ~
       createDrawerPagers
   }
 
@@ -229,11 +229,7 @@ trait DrawerComposer
   private[this] def startMovementAppsContacts(): Ui[_] =
     (pullToTabsView <~ pdvEnable(false)) ~
       (screenAnimation <~
-        vVisible <~
-        (getTypeView map {
-          case AppsView => vTranslationX(getDrawerWidth)
-          case ContactView => vTranslationX(-getDrawerWidth)
-        } getOrElse Tweak.blank))
+        (getTypeView map (cv => sadvInitAnimation(cv, getDrawerWidth)) getOrElse Tweak.blank))
 
   private[this] def moveMovementAppsContacts(displacement: Float): Ui[_] =
     screenAnimation <~
@@ -242,9 +238,9 @@ trait DrawerComposer
         case ContactView => vTranslationX(-getDrawerWidth - displacement)
       } getOrElse Tweak.blank)
 
-  private[this] def endMovementAppsContacts(): Ui[_] =
+  private[this] def endMovementAppsContacts(duration: Int)(implicit contextWrapper: ContextWrapper): Ui[_] =
     (pullToTabsView <~ pdvEnable(true)) ~
-      (screenAnimation <~ vGone)
+      (screenAnimation <~ sadvEndAnimation(duration))
 
   private[this] def changeContentView(contentView: ContentView)
     (implicit activityContextWrapper: ActivityContextWrapper, nineCardsTheme: NineCardsTheme): Ui[_] =
@@ -255,7 +251,7 @@ trait DrawerComposer
         case ContactView => loadContactsAlphabetical
       })
 
-  private[this] def getDrawerWidth: Int = drawerContent map (_.getWidth) getOrElse 0
+  private[this] def getDrawerWidth: Int = drawerContent map (dc => dc.getWidth) getOrElse 0
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 

@@ -265,3 +265,17 @@ object DialogToolbarTweaks {
   }
 
 }
+
+object SwipeAnimatedDrawerViewTweaks {
+
+  type W = SwipeAnimatedDrawerView
+
+  def sadvInitAnimation(contentView: ContentView, widthContainer: Int) = Tweak[W] { view =>
+    runUi(view.initAnimation(contentView, widthContainer))
+  }
+
+  def sadvEndAnimation(duration: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
+    runUi(view.endAnimation(duration))
+  }
+
+}
