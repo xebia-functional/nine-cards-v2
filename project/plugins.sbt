@@ -8,6 +8,10 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.0")
 
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 
-libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.10.44"
-
-addSbtPlugin("de.johoop" % "ant4sbt" % "1.1.2")
+libraryDependencies ++= Seq(
+  "com.amazonaws" % "aws-java-sdk-s3" % "1.10.44",
+  "org.apache.httpcomponents" % "httpclient" % "4.5.1",
+  "org.apache.httpcomponents" % "httpmime" % "4.5.1",
+  "crashlytics-devtools" % "crashlytics-devtools" % "1.0"
+    from s"file://${(baseDirectory.value / "modules/app/crashlytics/crashlytics-devtools.jar").getAbsolutePath}"
+)
