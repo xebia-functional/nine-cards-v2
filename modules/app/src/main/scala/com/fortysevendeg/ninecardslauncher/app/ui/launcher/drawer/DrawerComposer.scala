@@ -23,6 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Fast
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
@@ -32,7 +33,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Tweak, Ui}
+import macroid.{ContextWrapper, ActivityContextWrapper, Tweak, Ui}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -202,7 +203,7 @@ trait DrawerComposer
         scrollableStyle(colorPrimary)) ~
       (pullToTabsView <~
         pdvHorizontalEnable(true) <~
-        pdvHorizontalListener(recycler.get.horizontalMovementListener) <~
+        (recycler map (rv => pdvHorizontalListener(rv.horizontalMovementListener)) getOrElse Tweak.blank) <~
         ptvLinkTabs(
           tabs = tabs,
           start = Ui.nop,
@@ -350,13 +351,20 @@ trait DrawerComposer
     adapter: RecyclerView.Adapter[_],
     layoutManager: LayoutManager,
     counters: Seq[TermCounter],
-    signalType: FastScrollerSignalType = FastScrollerText) =
+    signalType: FastScrollerSignalType = FastScrollerText)(implicit contextWrapper: ContextWrapper) = {
+    val animationTweaks = getTypeView map {
+      case AppsView =>
+        rvLayoutAnimation(R.anim.appdrawer_apps_layout_animation) + vAddField(SelectedItemDecoration.showLine, true)
+      case ContactView =>
+        rvLayoutAnimation(R.anim.appdrawer_contacts_layout_animation) + vAddField(SelectedItemDecoration.showLine, false)
+    } getOrElse Tweak.blank
     (recycler <~
       rvLayoutManager(layoutManager) <~
-      vAddField(SelectedItemDecoration.showLine, adapter.isInstanceOf[AppsAdapter]) <~
+      animationTweaks <~
       rvAdapter(adapter) <~
       rvScrollToTop) ~
       scrollerLayoutUi(counters, signalType)
+  }
 
   private[this] def scrollerLayoutUi(counters: Seq[TermCounter], signalType: FastScrollerSignalType): Ui[_] =
     recycler map { rv =>

@@ -1,9 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
-import android.util.{Log, AttributeSet}
-import android.view.MotionEvent
+import android.support.v7.widget.RecyclerView.LayoutManager
+import android.support.v7.widget.{GridLayoutManager, RecyclerView}
+import android.util.AttributeSet
+import android.view.ViewGroup.LayoutParams
+import android.view.animation.GridLayoutAnimationController.{AnimationParameters => GridAnimationParameters}
+import android.view.animation.LayoutAnimationController.AnimationParameters
+import android.view.{MotionEvent, View}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -65,6 +69,37 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
     override def onRequestDisallowInterceptTouchEvent(b: Boolean): Unit = {}
   })
+
+  override def attachLayoutAnimationParameters(child: View, params: LayoutParams, index: Int, count: Int): Unit =
+    Option(getLayoutManager) match {
+      case (Some(layoutManager: GridLayoutManager)) =>
+        val animationParams = Option(params.layoutAnimationParameters) match {
+          case Some(animParams: GridAnimationParameters) => animParams
+          case _ =>
+            val animParams = new GridAnimationParameters()
+            params.layoutAnimationParameters = animParams
+            animParams
+        }
+        val columns = layoutManager.getSpanCount
+        animationParams.count = count
+        animationParams.index = index
+        animationParams.columnsCount = columns
+        animationParams.rowsCount = count / columns
+        val invertedIndex = count - 1 - index
+        animationParams.column = columns - 1 - (invertedIndex % columns)
+        animationParams.row = animationParams.rowsCount - 1 - invertedIndex / columns
+      case (Some(layoutManager: LayoutManager)) =>
+        val animationParams = Option(params.layoutAnimationParameters) match {
+          case Some(animParams: AnimationParameters) => animParams
+          case _ =>
+            val animParams = new AnimationParameters()
+            params.layoutAnimationParameters = animParams
+            animParams
+        }
+        animationParams.count = count
+        animationParams.index = index
+      case _ => super.attachLayoutAnimationParameters(child, params, index, count)
+    }
 
   private[this] def blockScroll(bs: Boolean) = getLayoutManager match {
     case lm: ScrollingLinearLayoutManager => lm.blockScroll = bs
