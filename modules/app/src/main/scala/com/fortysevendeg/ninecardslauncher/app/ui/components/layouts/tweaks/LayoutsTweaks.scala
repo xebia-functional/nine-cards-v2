@@ -274,6 +274,10 @@ object SwipeAnimatedDrawerViewTweaks {
     runUi(view.initAnimation(contentView, widthContainer))
   }
 
+  def sadvMoveAnimation(contentView: ContentView, widthContainer: Int, displacement: Float) = Tweak[W] { view =>
+    runUi(view.moveAnimation(contentView, widthContainer, displacement))
+  }
+
   def sadvEndAnimation(duration: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
     runUi(view.endAnimation(duration))
   }

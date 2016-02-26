@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import android.widget.{FrameLayout, ImageView, LinearLayout}
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -233,10 +234,7 @@ trait DrawerComposer
 
   private[this] def moveMovementAppsContacts(displacement: Float): Ui[_] =
     screenAnimation <~
-      (getTypeView map {
-        case AppsView => vTranslationX(getDrawerWidth - displacement)
-        case ContactView => vTranslationX(-getDrawerWidth - displacement)
-      } getOrElse Tweak.blank)
+      (getTypeView map (cv => sadvMoveAnimation(cv, getDrawerWidth, displacement)) getOrElse Tweak.blank)
 
   private[this] def endMovementAppsContacts(duration: Int)(implicit contextWrapper: ContextWrapper): Ui[_] =
     (pullToTabsView <~ pdvEnable(true)) ~

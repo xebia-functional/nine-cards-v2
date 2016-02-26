@@ -40,6 +40,7 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
     fastScroller map { fs =>
       val ll = new LayoutParams(WRAP_CONTENT, MATCH_PARENT)
       ll.gravity = Gravity.RIGHT
+      ll.setMarginEnd(getResources.getDimensionPixelSize(R.dimen.padding_default))
       runUi(this <~ vgAddView(fs, ll))
     }
     super.onFinishInflate()

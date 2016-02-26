@@ -6,7 +6,9 @@ import android.graphics.drawable.shapes.OvalShape
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{ContactView, AppsView, ContentView}
@@ -15,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{SearchIconsColor, NineCardsTheme, SearchBackgroundColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.SwipeAnimatedDrawerViewSnails._
-import macroid.{Ui, ActivityContextWrapper}
+import macroid.{Tweak, Ui, ActivityContextWrapper}
 import macroid.FullDsl._
 
 class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: Int)
@@ -51,23 +53,37 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
 
   def initAnimation(contentView: ContentView, widthContainer: Int): Ui[_] = {
     val sizeIcon = icon map (ic => ic.getWidth + ic.getPaddingLeft + ic.getPaddingRight) getOrElse 0
-    val (translationContent, translationIcon) = contentView match {
-      case AppsView => (widthContainer, 0)
-      case ContactView => (-widthContainer, widthContainer - sizeIcon)
+    val (translationContent, translationIcon, resIcon) = contentView match {
+      case AppsView => (widthContainer, 0, R.drawable.icon_collection_contacts_detail)
+      case ContactView => (-widthContainer, widthContainer - sizeIcon, R.drawable.icon_collection_default_detail)
     }
-    (self <~ vVisible <~ vTranslationX(translationContent)) ~
+    (self <~
+      vVisible <~
+      vTranslationX(translationContent)) ~
       (root <~ vBackgroundColor(colorForeground)) ~
       (icon <~
         vVisible <~
         vTranslationX(translationIcon) <~
-        ivSrc(contentView match {
-          case AppsView => R.drawable.icon_collection_default_detail
-          case ContactView => R.drawable.icon_collection_contacts_detail
-        }) <~
+        ivSrc(resIcon) <~
         tivDefaultColor(theme.get(SearchIconsColor)))
+  }
+
+  def moveAnimation(
+    contentView: ContentView,
+    widthContainer: Int,
+    displacement: Float): Ui[_] = {
+    val sizeIcon = icon map (ic => ic.getWidth + ic.getPaddingLeft + ic.getPaddingRight) getOrElse 0
+    val distance = (widthContainer / 2) - (sizeIcon / 2)
+    val iconX = (distance * displacement) / widthContainer
+    val (translationContent, translationIcon) = contentView match {
+      case AppsView => (widthContainer - displacement, iconX)
+      case ContactView => (-widthContainer - displacement, widthContainer - sizeIcon + iconX)
+    }
+    (self <~ vTranslationX(translationContent)) ~ (icon <~ vTranslationX(translationIcon))
   }
 
   def endAnimation(duration: Int): Ui[_] =
     (self <~ animatedClose(duration)) ~
       (icon <~ iconFadeOut(duration))
+
 }
