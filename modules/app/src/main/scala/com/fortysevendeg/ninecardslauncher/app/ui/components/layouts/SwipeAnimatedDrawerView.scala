@@ -11,6 +11,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CircleDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{ContactView, AppsView, ContentView}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
@@ -35,8 +36,7 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
 
   val colorBackground = theme.get(SearchBackgroundColor)
 
-  val shape = new ShapeDrawable(new OvalShape)
-  shape.getPaint.setColor(colorBackground)
+  val circle = new CircleDrawable(colorBackground)
 
   LayoutInflater.from(context).inflate(R.layout.swipe_animation_drawer_layout, self)
 
@@ -49,7 +49,7 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
   runUi(
     (root <~ vBackgroundColor(colorForeground)) ~
       (rippleView <~ vBackgroundColor(colorBackground) <~ vInvisible) ~
-      (icon <~ vBackground(shape)))
+      (icon <~ vBackground(circle)))
 
   def initAnimation(contentView: ContentView, widthContainer: Int): Ui[_] = {
     val sizeIcon = icon map (ic => ic.getWidth + ic.getPaddingLeft + ic.getPaddingRight) getOrElse 0
@@ -65,7 +65,8 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
         vVisible <~
         vTranslationX(translationIcon) <~
         ivSrc(resIcon) <~
-        tivDefaultColor(theme.get(SearchIconsColor)))
+        tivDefaultColor(theme.get(SearchIconsColor))) ~
+      Ui(circle.setPercentage(0))
   }
 
   def moveAnimation(
@@ -74,12 +75,15 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
     displacement: Float): Ui[_] = {
     val sizeIcon = icon map (ic => ic.getWidth + ic.getPaddingLeft + ic.getPaddingRight) getOrElse 0
     val distance = (widthContainer / 2) - (sizeIcon / 2)
+    val percentage: Float = math.abs(displacement) / widthContainer.toFloat
     val iconX = (distance * displacement) / widthContainer
     val (translationContent, translationIcon) = contentView match {
       case AppsView => (widthContainer - displacement, iconX)
       case ContactView => (-widthContainer - displacement, widthContainer - sizeIcon + iconX)
     }
-    (self <~ vTranslationX(translationContent)) ~ (icon <~ vTranslationX(translationIcon))
+    (self <~ vTranslationX(translationContent)) ~
+      (icon <~ vTranslationX(translationIcon)) ~
+      Ui(circle.setPercentage(percentage))
   }
 
   def endAnimation(duration: Int): Ui[_] =
