@@ -9,11 +9,13 @@ import android.view.MotionEvent._
 import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
 import android.view.{VelocityTracker, MotionEvent, ViewConfiguration, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Swiping, SwipeController}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
 class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
-  extends ViewGroup(context) {
+  extends ViewGroup(context)
+  with SwipeController {
 
   lazy val content = getChildAt(0)
 
@@ -24,13 +26,9 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
 
   var horizontalListener = HorizontalMovementListener()
 
-  val computeUnitsTracker = 1000
-
-  val (touchSlop, maximumVelocity, minimumVelocity) = {
+  val touchSlop = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
-    (ViewConfigurationCompat.getScaledPagingTouchSlop(configuration),
-      configuration.getScaledMaximumFlingVelocity,
-      configuration.getScaledMinimumFlingVelocity)
+    ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
   }
 
   override def checkLayoutParams(p: ViewGroup.LayoutParams): Boolean = p.isInstanceOf[MarginLayoutParams]
@@ -73,7 +71,7 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
     val action = MotionEventCompat.getActionMasked(event)
-    updateVelocityTracker(event)
+    updateSwipe(event)
     (pullToDownStatuses.action, action) match {
       case (_, ACTION_DOWN) => actionDown(event, x, y)
       case (NoMovement, ACTION_MOVE) => actionMoveIdle(event, x, y)
@@ -143,7 +141,7 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
   }
 
   private[this] def releasePulling(ev: MotionEvent): Boolean = {
-    pullToDownStatuses.velocityTracker foreach(_.recycle())
+    recycleSwipe()
     if (pullToDownStatuses.currentPosY > 0) {
       drop()
     } else {
@@ -163,18 +161,11 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
   }
 
   private[this] def releaseHorizontal(ev: MotionEvent): Boolean = {
-    val swipe = pullToDownStatuses.velocityTracker map { tracker =>
-      tracker.computeCurrentVelocity(computeUnitsTracker, maximumVelocity)
-      val velocity = tracker.getXVelocity
-      tracker.recycle()
-      velocity match {
-        case v if v > minimumVelocity => SwipeLeft(v)
-        case v if v < -minimumVelocity => SwipeRight(v)
-        case _ => NoSwipe()
-      }
-    } getOrElse NoSwipe()
+    val swipe = currentSwiping
+    recycleSwipe()
     horizontalListener.end(swipe, -pullToDownStatuses.currentPosX)
     pullToDownStatuses = pullToDownStatuses.restart()
+    resetSwipe()
     super.dispatchTouchEvent(ev)
   }
 
@@ -209,22 +200,6 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
 
   private[this] def childInTop: Boolean = !content.canScrollVertically(-1)
 
-  private[this] def updateVelocityTracker(event: MotionEvent): Unit = {
-    val action = MotionEventCompat.getActionMasked(event)
-    action match {
-      case ACTION_DOWN =>
-        if (pullToDownStatuses.velocityTracker.isEmpty) {
-          pullToDownStatuses = pullToDownStatuses.copy(velocityTracker = Some(VelocityTracker.obtain()))
-        } else {
-          pullToDownStatuses.velocityTracker foreach (_.clear())
-        }
-        pullToDownStatuses.velocityTracker foreach (_.addMovement(event))
-      case ACTION_MOVE =>
-        pullToDownStatuses.velocityTracker foreach (_.addMovement(event))
-      case _ =>
-    }
-  }
-
 }
 
 case class PullingListener(
@@ -236,20 +211,6 @@ case class HorizontalMovementListener(
   start: () => Unit = () => (),
   end: (Swiping, Int) => Unit = (_, _) => (),
   scroll: (Int) => Unit = (_) => ())
-
-sealed trait Swiping {
-  def getVelocity: Float = 0
-}
-
-case class SwipeLeft(velocity: Float) extends Swiping {
-  override def getVelocity: Float = velocity
-}
-
-case class SwipeRight(velocity: Float) extends Swiping {
-  override def getVelocity: Float = velocity
-}
-
-case class NoSwipe() extends Swiping
 
 sealed trait PullType
 
@@ -274,7 +235,6 @@ case class PullToDownStatuses(
   offsetY: Float = 0,
   enabled: Boolean = true,
   scrollHorizontalEnabled: Boolean = false,
-  velocityTracker: Option[VelocityTracker] = None,
   action: PullType = NoMovement) {
 
   val posStart = 0
@@ -290,8 +250,7 @@ case class PullToDownStatuses(
     lastMoveX = 0,
     lastMoveY = 0,
     offsetX = 0,
-    offsetY = 0,
-    velocityTracker = None)
+    offsetY = 0)
 
   def dontStarted: Boolean = startX == 0 && startY == 0
 
