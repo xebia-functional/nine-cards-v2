@@ -11,12 +11,11 @@ import com.fortysevendeg.ninecardslauncher.process.user.UserException
 
 trait LauncherTasks {
 
-  def getLauncherApps(implicit context: ContextSupport, di: Injector): ServiceDef2[(Seq[Collection], Seq[DockApp], Option[String]), CollectionException with DockAppException with UserException] =
+  def getLauncherApps(implicit context: ContextSupport, di: Injector): ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
     for {
       collections <- di.collectionProcess.getCollections
       dockApps <- di.deviceProcess.getDockApps
-      user <- di.userProcess.getUser
-    } yield (collections, dockApps, user.email)
+    } yield (collections, dockApps)
 
   def getLoadApps(order: GetAppOrder)(implicit context: ContextSupport, di: Injector): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
     for {

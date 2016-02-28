@@ -66,7 +66,11 @@ trait CollectionsComposer
 
   lazy val menuName = Option(findView(TR.menu_name))
 
+  lazy val menuEmail = Option(findView(TR.menu_email))
+
   lazy val menuAvatar = Option(findView(TR.menu_avatar))
+
+  lazy val menuCover = Option(findView(TR.menu_cover))
 
   lazy val loading = Option(findView(TR.launcher_loading))
 
@@ -168,9 +172,13 @@ trait CollectionsComposer
       createPager(selectedPageDefault)
   }
 
-  def userProfileMenu(name: String, photoUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
+  def userProfileMenu(name: String, email: String, photoUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
     (menuName <~ tvText(name)) ~
+      (menuEmail <~ tvText(email)) ~
       (menuAvatar <~ ivUri(photoUrl) <~ menuAvatarStyle)
+
+  def plusProfileMenu(coverPhotoUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
+    menuCover <~ ivUri(coverPhotoUrl)
 
   def uiActionCollection(action: UiAction, collection: Collection)
     (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =

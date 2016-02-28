@@ -35,8 +35,7 @@ class LauncherActivity
   with LauncherTasks
   with SystemBarsTint
   with NineCardIntentConversions
-  with DrawerListeners
-  with UserProfileProvider {
+  with DrawerListeners {
 
   implicit lazy val di: Injector = new Injector
 
@@ -50,6 +49,16 @@ class LauncherActivity
   val tagDialog = "dialog"
 
   var hasFocus = false
+
+  lazy val userProfile: Option[UserProfileProvider] = di.userProcess.getUser.run.run match {
+    case Answer(user) => user.email map { email =>
+      new UserProfileProvider(
+        account = email,
+        onConnectedUserProfile = onConnectedUserProfile,
+        onConnectedPlusProfile = onConnectedPlusProfile)
+    }
+    case _ => None
+  }
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
@@ -113,21 +122,21 @@ class LauncherActivity
   private[this] def loadCollectionsAndDockApps(): Unit = Task.fork(getLauncherApps.run).resolveAsyncUi(
     onResult = {
       // Check if there are collections in DB, if there aren't we go to wizard
-      case (Nil, _, _) => goToWizard()
-      case (collections, apps, Some(userEmail)) =>
-        connectUserProfile(userEmail)
-        createCollections(collections, apps)
-      case (collections, apps, None) =>
+      case (Nil, _) => goToWizard()
+      case (collections, apps) =>
+        userProfile foreach (_.connect)
         createCollections(collections, apps)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading
   )
 
-  override def onConnectedUserProfile(name: String, avatarUrl: String): Unit = runUi(userProfileMenu(name, avatarUrl))
+  def onConnectedUserProfile(name: String, email: String, avatarUrl: String): Unit = runUi(userProfileMenu(name, email, avatarUrl))
+
+  def onConnectedPlusProfile(coverPhotoUrl: String): Unit = runUi(plusProfileMenu(coverPhotoUrl))
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
-    checkUserProfile(resultCode, resultCode, data)
+    userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
 
   private[this] def goToWizard(): Ui[_] = Ui {
     val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])

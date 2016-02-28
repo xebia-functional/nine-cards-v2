@@ -12,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.FullDsl._
@@ -36,7 +35,6 @@ class ProfileActivity
   with ProfileComposer
   with ProfileTasks
   with GoogleApiClientProvider
-  with UserProfileProvider
   with AppBarLayout.OnOffsetChangedListener {
 
   implicit lazy val di = new Injector
@@ -50,9 +48,19 @@ class ProfileActivity
 
   var clientStatuses = GoogleApiClientStatuses()
 
+  lazy val userProfile: Option[UserProfileProvider] = di.userProcess.getUser.run.run match {
+    case Answer(user) => user.email map { email =>
+      new UserProfileProvider(
+        account = email,
+        onConnectedUserProfile = onConnectedUserProfile,
+        onConnectedPlusProfile = onConnectedPlusProfile)
+    }
+    case _ => None
+  }
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
-    getUserEmail
+    userProfile foreach (_.connect)
     setContentView(R.layout.profile_activity)
     runUi(initUi)
 
@@ -131,10 +139,12 @@ class ProfileActivity
       }
   }
 
-  override def onConnectedUserProfile(name: String, avatarUrl: String): Unit = runUi(userProfile(name, avatarUrl))
+  def onConnectedUserProfile(name: String, email: String, avatarUrl: String): Unit = runUi(userProfile(name, email, avatarUrl))
+
+  def onConnectedPlusProfile(coverPhotoUrl: String): Unit = {}
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
-    checkUserProfile(resultCode, resultCode, data)
+    userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
 
   private[this] def loadUserEmail(): Unit =
     Task.fork(loadSingedEmail.run).resolveAsyncUi(
@@ -154,13 +164,6 @@ class ProfileActivity
       onResult = accountSyncs => setAccountsAdapter(accountSyncs),
       onException = (_) => showError(R.string.errorConnectingGoogle, () => loadUserAccounts(client, username)),
       onPreTask = () => showLoading
-    )
-
-  private[this] def getUserEmail(): Unit =
-    Task.fork(di.userProcess.getUser.run).resolveAsync(
-      onResult = (user: User) => {
-        user.email foreach connectUserProfile
-      }
     )
 
 }

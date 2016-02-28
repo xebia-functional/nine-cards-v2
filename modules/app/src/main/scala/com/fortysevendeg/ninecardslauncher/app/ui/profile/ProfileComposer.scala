@@ -43,6 +43,8 @@ trait ProfileComposer
 
   lazy val userName = Option(findView(TR.profile_user_name))
 
+  lazy val userEmail = Option(findView(TR.profile_user_email))
+
   lazy val tabs = Option(findView(TR.profile_tabs))
 
   lazy val recyclerView = Option(findView(TR.profile_recycler))
@@ -63,8 +65,9 @@ trait ProfileComposer
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
       Ui(onProfileTabSelected(PublicationsTab))
 
-  def userProfile(name: String, avatarUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
+  def userProfile(name: String, email: String, avatarUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
     (userName <~ tvText(name)) ~
+    (userEmail <~ tvText(email)) ~
       (userAvatar <~ ivUri(avatarUrl) <~ menuAvatarStyle)
 
   def handleToolbarVisibility(percentage: Float): Ui[_] = toolbar match {
