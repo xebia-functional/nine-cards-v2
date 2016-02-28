@@ -74,7 +74,7 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
     val x = translationIcon + (sizeIcon / 2)
     (self <~ vTranslationX(translationContent)) ~
       (icon <~ vTranslationX(translationIcon)) ~
-      Ui(background.setData(percentage, x.toInt))
+      Ui(background.setData(percentage * percentage, x.toInt))
   }
 
   def endAnimation(duration: Int): Ui[_] =
