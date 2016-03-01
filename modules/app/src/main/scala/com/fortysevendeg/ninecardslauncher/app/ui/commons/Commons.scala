@@ -54,8 +54,6 @@ object ActivityResult {
 
   val resolveConnectedUser = 6
 
-  val signInModeOptional = 2
-
 }
 
 object WizardState {

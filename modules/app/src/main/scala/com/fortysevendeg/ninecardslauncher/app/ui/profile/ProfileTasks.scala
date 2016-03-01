@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
+import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
@@ -12,8 +13,7 @@ trait ProfileTasks {
 
   self: ProfileActivity =>
 
-  def loadSingedEmail: ServiceDef2[String, UserConfigException] =
-    di.userConfigProcess.getUserInfo.map(_.email)
+  def loadUserEmail(): ServiceDef2[Option[String], UserException] = di.userProcess.getUser.map(_.email)
 
   def loadAccounts(client: GoogleApiClient, email: String): ServiceDef2[Seq[AccountSync], CloudStorageProcessException] =  {
     val cloudStorageProcess = di.createCloudStorageProcess(client, email)

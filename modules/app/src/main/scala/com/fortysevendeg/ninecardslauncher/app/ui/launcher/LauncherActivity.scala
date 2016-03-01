@@ -50,15 +50,7 @@ class LauncherActivity
 
   var hasFocus = false
 
-  lazy val userProfile: Option[UserProfileProvider] = di.userProcess.getUser.run.run match {
-    case Answer(user) => user.email map { email =>
-      new UserProfileProvider(
-        account = email,
-        onConnectedUserProfile = onConnectedUserProfile,
-        onConnectedPlusProfile = onConnectedPlusProfile)
-    }
-    case _ => None
-  }
+  var userProfileStatuses = UserProfileStatuses()
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
@@ -124,19 +116,19 @@ class LauncherActivity
       // Check if there are collections in DB, if there aren't we go to wizard
       case (Nil, _) => goToWizard()
       case (collections, apps) =>
-        userProfile foreach (_.connect)
+        loadUserProfile()
         createCollections(collections, apps)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading
   )
 
-  def onConnectedUserProfile(name: String, email: String, avatarUrl: String): Unit = runUi(userProfileMenu(name, email, avatarUrl))
+  def onConnectedUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit = runUi(userProfileMenu(name, email, avatarUrl))
 
   def onConnectedPlusProfile(coverPhotoUrl: String): Unit = runUi(plusProfileMenu(coverPhotoUrl))
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
-    userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
+    userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
 
   private[this] def goToWizard(): Ui[_] = Ui {
     val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])
@@ -233,6 +225,19 @@ class LauncherActivity
             clickListener = (contact: Contact) => {
               execute(contact)
             })
+      })
+
+  private[this] def loadUserProfile(): Unit =
+    Task.fork(di.userProcess.getUser.run).resolveAsyncUi(
+      onResult = user => Ui {
+        val userProfile = user.email map { email =>
+          new UserProfileProvider(
+            account = email,
+            onConnectedUserProfile = onConnectedUserProfile,
+            onConnectedPlusProfile = onConnectedPlusProfile)
+        }
+        userProfileStatuses = userProfileStatuses.copy(userProfile = userProfile)
+        userProfileStatuses.userProfile foreach (_.connect())
       })
 
 }

@@ -12,10 +12,15 @@ import com.google.android.gms.plus.{People, Plus}
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 
+case class UserProfileStatuses(
+    userProfile: Option[UserProfileProvider] = None)
+
 class UserProfileProvider(account: String,
-     onConnectedUserProfile: (String, String, String) => Unit,
+     onConnectedUserProfile: (String, String, Option[String]) => Unit,
      onConnectedPlusProfile: (String) => Unit)(implicit activityContextWrapper: ActivityContextWrapper)
   extends GoogleApiClient.ConnectionCallbacks {
+
+  val me = "me"
 
   private[this] val apiClient: GoogleApiClient = {
     val gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -30,7 +35,7 @@ class UserProfileProvider(account: String,
       .build()
   }
 
-  def connect: Unit = {
+  def connect(): Unit = {
     val signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient)
     runUi(uiStartIntentForResult(signInIntent, resolveConnectedUser))
   }
@@ -41,24 +46,27 @@ class UserProfileProvider(account: String,
     (requestCode, resultCode) match {
       case (`resolveConnectedUser`, RESULT_OK)=> {
         val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
-        val account = result.getSignInAccount
-        apiClient.connect(signInModeOptional)
-        onConnectedUserProfile(account.getDisplayName, account.getEmail, account.getPhotoUrl.toString)
+        val signInAccount = result.getSignInAccount
+        apiClient.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)
+        val avatarUrl = Option(signInAccount.getPhotoUrl) map (_.toString)
+        onConnectedUserProfile(signInAccount.getDisplayName, account, avatarUrl)
       }
       case _ =>
     }
 
   override def onConnected(bundle: Bundle): Unit = {
 
-    val me = "me"
-
     Plus.PeopleApi.load(apiClient, me).setResultCallback(new ResultCallback[People.LoadPeopleResult]() {
 
       override def onResult(loadPeopleResult: People.LoadPeopleResult): Unit = {
-        val person = loadPeopleResult.getPersonBuffer.get(0)
-
-        onConnectedPlusProfile(person.getCover.getCoverPhoto.getUrl)
-
+        for {
+          people <- Option(loadPeopleResult)
+          personBuffer <- Option(people.getPersonBuffer)
+          person <- Option(personBuffer.get(0))
+          cover <- Option(person.getCover)
+          coverPhoto <- Option(cover.getCoverPhoto)
+          url <- Option(coverPhoto.getUrl)
+        } yield onConnectedPlusProfile(url)
       }
     })
   }
