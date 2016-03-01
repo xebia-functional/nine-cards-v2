@@ -34,11 +34,11 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
 
   val background = new BackgroundDrawerAnimationDrawable(colorForeground, colorBackground)
 
-  LayoutInflater.from(context).inflate(R.layout.swipe_animation_drawer_layout, self)
-
   lazy val root = Option(findView(TR.swipe_animation_root))
 
   lazy val icon = Option(findView(TR.swipe_animation_icon))
+
+  LayoutInflater.from(context).inflate(R.layout.swipe_animation_drawer_layout, self)
 
   runUi(root <~ vBackground(background))
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v4.view.MotionEventCompat
 import android.view.MotionEvent._
 import android.view.{MotionEvent, VelocityTracker, ViewConfiguration}
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 
 trait SwipeController {
 
@@ -11,42 +12,43 @@ trait SwipeController {
 
   val computeUnitsTracker = 1000
 
-  val (maximumVelocity, minimumVelocity) = {
+  lazy val (maximumVelocity, minimumVelocity) = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
     (configuration.getScaledMaximumFlingVelocity,
       configuration.getScaledMinimumFlingVelocity)
   }
 
-  var velocityTracker: Option[VelocityTracker] = None
+  // We need to use "null" instead of Option because we must assign "null" when we recycle
+  // the velocityTracker for avoid IllegalStateException in Android SDK
+  private[this] var velocityTracker: VelocityTracker = javaNull
 
   def updateSwipe(event: MotionEvent): Unit = {
     val action = MotionEventCompat.getActionMasked(event)
     action match {
       case ACTION_DOWN =>
-        if (velocityTracker.isEmpty) {
-          velocityTracker = Some(VelocityTracker.obtain())
-        } else {
-          velocityTracker foreach (_.clear())
+        if (velocityTracker == javaNull) {
+          velocityTracker = VelocityTracker.obtain()
         }
-        velocityTracker foreach (_.addMovement(event))
+        velocityTracker.addMovement(event)
       case ACTION_MOVE =>
-        velocityTracker foreach (_.addMovement(event))
+        velocityTracker.addMovement(event)
       case _ =>
     }
   }
 
-  def currentSwiping: Swiping = velocityTracker map { tracker =>
-    tracker.computeCurrentVelocity(computeUnitsTracker, maximumVelocity)
-    tracker.getXVelocity match {
+  def currentSwiping: Swiping = {
+    velocityTracker.computeCurrentVelocity(computeUnitsTracker, maximumVelocity)
+    velocityTracker.getXVelocity match {
       case v if v > minimumVelocity => SwipeLeft(v)
       case v if v < -minimumVelocity => SwipeRight(v)
       case _ => NoSwipe()
     }
-  } getOrElse NoSwipe()
+  }
 
-  def recycleSwipe(): Unit = velocityTracker foreach(_.recycle())
-
-  def resetSwipe(): Unit = velocityTracker = None
+  def recycleSwipe(): Unit = {
+    velocityTracker.recycle()
+    velocityTracker = javaNull
+  }
 
 }
 

@@ -4,8 +4,7 @@ import android.graphics._
 import android.graphics.drawable.Drawable
 import com.fortysevendeg.macroid.extras.SnailsUtils
 
-class BackgroundDrawerAnimationDrawable(
-  backgroundColor: Int, circleColor: Int)
+class BackgroundDrawerAnimationDrawable(backgroundColor: Int, circleColor: Int)
   extends Drawable {
 
   var statuses = BackgroundDrawerAnimationStatuses()

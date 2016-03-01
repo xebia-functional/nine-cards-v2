@@ -165,7 +165,6 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
     recycleSwipe()
     horizontalListener.end(swipe, -pullToDownStatuses.currentPosX)
     pullToDownStatuses = pullToDownStatuses.restart()
-    resetSwipe()
     super.dispatchTouchEvent(ev)
   }
 

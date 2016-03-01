@@ -346,11 +346,14 @@ trait DrawerComposer
     layoutManager: LayoutManager,
     counters: Seq[TermCounter],
     signalType: FastScrollerSignalType = FastScrollerText)(implicit contextWrapper: ContextWrapper) = {
+    val searchIsEmpty = searchBoxView exists (_.isEmpty)
     val animationTweaks = getTypeView map {
       case AppsView =>
-        rvLayoutAnimation(R.anim.appdrawer_apps_layout_animation) + vAddField(SelectedItemDecoration.showLine, true)
+        (if (searchIsEmpty) rvLayoutAnimation(R.anim.appdrawer_apps_layout_animation) else Tweak.blank) +
+          vAddField(SelectedItemDecoration.showLine, true)
       case ContactView =>
-        rvLayoutAnimation(R.anim.appdrawer_contacts_layout_animation) + vAddField(SelectedItemDecoration.showLine, false)
+        (if (searchIsEmpty) rvLayoutAnimation(R.anim.appdrawer_contacts_layout_animation) else Tweak.blank) +
+          vAddField(SelectedItemDecoration.showLine, false)
     } getOrElse Tweak.blank
     (recycler <~
       rvLayoutManager(layoutManager) <~
