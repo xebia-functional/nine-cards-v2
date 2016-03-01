@@ -2,26 +2,19 @@ import java.io.File
 
 import ReplacePropertiesGenerator._
 import android.Keys._
-import de.johoop.ant4sbt.Ant4Sbt._
 import sbt.Keys._
 import sbt._
 
 object Crashlytics {
 
   lazy val crashlyticsSettings =
-    antSettings ++
-      addAntTasks(
-        "crashlytics-pre-build",
-        "crashlytics-code-gen",
-        "crashlytics-post-package") ++
       Seq(
-        antBuildFile := baseDirectory.value / "crashlytics" / "crashlytics_build.xml",
         collectResources in Android <<= (collectResources in Android)
           dependsOn fixNameSpace
-          dependsOn antTaskKey("crashlytics-pre-build")
+          dependsOn crashlyticsPreBuild
           dependsOn createFiles,
         zipalign in Android <<= (zipalign in Android) map { result =>
-          antTaskKey("crashlytics-post-package")
+          crashlyticsPostPackage
           result
         }
       )
@@ -50,7 +43,7 @@ object Crashlytics {
    * with namespace
    */
   def fixNameSpace = Def.task[Unit] {
-    antTaskKey("crashlytics-code-gen").value
+    crashlyticsCodeGen.value
     val file = baseDirectory.value / "src/main/res/values/com_crashlytics_export_strings.xml"
     if (file.exists()) {
       val xml = scala.xml.XML.loadFile(file)
@@ -68,6 +61,130 @@ object Crashlytics {
         node = rewriteRule(xml),
         enc = "UTF-8",
         xmlDecl = true)
+    }
+  }
+
+  def crashlyticsPreBuild = Def.task[Unit] {
+    val log = streams.value.log
+    log.info("Crashlytics pre build")
+
+    // Cleanup
+    crashlyticsCleanupResources.value
+
+    // Upload deobs - Disabled
+    // crashlyticsUploadDeobs.value
+  }
+
+  def crashlyticsCodeGen = Def.task[Unit] {
+    val log = streams.value.log
+    log.info("Crashlytics code gen")
+
+    // Generate resources
+    crashlyticsGenerateResources.value
+  }
+
+  def crashlyticsPostPackage = Def.task[Unit] {
+    val log = streams.value.log
+    log.info("Crashlytics post package")
+
+    // Store deobs - Disabled
+    // crashlyticsStoreDeobs.value
+
+    // Upload deobs - Disabled
+    // crashlyticsUploadDeobs.value
+
+    // Cleanup
+    crashlyticsCleanupResources.value
+  }
+
+  def crashlyticsCleanupResources = Def.task[Unit] {
+    crashlyticsTask(
+      log = streams.value.log,
+      task = Crashlytics.CleanupResources,
+      projectPath = baseDirectory.value.getAbsolutePath)
+  }
+
+  def crashlyticsGenerateResources = Def.task[Unit] {
+    crashlyticsTask(
+      log = streams.value.log,
+      task = Crashlytics.GenerateResources,
+      projectPath = baseDirectory.value.getAbsolutePath,
+      extraArgs = Seq(
+        "-buildEvent",
+        "-tool", "com.crashlytics.tools.ant",
+        "-version", "1.20.0"))
+  }
+
+  def crashlyticsStoreDeobs = Def.task[Unit] {
+    crashlyticsTask(
+      log = streams.value.log,
+      task = Crashlytics.StoreDeobs,
+      projectPath = baseDirectory.value.getAbsolutePath,
+      extraArgs = Seq(
+        s"${(baseDirectory.value / "proguard-mapping.txt").getAbsolutePath}",
+        "-obfuscating",
+        "-obfuscator",
+        "proguard",
+        "-obVer",
+        "4.7",
+        "-verbose"))
+  }
+
+  def crashlyticsUploadDeobs = Def.task[Unit] {
+    crashlyticsTask(
+      log = streams.value.log,
+      task = Crashlytics.UploadDeobs,
+      projectPath = baseDirectory.value.getAbsolutePath,
+      extraArgs = Seq("-verbose"))
+  }
+
+  object Crashlytics {
+
+    sealed trait Task {
+      def param: String
+    }
+
+    case object CleanupResources extends Task {
+      val param = "-cleanupResourceFile"
+    }
+
+    case object GenerateResources extends Task {
+      val param = "-generateResourceFile"
+    }
+
+    case object StoreDeobs extends Task {
+      val param = "-storeDeobs"
+    }
+
+    case object UploadDeobs extends Task {
+      val param = "-uploadDeobs"
+    }
+
+  }
+
+  private[this] def crashlyticsTask(
+    log: Logger,
+    task: Crashlytics.Task,
+    projectPath: String,
+    extraArgs: Seq[String] = Seq.empty) = {
+
+    log.info(s"Crashlytics task: ${task.toString}")
+
+    val args = Seq(
+      "-projectPath", projectPath,
+      "-androidManifest", s"$projectPath/crashlytics/CrashlyticsManifest.xml",
+      "-androidRes", s"$projectPath/src/main/res",
+      "-androidAssets", s"$projectPath/src/main/assets",
+      task.param,
+      "-properties", s"$projectPath/crashlytics/fabric.properties") ++ extraArgs
+
+    log.debug(s"Arguments: $args")
+    try {
+      com.crashlytics.tools.android.DeveloperTools.main(args.toArray)
+    } catch {
+      case e: Throwable =>
+        log.error(s"Error executing crashlytics task: ${e.getMessage}")
+        throw e
     }
   }
 
