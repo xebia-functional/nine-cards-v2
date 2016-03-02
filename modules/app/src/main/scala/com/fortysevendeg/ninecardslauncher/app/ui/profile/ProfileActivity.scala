@@ -1,20 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.profile
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
-import android.view.{MenuItem, Menu}
+import android.view.{Menu, MenuItem}
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GoogleApiClientProvider, ActivityUiContext, UiContext, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.api.GoogleApiClient
-import macroid.{Ui, Contexts}
 import macroid.FullDsl._
+import macroid.{Contexts, Ui}
 import rapture.core.Answer
 
 import scala.util.Try
@@ -47,9 +48,11 @@ class ProfileActivity
 
   var clientStatuses = GoogleApiClientStatuses()
 
+  var userProfileStatuses = UserProfileStatuses()
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
-    loadUserInfo
+    loadUserProfile()
     setContentView(R.layout.profile_activity)
     runUi(initUi)
 
@@ -124,25 +127,40 @@ class ProfileActivity
           tryToConnect()
           runUi(showLoading)
         case _ =>
-          loadUserEmail()
+          loadUserInfo()
       }
   }
 
-  private[this] def loadUserInfo(implicit uiContext: UiContext[_]): Unit =
-    Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
-      onResult = userInfo => userProfile(userInfo.email, userInfo.imageUrl)
-    )
+  def onConnectedUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit = runUi(userProfile(name, email, avatarUrl))
 
-  private[this] def loadUserEmail(): Unit =
-    Task.fork(loadSingedEmail.run).resolveAsyncUi(
+  def onConnectedPlusProfile(coverPhotoUrl: String): Unit = {}
+
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
+    userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
+
+  private[this] def loadUserProfile(): Unit =
+    Task.fork(loadUserEmail().run).resolveAsyncUi(
       onResult = email => Ui {
-        val client = createGoogleDriveClient(email)
+        val userProfile = email map { email =>
+          new UserProfileProvider(
+            account = email,
+            onConnectedUserProfile = onConnectedUserProfile,
+            onConnectedPlusProfile = onConnectedPlusProfile)
+        }
+        userProfileStatuses = userProfileStatuses.copy(userProfile = userProfile)
+        userProfileStatuses.userProfile foreach (_.connect())
+      })
+
+  private[this] def loadUserInfo(): Unit =
+    Task.fork(loadUserEmail().run).resolveAsyncUi(
+      onResult = email => Ui {
+        val client = email map createGoogleDriveClient
         clientStatuses = clientStatuses.copy(
-          apiClient = Some(client),
-          username = Some(email))
-        client.connect()
+          apiClient = client,
+          username = email)
+        client foreach (_.connect())
       },
-      onException = (_) => showError(R.string.errorLoadingUser, loadUserEmail),
+      onException = (_) => showError(R.string.errorLoadingUser, loadUserInfo),
       onPreTask = () => showLoading
     )
 

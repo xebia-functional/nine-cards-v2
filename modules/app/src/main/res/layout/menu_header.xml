@@ -2,7 +2,11 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/MenuHeaderRoot">
-    
+
+    <ImageView
+            android:id="@+id/menu_cover"
+            style="@style/MenuHeaderCover"/>
+
     <LinearLayout
         style="@style/MenuHeaderContent">
 
@@ -13,6 +17,11 @@
         <TextView
             android:id="@+id/menu_name"
             style="@style/MenuHeaderName"/>
+
+        <TextView
+            android:id="@+id/menu_email"
+            style="@style/MenuHeaderEmail"/>
+
 
     </LinearLayout>
 

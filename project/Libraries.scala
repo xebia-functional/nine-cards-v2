@@ -72,6 +72,8 @@ object Libraries {
     lazy val playServicesBase = playServicesDep("play-services-base")
     lazy val playServicesDrive = playServicesDep("play-services-drive")
     lazy val playServicesAnalytics = playServicesDep("play-services-analytics")
+    lazy val playServicesAuth = playServicesDep("play-services-auth")
+    lazy val playServicesPlus = playServicesDep("play-services-plus")
   }
 
   object debug {
