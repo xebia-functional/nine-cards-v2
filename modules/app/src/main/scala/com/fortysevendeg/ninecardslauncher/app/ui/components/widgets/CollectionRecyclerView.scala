@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 import android.content.Context
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
-import android.util.{Log, AttributeSet}
+import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
@@ -17,7 +17,9 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  var statuses = CollectionRecyclerStatuses()
+  var disableScroll = false
+
+  var enableAnimation = false
 
   def createScrollListener(
     scrolled: (Int, Int, Int) => Int,
@@ -26,12 +28,10 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
       var scrollY = scrollListener map (_.scrollY) getOrElse 0
       override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = {
         super.onScrolled(recyclerView, dx, dy)
-        Log.d("9cards", s"onScrolled: $dy")
         scrollY = scrolled(scrollY, dx, dy)
       }
       override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
         super.onScrollStateChanged(recyclerView, newState)
-        Log.d("9cards", s"onScrollStateChanged: $newState")
         scrollStateChanged(scrollY, recyclerView, newState)
       }
     }
@@ -42,15 +42,15 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
   var scrollListener: Option[NineOnScrollListener] = None
 
-  override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(statuses.disableScroll) {
+  override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(disableScroll) {
     true
   } else {
     super.dispatchTouchEvent(ev)
   }
 
   override def attachLayoutAnimationParameters(child: View, params: LayoutParams, index: Int, count: Int): Unit =
-    (statuses.enableAnimation, Option(getAdapter), Option(getLayoutManager)) match {
-      case (true, Some(_), Some(layoutManager: GridLayoutManager)) =>
+    (enableAnimation, Option(getLayoutManager)) match {
+      case (true, Some(layoutManager: GridLayoutManager)) =>
         val animationParams = Option(params.layoutAnimationParameters) match {
           case Some(animParams: AnimationParameters) => animParams
           case _ =>
@@ -76,6 +76,3 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
 }
 
-case class CollectionRecyclerStatuses(
-  disableScroll: Boolean = false,
-  enableAnimation: Boolean = false)

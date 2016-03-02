@@ -14,6 +14,7 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.support.v7.widget.{ListPopupWindow, PopupMenu, RecyclerView, SwitchCompat, Toolbar}
 import android.text.{Editable, TextWatcher}
 import android.view.View.OnClickListener
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.view.{MenuItem, View, ViewGroup, ViewOutlineProvider}
 import android.widget.AdapterView.OnItemClickListener
@@ -220,6 +221,10 @@ object ExtraTweaks {
         override def onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean): Unit = onCheckedChange(isChecked)
       })
     )
+
+  def rvLayoutAnimation(res: Int)(implicit contextWrapper: ContextWrapper) = Tweak[RecyclerView]{ view =>
+    view.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(contextWrapper.application, res))
+  }
 
   def rvSwapAdapter[VH <: RecyclerView.ViewHolder](adapter: RecyclerView.Adapter[VH]): Tweak[RecyclerView] =
     Tweak[RecyclerView](_.swapAdapter(adapter, false))

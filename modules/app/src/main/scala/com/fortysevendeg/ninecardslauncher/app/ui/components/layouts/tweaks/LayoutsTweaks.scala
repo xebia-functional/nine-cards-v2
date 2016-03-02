@@ -10,6 +10,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher2.R
@@ -146,23 +147,15 @@ object WorkSpaceItemMenuTweaks {
 
 object SearchBoxesAnimatedViewTweak {
 
-  def sbavReset(implicit contextWrapper: ContextWrapper) = Tweak[SearchBoxesAnimatedView] { view =>
-    runUi(view.forceAppsView ~ view.reset)
-  }
+  def sbvUpdateContentView(contentView: ContentView) = Tweak[SearchBoxView] (view => runUi(view.updateContentView(contentView)))
 
-  def sbavChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxesAnimatedView] (_.listener = Some(listener))
+  def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxView] (_.listener = Some(listener))
 
-  def sbavEnabled(enabled: Boolean) = Tweak[SearchBoxesAnimatedView] { view =>
-    view.statuses = view.statuses.copy(enabled = enabled)
-  }
+  def sbvUpdateHeaderIcon(resourceId: Int) = Tweak[SearchBoxView](view => runUi(view.updateHeaderIcon(resourceId)))
 
-  def sbavUpdateAppsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateAppsIcon(resourceId)))
+  def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[SearchBoxView] (_.addTextChangedListener(onChangeText))
 
-  def sbavUpdateContactsIcon(resourceId: Int) = Tweak[SearchBoxesAnimatedView](view => runUi(view.updateContactsIcon(resourceId)))
-
-  def sbavOnChangeText(onChangeText: (String, BoxView) => Unit) = Tweak[SearchBoxesAnimatedView] (_.addTextChangedListener(onChangeText))
-
-  def sbavClean = Tweak[SearchBoxesAnimatedView] (view => runUi(view.clean))
+  def sbvClean = Tweak[SearchBoxView] (view => runUi(view.clean))
 }
 
 object PullToTabsViewTweaks {
@@ -194,12 +187,20 @@ object PullToCloseViewTweaks {
 
 object PullToDownViewTweaks {
 
-  def pdvListener(pullToDownListener: PullToDownListener) =
-    Tweak[PullToDownView] (_.listeners = pullToDownListener)
+  def pdvPullingListener(pullToDownListener: PullingListener) =
+    Tweak[PullToDownView] (_.pullingListeners = pullToDownListener)
+
+  def pdvHorizontalListener(horizontalMovementListener: HorizontalMovementListener) =
+    Tweak[PullToDownView] (_.horizontalListener = horizontalMovementListener)
 
   def pdvEnable(enabled: Boolean) =
     Tweak[PullToDownView] { view =>
       view.pullToDownStatuses = view.pullToDownStatuses.copy(enabled = enabled)
+    }
+
+  def pdvHorizontalEnable(enabled: Boolean) =
+    Tweak[PullToDownView] { view =>
+      view.pullToDownStatuses = view.pullToDownStatuses.copy(scrollHorizontalEnabled = enabled)
     }
 
   def pdvResistance(resistance: Float) =
@@ -261,6 +262,24 @@ object DialogToolbarTweaks {
 
   def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W]{ view =>
     runUi(view.navigationClickListener(click))
+  }
+
+}
+
+object SwipeAnimatedDrawerViewTweaks {
+
+  type W = SwipeAnimatedDrawerView
+
+  def sadvInitAnimation(contentView: ContentView, widthContainer: Int) = Tweak[W] { view =>
+    runUi(view.initAnimation(contentView, widthContainer))
+  }
+
+  def sadvMoveAnimation(contentView: ContentView, widthContainer: Int, displacement: Float) = Tweak[W] { view =>
+    runUi(view.moveAnimation(contentView, widthContainer, displacement))
+  }
+
+  def sadvEndAnimation(duration: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
+    runUi(view.endAnimation(duration))
   }
 
 }
