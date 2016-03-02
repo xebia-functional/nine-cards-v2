@@ -48,19 +48,11 @@ class ProfileActivity
 
   var clientStatuses = GoogleApiClientStatuses()
 
-  lazy val userProfile: Option[UserProfileProvider] = di.userProcess.getUser.run.run match {
-    case Answer(user) => user.email map { email =>
-      new UserProfileProvider(
-        account = email,
-        onConnectedUserProfile = onConnectedUserProfile,
-        onConnectedPlusProfile = onConnectedPlusProfile)
-    }
-    case _ => None
-  }
+  var userProfileStatuses = UserProfileStatuses()
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
-    userProfile foreach (_.connect)
+    loadUserProfile()
     setContentView(R.layout.profile_activity)
     runUi(initUi)
 
@@ -135,27 +127,40 @@ class ProfileActivity
           tryToConnect()
           runUi(showLoading)
         case _ =>
-          loadUserEmail()
+          loadUserInfo()
       }
   }
 
-  def onConnectedUserProfile(name: String, email: String, avatarUrl: String): Unit = runUi(userProfile(name, email, avatarUrl))
+  def onConnectedUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit = runUi(userProfile(name, email, avatarUrl))
 
   def onConnectedPlusProfile(coverPhotoUrl: String): Unit = {}
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
-    userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
+    userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
 
-  private[this] def loadUserEmail(): Unit =
-    Task.fork(loadSingedEmail.run).resolveAsyncUi(
+  private[this] def loadUserProfile(): Unit =
+    Task.fork(loadUserEmail().run).resolveAsyncUi(
       onResult = email => Ui {
-        val client = createGoogleDriveClient(email)
+        val userProfile = email map { email =>
+          new UserProfileProvider(
+            account = email,
+            onConnectedUserProfile = onConnectedUserProfile,
+            onConnectedPlusProfile = onConnectedPlusProfile)
+        }
+        userProfileStatuses = userProfileStatuses.copy(userProfile = userProfile)
+        userProfileStatuses.userProfile foreach (_.connect())
+      })
+
+  private[this] def loadUserInfo(): Unit =
+    Task.fork(loadUserEmail().run).resolveAsyncUi(
+      onResult = email => Ui {
+        val client = email map createGoogleDriveClient
         clientStatuses = clientStatuses.copy(
-          apiClient = Some(client),
-          username = Some(email))
-        client.connect()
+          apiClient = client,
+          username = email)
+        client foreach (_.connect())
       },
-      onException = (_) => showError(R.string.errorLoadingUser, loadUserEmail),
+      onException = (_) => showError(R.string.errorLoadingUser, loadUserInfo),
       onPreTask = () => showLoading
     )
 

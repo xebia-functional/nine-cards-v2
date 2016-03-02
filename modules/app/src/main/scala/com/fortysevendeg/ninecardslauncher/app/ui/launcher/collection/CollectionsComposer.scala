@@ -21,6 +21,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpaces, LauncherWorkSpacesListener, WorkSpaceItemMenu}
@@ -172,10 +173,15 @@ trait CollectionsComposer
       createPager(selectedPageDefault)
   }
 
-  def userProfileMenu(name: String, email: String, photoUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
+  def userProfileMenu(name: String, email: String, avatarUrl: Option[String])(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
     (menuName <~ tvText(name)) ~
       (menuEmail <~ tvText(email)) ~
-      (menuAvatar <~ ivUri(photoUrl) <~ menuAvatarStyle)
+      (menuAvatar <~
+        (avatarUrl map ivUri getOrElse {
+          val drawable = new CharDrawable(name.substring(0, 1).toUpperCase)
+          ivSrc(drawable)
+        }) <~
+        menuAvatarStyle)
 
   def plusProfileMenu(coverPhotoUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
     menuCover <~ ivUri(coverPhotoUrl)

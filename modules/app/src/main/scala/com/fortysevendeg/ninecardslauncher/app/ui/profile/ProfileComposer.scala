@@ -5,6 +5,7 @@ import android.support.design.widget.TabLayout.Tab
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -12,7 +13,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.PathMorphDrawable
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, SubscriptionsAdapter, PublicationsAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
@@ -65,10 +66,15 @@ trait ProfileComposer
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
       Ui(onProfileTabSelected(PublicationsTab))
 
-  def userProfile(name: String, email: String, avatarUrl: String)(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
+  def userProfile(name: String, email: String, avatarUrl: Option[String])(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
     (userName <~ tvText(name)) ~
     (userEmail <~ tvText(email)) ~
-      (userAvatar <~ ivUri(avatarUrl) <~ menuAvatarStyle)
+      (userAvatar <~
+        (avatarUrl map ivUri getOrElse {
+          val drawable = new CharDrawable(name.substring(0, 1).toUpperCase)
+          ivSrc(drawable)
+        }) <~
+        menuAvatarStyle)
 
   def handleToolbarVisibility(percentage: Float): Ui[_] = toolbar match {
     case Some(t) if percentage >= 0.5 && t.getVisibility == View.VISIBLE => toolbar <~ SnailsCommons.fadeOut()

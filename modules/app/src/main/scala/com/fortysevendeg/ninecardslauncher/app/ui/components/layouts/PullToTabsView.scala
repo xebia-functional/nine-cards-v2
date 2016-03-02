@@ -38,7 +38,7 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
   var tabsListener = PullToTabsListener()
 
   override def dispatchTouchEvent(event: MotionEvent): Boolean = {
-    if (pullToDownStatuses.isPulling) {
+    if (pullToDownStatuses.action == Pulling) {
       val displacedX = MotionEventCompat.getX(event, 0) + (distanceChangeTabs / 2)
       val pos = math.floor((displacedX - pullToDownStatuses.startX) / distanceChangeTabs).toInt
       val newPos = pullToTabsStatuses.calculatePosition(pos, getTabsCount)
@@ -62,12 +62,12 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
   def linkTabsView(tabsView: Option[LinearLayout], start: Ui[_], end: Ui[_]): Ui[PullToTabsView] = {
     tabs = tabsView
     this <~
-      pdvListener(PullToDownListener(
-        startPulling = () => {
+      pdvPullingListener(PullingListener(
+        start = () => {
           pullToTabsStatuses = pullToTabsStatuses.start()
           runUi((tabs <~ vVisible <~ vY(-heightTabs)) ~ start)
         },
-        endPulling = () => runUi((tabs <~ vGone) ~ end),
+        end = () => runUi((tabs <~ vGone) ~ end),
         scroll = (scroll: Int, close: Boolean) => runUi(tabs <~ vY(-heightTabs + scroll)))
       )
   }
