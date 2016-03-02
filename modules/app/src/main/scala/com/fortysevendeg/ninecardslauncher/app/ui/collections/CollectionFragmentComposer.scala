@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionStateIdle, ActionStateReordering, ReorderItemTouchHelperCallback}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullToCloseView, PullToDownListener}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullingListener, PullToCloseListener, PullToCloseView}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
@@ -44,9 +44,9 @@ trait CollectionFragmentComposer
         close = () => scrolledListener foreach (_.close())
       )) <~
       wire(pullToCloseView) <~
-      pdvListener(PullToDownListener(
-        startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
-        endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),
+      pdvPullingListener(PullingListener(
+        start = () => runUi(recyclerView <~ nrvDisableScroll(true)),
+        end = () => runUi(recyclerView <~ nrvDisableScroll(false)),
         scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, statuses.sType, close))
       ))
   )
