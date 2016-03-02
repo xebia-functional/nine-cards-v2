@@ -12,6 +12,8 @@ import com.google.android.gms.plus.{People, Plus}
 import macroid.ActivityContextWrapper
 import macroid.FullDsl._
 
+import scala.util.Try
+
 case class UserProfileStatuses(
     userProfile: Option[UserProfileProvider] = None)
 
@@ -62,7 +64,7 @@ class UserProfileProvider(account: String,
         for {
           people <- Option(loadPeopleResult)
           personBuffer <- Option(people.getPersonBuffer)
-          person <- Option(personBuffer.get(0))
+          person <- Try(personBuffer.get(0)).toOption
           cover <- Option(person.getCover)
           coverPhoto <- Option(cover.getCoverPhoto)
           url <- Option(coverPhoto.getUrl)
