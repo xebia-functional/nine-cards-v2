@@ -26,7 +26,7 @@ class UserProfileProvider(account: String,
 
   private[this] val apiClient: GoogleApiClient = {
     val gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-      .requestScopes(Plus.SCOPE_PLUS_LOGIN, Plus.SCOPE_PLUS_PROFILE)
+      .requestScopes(Plus.SCOPE_PLUS_PROFILE)
       .setAccountName(account)
       .build()
 
