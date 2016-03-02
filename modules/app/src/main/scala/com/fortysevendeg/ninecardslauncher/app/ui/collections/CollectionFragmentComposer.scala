@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToDownListener, PullToCloseListener, PullToCloseView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullingListener, PullToCloseListener, PullToCloseView}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, _}
@@ -41,9 +41,9 @@ trait CollectionFragmentComposer
       w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards)
     ) <~ pcvListener(PullToCloseListener(
       close = () => scrolledListener foreach (_.close())
-    )) <~ pdvListener(PullToDownListener(
-      startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
-      endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),
+    )) <~ pdvPullingListener(PullingListener(
+      start = () => runUi(recyclerView <~ nrvDisableScroll(true)),
+      end = () => runUi(recyclerView <~ nrvDisableScroll(false)),
       scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, sType, close))
     ))
   )

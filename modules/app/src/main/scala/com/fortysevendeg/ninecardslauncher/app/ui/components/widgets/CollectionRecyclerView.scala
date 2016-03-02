@@ -49,8 +49,8 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
   }
 
   override def attachLayoutAnimationParameters(child: View, params: LayoutParams, index: Int, count: Int): Unit =
-    (enableAnimation, Option(getAdapter), Option(getLayoutManager)) match {
-      case (true, Some(_), Some(layoutManager: GridLayoutManager)) =>
+    (enableAnimation, Option(getLayoutManager)) match {
+      case (true, Some(layoutManager: GridLayoutManager)) =>
         val animationParams = Option(params.layoutAnimationParameters) match {
           case Some(animParams: AnimationParameters) => animParams
           case _ =>

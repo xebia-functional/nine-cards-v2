@@ -7,29 +7,29 @@ import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
-import android.view.{MotionEvent, ViewConfiguration, ViewGroup}
+import android.view.{VelocityTracker, MotionEvent, ViewConfiguration, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Swiping, SwipeController}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
 class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
-  extends ViewGroup(context) {
+  extends ViewGroup(context)
+  with SwipeController {
 
   lazy val content = getChildAt(0)
 
   var pullToDownStatuses = PullToDownStatuses(
     distanceToValidAction = resGetDimensionPixelSize(R.dimen.distance_to_valid_action))
 
-  var listeners = PullToDownListener()
+  var pullingListeners = PullingListener()
+
+  var horizontalListener = HorizontalMovementListener()
 
   val touchSlop = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
     ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
   }
-
-  def isPulling: Boolean = pullToDownStatuses.isPulling
-
-  def currentPosY: Int = pullToDownStatuses.currentPosY
 
   override def checkLayoutParams(p: ViewGroup.LayoutParams): Boolean = p.isInstanceOf[MarginLayoutParams]
 
@@ -70,12 +70,15 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
   override def dispatchTouchEvent(event: MotionEvent): Boolean = {
     val x = MotionEventCompat.getX(event, 0)
     val y = MotionEventCompat.getY(event, 0)
-    (pullToDownStatuses.isPulling, childInTop, event.getAction) match {
-      case (true, _, ACTION_UP | ACTION_CANCEL) => release(event)
-      case (true, _, ACTION_DOWN) => actionDown(event, x, y)
-      case (true, _, ACTION_MOVE) => actionMove(event, x, y)
-      case (false, true, ACTION_DOWN) => actionDown(event, x, y)
-      case (false, true, ACTION_MOVE) => actionMoveIdle(event, x, y)
+    val action = MotionEventCompat.getActionMasked(event)
+    updateSwipe(event)
+    (pullToDownStatuses.action, action) match {
+      case (_, ACTION_DOWN) => actionDown(event, x, y)
+      case (NoMovement, ACTION_MOVE) => actionMoveIdle(event, x, y)
+      case (Pulling, ACTION_MOVE) => actionMovePulling(event, x, y)
+      case (Pulling, ACTION_UP | ACTION_CANCEL) => releasePulling(event)
+      case (HorizontalMovement, ACTION_MOVE) => actionMoveHorizontal(event, x, y)
+      case (HorizontalMovement, ACTION_UP | ACTION_CANCEL) => releaseHorizontal(event)
       case _ => super.dispatchTouchEvent(event)
     }
   }
@@ -90,36 +93,42 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
     })
     anim.addListener(new AnimatorListenerAdapter {
       override def onAnimationEnd(animation: Animator): Unit = {
-        listeners.endPulling()
-        pullToDownStatuses = pullToDownStatuses.copy(isPulling = false)
+        pullingListeners.end()
+        pullToDownStatuses = pullToDownStatuses.copy(action = NoMovement)
         restart()
       }
     })
     anim.start()
   }
 
-  private[this] def release(ev: MotionEvent): Boolean = {
-    if (pullToDownStatuses.currentPosY > 0) {
-      drop()
-    } else {
-      listeners.endPulling()
-      pullToDownStatuses = pullToDownStatuses.copy(isPulling = false)
-    }
-    super.dispatchTouchEvent(ev)
-  }
-
   private[this] def actionDown(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    pullToDownStatuses = pullToDownStatuses.start(x, y)
+    pullToDownStatuses = pullToDownStatuses.start(x, y, NoMovement)
     super.dispatchTouchEvent(ev)
     true
   }
 
-  private[this] def actionMove(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    val firstTime = !pullToDownStatuses.isPulling && childInTop && pullToDownStatuses.dontStarted
-    if (firstTime) {
-      // User began movement when the child can scroll up and we need start information
-      pullToDownStatuses = pullToDownStatuses.start(x, y)
+  private[this] def actionMoveIdle(ev: MotionEvent, x: Float, y: Float): Boolean = {
+    if (pullToDownStatuses.enabled) {
+      val deltaX = x - pullToDownStatuses.startX
+      val deltaY = y - pullToDownStatuses.startY
+      val pulling = childInTop && (deltaY > touchSlop)
+      val moveX = pullToDownStatuses.scrollHorizontalEnabled &&
+        (math.abs(deltaX) > touchSlop) &&
+        (math.abs(deltaX) > math.abs(deltaY))
+      (pulling, moveX) match {
+        case (true, _) =>
+          pullToDownStatuses = pullToDownStatuses.start(x, y, Pulling)
+          pullingListeners.start()
+        case (_, true) =>
+          pullToDownStatuses = pullToDownStatuses.start(x, y, HorizontalMovement)
+          horizontalListener.start()
+        case _ =>
+      }
     }
+    super.dispatchTouchEvent(ev)
+  }
+
+  private[this] def actionMovePulling(ev: MotionEvent, x: Float, y: Float): Boolean = {
     pullToDownStatuses = pullToDownStatuses.move(x, y)
     val moveDown = pullToDownStatuses.offsetY > 0
 
@@ -131,12 +140,31 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
     super.dispatchTouchEvent(ev)
   }
 
-  private[this] def actionMoveIdle(ev: MotionEvent, x: Float, y: Float): Boolean = {
-    if (y - pullToDownStatuses.startY > touchSlop && pullToDownStatuses.enabled) {
-      pullToDownStatuses = pullToDownStatuses.copy(isPulling = true)
-      pullToDownStatuses = pullToDownStatuses.start(x, y)
-      listeners.startPulling()
+  private[this] def releasePulling(ev: MotionEvent): Boolean = {
+    recycleSwipe()
+    if (pullToDownStatuses.currentPosY > 0) {
+      drop()
+    } else {
+      pullingListeners.end()
+      pullToDownStatuses = pullToDownStatuses.copy(action = NoMovement)
     }
+    super.dispatchTouchEvent(ev)
+  }
+
+  private[this] def actionMoveHorizontal(ev: MotionEvent, x: Float, y: Float): Boolean = {
+    requestDisallowInterceptTouchEvent(true)
+    val to = pullToDownStatuses.currentPosY + pullToDownStatuses.offsetX.toInt
+    pullToDownStatuses = pullToDownStatuses.updateCurrentPostX(to)
+    horizontalListener.scroll(pullToDownStatuses.offsetX.toInt)
+    pullToDownStatuses = pullToDownStatuses.move(x, y)
+    super.dispatchTouchEvent(ev)
+  }
+
+  private[this] def releaseHorizontal(ev: MotionEvent): Boolean = {
+    val swipe = currentSwiping
+    recycleSwipe()
+    horizontalListener.end(swipe, -pullToDownStatuses.currentPosX)
+    pullToDownStatuses = pullToDownStatuses.restart()
     super.dispatchTouchEvent(ev)
   }
 
@@ -156,7 +184,7 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
         }
       }
       pullToDownStatuses = pullToDownStatuses.updateCurrentPostY(to)
-      listeners.scroll(to, pullToDownStatuses.isValidAction)
+      pullingListeners.scroll(to, pullToDownStatuses.isValidAction)
       val change: Int = to - pullToDownStatuses.lastPosY
       updatePos(change)
     }
@@ -173,14 +201,29 @@ class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
 
 }
 
-case class PullToDownListener(
-  startPulling: () => Unit = () => (),
-  endPulling: () => Unit = () => (),
-  scroll: (Int, Boolean) => Unit = (i: Int, b: Boolean) => ())
+case class PullingListener(
+  start: () => Unit = () => (),
+  end: () => Unit = () => (),
+  scroll: (Int, Boolean) => Unit = (_, _) => ())
+
+case class HorizontalMovementListener(
+  start: () => Unit = () => (),
+  end: (Swiping, Int) => Unit = (_, _) => (),
+  scroll: (Int) => Unit = (_) => ())
+
+sealed trait PullType
+
+case object Pulling extends PullType
+
+case object HorizontalMovement extends PullType
+
+case object NoMovement extends PullType
 
 case class PullToDownStatuses(
   distanceToValidAction: Int,
   resistance: Float = 3f,
+  lastPosX: Int = 0,
+  currentPosX: Int = 0,
   lastPosY: Int = 0,
   currentPosY: Int = 0,
   startX: Float = 0,
@@ -190,12 +233,15 @@ case class PullToDownStatuses(
   offsetX: Float = 0,
   offsetY: Float = 0,
   enabled: Boolean = true,
-  isPulling: Boolean = false) {
+  scrollHorizontalEnabled: Boolean = false,
+  action: PullType = NoMovement) {
 
   val posStart = 0
 
   def restart(): PullToDownStatuses = copy(
-    isPulling = false,
+    action = NoMovement,
+    lastPosX = 0,
+    currentPosX = 0,
     lastPosY = 0,
     currentPosY = 0,
     startX = 0,
@@ -207,19 +253,24 @@ case class PullToDownStatuses(
 
   def dontStarted: Boolean = startX == 0 && startY == 0
 
-  def start(x: Float, y: Float): PullToDownStatuses = copy(
+  def start(x: Float, y: Float, action: PullType): PullToDownStatuses = copy(
+    currentPosX = 0,
     currentPosY = 0,
     startX = x,
     startY = y,
     lastMoveX = x,
-    lastMoveY = y)
+    lastMoveY = y,
+    action = action)
 
   def move(x: Float, y: Float): PullToDownStatuses = copy(
     offsetX = x - lastMoveX,
     offsetY = (y - lastMoveY) / resistance,
     lastMoveX = x,
-    lastMoveY = y,
-    isPulling = true)
+    lastMoveY = y)
+
+  def updateCurrentPostX(current: Int): PullToDownStatuses = copy(
+    lastPosX = currentPosX,
+    currentPosX = current)
 
   def updateCurrentPostY(current: Int): PullToDownStatuses = copy(
     lastPosY = currentPosY,
