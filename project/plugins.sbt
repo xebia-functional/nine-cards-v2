@@ -6,8 +6,11 @@ resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksam
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.0")
 
-resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
+resolvers += "Fabric public" at "https://maven.fabric.io/public"
 
-libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.10.44"
-
-addSbtPlugin("de.johoop" % "ant4sbt" % "1.1.2")
+libraryDependencies ++= Seq(
+  "com.amazonaws" % "aws-java-sdk-s3" % "1.10.44",
+  "org.apache.httpcomponents" % "httpclient" % "4.5.1",
+  "org.apache.httpcomponents" % "httpmime" % "4.5.1",
+  "io.fabric.tools" % "gradle" % "1.21.4"
+)
