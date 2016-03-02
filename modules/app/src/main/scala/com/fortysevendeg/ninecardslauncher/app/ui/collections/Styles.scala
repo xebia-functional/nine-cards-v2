@@ -17,11 +17,13 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchHelperCallback
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
@@ -68,13 +70,15 @@ trait Styles {
 
 trait CollectionFragmentStyles {
 
-  def recyclerStyle(animateCards: Boolean)(implicit context: ContextWrapper): Tweak[CollectionRecyclerView] = {
+  def recyclerStyle(animateCards: Boolean, callback: ReorderItemTouchHelperCallback)
+    (implicit context: ContextWrapper): Tweak[CollectionRecyclerView] = {
     val paddingTop = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     vMatchParent +
       vPadding(padding, paddingTop, padding, padding) +
       vgClipToPadding(false) +
       vOverScrollMode(View.OVER_SCROLL_NEVER) +
+      rvItemTouchHelperCallback(callback) +
       (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)
   }
 

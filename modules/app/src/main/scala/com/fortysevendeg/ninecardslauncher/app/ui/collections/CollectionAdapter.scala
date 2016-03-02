@@ -2,11 +2,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Context
 import android.support.v7.widget.{CardView, RecyclerView}
-import android.view.View.{OnClickListener, OnLongClickListener}
+import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -18,6 +18,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with AnalyticDispatcher
+  with ReorderItemTouchListener
   with LauncherExecutor { self =>
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
@@ -31,17 +32,6 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
       } yield {
         trackCard(card, OpenAction)
         execute(card.intent)
-      }
-    })
-    adapter.content.setOnLongClickListener(new OnLongClickListener {
-      override def onLongClick(v: View): Boolean = {
-        for {
-          tag <- Option(v.getTag)
-          pos = Int.unbox(tag)
-          c <- collection.cards.lift(pos)
-          activity <- activity[CollectionsDetailsActivity]
-        } yield activity.removeCard(c)
-        false
       }
     })
     adapter
@@ -90,6 +80,16 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   }
 
   override def getApplicationContext: Context = activityContext.bestAvailable
+
+  override def onItemMove(from: Int, to: Int): Unit = {
+    val cards = collection.cards.zipWithIndex.map {
+      case (_, i) if i == from => collection.cards(to)
+      case (_, i) if i == to => collection.cards(from)
+      case (card, _) => card
+    }
+    collection = collection.copy(cards = cards)
+    notifyItemMoved(from, to)
+  }
 }
 
 

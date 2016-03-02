@@ -11,6 +11,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionStateIdle, ActionStateReordering, ActionStateReorder, ReorderItemTouchHelperCallback}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToDownListener, PullToCloseListener, PullToCloseView}
@@ -36,16 +37,27 @@ trait CollectionFragmentComposer
 
   var recyclerView = slot[CollectionRecyclerView]
 
+  var pullToCloseView = slot[PullToCloseView]
+
+  val itemTouchCallback = new ReorderItemTouchHelperCallback(
+    onChanged = {
+      case ActionStateReordering => runUi(pullToCloseView <~ pdvEnable(false))
+      case ActionStateIdle => runUi(pullToCloseView <~ pdvEnable(true))
+    })
+
   def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = getUi(
     l[PullToCloseView](
-      w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards)
-    ) <~ pcvListener(PullToCloseListener(
-      close = () => scrolledListener foreach (_.close())
-    )) <~ pdvListener(PullToDownListener(
-      startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
-      endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),
-      scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, sType, close))
-    ))
+      w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards, itemTouchCallback)
+    ) <~
+      pcvListener(PullToCloseListener(
+        close = () => scrolledListener foreach (_.close())
+      )) <~
+      wire(pullToCloseView) <~
+      pdvListener(PullToDownListener(
+        startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
+        endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),
+        scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, sType, close))
+      ))
   )
 
   def initUi(collection: Collection, animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =

@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 import android.content.Context
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
-import android.util.AttributeSet
+import android.util.{Log, AttributeSet}
 import android.view.ViewGroup.LayoutParams
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
@@ -28,10 +28,12 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
       var scrollY = scrollListener map (_.scrollY) getOrElse 0
       override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = {
         super.onScrolled(recyclerView, dx, dy)
+        Log.d("9cards", s"onScrolled: $dy")
         scrollY = scrolled(scrollY, dx, dy)
       }
       override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
         super.onScrollStateChanged(recyclerView, newState)
+        Log.d("9cards", s"onScrollStateChanged: $newState")
         scrollStateChanged(scrollY, recyclerView, newState)
       }
     }
