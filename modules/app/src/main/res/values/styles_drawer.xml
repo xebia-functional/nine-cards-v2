@@ -14,8 +14,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:paddingLeft">@dimen/padding_default</item>
-        <item name="android:paddingRight">@dimen/padding_default</item>
         <item name="android:clipToPadding">false</item>
     </style>
 
@@ -42,6 +40,26 @@
         <item name="pressedTranslationZ">@dimen/elevation_fab_button_pressed</item>
         <item name="backgroundTint">@color/drawer_fab_button</item>
         <item name="rippleColor">@color/drawer_fab_button_ripple</item>
+    </style>
+
+    <!-- Animated View -->
+
+    <style name="LauncherDrawerAnimatedContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="LauncherDrawerAnimatedRipple">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="LauncherDrawerAnimatedIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_margin">@dimen/padding_large</item>
+        <item name="android:padding">@dimen/padding_large</item>
     </style>
 
 </resources>

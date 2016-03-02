@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_animation_root"
+    style="@style/LauncherDrawerAnimatedContent">
+
+    <ImageView
+        android:id="@+id/swipe_animation_content"
+        style="@style/LauncherDrawerAnimatedRipple"/>
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        android:id="@+id/swipe_animation_icon"
+        style="@style/LauncherDrawerAnimatedIcon"/>
+
+</FrameLayout>
