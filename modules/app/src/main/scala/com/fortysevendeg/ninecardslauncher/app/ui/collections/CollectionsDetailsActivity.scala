@@ -178,11 +178,11 @@ class CollectionsDetailsActivity
 
   override def scrollY(scroll: Int, dy: Int): Unit = runUi(translationScrollY(scroll))
 
-  override def scrollType(sType: Int): Unit = runUi(notifyScroll(sType))
+  override def scrollType(sType: ScrollType): Unit = runUi(notifyScroll(sType))
 
   override def onBackPressed(): Unit = runUi(backByPriority)
 
-  override def pullToClose(scroll: Int, scrollType: Int, close: Boolean): Unit =
+  override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
     runUi(pullCloseScrollY(scroll, scrollType, close))
 
   override def close(): Unit = runUi(exitTransition)
@@ -246,9 +246,9 @@ trait ScrolledListener {
 
   def scrollY(scroll: Int, dy: Int)
 
-  def scrollType(sType: Int)
+  def scrollType(sType: ScrollType)
 
-  def pullToClose(scroll: Int, scrollType: Int, close: Boolean)
+  def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean)
 
   def close()
 }
@@ -257,11 +257,6 @@ trait ActionsScreenListener {
   def onStartFinishAction()
 
   def onEndFinishAction()
-}
-
-object ScrollType {
-  val up = 0
-  val down = 1
 }
 
 object CollectionsDetailsActivity {

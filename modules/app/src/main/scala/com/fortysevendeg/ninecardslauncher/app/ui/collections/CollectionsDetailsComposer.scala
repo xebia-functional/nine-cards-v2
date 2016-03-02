@@ -110,12 +110,12 @@ trait CollectionsDetailsComposer
       (tabs <~ vVisible <~~ enterViews)
   }
 
-  def pullCloseScrollY(scroll: Int, scrollType: Int, close: Boolean): Ui[_] = {
+  def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_] = {
     val displacement = scroll * resistanceDisplacement
     val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_action)
     val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
     (tabs <~ (scrollType match {
-      case ScrollType.down => vTranslationY(displacement)
+      case ScrollDown => vTranslationY(displacement)
       case _ => Tweak.blank
     })) ~
       (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
@@ -138,7 +138,7 @@ trait CollectionsDetailsComposer
       (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
   }
 
-  def notifyScroll(sType: Int): Ui[_] = (for {
+  def notifyScroll(sType: ScrollType): Ui[_] = (for {
     vp <- viewPager
     adapter <- getAdapter
   } yield {

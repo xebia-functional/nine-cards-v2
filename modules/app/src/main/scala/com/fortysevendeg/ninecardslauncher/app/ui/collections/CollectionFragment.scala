@@ -45,8 +45,9 @@ class CollectionFragment
     layout(animateCards)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    sType = getArguments.getInt(keyScrollType, ScrollType.down)
-    canScroll = collection exists (_.cards.length > numSpaces)
+    val sType = ScrollType(getArguments.getString(keyScrollType, ScrollDown.toString))
+    val canScroll = collection exists (_.cards.length > numSpaces)
+    statuses = statuses.copy(sType = sType, canScroll = canScroll)
     collection foreach (c => runUi(initUi(c, animateCards)))
     super.onViewCreated(view, savedInstanceState)
   }
@@ -69,21 +70,21 @@ class CollectionFragment
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)
     val cardCount = adapter.collection.cards.length
-    canScroll = cardCount > numSpaces
+    statuses = statuses.copy(canScroll = cardCount > numSpaces)
     runUi(resetScroll(adapter.collection))
   }
 
   def removeCard(card: Card) = getAdapter foreach { adapter =>
     adapter.removeCard(card)
     val cardCount = adapter.collection.cards.length
-    canScroll = cardCount > numSpaces
+    statuses = statuses.copy(canScroll = cardCount > numSpaces)
     runUi(resetScroll(adapter.collection))
   }
 
   def reloadCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.updateCards(cards)
     val cardCount = adapter.collection.cards.length
-    canScroll = cardCount > numSpaces
+    statuses = statuses.copy(canScroll = cardCount > numSpaces)
     runUi(resetScroll(adapter.collection))
   }
 }

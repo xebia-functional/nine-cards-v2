@@ -37,10 +37,10 @@ object RippleBackgroundViewTweaks {
 object CollectionRecyclerViewTweaks {
   type W = CollectionRecyclerView
 
-  def nrvDisableScroll(disable: Boolean) = Tweak[W](_.disableScroll = disable)
+  def nrvDisableScroll(disable: Boolean) = Tweak[W]( view => view.statuses = view.statuses.copy(disableScroll = disable))
 
-  def nrvEnableAnimation(res: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W]{ view =>
-    view.enableAnimation = true
+  def nrvEnableAnimation(res: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
+    view.statuses = view.statuses.copy(enableAnimation = true)
     view.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(contextWrapper.application, res))
   }
 

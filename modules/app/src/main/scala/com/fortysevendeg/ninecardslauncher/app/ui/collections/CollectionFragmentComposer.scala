@@ -1,37 +1,28 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.support.v7.widget.{CardView, DefaultItemAnimator, GridLayoutManager, RecyclerView}
-import android.view.View
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionStateIdle, ActionStateReordering, ActionStateReorder, ReorderItemTouchHelperCallback}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionStateIdle, ActionStateReordering, ReorderItemTouchHelperCallback}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToDownListener, PullToCloseListener, PullToCloseView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullToCloseView, PullToDownListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, _}
+import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
 trait CollectionFragmentComposer
   extends CollectionFragmentStyles {
 
-  var sType = -1
-
-  var canScroll = false
-
-  var activeFragment = false
+  var statuses = CollectionStatuses()
 
   var scrolledListener: Option[ScrolledListener] = None
 
@@ -56,7 +47,7 @@ trait CollectionFragmentComposer
       pdvListener(PullToDownListener(
         startPulling = () => runUi(recyclerView <~ nrvDisableScroll(true)),
         endPulling = () => runUi(recyclerView <~ nrvDisableScroll(false)),
-        scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, sType, close))
+        scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, statuses.sType, close))
       ))
   )
 
@@ -83,18 +74,25 @@ trait CollectionFragmentComposer
       getScrollListener(collection.cards.length, spaceMove)
   }
 
-  def scrollType(newSType: Int)(implicit contextWrapper: ContextWrapper): Ui[_] = {
+  def scrollType(newSType: ScrollType)(implicit contextWrapper: ContextWrapper): Ui[_] = {
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-    (canScroll, sType) match {
-      case (scroll, s) if s != newSType && scroll =>
-        sType = newSType
+    (statuses.canScroll, statuses.sType) match {
+      case (true, s) if s != newSType =>
+        statuses = statuses.copy(sType = newSType)
         recyclerView <~
           vScrollBy(0, -Int.MaxValue) <~
-          (if (sType == ScrollType.up) vScrollBy(0, spaceMove) else Tweak.blank)
+          (statuses.sType match {
+            case ScrollUp => vScrollBy(0, spaceMove)
+            case _ => Tweak.blank
+          })
       case (_, s) if s != newSType =>
-        sType = newSType
-        recyclerView <~ vPadding(padding, if (newSType == ScrollType.up) padding else spaceMove, padding, padding)
+        statuses = statuses.copy(sType = newSType)
+        val paddingTop = newSType match {
+          case ScrollUp => padding
+          case _ => spaceMove
+        }
+        recyclerView <~ vPadding(padding, paddingTop, padding, padding)
       case _ => Ui.nop
     }
   }
@@ -126,18 +124,18 @@ trait CollectionFragmentComposer
     nrvCollectionScrollListener(
       scrolled = (scrollY: Int, dx: Int, dy: Int) => {
         val sy = scrollY + dy
-        if (activeFragment && cardsCount > numSpaces) {
+        if (statuses.activeFragment && cardsCount > numSpaces) {
           scrolledListener foreach (_.scrollY(sy, dy))
         }
         sy
       },
       scrollStateChanged = (scrollY: Int, recyclerView: RecyclerView, newState: Int) => {
         if (newState == RecyclerView.SCROLL_STATE_DRAGGING) scrolledListener foreach (_.startScroll())
-        if (activeFragment &&
+        if (statuses.activeFragment &&
           newState == RecyclerView.SCROLL_STATE_IDLE &&
           cardsCount > numSpaces) {
           scrolledListener foreach { sl =>
-            val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollType.down) else (spaceMove, ScrollType.up)
+            val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
             (scrollY, moveTo, sType) match {
               case (y, move, st) if y < spaceMove && moveTo != scrollY =>
                 sl.scrollType(sType)
@@ -151,9 +149,12 @@ trait CollectionFragmentComposer
     )
 
   private[this] def startScroll(padding: Int, spaceMove: Int)(implicit contextWrapper: ContextWrapper): Ui[_] =
-    (canScroll, sType) match {
-      case (true, s) => recyclerView <~ vScrollBy(0, if (s == ScrollType.up) spaceMove else 0)
-      case (_, s) => recyclerView <~ vPadding(padding, if (s == ScrollType.up) padding else spaceMove, padding, padding)
+    (statuses.canScroll, statuses.sType) match {
+      case (true, ScrollUp) => recyclerView <~ vScrollBy(0, spaceMove)
+      case (true, ScrollDown) => recyclerView <~ vScrollBy(0, 0)
+      case (false, ScrollUp) => recyclerView <~ vPadding(padding, padding, padding, padding)
+      case (false, ScrollDown) => recyclerView <~ vPadding(padding, spaceMove, padding, padding)
+      case _ => Ui.nop
     }
 
   private[this] def createAdapter(collection: Collection)
@@ -165,39 +166,23 @@ trait CollectionFragmentComposer
 
 }
 
-case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with CollectionAdapterStyles
-  with TypedFindView {
+trait ScrollType
 
-  lazy val iconContent = Option(findView(TR.card_icon_content))
+case object ScrollUp extends ScrollType
 
-  lazy val icon = Option(findView(TR.card_icon))
+case object ScrollDown extends ScrollType
 
-  lazy val name = Option(findView(TR.card_text))
+case object ScrollNo extends ScrollType
 
-  lazy val badge = Option(findView(TR.card_badge))
-
-  runUi(
-    (content <~ rootStyle(heightCard)) ~
-      (iconContent <~ iconContentStyle(heightCard)))
-
-  def bind(card: Card, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
-    (icon <~ iconCardTransform(card)) ~
-      (name <~ tvText(card.term)) ~
-      (content <~ vTag2(position)) ~
-      (badge <~ (getBadge(card.cardType) map {
-        ivSrc(_) + vVisible
-      } getOrElse vGone)) ~
-      (name <~ nameStyle(card.cardType))
-
-  private[this] def getBadge(cardType: CardType): Option[Int] = cardType match {
-    case PhoneCardType => Option(R.drawable.badge_phone)
-    case SmsCardType => Option(R.drawable.badge_sms)
-    case EmailCardType => Option(R.drawable.badge_email)
-    case _ => None
+object ScrollType {
+  def apply(name: String): ScrollType = name match {
+    case n if n == ScrollUp.toString => ScrollUp
+    case n if n == ScrollDown.toString => ScrollDown
+    case _ => ScrollNo
   }
-
-  override def findViewById(id: Int): View = content.findViewById(id)
-
 }
+
+case class CollectionStatuses(
+  sType: ScrollType = ScrollNo,
+  canScroll: Boolean = false,
+  activeFragment: Boolean = false)

@@ -4,14 +4,18 @@ import android.content.Context
 import android.support.v7.widget.{CardView, RecyclerView}
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.R
-import macroid.ActivityContextWrapper
+import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
+import macroid.{Ui, ActivityContextWrapper}
 import macroid.FullDsl._
 
 case class CollectionAdapter(var collection: Collection, heightCard: Int)
@@ -92,4 +96,39 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   }
 }
 
+case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+  extends RecyclerView.ViewHolder(content)
+    with CollectionAdapterStyles
+    with TypedFindView {
 
+  lazy val iconContent = Option(findView(TR.card_icon_content))
+
+  lazy val icon = Option(findView(TR.card_icon))
+
+  lazy val name = Option(findView(TR.card_text))
+
+  lazy val badge = Option(findView(TR.card_badge))
+
+  runUi(
+    (content <~ rootStyle(heightCard)) ~
+      (iconContent <~ iconContentStyle(heightCard)))
+
+  def bind(card: Card, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
+    (icon <~ iconCardTransform(card)) ~
+      (name <~ tvText(card.term)) ~
+      (content <~ vTag2(position)) ~
+      (badge <~ (getBadge(card.cardType) map {
+        ivSrc(_) + vVisible
+      } getOrElse vGone)) ~
+      (name <~ nameStyle(card.cardType))
+
+  private[this] def getBadge(cardType: CardType): Option[Int] = cardType match {
+    case PhoneCardType => Option(R.drawable.badge_phone)
+    case SmsCardType => Option(R.drawable.badge_sms)
+    case EmailCardType => Option(R.drawable.badge_email)
+    case _ => None
+  }
+
+  override def findViewById(id: Int): View = content.findViewById(id)
+
+}

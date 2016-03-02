@@ -17,9 +17,7 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  var disableScroll = false
-
-  var enableAnimation = false
+  var statuses = CollectionRecyclerStatuses()
 
   def createScrollListener(
     scrolled: (Int, Int, Int) => Int,
@@ -44,14 +42,14 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
   var scrollListener: Option[NineOnScrollListener] = None
 
-  override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(disableScroll) {
+  override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(statuses.disableScroll) {
     true
   } else {
     super.dispatchTouchEvent(ev)
   }
 
   override def attachLayoutAnimationParameters(child: View, params: LayoutParams, index: Int, count: Int): Unit =
-    (enableAnimation, Option(getAdapter), Option(getLayoutManager)) match {
+    (statuses.enableAnimation, Option(getAdapter), Option(getLayoutManager)) match {
       case (true, Some(_), Some(layoutManager: GridLayoutManager)) =>
         val animationParams = Option(params.layoutAnimationParameters) match {
           case Some(animParams: AnimationParameters) => animParams
@@ -78,3 +76,6 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
 }
 
+case class CollectionRecyclerStatuses(
+  disableScroll: Boolean = false,
+  enableAnimation: Boolean = false)
