@@ -6,26 +6,26 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.{LayoutInflater, View}
-import android.widget.{ScrollView, LinearLayout}
+import android.widget.{LinearLayout, ScrollView}
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Ui}
+import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
 
 import scala.annotation.tailrec
 
-case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
+case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, context: ActivityContextWrapper, uiContext: UiContext[_])
   extends DialogFragment
   with NineCardIntentConversions {
-
-  val primaryColor = theme.get(PrimaryColor)
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
     val scrollView = new ScrollView(getActivity)
@@ -33,13 +33,31 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     rootView.setOrientation(LinearLayout.VERTICAL)
 
     val views = contact.info map { info =>
-      generateItemViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty, PhoneCardType) ++
+      generateHeaderView(contact.name, contact.photoUri) ++
+        generateItemViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty, PhoneCardType) ++
         generateItemViews(info.emails map (email => (email.address, email.category)), Seq.empty, EmailCardType)
     } getOrElse Seq.empty
 
     runUi((rootView <~ vgAddViews(views)) ~ (scrollView <~ vgAddView(rootView)))
 
     new AlertDialog.Builder(getActivity).setView(scrollView).create()
+  }
+
+  class HeaderView(name: String, avatarUrl: String)
+    extends LinearLayout(contextWrapper.bestAvailable)
+      with TypedFindView {
+
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_header, this)
+
+    lazy val headerAvatar = Option(findView(TR.contact_info_header_avatar))
+    lazy val headerName = Option(findView(TR.contact_info_header_name))
+
+    runUi(
+      headerAvatar <~
+        ivUriContactInfo(avatarUrl),
+      headerName <~
+        tvText(name)
+    )
   }
 
   class PhoneView(data: (String, String))
@@ -85,6 +103,8 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       emailContent <~ On.click(generateIntent(email, EmailCardType))
     )
   }
+
+  private[this] def generateHeaderView(name: String, avatarUrl: String): Seq[View] = Seq(new HeaderView(name, avatarUrl))
 
   @tailrec
   private[this] def generateItemViews(
