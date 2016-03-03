@@ -66,6 +66,9 @@ trait CollectionProcessImplData {
   val photoUri: String = Random.nextString(10)
   val phoneNumber: String = Random.nextString(5)
 
+  val collectionsRemoved = Random.nextInt(2)
+  val cardsRemoved = Random.nextInt(2)
+
   val application1 = Application(
     name = name1,
     packageName = packageName1,
