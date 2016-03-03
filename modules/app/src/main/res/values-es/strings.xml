@@ -109,6 +109,17 @@
     <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>
     <string name="errorLoadingPrivateCollections">Error cargando colleciones privadas</string>
 
+    <!-- Contacts Info -->
+
+    <string name="phoneHome">Casa</string>
+    <string name="phoneMobile">Móvil</string>
+    <string name="phoneWork">Trabajo</string>
+    <string name="phoneOther">Otro</string>
+
+    <string name="emailHome">Casa</string>
+    <string name="emailWork">Trabajo</string>
+    <string name="emailOther">Otro</string>
+
     <!-- Recommendations Action -->
 
     <string name="recommendationError">Esta colección no tiene aplicaciones así que no podemos encontrar recomendaciones</string>

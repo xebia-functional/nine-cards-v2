@@ -113,6 +113,17 @@
     <string name="errorLoadingRecommendations">Error loading recommendations</string>
     <string name="errorLoadingPrivateCollections">Error loading private collections</string>
 
+    <!-- Contacts Info -->
+
+    <string name="phoneHome">Home</string>
+    <string name="phoneMobile">Mobile</string>
+    <string name="phoneWork">Work</string>
+    <string name="phoneOther">Other</string>
+
+    <string name="emailHome">Home</string>
+    <string name="emailWork">Work</string>
+    <string name="emailOther">Other</string>
+
     <!-- Recommendations Action -->
 
     <string name="recommendationError">This collection don\'t have applications and can\'t found recommendations</string>

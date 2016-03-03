@@ -66,6 +66,18 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     val (phone, category) = data
 
+    val phoneH = "PhoneHome"
+    val phoneW = "PhoneWork"
+    val phoneM = "PhoneMobile"
+    val phoneO = "PhoneOther"
+
+    val categoryName = category match {
+      case `phoneH` => getResources.getString(R.string.phoneHome)
+      case `phoneW` => getResources.getString(R.string.phoneWork)
+      case `phoneM` => getResources.getString(R.string.phoneMobile)
+      case `phoneO` => getResources.getString(R.string.phoneOther)
+    }
+
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_phone_dialog, this)
 
     lazy val phoneContent = Option(findView(TR.contact_dialog_phone_content))
@@ -77,7 +89,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       phoneNumber <~
         tvText(phone),
       phoneCategory <~
-        tvText(category),
+        tvText(categoryName),
       phoneContent <~ On.click(generateIntent(phone, PhoneCardType)),
       phoneSms <~ On.click(generateIntent(phone, SmsCardType))
     )
@@ -89,6 +101,16 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     val (email, category) = data
 
+    val emailH = "EmailHome"
+    val emailW = "EmailWork"
+    val emailO = "EmailOther"
+
+    val categoryName = category match {
+      case `emailH` => getResources.getString(R.string.emailHome)
+      case `emailW` => getResources.getString(R.string.emailWork)
+      case `emailO` => getResources.getString(R.string.emailOther)
+    }
+
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_email_dialog, this)
 
     lazy val emailContent = Option(findView(TR.contact_dialog_email_content))
@@ -99,7 +121,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       emailAddress <~
         tvText(email),
       emailCategory <~
-        tvText(category),
+        tvText(categoryName),
       emailContent <~ On.click(generateIntent(email, EmailCardType))
     )
   }
