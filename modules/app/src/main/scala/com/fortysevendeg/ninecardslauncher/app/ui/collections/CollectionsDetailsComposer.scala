@@ -32,9 +32,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, SystemBarsTint}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, FabButtonBehaviour, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
@@ -98,7 +97,7 @@ trait CollectionsDetailsComposer
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
     val adapter = CollectionsPagerAdapter(manager.get, collections, position)
-    (root <~ fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
+    (root <~ SnailsCommons.fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
       (viewPager <~ vpAdapter(adapter)) ~
       Ui(adapter.activateFragment(position)) ~
       (tabs <~
@@ -137,6 +136,15 @@ trait CollectionsDetailsComposer
       (toolbar <~ tbReduceLayout(move * 2) <~ uiElevation(newElevation)) ~
       (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
   }
+  // TODO First implementation. We should improve that
+  def reorderModeIn: Ui[_] =
+    (tabs <~ vTranslationY(-spaceMove) <~ uiElevation(elevation + 1) <~ vInvisible) ~
+      (toolbar <~ tbReduceLayout(spaceMove * 2) <~ uiElevation(elevation + 1)) ~
+      (iconContent <~ vInvisible)
+
+  def reorderModeOut: Ui[_] =
+    (tabs <~ vVisible) ~
+      (iconContent <~ vVisible)
 
   def notifyScroll(sType: ScrollType): Ui[_] = (for {
     vp <- viewPager

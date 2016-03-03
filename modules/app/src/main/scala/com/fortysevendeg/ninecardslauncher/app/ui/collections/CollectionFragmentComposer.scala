@@ -30,26 +30,46 @@ trait CollectionFragmentComposer
 
   var pullToCloseView = slot[PullToCloseView]
 
-  val itemTouchCallback = new ReorderItemTouchHelperCallback(
-    onChanged = {
-      case ActionStateReordering => runUi(pullToCloseView <~ pdvEnable(false))
-      case ActionStateIdle => runUi(pullToCloseView <~ pdvEnable(true))
-    })
+  def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = {
+    // TODO First implementation. We should improve that
+    val itemTouchCallback = new ReorderItemTouchHelperCallback(
+      onChanged = {
+        case ActionStateReordering =>
+          scrolledListener foreach { sl =>
+            val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+            runUi(recyclerView <~ vPadding(padding, padding, padding, padding))
+            sl.reorderMove(true)
+          }
+          runUi(
+            (pullToCloseView <~ pdvEnable(false)) ~
+              (recyclerView <~ nrvRegisterScroll(false)))
+        case ActionStateIdle =>
+          val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+          val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+          recyclerView.get.scrollListener.get.scrollY = spaceMove
+          statuses = statuses.copy(scrollType = ScrollUp)
+          runUi(recyclerView <~ vPadding(padding, 0, padding, padding))
+          scrolledListener foreach (_.reorderMove(false))
+          runUi(
+            (pullToCloseView <~ pdvEnable(true)) ~
+              (recyclerView <~ nrvRegisterScroll(true)))
+      })
 
-  def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = getUi(
-    l[PullToCloseView](
-      w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards, itemTouchCallback)
-    ) <~
-      pcvListener(PullToCloseListener(
-        close = () => scrolledListener foreach (_.close())
-      )) <~
-      wire(pullToCloseView) <~
-      pdvPullingListener(PullingListener(
-        start = () => runUi(recyclerView <~ nrvDisableScroll(true)),
-        end = () => runUi(recyclerView <~ nrvDisableScroll(false)),
-        scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, statuses.sType, close))
-      ))
-  )
+    getUi(
+      l[PullToCloseView](
+        w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards, itemTouchCallback)
+      ) <~
+        pcvListener(PullToCloseListener(
+          close = () => scrolledListener foreach (_.close())
+        )) <~
+        wire(pullToCloseView) <~
+        pdvPullingListener(PullingListener(
+          start = () => runUi(recyclerView <~ nrvDisableScroll(true)),
+          end = () => runUi(recyclerView <~ nrvDisableScroll(false)),
+          scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, statuses.scrollType, close))
+        ))
+    )
+  }
 
   def initUi(collection: Collection, animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
     recyclerView <~
@@ -74,21 +94,21 @@ trait CollectionFragmentComposer
       getScrollListener(collection.cards.length, spaceMove)
   }
 
-  def scrollType(newSType: ScrollType)(implicit contextWrapper: ContextWrapper): Ui[_] = {
+  def scrollType(newScrollType: ScrollType)(implicit contextWrapper: ContextWrapper): Ui[_] = {
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-    (statuses.canScroll, statuses.sType) match {
-      case (true, s) if s != newSType =>
-        statuses = statuses.copy(sType = newSType)
+    (statuses.canScroll, statuses.scrollType) match {
+      case (true, s) if s != newScrollType =>
+        statuses = statuses.copy(scrollType = newScrollType)
         recyclerView <~
           vScrollBy(0, -Int.MaxValue) <~
-          (statuses.sType match {
+          (statuses.scrollType match {
             case ScrollUp => vScrollBy(0, spaceMove)
             case _ => Tweak.blank
           })
-      case (_, s) if s != newSType =>
-        statuses = statuses.copy(sType = newSType)
-        val paddingTop = newSType match {
+      case (false, s) if s != newScrollType =>
+        statuses = statuses.copy(scrollType = newScrollType)
+        val paddingTop = newScrollType match {
           case ScrollUp => padding
           case _ => spaceMove
         }
@@ -138,7 +158,6 @@ trait CollectionFragmentComposer
             val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
             (scrollY, moveTo, sType) match {
               case (y, move, st) if y < spaceMove && moveTo != scrollY =>
-                sl.scrollType(sType)
                 recyclerView.smoothScrollBy(0, moveTo - scrollY)
               case _ =>
             }
@@ -149,7 +168,7 @@ trait CollectionFragmentComposer
     )
 
   private[this] def startScroll(padding: Int, spaceMove: Int)(implicit contextWrapper: ContextWrapper): Ui[_] =
-    (statuses.canScroll, statuses.sType) match {
+    (statuses.canScroll, statuses.scrollType) match {
       case (true, ScrollUp) => recyclerView <~ vScrollBy(0, spaceMove)
       case (true, ScrollDown) => recyclerView <~ vScrollBy(0, 0)
       case (false, ScrollUp) => recyclerView <~ vPadding(padding, padding, padding, padding)
@@ -183,6 +202,6 @@ object ScrollType {
 }
 
 case class CollectionStatuses(
-  sType: ScrollType = ScrollNo,
+  scrollType: ScrollType = ScrollNo,
   canScroll: Boolean = false,
   activeFragment: Boolean = false)

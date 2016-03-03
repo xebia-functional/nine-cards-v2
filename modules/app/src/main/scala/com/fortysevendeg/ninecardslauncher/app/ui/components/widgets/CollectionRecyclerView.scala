@@ -19,6 +19,8 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
   var statuses = CollectionRecyclerStatuses()
 
+  var scrollListener: Option[NineOnScrollListener] = None
+
   def createScrollListener(
     scrolled: (Int, Int, Int) => Int,
     scrollStateChanged: (Int, RecyclerView, Int) => Unit) = {
@@ -26,19 +28,21 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
       var scrollY = scrollListener map (_.scrollY) getOrElse 0
       override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = {
         super.onScrolled(recyclerView, dx, dy)
-        scrollY = scrolled(scrollY, dx, dy)
+        if (statuses.registerScroll) {
+          scrollY = scrolled(scrollY, dx, dy)
+        }
       }
       override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
         super.onScrollStateChanged(recyclerView, newState)
-        scrollStateChanged(scrollY, recyclerView, newState)
+        if (statuses.registerScroll) {
+          scrollStateChanged(scrollY, recyclerView, newState)
+        }
       }
     }
     clearOnScrollListeners()
     addOnScrollListener(sl)
     scrollListener = Option(sl)
   }
-
-  var scrollListener: Option[NineOnScrollListener] = None
 
   override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(statuses.disableScroll) {
     true
@@ -75,6 +79,7 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 }
 
 case class CollectionRecyclerStatuses(
+  registerScroll: Boolean = true,
   disableScroll: Boolean = false,
   enableAnimation: Boolean = false)
 

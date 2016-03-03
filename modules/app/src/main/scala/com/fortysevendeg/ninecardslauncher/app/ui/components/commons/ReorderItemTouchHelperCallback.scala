@@ -1,13 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.commons
 
+import java.util
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.helper.ItemTouchHelper._
+import android.util.Log
 
 class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder) => Unit)
   extends Callback {
 
   override def isLongPressDragEnabled: Boolean = true
+
+  override def chooseDropTarget(selected: ViewHolder, dropTargets: util.List[ViewHolder], curX: Int, curY: Int): ViewHolder = {
+    Log.d("9cards", s"chooseDropTarget -- curX: $curX -- curY: $curY")
+    super.chooseDropTarget(selected, dropTargets, curX, curY)
+  }
 
   override def onSelectedChanged(viewHolder: ViewHolder, actionState: Int): Unit = {
     onChanged(ActionStateReorder(actionState))

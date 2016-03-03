@@ -47,7 +47,7 @@ class CollectionFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     val sType = ScrollType(getArguments.getString(keyScrollType, ScrollDown.toString))
     val canScroll = collection exists (_.cards.length > numSpaces)
-    statuses = statuses.copy(sType = sType, canScroll = canScroll)
+    statuses = statuses.copy(scrollType = sType, canScroll = canScroll)
     collection foreach (c => runUi(initUi(c, animateCards)))
     super.onViewCreated(view, savedInstanceState)
   }
