@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             style="@style/DialogContactInfoRoot">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  style="@style/DialogContactInfoEmailContent"
+                  android:id="@+id/contact_dialog_email_content">
+
+            <ImageView
+                    style="@style/DialogContactInfoEmailIcon"
+                    android:id="@+id/contact_dialog_email_icon"/>
+
+
+            <LinearLayout style="@style/DialogContactInfoEmailContentValues">
+
+                <TextView
+                        style="@style/DialogContactInfoValue"
+                        android:id="@+id/contact_dialog_email_address"/>
+
+                <TextView
+                        style="@style/DialogContactInfoCategory"
+                        android:id="@+id/contact_dialog_email_category"/>
+
+            </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+            style="@style/DialogContactInfoLineHorizontal"/>
+
+</FrameLayout>

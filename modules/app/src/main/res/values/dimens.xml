@@ -118,6 +118,8 @@
 
     <dimen name="size_icon_contact">40dp</dimen>
 
+    <dimen name="size_icon_contact_dialog">60dp</dimen>
+
     <dimen name="size_icon_recommendation">42dp</dimen>
 
     <dimen name="height_screenshot">180dp</dimen>

@@ -14,15 +14,18 @@ import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Ui}
 
 import scala.annotation.tailrec
 
-case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper)
+case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends DialogFragment
   with NineCardIntentConversions {
+
+  val primaryColor = theme.get(PrimaryColor)
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
     val scrollView = new ScrollView(getActivity)
@@ -30,25 +33,13 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     rootView.setOrientation(LinearLayout.VERTICAL)
 
     val views = contact.info map { info =>
-      generatePhoneViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty) ++
-        generateItemsViews(info.emails map (_.address), Seq.empty, EmailCardType, R.string.emails) ++
-        generateItemsViews(info.phones map (_.number), Seq.empty, SmsCardType, R.string.sms)
+      generateItemViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty, PhoneCardType) ++
+        generateItemViews(info.emails map (email => (email.address, email.category)), Seq.empty, EmailCardType)
     } getOrElse Seq.empty
 
     runUi((rootView <~ vgAddViews(views)) ~ (scrollView <~ vgAddView(rootView)))
 
     new AlertDialog.Builder(getActivity).setView(scrollView).create()
-  }
-
-  class CategoryView(res: Int)
-    extends LinearLayout(contextWrapper.bestAvailable)
-    with TypedFindView {
-
-    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_category_dialog, this)
-
-//    val text = Option(findView(TR.contact_dialog_category_text))
-//
-//    runUi(text <~ tvText(res))
   }
 
   class PhoneView(data: (String, String))
@@ -69,33 +60,48 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
         tvText(phone),
       phoneCategory <~
         tvText(category),
-      phoneContent <~
-        On.click {
-          Ui {
-            generateIntent(phone, PhoneCardType)
-          }
-        },
-      phoneSms <~
-        On.click {
-          Ui {
-            generateIntent(phone, SmsCardType)
-          }
-        }
+      phoneContent <~ On.click(generateIntent(phone, PhoneCardType)),
+      phoneSms <~ On.click(generateIntent(phone, SmsCardType))
+    )
+  }
+
+  class EmailView(data: (String, String))
+    extends LinearLayout(contextWrapper.bestAvailable)
+      with TypedFindView {
+
+    val (email, category) = data
+
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_email_dialog, this)
+
+    lazy val emailContent = Option(findView(TR.contact_dialog_email_content))
+    lazy val emailAddress = Option(findView(TR.contact_dialog_email_address))
+    lazy val emailCategory = Option(findView(TR.contact_dialog_email_category))
+
+    runUi(
+      emailAddress <~
+        tvText(email),
+      emailCategory <~
+        tvText(category),
+      emailContent <~ On.click(generateIntent(email, EmailCardType))
     )
   }
 
   @tailrec
-  private[this] def generatePhoneViews(
+  private[this] def generateItemViews(
     items: Seq[(String, String)],
-    acc: Seq[View]): Seq[View] = items match {
+    acc: Seq[View],
+    cardType: CardType): Seq[View] = items match {
     case Nil => acc
     case h :: t =>
-      val viewItem = new PhoneView(h)
+      val viewItem = cardType match {
+        case EmailCardType => new EmailView(h)
+        case PhoneCardType => new PhoneView(h)
+      }
       val newAcc = acc :+ viewItem
-      generatePhoneViews(t, newAcc)
+      generateItemViews(t, newAcc, cardType)
   }
 
-  private[this] def generateIntent(data: String, cardType: CardType) ={
+  private[this] def generateIntent(data: String, cardType: CardType): Ui[_] = Ui {
     val maybeIntent: Option[NineCardIntent] = cardType match {
       case EmailCardType => Some(emailToNineCardIntent(data))
       case SmsCardType => Some(smsToNineCardIntent(data))
@@ -115,62 +121,6 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
     }
     dismiss()
-  }
-
-  class ItemView(data: String, cardType: CardType)
-    extends LinearLayout(contextWrapper.bestAvailable)
-    with TypedFindView {
-
-    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_item_dialog, this)
-
-    lazy val text = Option(findView(TR.contact_dialog_item_text))
-
-    runUi(
-      text <~
-        tvText(data) <~
-        On.click {
-          Ui {
-            val maybeIntent: Option[NineCardIntent] = cardType match {
-              case EmailCardType => Some(emailToNineCardIntent(data))
-              case SmsCardType => Some(smsToNineCardIntent(data))
-              case PhoneCardType => Some(phoneToNineCardIntent(data))
-              case _ => None
-            }
-            maybeIntent foreach { intent =>
-              val card = AddCardRequest(
-                term = contact.name,
-                packageName = None,
-                cardType = cardType,
-                intent = intent,
-                imagePath = contact.photoUri
-              )
-              val responseIntent = new Intent
-              responseIntent.putExtra(ContactsFragment.addCardRequest, card)
-              getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
-            }
-            dismiss()
-          }
-        }
-    )
-
-  }
-
-  @tailrec
-  private[this] def generateItemsViews(
-    items: Seq[String],
-    acc: Seq[View],
-    cardType: CardType,
-    resHead: Int): Seq[View] = items match {
-    case Nil => acc
-    case h :: t =>
-      val maybeViewCategory: Option[View] = if (acc.isEmpty) {
-        Option(new CategoryView(resHead))
-      } else None
-      val viewItem = new ItemView(h, cardType)
-      val newAcc = maybeViewCategory map { viewCategory =>
-        acc ++ Seq(viewCategory, viewItem)
-      } getOrElse acc :+ viewItem
-      generateItemsViews(t, newAcc, cardType, resHead)
   }
 
 }
