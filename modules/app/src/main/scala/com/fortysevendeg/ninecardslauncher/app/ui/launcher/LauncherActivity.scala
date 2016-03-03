@@ -50,6 +50,8 @@ class LauncherActivity
 
   var hasFocus = false
 
+  var userProfileStatuses = UserProfileStatuses()
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     Task.fork(di.userProcess.register.run).resolveAsync()
@@ -114,16 +116,19 @@ class LauncherActivity
       // Check if there are collections in DB, if there aren't we go to wizard
       case (Nil, _) => goToWizard()
       case (collections, apps) =>
-        getUserInfo
+        loadUserProfile()
         createCollections(collections, apps)
     },
     onException = (ex: Throwable) => goToWizard(),
     onPreTask = () => showLoading
   )
 
-  private[this] def getUserInfo = Task.fork(di.userConfigProcess.getUserInfo.run).resolveAsyncUi(
-    onResult = userInfoMenu
-  )
+  def onConnectedUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit = runUi(userProfileMenu(name, email, avatarUrl))
+
+  def onConnectedPlusProfile(coverPhotoUrl: String): Unit = runUi(plusProfileMenu(coverPhotoUrl))
+
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
+    userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
 
   private[this] def goToWizard(): Ui[_] = Ui {
     val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])
@@ -220,6 +225,19 @@ class LauncherActivity
             clickListener = (contact: Contact) => {
               execute(contact)
             })
+      })
+
+  private[this] def loadUserProfile(): Unit =
+    Task.fork(di.userProcess.getUser.run).resolveAsyncUi(
+      onResult = user => Ui {
+        val userProfile = user.email map { email =>
+          new UserProfileProvider(
+            account = email,
+            onConnectedUserProfile = onConnectedUserProfile,
+            onConnectedPlusProfile = onConnectedPlusProfile)
+        }
+        userProfileStatuses = userProfileStatuses.copy(userProfile = userProfile)
+        userProfileStatuses.userProfile foreach (_.connect())
       })
 
 }

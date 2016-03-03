@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.CollectionExceptio
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, IterableApps, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, ContactException, ContactsFilter, DockAppException, GetAppOrder}
+import com.fortysevendeg.ninecardslauncher.process.user.UserException
 
 trait LauncherTasks {
 

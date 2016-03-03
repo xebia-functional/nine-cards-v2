@@ -21,10 +21,17 @@
 
     <style name="MenuHeaderContent">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">bottom</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">bottom</item>
         <item name="android:orientation">vertical</item>
         <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:background">@color/background_menu_content</item>
+    </style>
+
+    <style name="MenuHeaderCover">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scaleType">centerCrop</item>
     </style>
 
     <style name="MenuHeaderAvatar">
@@ -38,6 +45,14 @@
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:textColor">@color/text_menu_name</item>
         <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="MenuHeaderEmail">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">@color/text_menu_email</item>
     </style>
 
 </resources>

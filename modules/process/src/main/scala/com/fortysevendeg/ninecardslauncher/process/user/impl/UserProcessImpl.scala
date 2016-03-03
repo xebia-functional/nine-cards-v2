@@ -5,11 +5,11 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.user._
-import com.fortysevendeg.ninecardslauncher.process.user.models.Device
+import com.fortysevendeg.ninecardslauncher.process.user.models.{User, Device}
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import rapture.core.{Answer, Errata, Result, Unforeseen}
 
 import scalaz.concurrent.Task
@@ -64,18 +64,27 @@ class UserProcessImpl(
       Service(Task(Result.answer[Unit, UserException](())))
     }
 
-  private[this] def getFirstOrAddUser(implicit context: ContextSupport): ServiceDef2[User, UserException] =
+  override def getUser(implicit context: ContextSupport) =
+    context.getActiveUserId map { id =>
+      (for {
+        Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
+      } yield toUser(user)).resolve[UserException]
+    } getOrElse {
+      Service(Task(Result.errata[User, UserException](UserException(noActiveUserErrorMessage))))
+    }
+
+  private[this] def getFirstOrAddUser(implicit context: ContextSupport): ServiceDef2[ServicesUser, UserException] =
     (for {
       maybeUsers <- persistenceServices.fetchUsers
-      user <- maybeUsers.headOption map (user => Service(Task(Result.answer[User, PersistenceServiceException](user)))) getOrElse {
+      user <- maybeUsers.headOption map (user => Service(Task(Result.answer[ServicesUser, PersistenceServiceException](user)))) getOrElse {
         persistenceServices.addUser(emptyUserRequest)
       }
     } yield user).resolve[UserException]
 
-  private[this] def checkOrAddUser(id: Int)(implicit context: ContextSupport): ServiceDef2[User, UserException] =
+  private[this] def checkOrAddUser(id: Int)(implicit context: ContextSupport): ServiceDef2[ServicesUser, UserException] =
     (for {
       maybeUser <- persistenceServices.findUserById(FindUserByIdRequest(id))
-      user <- maybeUser map (user => Service(Task(Result.answer[User, PersistenceServiceException](user)))) getOrElse {
+      user <- maybeUser map (user => Service(Task(Result.answer[ServicesUser, PersistenceServiceException](user)))) getOrElse {
         persistenceServices.addUser(emptyUserRequest)
       }
     } yield user).resolve[UserException]

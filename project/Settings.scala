@@ -110,6 +110,8 @@ object Settings {
     aar(playServicesBase),
     aar(playServicesAnalytics),
     aar(playServicesDrive),
+    aar(playServicesAuth),
+    aar(playServicesPlus),
     aar(multiDexLib),
     aar(crashlytics),
     prettyTime,
