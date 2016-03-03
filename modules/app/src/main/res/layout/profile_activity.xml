@@ -34,6 +34,10 @@
                             android:id="@+id/profile_user_name"
                             style="@style/ProfileUserName"/>
 
+                        <TextView
+                            android:id="@+id/profile_user_email"
+                            style="@style/ProfileUserEmail"/>
+
                     </LinearLayout>
                 </FrameLayout>
             </android.support.design.widget.CollapsingToolbarLayout>

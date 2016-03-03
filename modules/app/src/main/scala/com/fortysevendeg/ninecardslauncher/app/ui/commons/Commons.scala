@@ -52,6 +52,8 @@ object ActivityResult {
 
   val resolveGooglePlayConnection = 5
 
+  val resolveConnectedUser = 6
+
 }
 
 object WizardState {
