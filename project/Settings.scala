@@ -1,3 +1,6 @@
+import java.text.SimpleDateFormat
+import java.util.Date
+
 import Libraries.android._
 import Libraries.graphics._
 import Libraries.json._
@@ -17,6 +20,18 @@ import sbt._
 
 object Settings {
 
+  lazy val commit = sys.env.getOrElse("GIT_COMMIT", "unknown-commit")
+
+  lazy val user = sys.env.getOrElse("USER", "unknown-user")
+
+  def getDateFormatted = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date())
+
+  def versionNameSuffix = sys.env.get("GIT_PR") match {
+    case Some("false") => s"master-$commit"
+    case Some(prNumber) => s"PR$prNumber-$commit"
+    case None => s"$user-$getDateFormatted"
+  }
+
   // App Module
   lazy val appSettings = basicSettings ++ multiDex ++ customS3Settings ++ crashlyticsSettings ++
     Seq(
@@ -35,6 +50,7 @@ object Settings {
       dexMaxHeap in Android := "2048m",
       proguardScala in Android := true,
       useProguard in Android := true,
+      versionName in Android := Some(s"${versionName.value.getOrElse("")}-$versionNameSuffix"),
       proguardOptions in Android ++= proguardCommons,
       proguardCache in Android := Seq.empty)
 
