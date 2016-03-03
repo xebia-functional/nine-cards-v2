@@ -117,9 +117,11 @@
     <color name="drawer_search_box_hint">#4c000000</color>
 
     <!-- Contact Info Dialog -->
+    <color name="divider_color_info_dialog_no_alpha">#00d6d6d6</color>
     <color name="divider_color_info_dialog">#d6d6d6</color>
     <color name="text_selected_color_dialog">#4285F4</color>
     <color name="color_selected_color_dialog">#ffffff</color>
+    <color name="text_phone_category">#4f000000</color>
 
     <!-- Public Collection Dialog -->
     <color name="background_count_public_collection_dialog">#cdcdcd</color>

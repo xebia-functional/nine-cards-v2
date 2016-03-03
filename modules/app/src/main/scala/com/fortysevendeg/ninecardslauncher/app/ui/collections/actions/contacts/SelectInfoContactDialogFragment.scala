@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.{LayoutInflater, View}
-import android.widget.LinearLayout
+import android.widget.{ScrollView, LinearLayout}
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
@@ -25,18 +25,19 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   with NineCardIntentConversions {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
+    val scrollView = new ScrollView(getActivity)
     val rootView = new LinearLayout(getActivity)
     rootView.setOrientation(LinearLayout.VERTICAL)
 
     val views = contact.info map { info =>
-      generateItemsViews(info.phones map (_.number), Seq.empty, PhoneCardType, R.string.phones) ++
+      generatePhoneViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty) ++
         generateItemsViews(info.emails map (_.address), Seq.empty, EmailCardType, R.string.emails) ++
         generateItemsViews(info.phones map (_.number), Seq.empty, SmsCardType, R.string.sms)
     } getOrElse Seq.empty
 
-    runUi(rootView <~ vgAddViews(views))
+    runUi((rootView <~ vgAddViews(views)) ~ (scrollView <~ vgAddView(rootView)))
 
-    new AlertDialog.Builder(getActivity).setView(rootView).create()
+    new AlertDialog.Builder(getActivity).setView(scrollView).create()
   }
 
   class CategoryView(res: Int)
@@ -45,9 +46,75 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_category_dialog, this)
 
-    val text = Option(findView(TR.contact_dialog_category_text))
+//    val text = Option(findView(TR.contact_dialog_category_text))
+//
+//    runUi(text <~ tvText(res))
+  }
 
-    runUi(text <~ tvText(res))
+  class PhoneView(data: (String, String))
+    extends LinearLayout(contextWrapper.bestAvailable)
+      with TypedFindView {
+
+    val (phone, category) = data
+
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_phone_dialog, this)
+
+    lazy val phoneContent = Option(findView(TR.contact_dialog_phone_content))
+    lazy val phoneNumber = Option(findView(TR.contact_dialog_phone_number))
+    lazy val phoneCategory = Option(findView(TR.contact_dialog_phone_category))
+    lazy val phoneSms = Option(findView(TR.contact_dialog_sms_icon))
+
+    runUi(
+      phoneNumber <~
+        tvText(phone),
+      phoneCategory <~
+        tvText(category),
+      phoneContent <~
+        On.click {
+          Ui {
+            generateIntent(phone, PhoneCardType)
+          }
+        },
+      phoneSms <~
+        On.click {
+          Ui {
+            generateIntent(phone, SmsCardType)
+          }
+        }
+    )
+  }
+
+  @tailrec
+  private[this] def generatePhoneViews(
+    items: Seq[(String, String)],
+    acc: Seq[View]): Seq[View] = items match {
+    case Nil => acc
+    case h :: t =>
+      val viewItem = new PhoneView(h)
+      val newAcc = acc :+ viewItem
+      generatePhoneViews(t, newAcc)
+  }
+
+  private[this] def generateIntent(data: String, cardType: CardType) ={
+    val maybeIntent: Option[NineCardIntent] = cardType match {
+      case EmailCardType => Some(emailToNineCardIntent(data))
+      case SmsCardType => Some(smsToNineCardIntent(data))
+      case PhoneCardType => Some(phoneToNineCardIntent(data))
+      case _ => None
+    }
+    maybeIntent foreach { intent =>
+      val card = AddCardRequest(
+        term = contact.name,
+        packageName = None,
+        cardType = cardType,
+        intent = intent,
+        imagePath = contact.photoUri
+      )
+      val responseIntent = new Intent
+      responseIntent.putExtra(ContactsFragment.addCardRequest, card)
+      getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+    }
+    dismiss()
   }
 
   class ItemView(data: String, cardType: CardType)

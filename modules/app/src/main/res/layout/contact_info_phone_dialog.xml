@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/DialogContactInfoContent"
+              android:id="@+id/contact_dialog_phone_content">
+
+    <LinearLayout style="@style/DialogContactInfoLeftLayout">
+
+        <ImageView
+                style="@style/DialogContactInfoLeftIcon"
+                android:id="@+id/contact_dialog_phone_icon"/>
+
+        <ImageView
+                style="@style/DialogContactInfoLineHorizontalNoAlpha"/>
+
+    </LinearLayout>
+
+    <LinearLayout style="@style/DialogContactInfoRightLayoutLine">
+
+        <LinearLayout style="@style/DialogContactInfoRightLayout">
+
+            <LinearLayout style="@style/DialogContactInfoPhoneContent">
+
+                <TextView
+                        style="@style/DialogContactInfoPhoneNumber"
+                        android:id="@+id/contact_dialog_phone_number"/>
+
+                <TextView
+                        style="@style/DialogContactInfoPhoneCategory"
+                        android:id="@+id/contact_dialog_phone_category"/>
+            </LinearLayout>
+
+            <ImageView
+                    style="@style/DialogContactInfoRightIcon"
+                    android:id="@+id/contact_dialog_sms_icon"/>
+
+        </LinearLayout>
+
+        <ImageView
+                style="@style/DialogContactInfoLineHorizontal"/>
+
+    </LinearLayout>
+
+</LinearLayout>
