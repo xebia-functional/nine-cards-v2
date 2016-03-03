@@ -209,7 +209,7 @@ trait CollectionsComposer
     (implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = itemId match {
     case R.id.menu_collections => goToWorkspace(pageCollections)
     case R.id.menu_moments => goToWorkspace(pageWidgets)
-    case R.id.menu_profile => uiStartIntent(new Intent(this, classOf[ProfileActivity]))
+    case R.id.menu_profile => uiStartIntentForResult(new Intent(this, classOf[ProfileActivity]), RequestCodes.goToProfile)
     case R.id.menu_wallpapers => uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
     case R.id.menu_android_settings => uiStartIntent(new Intent(android.provider.Settings.ACTION_SETTINGS))
     case R.id.menu_9cards_settings => uiStartIntent(new Intent(this, classOf[NineCardsPreferencesActivity]))

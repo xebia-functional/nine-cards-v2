@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
+import android.app.Activity._
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -127,8 +128,13 @@ class LauncherActivity
 
   def onConnectedPlusProfile(coverPhotoUrl: String): Unit = runUi(plusProfileMenu(coverPhotoUrl))
 
-  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
+    (requestCode, resultCode) match {
+      case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) => loadCollectionsAndDockApps()
+      case _ =>
+    }
+  }
 
   private[this] def goToWizard(): Ui[_] = Ui {
     val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])

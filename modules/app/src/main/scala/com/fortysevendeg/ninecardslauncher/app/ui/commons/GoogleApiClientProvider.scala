@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.{ConnectionResult, GooglePlayServicesUtil}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.google.android.gms.drive._
 
 import scala.util.{Failure, Try}

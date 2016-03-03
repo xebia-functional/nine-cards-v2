@@ -66,7 +66,7 @@
     <style name="ProfileTabLayout" parent="Widget.Design.TabLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="tabMode">scrollable</item>
+        <item name="tabMode">fixed</item>
         <item name="tabGravity">fill</item>
         <item name="tabIndicatorColor">@android:color/white</item>
     </style>
