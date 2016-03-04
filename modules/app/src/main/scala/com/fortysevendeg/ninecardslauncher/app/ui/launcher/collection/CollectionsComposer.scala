@@ -37,7 +37,6 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import ViewOps._
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import macroid.FullDsl._
 import macroid._
 
