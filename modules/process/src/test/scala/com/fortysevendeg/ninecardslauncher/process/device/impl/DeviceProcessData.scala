@@ -159,6 +159,8 @@ trait DeviceProcessData
   val lookupKey3 = "lookupKey 3"
   val photoUri3 = "photoUri 3"
 
+  val dockAppsRemoved = 4
+
   val applicationNoCached = Application(
     name = name4,
     packageName = packageName4,

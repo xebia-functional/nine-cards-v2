@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
@@ -37,13 +37,13 @@ class NewCollectionFragment
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
     val ui = (requestCode, resultCode) match {
-      case (ActivityResult.selectInfoIcon, Activity.RESULT_OK) =>
+      case (RequestCodes.selectInfoIcon, Activity.RESULT_OK) =>
         Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(NewCollectionFragment.iconRequest) =>
             setCategory(NineCardCategory(extras.getString(NewCollectionFragment.iconRequest)))
           case _ => Ui.nop
         } getOrElse showGeneralError
-      case (ActivityResult.selectInfoColor, Activity.RESULT_OK) =>
+      case (RequestCodes.selectInfoColor, Activity.RESULT_OK) =>
         Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(NewCollectionFragment.colorRequest) =>
             setIndexColor(extras.getInt(NewCollectionFragment.colorRequest))
