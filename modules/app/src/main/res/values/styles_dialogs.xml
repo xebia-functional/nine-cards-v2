@@ -6,7 +6,6 @@
     <style name="ContactInfoHeaderRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/header_height</item>
-        <item name="android:background">@color/primary</item>
     </style>
 
     <style name="ContactInfoHeaderAvatar">

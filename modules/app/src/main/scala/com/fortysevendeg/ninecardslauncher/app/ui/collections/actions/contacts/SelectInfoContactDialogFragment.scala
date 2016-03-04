@@ -9,6 +9,7 @@ import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, ScrollView}
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
@@ -16,15 +17,18 @@ import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
 
 import scala.annotation.tailrec
 
-case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, context: ActivityContextWrapper, uiContext: UiContext[_])
+case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, context: ActivityContextWrapper, theme: NineCardsTheme, uiContext: UiContext[_])
   extends DialogFragment
   with NineCardIntentConversions {
+
+  val primaryColor = theme.get(PrimaryColor)
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
     val scrollView = new ScrollView(getActivity)
@@ -44,7 +48,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   class HeaderView(name: String, avatarUrl: String)
     extends LinearLayout(contextWrapper.bestAvailable)
-      with TypedFindView {
+    with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_header, this)
 
@@ -53,7 +57,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     runUi(
       headerAvatar <~
-        ivUriContactInfo(avatarUrl),
+        ivUriContactInfo(avatarUrl) <~ vBackgroundColor(primaryColor),
       headerName <~
         tvText(name)
     )
