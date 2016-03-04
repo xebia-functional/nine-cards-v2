@@ -112,6 +112,8 @@
     <dimen name="height_extended_toolbar_dialog">104dp</dimen>
     <dimen name="margin_top_extended_content_toolbar">54dp</dimen>
 
+    <dimen name="header_height">150dp</dimen>
+
     <dimen name="size_icon_app">60dp</dimen>
 
     <dimen name="size_icon_shortcut">40dp</dimen>

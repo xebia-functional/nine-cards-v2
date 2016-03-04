@@ -14,9 +14,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
@@ -34,8 +33,8 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     val views = contact.info map { info =>
       generateHeaderView(contact.name, contact.photoUri) ++
-        generateItemViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty, PhoneCardType) ++
-        generateItemViews(info.emails map (email => (email.address, email.category)), Seq.empty, EmailCardType)
+        generatePhoneViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty) ++
+        generateEmailViews(info.emails map (email => (email.address, email.category)), Seq.empty)
     } getOrElse Seq.empty
 
     runUi((rootView <~ vgAddViews(views)) ~ (scrollView <~ vgAddView(rootView)))
@@ -60,22 +59,21 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     )
   }
 
-  class PhoneView(data: (String, String))
+  class PhoneView(data: (String, PhoneCategory))
     extends LinearLayout(contextWrapper.bestAvailable)
       with TypedFindView {
 
     val (phone, category) = data
 
-    val phoneH = "PhoneHome"
-    val phoneW = "PhoneWork"
-    val phoneM = "PhoneMobile"
-    val phoneO = "PhoneOther"
-
     val categoryName = category match {
-      case `phoneH` => getResources.getString(R.string.phoneHome)
-      case `phoneW` => getResources.getString(R.string.phoneWork)
-      case `phoneM` => getResources.getString(R.string.phoneMobile)
-      case `phoneO` => getResources.getString(R.string.phoneOther)
+      case PhoneHome => getResources.getString(R.string.phoneHome)
+      case PhoneWork => getResources.getString(R.string.phoneWork)
+      case PhoneMobile => getResources.getString(R.string.phoneMobile)
+      case PhoneMain => getResources.getString(R.string.phoneMain)
+      case PhoneFaxWork => getResources.getString(R.string.phoneFaxWork)
+      case PhoneFaxHome => getResources.getString(R.string.phoneFaxHome)
+      case PhonePager => getResources.getString(R.string.phonePager)
+      case PhoneOther => getResources.getString(R.string.phoneOther)
     }
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_phone_dialog, this)
@@ -95,20 +93,16 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     )
   }
 
-  class EmailView(data: (String, String))
+  class EmailView(data: (String, EmailCategory))
     extends LinearLayout(contextWrapper.bestAvailable)
       with TypedFindView {
 
     val (email, category) = data
 
-    val emailH = "EmailHome"
-    val emailW = "EmailWork"
-    val emailO = "EmailOther"
-
     val categoryName = category match {
-      case `emailH` => getResources.getString(R.string.emailHome)
-      case `emailW` => getResources.getString(R.string.emailWork)
-      case `emailO` => getResources.getString(R.string.emailOther)
+      case EmailHome => getResources.getString(R.string.emailHome)
+      case EmailWork => getResources.getString(R.string.emailWork)
+      case EmailOther => getResources.getString(R.string.emailOther)
     }
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_email_dialog, this)
@@ -129,18 +123,25 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   private[this] def generateHeaderView(name: String, avatarUrl: String): Seq[View] = Seq(new HeaderView(name, avatarUrl))
 
   @tailrec
-  private[this] def generateItemViews(
-    items: Seq[(String, String)],
-    acc: Seq[View],
-    cardType: CardType): Seq[View] = items match {
+  private[this] def generatePhoneViews(
+    items: Seq[(String, PhoneCategory)],
+    acc: Seq[View]): Seq[View] = items match {
     case Nil => acc
     case h :: t =>
-      val viewItem = cardType match {
-        case EmailCardType => new EmailView(h)
-        case PhoneCardType => new PhoneView(h)
-      }
+      val viewItem = new PhoneView(h)
       val newAcc = acc :+ viewItem
-      generateItemViews(t, newAcc, cardType)
+      generatePhoneViews(t, newAcc)
+  }
+
+  @tailrec
+  private[this] def generateEmailViews(
+    items: Seq[(String, EmailCategory)],
+    acc: Seq[View]): Seq[View] = items match {
+    case Nil => acc
+    case h :: t =>
+      val viewItem = new EmailView(h)
+      val newAcc = acc :+ viewItem
+      generateEmailViews(t, newAcc)
   }
 
   private[this] def generateIntent(data: String, cardType: CardType): Ui[_] = Ui {

@@ -114,6 +114,10 @@
     <string name="phoneHome">Casa</string>
     <string name="phoneMobile">Móvil</string>
     <string name="phoneWork">Trabajo</string>
+    <string name="phoneMain">Principal</string>
+    <string name="phoneFaxWork">Fax del trabajo</string>
+    <string name="phoneFaxHome">Fax de casa</string>
+    <string name="phonePager">Busca</string>
     <string name="phoneOther">Otro</string>
 
     <string name="emailHome">Casa</string>

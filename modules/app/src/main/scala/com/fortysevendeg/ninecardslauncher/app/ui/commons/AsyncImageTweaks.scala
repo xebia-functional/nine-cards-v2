@@ -113,7 +113,7 @@ object AsyncImageTweaks {
         override def onLoadStarted(placeholder: Drawable): Unit =
           imageView.setImageDrawable(javaNull)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          runUi(imageView <~ ivSrc(R.drawable.dialog_contact_icon_general_info) <~ ivScaleType(ScaleType.CENTER_INSIDE) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
+          runUi(imageView <~ ivSrc(R.drawable.dialog_contact_header_no_image) <~ ivScaleType(ScaleType.CENTER_INSIDE) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
       })

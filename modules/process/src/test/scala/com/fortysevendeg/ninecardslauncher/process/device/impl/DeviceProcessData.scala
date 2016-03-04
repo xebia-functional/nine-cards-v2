@@ -25,6 +25,21 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.{
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json
+import com.fortysevendeg.ninecardslauncher.services.commons.{
+  EmailCategory => ServicesEmailCategory,
+  EmailHome => ServicesEmailHome,
+  EmailWork => ServicesEmailWork,
+  EmailOther => ServicesEmailOther}
+import com.fortysevendeg.ninecardslauncher.services.commons.{
+  PhoneCategory => ServicesPhoneCategory,
+  PhoneHome => ServicesPhoneHome,
+  PhoneWork => ServicesPhoneWork,
+  PhoneMobile=> ServicesPhoneMobile,
+  PhoneMain => ServicesPhoneMain,
+  PhoneFaxWork => ServicesPhoneFaxWork,
+  PhoneFaxHome=> ServicesPhoneFaxHome,
+  PhonePager => ServicesPhonePager,
+  PhoneOther => ServicesPhoneOther}
 
 trait DeviceProcessData
   extends NineCardIntentConversions {
@@ -137,7 +152,7 @@ trait DeviceProcessData
 
   val phoneNumber1 = "+00 111 222 333"
   val contactName1 = "Contact 1"
-  val numberType1 = PhoneHome
+  val numberType1 = ServicesPhoneHome
   val date1 = 3L
   val callType1 = 1
   val lookupKey1 = "lookupKey 1"
@@ -145,7 +160,7 @@ trait DeviceProcessData
 
   val phoneNumber2 = "+00 444 555 666"
   val contactName2 = "Contact 2"
-  val numberType2 = PhoneWork
+  val numberType2 = ServicesPhoneWork
   val date2 = 2L
   val callType2 = 2
   val lookupKey2 = "lookupKey 2"
@@ -153,7 +168,7 @@ trait DeviceProcessData
 
   val phoneNumber3 = "+00 777 888 999"
   val contactName3 = "Contact 3"
-  val numberType3 = PhoneOther
+  val numberType3 = ServicesPhoneOther
   val date3 = 1L
   val callType3 = 3
   val lookupKey3 = "lookupKey 3"
@@ -394,17 +409,17 @@ trait DeviceProcessData
         emails = Seq(
           ContactEmail(
             address = "sample1@47deg.com",
-            category = EmailHome
+            category = ServicesEmailHome
           )
         ),
         phones = Seq(
           ContactPhone(
             number = phoneNumber1,
-            category = PhoneHome
+            category = ServicesPhoneHome
           ),
           ContactPhone(
             number = phoneNumber2,
-            category = PhoneMobile
+            category = ServicesPhoneMobile
           )
         )
       )
@@ -516,7 +531,7 @@ trait DeviceProcessData
     ServicesCall(
       number = phoneNumber1,
       name = Some(contactName1),
-      numberType = PhoneMobile,
+      numberType = ServicesPhoneMobile,
       date = date1,
       callType = callType1),
     ServicesCall(

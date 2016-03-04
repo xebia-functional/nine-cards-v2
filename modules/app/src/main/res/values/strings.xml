@@ -118,6 +118,10 @@
     <string name="phoneHome">Home</string>
     <string name="phoneMobile">Mobile</string>
     <string name="phoneWork">Work</string>
+    <string name="phoneMain">Main</string>
+    <string name="phoneFaxWork">Work Fax</string>
+    <string name="phoneFaxHome">Home Fax</string>
+    <string name="phonePager">Pager</string>
     <string name="phoneOther">Other</string>
 
     <string name="emailHome">Home</string>

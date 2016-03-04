@@ -5,7 +5,7 @@
 
     <style name="ContactInfoHeaderRoot">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/menu_height</item>
+        <item name="android:layout_height">@dimen/header_height</item>
         <item name="android:background">@color/primary</item>
     </style>
 
@@ -28,7 +28,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/text_xxxlarge</item>
-        <item name="android:textColor">@color/text_menu_name</item>
+        <item name="android:textColor">@color/text_dialog_name</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 

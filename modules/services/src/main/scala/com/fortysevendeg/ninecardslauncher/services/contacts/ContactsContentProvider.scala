@@ -83,8 +83,13 @@ object ContactsContentProvider {
       case Fields.PHONE_TYPE_HOME => PhoneHome
       case Fields.PHONE_TYPE_WORK => PhoneWork
       case Fields.PHONE_TYPE_MOBILE => PhoneMobile
+      case Fields.PHONE_TYPE_MAIN => PhoneMain
+      case Fields.PHONE_TYPE_FAX_WORK => PhoneFaxWork
+      case Fields.PHONE_TYPE_FAX_HOME => PhoneFaxHome
+      case Fields.PHONE_TYPE_PAGER => PhonePager
       case _ => PhoneOther
     }
+
 
   private[this] def readContact(
     cursor: Cursor,
