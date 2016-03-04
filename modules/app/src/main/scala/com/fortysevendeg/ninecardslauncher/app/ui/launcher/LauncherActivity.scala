@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
-import android.app.Activity._
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -15,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
@@ -131,7 +131,8 @@ class LauncherActivity
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
     (requestCode, resultCode) match {
-      case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) => loadCollectionsAndDockApps()
+      case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) =>
+        runUi((workspaces <~ lwsClean) ~ goToWizard())
       case _ =>
     }
   }

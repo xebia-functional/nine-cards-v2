@@ -44,6 +44,8 @@ object LauncherWorkSpacesTweaks {
       workspaces.init(pageSelected)
   }
 
+  def lwsClean = Tweak[W] (_.clean())
+
   def lwsAddCollection(collection: Collection) = Tweak[W] {
     workspaces =>
       workspaces.data.lastOption foreach { data =>
