@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
+import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportProvider, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
@@ -36,7 +37,8 @@ class LauncherActivity
   with LauncherTasks
   with SystemBarsTint
   with NineCardIntentConversions
-  with DrawerListeners {
+  with AnalyticDispatcher
+  with DrawerListeners { self =>
 
   implicit lazy val di: Injector = new Injector
 
@@ -52,6 +54,29 @@ class LauncherActivity
   var hasFocus = false
 
   var userProfileStatuses = UserProfileStatuses()
+
+  val clickListener: (App) => Unit = (app: App) => {
+    if (isTabsOpened) {
+      runUi(closeTabs)
+    } else {
+      self !>>
+        TrackEvent(
+          screen = CollectionDetailScreen,
+          category = AppCategory(app.category),
+          action = OpenAction,
+          label = Some(ProvideLabel(app.packageName)),
+          value = Some(OpenAppFromAppDrawerValue))
+      execute(toNineCardIntent(app))
+    }
+  }
+
+  val longClickListener: (App) => Unit = (app: App) => {
+    if (isTabsOpened) {
+      runUi(closeTabs)
+    } else {
+      launchSettings(app.packageName)
+    }
+  }
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
@@ -160,20 +185,8 @@ class LauncherActivity
         case (apps: IterableApps, counters: Seq[TermCounter]) =>
           addApps(
             apps = apps,
-            clickListener = (app: App) => {
-              if (isTabsOpened) {
-                runUi(closeTabs)
-              } else {
-                execute(toNineCardIntent(app))
-              }
-            },
-            longClickListener = (app: App) => {
-              if (isTabsOpened) {
-                runUi(closeTabs)
-              } else {
-                launchSettings(app.packageName)
-              }
-            },
+            clickListener = clickListener,
+            longClickListener = longClickListener,
             getAppOrder = getAppOrder,
             counters = counters)
       }
@@ -215,12 +228,8 @@ class LauncherActivity
         case (apps: IterableApps) =>
           addApps(
             apps = apps,
-            clickListener = (app: App) => {
-              execute(toNineCardIntent(app))
-            },
-            longClickListener = (app: App) => {
-              launchSettings(app.packageName)
-            })
+            clickListener = clickListener,
+            longClickListener = longClickListener)
       })
 
   override def loadContactsByKeyword(keyword: String): Unit =
