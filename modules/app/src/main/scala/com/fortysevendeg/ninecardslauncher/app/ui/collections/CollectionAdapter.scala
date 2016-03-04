@@ -86,7 +86,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
             action = action,
             label = Some(ProvideLabel(packageName)),
             value = Some(action match {
-              case OpenAction => OpenAppFromCollectionValue
+              case OpenCardAction => OpenAppFromCollectionValue
               case AddedToCollectionAction => AddedToCollectionValue
               case RemovedInCollectionAction => RemovedInCollectionValue
               case _ => NoValue
