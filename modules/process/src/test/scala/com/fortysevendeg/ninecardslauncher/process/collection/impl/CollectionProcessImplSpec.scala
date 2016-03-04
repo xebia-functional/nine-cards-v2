@@ -181,6 +181,36 @@ trait CollectionProcessImplSpecification
 
   }
 
+  trait ValidCleanCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.deleteAllCollections() returns Service(Task(Result.answer(collectionsRemoved)))
+    mockPersistenceServices.deleteAllCards() returns Service(Task(Result.answer(cardsRemoved)))
+
+  }
+
+  trait CollectionErrorCleanCollectionsPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.deleteAllCollections() returns Service(Task(Errata(persistenceServiceException)))
+    mockPersistenceServices.deleteAllCards() returns Service(Task(Result.answer(cardsRemoved)))
+
+  }
+
+  trait CardErrorCleanCollectionsPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.deleteAllCollections() returns Service(Task(Result.answer(collectionsRemoved)))
+    mockPersistenceServices.deleteAllCards() returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
   trait ErrorFindCollectionPersistenceServicesResponses
     extends CollectionProcessImplData {
 
@@ -655,6 +685,39 @@ class CollectionProcessImplSpec
             resultCollection shouldEqual ((): Unit)
         }
       }
+  }
+
+  "cleanCollections" should {
+
+    "returns a empty answer for a valid request" in
+      new CollectionProcessScope with ValidCleanCollectionPersistenceServicesResponses {
+        val result = collectionProcess.cleanCollections().run.run
+        result must beLike {
+          case Answer(r) =>
+            r shouldEqual ((): Unit)
+        }
+      }
+
+    "returns a CollectionException if the service throws a exception removing collections" in
+      new CollectionProcessScope with CollectionErrorCleanCollectionsPersistenceServicesResponses {
+        val result = collectionProcess.cleanCollections().run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+          }
+        }
+      }
+
+    "returns a CollectionException if the service throws a exception removing cards" in
+      new CollectionProcessScope with CardErrorCleanCollectionsPersistenceServicesResponses {
+        val result = collectionProcess.cleanCollections().run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+          }
+        }
+      }
+
   }
 
   "reorderCollection" should {

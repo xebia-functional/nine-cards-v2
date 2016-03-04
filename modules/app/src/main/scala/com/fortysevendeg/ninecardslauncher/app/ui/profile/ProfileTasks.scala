@@ -4,8 +4,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
+import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
+import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 
@@ -19,6 +20,13 @@ trait ProfileTasks {
     val cloudStorageProcess = di.createCloudStorageProcess(client, email)
     cloudStorageProcess.getCloudStorageDevices.map(devices => createSync(devices))
   }
+
+  def logout(): ServiceDef2[Unit, CollectionException with DockAppException with UserException] =
+    for {
+      _ <- di.collectionProcess.cleanCollections()
+      _ <- di.deviceProcess.deleteAllDockApps
+      _ <- di.userProcess.unregister
+    } yield (())
 
   private[this] def createSync(devices: Seq[CloudStorageDeviceSummary]): Seq[AccountSync] = {
     val currentDevice = devices.find(_.currentDevice) map { d =>

@@ -39,6 +39,8 @@ class CollectionProcessImpl(
 
   override def deleteCollection(collectionId: Int) = super.deleteCollection(collectionId)
 
+  override def cleanCollections() = super.cleanCollections()
+
   override def reorderCollection(position: Int, newPosition: Int) = super.reorderCollection(position, newPosition)
 
   override def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest) =

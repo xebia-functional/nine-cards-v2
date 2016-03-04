@@ -120,6 +120,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     runUi(ui ~ reset())
   }
 
+  def clean(): Unit = {
+    data = Seq.empty
+    removeAllViews()
+  }
+
   def goToItem(): Int = (statuses.displacement, statuses.currentItem) match {
     case (disp, item) if disp < 0 && item >= data.size - 1 => 0
     case (disp, item) if disp < 0 => item + 1

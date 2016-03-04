@@ -12,16 +12,19 @@ trait DockAppsDeviceProcessImpl {
     with DeviceProcessDependencies
     with ImplicitsDeviceException =>
 
-  def saveDockApp(packageName: String, intent: NineCardIntent, imagePath: String, position: Int) = {
+  def saveDockApp(packageName: String, intent: NineCardIntent, imagePath: String, position: Int) =
     (for {
       _ <- persistenceServices.createOrUpdateDockApp(toCreateOrUpdateDockAppRequest(packageName, AppDockType, intent, imagePath, position))
     } yield ()).resolve[DockAppException]
-  }
 
-  def getDockApps = {
+  def getDockApps =
     (for {
       apps <- persistenceServices.fetchDockApps
     } yield apps map toDockApp).resolve[DockAppException]
-  }
+
+  def deleteAllDockApps =
+    (for {
+      _ <- persistenceServices.deleteAllDockApps()
+    } yield ()).resolve[DockAppException]
 
 }

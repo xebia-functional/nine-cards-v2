@@ -500,6 +500,9 @@ trait DeviceProcessSpecification
 
     mockPersistenceServices.fetchDockApps returns
       Service(Task(Result.answer(dockAppSeq)))
+
+    mockPersistenceServices.deleteAllDockApps() returns
+      Service(Task(Result.answer(dockAppsRemoved)))
   }
 
   trait DockAppsErrorScope {
@@ -510,6 +513,10 @@ trait DeviceProcessSpecification
     }
 
     mockPersistenceServices.fetchDockApps returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.deleteAllDockApps() returns Service {
       Task(Errata(persistenceServiceException))
     }
   }
@@ -1247,7 +1254,7 @@ class DeviceProcessImplSpec
 
   "Save Dock App" should {
 
-    "get path of icon stored" in
+    "returns a empty answer for a valid request" in
       new DeviceProcessScope with DockAppsScope {
         val result = deviceProcess.saveDockApp(packageName1, intent, imagePath1, 0).run.run
         result must beLike {
@@ -1256,7 +1263,7 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns ShortcutException when ImageServices fails storing the icon" in
+    "returns DockAppException when PersistenceService fails" in
       new DeviceProcessScope with DockAppsErrorScope {
         val result = deviceProcess.saveDockApp(packageName1, intent, imagePath1, 0).run.run
         result must beLike {
@@ -1269,7 +1276,7 @@ class DeviceProcessImplSpec
 
   "Get Dock Apps" should {
 
-    "get path of icon stored" in
+    "get dock apps stored" in
       new DeviceProcessScope with DockAppsScope {
         val result = deviceProcess.getDockApps.run.run
         result must beLike {
@@ -1278,9 +1285,31 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns ShortcutException when ImageServices fails storing the icon" in
+    "returns DockAppException when PersistenceService fails" in
       new DeviceProcessScope with DockAppsErrorScope {
         val result = deviceProcess.getDockApps.run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
+          }
+        }
+      }
+  }
+
+  "Delete All Dock Apps" should {
+
+    "returns a empty answer for a valid request" in
+      new DeviceProcessScope with DockAppsScope {
+        val result = deviceProcess.deleteAllDockApps.run.run
+        result must beLike {
+          case Answer(resultDockApp) =>
+            resultDockApp shouldEqual ((): Unit)
+        }
+      }
+
+    "returns DockAppException when PersistenceService fails" in
+      new DeviceProcessScope with DockAppsErrorScope {
+        val result = deviceProcess.deleteAllDockApps.run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]

@@ -64,6 +64,12 @@ trait CollectionsProcessImpl {
       _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
     } yield ()).resolve[CollectionException]
 
+  def cleanCollections() =
+    (for {
+      _ <- persistenceServices.deleteAllCollections()
+      _ <- persistenceServices.deleteAllCards()
+    } yield ()).resolve[CollectionException]
+
   def reorderCollection(position: Int, newPosition: Int) =
     (for {
       Some(collection) <- persistenceServices.fetchCollectionByPosition(toFetchCollectionByPositionRequest(position))

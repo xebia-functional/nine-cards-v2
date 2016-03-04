@@ -176,4 +176,11 @@ trait DeviceProcess {
     */
   def getDockApps: ServiceDef2[Seq[DockApp], DockAppException]
 
+  /**
+    * Delete all dock apps in database
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp]
+    * @throws DockAppException if exist some problem to get the app or storing it
+    */
+  def deleteAllDockApps: ServiceDef2[Unit, DockAppException]
+
 }
