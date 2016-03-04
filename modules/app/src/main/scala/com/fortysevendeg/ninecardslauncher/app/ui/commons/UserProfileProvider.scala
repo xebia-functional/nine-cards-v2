@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.app.Activity._
 import android.content.Intent
 import android.os.Bundle
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ActivityResult._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

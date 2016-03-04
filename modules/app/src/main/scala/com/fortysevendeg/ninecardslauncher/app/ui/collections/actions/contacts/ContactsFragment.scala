@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityResult, FragmentUiContext, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, FragmentUiContext, UiContext}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
@@ -44,7 +44,7 @@ class ContactsFragment
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
     (requestCode, resultCode) match {
-      case (ActivityResult.selectInfoContact, Activity.RESULT_OK) =>
+      case (RequestCodes.selectInfoContact, Activity.RESULT_OK) =>
         val ui: Ui[_] = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(ContactsFragment.addCardRequest) =>
             extras.get(ContactsFragment.addCardRequest) match {
@@ -80,7 +80,7 @@ class ContactsFragment
       Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
       ft.addToBackStack(javaNull)
       val dialog = new SelectInfoContactDialogFragment(contact)
-      dialog.setTargetFragment(this, ActivityResult.selectInfoContact)
+      dialog.setTargetFragment(this, RequestCodes.selectInfoContact)
       dialog.show(ft, tagDialog)
     },
     onException = (ex: Throwable) => runUi(showGeneralError)

@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
@@ -127,8 +128,14 @@ class LauncherActivity
 
   def onConnectedPlusProfile(coverPhotoUrl: String): Unit = runUi(plusProfileMenu(coverPhotoUrl))
 
-  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
+    (requestCode, resultCode) match {
+      case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) =>
+        runUi((workspaces <~ lwsClean) ~ goToWizard())
+      case _ =>
+    }
+  }
 
   private[this] def goToWizard(): Ui[_] = Ui {
     val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])

@@ -90,4 +90,6 @@ class DeviceProcessImpl(
 
   override def getDockApps = super.getDockApps
 
+  override def deleteAllDockApps = super.deleteAllDockApps
+
 }

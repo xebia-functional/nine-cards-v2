@@ -217,6 +217,8 @@
 
     <string name="errorLoadingUser">Error cargando usuario</string>
 
+    <string name="logout">Salir</string>
+
     <!-- Preferences -->
 
     <!-- Preferences Default Launcher -->

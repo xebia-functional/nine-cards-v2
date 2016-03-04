@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityResult, ColorsUtils}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, ColorsUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
@@ -60,7 +60,7 @@ trait NewCollectionComposer
             Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
             ft.addToBackStack(javaNull)
             val dialog = new ColorDialogFragment(color)
-            dialog.setTargetFragment(this, ActivityResult.selectInfoColor)
+            dialog.setTargetFragment(this, RequestCodes.selectInfoColor)
             dialog.show(ft, tagDialog)
           }
         }
@@ -72,7 +72,7 @@ trait NewCollectionComposer
             Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
             ft.addToBackStack(javaNull)
             val dialog = new IconDialogFragment(category)
-            dialog.setTargetFragment(this, ActivityResult.selectInfoIcon)
+            dialog.setTargetFragment(this, RequestCodes.selectInfoIcon)
             dialog.show(ft, tagDialog)
           }
         }

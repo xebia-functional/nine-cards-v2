@@ -61,6 +61,12 @@ trait CollectionProcess {
   def deleteCollection(collectionId: Int): ServiceDef2[Unit, CollectionException]
 
   /**
+    * Deletes all Collections and Cards
+    * @throws CollectionException if there was an error finding the collection, getting the existing collections, deleting the collection or updating the rest of them
+    */
+  def cleanCollections(): ServiceDef2[Unit, CollectionException]
+
+  /**
    * Moves a Collection to another position and updates the position of the other Collections
    * @param position the position of the Collection to move
    * @param newPosition the new position of the Collection
