@@ -82,6 +82,9 @@ class ProfileActivity
     case android.R.id.home =>
       finish()
       true
+    case R.id.action_logout =>
+      quit()
+      true
     case _ =>
       super.onOptionsItemSelected(item)
   }
@@ -170,5 +173,13 @@ class ProfileActivity
       onException = (_) => showError(R.string.errorConnectingGoogle, () => loadUserAccounts(client, username)),
       onPreTask = () => showLoading
     )
+
+  private[this] def quit(): Unit =
+    Task.fork(logout().run).resolveAsyncUi(
+      onResult = (_) => Ui {
+        setResult(ResultCodes.logoutSuccessful)
+        finish()
+      },
+      onException = (_) => showError(R.string.contactUsError, quit))
 
 }

@@ -40,7 +40,7 @@ object ImageResourceNamed {
 
 }
 
-object ActivityResult {
+object RequestCodes {
 
   val shortcutAdded = 1
 
@@ -53,6 +53,14 @@ object ActivityResult {
   val resolveGooglePlayConnection = 5
 
   val resolveConnectedUser = 6
+
+  val goToProfile = 7
+
+}
+
+object ResultCodes {
+
+  val logoutSuccessful = 10
 
 }
 

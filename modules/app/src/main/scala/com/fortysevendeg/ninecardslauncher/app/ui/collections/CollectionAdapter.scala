@@ -34,7 +34,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
         pos = Int.unbox(tag)
         card <- collection.cards.lift(pos)
       } yield {
-        trackCard(card, OpenAction)
+        trackCard(card, OpenCardAction)
         execute(card.intent)
       }
     })
@@ -78,7 +78,13 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
             screen = CollectionDetailScreen,
             category = AppCategory(category),
             action = action,
-            label = Some(ProvideLabel(packageName)))
+            label = Some(ProvideLabel(packageName)),
+            value = Some(action match {
+              case OpenCardAction => OpenAppFromCollectionValue
+              case AddedToCollectionAction => AddedToCollectionValue
+              case RemovedInCollectionAction => RemovedInCollectionValue
+              case _ => NoValue
+            }))
       }
     case _ =>
   }
