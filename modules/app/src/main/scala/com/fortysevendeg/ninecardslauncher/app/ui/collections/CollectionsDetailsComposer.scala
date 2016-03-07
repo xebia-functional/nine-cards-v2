@@ -136,15 +136,16 @@ trait CollectionsDetailsComposer
       (toolbar <~ tbReduceLayout(move * 2) <~ uiElevation(newElevation)) ~
       (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
   }
-  // TODO First implementation. We should improve that
-  def reorderModeIn: Ui[_] =
+
+  def openReorderMode: Ui[_] =
     (tabs <~ vTranslationY(-spaceMove) <~ uiElevation(elevation + 1) <~ vInvisible) ~
       (toolbar <~ tbReduceLayout(spaceMove * 2) <~ uiElevation(elevation + 1)) ~
       (iconContent <~ vInvisible)
 
-  def reorderModeOut: Ui[_] =
-    (tabs <~ vVisible) ~
-      (iconContent <~ vVisible)
+  def closeReorderMode: Ui[_] =
+    (tabs <~ vTranslationY(0) <~ uiElevation(elevation) <~ vVisible) ~
+      (toolbar <~ tbReduceLayout(0) <~ uiElevation(elevation)) ~
+      (iconContent <~ vVisible <~ vScaleX(1) <~ vScaleY(1) <~ vAlpha(1))
 
   def notifyScroll(sType: ScrollType): Ui[_] = (for {
     vp <- viewPager

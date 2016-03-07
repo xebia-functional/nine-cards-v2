@@ -31,28 +31,10 @@ trait CollectionFragmentComposer
   var pullToCloseView = slot[PullToCloseView]
 
   def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = {
-    // TODO First implementation. We should improve that
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
       onChanged = {
-        case ActionStateReordering =>
-          scrolledListener foreach { sl =>
-            val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-            runUi(recyclerView <~ vPadding(padding, padding, padding, padding))
-            sl.reorderMove(true)
-          }
-          runUi(
-            (pullToCloseView <~ pdvEnable(false)) ~
-              (recyclerView <~ nrvRegisterScroll(false)))
-        case ActionStateIdle =>
-          val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-          val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-          recyclerView.get.scrollListener.get.scrollY = spaceMove
-          statuses = statuses.copy(scrollType = ScrollUp)
-          runUi(recyclerView <~ vPadding(padding, 0, padding, padding))
-          scrolledListener foreach (_.reorderMove(false))
-          runUi(
-            (pullToCloseView <~ pdvEnable(true)) ~
-              (recyclerView <~ nrvRegisterScroll(true)))
+        case ActionStateReordering => runUi(openReorderMode)
+        case ActionStateIdle => runUi(closeReorderMode)
       })
 
     getUi(
@@ -80,6 +62,28 @@ trait CollectionFragmentComposer
         loadCollection(collection, padding, spaceMove, animateCards) ~
           uiHandler(startScroll(padding, spaceMove))
       })
+
+  def openReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
+    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+    scrolledListener foreach (_.reorderMode(true))
+    (pullToCloseView <~ pdvEnable(false)) ~
+      (recyclerView <~
+        vPadding(padding, padding, padding, padding) <~
+        nrvRegisterScroll(false) )
+  }
+
+  def closeReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
+    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+    val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+    scrolledListener foreach (_.scrollType(ScrollDown))
+    scrolledListener foreach (_.reorderMode(false))
+    (pullToCloseView <~ pdvEnable(true)) ~
+      (recyclerView <~
+        nrvResetScroll <~
+        vPadding(padding, spaceMove, padding, padding) <~
+        vScrollBy(0, -Int.MaxValue) <~
+        nrvRegisterScroll(true))
+  }
 
   def resetScroll(collection: Collection)(implicit contextWrapper: ActivityContextWrapper) =
     recyclerView <~
@@ -204,4 +208,5 @@ object ScrollType {
 case class CollectionStatuses(
   scrollType: ScrollType = ScrollNo,
   canScroll: Boolean = false,
-  activeFragment: Boolean = false)
+  activeFragment: Boolean = false,
+  reordering: Boolean = false)

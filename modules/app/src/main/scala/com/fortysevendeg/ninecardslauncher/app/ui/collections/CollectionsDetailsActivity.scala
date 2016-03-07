@@ -178,7 +178,7 @@ class CollectionsDetailsActivity
 
   override def scrollY(scroll: Int, dy: Int): Unit = runUi(translationScrollY(scroll))
 
-  override def reorderMove(in: Boolean): Unit = runUi(if (in) reorderModeIn else reorderModeOut)
+  override def reorderMode(in: Boolean): Unit = runUi(if (in) openReorderMode else closeReorderMode)
 
   override def scrollType(sType: ScrollType): Unit = runUi(notifyScroll(sType))
 
@@ -252,7 +252,7 @@ trait ScrolledListener {
 
   def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit
 
-  def reorderMove(in: Boolean): Unit
+  def reorderMode(in: Boolean): Unit
 
   def close(): Unit
 }

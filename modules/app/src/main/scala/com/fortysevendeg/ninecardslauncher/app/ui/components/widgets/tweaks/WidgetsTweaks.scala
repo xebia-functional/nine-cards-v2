@@ -49,6 +49,10 @@ object CollectionRecyclerViewTweaks {
 
   def nrvScheduleLayoutAnimation = Tweak[W](_.scheduleLayoutAnimation())
 
+  def nrvResetScroll = Tweak[W] { rv =>
+    rv.scrollListener.foreach(_.scrollY = 0)
+  }
+
   def nrvCollectionScrollListener(
     scrolled: (Int, Int, Int) => Int,
     scrollStateChanged: (Int, RecyclerView, Int) => Unit
