@@ -8,6 +8,7 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.ContactsContract.Contacts
 import android.widget.ImageView
+import android.widget.ImageView.ScaleType
 import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.model.stream.StreamModelLoader
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
@@ -16,6 +17,7 @@ import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{Snail, ActivityContextWrapper, Tweak}
 import macroid.FullDsl._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -49,6 +51,14 @@ object AsyncImageTweaks {
         imageView = imageView,
         char = name.substring(0, 1),
         circular = circular,
+        fadeInFailed = false)
+    })
+
+  def ivUriContactInfo(uri: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+    imageView => {
+      makeContactRequest(
+        request = glide().using(new ContactPhotoLoader(context.application.getContentResolver)).load(Uri.parse(uri)),
+        imageView = imageView,
         fadeInFailed = false)
     })
 
@@ -88,6 +98,22 @@ object AsyncImageTweaks {
           imageView.setImageDrawable(javaNull)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
           runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
+        override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
+          view.setImageDrawable(resource.getCurrent)
+      })
+  }
+
+  private[this] def makeContactRequest(
+    request: DrawableTypeRequest[_],
+    imageView: ImageView,
+    fadeInFailed: Boolean = true)(implicit context: ActivityContextWrapper) = {
+    request
+      .crossFade()
+      .into(new ViewTarget[ImageView, GlideDrawable](imageView) {
+        override def onLoadStarted(placeholder: Drawable): Unit =
+          imageView.setImageDrawable(javaNull)
+        override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
+          runUi(imageView <~ ivSrc(R.drawable.dialog_contact_header_no_image) <~ ivScaleType(ScaleType.CENTER_INSIDE) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
       })
