@@ -8,7 +8,8 @@
             style="@style/ContactInfoHeaderAvatar"/>
 
     <LinearLayout
-        style="@style/ContactInfoHeaderContent">
+        style="@style/ContactInfoHeaderContent"
+        android:id="@+id/contact_info_header">
 
         <TextView
             android:id="@+id/contact_info_header_name"

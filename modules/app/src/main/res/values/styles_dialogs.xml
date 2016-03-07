@@ -20,15 +20,15 @@
         <item name="android:gravity">bottom</item>
         <item name="android:orientation">vertical</item>
         <item name="android:padding">@dimen/padding_large</item>
-        <item name="android:background">@color/background_header_content</item>
+    <item name="android:background">@color/background_header_content</item>
     </style>
 
     <style name="ContactInfoHeaderName">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_xxxlarge</item>
+        <item name="android:textSize">@dimen/text_xxxxlarge</item>
         <item name="android:textColor">@color/text_dialog_name</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
     </style>
 
     <!-- Dialog Contact Info -->
@@ -44,16 +44,17 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">left</item>
         <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/text_item_value</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
     </style>
 
     <style name="DialogContactInfoCategory">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">left</item>
-        <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textColor">@color/text_phone_category</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/text_item_category</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
     </style>
 
     <style name="DialogContactInfoLineHorizontal">
@@ -87,7 +88,7 @@
         <item name="android:layout_width">@dimen/size_icon_contact_dialog</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:src">@drawable/dialog_contact_icon_phone</item>
-        <item name="android:scaleType">centerInside</item>
+        <item name="android:scaleType">center</item>
     </style>
 
     <style name="DialogContactInfoPhoneContentValues">
@@ -95,6 +96,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
     </style>
 
     <style name="DialogContactInfoSmsIcon">
@@ -130,6 +133,8 @@
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
     </style>
 
     <!-- Dialog Icon Info -->
