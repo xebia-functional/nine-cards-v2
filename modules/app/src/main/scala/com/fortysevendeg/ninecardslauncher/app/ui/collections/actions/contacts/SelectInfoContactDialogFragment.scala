@@ -66,7 +66,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   class GeneralInfoView(lookupKey: String, avatarUrl: String)
     extends LinearLayout(contextWrapper.bestAvailable)
-      with TypedFindView {
+    with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_general_dialog, this)
 
@@ -80,10 +80,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       vBackgroundColor(primaryColor)) ~
       (generalInfo <~
       tvText(getResources.getString(R.string.generalInfo))) ~
-      (generalContent <~ On.click{
-      execute(contactToNineCardIntent(lookupKey))
-      Ui.nop
-    })).run
+      (generalContent <~ On.click(generateIntent(lookupKey, ContactCardType)))).run
   }
 
   class PhoneView(data: (String, PhoneCategory))
@@ -174,6 +171,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       case EmailCardType => Some(emailToNineCardIntent(data))
       case SmsCardType => Some(smsToNineCardIntent(data))
       case PhoneCardType => Some(phoneToNineCardIntent(data))
+      case ContactCardType => Some(contactToNineCardIntent(data))
       case _ => None
     }
     maybeIntent foreach { intent =>
