@@ -246,13 +246,13 @@ trait CollectionsDetailsComposer
       fragment.removeCard(c)
     }
 
-  protected def reloadCardsToCurrentFragment(cards: Seq[Card]) = for {
+  protected def reloadCardsToCurrentFragment(cards: Seq[Card], reloadFragment: Boolean) = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
     currentPosition <- adapter.getCurrentFragmentPosition
   } yield {
     adapter.updateCardFromCollection(currentPosition, cards)
-    fragment.reloadCards(cards)
+    if (reloadFragment) fragment.reloadCards(cards)
   }
 
   def backByPriority(implicit theme: NineCardsTheme): Ui[_] = if (fabMenuOpened) {

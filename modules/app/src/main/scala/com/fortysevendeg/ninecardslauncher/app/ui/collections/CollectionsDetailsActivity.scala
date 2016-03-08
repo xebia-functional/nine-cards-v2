@@ -61,7 +61,7 @@ class CollectionsDetailsActivity
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (AppsActionFilter(action), data) match {
-    case (AppInstalledActionFilter, _) => reloadCards()
+    case (AppInstalledActionFilter, _) => reloadCards(true)
     case _ =>
   }
 
@@ -221,11 +221,11 @@ class CollectionsDetailsActivity
     dialog.show(ft, tagDialog)
   }
 
-  def reloadCards(): Unit =
+  def reloadCards(reloadFragment: Boolean): Unit =
     getCurrentCollection foreach { currentCollection =>
       Task.fork(di.collectionProcess.getCollectionById(currentCollection.id).run).resolveAsync(
         onResult = (c) => c map (newCollection => if (newCollection.cards != currentCollection.cards) {
-          reloadCardsToCurrentFragment(newCollection.cards)
+          reloadCardsToCurrentFragment(newCollection.cards, reloadFragment)
         })
       )
     }

@@ -73,7 +73,7 @@ trait CollectionFragmentComposer
     (pullToCloseView <~ pdvEnable(false)) ~
       (recyclerView <~
         vPadding(padding, padding, padding, padding) <~
-        nrvRegisterScroll(false) )
+        nrvRegisterScroll(false))
   }
 
   def closeReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
