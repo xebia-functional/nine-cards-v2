@@ -9,8 +9,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak}
+import macroid._
 
 class FabItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(context, attr, defStyleAttr)
@@ -28,7 +27,7 @@ class FabItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)(impli
 
   addView(content)
 
-  runUi(icon <~ fabStyle)
+  (icon <~ fabStyle).run
 
 }
 

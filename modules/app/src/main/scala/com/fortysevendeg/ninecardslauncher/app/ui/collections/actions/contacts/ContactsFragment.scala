@@ -3,21 +3,18 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, FragmentUiContext, UiContext}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
 import macroid.Ui
 
 import scalaz.concurrent.Task
@@ -33,11 +30,11 @@ class ContactsFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    runUi(initUi(checked => loadContacts(if (checked) {
+    initUi(checked => loadContacts(if (checked) {
       AllContacts
     } else {
       FavoriteContacts
-    }, reload = true)))
+    }, reload = true)).run
     loadContacts(AllContacts)
   }
 
@@ -55,7 +52,7 @@ class ContactsFragment
             }
           case _ => showGeneralError
         } getOrElse showGeneralError
-        runUi(ui)
+        ui.run
       case _ =>
     }
   }
@@ -83,7 +80,7 @@ class ContactsFragment
       dialog.setTargetFragment(this, RequestCodes.selectInfoContact)
       dialog.show(ft, tagDialog)
     },
-    onException = (ex: Throwable) => runUi(showGeneralError)
+    onException = (ex: Throwable) => showGeneralError.run
   )
 
 }

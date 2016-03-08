@@ -13,8 +13,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -22,7 +21,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, ContextWrapper, Tweak, Ui}
+import macroid._
 
 import scala.annotation.tailrec
 
@@ -45,7 +44,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
         generateEmailViews(info.emails map (email => (email.address, email.category)), Seq.empty)
     } getOrElse Seq.empty
 
-    runUi((rootView <~ vgAddViews(views)) ~ (scrollView <~ vgAddView(rootView)))
+    ((rootView <~ vgAddViews(views)) ~ (scrollView <~ vgAddView(rootView))).run
 
     new AlertDialog.Builder(getActivity).setView(scrollView).create()
   }
@@ -59,12 +58,10 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     lazy val headerAvatar = Option(findView(TR.contact_info_header_avatar))
     lazy val headerName = Option(findView(TR.contact_info_header_name))
 
-    runUi(
-      headerAvatar <~
-        ivUriContactInfo(avatarUrl, true) <~ vBackgroundColor(primaryColor),
-      headerName <~
-        tvText(name)
-    )
+    ((headerAvatar <~
+      ivUriContactInfo(avatarUrl, header = true) <~
+      vBackgroundColor(primaryColor)) ~
+      (headerName <~ tvText(name))).run
   }
 
   class GeneralInfoView(lookupKey: String, avatarUrl: String)
@@ -77,18 +74,16 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     lazy val icon = Option(findView(TR.contact_dialog_general_icon))
     lazy val generalInfo= Option(findView(TR.contact_dialog_general_info))
 
-    runUi(
-      icon <~
-        ivUriContactInfo(avatarUrl, false) <~
-        (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank) <~
-        vBackgroundColor(primaryColor),
-      generalInfo <~
-        tvText(getResources.getString(R.string.generalInfo)),
-      generalContent <~ On.click{
-        execute(contactToNineCardIntent(lookupKey))
-        Ui.nop
-      }
-    )
+    ((icon <~
+      ivUriContactInfo(avatarUrl, header = false) <~
+      (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank) <~
+      vBackgroundColor(primaryColor)) ~
+      (generalInfo <~
+      tvText(getResources.getString(R.string.generalInfo))) ~
+      (generalContent <~ On.click{
+      execute(contactToNineCardIntent(lookupKey))
+      Ui.nop
+    })).run
   }
 
   class PhoneView(data: (String, PhoneCategory))
@@ -115,14 +110,12 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     lazy val phoneCategory = Option(findView(TR.contact_dialog_phone_category))
     lazy val phoneSms = Option(findView(TR.contact_dialog_sms_icon))
 
-    runUi(
-      phoneNumber <~
-        tvText(phone),
-      phoneCategory <~
-        tvText(categoryName),
-      phoneContent <~ On.click(generateIntent(phone, PhoneCardType)),
-      phoneSms <~ On.click(generateIntent(phone, SmsCardType))
-    )
+    ((phoneNumber <~
+      tvText(phone)) ~
+      (phoneCategory <~
+      tvText(categoryName)) ~
+      (phoneContent <~ On.click(generateIntent(phone, PhoneCardType))) ~
+      (phoneSms <~ On.click(generateIntent(phone, SmsCardType)))).run
   }
 
   class EmailView(data: (String, EmailCategory))
@@ -143,13 +136,11 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     lazy val emailAddress = Option(findView(TR.contact_dialog_email_address))
     lazy val emailCategory = Option(findView(TR.contact_dialog_email_category))
 
-    runUi(
-      emailAddress <~
-        tvText(email),
-      emailCategory <~
-        tvText(categoryName),
-      emailContent <~ On.click(generateIntent(email, EmailCardType))
-    )
+    ((emailAddress <~
+      tvText(email)) ~
+      (emailCategory <~
+      tvText(categoryName)) ~
+      (emailContent <~ On.click(generateIntent(email, EmailCardType)))).run
   }
 
   private[this] def generateHeaderView(name: String, avatarUrl: String): Seq[View] = Seq(new HeaderView(name, avatarUrl))

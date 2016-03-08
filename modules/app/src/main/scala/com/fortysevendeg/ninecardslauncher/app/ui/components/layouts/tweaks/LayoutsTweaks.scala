@@ -14,8 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak, Ui}
+import macroid._
 
 import scala.annotation.tailrec
 
@@ -88,7 +87,7 @@ object LauncherWorkSpacesTweaks {
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
 
   def lwsCloseMenu = Tweak[W] { view =>
-    runUi(view.closeMenu())
+    view.closeMenu().run
   }
 
 }
@@ -149,15 +148,15 @@ object WorkSpaceItemMenuTweaks {
 
 object SearchBoxesAnimatedViewTweak {
 
-  def sbvUpdateContentView(contentView: ContentView) = Tweak[SearchBoxView] (view => runUi(view.updateContentView(contentView)))
+  def sbvUpdateContentView(contentView: ContentView) = Tweak[SearchBoxView] (view => view.updateContentView(contentView).run)
 
   def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxView] (_.listener = Some(listener))
 
-  def sbvUpdateHeaderIcon(resourceId: Int) = Tweak[SearchBoxView](view => runUi(view.updateHeaderIcon(resourceId)))
+  def sbvUpdateHeaderIcon(resourceId: Int) = Tweak[SearchBoxView](view => view.updateHeaderIcon(resourceId).run)
 
   def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[SearchBoxView] (_.addTextChangedListener(onChangeText))
 
-  def sbvClean = Tweak[SearchBoxView] (view => runUi(view.clean))
+  def sbvClean = Tweak[SearchBoxView] (view => view.clean.run)
 }
 
 object PullToTabsViewTweaks {
@@ -167,7 +166,7 @@ object PullToTabsViewTweaks {
   def ptvAddTabs(items: Seq[TabInfo]) = Tweak[PullToTabsView](_.addTabs(items))
 
   def ptvLinkTabs(tabs: Option[LinearLayout], start: Ui[_], end: Ui[_]) = Tweak[PullToTabsView] { view =>
-    runUi(view.linkTabsView(tabs, start, end))
+    view.linkTabsView(tabs, start, end).run
   }
 
   def ptvClearTabs() = Tweak[PullToTabsView](_.clear())
@@ -247,23 +246,23 @@ object DialogToolbarTweaks {
   type W = DialogToolbar
 
   def dtbInit(color: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    runUi(view.init(color))
+    view.init(color).run
   }
 
   def dtbExtended(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    runUi(view.changeToolbarHeight(resGetDimensionPixelSize(R.dimen.height_extended_toolbar_dialog)))
+    view.changeToolbarHeight(resGetDimensionPixelSize(R.dimen.height_extended_toolbar_dialog)).run
   }
 
   def dtbAddExtendedView(viewToAdd: View)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    runUi(view.addExtendedView(viewToAdd))
+    view.addExtendedView(viewToAdd).run
   }
 
   def dtbChangeText(resourceId: Int) = Tweak[W] { view =>
-    runUi(view.changeText(resourceId))
+    view.changeText(resourceId).run
   }
 
   def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W]{ view =>
-    runUi(view.navigationClickListener(click))
+    view.navigationClickListener(click).run
   }
 
 }
@@ -273,15 +272,15 @@ object SwipeAnimatedDrawerViewTweaks {
   type W = SwipeAnimatedDrawerView
 
   def sadvInitAnimation(contentView: ContentView, widthContainer: Int) = Tweak[W] { view =>
-    runUi(view.initAnimation(contentView, widthContainer))
+    view.initAnimation(contentView, widthContainer).run
   }
 
   def sadvMoveAnimation(contentView: ContentView, widthContainer: Int, displacement: Float) = Tweak[W] { view =>
-    runUi(view.moveAnimation(contentView, widthContainer, displacement))
+    view.moveAnimation(contentView, widthContainer, displacement).run
   }
 
   def sadvEndAnimation(duration: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    runUi(view.endAnimation(duration))
+    view.endAnimation(duration).run
   }
 
 }

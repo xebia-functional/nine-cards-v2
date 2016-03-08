@@ -4,11 +4,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{Header, AccountSync}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{AccountSync, Header}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
-import macroid.FullDsl._
 
 case class AccountsAdapter(items: Seq[AccountSync])(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderAccountsAdapter] {
@@ -20,7 +19,7 @@ case class AccountsAdapter(items: Seq[AccountSync])(implicit activityContext: Ac
   override def getItemCount: Int = items.size
 
   override def onBindViewHolder(viewHolder: ViewHolderAccountsAdapter, position: Int): Unit =
-    runUi(viewHolder.bind(items(position), position))
+    viewHolder.bind(items(position), position).run
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderAccountsAdapter =
     viewType match {

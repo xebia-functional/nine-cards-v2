@@ -14,7 +14,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.api.GoogleApiClient
-import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 import rapture.core.Answer
 
@@ -54,7 +53,7 @@ class ProfileActivity
     super.onCreate(bundle)
     loadUserProfile()
     setContentView(R.layout.profile_activity)
-    runUi(initUi)
+    initUi.run
 
     toolbar foreach setSupportActionBar
     Option(getSupportActionBar) foreach { actionBar =>
@@ -93,7 +92,7 @@ class ProfileActivity
     val maxScroll = appBarLayout.getTotalScrollRange.toFloat
     val percentage = Math.abs(offset) / maxScroll
 
-    runUi(handleToolbarVisibility(percentage) ~ handleProfileVisibility(percentage))
+    (handleToolbarVisibility(percentage) ~ handleProfileVisibility(percentage)).run
   }
 
   override def onRequestConnectionError(errorCode: Int): Unit =
@@ -118,23 +117,23 @@ class ProfileActivity
   override def onProfileTabSelected(profileTab: ProfileTab): Unit = profileTab match {
     case PublicationsTab =>
       // TODO - Load publications and set adapter
-      runUi(setPublicationsAdapter(sampleItems("Publication")))
+      setPublicationsAdapter(sampleItems("Publication")).run
     case SubscriptionsTab =>
       // TODO - Load subscriptions and set adapter
-      runUi(setSubscriptionsAdapter(sampleItems("Subscription")))
+      setSubscriptionsAdapter(sampleItems("Subscription"))
     case AccountsTab =>
       clientStatuses match {
         case GoogleApiClientStatuses(Some(client), Some(email)) if client.isConnected =>
           loadUserAccounts(client, email)
         case GoogleApiClientStatuses(Some(client), Some(email)) =>
           tryToConnect()
-          runUi(showLoading)
+          showLoading.run
         case _ =>
           loadUserInfo()
       }
   }
 
-  def onConnectedUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit = runUi(userProfile(name, email, avatarUrl))
+  def onConnectedUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit = userProfile(name, email, avatarUrl).run
 
   def onConnectedPlusProfile(coverPhotoUrl: String): Unit = {}
 

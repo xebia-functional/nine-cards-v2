@@ -5,9 +5,8 @@ import android.view.{LayoutInflater, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher2.TR
-import macroid.ActivityContextWrapper
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
-import macroid.FullDsl._
+import macroid.ActivityContextWrapper
 
 case class PublicCollectionsAdapter(sharedCollections: Seq[SharedCollection], clickListener: (SharedCollection) => Unit)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
@@ -22,7 +21,7 @@ case class PublicCollectionsAdapter(sharedCollections: Seq[SharedCollection], cl
 
   override def onBindViewHolder(viewHolder: ViewHolderPublicCollectionsLayoutAdapter, position: Int): Unit = {
     val publicCollection = sharedCollections(position)
-    runUi(viewHolder.bind(publicCollection, position))
+    viewHolder.bind(publicCollection, position).run
   }
 
   def getLayoutManager = new LinearLayoutManager(activityContext.application)

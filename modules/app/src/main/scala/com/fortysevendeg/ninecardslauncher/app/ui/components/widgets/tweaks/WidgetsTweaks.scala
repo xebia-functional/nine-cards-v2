@@ -6,11 +6,10 @@ import android.view.ViewGroup.OnHierarchyChangeListener
 import android.view.animation.AnimationUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{ContactsMenuOption, AppsMenuOption}
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.RippleBackgroundSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
+import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -30,7 +29,7 @@ object TintableImageViewTweaks {
 object RippleBackgroundViewTweaks {
 
   def rbvColor(color: Int, forceFade: Boolean = false)(implicit contextWrapper: ContextWrapper) = Tweak[RippleBackgroundView] { view =>
-    runUi(view <~~ ripple(color, forceFade))
+    (view <~~ ripple(color, forceFade)).run
   }
 
 }
@@ -62,7 +61,7 @@ object CollectionRecyclerViewTweaks {
           0 until recyclerView.getChildCount foreach { position =>
             val newPosition = position + firstVisiblePosition
             val v = recyclerView.getChildAt(position)
-            runUi(v <~ vTag2(newPosition))
+            (v <~ vTag2(newPosition)).run
           }
         case _ =>
       }
@@ -77,12 +76,12 @@ object DrawerRecyclerViewTweaks {
 
   def drvSetType(option: AppsMenuOption) = Tweak[W] { view =>
     view.statuses = view.statuses.copy(contentView = AppsView)
-    runUi(view <~ vSetType(option.name))
+    (view <~ vSetType(option.name)).run
   }
 
   def drvSetType(option: ContactsMenuOption) = Tweak[W] { view =>
     view.statuses = view.statuses.copy(contentView = ContactView)
-    runUi(view <~ vSetType(option.name))
+    (view <~ vSetType(option.name)).run
   }
 
   def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)

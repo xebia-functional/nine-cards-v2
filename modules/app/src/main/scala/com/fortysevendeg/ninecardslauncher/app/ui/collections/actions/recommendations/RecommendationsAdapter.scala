@@ -5,8 +5,7 @@ import android.view.{LayoutInflater, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Ui, ActivityContextWrapper}
-import macroid.FullDsl._
+import macroid.{ActivityContextWrapper, Ui}
 
 case class RecommendationsAdapter(recommendations: Seq[RecommendedApp], clickListener: (RecommendedApp) => Ui[_])
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
@@ -21,7 +20,7 @@ case class RecommendationsAdapter(recommendations: Seq[RecommendedApp], clickLis
 
   override def onBindViewHolder(viewHolder: ViewHolderRecommendationsLayoutAdapter, position: Int): Unit = {
     val recommendation = recommendations(position)
-    runUi(viewHolder.bind(recommendation, position))
+    viewHolder.bind(recommendation, position).run
   }
 
   def getLayoutManager = new LinearLayoutManager(activityContext.application)

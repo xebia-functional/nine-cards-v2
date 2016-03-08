@@ -13,8 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, Ui
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import macroid.Contexts
-import macroid.FullDsl._
+import macroid._
 import rapture.core.Answer
 
 class CollectionFragment
@@ -47,7 +46,7 @@ class CollectionFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     sType = getArguments.getInt(keyScrollType, ScrollType.down)
     canScroll = collection exists (_.cards.length > numSpaces)
-    collection foreach (c => runUi(initUi(c, animateCards)))
+    collection foreach (c => initUi(c, animateCards).run)
     super.onViewCreated(view, savedInstanceState)
   }
 
@@ -64,27 +63,27 @@ class CollectionFragment
     scrolledListener = None
   }
 
-  def bindAnimatedAdapter = if (animateCards) collection foreach (c => runUi(setAnimatedAdapter(c)))
+  def bindAnimatedAdapter = if (animateCards) collection foreach (c => setAnimatedAdapter(c).run)
 
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)
     val cardCount = adapter.collection.cards.length
     canScroll = cardCount > numSpaces
-    runUi(resetScroll(adapter.collection))
+    resetScroll(adapter.collection).run
   }
 
   def removeCard(card: Card) = getAdapter foreach { adapter =>
     adapter.removeCard(card)
     val cardCount = adapter.collection.cards.length
     canScroll = cardCount > numSpaces
-    runUi(resetScroll(adapter.collection))
+    resetScroll(adapter.collection).run
   }
 
   def reloadCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.updateCards(cards)
     val cardCount = adapter.collection.cards.length
     canScroll = cardCount > numSpaces
-    runUi(resetScroll(adapter.collection))
+    resetScroll(adapter.collection).run
   }
 }
 

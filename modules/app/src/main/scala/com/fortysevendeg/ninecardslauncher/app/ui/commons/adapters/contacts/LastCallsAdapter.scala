@@ -1,29 +1,30 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts
 
+import java.util.Date
+
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.LastCallsContact
 import com.fortysevendeg.ninecardslauncher.process.device.types._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import org.ocpsoft.prettytime.PrettyTime
-import java.util.Date
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Tweak, Ui}
+import macroid._
+import org.ocpsoft.prettytime.PrettyTime
 
 case class LastCallsAdapter(
   contacts: Seq[LastCallsContact],
@@ -36,9 +37,8 @@ case class LastCallsAdapter(
 
   override def getItemCount: Int = contacts.length
 
-  override def onBindViewHolder(vh: LastCallsContactHolder, position: Int): Unit = {
-    runUi(vh.bind(contacts(position), position))
-  }
+  override def onBindViewHolder(vh: LastCallsContactHolder, position: Int): Unit =
+    vh.bind(contacts(position), position).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): LastCallsContactHolder = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.last_call_item, parent, false)
@@ -74,7 +74,7 @@ case class LastCallsContactHolder(content: View)
 
   lazy val callTypes = Option(findView(TR.last_call_item_types))
 
-  runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
+  (icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank)).run
 
   def bind(contact: LastCallsContact, position: Int)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
     val date = new Date(contact.lastCallDate)
@@ -89,11 +89,11 @@ case class LastCallsContactHolder(content: View)
   private[this] def addCallTypesView(callTypes: Seq[CallType])(implicit context: ActivityContextWrapper) = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val callViews = callTypes map { ct =>
-      getUi(w[ImageView] <~ ivSrc(ct match {
+      (w[ImageView] <~ ivSrc(ct match {
         case IncomingType => R.drawable.icon_call_incoming
         case MissedType => R.drawable.icon_call_missed
         case _ => R.drawable.icon_call_outgoing
-      }) <~  vPadding(paddingRight = padding))
+      }) <~  vPadding(paddingRight = padding)).get
     }
     vgRemoveAllViews + vgAddViews(callViews)
   }

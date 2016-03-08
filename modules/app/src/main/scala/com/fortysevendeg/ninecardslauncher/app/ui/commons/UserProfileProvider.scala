@@ -10,7 +10,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.{GoogleApiClient, ResultCallback}
 import com.google.android.gms.plus.{People, Plus}
 import macroid.ActivityContextWrapper
-import macroid.FullDsl._
 
 import scala.util.Try
 
@@ -39,7 +38,7 @@ class UserProfileProvider(account: String,
 
   def connect(): Unit = {
     val signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient)
-    runUi(uiStartIntentForResult(signInIntent, resolveConnectedUser))
+    uiStartIntentForResult(signInIntent, resolveConnectedUser).run
   }
 
   override def onConnectionSuspended(i: Int): Unit = { }

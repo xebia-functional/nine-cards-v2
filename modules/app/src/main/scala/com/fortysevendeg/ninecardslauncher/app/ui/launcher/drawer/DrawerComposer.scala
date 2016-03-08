@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import android.widget.{FrameLayout, ImageView, LinearLayout}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -14,7 +13,6 @@ import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SwipeAnimatedDrawerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
@@ -25,8 +23,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Fast
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SwipeAnimatedDrawerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device._
@@ -34,7 +33,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ContextWrapper, ActivityContextWrapper, Tweak, Ui}
+import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -86,7 +85,7 @@ trait DrawerComposer
   }
 
   override def onHeaderIconClick(implicit context: ActivityContextWrapper): Unit =
-    runUi(if (isTabsOpened) closeTabs else openTabs)
+    (if (isTabsOpened) closeTabs else openTabs).run
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
@@ -163,9 +162,9 @@ trait DrawerComposer
       wire(screenAnimation)
 
     (searchBoxContentPanel <~
-      vgAddView(getUi(l[SearchBoxView]() <~ wire(searchBoxView) <~ sbvChangeListener(self)))) ~
+      vgAddView((l[SearchBoxView]() <~ wire(searchBoxView) <~ sbvChangeListener(self)).get)) ~
       (scrollerLayout <~
-        vgAddViewByIndex(getUi(l[FrameLayout](screenAnimationLayout, pullTabLayout, tabsLayout)), 0)) ~
+        vgAddViewByIndex(l[FrameLayout](screenAnimationLayout, pullTabLayout, tabsLayout).get, 0)) ~
       createDrawerPagers
   }
 
@@ -213,14 +212,13 @@ trait DrawerComposer
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
-            runUi(
-              (getTypeView match {
+            ((getTypeView match {
                 case Some(AppsView) =>
                   AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
                 case Some(ContactView) =>
                   ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
                 case _ => Ui.nop
-              }) ~ (if (isTabsOpened) closeTabs else Ui.nop) ~ (searchBoxView <~ sbvClean))
+              }) ~ (if (isTabsOpened) closeTabs else Ui.nop) ~ (searchBoxView <~ sbvClean)).run
           }
         ))) ~
       (drawerContent <~ contentStyle) ~
@@ -297,9 +295,8 @@ trait DrawerComposer
     adapter <- Option(rv.getAdapter)
   } yield adapter.getItemCount) getOrElse 0
 
-  def paginationDrawer(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
-    w[ImageView] <~ paginationDrawerItemStyle <~ vSetPosition(position)
-  )
+  def paginationDrawer(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+    (w[ImageView] <~ paginationDrawerItemStyle <~ vSetPosition(position)).get
 
   private[this] def createDrawerPagers(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = {
     val pagerViews = 0 until pages map paginationDrawer
