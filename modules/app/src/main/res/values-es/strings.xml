@@ -111,6 +111,8 @@
 
     <!-- Contacts Info -->
 
+    <string name="generalInfo">Información General</string>
+
     <string name="phoneHome">Casa</string>
     <string name="phoneMobile">Móvil</string>
     <string name="phoneWork">Trabajo</string>

@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, ScrollView}
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -17,10 +18,10 @@ import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
+import macroid.{ActivityContextWrapper, ContextWrapper, Tweak, Ui}
 
 import scala.annotation.tailrec
 
@@ -37,6 +38,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     val views = contact.info map { info =>
       generateHeaderView(contact.name, contact.photoUri) ++
+        generateGeneralInfoView(contact.photoUri) ++
         generatePhoneViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty) ++
         generateEmailViews(info.emails map (email => (email.address, email.category)), Seq.empty)
     } getOrElse Seq.empty
@@ -57,9 +59,30 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     runUi(
       headerAvatar <~
-        ivUriContactInfo(avatarUrl) <~ vBackgroundColor(primaryColor),
+        ivUriContactInfo(avatarUrl, true) <~ vBackgroundColor(primaryColor),
       headerName <~
         tvText(name)
+    )
+  }
+
+  class GeneralInfoView(avatarUrl: String)
+    extends LinearLayout(contextWrapper.bestAvailable)
+      with TypedFindView {
+
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_general_dialog, this)
+
+    lazy val generalContent = Option(findView(TR.contact_dialog_general_content))
+    lazy val icon = Option(findView(TR.contact_dialog_general_icon))
+    lazy val generalInfo= Option(findView(TR.contact_dialog_general_info))
+
+    runUi(
+      icon <~
+        ivUriContactInfo(avatarUrl, false) <~
+        (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank) <~
+        vBackgroundColor(primaryColor),
+      generalInfo <~
+        tvText(getResources.getString(R.string.generalInfo)),
+      generalContent <~ On.click(generateIntent("", PhoneCardType))
     )
   }
 
@@ -125,6 +148,8 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   private[this] def generateHeaderView(name: String, avatarUrl: String): Seq[View] = Seq(new HeaderView(name, avatarUrl))
+
+  private[this] def generateGeneralInfoView(avatarUrl: String): Seq[View] = Seq(new GeneralInfoView(avatarUrl))
 
   @tailrec
   private[this] def generatePhoneViews(

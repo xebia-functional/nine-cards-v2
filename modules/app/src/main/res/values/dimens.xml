@@ -121,6 +121,8 @@
 
     <dimen name="size_icon_contact">40dp</dimen>
 
+    <dimen name="size_icon_contact_small">28dp</dimen>
+
     <dimen name="size_icon_contact_dialog">60dp</dimen>
 
     <dimen name="size_icon_recommendation">42dp</dimen>
