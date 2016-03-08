@@ -14,6 +14,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -25,9 +26,10 @@ import macroid.{ActivityContextWrapper, ContextWrapper, Tweak, Ui}
 
 import scala.annotation.tailrec
 
-case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, context: ActivityContextWrapper, theme: NineCardsTheme, uiContext: UiContext[_])
+case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, activityContext: ActivityContextWrapper, theme: NineCardsTheme, uiContext: UiContext[_])
   extends DialogFragment
-  with NineCardIntentConversions {
+  with NineCardIntentConversions
+  with LauncherExecutor {
 
   val primaryColor = theme.get(PrimaryColor)
 
@@ -38,7 +40,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     val views = contact.info map { info =>
       generateHeaderView(contact.name, contact.photoUri) ++
-        generateGeneralInfoView(contact.photoUri) ++
+        generateGeneralInfoView(contact.lookupKey, contact.photoUri) ++
         generatePhoneViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty) ++
         generateEmailViews(info.emails map (email => (email.address, email.category)), Seq.empty)
     } getOrElse Seq.empty
@@ -65,7 +67,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     )
   }
 
-  class GeneralInfoView(avatarUrl: String)
+  class GeneralInfoView(lookupKey: String, avatarUrl: String)
     extends LinearLayout(contextWrapper.bestAvailable)
       with TypedFindView {
 
@@ -82,7 +84,10 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
         vBackgroundColor(primaryColor),
       generalInfo <~
         tvText(getResources.getString(R.string.generalInfo)),
-      generalContent <~ On.click(generateIntent("", PhoneCardType))
+      generalContent <~ On.click{
+        execute(contactToNineCardIntent(lookupKey))
+        Ui.nop
+      }
     )
   }
 
@@ -149,7 +154,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   private[this] def generateHeaderView(name: String, avatarUrl: String): Seq[View] = Seq(new HeaderView(name, avatarUrl))
 
-  private[this] def generateGeneralInfoView(avatarUrl: String): Seq[View] = Seq(new GeneralInfoView(avatarUrl))
+  private[this] def generateGeneralInfoView(lookupKey: String, avatarUrl: String): Seq[View] = Seq(new GeneralInfoView(lookupKey, avatarUrl))
 
   @tailrec
   private[this] def generatePhoneViews(
