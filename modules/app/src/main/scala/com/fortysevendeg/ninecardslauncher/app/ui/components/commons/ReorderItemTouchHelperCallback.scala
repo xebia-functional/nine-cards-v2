@@ -4,20 +4,24 @@ import java.util
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.helper.ItemTouchHelper._
-import android.util.Log
 
-class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder) => Unit)
+class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder, Int) => Unit)
   extends Callback {
+
+  var statuses = ReorderStatuses()
 
   override def isLongPressDragEnabled: Boolean = true
 
   override def chooseDropTarget(selected: ViewHolder, dropTargets: util.List[ViewHolder], curX: Int, curY: Int): ViewHolder = {
-    Log.d("9cards", s"chooseDropTarget -- curX: $curX -- curY: $curY")
     super.chooseDropTarget(selected, dropTargets, curX, curY)
   }
 
   override def onSelectedChanged(viewHolder: ViewHolder, actionState: Int): Unit = {
-    onChanged(ActionStateReorder(actionState))
+    val action = ActionStateReorder(actionState)
+    onChanged(action, action match {
+      case ActionStateReordering => viewHolder.getAdapterPosition
+      case ActionStateIdle => statuses.to
+    })
     super.onSelectedChanged(viewHolder, actionState)
   }
 
@@ -27,9 +31,10 @@ class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder) => Unit)
   }
 
   override def onMove(recyclerView: RecyclerView, viewHolder: ViewHolder, target: ViewHolder): Boolean = {
+    statuses = statuses.copy(from = viewHolder.getAdapterPosition, to = target.getAdapterPosition)
     Option(recyclerView.getAdapter) match {
       case Some(listener: ReorderItemTouchListener) =>
-        listener.onItemMove(viewHolder.getAdapterPosition, target.getAdapterPosition)
+        listener.onItemMove(statuses.from, statuses.to)
     }
     true
   }
@@ -41,6 +46,8 @@ class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder) => Unit)
 trait ReorderItemTouchListener {
   def onItemMove(from: Int, to: Int): Unit
 }
+
+case class ReorderStatuses(from: Int = 0, to: Int = 0)
 
 trait ActionStateReorder
 

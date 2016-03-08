@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItem
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
 import macroid.{Ui, ActivityContextWrapper}
 import macroid.FullDsl._
@@ -83,19 +84,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   override def getApplicationContext: Context = activityContext.bestAvailable
 
   override def onItemMove(from: Int, to: Int): Unit = {
-    val range1 = math.min(from, to)
-    val range2 = math.max(from, to)
-
-    val header = collection.cards.take(range1)
-    val tail = collection.cards.drop(range2 + 1)
-    val range = collection.cards.slice(range1, range2 + 1)
-    val updatedRange = if (from < to) {
-      range.drop(1) ++ range.take(1)
-    } else {
-      range.takeRight(1) ++ range.dropRight(1)
-    }
-
-    collection = collection.copy(cards = header ++ updatedRange ++ tail)
+    collection = collection.copy(cards = collection.cards.reorder(from, to))
     notifyItemMoved(from, to)
   }
 }

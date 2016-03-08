@@ -30,11 +30,15 @@ trait CollectionFragmentComposer
 
   var pullToCloseView = slot[PullToCloseView]
 
-  def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = {
+  def layout(animateCards: Boolean, onMoveItems: (Int, Int) => Unit)(implicit contextWrapper: ActivityContextWrapper) = {
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
       onChanged = {
-        case ActionStateReordering => runUi(openReorderMode)
-        case ActionStateIdle => runUi(closeReorderMode)
+        case (ActionStateReordering, position) =>
+          statuses = statuses.copy(startPositionReorder = position)
+          runUi(openReorderMode)
+        case (ActionStateIdle, position) =>
+          onMoveItems(statuses.startPositionReorder, position)
+          runUi(closeReorderMode)
       })
 
     getUi(
@@ -207,4 +211,4 @@ case class CollectionStatuses(
   scrollType: ScrollType = ScrollNo,
   canScroll: Boolean = false,
   activeFragment: Boolean = false,
-  reordering: Boolean = false)
+  startPositionReorder: Int = 0)

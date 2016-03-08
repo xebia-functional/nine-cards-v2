@@ -13,9 +13,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, Ui
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import macroid.Contexts
 import macroid.FullDsl._
 import rapture.core.Answer
+
+import scalaz.concurrent.Task
 
 class CollectionFragment
   extends Fragment
@@ -42,7 +45,13 @@ class CollectionFragment
   lazy val collectionId = getInt(Seq(getArguments), keyCollectionId, 0)
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View =
-    layout(animateCards)
+    layout(
+      animateCards = animateCards,
+      onMoveItems = (from: Int, to: Int) => {
+        collection foreach { col =>
+          Task.fork(di.collectionProcess.reorderCard(col.id, col.cards(from).id, to).run).resolveAsync()
+        }
+    })
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     val sType = ScrollType(getArguments.getString(keyScrollType, ScrollDown.toString))
