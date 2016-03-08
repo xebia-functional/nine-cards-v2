@@ -21,6 +21,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
@@ -137,14 +138,27 @@ trait CollectionsDetailsComposer
       (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
   }
 
-  def openReorderMode: Ui[_] =
-    (tabs <~ vTranslationY(-spaceMove) <~ uiElevation(elevation + 1) <~ vInvisible) ~
-      (toolbar <~ tbReduceLayout(spaceMove * 2) <~ uiElevation(elevation + 1)) ~
+  def openReorderModeUi(current: ScrollType): Ui[_] =
+    (tabs <~~
+      applyAnimation(y = Some(-spaceMove), alpha = Some(0f)) <~
+      uiElevation(elevation + 1) <~
+      vInvisible) ~
+      (toolbar <~~
+        applyAnimation(onUpdate = (ratio) => current match {
+          case ScrollDown => toolbar <~ tbReduceLayout((ratio * (spaceMove * 2)).toInt)
+          case _ => Ui.nop
+        }) <~
+        uiElevation(elevation + 1)) ~
       (iconContent <~ vInvisible)
 
-  def closeReorderMode: Ui[_] =
-    (tabs <~ vTranslationY(0) <~ uiElevation(elevation) <~ vVisible) ~
-      (toolbar <~ tbReduceLayout(0) <~ uiElevation(elevation)) ~
+  def closeReorderModeUi: Ui[_] =
+    (tabs <~
+      vVisible <~~
+      applyAnimation(y = Some(0f), alpha = Some(1f)) <~
+      uiElevation(elevation)) ~
+      (toolbar <~
+        applyAnimation(onUpdate = (ratio) => toolbar <~ tbReduceLayout(((1f - ratio) * (spaceMove * 2)).toInt)) <~
+        uiElevation(elevation)) ~
       (iconContent <~ vVisible <~ vScaleX(1) <~ vScaleY(1) <~ vAlpha(1))
 
   def notifyScroll(sType: ScrollType): Ui[_] = (for {

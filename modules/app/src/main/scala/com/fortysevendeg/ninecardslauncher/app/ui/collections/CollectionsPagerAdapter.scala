@@ -87,8 +87,9 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     val uis = fragments map {
       case (id, fragment) => id match {
         case `currentPosition` =>
-          fragment.statuses = fragment.statuses.copy(activeFragment = true)
-          Ui.nop
+          Ui {
+            fragment.statuses = fragment.statuses.copy(activeFragment = true, scrollType = statuses.scrollType)
+          }
         case _ =>
           fragment.statuses = fragment.statuses.copy(activeFragment = false)
           fragment.scrollType(statuses.scrollType)

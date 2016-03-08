@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
+import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import android.view.View
@@ -8,7 +9,8 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Snail, ContextWrapper}
+import macroid.{Ui, Snail, ContextWrapper}
+import macroid.FullDsl._
 
 import scala.concurrent.Promise
 
@@ -166,16 +168,14 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def fadeIn(maybeDuration: Option[Int] = None)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def fadeIn(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.setAlpha(0)
-      val duration = maybeDuration getOrElse resGetInteger(R.integer.anim_duration_normal)
-      view
+      val animator = view
         .animate
-        .setDuration(duration)
         .setInterpolator(new DecelerateInterpolator())
         .alpha(1f)
         .setListener(new AnimatorListenerAdapter {
@@ -185,19 +185,21 @@ object SnailsCommons {
             view.setVisibility(View.VISIBLE)
             animPromise.trySuccess()
           }
-        }).start()
+        })
+
+      animator.setDuration(duration getOrElse resGetInteger(R.integer.anim_duration_normal))
+      animator.start()
+
       animPromise.future
   }
 
-  def fadeOut(maybeDuration: Option[Int] = None)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def fadeOut(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
-      val duration = maybeDuration getOrElse resGetInteger(R.integer.anim_duration_normal)
-      view
+      val animator = view
         .animate
-        .setDuration(duration)
         .setInterpolator(new AccelerateDecelerateInterpolator())
         .alpha(0f)
         .setListener(new AnimatorListenerAdapter {
@@ -207,7 +209,50 @@ object SnailsCommons {
             view.setVisibility(View.INVISIBLE)
             animPromise.trySuccess()
           }
-        }).start()
+        })
+
+      animator.setDuration(duration getOrElse resGetInteger(R.integer.anim_duration_normal))
+      animator.start()
+
+      animPromise.future
+  }
+
+  def applyAnimation(
+    x: Option[Float] = None,
+    y: Option[Float] = None,
+    alpha: Option[Float] = None,
+    scaleX: Option[Float] = None,
+    scaleY: Option[Float] = None,
+    duration: Option[Long] = None,
+    onUpdate: (Float) => Ui[_] = (_) => Ui.nop)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+    view =>
+      view.clearAnimation()
+      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+      val animPromise = Promise[Unit]()
+
+      val animator = view
+        .animate
+        .setInterpolator(new AccelerateDecelerateInterpolator())
+        .setUpdateListener(new AnimatorUpdateListener {
+          override def onAnimationUpdate(animation: ValueAnimator): Unit =
+            runUi(onUpdate(animation.getAnimatedFraction))
+        })
+        .setListener(new AnimatorListenerAdapter {
+          override def onAnimationEnd(animation: Animator) {
+            super.onAnimationEnd(animation)
+            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+            animPromise.trySuccess()
+          }
+        })
+
+      animator.setDuration(duration getOrElse resGetInteger(R.integer.anim_duration_normal))
+      x foreach animator.translationX
+      y foreach animator.translationY
+      alpha foreach animator.alpha
+      scaleX foreach animator.scaleX
+      scaleY foreach animator.scaleY
+      animator.start()
+
       animPromise.future
   }
 

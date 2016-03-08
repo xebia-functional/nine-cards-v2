@@ -65,7 +65,7 @@ trait CollectionFragmentComposer
 
   def openReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-    scrolledListener foreach (_.reorderMode(true))
+    scrolledListener foreach (_.openReorderMode(statuses.scrollType))
     (pullToCloseView <~ pdvEnable(false)) ~
       (recyclerView <~
         vPadding(padding, padding, padding, padding) <~
@@ -75,8 +75,10 @@ trait CollectionFragmentComposer
   def closeReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-    scrolledListener foreach (_.scrollType(ScrollDown))
-    scrolledListener foreach (_.reorderMode(false))
+    scrolledListener foreach { sl =>
+      sl.scrollType(ScrollDown)
+      sl.closeReorderMode()
+    }
     (pullToCloseView <~ pdvEnable(true)) ~
       (recyclerView <~
         nrvResetScroll <~
@@ -85,12 +87,12 @@ trait CollectionFragmentComposer
         nrvRegisterScroll(true))
   }
 
-  def resetScroll(collection: Collection)(implicit contextWrapper: ActivityContextWrapper) =
+  def resetScroll(collection: Collection)(implicit contextWrapper: ActivityContextWrapper): Ui[_] =
     recyclerView <~
       getScrollListener(collection.cards.length, resGetDimensionPixelSize(R.dimen.space_moving_collection_details))
 
   def setAnimatedAdapter(collection: Collection)
-    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = {
+    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     recyclerView <~
       rvAdapter(createAdapter(collection)) <~
@@ -160,11 +162,7 @@ trait CollectionFragmentComposer
           cardsCount > numSpaces) {
           scrolledListener foreach { sl =>
             val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
-            (scrollY, moveTo, sType) match {
-              case (y, move, st) if y < spaceMove && moveTo != scrollY =>
-                recyclerView.smoothScrollBy(0, moveTo - scrollY)
-              case _ =>
-            }
+            if (scrollY < spaceMove && moveTo != scrollY) recyclerView.smoothScrollBy(0, moveTo - scrollY)
             sl.scrollType(sType)
           }
         }
