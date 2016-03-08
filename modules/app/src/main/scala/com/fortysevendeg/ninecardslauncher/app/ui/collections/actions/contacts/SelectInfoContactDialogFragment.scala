@@ -54,14 +54,14 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     extends LinearLayout(contextWrapper.bestAvailable)
     with TypedFindView {
 
-    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_header, this)
-
     lazy val headerAvatar = Option(findView(TR.contact_info_header_avatar))
     lazy val headerName = Option(findView(TR.contact_info_header_name))
 
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_header, this)
+
     runUi(
       headerAvatar <~
-        ivUriContactInfo(avatarUrl, true) <~ vBackgroundColor(primaryColor),
+        ivUriContactInfo(avatarUrl, header = true) <~ vBackgroundColor(primaryColor),
       headerName <~
         tvText(name)
     )
@@ -69,25 +69,22 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   class GeneralInfoView(lookupKey: String, avatarUrl: String)
     extends LinearLayout(contextWrapper.bestAvailable)
-      with TypedFindView {
-
-    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_general_dialog, this)
+    with TypedFindView {
 
     lazy val generalContent = Option(findView(TR.contact_dialog_general_content))
     lazy val icon = Option(findView(TR.contact_dialog_general_icon))
     lazy val generalInfo= Option(findView(TR.contact_dialog_general_info))
 
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_general_dialog, this)
+
     runUi(
       icon <~
-        ivUriContactInfo(avatarUrl, false) <~
+        ivUriContactInfo(avatarUrl, header = false) <~
         (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank) <~
         vBackgroundColor(primaryColor),
       generalInfo <~
         tvText(getResources.getString(R.string.generalInfo)),
-      generalContent <~ On.click{
-        execute(contactToNineCardIntent(lookupKey))
-        Ui.nop
-      }
+      generalContent <~ On.click(Ui(execute(contactToNineCardIntent(lookupKey))))
     )
   }
 
@@ -108,12 +105,12 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       case PhoneOther => getResources.getString(R.string.phoneOther)
     }
 
-    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_phone_dialog, this)
-
     lazy val phoneContent = Option(findView(TR.contact_dialog_phone_content))
     lazy val phoneNumber = Option(findView(TR.contact_dialog_phone_number))
     lazy val phoneCategory = Option(findView(TR.contact_dialog_phone_category))
     lazy val phoneSms = Option(findView(TR.contact_dialog_sms_icon))
+
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_phone_dialog, this)
 
     runUi(
       phoneNumber <~
@@ -137,12 +134,11 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       case EmailOther => getResources.getString(R.string.emailOther)
     }
 
-    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_email_dialog, this)
-
     lazy val emailContent = Option(findView(TR.contact_dialog_email_content))
     lazy val emailAddress = Option(findView(TR.contact_dialog_email_address))
     lazy val emailCategory = Option(findView(TR.contact_dialog_email_category))
 
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_email_dialog, this)
     runUi(
       emailAddress <~
         tvText(email),
