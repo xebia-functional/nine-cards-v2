@@ -61,9 +61,13 @@ public interface Fields {
     String PHONE_TYPE = ContactsContract.CommonDataKinds.Phone.TYPE;
     String PHONE_CUSTOM_RINGTONE = ContactsContract.CommonDataKinds.Phone.CUSTOM_RINGTONE;
 
-    int PHONE_TYPE_HOME = ContactsContract.CommonDataKinds.Phone.TYPE_HOME;
-    int PHONE_TYPE_WORK = ContactsContract.CommonDataKinds.Phone.TYPE_WORK;
     int PHONE_TYPE_MOBILE = ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
+    int PHONE_TYPE_WORK = ContactsContract.CommonDataKinds.Phone.TYPE_WORK;
+    int PHONE_TYPE_HOME = ContactsContract.CommonDataKinds.Phone.TYPE_HOME;
+    int PHONE_TYPE_MAIN = ContactsContract.CommonDataKinds.Phone.TYPE_MAIN;
+    int PHONE_TYPE_FAX_WORK = ContactsContract.CommonDataKinds.Phone.TYPE_FAX_WORK;
+    int PHONE_TYPE_FAX_HOME = ContactsContract.CommonDataKinds.Phone.TYPE_FAX_HOME;
+    int PHONE_TYPE_PAGER = ContactsContract.CommonDataKinds.Phone.TYPE_PAGER;
 
     String PHONE_CONTACT_SELECTION = ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " = ? ";
 

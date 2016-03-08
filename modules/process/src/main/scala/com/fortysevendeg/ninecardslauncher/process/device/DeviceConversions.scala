@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.Dimensions._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{DockType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{EmailCategory, PhoneCategory, DockType, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayApp, GooglePlayPackage}
@@ -167,11 +167,11 @@ trait DeviceConversions extends NineCardIntentConversions {
 
   def toContactEmail(item: ServicesContactEmail): ContactEmail = ContactEmail(
     address = item.address,
-    category = item.category.toString)
+    category = EmailCategory(item.category))
 
   def toContactPhone(item: ServicesContactPhone): ContactPhone = ContactPhone(
     number = item.number,
-    category = item.category.toString)
+    category = PhoneCategory(item.category))
 
   def toWidget(item: ServicesWidget): Widget = Widget(
     userHashCode = item.userHashCode,

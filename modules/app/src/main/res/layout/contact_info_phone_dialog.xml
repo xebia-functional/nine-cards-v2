@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             style="@style/DialogContactInfoRoot">
+    
+    <LinearLayout 
+                  style="@style/DialogContactInfoContentValues">
+
+        <LinearLayout
+                style="@style/DialogContactInfoPhoneContent"
+                android:id="@+id/contact_dialog_phone_content">
+
+            <ImageView
+                    style="@style/DialogContactInfoPhoneIcon"
+                    android:id="@+id/contact_dialog_phone_icon"/>
+
+            <LinearLayout style="@style/DialogContactInfoPhoneContentValues">
+
+                <TextView
+                        style="@style/DialogContactInfoValue"
+                        android:id="@+id/contact_dialog_phone_number"/>
+
+                <TextView
+                        style="@style/DialogContactInfoCategory"
+                        android:id="@+id/contact_dialog_phone_category"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView
+                style="@style/DialogContactInfoSmsIcon"
+                android:id="@+id/contact_dialog_sms_icon"/>
+
+    
+    </LinearLayout>
+
+    <ImageView
+            style="@style/DialogContactInfoLineHorizontal"/>
+
+</FrameLayout>
