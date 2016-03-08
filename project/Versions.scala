@@ -6,7 +6,7 @@ object Versions {
   val androidV = "23.1.1"
   val androidProvidedV = "4.1.1.4"
   val multiDexV = "0.1"
-  val macroidExtrasV = "0.2"
+  val macroidExtrasV = "0.3-SNAPSHOT"
   val macroidV = "2.0.0-M5-SNAPSHOT"
   val playJsonV = "2.3.7"
   val specs2V = "2.4.15"
