@@ -18,6 +18,10 @@ case object PhoneCardType extends CardType {
   override val name: String = phone
 }
 
+case object ContactCardType extends CardType {
+  override val name: String = contact
+}
+
 case object EmailCardType extends CardType {
   override val name: String = email
 }
@@ -40,7 +44,7 @@ case object NotFoundCardType extends CardType {
 
 object CardType {
 
-  val cardTypes = Seq(AppCardType, NoInstalledAppCardType, PhoneCardType, EmailCardType, SmsCardType, ShortcutCardType, RecommendedAppCardType)
+  val cardTypes = Seq(AppCardType, NoInstalledAppCardType, PhoneCardType, ContactCardType, EmailCardType, SmsCardType, ShortcutCardType, RecommendedAppCardType)
 
   def apply(name: String): CardType = cardTypes find (_.name == name) getOrElse NotFoundCardType
 

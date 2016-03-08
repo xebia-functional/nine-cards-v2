@@ -71,6 +71,7 @@ object CardType {
   val app = "APP"
   val noInstalledApp = "NO_INSTALLED_APP"
   val phone = "PHONE"
+  val contact = "CONTACT"
   val email = "EMAIL"
   val sms = "SMS"
   val shortcut = "SHORTCUT"

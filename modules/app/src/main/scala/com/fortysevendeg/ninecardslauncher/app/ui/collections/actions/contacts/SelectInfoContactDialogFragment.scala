@@ -84,7 +84,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
         vBackgroundColor(primaryColor),
       generalInfo <~
         tvText(getResources.getString(R.string.generalInfo)),
-      generalContent <~ On.click(Ui(execute(contactToNineCardIntent(lookupKey))))
+      generalContent <~ On.click(generateIntent(lookupKey, ContactCardType))
     )
   }
 
@@ -179,6 +179,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       case EmailCardType => Some(emailToNineCardIntent(data))
       case SmsCardType => Some(smsToNineCardIntent(data))
       case PhoneCardType => Some(phoneToNineCardIntent(data))
+      case ContactCardType => Some(contactToNineCardIntent(data))
       case _ => None
     }
     maybeIntent foreach { intent =>
