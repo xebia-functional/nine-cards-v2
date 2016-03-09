@@ -7,26 +7,29 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, ScrollView}
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
+import macroid.{ActivityContextWrapper, ContextWrapper, Tweak, Ui}
 
 import scala.annotation.tailrec
 
-case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, context: ActivityContextWrapper, theme: NineCardsTheme, uiContext: UiContext[_])
+case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, activityContext: ActivityContextWrapper, theme: NineCardsTheme, uiContext: UiContext[_])
   extends DialogFragment
-  with NineCardIntentConversions {
+  with NineCardIntentConversions
+  with LauncherExecutor {
 
   val primaryColor = theme.get(PrimaryColor)
 
@@ -37,6 +40,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     val views = contact.info map { info =>
       generateHeaderView(contact.name, contact.photoUri) ++
+        generateGeneralInfoView(contact.lookupKey, contact.photoUri) ++
         generatePhoneViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty) ++
         generateEmailViews(info.emails map (email => (email.address, email.category)), Seq.empty)
     } getOrElse Seq.empty
@@ -50,16 +54,37 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     extends LinearLayout(contextWrapper.bestAvailable)
     with TypedFindView {
 
-    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_header, this)
-
     lazy val headerAvatar = Option(findView(TR.contact_info_header_avatar))
     lazy val headerName = Option(findView(TR.contact_info_header_name))
 
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_header, this)
+
     runUi(
       headerAvatar <~
-        ivUriContactInfo(avatarUrl) <~ vBackgroundColor(primaryColor),
+        ivUriContactInfo(avatarUrl, header = true) <~ vBackgroundColor(primaryColor),
       headerName <~
         tvText(name)
+    )
+  }
+
+  class GeneralInfoView(lookupKey: String, avatarUrl: String)
+    extends LinearLayout(contextWrapper.bestAvailable)
+    with TypedFindView {
+
+    lazy val generalContent = Option(findView(TR.contact_dialog_general_content))
+    lazy val icon = Option(findView(TR.contact_dialog_general_icon))
+    lazy val generalInfo= Option(findView(TR.contact_dialog_general_info))
+
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_general_dialog, this)
+
+    runUi(
+      icon <~
+        ivUriContactInfo(avatarUrl, header = false) <~
+        (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank) <~
+        vBackgroundColor(primaryColor),
+      generalInfo <~
+        tvText(getResources.getString(R.string.generalInfo)),
+      generalContent <~ On.click(generateIntent(lookupKey, ContactCardType))
     )
   }
 
@@ -80,12 +105,12 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       case PhoneOther => getResources.getString(R.string.phoneOther)
     }
 
-    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_phone_dialog, this)
-
     lazy val phoneContent = Option(findView(TR.contact_dialog_phone_content))
     lazy val phoneNumber = Option(findView(TR.contact_dialog_phone_number))
     lazy val phoneCategory = Option(findView(TR.contact_dialog_phone_category))
     lazy val phoneSms = Option(findView(TR.contact_dialog_sms_icon))
+
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_phone_dialog, this)
 
     runUi(
       phoneNumber <~
@@ -109,12 +134,11 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       case EmailOther => getResources.getString(R.string.emailOther)
     }
 
-    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_email_dialog, this)
-
     lazy val emailContent = Option(findView(TR.contact_dialog_email_content))
     lazy val emailAddress = Option(findView(TR.contact_dialog_email_address))
     lazy val emailCategory = Option(findView(TR.contact_dialog_email_category))
 
+    LayoutInflater.from(getActivity).inflate(R.layout.contact_info_email_dialog, this)
     runUi(
       emailAddress <~
         tvText(email),
@@ -125,6 +149,8 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   private[this] def generateHeaderView(name: String, avatarUrl: String): Seq[View] = Seq(new HeaderView(name, avatarUrl))
+
+  private[this] def generateGeneralInfoView(lookupKey: String, avatarUrl: String): Seq[View] = Seq(new GeneralInfoView(lookupKey, avatarUrl))
 
   @tailrec
   private[this] def generatePhoneViews(
@@ -153,6 +179,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       case EmailCardType => Some(emailToNineCardIntent(data))
       case SmsCardType => Some(smsToNineCardIntent(data))
       case PhoneCardType => Some(phoneToNineCardIntent(data))
+      case ContactCardType => Some(contactToNineCardIntent(data))
       case _ => None
     }
     maybeIntent foreach { intent =>

@@ -215,7 +215,7 @@ class LauncherActivity
                   if (isTabsOpened) {
                     runUi(closeTabs)
                   } else {
-                    execute(contact)
+                    executeContact(contact.lookupKey)
                   }
                 },
                 counters = counters)
@@ -239,7 +239,7 @@ class LauncherActivity
           addContacts(
             contacts = contacts,
             clickListener = (contact: Contact) => {
-              execute(contact)
+              executeContact(contact.lookupKey)
             })
       })
 

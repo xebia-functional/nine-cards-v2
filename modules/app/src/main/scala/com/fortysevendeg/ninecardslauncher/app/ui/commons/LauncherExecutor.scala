@@ -65,14 +65,19 @@ trait LauncherExecutor {
             newIntent.putExtra(Intent.EXTRA_EMAIL, Array(email))
             tryOrError(activity, Intent.createChooser(newIntent, titleDialogEmail))
           }) getOrElse showError
+      case `openContact` =>
+        for {
+          contactLookupKey <- intent.extraLookup()
+          activity <- activityContext.original.get
+        } yield executeContact(contactLookupKey)
       case _ => activityContext.original.get map (tryOrError(_, intent)) getOrElse showError
     }
   }
 
-  def execute(contact: Contact)(implicit activityContext: ActivityContextWrapper) = {
+  def executeContact(contactLookupKey: String)(implicit activityContext: ActivityContextWrapper) = {
     val contactUri = ContactsContract.Contacts.CONTENT_LOOKUP_URI
       .buildUpon()
-      .appendPath(contact.lookupKey)
+      .appendPath(contactLookupKey)
       .build()
     val intent = new Intent(Intent.ACTION_VIEW, contactUri)
     activityContext.original.get match {
