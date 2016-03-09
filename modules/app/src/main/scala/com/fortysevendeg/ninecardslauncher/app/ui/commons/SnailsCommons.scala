@@ -238,7 +238,7 @@ object SnailsCommons {
             runUi(onUpdate(animation.getAnimatedFraction))
         })
         .setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) {
+          override def onAnimationEnd(animation: Animator): Unit = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             animPromise.trySuccess()

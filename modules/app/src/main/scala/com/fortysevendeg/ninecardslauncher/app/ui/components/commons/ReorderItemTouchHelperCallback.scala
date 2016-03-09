@@ -49,7 +49,7 @@ trait ReorderItemTouchListener {
 
 case class ReorderStatuses(from: Int = 0, to: Int = 0)
 
-trait ActionStateReorder
+sealed trait ActionStateReorder
 
 case object ActionStateReordering extends ActionStateReorder
 

@@ -145,7 +145,7 @@ trait CollectionsDetailsComposer
       vInvisible) ~
       (toolbar <~~
         applyAnimation(onUpdate = (ratio) => current match {
-          case ScrollDown => toolbar <~ tbReduceLayout((ratio * (spaceMove * 2)).toInt)
+          case ScrollDown => toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = false))
           case _ => Ui.nop
         }) <~
         uiElevation(elevation + 1)) ~
@@ -157,7 +157,7 @@ trait CollectionsDetailsComposer
       applyAnimation(y = Some(0f), alpha = Some(1f)) <~
       uiElevation(elevation)) ~
       (toolbar <~
-        applyAnimation(onUpdate = (ratio) => toolbar <~ tbReduceLayout(((1f - ratio) * (spaceMove * 2)).toInt)) <~
+        applyAnimation(onUpdate = (ratio) => toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = true))) <~
         uiElevation(elevation)) ~
       (iconContent <~ vVisible <~ vScaleX(1) <~ vScaleY(1) <~ vAlpha(1))
 
@@ -168,6 +168,11 @@ trait CollectionsDetailsComposer
       adapter.setScrollType(sType)
       adapter.notifyChanged(vp.getCurrentItem)
     }) getOrElse Ui.nop
+
+  private[this] def calculateReduce(ratio: Float, spaceMove: Int, reversed: Boolean) = {
+    val newRatio = if (reversed) 1f - ratio else ratio
+    (newRatio * (spaceMove * 2)).toInt
+  }
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
