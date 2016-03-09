@@ -24,12 +24,12 @@ object Settings {
 
   lazy val user = sys.env.getOrElse("USER", "unknown-user")
 
-  def getDateFormatted = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date())
+  def getDateFormatted = new SimpleDateFormat("yyyyMMdd").format(new Date())
 
   def versionNameSuffix = sys.env.get("GIT_PR") match {
-    case Some("false") => s"master-$commit"
+    case Some("false") => s"master-$getDateFormatted-$commit"
     case Some(prNumber) => s"PR$prNumber-$commit"
-    case None => s"$user-$getDateFormatted"
+    case None => s"$user"
   }
 
   // App Module
