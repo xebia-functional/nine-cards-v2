@@ -115,6 +115,8 @@
 
     <!-- Contacts Info -->
 
+    <string name="generalInfo">General Info</string>
+
     <string name="phoneHome">Home</string>
     <string name="phoneMobile">Mobile</string>
     <string name="phoneWork">Work</string>

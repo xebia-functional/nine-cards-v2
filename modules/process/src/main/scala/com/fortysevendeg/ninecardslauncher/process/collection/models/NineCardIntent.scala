@@ -109,6 +109,7 @@ object NineCardsIntentExtras {
   val openSms: String = "com.fortysevendeg.ninecardslauncher.OPEN_SMS"
   val openPhone: String = "com.fortysevendeg.ninecardslauncher.OPEN_PHONE"
   val openEmail: String = "com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"
+  val openContact: String = "com.fortysevendeg.ninecardslauncher.OPEN_CONTACT"
 }
 
 object NineCardIntentImplicits {

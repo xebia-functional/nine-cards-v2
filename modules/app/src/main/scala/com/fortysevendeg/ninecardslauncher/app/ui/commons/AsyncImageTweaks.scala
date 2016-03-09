@@ -54,11 +54,12 @@ object AsyncImageTweaks {
         fadeInFailed = false)
     })
 
-  def ivUriContactInfo(uri: String)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivUriContactInfo(uri: String, header: Boolean = true)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       makeContactRequest(
         request = glide().using(new ContactPhotoLoader(context.application.getContentResolver)).load(Uri.parse(uri)),
         imageView = imageView,
+        header = header,
         fadeInFailed = false)
     })
 
@@ -106,6 +107,7 @@ object AsyncImageTweaks {
   private[this] def makeContactRequest(
     request: DrawableTypeRequest[_],
     imageView: ImageView,
+    header: Boolean,
     fadeInFailed: Boolean = true)(implicit context: ActivityContextWrapper) = {
     request
       .crossFade()
@@ -113,11 +115,17 @@ object AsyncImageTweaks {
         override def onLoadStarted(placeholder: Drawable): Unit =
           imageView.setImageDrawable(javaNull)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          runUi(imageView <~ ivSrc(R.drawable.dialog_contact_header_no_image) <~ ivScaleType(ScaleType.CENTER_INSIDE) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
+          if(header) loadDefaultHeaderImage(imageView, fadeInFailed) else loadDefaultGeneralInfoImage(imageView, fadeInFailed)
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
       })
   }
+
+  private[this] def loadDefaultHeaderImage(imageView: ImageView, fadeInFailed: Boolean = true) =
+    runUi(imageView <~ ivSrc(R.drawable.dialog_contact_header_no_image) <~ ivScaleType(ScaleType.CENTER_INSIDE) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
+
+  private[this] def loadDefaultGeneralInfoImage(imageView: ImageView, fadeInFailed: Boolean = true) =
+    runUi(imageView <~ ivSrc(R.drawable.dialog_contact_icon_general_info) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
 
   class ContactPhotoLoader(contentResolver: ContentResolver) extends StreamModelLoader[Uri] {
 

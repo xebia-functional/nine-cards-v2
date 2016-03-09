@@ -151,6 +151,13 @@ trait NineCardIntentConversions {
     intent
   }
 
+  def contactToNineCardIntent(lookupKey: String): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      contact_lookup_key = Option(lookupKey)))
+    intent.setAction(NineCardsIntentExtras.openContact)
+    intent
+  }
+
   def toNineCardIntent(intent: Intent): NineCardIntent = {
     val i = new NineCardIntent(NineCardIntentExtras())
     i.fill(intent)
