@@ -1,11 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks
 
-import android.support.v7.widget.{GridLayoutManager, RecyclerView}
-import android.view.View
-import android.view.ViewGroup.OnHierarchyChangeListener
+import android.support.v7.widget.RecyclerView
 import android.view.animation.AnimationUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}

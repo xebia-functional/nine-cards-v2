@@ -40,7 +40,7 @@ trait CollectionFragmentComposer
       onChanged = {
         case (ActionStateReordering, _, position) =>
           statuses = statuses.copy(startPositionReorder = position)
-          runUi(openReorderMode)
+          openReorderMode.run
         case (ActionStateIdle, action, position) =>
           action match {
             case ActionRemove =>
@@ -48,23 +48,22 @@ trait CollectionFragmentComposer
               onRemoveItem(statuses.startPositionReorder, position)
             case _ => onMoveItems(statuses.startPositionReorder, position)
           }
-          runUi(closeReorderMode)
+          closeReorderMode.run
       })
 
-    getUi(
-      l[PullToCloseView](
-        w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards, itemTouchCallback)
-      ) <~
-        pcvListener(PullToCloseListener(
-          close = () => scrolledListener foreach (_.close())
-        )) <~
-        wire(pullToCloseView) <~
-        pdvPullingListener(PullingListener(
-          start = () => runUi(recyclerView <~ nrvDisableScroll(true)),
-          end = () => runUi(recyclerView <~ nrvDisableScroll(false)),
-          scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, statuses.scrollType, close))
-        ))
-    )
+    (l[PullToCloseView](
+      w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards, itemTouchCallback)
+    ) <~
+      pcvListener(PullToCloseListener(
+        close = () => scrolledListener foreach (_.close())
+      )) <~
+      wire(pullToCloseView) <~
+      pdvPullingListener(PullingListener(
+        start = () => (recyclerView <~ nrvDisableScroll(true)).run,
+        end = () => (recyclerView <~ nrvDisableScroll(false)).run,
+        scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, statuses.scrollType, close))
+      ))
+      ).get
   }
 
   def initUi(collection: Collection, animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
