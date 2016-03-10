@@ -26,7 +26,7 @@ import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{Sha
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{LatestSharedCollection, TopSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Tweak, Ui}
+import macroid._
 
 trait PublicCollectionsComposer
   extends Styles
@@ -54,16 +54,14 @@ trait PublicCollectionsComposer
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.publicCollections) <~
       dtbExtended <~
-      dtbAddExtendedView(getUi(
+      dtbAddExtendedView(
         l[LinearLayout](
           w[TextView] <~
             wire(typeFilter) <~
             tabButtonStyle(R.string.top),
           w[TextView] <~
             wire(categoryFilter) <~
-            tabButtonStyle(R.string.communication)
-        )
-      )) <~
+            tabButtonStyle(R.string.communication)).get) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (typeFilter <~
         On.click {
@@ -72,10 +70,10 @@ trait PublicCollectionsComposer
             onMenuItemClickListener = (item: MenuItem) => {
               item.getItemId match {
                 case R.id.top =>
-                  runUi(typeFilter <~ tvText(R.string.top))
+                  (typeFilter <~ tvText(R.string.top)).run
                   changeTypeSharedCollection(TopSharedCollection)
                 case R.id.latest =>
-                  runUi(typeFilter <~ tvText(R.string.latest))
+                  (typeFilter <~ tvText(R.string.latest)).run
                   changeTypeSharedCollection(LatestSharedCollection)
                 case _ =>
               }
@@ -89,7 +87,7 @@ trait PublicCollectionsComposer
             menu = categoryNamesMenu,
             onItemClickListener = (position: Int) => {
               categories.lift(position) foreach { category =>
-                runUi(categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name))
+                (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)).run
                 changeCategory(category)
               }
             },
@@ -176,11 +174,10 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
     val size = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
     val padding = (width - (size * appsByRow)) / (appsByRow - 1)
     val appsViews = packages map { pkg =>
-      getUi(
-        w[ImageView] <~
-          lp[ViewGroup](size, size) <~
-          llLayoutMargin(marginRight = padding) <~
-          ivUri(pkg.icon))
+      (w[ImageView] <~
+        lp[ViewGroup](size, size) <~
+        llLayoutMargin(marginRight = padding) <~
+        ivUri(pkg.icon)).get
     }
     if (plus > 0) {
       appsViews :+ getCounter(plus, width)
@@ -192,9 +189,8 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
   private[this] def getCounter(plus: Int, width: Int) = {
     val size = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
     val color = resGetColor(R.color.background_count_public_collection_dialog)
-    getUi(
-      w[ImageView] <~
-        lp[ViewGroup](size, size) <~
-        ivSrc(new CharDrawable(s"+$plus", circle = true, Some(color))))
+    (w[ImageView] <~
+      lp[ViewGroup](size, size) <~
+      ivSrc(new CharDrawable(s"+$plus", circle = true, Some(color)))).get
   }
 }

@@ -21,8 +21,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import macroid.FullDsl._
-import macroid.{Contexts, Ui}
+import macroid._
 import rapture.core.Answer
 
 import scala.util.Try
@@ -90,7 +89,7 @@ class CollectionsDetailsActivity
 
     setContentView(R.layout.collections_detail_activity)
 
-    runUi(initUi(indexColor, icon))
+    initUi(indexColor, icon).run
 
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
@@ -99,10 +98,10 @@ class CollectionsDetailsActivity
     initSystemStatusBarTint
 
     if (doAnimation) {
-      configureEnterTransition(position, () => runUi(ensureDrawCollection(position)))
+      configureEnterTransition(position, () => ensureDrawCollection(position).run)
       Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
         onResult = (c: Seq[Collection]) => collections = c,
-        onException = (ex: Throwable) => runUi(showError())
+        onException = (ex: Throwable) => showError().run
       )
     } else {
       Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
@@ -132,7 +131,7 @@ class CollectionsDetailsActivity
 
   override def finishAfterTransition(): Unit = {
     super.finishAfterTransition()
-    runUi(toolbar <~ vVisible)
+    (toolbar <~ vVisible).run
   }
 
   override def onSaveInstanceState(outState: Bundle): Unit = {
@@ -171,32 +170,32 @@ class CollectionsDetailsActivity
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case android.R.id.home =>
-      runUi(exitTransition)
+      exitTransition.run
       false
     case _ => super.onOptionsItemSelected(item)
   }
 
-  override def scrollY(scroll: Int, dy: Int): Unit = runUi(translationScrollY(scroll))
+  override def scrollY(scroll: Int, dy: Int): Unit = translationScrollY(scroll).run
 
-  override def openReorderMode(current: ScrollType): Unit = runUi(openReorderModeUi(current))
+  override def openReorderMode(current: ScrollType): Unit = openReorderModeUi(current).run
 
-  override def closeReorderMode(): Unit = runUi(closeReorderModeUi)
+  override def closeReorderMode(): Unit = closeReorderModeUi.run
 
-  override def scrollType(sType: ScrollType): Unit = runUi(notifyScroll(sType))
+  override def scrollType(sType: ScrollType): Unit = notifyScroll(sType).run
 
-  override def onBackPressed(): Unit = runUi(backByPriority)
+  override def onBackPressed(): Unit = backByPriority.run
 
   override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
-    runUi(pullCloseScrollY(scroll, scrollType, close))
+    pullCloseScrollY(scroll, scrollType, close).run
 
-  override def close(): Unit = runUi(exitTransition)
+  override def close(): Unit = exitTransition.run
 
   override def startScroll(): Unit = getCurrentCollection foreach { collection =>
     val color = getIndexColor(collection.themedColorIndex)
-    runUi(showFabButton(color))
+    showFabButton(color).run
   }
 
-  override def onStartFinishAction(): Unit = runUi(turnOffFragmentContent)
+  override def onStartFinishAction(): Unit = turnOffFragmentContent.run
 
   override def onEndFinishAction(): Unit = removeActionFragment
 

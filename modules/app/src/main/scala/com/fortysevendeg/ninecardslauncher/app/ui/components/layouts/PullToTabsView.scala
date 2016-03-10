@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.support.v4.view.MotionEventCompat
-import android.view.{MotionEvent, LayoutInflater, ViewGroup}
+import android.view.{LayoutInflater, MotionEvent, ViewGroup}
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -15,10 +15,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, SearchBackgroundColor, NineCardsTheme, SearchIconsColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor, SearchBackgroundColor, SearchIconsColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Transformer, Tweak, Ui}
+import macroid._
 
 class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends PullToDownView(context) {
@@ -44,7 +44,7 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
       val newPos = pullToTabsStatuses.calculatePosition(pos, getTabsCount)
       if (newPos != pullToTabsStatuses.selectedItem) {
         pullToTabsStatuses = pullToTabsStatuses.copy(selectedItem = newPos)
-        runUi(tabs <~ activateItem(newPos))
+        (tabs <~ activateItem(newPos)).run
       }
     }
     super.dispatchTouchEvent(event)
@@ -65,10 +65,10 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
       pdvPullingListener(PullingListener(
         start = () => {
           pullToTabsStatuses = pullToTabsStatuses.start()
-          runUi((tabs <~ vVisible <~ vY(-heightTabs)) ~ start)
+          ((tabs <~ vVisible <~ vY(-heightTabs)) ~ start).run
         },
-        end = () => runUi((tabs <~ vGone) ~ end),
-        scroll = (scroll: Int, close: Boolean) => runUi(tabs <~ vY(-heightTabs + scroll)))
+        end = () => ((tabs <~ vGone) ~ end).run,
+        scroll = (scroll: Int, close: Boolean) => (tabs <~ vY(-heightTabs + scroll)).run)
       )
   }
 
@@ -77,7 +77,7 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
     case tab: TabView => tab.deactivate()
   }
 
-  def clear(): Unit = runUi(tabs <~ vgRemoveAllViews)
+  def clear(): Unit = (tabs <~ vgRemoveAllViews).run
 
   def addTabs(items: Seq[TabInfo], index: Option[Int] = None): Unit = {
     index foreach (i => pullToTabsStatuses = pullToTabsStatuses.copy(selectedItem = i))
@@ -85,7 +85,7 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
       case (item, pos) => new TabView(item, pos, index contains pos)
     }
     val params = new LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1)
-    runUi(tabs <~ vgAddViews(views, params))
+    (tabs <~ vgAddViews(views, params)).run
   }
 
   class TabView(item: TabInfo, pos: Int, selected: Boolean)
@@ -102,23 +102,22 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
 
     val backgroundColor = getColorDark(theme.get(SearchBackgroundColor), 0.05f)
 
-    runUi(
-      (this <~ vBackgroundColor(backgroundColor)) ~
-        (icon <~ ivSrc(item.drawable)) ~
-        (name <~ tvText(item.name)) ~
-        (if (selected) {
-          activate()
-        } else {
-          deactivate()
-        }) ~
-        (this <~
-          vSetPosition(pos) <~
-          On.click {
-            Ui {
-              pullToTabsStatuses = pullToTabsStatuses.copy(selectedItem = pos)
-              tabsListener.changeItem(pullToTabsStatuses.selectedItem)
-            } ~ (tabs <~ activateItem(pos))
-          }))
+    ((this <~ vBackgroundColor(backgroundColor)) ~
+      (icon <~ ivSrc(item.drawable)) ~
+      (name <~ tvText(item.name)) ~
+      (if (selected) {
+        activate()
+      } else {
+        deactivate()
+      }) ~
+      (this <~
+        vSetPosition(pos) <~
+        On.click {
+          Ui {
+            pullToTabsStatuses = pullToTabsStatuses.copy(selectedItem = pos)
+            tabsListener.changeItem(pullToTabsStatuses.selectedItem)
+          } ~ (tabs <~ activateItem(pos))
+        })).run
 
     def activate(): Ui[_] =
       (icon <~ tivDefaultColor(primaryColor)) ~

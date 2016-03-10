@@ -1,10 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
 import java.io.File
+import java.util
 
-import android.content.Context
+import android.app.Activity
+
+import scala.collection.JavaConverters._
+
+import android.content.pm.{PackageManager, ResolveInfo}
+import android.content.{ComponentName, Context, Intent, IntentFilter}
+import android.util.Log
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
@@ -77,6 +85,106 @@ trait CreateCollectionsTasks
 
   private[this] def generateDockApps() =  Service {
     val tasks = packagesForDockApps.indices map { position =>
+
+//      val mainIntent: Intent = new Intent(Intent.ACTION_MAIN, null)
+//      mainIntent.addCategory(Intent.CATEGORY_HOME)
+//      mainIntent.addCategory(Intent.CATEGORY_DEFAULT)
+//
+//      val pkgAppsList: util.List[ResolveInfo] = getPackageManager.queryIntentActivities(mainIntent, 0)
+//
+//      Log.d("9Cards", s"pkgAppsList: $pkgAppsList")
+//
+//      val listAppInfo : util.ArrayList[ApplicationInfo] = new util.ArrayList[ApplicationInfo]()
+//      for(ResolveInfo info: pkgAppsList) {
+//        listAppInfo.add(info.activityInfo.applicationInfo)
+//      }
+//
+
+//      val filter: IntentFilter = new IntentFilter(Intent.ACTION_MAIN)
+//      filter.addCategory(Intent.CATEGORY_APP_BROWSER)
+//      filter.addCategory(Intent.CATEGORY_BROWSABLE)
+
+//      listFilters.add(filter)
+
+//      val outFilters: util.ArrayList[IntentFilter] = new util.ArrayList[IntentFilter]()
+//      val outActivities: util.ArrayList[ComponentName] = new util.ArrayList[ComponentName]()
+//
+//      getPackageManager.getPreferredActivities(outFilters, outActivities, javaNull)
+//
+//      Log.d("9Cards", s"outActivities: $outActivities")
+//
+//      val mapOut: Seq[(IntentFilter, ComponentName)] = (outFilters.asScala zip outActivities.asScala).toSeq
+//
+//      Log.d("9Cards", s"mapOut: $mapOut")
+//
+//      mapOut map { item =>
+//        val (filter, component) = item
+////        if (filter.hasAction(Intent.ACTION_CALL))
+//        val countActions: Int = filter.countActions
+//        val countCategories: Int = filter.countCategories
+//
+//        val packageName: String = component.getPackageName
+//        val activityName: String = component.getClassName
+//
+//        Log.d("9Cards", s"package: $packageName")
+//        Log.d("9Cards", s"activity: $activityName")
+//        Log.d("9Cards", s"countActions: $countActions")
+//        Log.d("9Cards", s"countCategories: $countCategories")
+//        (0 until countActions) map { i =>
+//          Log.d("9Cards", s"action: ${filter.getAction(i)}")
+//        }
+//        (0 until countCategories) map { i =>
+//          Log.d("9Cards", s"category: ${filter.getCategory(i)}")
+//        }
+//
+//        Log.d("9Cards", s"----------------------------------------------------")
+////        else if (filter.hasAction(Intent.ACTION_MAIN) && filter.hasCategory(Intent.CATEGORY_HOME))
+////          Log.d("9Cards", s"activity: $activity")
+////        else if (filter.hasAction(Intent.ACTION_MAIN) && filter.hasCategory(Intent.CATEGORY_APP_MESSAGING))
+////          Log.d("9Cards", s"activity: $activity")
+//      }
+
+
+      val messageIntent: Intent = new Intent("android.media.action.STILL_IMAGE_CAMERA")
+      messageIntent.addCategory(Intent.CATEGORY_DEFAULT)
+      messageIntent.addFlags(
+        Intent.FLAG_ACTIVITY_NEW_TASK |
+          Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+
+//      val message: ResolveInfo = getPackageManager.resolveActivity(messageIntent, 0)
+      val messageList: List[ResolveInfo] = getPackageManager.queryIntentActivities(messageIntent, 0).asScala.toList
+
+
+//      Log.d("9Cards", s"messageActivityInfo: ${message.resolvePackageName} --- messagePackageName: ${message.activityInfo.packageName}")
+      Log.d("9Cards", s"messageList: ${messageList}")
+
+//      val browserIntent: Intent = new Intent(Intent.ACTION_VIEW, null)
+////      browserIntent.addCategory(Intent.CATEGORY_APP_BROWSER)
+//      browserIntent.addCategory(Intent.CATEGORY_BROWSABLE)
+//
+//      val browser: ResolveInfo = getPackageManager.resolveActivity(browserIntent, 0)
+//
+//      Log.d("9Cards", s"browserActivityInfo: ${browser.activityInfo.name} --- browserPackageName: ${browser.activityInfo.packageName}")
+//
+//
+//      val cameraIntent: Intent = new Intent("android.media.action.STILL_IMAGE_CAMERA")
+//      cameraIntent.addCategory(Intent.CATEGORY_DEFAULT)
+//
+//      val camera: ResolveInfo = getPackageManager.resolveActivity(cameraIntent, 0)
+//
+//      Log.d("9Cards", s"cameraActivityInfo: ${camera.activityInfo.name} --- cameraPackageName: ${camera.activityInfo.packageName}")
+//
+//
+//      val phoneIntent: Intent = new Intent(Intent.ACTION_CALL, null)
+//      phoneIntent.addCategory(Intent.CATEGORY_DEFAULT)
+//
+//      val phone: ResolveInfo = getPackageManager.resolveActivity(phoneIntent, 0)
+//      val phoneList: List[ResolveInfo] = getPackageManager.queryIntentActivities(phoneIntent, 0).asScala.toList
+//
+//      Log.d("9Cards", s"phoneList: ${phoneList}")
+//      Log.d("9Cards", s"phoneActivityInfo: ${phone.activityInfo.name} --- phonePackageName: ${phone.activityInfo.packageName}")
+
+
       val maybeApp = packagesForDockApps(position) find { app =>
         val (packageName, className) = app
         val imagePath = getImagePath(packageName, className)

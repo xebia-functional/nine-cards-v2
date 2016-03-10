@@ -15,12 +15,12 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Snail, ActivityContextWrapper, Tweak}
 import macroid.FullDsl._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import macroid._
 
 object AsyncImageTweaks {
   type W = ImageView
@@ -82,7 +82,7 @@ object AsyncImageTweaks {
         char = char,
         circular = circular)
     } else {
-      runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)))
+      (imageView <~ ivSrc(new CharDrawable(char, circle = circular))).run
     }
   }
 
@@ -98,7 +98,7 @@ object AsyncImageTweaks {
         override def onLoadStarted(placeholder: Drawable): Unit =
           imageView.setImageDrawable(javaNull)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          runUi(imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
+          (imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
       })
@@ -122,10 +122,10 @@ object AsyncImageTweaks {
   }
 
   private[this] def loadDefaultHeaderImage(imageView: ImageView, fadeInFailed: Boolean = true) =
-    runUi(imageView <~ ivSrc(R.drawable.dialog_contact_header_no_image) <~ ivScaleType(ScaleType.CENTER_INSIDE) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
+    (imageView <~ ivSrc(R.drawable.dialog_contact_header_no_image) <~ ivScaleType(ScaleType.CENTER_INSIDE) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
 
   private[this] def loadDefaultGeneralInfoImage(imageView: ImageView, fadeInFailed: Boolean = true) =
-    runUi(imageView <~ ivSrc(R.drawable.dialog_contact_icon_general_info) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank))
+    (imageView <~ ivSrc(R.drawable.dialog_contact_icon_general_info) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
 
   class ContactPhotoLoader(contentResolver: ContentResolver) extends StreamModelLoader[Uri] {
 

@@ -12,8 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.Translation
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
-import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -74,7 +73,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
           requestDisallowInterceptTouchEvent(true)
           val deltaY = statuses.deltaY(y)
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          runUi(performMenuMovement(deltaY))
+          performMenuMovement(deltaY).run
         case ACTION_DOWN =>
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         case ACTION_CANCEL | ACTION_UP =>
@@ -96,7 +95,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
           requestDisallowInterceptTouchEvent(true)
           val deltaY = statuses.deltaY(y)
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-          runUi(performMenuMovement(deltaY))
+          performMenuMovement(deltaY).run
         case ACTION_DOWN =>
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         case ACTION_CANCEL | ACTION_UP =>
@@ -113,7 +112,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   override def setStateIfNeeded(x: Float, y: Float): Unit = {
     // We check that the user is doing up vertical swipe
     if (isVerticalMoving(x, y)) {
-      runUi(workSpacesListener.onStartOpenMenu())
+      workSpacesListener.onStartOpenMenu().run
       resetLongClick()
       workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
     } else {
@@ -213,11 +212,10 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def computeFlingMenuMovement() = statuses.velocityTracker foreach {
     tracker =>
       tracker.computeCurrentVelocity(1000, maximumVelocity)
-      runUi(
-        if (math.abs(tracker.getYVelocity) > minimumVelocity)
-          snapMenuMovement(tracker.getYVelocity)
-        else
-          snapDestinationMenuMovement())
+      (if (math.abs(tracker.getYVelocity) > minimumVelocity)
+        snapMenuMovement(tracker.getYVelocity)
+      else
+        snapDestinationMenuMovement()).run
       tracker.recycle()
       statuses = statuses.copy(velocityTracker = None)
   }

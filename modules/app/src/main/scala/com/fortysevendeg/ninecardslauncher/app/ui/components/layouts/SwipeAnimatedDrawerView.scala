@@ -14,8 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{AppsView, 
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchIconsColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid._
 
 class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: Int)
   (implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme)
@@ -40,7 +39,7 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
 
   LayoutInflater.from(context).inflate(R.layout.swipe_animation_drawer_layout, self)
 
-  runUi(root <~ vBackground(background))
+  (root <~ vBackground(background)).run
 
   def initAnimation(contentView: ContentView, widthContainer: Int): Ui[_] = {
     val sizeIcon = icon map (ic => ic.getWidth + ic.getPaddingLeft + ic.getPaddingRight) getOrElse 0

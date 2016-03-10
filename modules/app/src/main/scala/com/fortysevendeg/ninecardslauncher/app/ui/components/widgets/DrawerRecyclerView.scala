@@ -14,8 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.commons._
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Ui}
+import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -34,20 +33,20 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   val horizontalMovementListener = HorizontalMovementListener(
     start = () => {
-      runUi(drawerRecyclerListener.start())
+      drawerRecyclerListener.start().run
       statuses = statuses.copy(disableClickItems = true)
       blockScroll(true)
     },
     end = (swiping: Swiping, displacement: Int) => {
       statuses = statuses.copy(disableClickItems = false)
-      runUi(snap(swiping))
+      snap(swiping).run
       blockScroll(false)
     },
     scroll = (deltaX: Int) => {
       if (!overScroll(deltaX)) {
         statuses = statuses.move(deltaX)
         offsetLeftAndRight(deltaX)
-        runUi(drawerRecyclerListener.move(statuses.displacement))
+        drawerRecyclerListener.move(statuses.displacement).run
       }
     })
 

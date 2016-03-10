@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.widget._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -21,16 +20,17 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{LauncherWorkSpaceHolder, Dimen}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.CollectionItemTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Tweak, Ui}
+import macroid._
 
 class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityContext: ActivityContextWrapper)
   extends LauncherWorkSpaceHolder
@@ -40,14 +40,14 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityCo
 
   val views = 0 until numSpaces map (new CollectionItem(_))
 
-  addView(getUi(l[GridLayout]() <~ wire(grid) <~ collectionGridStyle))
+  addView((l[GridLayout]() <~ wire(grid) <~ collectionGridStyle).get)
 
-  runUi(grid <~ glAddViews(
+  (grid <~ glAddViews(
     views = views,
     columns = numInLine,
     rows = numInLine,
     width = parentDimen.width / numInLine,
-    height = parentDimen.height / numInLine))
+    height = parentDimen.height / numInLine)).run
 
   def populate(collections: Seq[Collection]): Ui[_] = {
     val uiSeq = for {
@@ -83,32 +83,31 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
   setTag(positionInGrid)
 
   addView(
-    getUi(
-      l[LinearLayout](
-        w[ImageView] <~ wire(icon) <~ iconStyle,
-        w[TextView] <~ wire(name) <~ nameStyle
-      ) <~ collectionItemStyle <~ On.click {
-        collection map { c =>
-          val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-            activityContext.getOriginal,
-            new Pair[View, String](icon.get, getContentTransitionName(c.position)))
-          val intent = createIntent[CollectionsDetailsActivity]
-          intent.putExtra(startPosition, c.position)
-          intent.putExtra(indexColorToolbar, c.themedColorIndex)
-          intent.putExtra(iconToolbar, c.icon)
-          uiStartIntentWithOptions(intent, options)
-        } getOrElse Ui.nop
-      } <~ On.longClick {
-        for {
-          c <- collection
-          activity <- activity[LauncherActivity]
-        } yield activity.removeCollection(c)
-        Ui(true)
-      } <~ vUseLayerHardware))
+    (l[LinearLayout](
+      w[ImageView] <~ wire(icon) <~ iconStyle,
+      w[TextView] <~ wire(name) <~ nameStyle
+    ) <~ collectionItemStyle <~ On.click {
+      collection map { c =>
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+          activityContext.getOriginal,
+          new Pair[View, String](icon.get, getContentTransitionName(c.position)))
+        val intent = createIntent[CollectionsDetailsActivity]
+        intent.putExtra(startPosition, c.position)
+        intent.putExtra(indexColorToolbar, c.themedColorIndex)
+        intent.putExtra(iconToolbar, c.icon)
+        uiStartIntentWithOptions(intent, options)
+      } getOrElse Ui.nop
+    } <~ On.longClick {
+      for {
+        c <- collection
+        activity <- activity[LauncherActivity]
+      } yield activity.removeCollection(c)
+      Ui(true)
+    } <~ vUseLayerHardware).get)
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)
-    runUi(populateIcon(collection, iconCollectionWorkspace(collection.icon)))
+    populateIcon(collection, iconCollectionWorkspace(collection.icon)).run
   }
 
   private def populateIcon(collection: Collection, resIcon: Int): Ui[_] =

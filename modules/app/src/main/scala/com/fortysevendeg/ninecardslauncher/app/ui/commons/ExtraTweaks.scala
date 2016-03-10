@@ -22,8 +22,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak, Ui}
+import macroid._
 
 /**
   * This tweaks should be moved to Macroid-Extras
@@ -155,7 +154,7 @@ object ExtraTweaks {
   def tbNavigationIcon(drawable: Drawable) = Tweak[Toolbar](_.setNavigationIcon(drawable))
 
   def tbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[Toolbar](_.setNavigationOnClickListener(new OnClickListener {
-    override def onClick(v: View): Unit = runUi(click(v))
+    override def onClick(v: View): Unit = click(v).run
   }))
 
   def tbChangeHeightLayout(height: Int) = Tweak[Toolbar] { view =>
@@ -239,33 +238,33 @@ object ExtraTweaks {
   }
 
   def uiSnackbarShort(res: Int) = Tweak[View] { view =>
-    runUi(Ui(Snackbar.make(view, res, Snackbar.LENGTH_SHORT).show()))
+    Ui(Snackbar.make(view, res, Snackbar.LENGTH_SHORT).show()).run
   }
 
   def uiSnackbarLong(res: Int) = Tweak[View] { view =>
-    runUi(Ui(Snackbar.make(view, res, Snackbar.LENGTH_LONG).show()))
+    Ui(Snackbar.make(view, res, Snackbar.LENGTH_LONG).show()).run
   }
 
   def uiSnackbarIndefinite(res: Int) = Tweak[View] { view =>
-    runUi(Ui(Snackbar.make(view, res, Snackbar.LENGTH_INDEFINITE).show()))
+    Ui(Snackbar.make(view, res, Snackbar.LENGTH_INDEFINITE).show()).run
   }
 
   def uiSnackbarShort(message: String) = Tweak[View] { view =>
-    runUi(Ui(Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()))
+    Ui(Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()).run
   }
 
   def uiSnackbarLong(message: String) = Tweak[View] { view =>
-    runUi(Ui(Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()))
+    Ui(Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()).run
   }
 
   def uiSnackbarIndefinite(message: String) = Tweak[View] { view =>
-    runUi(Ui(Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).show()))
+    Ui(Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE).show()).run
   }
 
   def uiSnackbarIndefiniteAction(res: Int, buttonText: Int, f: () => Unit) = Tweak[View] { view =>
-    runUi(Ui(Snackbar.make(view, res, Snackbar.LENGTH_INDEFINITE).setAction(buttonText, new OnClickListener {
+    Ui(Snackbar.make(view, res, Snackbar.LENGTH_INDEFINITE).setAction(buttonText, new OnClickListener {
       override def onClick(v: View): Unit = f()
-    }).show()))
+    }).show()).run
   }
 
   def etAddTextChangedListener(onChanged: (String, Int, Int, Int) => Unit) = Tweak[EditText] { view =>

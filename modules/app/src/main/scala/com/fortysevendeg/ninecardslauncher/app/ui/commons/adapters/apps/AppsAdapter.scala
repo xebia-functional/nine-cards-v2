@@ -6,17 +6,16 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid._
 
 case class AppsAdapter(
   var apps: IterableApps,
@@ -31,7 +30,7 @@ case class AppsAdapter(
   override def getItemCount: Int = apps.count()
 
   override def onBindViewHolder(vh: AppsIterableHolder, position: Int): Unit =
-    runUi(vh.bind(apps.moveToPosition(position), position))
+    vh.bind(apps.moveToPosition(position), position).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): AppsIterableHolder = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.app_item, parent, false)

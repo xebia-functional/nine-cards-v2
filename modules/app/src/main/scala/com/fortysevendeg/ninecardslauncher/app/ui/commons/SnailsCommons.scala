@@ -10,7 +10,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{Ui, Snail, ContextWrapper}
-import macroid.FullDsl._
 
 import scala.concurrent.Promise
 
@@ -235,7 +234,7 @@ object SnailsCommons {
         .setInterpolator(new AccelerateDecelerateInterpolator())
         .setUpdateListener(new AnimatorUpdateListener {
           override def onAnimationUpdate(animation: ValueAnimator): Unit =
-            runUi(onUpdate(animation.getAnimatedFraction))
+            onUpdate(animation.getAnimatedFraction).run
         })
         .setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator): Unit = {

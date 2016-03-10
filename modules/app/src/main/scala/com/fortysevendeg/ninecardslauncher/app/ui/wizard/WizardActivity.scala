@@ -18,7 +18,6 @@ import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.api.GoogleApiClient
-import macroid.FullDsl._
 import macroid.{Contexts, Ui}
 
 import scala.util.Try
@@ -55,15 +54,15 @@ class WizardActivity
 
   override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
     case (WizardStateActionFilter, Some(`stateSuccess`)) => storeCloudDevice()
-    case (WizardStateActionFilter, Some(`stateFaliure`)) => runUi(showUser)
-    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => runUi(showWizard)
+    case (WizardStateActionFilter, Some(`stateFaliure`)) => showUser.run
+    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => showWizard.run
     case _ =>
   }
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.wizard_activity)
-    runUi(showUser ~ initUi(accounts))
+    (showUser ~ initUi(accounts)).run
   }
 
   override def onResume(): Unit = {
@@ -102,7 +101,7 @@ class WizardActivity
             showLoading
           },
           onRequestTokensException)
-      case _ => runUi(backToUser(R.string.errorLoginUser))
+      case _ => backToUser(R.string.errorLoginUser).run
     }
 
   def finishUi: Ui[_] = Ui {
@@ -118,9 +117,9 @@ class WizardActivity
 
   // TODO - Implement error code
   override def onRequestConnectionError(errorCode: Int): Unit =
-    runUi(backToUser(R.string.errorConnectingGoogle))
+    backToUser(R.string.errorConnectingGoogle).run
 
-  override def onResolveConnectionError(): Unit = runUi(backToUser(R.string.errorConnectingGoogle))
+  override def onResolveConnectionError(): Unit = backToUser(R.string.errorConnectingGoogle).run
 
   override def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
 
@@ -129,7 +128,7 @@ class WizardActivity
       case GoogleApiClientStatuses(Some(client), Some(username), Some(userPermissions)) =>
         loadCloudDevices(client, username, userPermissions)
       case _ =>
-        runUi(backToUser(R.string.errorConnectingGoogle))
+        backToUser(R.string.errorConnectingGoogle).run
     }
 
   private[this] def loadCloudDevices(client: GoogleApiClient, username: String, userPermissions: UserPermissions) =
@@ -139,7 +138,7 @@ class WizardActivity
         Task.fork(loadUserDevices(client, id, username, userPermissions).run).resolveAsyncUi(
           userCloudDevices => showLoading ~ searchDevices(userCloudDevices),
           onLoadDevicesException)
-      case _ => runUi(backToUser(R.string.errorConnectingGoogle))
+      case _ => backToUser(R.string.errorConnectingGoogle).run
     }
 
   private[this] def storeCloudDevice(): Unit =

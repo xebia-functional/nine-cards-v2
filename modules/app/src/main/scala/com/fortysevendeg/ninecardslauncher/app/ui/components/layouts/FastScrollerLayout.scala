@@ -25,7 +25,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{Tweak, Ui}
+import macroid._
 
 class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr) { self =>
@@ -40,26 +40,26 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
     fastScroller map { fs =>
       val ll = new LayoutParams(WRAP_CONTENT, MATCH_PARENT)
       ll.gravity = Gravity.RIGHT
-      runUi(this <~ vgAddView(fs, ll))
+      (this <~ vgAddView(fs, ll)).run
     }
     super.onFinishInflate()
   }
 
-  def linkRecycler(recyclerView: RecyclerView) = runUi(fastScroller <~ fsRecyclerView(recyclerView))
+  def linkRecycler(recyclerView: RecyclerView) = (fastScroller <~ fsRecyclerView(recyclerView)).run
 
-  def setColor(color: Int) = runUi(fastScroller <~ fsColor(color))
+  def setColor(color: Int) = (fastScroller <~ fsColor(color)).run
 
-  def setSignalType(signalType: FastScrollerSignalType) = runUi(fastScroller <~ fsSignalType(signalType))
+  def setSignalType(signalType: FastScrollerSignalType) = (fastScroller <~ fsSignalType(signalType)).run
 
-  def reset = runUi(fastScroller <~ fsReset)
+  def reset = (fastScroller <~ fsReset).run
 
-  def setCounters(counters: Seq[TermCounter]) = runUi(fastScroller <~ fsCounters(counters))
+  def setCounters(counters: Seq[TermCounter]) = (fastScroller <~ fsCounters(counters)).run
 
   def setEnabledScroller(enabled: Boolean) =
-    runUi(
+    (
       fastScroller <~
         fsEnabledScroller(enabled) <~
-        (if (enabled) fsShow else fsHide))
+        (if (enabled) fsShow else fsHide)).run
 
   private[this] def fsSignalType(signalType: FastScrollerSignalType) = Tweak[FastScrollerView](_.setFastScrollerSignalType(signalType))
 
@@ -72,14 +72,14 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def fsRecyclerView(rv: RecyclerView) = Tweak[FastScrollerView](view => view.setRecyclerView(rv))
 
   private[this] def fsColor(color: Int) = Tweak[FastScrollerView] { view =>
-    runUi(
+    (
       (view.bar <~ ivSrc(changeColor(R.drawable.fastscroller_bar, color))) ~
-        (view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color)))))
+        (view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color))))).run
   }
 
-  private[this] def fsShow = Tweak[FastScrollerView] { view => runUi(view.show) }
+  private[this] def fsShow = Tweak[FastScrollerView] { view => (view.show).run }
 
-  private[this] def fsHide = Tweak[FastScrollerView] { view => runUi(view.hide) }
+  private[this] def fsHide = Tweak[FastScrollerView] { view => (view.hide).run }
 
   private[this] def changeColor(res: Int, color: Int): Drawable = getDrawable(res) match {
     case drawable: GradientDrawable =>
@@ -141,7 +141,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
       statuses = statuses.copy(heightScroller = h)
       recyclerView foreach (rv => statuses = statuses.resetRecyclerInfo(rv, statuses.heightScroller))
-      runUi(changePosition(0))
+      changePosition(0).run
     }
   }
 
@@ -157,10 +157,9 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
         true
       case (_, ACTION_MOVE) =>
         statuses = statuses.movingScroll()
-        runUi(
-          changePosition(y) ~
-            (if (statuses.usingCounters) showSignal else hideSignal) ~
-            (recyclerView <~ rvScrollToPosition(y)))
+        (changePosition(y) ~
+          (if (statuses.usingCounters) showSignal else hideSignal) ~
+          (recyclerView <~ rvScrollToPosition(y))).run
         true
       case (_, ACTION_UP | ACTION_CANCEL) =>
         statuses = statuses.resetScrollPosition()
@@ -171,7 +170,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
             statuses = statuses.resetScroll()
           }
         }
-        runUi((recyclerView <~ removeKeys() <~ rvInvalidateItemDecorations) ~ changePosition(y) ~ hideSignal)
+        ((recyclerView <~ removeKeys() <~ rvInvalidateItemDecorations) ~ changePosition(y) ~ hideSignal).run
         true
       case _ => super.onTouchEvent(event)
     }
@@ -196,9 +195,9 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def setFastScrollerSignalType(signalType: FastScrollerSignalType): Unit = {
     statuses = statuses.copy(fastScrollerSignalType = signalType)
     signalType match {
-      case FastScrollerText => runUi((icon <~ vGone) ~ (text <~ vVisible))
-      case FastScrollerCategory => runUi((icon <~ vVisible) ~ (text <~ vGone))
-      case FastScrollerInstallationDate => runUi((icon <~ vVisible) ~ (text <~ vGone))
+      case FastScrollerText => ((icon <~ vGone) ~ (text <~ vVisible)).run
+      case FastScrollerCategory => ((icon <~ vVisible) ~ (text <~ vGone)).run
+      case FastScrollerInstallationDate => ((icon <~ vVisible) ~ (text <~ vGone)).run
     }
   }
 
@@ -214,7 +213,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def reset(): Unit = {
     recyclerView foreach (rv => statuses = statuses.resetRecyclerInfo(rv, statuses.heightScroller))
     scrollListener foreach (_.reset())
-    runUi(changePosition(0))
+    changePosition(0).run
   }
 
   def setEnabledScroller(enabled: Boolean) = statuses = statuses.copy(enabled = enabled)
@@ -238,9 +237,8 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       if (statuses.usingCounters) {
         val item = statuses.counters(position)
         val toPosition = (statuses.counters take position map (_.count)).sum
-        runUi(
-          updateSignal(item.term) ~
-            (recyclerView <~ addKeys(toPosition, item.count) <~ rvInvalidateItemDecorations))
+        (updateSignal(item.term) ~
+          (recyclerView <~ addKeys(toPosition, item.count) <~ rvInvalidateItemDecorations)).run
         view.smoothScrollToPosition(toPosition)
       } else {
         val toPosition = position * statuses.columns
@@ -324,7 +322,7 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
           offsetY = 0
           y
         }
-        runUi(changePosition(move))
+        changePosition(move).run
       } else if (recyclerView.getScrollState != statuses.scrollState) {
         statuses = statuses.copy(scrollState = recyclerView.getScrollState)
       }

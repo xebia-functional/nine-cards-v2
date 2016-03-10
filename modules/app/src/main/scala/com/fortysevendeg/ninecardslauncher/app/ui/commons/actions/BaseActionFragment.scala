@@ -13,13 +13,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListe
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ActionsSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{Contexts, Ui}
+import macroid._
 import rapture.core.Answer
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -95,19 +95,18 @@ trait BaseActionFragment
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, container, false).asInstanceOf[FrameLayout]
     val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
     rootView = Option(baseView)
-    runUi(
-      (content <~ vgAddView(layout))  ~
-        (loading <~ pbColor(colorPrimary)) ~
-        (transitionView <~ vBackgroundColor(colorPrimary)) ~
-        (rootContent <~ vInvisible) ~
-        (errorContent <~ vGone) ~
-        (errorButton <~ vBackgroundTint(colorPrimary)))
+    ((content <~ vgAddView(layout))  ~
+      (loading <~ pbColor(colorPrimary)) ~
+      (transitionView <~ vBackgroundColor(colorPrimary)) ~
+      (rootContent <~ vInvisible) ~
+      (errorContent <~ vGone) ~
+      (errorButton <~ vBackgroundTint(colorPrimary))).run
     baseView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
       override def onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int): Unit = {
         v.removeOnLayoutChangeListener(this)
         width = right - left
         height = bottom - top
-        runUi(reveal)
+        reveal.run
       }
     })
     baseView
