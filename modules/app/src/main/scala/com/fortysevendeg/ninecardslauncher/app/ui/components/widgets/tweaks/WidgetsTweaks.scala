@@ -49,32 +49,14 @@ object CollectionRecyclerViewTweaks {
 
   def nrvScheduleLayoutAnimation = Tweak[W](_.scheduleLayoutAnimation())
 
-  def nrvResetScroll = Tweak[W] { rv =>
-    rv.scrollListener.foreach(_.scrollY = 0)
+  def nrvResetScroll(y: Int) = Tweak[W] { rv =>
+    rv.scrollListener.foreach(_.scrollY = y)
   }
 
   def nrvCollectionScrollListener(
     scrolled: (Int, Int, Int) => Int,
     scrollStateChanged: (Int, RecyclerView, Int) => Unit
   )(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.createScrollListener(scrolled, scrollStateChanged))
-
-  def nrvResetPositions(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { recyclerView =>
-    recyclerView.setOnHierarchyChangeListener(new OnHierarchyChangeListener {
-      override def onChildViewAdded(parent: View, child: View): Unit = reset
-      override def onChildViewRemoved(parent: View, child: View): Unit = reset
-      private[this] def reset = recyclerView.getLayoutManager match {
-        case layoutManager: GridLayoutManager =>
-          val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
-          0 until recyclerView.getChildCount foreach { position =>
-            val newPosition = position + firstVisiblePosition
-            val v = recyclerView.getChildAt(position)
-            runUi(v <~ vTag2(newPosition))
-          }
-        case _ =>
-      }
-
-    })
-  }
 
 }
 

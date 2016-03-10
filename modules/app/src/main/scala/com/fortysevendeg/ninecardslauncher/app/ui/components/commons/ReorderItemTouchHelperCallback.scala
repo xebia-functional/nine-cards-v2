@@ -40,32 +40,6 @@ class ReorderItemTouchHelperCallback(
     super.clearView(recyclerView, viewHolder)
   }
 
-  override def onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean): Unit = {
-    if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && isCurrentlyActive) {
-      val w = recyclerView.getWidth
-      val h = recyclerView.getHeight
-
-      val actionLeft = w - sizeActions - paddingActions
-      val actionTop = h - sizeActions - paddingActions
-      val actionRight = actionLeft + sizeActions
-      val actionBottom = actionTop + sizeActions
-
-      val actionRectF = new RectF(actionLeft, actionTop, actionRight, actionBottom)
-
-      // Draw actions
-      c.drawOval(actionRectF, buttonsPaint)
-
-      val bitmapLeft = actionRectF.centerX().toInt - (deleteActionBitmap.getWidth / 2)
-      val bitmapTop = actionRectF.centerY().toInt - (deleteActionBitmap.getHeight / 2)
-      val bitmapRight = bitmapLeft + deleteActionBitmap.getWidth
-      val bitmapBottom = bitmapTop + deleteActionBitmap.getHeight
-
-      val bitmapRect = new Rect(bitmapLeft, bitmapTop, bitmapRight, bitmapBottom)
-      c.drawBitmap(deleteActionBitmap, deleteActionRect, bitmapRect, javaNull)
-    }
-    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-  }
-
   override def onChildDrawOver(c: Canvas, recyclerView: RecyclerView, viewHolder: ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean): Unit = {
     if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && isCurrentlyActive) {
       val itemView = viewHolder.itemView
@@ -86,6 +60,7 @@ class ReorderItemTouchHelperCallback(
       val actionBottom = actionTop + sizeActions
 
       val actionRect = new Rect(actionLeft, actionTop, actionRight, actionBottom)
+      val actionRectF = new RectF(actionLeft, actionTop, actionRight, actionBottom)
 
       // Draw card if the item is over an action
       if (itemRect.contains(actionRect)) {
@@ -95,6 +70,17 @@ class ReorderItemTouchHelperCallback(
         statuses = statuses.copy(action = NoAction)
       }
 
+      // Draw actions
+      c.drawOval(actionRectF, buttonsPaint)
+
+      val bitmapLeft = actionRectF.centerX().toInt - (deleteActionBitmap.getWidth / 2)
+      val bitmapTop = actionRectF.centerY().toInt - (deleteActionBitmap.getHeight / 2)
+      val bitmapRight = bitmapLeft + deleteActionBitmap.getWidth
+      val bitmapBottom = bitmapTop + deleteActionBitmap.getHeight
+
+      val bitmapRect = new Rect(bitmapLeft, bitmapTop, bitmapRight, bitmapBottom)
+      c.drawBitmap(deleteActionBitmap, deleteActionRect, bitmapRect, javaNull)
+
     }
     super.onChildDrawOver(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
   }
@@ -102,7 +88,11 @@ class ReorderItemTouchHelperCallback(
   override def onSelectedChanged(viewHolder: ViewHolder, actionState: Int): Unit = {
     val actionReorder = ActionStateReorder(actionState)
     onChanged(actionReorder, statuses.action, actionReorder match {
-      case ActionStateReordering => viewHolder.getAdapterPosition
+      case ActionStateReordering =>
+        val position =  viewHolder.getAdapterPosition
+        // Update positions
+        statuses = statuses.copy(from = position, to = position)
+        position
       case ActionStateIdle => statuses.to
     })
     super.onSelectedChanged(viewHolder, actionState)

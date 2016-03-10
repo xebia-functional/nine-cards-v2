@@ -58,11 +58,13 @@ class CollectionFragment
             )
           }
         },
-        onRemoveItem = (position: Int) => {
+        onRemoveItem = (from: Int, to: Int) => {
           for {
             col <- collection
             activity <- activity[CollectionsDetailsActivity]
-          } yield activity.removeCard(col.cards(position))
+          } yield {
+            activity.removeCard(col.cards(from))
+          }
         })
     } getOrElse(throw new RuntimeException("Collection not found")) // TODO We should use an error screen
 
@@ -87,7 +89,7 @@ class CollectionFragment
     scrolledListener = None
   }
 
-  def bindAnimatedAdapter = if (animateCards) collection foreach (c => runUi(setAnimatedAdapter(c)))
+  def bindAnimatedAdapter() = if (animateCards) collection foreach (c => runUi(setAnimatedAdapter(c)))
 
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)
