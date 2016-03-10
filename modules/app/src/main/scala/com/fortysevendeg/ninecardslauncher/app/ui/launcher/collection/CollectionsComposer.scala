@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.FragmentExtras._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -17,8 +18,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
@@ -36,7 +37,6 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import ViewOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -111,13 +111,12 @@ trait CollectionsComposer
 
   private[this] def addWidgetsCollections(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
     workspacesContent <~
-      vgAddView(getUi(w[LauncherWorkSpaces] <~ wire(workspaces)
-      ))
+      vgAddView((w[LauncherWorkSpaces] <~ wire(workspaces)).get)
 
   private[this] def transformCollections(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
-        runUi(goToMenuOption(itemId) ~ closeMenu())
+        (goToMenuOption(itemId) ~ closeMenu()).run
         true
       })) ~
       (menuCollectionRoot <~ vGone) ~
@@ -130,7 +129,7 @@ trait CollectionsComposer
           )
         ) <~
         awsListener(AnimatedWorkSpacesListener(
-          onLongClick = () => runUi(drawerLayout <~ dlOpenDrawer))
+          onLongClick = () => (drawerLayout <~ dlOpenDrawer).run)
         )) ~
       (searchPanel <~ searchContentStyle) ~
       (menuCollectionContent <~ vgAddViews(getItemsForFabMenu)) ~
@@ -165,7 +164,7 @@ trait CollectionsComposer
       (workspaces <~
         lwsData(collections, selectedPageDefault) <~
         awsAddPageChangedObserver(currentPage => {
-          runUi(paginationPanel <~ reloadPager(currentPage))
+          (paginationPanel <~ reloadPager(currentPage)).run
         }
         )) ~
       (appDrawerPanel <~ fillAppDrawer) ~
@@ -225,15 +224,15 @@ trait CollectionsComposer
   protected def isEmptyCollections = workspaces exists (_.isEmptyCollections)
 
   protected def getItemsForFabMenu(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]) = Seq(
-    getUi(w[WorkSpaceItemMenu] <~ workspaceButtonCreateCollectionStyle <~ FuncOn.click { view: View =>
+    (w[WorkSpaceItemMenu] <~ workspaceButtonCreateCollectionStyle <~ FuncOn.click { view: View =>
       showAction(f[NewCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection))
-    }),
-    getUi(w[WorkSpaceItemMenu] <~ workspaceButtonMyCollectionsStyle <~ FuncOn.click { view: View =>
+    }).get,
+    (w[WorkSpaceItemMenu] <~ workspaceButtonMyCollectionsStyle <~ FuncOn.click { view: View =>
       showAction(f[PrivateCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_my_collections))
-    }),
-    getUi(w[WorkSpaceItemMenu] <~ workspaceButtonPublicCollectionStyle <~ FuncOn.click { view: View =>
+    }).get,
+    (w[WorkSpaceItemMenu] <~ workspaceButtonPublicCollectionStyle <~ FuncOn.click { view: View =>
       showAction(f[PublicCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_public_collection))
-    })
+    }).get
   )
 
   private[this] def startOpenCollectionMenu()(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
@@ -295,9 +294,8 @@ trait CollectionsComposer
     case i: ImageView => i <~ vActivated(false)
   }
 
-  def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = getUi(
-    w[ImageView] <~ paginationItemStyle <~ vSetPosition(position)
-  )
+  def pagination(position: Int)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+    (w[ImageView] <~ paginationItemStyle <~ vSetPosition(position)).get
 
   private[this] def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], view: View, color: Int, map: Map[String, String] = Map.empty)

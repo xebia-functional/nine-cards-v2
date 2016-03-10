@@ -23,7 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Dial
 import com.fortysevendeg.ninecardslauncher.process.collection.{PrivateCard, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Tweak, Ui}
+import macroid._
 
 trait PrivateCollectionsComposer
   extends Styles
@@ -115,11 +115,10 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     val padding = (width - (size * appsByRow)) / (appsByRow - 1)
     cards.zipWithIndex map {
       case (card, index) =>
-        getUi(
-          w[ImageView] <~
-            lp[ViewGroup](size, size) <~
-            (if (index < appsByRow - 1) llLayoutMargin(0, 0, padding, 0) else Tweak.blank) <~
-            ivUri(card.imagePath))
+        (w[ImageView] <~
+          lp[ViewGroup](size, size) <~
+          (if (index < appsByRow - 1) llLayoutMargin(0, 0, padding, 0) else Tweak.blank) <~
+          ivUri(card.imagePath)).get
     }
   }
 }

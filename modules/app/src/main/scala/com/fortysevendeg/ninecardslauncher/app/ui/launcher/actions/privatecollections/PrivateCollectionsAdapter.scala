@@ -6,7 +6,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.process.collection.PrivateCollection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
-import macroid.FullDsl._
 
 case class PrivateCollectionsAdapter(privateCollections: Seq[PrivateCollection], clickListener: (PrivateCollection) => Unit)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
@@ -21,7 +20,7 @@ case class PrivateCollectionsAdapter(privateCollections: Seq[PrivateCollection],
 
   override def onBindViewHolder(viewHolder: ViewHolderPrivateCollectionsLayoutAdapter, position: Int): Unit = {
     val privateCollection = privateCollections(position)
-    runUi(viewHolder.bind(privateCollection, position))
+    viewHolder.bind(privateCollection, position).run
   }
 
   def getLayoutManager = new LinearLayoutManager(activityContext.application)

@@ -14,10 +14,6 @@ class LauncherWorkSpaceMomentsHolder(implicit activityContext: ActivityContextWr
 
   var text = slot[TextView]
 
-  addView(
-    getUi(
-      w[TextView] <~ wire(text) <~ vMatchParent <~ tvSize(30) <~ tvColor(Color.WHITE) <~ tvText("MOMENTS") <~ tvGravity(Gravity.CENTER)
-    )
-  )
+  addView((w[TextView] <~ wire(text) <~ vMatchParent <~ tvSize(30) <~ tvColor(Color.WHITE) <~ tvText("MOMENTS") <~ tvGravity(Gravity.CENTER)).get)
 
 }

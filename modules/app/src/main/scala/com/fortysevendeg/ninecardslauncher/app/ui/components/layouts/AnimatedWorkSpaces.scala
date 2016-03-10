@@ -9,15 +9,15 @@ import android.view.ViewGroup.LayoutParams._
 import android.view._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Ui}
+import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -117,7 +117,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       f.addView(front, params)
       self <~ vgAddViews(Seq(p, n, f), params)
     }) getOrElse (throw new InstantiationException("parent views can't be added"))
-    runUi(ui ~ reset())
+    (ui ~ reset()).run
   }
 
   def clean(): Unit = {
@@ -181,7 +181,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def selectPosition(position: Int): Unit = {
     statuses = statuses.copy(currentItem = position)
-    runUi(reset())
+    reset().run
   }
 
   private[this] def applyTranslation(view: Option[ViewGroup], translate: Float): Ui[_] =
@@ -364,9 +364,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
         val deltaY = statuses.deltaY(y)
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         if (overScroll(deltaX, deltaY)) {
-          runUi(applyTranslation(frontParentView, 0))
+          applyTranslation(frontParentView, 0).run
         } else {
-          runUi(performScroll(if (statuses.horizontalGallery) deltaX else deltaY))
+          performScroll(if (statuses.horizontalGallery) deltaX else deltaY).run
         }
       case (ACTION_MOVE, Stopped) => setStateIfNeeded(x, y)
       case (ACTION_DOWN, _) =>
@@ -428,7 +428,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
         }
         if (isScrolling) {
           statuses = statuses.copy(touchState = Scrolling)
-          runUi(self <~ vLayerHardware(activate = true))
+          (self <~ vLayerHardware(activate = true)).run
         }
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
       }
@@ -440,7 +440,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       tracker.computeCurrentVelocity(1000, maximumVelocity)
       if (statuses.isScrolling && !overScroll(-tracker.getXVelocity, -tracker.getYVelocity)) {
         val velocity = if (statuses.horizontalGallery) tracker.getXVelocity else tracker.getYVelocity
-        runUi(if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination())
+        (if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()).run
       }
       tracker.recycle()
       statuses = statuses.copy(velocityTracker = None)

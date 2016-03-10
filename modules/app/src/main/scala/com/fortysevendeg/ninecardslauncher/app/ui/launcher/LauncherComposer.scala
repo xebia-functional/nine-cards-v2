@@ -12,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.Collection
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{DrawerComposer, DrawerListeners}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import macroid.FullDsl._
 import macroid._
 
 trait LauncherComposer

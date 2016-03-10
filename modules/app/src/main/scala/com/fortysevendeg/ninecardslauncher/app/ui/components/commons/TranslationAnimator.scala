@@ -1,12 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.commons
 
-import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator, ObjectAnimator}
+import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, ValueAnimator}
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Snail, ContextWrapper, Ui}
-import macroid.FullDsl._
+import macroid.{ContextWrapper, Snail, Ui}
 
 import scala.concurrent.Promise
 
@@ -25,7 +24,7 @@ class TranslationAnimator(
   }
   animator.setInterpolator(new DecelerateInterpolator())
   animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-    override def onAnimationUpdate(value: ValueAnimator) = runUi(update(value.getAnimatedValue.asInstanceOf[Float]))
+    override def onAnimationUpdate(value: ValueAnimator) = update(value.getAnimatedValue.asInstanceOf[Float]).run
   })
 
   def move(

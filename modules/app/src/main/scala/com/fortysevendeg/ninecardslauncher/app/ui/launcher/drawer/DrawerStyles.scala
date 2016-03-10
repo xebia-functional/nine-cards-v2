@@ -17,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Tint
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak}
+import macroid._
 
 trait DrawerStyles {
 

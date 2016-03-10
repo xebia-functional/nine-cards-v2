@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{Tweak, Ui}
+import macroid._
 
 trait AppsComposer
   extends Styles {
@@ -32,13 +32,13 @@ trait AppsComposer
     val switchViewTweak = if (allApps) {
       Tweak.blank
     } else {
-      vgAddView(getUi(
+      vgAddView((
         w[SwitchCompat] <~
           wire(switch) <~
           scColor(colorPrimary) <~
           scChecked(checked = true) <~
           scCheckedChangeListener(onCheckedChange)
-      ))
+      ).get)
     }
     (toolbar <~
       dtbInit(colorPrimary) <~

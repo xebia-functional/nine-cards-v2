@@ -97,17 +97,16 @@ trait WizardComposer
           }
         }) ~
       (wizardWorkspaceContent <~
-        vgAddView(getUi(w[StepsWorkspaces] <~
+        vgAddView((w[StepsWorkspaces] <~
           wire(workspaces) <~
           swData(steps) <~
           awsAddPageChangedObserver(currentPage => {
             val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
-            runUi(
-              (wizardRootLayout <~ rbvColor(backgroundColor)) ~
-                (stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
-                (paginationPanel <~ reloadPagers(currentPage)))
+            ((wizardRootLayout <~ rbvColor(backgroundColor)) ~
+              (stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
+              (paginationPanel <~ reloadPagers(currentPage))).run
           }
-          )))) ~
+          )).get)) ~
       (stepsAction <~
         diveInActionStyle <~
         On.click(finishUi)) ~
@@ -145,13 +144,11 @@ trait WizardComposer
     case i: ImageView => i <~ vActivated(false)
   }
 
-  private[this] def pagination(position: Int)(implicit context: ActivityContextWrapper) = getUi(
-    w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)
-  )
+  private[this] def pagination(position: Int)(implicit context: ActivityContextWrapper) =
+    (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def userRadio(title: String, tag: String)(implicit context: ActivityContextWrapper): RadioButton = getUi(
-    w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)
-  )
+  private[this] def userRadio(title: String, tag: String)(implicit context: ActivityContextWrapper): RadioButton =
+    (w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)).get
 
   def searchDevices(userCloudDevices: UserCloudDevices)(implicit context: ActivityContextWrapper): Ui[_] =
     addDevicesToRadioGroup(userCloudDevices.devices) ~

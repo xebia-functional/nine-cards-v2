@@ -6,7 +6,6 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
-import macroid.FullDsl._
 
 case class ShortcutAdapter(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit)
   (implicit activityContext: ActivityContextWrapper)
@@ -24,7 +23,7 @@ case class ShortcutAdapter(shortcuts: Seq[Shortcut], clickListener: (Shortcut) =
 
   override def onBindViewHolder(viewHolder: ViewHolderShortcutLayoutAdapter, position: Int): Unit = {
     val shortcut = shortcuts(position)
-    runUi(viewHolder.bind(shortcut, position))
+    viewHolder.bind(shortcut, position).run
   }
 
   def getLayoutManager = new LinearLayoutManager(activityContext.application)
