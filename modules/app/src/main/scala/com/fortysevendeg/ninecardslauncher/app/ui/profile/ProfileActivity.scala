@@ -120,7 +120,7 @@ class ProfileActivity
       setPublicationsAdapter(sampleItems("Publication")).run
     case SubscriptionsTab =>
       // TODO - Load subscriptions and set adapter
-      setSubscriptionsAdapter(sampleItems("Subscription"))
+      setSubscriptionsAdapter(sampleItems("Subscription")).run
     case AccountsTab =>
       clientStatuses match {
         case GoogleApiClientStatuses(Some(client), Some(email)) if client.isConnected =>
