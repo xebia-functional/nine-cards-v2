@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak}
+import macroid._
 
 trait CollectionsGroupStyle {
 

@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, Itera
 import com.fortysevendeg.ninecardslauncher.process.device.{ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.Ui
+import macroid._
 
 trait ContactsComposer
   extends Styles {
@@ -31,13 +31,13 @@ trait ContactsComposer
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.contacts) <~
-      vgAddView(getUi(
+      vgAddView((
         w[SwitchCompat] <~
           wire(switch) <~
           scColor(colorPrimary) <~
           scChecked(checked = true) <~
           scCheckedChangeListener(onCheckedChange)
-      )) <~
+      ).get) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle) ~
       (scrollerLayout <~ fslColor(colorPrimary))

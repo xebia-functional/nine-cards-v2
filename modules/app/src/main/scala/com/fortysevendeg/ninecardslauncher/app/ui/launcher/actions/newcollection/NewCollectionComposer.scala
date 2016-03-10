@@ -10,13 +10,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, ColorsUtils}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.Ui
+import macroid._
 
 trait NewCollectionComposer
   extends Styles {

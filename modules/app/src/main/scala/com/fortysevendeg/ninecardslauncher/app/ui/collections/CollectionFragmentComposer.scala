@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullingListener, PullToCloseListener, PullToCloseView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullToCloseView, PullingListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, _}
@@ -36,17 +36,17 @@ trait CollectionFragmentComposer
 
   var recyclerView = slot[CollectionRecyclerView]
 
-  def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) = getUi(
-    l[PullToCloseView](
+  def layout(animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper) =
+    (l[PullToCloseView](
       w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards)
     ) <~ pcvListener(PullToCloseListener(
       close = () => scrolledListener foreach (_.close())
     )) <~ pdvPullingListener(PullingListener(
-      start = () => runUi(recyclerView <~ nrvDisableScroll(true)),
-      end = () => runUi(recyclerView <~ nrvDisableScroll(false)),
+      start = () => (recyclerView <~ nrvDisableScroll(true)).run,
+      end = () => (recyclerView <~ nrvDisableScroll(false)).run,
       scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, sType, close))
     ))
-  )
+  ).get
 
   def initUi(collection: Collection, animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
     recyclerView <~
@@ -166,9 +166,8 @@ case class ViewHolderCollectionAdapter(content: CardView, heightCard: Int)(impli
 
   lazy val badge = Option(findView(TR.card_badge))
 
-  runUi(
-    (content <~ rootStyle(heightCard)) ~
-      (iconContent <~ iconContentStyle(heightCard)))
+  ((content <~ rootStyle(heightCard)) ~
+      (iconContent <~ iconContentStyle(heightCard))).run
 
   def bind(card: Card, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     (icon <~ iconCardTransform(card)) ~

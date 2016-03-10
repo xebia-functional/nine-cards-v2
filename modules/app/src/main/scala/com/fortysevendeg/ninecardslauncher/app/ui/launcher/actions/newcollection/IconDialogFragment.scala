@@ -21,7 +21,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak, Ui}
+import macroid._
 
 case class IconDialogFragment(categorySelected: NineCardCategory)(implicit contextWrapper: ContextWrapper)
   extends DialogFragment
@@ -34,9 +34,8 @@ case class IconDialogFragment(categorySelected: NineCardCategory)(implicit conte
 
     val views = appsCategories map { cat => new ItemView(cat, cat == categorySelected) }
 
-    runUi(
-      (rootView <~ vgAddView(contentView)) ~
-        (contentView <~ vgAddViews(views)))
+    ((rootView <~ vgAddView(contentView)) ~
+      (contentView <~ vgAddViews(views))).run
 
     new AlertDialog.Builder(getActivity).setView(rootView).create()
   }
@@ -59,21 +58,20 @@ case class IconDialogFragment(categorySelected: NineCardCategory)(implicit conte
       defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
       defaultColor = resGetColor(R.color.text_selected_color_dialog))
 
-    runUi(
-      (text <~
-        (if (select) tvColorResource(R.color.text_selected_color_dialog) else Tweak.blank) <~
-        tvText(name) <~
-        tvCompoundDrawablesWithIntrinsicBounds2(left = Some(colorizeDrawable))) ~
-        (icon <~ (if (select) ivSrc(drawable) else Tweak.blank)) ~
-        (this <~ On.click{
-          Ui {
-            val responseIntent = new Intent
-            responseIntent.putExtra(NewCollectionFragment.iconRequest, category.name)
-            getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
-            dismiss()
-          }
-        })
-    )
+    ((text <~
+      (if (select) tvColorResource(R.color.text_selected_color_dialog) else Tweak.blank) <~
+      tvText(name) <~
+      tvCompoundDrawablesWithIntrinsicBounds2(left = Some(colorizeDrawable))) ~
+      (icon <~ (if (select) ivSrc(drawable) else Tweak.blank)) ~
+      (this <~ On.click{
+        Ui {
+          val responseIntent = new Intent
+          responseIntent.putExtra(NewCollectionFragment.iconRequest, category.name)
+          getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+          dismiss()
+        }
+      })
+    ).run
 
   }
 

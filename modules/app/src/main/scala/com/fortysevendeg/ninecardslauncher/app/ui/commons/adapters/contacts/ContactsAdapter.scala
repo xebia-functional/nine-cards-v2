@@ -10,14 +10,13 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Tweak, Ui}
+import macroid._
 
 case class ContactsAdapter(
   var contacts: IterableContacts,
@@ -32,7 +31,7 @@ case class ContactsAdapter(
   override def getItemCount: Int = contacts.count()
 
   override def onBindViewHolder(vh: ContactsIterableHolder, position: Int): Unit =
-    runUi(vh.bind(contacts.moveToPosition(position), position))
+    vh.bind(contacts.moveToPosition(position), position).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): ContactsIterableHolder = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.contact_item, parent, false)
@@ -81,7 +80,7 @@ case class ContactsIterableHolder(content: View)(implicit context: ActivityConte
 
   lazy val favorite = Option(findView(TR.contact_item_favorite))
 
-  runUi(icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank))
+  (icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank)).run
 
   def bind(contact: Contact, position: Int): Ui[_] = {
     val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)

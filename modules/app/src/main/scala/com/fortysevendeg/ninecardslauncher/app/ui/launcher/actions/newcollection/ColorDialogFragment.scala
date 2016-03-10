@@ -11,16 +11,16 @@ import android.support.v7.app.AlertDialog
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, LayoutInflater}
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak, Ui}
+import macroid._
 
 case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapper)
   extends DialogFragment
@@ -33,7 +33,7 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
       val params = new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1)
 
       val views = from to to map (i => new ItemView(i, select = index == i))
-      runUi(layout <~ vgAddViews(views, params))
+      (layout <~ vgAddViews(views, params)).run
       layout
     }
     val rootView = new LinearLayout(getActivity)
@@ -44,7 +44,7 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
     val params = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
     params.gravity = Gravity.CENTER
 
-    runUi(rootView <~ vgAddViews(views, params))
+    (rootView <~ vgAddViews(views, params)).run
 
     new AlertDialog.Builder(getActivity).setView(rootView).create()
   }
@@ -63,19 +63,18 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
       defaultColor = resGetColor(R.color.color_selected_color_dialog),
       padding = resGetDimensionPixelSize(R.dimen.padding_large))
 
-    runUi(
-      (color <~
-        (if (select) ivSrc(icon) else Tweak.blank) <~
-        vBackground(getDrawable(index))) ~
-        (this <~
-          On.click {
-            Ui {
-              val responseIntent = new Intent
-              responseIntent.putExtra(NewCollectionFragment.colorRequest, index)
-              getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
-              dismiss()
-            }
-          }))
+    ((color <~
+      (if (select) ivSrc(icon) else Tweak.blank) <~
+      vBackground(getDrawable(index))) ~
+      (this <~
+        On.click {
+          Ui {
+            val responseIntent = new Intent
+            responseIntent.putExtra(NewCollectionFragment.colorRequest, index)
+            getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+            dismiss()
+          }
+        })).run
   }
 
   private[this] def getDrawable(index: Int) = {

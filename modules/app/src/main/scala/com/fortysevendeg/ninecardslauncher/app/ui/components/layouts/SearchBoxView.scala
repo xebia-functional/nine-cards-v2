@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 import android.content.Context
 import android.util.AttributeSet
 import android.view._
-import android.widget.{FrameLayout, EditText, LinearLayout, TextView}
+import android.widget.{EditText, FrameLayout, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -42,7 +42,7 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   lazy val headerIcon = Option(findView(TR.launcher_header_icon))
 
-  runUi(self <~ vgAddView(content))
+  (self <~ vgAddView(content)).run
 
   def updateContentView(contentView: ContentView): Ui[_] =
     (icon <~ iconTweak(contentView)) ~
@@ -61,9 +61,9 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
   def clean: Ui[_] = editText <~ (if (isEmpty) Tweak.blank else tvText("")) <~ etHideKeyboard
 
   def addTextChangedListener(onChangeText: (String) => Unit): Unit =
-    runUi(editText <~
+    (editText <~
       etAddTextChangedListener(
-        (text: String, start: Int, before: Int, count: Int) => onChangeText(text)))
+        (text: String, start: Int, before: Int, count: Int) => onChangeText(text))).run
 
   def isEmpty: Boolean = editText exists (_.getText.toString == "")
 

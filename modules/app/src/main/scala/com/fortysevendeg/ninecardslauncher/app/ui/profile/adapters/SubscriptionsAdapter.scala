@@ -7,8 +7,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.SubscriptionsAdapterStyles
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, _}
+import macroid._
 
 case class SubscriptionsAdapter(items: Seq[String])(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderPublicationsAdapter] {
@@ -16,7 +15,7 @@ case class SubscriptionsAdapter(items: Seq[String])(implicit activityContext: Ac
   override def getItemCount: Int = items.size
 
   override def onBindViewHolder(viewHolder: ViewHolderPublicationsAdapter, position: Int): Unit =
-    runUi(viewHolder.bind(items(position), position))
+    viewHolder.bind(items(position), position).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): ViewHolderPublicationsAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_subscription_item, parent, false).asInstanceOf[CardView]
@@ -31,7 +30,7 @@ case class ViewHolderSubscriptionsAdapter(content: View)(implicit context: Activ
 
   lazy val cardTitle = Option(findView(TR.title))
 
-  runUi(content <~ rootStyle())
+  (content <~ rootStyle()).run
 
   def bind(title: String, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     cardTitle <~ tvText(title)

@@ -5,17 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{FreeCollectionType, CollectionType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{FreeCollectionType, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import macroid.Ui
 
 import scalaz.concurrent.Task
@@ -31,7 +28,7 @@ class NewCollectionFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    runUi(initUi(saveCollection))
+    initUi(saveCollection).run
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
@@ -51,7 +48,7 @@ class NewCollectionFragment
         } getOrElse showGeneralError
       case _ => Ui.nop
     }
-    runUi(ui)
+    ui.run
   }
 
   private[this] def saveCollection(name: String, icon: String, index: Int) = {

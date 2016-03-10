@@ -16,11 +16,11 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFra
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
+import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid._
 
 trait RecommendationsComposer
   extends Styles

@@ -6,14 +6,13 @@ import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Ui}
+import macroid._
 
 class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)

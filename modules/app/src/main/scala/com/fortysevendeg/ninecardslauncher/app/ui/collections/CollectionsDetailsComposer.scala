@@ -147,13 +147,13 @@ trait CollectionsDetailsComposer
     }) getOrElse Ui.nop
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
-    getUi(w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
+    (w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>
         val category = getCurrentCollection flatMap (_.appsCategory)
         val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         showAction(f[AppsFragment], view, map)
-    }),
-    getUi(w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
+    }).get,
+    (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
       view: View =>
         val collection = getCurrentCollection
         val packages = collection map (_.cards flatMap (_.packageName)) getOrElse Seq.empty
@@ -164,13 +164,13 @@ trait CollectionsDetailsComposer
         } else {
           showAction(f[RecommendationsFragment], view, map, packages)
         }
-    }),
-    getUi(w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
+    }).get,
+    (w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
       view: View => showAction(f[ContactsFragment], view)
-    }),
-    getUi(w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
+    }).get,
+    (w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
       view: View => showAction(f[ShortcutFragment], view)
-    })
+    }).get
   )
 
   private[this] def tbReduceLayout(reduce: Int) = Tweak[Toolbar] { view =>
@@ -415,7 +415,7 @@ class OnPageChangeCollectionsListener(
     valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       override def onAnimationUpdate(value: ValueAnimator): Unit = {
         val color = interpolateColors(value.getAnimatedFraction, getColor(from), getColor(to))
-        runUi(updateToolbarColor(color))
+        updateToolbarColor(color).run
       }
     })
     valueAnimator.start()
@@ -437,7 +437,7 @@ class OnPageChangeCollectionsListener(
         val nextCollection: Option[Collection] = collections.lift(position + 1)
         nextCollection map { next =>
           val color = interpolateColors(positionOffset, getColor(selectedCollection), getColor(next))
-          runUi(updateToolbarColor(color))
+          updateToolbarColor(color).run
         }
     }
 
@@ -456,7 +456,7 @@ class OnPageChangeCollectionsListener(
       case Jump => jump(collections(lastPosition), collections(currentPosition))
       case _ =>
     }
-    runUi(updateCollection(collections(position), position, pageMovement))
+    updateCollection(collections(position), position, pageMovement).run
   }
 
 }

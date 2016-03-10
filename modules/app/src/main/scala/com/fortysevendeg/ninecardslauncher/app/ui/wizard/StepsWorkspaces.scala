@@ -9,8 +9,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.AnimatedWorkSpaces
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid.FullDsl._
-import macroid.{ActivityContextWrapper, Tweak, Ui}
+import macroid._
 
 class StepsWorkspaces(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit activityContext: ActivityContextWrapper)
   extends AnimatedWorkSpaces[StepWorkSpaceWidgetsHolder, StepData](context, attr, defStyleAttr) {

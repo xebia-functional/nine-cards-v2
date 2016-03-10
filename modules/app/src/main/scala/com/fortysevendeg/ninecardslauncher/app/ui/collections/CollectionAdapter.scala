@@ -12,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
-import macroid.FullDsl._
 
 case class CollectionAdapter(var collection: Collection, heightCard: Int)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
@@ -51,7 +50,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
 
   override def onBindViewHolder(viewHolder: ViewHolderCollectionAdapter, position: Int): Unit = {
     val card = collection.cards(position)
-    runUi(viewHolder.bind(card, position))
+    viewHolder.bind(card, position).run
   }
 
   def addCards(cards: Seq[Card]) = {

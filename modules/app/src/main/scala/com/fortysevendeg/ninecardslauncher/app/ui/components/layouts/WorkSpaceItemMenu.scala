@@ -8,9 +8,8 @@ import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher2.{TypedFindView, R, TR}
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Tweak}
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import macroid._
 
 class WorkSpaceItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(context, attr, defStyleAttr)
@@ -27,7 +26,7 @@ class WorkSpaceItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val icon = Option(findView(TR.workspace_icon))
 
-  runUi(icon <~ fabStyle)
+  (icon <~ fabStyle).run
 
 }
 

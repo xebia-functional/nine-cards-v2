@@ -7,11 +7,10 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Transformer, Tweak}
+import macroid._
 
 object CommonsTweak {
 

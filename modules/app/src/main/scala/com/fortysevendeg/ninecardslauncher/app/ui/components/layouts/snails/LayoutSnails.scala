@@ -8,8 +8,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
-import macroid.{ContextWrapper, Snail}
+import macroid._
 
 import scala.concurrent.Promise
 
@@ -28,7 +27,7 @@ object SwipeAnimatedDrawerViewSnails {
       .setListener(new AnimatorListenerAdapter {
         override def onAnimationEnd(animation: Animator) = {
           super.onAnimationEnd(animation)
-          runUi(view <~ vUseLayerHardware <~ vTranslationY(0) <~ vAlpha(1) <~ vGone)
+          (view <~ vUseLayerHardware <~ vTranslationY(0) <~ vAlpha(1) <~ vGone).run
           animPromise.trySuccess()
         }
       }).start()
