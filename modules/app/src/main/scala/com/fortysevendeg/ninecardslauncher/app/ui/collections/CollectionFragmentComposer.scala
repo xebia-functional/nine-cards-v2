@@ -7,7 +7,7 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionStateIdle, ActionStateReordering, ReorderItemTouchHelperCallback}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionRemove, ActionStateIdle, ActionStateReordering, ReorderItemTouchHelperCallback}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullToCloseView, PullingListener}
@@ -30,14 +30,22 @@ trait CollectionFragmentComposer
 
   var pullToCloseView = slot[PullToCloseView]
 
-  def layout(animateCards: Boolean, onMoveItems: (Int, Int) => Unit)(implicit contextWrapper: ActivityContextWrapper) = {
+  def layout(
+    animateCards: Boolean,
+    color: Int,
+    onMoveItems: (Int, Int) => Unit,
+    onRemoveItem: (Int) => Unit)(implicit contextWrapper: ActivityContextWrapper) = {
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
+      color = color,
       onChanged = {
-        case (ActionStateReordering, position) =>
+        case (ActionStateReordering, _, position) =>
           statuses = statuses.copy(startPositionReorder = position)
           runUi(openReorderMode)
-        case (ActionStateIdle, position) =>
-          onMoveItems(statuses.startPositionReorder, position)
+        case (ActionStateIdle, action, position) =>
+          action match {
+            case ActionRemove => onRemoveItem(statuses.startPositionReorder)
+            case _ => onMoveItems(statuses.startPositionReorder, position)
+          }
           runUi(closeReorderMode)
       })
 

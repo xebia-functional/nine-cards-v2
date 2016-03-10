@@ -100,6 +100,8 @@
     <dimen name="height_selected_tab">2dp</dimen>
     <dimen name="text_tabs">14sp</dimen>
 
+    <dimen name="size_actions_drag_drop">48dp</dimen>
+
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
     <dimen name="margin_app_drawer_fab_button">16dp</dimen>
