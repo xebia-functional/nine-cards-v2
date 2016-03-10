@@ -16,7 +16,6 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import macroid.Contexts
-import macroid.FullDsl._
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -60,7 +59,7 @@ class CollectionFragment
     val sType = ScrollType(getArguments.getString(keyScrollType, ScrollDown.toString))
     val canScroll = collection exists (_.cards.length > numSpaces)
     statuses = statuses.copy(scrollType = sType, canScroll = canScroll)
-    collection foreach (c => runUi(initUi(c, animateCards)))
+    collection foreach (c => initUi(c, animateCards).run)
     super.onViewCreated(view, savedInstanceState)
   }
 
@@ -77,27 +76,27 @@ class CollectionFragment
     scrolledListener = None
   }
 
-  def bindAnimatedAdapter = if (animateCards) collection foreach (c => runUi(setAnimatedAdapter(c)))
+  def bindAnimatedAdapter = if (animateCards) collection foreach (c => setAnimatedAdapter(c).run)
 
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)
     val cardCount = adapter.collection.cards.length
     statuses = statuses.copy(canScroll = cardCount > numSpaces)
-    runUi(resetScroll(adapter.collection))
+    resetScroll(adapter.collection).run
   }
 
   def removeCard(card: Card) = getAdapter foreach { adapter =>
     adapter.removeCard(card)
     val cardCount = adapter.collection.cards.length
     statuses = statuses.copy(canScroll = cardCount > numSpaces)
-    runUi(resetScroll(adapter.collection))
+    resetScroll(adapter.collection).run
   }
 
   def reloadCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.updateCards(cards)
     val cardCount = adapter.collection.cards.length
     statuses = statuses.copy(canScroll = cardCount > numSpaces)
-    runUi(resetScroll(adapter.collection))
+    resetScroll(adapter.collection).run
   }
 }
 

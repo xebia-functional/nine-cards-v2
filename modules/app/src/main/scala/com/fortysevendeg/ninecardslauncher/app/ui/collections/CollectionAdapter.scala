@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
 import macroid.{Ui, ActivityContextWrapper}
+import macroid._
 import macroid.FullDsl._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 
@@ -38,7 +39,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   override def getItemCount: Int = collection.cards.size
 
   override def onBindViewHolder(viewHolder: ViewHolderCollectionAdapter, position: Int): Unit =
-    runUi(viewHolder.bind(collection.cards(position)))
+    viewHolder.bind(collection.cards(position)).run
 
   def addCards(cards: Seq[Card]) = {
     cards foreach (card => trackCard(card, AddedToCollectionAction))
@@ -105,10 +106,9 @@ case class ViewHolderCollectionAdapter(
 
   lazy val badge = Option(findView(TR.card_badge))
 
-  runUi(
-    (content <~ rootStyle(heightCard) <~ On.click {
-      onClick(getAdapterPosition)
-    }) ~ (iconContent <~ iconContentStyle(heightCard)))
+  ((content <~ rootStyle(heightCard) <~ On.click {
+    onClick(getAdapterPosition)
+  }) ~ (iconContent <~ iconContentStyle(heightCard))).run
 
   def bind(card: Card)(implicit uiContext: UiContext[_]): Ui[_] =
     (icon <~ iconCardTransform(card)) ~
