@@ -103,9 +103,9 @@ trait CollectionFragmentComposer
         nrvRegisterScroll(true))
   }
 
-  def resetScroll(collection: Collection)(implicit contextWrapper: ActivityContextWrapper): Ui[_] =
+  def resetScroll(implicit contextWrapper: ActivityContextWrapper): Ui[_] =
     recyclerView <~
-      getScrollListener(collection.cards.length, resGetDimensionPixelSize(R.dimen.space_moving_collection_details))
+      getScrollListener(resGetDimensionPixelSize(R.dimen.space_moving_collection_details))
 
   def setAnimatedAdapter(collection: Collection)
     (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
@@ -113,7 +113,7 @@ trait CollectionFragmentComposer
     recyclerView <~
       rvAdapter(createAdapter(collection)) <~
       nrvScheduleLayoutAnimation <~
-      getScrollListener(collection.cards.length, spaceMove)
+      getScrollListener(spaceMove)
   }
 
   def scrollType(newScrollType: ScrollType)(implicit contextWrapper: ContextWrapper): Ui[_] = {
@@ -155,7 +155,7 @@ trait CollectionFragmentComposer
 
     val adapterTweaks = if (!animateCards) {
       rvAdapter(createAdapter(collection)) +
-        getScrollListener(collection.cards.length, spaceMove)
+        getScrollListener(spaceMove)
     } else Tweak.blank
 
     recyclerView <~
@@ -166,11 +166,11 @@ trait CollectionFragmentComposer
       rvItemAnimator(new DefaultItemAnimator)
   }
 
-  private[this] def getScrollListener(cardsCount: Int, spaceMove: Int)(implicit contextWrapper: ActivityContextWrapper) =
+  private[this] def getScrollListener(spaceMove: Int)(implicit contextWrapper: ActivityContextWrapper) =
     nrvCollectionScrollListener(
       scrolled = (scrollY: Int, dx: Int, dy: Int) => {
         val sy = scrollY + dy
-        if (statuses.activeFragment && cardsCount > numSpaces) {
+        if (statuses.activeFragment && statuses.canScroll) {
           scrolledListener foreach (_.scrollY(sy, dy))
         }
         sy
@@ -179,7 +179,7 @@ trait CollectionFragmentComposer
         if (newState == RecyclerView.SCROLL_STATE_DRAGGING) scrolledListener foreach (_.startScroll())
         if (statuses.activeFragment &&
           newState == RecyclerView.SCROLL_STATE_IDLE &&
-          cardsCount > numSpaces) {
+          statuses.canScroll) {
           scrolledListener foreach { sl =>
             val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
             if (scrollY < spaceMove && moveTo != scrollY) recyclerView.smoothScrollBy(0, moveTo - scrollY)

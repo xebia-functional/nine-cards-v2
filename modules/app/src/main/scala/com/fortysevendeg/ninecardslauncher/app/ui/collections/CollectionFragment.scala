@@ -56,7 +56,7 @@ class CollectionFragment
             collection = adapter.collection
             activity <- activity[CollectionsDetailsActivity]
           } yield {
-            Task.fork(di.collectionProcess.reorderCard(collection.id, collection.cards(from).id, to).run).resolveAsync(
+            Task.fork(di.collectionProcess.reorderCard(collection.id, collection.cards(to).id, to).run).resolveAsync(
               onResult = (_) => activity.reloadCards(false)
             )
           }
@@ -97,19 +97,19 @@ class CollectionFragment
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)
     updateScroll()
-    resetScroll(adapter.collection).run
+    resetScroll.run
   }
 
   def removeCard(card: Card) = getAdapter foreach { adapter =>
     adapter.removeCard(card)
     updateScroll()
-    resetScroll(adapter.collection).run
+    resetScroll.run
   }
 
   def reloadCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.updateCards(cards)
     updateScroll()
-    resetScroll(adapter.collection).run
+    resetScroll.run
   }
 }
 
