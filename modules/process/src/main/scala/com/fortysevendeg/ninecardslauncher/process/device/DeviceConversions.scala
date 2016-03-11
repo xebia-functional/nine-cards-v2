@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.process.device
 
-import android.content.{ComponentName, Intent}
+import android.content.{Context, ComponentName, Intent}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardsIntentExtras, NineCardIntentExtras, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.process.commons.Dimensions._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{EmailCategory, PhoneCategory, DockType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
 import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayApp, GooglePlayPackage}
@@ -111,6 +111,13 @@ trait DeviceConversions extends NineCardIntentConversions {
     imagePath = app.imagePath,
     position = app.position
   )
+
+  def toDockApp(app: Application, position: Int, imagePath: String)(implicit context: ContextSupport): DockApp = DockApp(
+    name = app.packageName,
+    dockType = AppDockType,
+    intent = toNineCardIntent(app),
+    imagePath = imagePath,
+    position = position)
 
   def toShortcutSeq(items: Seq[ServicesShortcut])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
 

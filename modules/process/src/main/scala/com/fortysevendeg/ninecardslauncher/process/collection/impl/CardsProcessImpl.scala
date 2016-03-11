@@ -18,7 +18,7 @@ trait CardsProcessImpl {
     with FormedCollectionConversions
     with ImplicitsPersistenceServiceExceptions =>
 
-  def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): ResultT[Task, Seq[Card], CardException] =
+  def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]) =
     (for {
       cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId))
       addedCardList <- addCardList(collectionId, addCardListRequest, cardList.size)

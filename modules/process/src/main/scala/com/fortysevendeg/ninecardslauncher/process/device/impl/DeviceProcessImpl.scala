@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetsServices
 
 class DeviceProcessImpl(
-  val appsService: AppsServices,
+  val appsServices: AppsServices,
   val apiServices: ApiServices,
   val persistenceServices: PersistenceServices,
   val shortcutsServices: ShortcutsServices,
@@ -85,8 +85,7 @@ class DeviceProcessImpl(
 
   override def getLastCalls(implicit context: ContextSupport) = super.getLastCalls
 
-  override def saveDockApp(packageName: String, intent: NineCardIntent, imagePath: String, position: Int) =
-    super.saveDockApp(packageName, intent, imagePath, position)
+  override def generateDockApps(size: Int)(implicit context: ContextSupport) = super.generateDockApps(size)
 
   override def getDockApps = super.getDockApps
 
