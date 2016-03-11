@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -45,15 +46,26 @@ class CollectionFragment
   lazy val collectionId = getInt(Seq(getArguments), keyCollectionId, 0)
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View =
-    layout(
-      animateCards = animateCards,
-      onMoveItems = (from: Int, to: Int) => {
-        collection foreach { col =>
-          Task.fork(di.collectionProcess.reorderCard(col.id, col.cards(from).id, to).run).resolveAsync(
-            onResult = (_) => activity[CollectionsDetailsActivity] foreach(_.reloadCards(false))
-          )
-        }
-    })
+    collection map { col =>
+      layout(
+        animateCards = animateCards,
+        color = resGetColor(getIndexColor(col.themedColorIndex)),
+        onMoveItems = (from: Int, to: Int) => {
+          collection foreach { col =>
+            Task.fork(di.collectionProcess.reorderCard(col.id, col.cards(from).id, to).run).resolveAsync(
+              onResult = (_) => activity[CollectionsDetailsActivity] foreach (_.reloadCards(false))
+            )
+          }
+        },
+        onRemoveItem = (from: Int, to: Int) => {
+          for {
+            col <- collection
+            activity <- activity[CollectionsDetailsActivity]
+          } yield {
+            activity.removeCard(col.cards(from))
+          }
+        })
+    } getOrElse(throw new RuntimeException("Collection not found")) // TODO We should use an error screen
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     val sType = ScrollType(getArguments.getString(keyScrollType, ScrollDown.toString))
@@ -76,7 +88,7 @@ class CollectionFragment
     scrolledListener = None
   }
 
-  def bindAnimatedAdapter = if (animateCards) collection foreach (c => setAnimatedAdapter(c).run)
+  def bindAnimatedAdapter() = if (animateCards) collection foreach (c => setAnimatedAdapter(c).run)
 
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)

@@ -1,11 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks
 
-import android.support.v7.widget.{GridLayoutManager, RecyclerView}
-import android.view.View
-import android.view.ViewGroup.OnHierarchyChangeListener
+import android.support.v7.widget.RecyclerView
 import android.view.animation.AnimationUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
@@ -48,32 +45,14 @@ object CollectionRecyclerViewTweaks {
 
   def nrvScheduleLayoutAnimation = Tweak[W](_.scheduleLayoutAnimation())
 
-  def nrvResetScroll = Tweak[W] { rv =>
-    rv.scrollListener.foreach(_.scrollY = 0)
+  def nrvResetScroll(y: Int) = Tweak[W] { rv =>
+    rv.scrollListener.foreach(_.scrollY = y)
   }
 
   def nrvCollectionScrollListener(
     scrolled: (Int, Int, Int) => Int,
     scrollStateChanged: (Int, RecyclerView, Int) => Unit
   )(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.createScrollListener(scrolled, scrollStateChanged))
-
-  def nrvResetPositions(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { recyclerView =>
-    recyclerView.setOnHierarchyChangeListener(new OnHierarchyChangeListener {
-      override def onChildViewAdded(parent: View, child: View): Unit = reset
-      override def onChildViewRemoved(parent: View, child: View): Unit = reset
-      private[this] def reset = recyclerView.getLayoutManager match {
-        case layoutManager: GridLayoutManager =>
-          val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
-          0 until recyclerView.getChildCount foreach { position =>
-            val newPosition = position + firstVisiblePosition
-            val v = recyclerView.getChildAt(position)
-            (v <~ vTag2(newPosition)).run
-          }
-        case _ =>
-      }
-
-    })
-  }
 
 }
 

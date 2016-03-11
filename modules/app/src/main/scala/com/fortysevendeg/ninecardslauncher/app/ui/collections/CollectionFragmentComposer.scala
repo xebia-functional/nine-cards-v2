@@ -7,7 +7,7 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionStateIdle, ActionStateReordering, ReorderItemTouchHelperCallback}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionRemove, ActionStateIdle, ActionStateReordering, ReorderItemTouchHelperCallback}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullToCloseView, PullingListener}
@@ -30,14 +30,24 @@ trait CollectionFragmentComposer
 
   var pullToCloseView = slot[PullToCloseView]
 
-  def layout(animateCards: Boolean, onMoveItems: (Int, Int) => Unit)(implicit contextWrapper: ActivityContextWrapper) = {
+  def layout(
+    animateCards: Boolean,
+    color: Int,
+    onMoveItems: (Int, Int) => Unit,
+    onRemoveItem: (Int, Int) => Unit)(implicit contextWrapper: ActivityContextWrapper) = {
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
+      color = color,
       onChanged = {
-        case (ActionStateReordering, position) =>
+        case (ActionStateReordering, _, position) =>
           statuses = statuses.copy(startPositionReorder = position)
           openReorderMode.run
-        case (ActionStateIdle, position) =>
-          onMoveItems(statuses.startPositionReorder, position)
+        case (ActionStateIdle, action, position) =>
+          action match {
+            case ActionRemove =>
+              getAdapter foreach(_.onItemMove(statuses.startPositionReorder, position))
+              onRemoveItem(statuses.startPositionReorder, position)
+            case _ => onMoveItems(statuses.startPositionReorder, position)
+          }
           closeReorderMode.run
       })
 
@@ -52,12 +62,12 @@ trait CollectionFragmentComposer
         start = () => (recyclerView <~ nrvDisableScroll(true)).run,
         end = () => (recyclerView <~ nrvDisableScroll(false)).run,
         scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, statuses.scrollType, close))
-      ))).get
+      ))
+      ).get
   }
 
   def initUi(collection: Collection, animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
     recyclerView <~
-      nrvResetPositions <~
       vGlobalLayoutListener(view => {
         val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
         val padding = resGetDimensionPixelSize(R.dimen.padding_small)
@@ -68,6 +78,7 @@ trait CollectionFragmentComposer
   def openReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     scrolledListener foreach (_.openReorderMode(statuses.scrollType))
+    scrolledListener foreach (_.scrollType(ScrollUp))
     (pullToCloseView <~ pdvEnable(false)) ~
       (recyclerView <~
         vPadding(padding, padding, padding, padding) <~
@@ -75,16 +86,14 @@ trait CollectionFragmentComposer
   }
 
   def closeReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
-    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     scrolledListener foreach { sl =>
-      sl.scrollType(ScrollDown)
       sl.closeReorderMode()
     }
+    recyclerView.get.smoothScrollToPosition(0)
     (pullToCloseView <~ pdvEnable(true)) ~
       (recyclerView <~
-        nrvResetScroll <~
-        vPadding(padding, spaceMove, padding, padding) <~
+        nrvResetScroll(spaceMove) <~
         vScrollBy(0, -Int.MaxValue) <~
         nrvRegisterScroll(true))
   }

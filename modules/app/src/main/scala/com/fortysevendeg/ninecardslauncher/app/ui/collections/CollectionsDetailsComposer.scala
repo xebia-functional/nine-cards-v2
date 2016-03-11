@@ -106,7 +106,7 @@ trait CollectionsDetailsComposer
         stlOnPageChangeListener(
           new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
-      uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter) }, 100) ~
+      uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter()) }, 100) ~
       (tabs <~ vVisible <~~ enterViews)
   }
 
@@ -154,12 +154,8 @@ trait CollectionsDetailsComposer
   def closeReorderModeUi: Ui[_] =
     (tabs <~
       vVisible <~~
-      applyAnimation(y = Some(0f), alpha = Some(1f)) <~
-      uiElevation(elevation)) ~
-      (toolbar <~
-        applyAnimation(onUpdate = (ratio) => toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = true))) <~
-        uiElevation(elevation)) ~
-      (iconContent <~ vVisible <~ vScaleX(1) <~ vScaleY(1) <~ vAlpha(1))
+      applyAnimation(alpha = Some(1f))) ~
+      (iconContent <~ vVisible)
 
   def notifyScroll(sType: ScrollType): Ui[_] = (for {
     vp <- viewPager

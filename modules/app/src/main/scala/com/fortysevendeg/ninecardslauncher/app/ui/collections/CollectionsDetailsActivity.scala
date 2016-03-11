@@ -206,18 +206,10 @@ class CollectionsDetailsActivity
       )
     }
 
-  def removeCard(card: Card): Unit = {
-    val ft = getSupportFragmentManager.beginTransaction()
-    Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(javaNull)
-    val dialog = new RemoveCardDialogFragment(() => {
-      getCurrentCollection foreach { collection =>
-        Task.fork(removeCard(collection.id, card.id).run).resolveAsync(
-          onResult = (_) => removeCardFromCurrentFragment(card)
-        )
-      }
-    })
-    dialog.show(ft, tagDialog)
+  def removeCard(card: Card): Unit = getCurrentCollection foreach { collection =>
+    Task.fork(removeCard(collection.id, card.id).run).resolveAsync(
+      onResult = (_) => removeCardFromCurrentFragment(card)
+    )
   }
 
   def reloadCards(reloadFragment: Boolean): Unit =
