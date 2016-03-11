@@ -51,18 +51,22 @@ class CollectionFragment
         animateCards = animateCards,
         color = resGetColor(getIndexColor(col.themedColorIndex)),
         onMoveItems = (from: Int, to: Int) => {
-          collection foreach { col =>
-            Task.fork(di.collectionProcess.reorderCard(col.id, col.cards(from).id, to).run).resolveAsync(
-              onResult = (_) => activity[CollectionsDetailsActivity] foreach (_.reloadCards(false))
+          for {
+            adapter <- getAdapter
+            collection = adapter.collection
+            activity <- activity[CollectionsDetailsActivity]
+          } yield {
+            Task.fork(di.collectionProcess.reorderCard(collection.id, collection.cards(from).id, to).run).resolveAsync(
+              onResult = (_) => activity.reloadCards(false)
             )
           }
         },
-        onRemoveItem = (from: Int, to: Int) => {
+        onRemoveItem = (position: Int) => {
           for {
-            col <- collection
+            adapter <- getAdapter
             activity <- activity[CollectionsDetailsActivity]
           } yield {
-            activity.removeCard(col.cards(from))
+            activity.removeCard(adapter.collection.cards(position))
           }
         })
     } getOrElse(throw new RuntimeException("Collection not found")) // TODO We should use an error screen
@@ -92,22 +96,19 @@ class CollectionFragment
 
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)
-    val cardCount = adapter.collection.cards.length
-    statuses = statuses.copy(canScroll = cardCount > numSpaces)
+    updateScroll()
     resetScroll(adapter.collection).run
   }
 
   def removeCard(card: Card) = getAdapter foreach { adapter =>
     adapter.removeCard(card)
-    val cardCount = adapter.collection.cards.length
-    statuses = statuses.copy(canScroll = cardCount > numSpaces)
+    updateScroll()
     resetScroll(adapter.collection).run
   }
 
   def reloadCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.updateCards(cards)
-    val cardCount = adapter.collection.cards.length
-    statuses = statuses.copy(canScroll = cardCount > numSpaces)
+    updateScroll()
     resetScroll(adapter.collection).run
   }
 }

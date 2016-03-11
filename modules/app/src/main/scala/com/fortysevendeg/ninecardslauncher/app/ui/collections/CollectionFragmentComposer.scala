@@ -34,7 +34,7 @@ trait CollectionFragmentComposer
     animateCards: Boolean,
     color: Int,
     onMoveItems: (Int, Int) => Unit,
-    onRemoveItem: (Int, Int) => Unit)(implicit contextWrapper: ActivityContextWrapper) = {
+    onRemoveItem: (Int) => Unit)(implicit contextWrapper: ActivityContextWrapper) = {
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
       color = color,
       onChanged = {
@@ -44,8 +44,11 @@ trait CollectionFragmentComposer
         case (ActionStateIdle, action, position) =>
           action match {
             case ActionRemove =>
-              getAdapter foreach(_.onItemMove(statuses.startPositionReorder, position))
-              onRemoveItem(statuses.startPositionReorder, position)
+              // If we are removing card, first we move the card to the place where we begin the movement
+              getAdapter foreach(_.onItemMove(position, statuses.startPositionReorder))
+              onRemoveItem(statuses.startPositionReorder)
+              // Update the scroll removing one element
+              updateScroll(-1)
             case _ => onMoveItems(statuses.startPositionReorder, position)
           }
           closeReorderMode.run
@@ -92,9 +95,11 @@ trait CollectionFragmentComposer
     (pullToCloseView <~ pdvEnable(true)) ~
       (recyclerView <~
         nrvResetScroll(spaceMove) <~
-        vPadding(padding, spaceMove, padding, padding) <~
-        vScrollBy(0, -Int.MaxValue) <~
-        vScrollBy(0, spaceMove) <~
+        (if (statuses.canScroll) {
+          vPadding(padding, spaceMove, padding, padding) +
+            vScrollBy(0, -Int.MaxValue) +
+            vScrollBy(0, spaceMove)
+        } else Tweak.blank) <~
         nrvRegisterScroll(true))
   }
 
@@ -139,6 +144,10 @@ trait CollectionFragmentComposer
       case Some(a: CollectionAdapter) => Some(a)
       case _ => None
     }
+  }
+
+  def updateScroll(offset: Int = 0): Unit = getAdapter foreach { adapter =>
+    statuses = statuses.updateScroll(adapter.collection.cards.length + offset)
   }
 
   private[this] def loadCollection(collection: Collection, padding: Int, spaceMove: Int, animateCards: Boolean)
@@ -218,4 +227,8 @@ case class CollectionStatuses(
   scrollType: ScrollType = ScrollNo,
   canScroll: Boolean = false,
   activeFragment: Boolean = false,
-  startPositionReorder: Int = 0)
+  startPositionReorder: Int = 0) {
+
+  def updateScroll(length: Int) = copy(canScroll = length > numSpaces)
+
+}
