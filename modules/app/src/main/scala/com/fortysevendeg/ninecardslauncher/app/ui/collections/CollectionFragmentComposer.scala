@@ -86,15 +86,15 @@ trait CollectionFragmentComposer
   }
 
   def closeReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
+    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-    scrolledListener foreach { sl =>
-      sl.closeReorderMode()
-    }
-    recyclerView.get.smoothScrollToPosition(0)
+    scrolledListener foreach (_.closeReorderMode())
     (pullToCloseView <~ pdvEnable(true)) ~
       (recyclerView <~
         nrvResetScroll(spaceMove) <~
+        vPadding(padding, spaceMove, padding, padding) <~
         vScrollBy(0, -Int.MaxValue) <~
+        vScrollBy(0, spaceMove) <~
         nrvRegisterScroll(true))
   }
 
