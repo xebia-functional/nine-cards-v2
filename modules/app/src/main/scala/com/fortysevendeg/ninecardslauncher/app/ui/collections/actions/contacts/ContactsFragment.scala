@@ -30,11 +30,7 @@ class ContactsFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    initUi(checked => loadContacts(if (checked) {
-      AllContacts
-    } else {
-      FavoriteContacts
-    }, reload = true)).run
+    initUi(filter => loadContacts(filter, reload = true)).run
     loadContacts(AllContacts)
   }
 
@@ -64,9 +60,7 @@ class ContactsFragment
     onResult = (contacts: IterableContacts) => if (reload) {
       reloadContactsAdapter(contacts, filter)
     } else {
-      generateContactsAdapter(contacts, contact => {
-        showDialog(contact)
-      })
+      generateContactsAdapter(contacts, contact => showDialog(contact))
     },
     onException = (ex: Throwable) => showError(R.string.errorLoadingContacts, loadContacts(filter, reload))
   )

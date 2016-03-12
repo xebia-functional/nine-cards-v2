@@ -1,19 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
-import android.support.v7.widget.SwitchCompat
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{TabInfo, PullToTabsListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
-import com.fortysevendeg.ninecardslauncher.process.device.{ContactsFilter, FavoriteContacts}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
+import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid.FullDsl._
 import macroid._
 
 trait ContactsComposer
@@ -21,25 +23,48 @@ trait ContactsComposer
 
   self: TypedFindView with BaseActionFragment =>
 
+  val resistance = 2.4f
+
   lazy val recycler = Option(findView(TR.actions_recycler))
 
-  lazy val scrollerLayout = findView(TR.action_scroller_layout)
+  lazy val scrollerLayout = Option(findView(TR.action_scroller_layout))
 
-  var switch = slot[SwitchCompat]
+  lazy val pullToTabsView = Option(findView(TR.actions_pull_to_tabs))
 
-  def initUi(onCheckedChange: (Boolean) => Unit): Ui[_] =
+  lazy val tabs = Option(findView(TR.actions_tabs))
+
+  lazy val appTabs = Seq(
+    TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.contacts_alphabetical)),
+    TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites))
+  )
+
+  def initUi(onChange: (ContactsFilter) => Unit): Ui[_] =
     (toolbar <~
       dtbInit(colorPrimary) <~
+      dtvInflateMenu(R.menu.contact_dialog_menu) <~
+      dtvOnMenuItemClickListener(onItem = {
+        case R.id.action_filter =>
+          (if (isTabsOpened) closeTabs else openTabs).run
+          true
+        case _ => false
+      }) <~
       dtbChangeText(R.string.contacts) <~
-      vgAddView((
-        w[SwitchCompat] <~
-          wire(switch) <~
-          scColor(colorPrimary) <~
-          scChecked(checked = true) <~
-          scCheckedChangeListener(onCheckedChange)
-      ).get) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
+      (pullToTabsView <~
+        ptvLinkTabs(
+          tabs = tabs,
+          start = Ui.nop,
+          end = Ui.nop) <~
+        ptvAddTabsAndActivate(appTabs, 0, Some(colorPrimary)) <~
+        pdvResistance(resistance) <~
+        ptvListener(PullToTabsListener(
+          changeItem = (pos: Int) => {
+            (Ui(onChange(if (pos == 0) AllContacts else FavoriteContacts)) ~
+              (if (isTabsOpened) closeTabs else Ui.nop)).run
+          }
+        ))) ~
       (recycler <~ recyclerStyle) ~
+      (tabs <~ tvClose) ~
       (scrollerLayout <~ fslColor(colorPrimary))
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError
@@ -79,5 +104,15 @@ trait ContactsComposer
       case _ => None
     }
   }
+
+  private[this] def isTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
+
+  protected def openTabs: Ui[_] =
+    (tabs <~ tvOpen <~ showTabs) ~
+      (recycler <~ hideList)
+
+  protected def closeTabs: Ui[_] =
+    (tabs <~ tvClose <~ hideTabs) ~
+      (recycler <~ showList)
 
 }

@@ -4,8 +4,18 @@
     android:id="@+id/action_scroller_layout"
     style="@style/ActionsListContent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/actions_recycler"
-        style="@style/ActionsRecycler"/>
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToTabsView
+        android:id="@+id/actions_pull_to_tabs"
+        style="@style/PullToTabsContent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/actions_recycler"
+            style="@style/ActionsRecycler"/>
+
+    </com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToTabsView>
+
+    <LinearLayout
+        android:id="@+id/actions_tabs"
+        style="@style/PullToTabsItem"/>
 
 </com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout>

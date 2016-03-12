@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{Con
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
@@ -27,6 +28,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Swip
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
@@ -49,8 +51,6 @@ trait DrawerComposer
   val pages = 2
 
   val resistance = 2.4f
-
-  val openedField = "opened"
 
   lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
 
@@ -93,11 +93,11 @@ trait DrawerComposer
     addWidgetsDrawer ~ transformDrawerUi
 
   protected def openTabs(implicit context: ActivityContextWrapper): Ui[_] =
-    (tabs <~ vAddField(openedField, true) <~ showTabs) ~
+    (tabs <~ tvOpen <~ showTabs) ~
       (recycler <~ hideList)
 
   protected def closeTabs(implicit context: ActivityContextWrapper): Ui[_] =
-    (tabs <~ vAddField(openedField, false) <~ hideTabs) ~
+    (tabs <~ tvClose <~ hideTabs) ~
       (recycler <~ showList)
 
   private[this] def closeCursorAdapter: Ui[_] =
@@ -129,7 +129,7 @@ trait DrawerComposer
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
-        ptvAddTabsAndActivate(appTabs, 0)) ~
+        ptvAddTabsAndActivate(appTabs, 0, None)) ~
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
   }
 
@@ -140,7 +140,7 @@ trait DrawerComposer
       (paginationDrawerPanel <~ reloadPager(1)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
-        ptvAddTabsAndActivate(contactsTabs, 0)) ~
+        ptvAddTabsAndActivate(contactsTabs, 0, None)) ~
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
   }
 
@@ -153,7 +153,7 @@ trait DrawerComposer
     ) <~ wire(pullToTabsView)
 
     val tabsLayout = l[LinearLayout]() <~
-      vAddField(openedField, false) <~
+      tvClose <~
       tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
       wire(tabs)
 
@@ -170,6 +170,7 @@ trait DrawerComposer
 
   private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
     val colorPrimary = theme.get(PrimaryColor)
+    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     (searchBoxView <~
       sbvUpdateContentView(AppsView) <~
       sbvChangeListener(self) <~
@@ -200,6 +201,7 @@ trait DrawerComposer
         )) <~
         rvAddItemDecoration(new SelectedItemDecoration)) ~
       (scrollerLayout <~
+        fslMarginRightBarContent(padding) <~
         scrollableStyle(colorPrimary)) ~
       (pullToTabsView <~
         pdvHorizontalEnable(true) <~
@@ -208,7 +210,7 @@ trait DrawerComposer
           tabs = tabs,
           start = Ui.nop,
           end = Ui.nop) <~
-        ptvAddTabsAndActivate(appTabs, 0) <~
+        ptvAddTabsAndActivate(appTabs, 0, None) <~
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
@@ -284,7 +286,7 @@ trait DrawerComposer
       })
   }
 
-  protected def isTabsOpened: Boolean = tabs exists (rv => rv.getField[Boolean](openedField) getOrElse false)
+  protected def isTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
 
   private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
 

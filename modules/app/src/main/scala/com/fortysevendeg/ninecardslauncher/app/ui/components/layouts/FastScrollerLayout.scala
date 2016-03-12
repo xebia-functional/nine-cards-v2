@@ -49,6 +49,8 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def setColor(color: Int) = (fastScroller <~ fsColor(color)).run
 
+  def setMarginRightBarContent(pixels: Int) = (fastScroller <~ fsMarginRightBarContent(pixels)).run
+
   def setSignalType(signalType: FastScrollerSignalType) = (fastScroller <~ fsSignalType(signalType)).run
 
   def reset = (fastScroller <~ fsReset).run
@@ -56,14 +58,15 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   def setCounters(counters: Seq[TermCounter]) = (fastScroller <~ fsCounters(counters)).run
 
   def setEnabledScroller(enabled: Boolean) =
-    (
-      fastScroller <~
-        fsEnabledScroller(enabled) <~
-        (if (enabled) fsShow else fsHide)).run
+    (fastScroller <~
+      fsEnabledScroller(enabled) <~
+      (if (enabled) fsShow else fsHide)).run
 
   private[this] def fsSignalType(signalType: FastScrollerSignalType) = Tweak[FastScrollerView](_.setFastScrollerSignalType(signalType))
 
   private[this] def fsReset = Tweak[FastScrollerView](_.reset())
+
+  private[this] def fsMarginRightBarContent(pixels: Int) = Tweak[FastScrollerView](_.setBarContentMargin(pixels).run)
 
   private[this] def fsCounters(counters: Seq[TermCounter]) = Tweak[FastScrollerView](_.setCounters(counters))
 
@@ -72,14 +75,13 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def fsRecyclerView(rv: RecyclerView) = Tweak[FastScrollerView](view => view.setRecyclerView(rv))
 
   private[this] def fsColor(color: Int) = Tweak[FastScrollerView] { view =>
-    (
-      (view.bar <~ ivSrc(changeColor(R.drawable.fastscroller_bar, color))) ~
-        (view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color))))).run
+    ((view.bar <~ ivSrc(changeColor(R.drawable.fastscroller_bar, color))) ~
+      (view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color))))).run
   }
 
-  private[this] def fsShow = Tweak[FastScrollerView] { view => (view.show).run }
+  private[this] def fsShow = Tweak[FastScrollerView] (_.show.run)
 
-  private[this] def fsHide = Tweak[FastScrollerView] { view => (view.hide).run }
+  private[this] def fsHide = Tweak[FastScrollerView] (_.hide.run)
 
   private[this] def changeColor(res: Int, color: Int): Drawable = getDrawable(res) match {
     case drawable: GradientDrawable =>
@@ -113,6 +115,8 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   setClipChildren(false)
 
   LayoutInflater.from(context).inflate(R.layout.fastscroller, this)
+
+  lazy val barContent = Option(findView(TR.fastscroller_bar_content))
 
   val bar = Option(findView(TR.fastscroller_bar))
 
@@ -183,6 +187,8 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   private[this] def removeKeys() =
     vRemoveField(FastScrollerView.fastScrollerPositionKey) +
       vRemoveField(FastScrollerView.fastScrollerCountKey)
+
+  def setBarContentMargin(pixels: Int) = barContent <~ vMargin(marginRight = pixels)
 
   def show: Ui[_] = (signal <~ vGone) ~ (bar <~ vVisible)
 
