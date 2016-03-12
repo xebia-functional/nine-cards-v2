@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Errata, Answer}
+import rapture.core.{Answer, Errata}
 
 import scala.collection.JavaConversions._
 

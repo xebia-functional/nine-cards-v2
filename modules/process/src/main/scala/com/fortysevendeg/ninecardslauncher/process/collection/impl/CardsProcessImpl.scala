@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, C
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
 import rapture.core.Answer
-import rapture.core.scalazInterop.ResultT
 
 import scalaz.concurrent.Task
 
