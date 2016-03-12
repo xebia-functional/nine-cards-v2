@@ -2,56 +2,44 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Context
 import android.support.v7.widget.{CardView, RecyclerView}
-import android.view.View.{OnClickListener, OnLongClickListener}
 import android.view.{LayoutInflater, View, ViewGroup}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.R
-import macroid.ActivityContextWrapper
+import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
+import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
+import macroid.{Ui, ActivityContextWrapper}
+import macroid._
+import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher2.TypedResource._
 
 case class CollectionAdapter(var collection: Collection, heightCard: Int)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with AnalyticDispatcher
+  with ReorderItemTouchListener
   with LauncherExecutor { self =>
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
-    val view = LayoutInflater.from(parent.getContext).inflate(R.layout.card_item, parent, false).asInstanceOf[CardView]
-    val adapter = new ViewHolderCollectionAdapter(view, heightCard)
-    adapter.content.setOnClickListener(new OnClickListener {
-      override def onClick(v: View): Unit = for {
-        tag <- Option(v.getTag)
-        pos = Int.unbox(tag)
-        card <- collection.cards.lift(pos)
-      } yield {
-        trackCard(card, OpenCardAction)
-        execute(card.intent)
-      }
-    })
-    adapter.content.setOnLongClickListener(new OnLongClickListener {
-      override def onLongClick(v: View): Boolean = {
-        for {
-          tag <- Option(v.getTag)
-          pos = Int.unbox(tag)
-          c <- collection.cards.lift(pos)
-          activity <- activity[CollectionsDetailsActivity]
-        } yield activity.removeCard(c)
-        false
-      }
-    })
-    adapter
+    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.card_item, parent, false)
+    new ViewHolderCollectionAdapter(
+      content = view,
+      heightCard = heightCard,
+      onClick = (position: Int) => Ui {
+        collection.cards.lift(position) foreach (card => execute(card.intent))
+      })
   }
 
   override def getItemCount: Int = collection.cards.size
 
-  override def onBindViewHolder(viewHolder: ViewHolderCollectionAdapter, position: Int): Unit = {
-    val card = collection.cards(position)
-    viewHolder.bind(card, position).run
-  }
+  override def onBindViewHolder(viewHolder: ViewHolderCollectionAdapter, position: Int): Unit =
+    viewHolder.bind(collection.cards(position)).run
 
   def addCards(cards: Seq[Card]) = {
     cards foreach (card => trackCard(card, AddedToCollectionAction))
@@ -95,6 +83,48 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   }
 
   override def getApplicationContext: Context = activityContext.bestAvailable
+
+  override def onItemMove(from: Int, to: Int): Unit = {
+    collection = collection.copy(cards = collection.cards.reorder(from, to))
+    notifyItemMoved(from, to)
+  }
 }
 
+case class ViewHolderCollectionAdapter(
+  content: CardView,
+  heightCard: Int,
+  onClick: (Int) => Ui[_])(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+  extends RecyclerView.ViewHolder(content)
+  with CollectionAdapterStyles
+  with TypedFindView {
 
+  lazy val iconContent = Option(findView(TR.card_icon_content))
+
+  lazy val icon = Option(findView(TR.card_icon))
+
+  lazy val name = Option(findView(TR.card_text))
+
+  lazy val badge = Option(findView(TR.card_badge))
+
+  ((content <~ rootStyle(heightCard) <~ On.click {
+    onClick(getAdapterPosition)
+  }) ~ (iconContent <~ iconContentStyle(heightCard))).run
+
+  def bind(card: Card)(implicit uiContext: UiContext[_]): Ui[_] =
+    (icon <~ iconCardTransform(card)) ~
+      (name <~ tvText(card.term)) ~
+      (badge <~ (getBadge(card.cardType) map {
+        ivSrc(_) + vVisible
+      } getOrElse vGone)) ~
+      (name <~ nameStyle(card.cardType))
+
+  private[this] def getBadge(cardType: CardType): Option[Int] = cardType match {
+    case PhoneCardType => Option(R.drawable.badge_phone)
+    case SmsCardType => Option(R.drawable.badge_sms)
+    case EmailCardType => Option(R.drawable.badge_email)
+    case _ => None
+  }
+
+  override def findViewById(id: Int): View = content.findViewById(id)
+
+}
