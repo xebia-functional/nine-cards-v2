@@ -2,47 +2,79 @@ package com.fortysevendeg.ninecardslauncher.app.services
 
 import android.app.Service
 import android.content.Intent
-import android.os.{Build, Bundle, IBinder}
+import android.os.{Bundle, IBinder}
+import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientProvider
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcessException, Conversions}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
+import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
-import rapture.core.scalazInterop.ResultT
 
 import scalaz.concurrent.Task
 
 class SynchronizeDeviceService
   extends Service
   with Contexts[Service]
-  with GoogleApiClientProvider {
+  with GoogleApiClientProvider
+  with BroadcastDispatcher {
 
+  self =>
+
+  import AppLog._
   import Conversions._
+  import TasksOps._
 
   implicit lazy val di = new Injector
 
   private[this] var statuses = GoogleApiClientStatuses()
 
-  override def onBind(intent: Intent): IBinder = ???
+  override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
+    registerDispatchers
+
+    synchronizeDevice()
+
+    super.onStartCommand(intent, flags, startId)
+  }
+
+  override def onBind(intent: Intent): IBinder = javaNull
+
+  override def onDestroy(): Unit = {
+    super.onDestroy()
+    unregisterDispatcher
+  }
 
   override def tryToConnect(): Unit = statuses.apiClient foreach (_.connect())
 
-  override def onResolveConnectionError(): Unit = ???
+  override def onResolveConnectionError(): Unit =
+    error(getString(R.string.errorConnectingGoogle))
 
-  override def onRequestConnectionError(errorCode: Int): Unit = ???
+  override def onRequestConnectionError(errorCode: Int): Unit =
+    error(getString(R.string.errorConnectingGoogle))
 
   override def onConnected(bundle: Bundle): Unit =
     statuses match {
       case GoogleApiClientStatuses(Some(client), Some(account)) if client.isConnected =>
-        sync(client, account)
+        Task.fork(sync(client, account).run).resolveAsync(
+          _ => success(),
+          throwable => {
+            error(
+              message = getString(R.string.errorConnectingGoogle),
+              maybeException = Some(throwable))
+          })
       case GoogleApiClientStatuses(Some(client), Some(account)) =>
         tryToConnect()
       case _ =>
-        // TODO
+        error(getString(R.string.errorConnectingGoogle))
     }
+
+  override val actionsFilters: Seq[String] = GoogleDriveSyncActionFilter.cases map (_.action)
 
   def synchronizeDevice(): Unit = {
     Task.fork(di.userProcess.getUser.run).resolveAsync(
@@ -54,6 +86,12 @@ class SynchronizeDeviceService
             username = Some(account))
           client.connect()
         case _ =>
+          error(getString(R.string.errorLoadingUser))
+      },
+      throwable => {
+        error(
+          message = getString(R.string.errorLoadingUser),
+          maybeException = Some(throwable))
       })
   }
 
@@ -66,6 +104,22 @@ class SynchronizeDeviceService
       _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
         collections = collections map toCloudStorageCollection)
     } yield ()
+  }
+
+  private[this] def success() = {
+    self ! BroadAction(GoogleDriveSyncActionFilterSuccess.action)
+    closeService()
+  }
+
+  private[this] def error(message: String, maybeException: Option[Throwable] = None) = {
+    maybeException foreach (ex => printErrorMessage(ex))
+    self ! BroadAction(GoogleDriveSyncActionFilterError.action, Some(message))
+    closeService()
+  }
+
+  private[this] def closeService() = {
+    stopForeground(true)
+    stopSelf()
   }
 }
 
