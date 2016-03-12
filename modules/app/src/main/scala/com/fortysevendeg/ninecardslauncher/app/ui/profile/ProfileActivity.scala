@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientActivityProvider
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.api.GoogleApiClient
@@ -33,7 +34,7 @@ class ProfileActivity
   with ProfileTabListener
   with ProfileComposer
   with ProfileTasks
-  with GoogleApiClientProvider
+  with GoogleApiClientActivityProvider
   with AppBarLayout.OnOffsetChangedListener {
 
   implicit lazy val di = new Injector

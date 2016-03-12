@@ -8,10 +8,10 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.GoogleApiClientProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientActivityProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserPermissions
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
@@ -32,7 +32,7 @@ class WizardActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
-  with GoogleApiClientProvider
+  with GoogleApiClientActivityProvider
   with WizardListeners
   with WizardTasks
   with WizardPersistence
@@ -142,9 +142,9 @@ class WizardActivity
     }
 
   private[this] def storeCloudDevice(): Unit =
-    (getAndroidId, clientStatuses) match {
-      case (Some(androidId), GoogleApiClientStatuses(Some(client), Some(username), _)) =>
-        Task.fork(storeActualDevice(client, androidId, username).run).resolveAsyncUi(
+    clientStatuses match {
+      case GoogleApiClientStatuses(Some(client), Some(username), _) =>
+        Task.fork(storeActualDevice(client, username).run).resolveAsyncUi(
           _ => finishProcess,
           _ => finishProcess)
       case _ =>

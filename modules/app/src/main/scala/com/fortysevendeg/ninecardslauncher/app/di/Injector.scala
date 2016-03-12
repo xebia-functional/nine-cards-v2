@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.di
 
 import com.fortysevendeg.ninecardslauncher.api.services._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.GoogleApiClientProvider
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.cloud.impl.CloudStorageProcessImpl
@@ -32,6 +31,7 @@ import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.google.android.gms.common.api.GoogleApiClient
 import com.squareup.{okhttp => okHttp}
 import com.facebook.stetho.okhttp.StethoInterceptor
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientActivityProvider
 
 class Injector(implicit contextSupport: ContextSupport) {
 
