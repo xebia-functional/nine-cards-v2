@@ -50,7 +50,6 @@ trait CollectionPersistenceServicesImpl {
       cards <- fetchCards(collection)
     } yield collection map (toCollection(_, cards))).resolve[PersistenceServiceException]
 
-
   def fetchCollectionByPosition(request: FetchCollectionByPositionRequest) =
     (for {
       collection <- collectionRepository.fetchCollectionByPosition(request.position)

@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Collection, FormedCollection, UnformedApp, UnformedContact}
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequest, CollectionException, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
+import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
@@ -74,7 +75,10 @@ trait CollectionsProcessImpl {
     (for {
       Some(collection) <- persistenceServices.fetchCollectionByPosition(toFetchCollectionByPositionRequest(position))
       collectionList <- getCollections
-      _ <- updateCollectionList(reorderCollectionList(collectionList, newPosition, position))
+      updatedCollections = collectionList.reorder(position, newPosition).zipWithIndex map {
+        case (c, index) => c.copy(position = index)
+      }
+      _ <- updateCollectionList(updatedCollections)
     } yield ()).resolve[CollectionException]
 
   def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest) =
@@ -93,17 +97,6 @@ trait CollectionsProcessImpl {
   private[this] def moveCollectionList(collectionList: Seq[Collection], position: Int) =
     collectionList map { collection =>
       if (collection.position > position) collection.copy(position = collection.position - 1) else collection
-    }
-
-  private[this] def reorderCollectionList(collectionList: Seq[Collection], newPosition: Int, oldPosition: Int): Seq[Collection] =
-    collectionList map { collection =>
-      val position = collection.position
-      (newPosition, oldPosition, position) match {
-        case (n, o, p) if n < o && p > n && p < o => collection.copy(position = p + 1)
-        case (n, o, p) if n > o && p < n && p > o => collection.copy(position = p - 1)
-        case (n, o, _) if n < o || n > o => collection
-        case _ => collection.copy(position = newPosition)
-      }
     }
 
   private[this] def findCollectionById(id: Int) =

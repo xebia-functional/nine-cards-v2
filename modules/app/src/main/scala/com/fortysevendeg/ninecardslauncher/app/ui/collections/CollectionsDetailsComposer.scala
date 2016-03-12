@@ -21,6 +21,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
@@ -32,9 +33,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, SystemBarsTint}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, FabButtonBehaviour, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
@@ -98,7 +98,7 @@ trait CollectionsDetailsComposer
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
     val adapter = CollectionsPagerAdapter(manager.get, collections, position)
-    (root <~ fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
+    (root <~ SnailsCommons.fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
       (viewPager <~ vpAdapter(adapter)) ~
       Ui(adapter.activateFragment(position)) ~
       (tabs <~
@@ -106,16 +106,16 @@ trait CollectionsDetailsComposer
         stlOnPageChangeListener(
           new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
-      uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter) }, 100) ~
+      uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter()) }, 100) ~
       (tabs <~ vVisible <~~ enterViews)
   }
 
-  def pullCloseScrollY(scroll: Int, scrollType: Int, close: Boolean): Ui[_] = {
+  def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_] = {
     val displacement = scroll * resistanceDisplacement
     val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_action)
     val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
     (tabs <~ (scrollType match {
-      case ScrollType.down => vTranslationY(displacement)
+      case ScrollDown => vTranslationY(displacement)
       case _ => Tweak.blank
     })) ~
       (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
@@ -138,13 +138,37 @@ trait CollectionsDetailsComposer
       (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
   }
 
-  def notifyScroll(sType: Int): Ui[_] = (for {
+  def openReorderModeUi(current: ScrollType): Ui[_] =
+    (tabs <~~
+      applyAnimation(y = Some(-spaceMove), alpha = Some(0f)) <~
+      uiElevation(elevation + 1) <~
+      vInvisible) ~
+      (toolbar <~~
+        applyAnimation(onUpdate = (ratio) => current match {
+          case ScrollDown => toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = false))
+          case _ => Ui.nop
+        }) <~
+        uiElevation(elevation + 1)) ~
+      (iconContent <~ vInvisible)
+
+  def closeReorderModeUi: Ui[_] =
+    (tabs <~
+      vVisible <~~
+      applyAnimation(alpha = Some(1f))) ~
+      (iconContent <~ vVisible)
+
+  def notifyScroll(sType: ScrollType): Ui[_] = (for {
     vp <- viewPager
     adapter <- getAdapter
   } yield {
       adapter.setScrollType(sType)
       adapter.notifyChanged(vp.getCurrentItem)
     }) getOrElse Ui.nop
+
+  private[this] def calculateReduce(ratio: Float, spaceMove: Int, reversed: Boolean) = {
+    val newRatio = if (reversed) 1f - ratio else ratio
+    (newRatio * (spaceMove * 2)).toInt
+  }
 
   private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
     (w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
@@ -223,13 +247,13 @@ trait CollectionsDetailsComposer
       fragment.removeCard(c)
     }
 
-  protected def reloadCardsToCurrentFragment(cards: Seq[Card]) = for {
+  protected def reloadCardsToCurrentFragment(cards: Seq[Card], reloadFragment: Boolean) = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
     currentPosition <- adapter.getCurrentFragmentPosition
   } yield {
     adapter.updateCardFromCollection(currentPosition, cards)
-    fragment.reloadCards(cards)
+    if (reloadFragment) fragment.reloadCards(cards)
   }
 
   def backByPriority(implicit theme: NineCardsTheme): Ui[_] = if (fabMenuOpened) {

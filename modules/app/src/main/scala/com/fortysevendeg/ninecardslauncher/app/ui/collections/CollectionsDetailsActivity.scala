@@ -11,8 +11,8 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
@@ -60,7 +60,7 @@ class CollectionsDetailsActivity
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (AppsActionFilter(action), data) match {
-    case (AppInstalledActionFilter, _) => reloadCards()
+    case (AppInstalledActionFilter, _) => reloadCards(true)
     case _ =>
   }
 
@@ -177,11 +177,15 @@ class CollectionsDetailsActivity
 
   override def scrollY(scroll: Int, dy: Int): Unit = translationScrollY(scroll).run
 
-  override def scrollType(sType: Int): Unit = notifyScroll(sType).run
+  override def openReorderMode(current: ScrollType): Unit = openReorderModeUi(current).run
+
+  override def closeReorderMode(): Unit = closeReorderModeUi.run
+
+  override def scrollType(sType: ScrollType): Unit = notifyScroll(sType).run
 
   override def onBackPressed(): Unit = backByPriority.run
 
-  override def pullToClose(scroll: Int, scrollType: Int, close: Boolean): Unit =
+  override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
     pullCloseScrollY(scroll, scrollType, close).run
 
   override def close(): Unit = exitTransition.run
@@ -202,25 +206,17 @@ class CollectionsDetailsActivity
       )
     }
 
-  def removeCard(card: Card): Unit = {
-    val ft = getSupportFragmentManager.beginTransaction()
-    Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(javaNull)
-    val dialog = new RemoveCardDialogFragment(() => {
-      getCurrentCollection foreach { collection =>
-        Task.fork(removeCard(collection.id, card.id).run).resolveAsync(
-          onResult = (_) => removeCardFromCurrentFragment(card)
-        )
-      }
-    })
-    dialog.show(ft, tagDialog)
+  def removeCard(card: Card): Unit = getCurrentCollection foreach { collection =>
+    Task.fork(removeCard(collection.id, card.id).run).resolveAsync(
+      onResult = (_) => removeCardFromCurrentFragment(card)
+    )
   }
 
-  def reloadCards(): Unit =
+  def reloadCards(reloadFragment: Boolean): Unit =
     getCurrentCollection foreach { currentCollection =>
       Task.fork(di.collectionProcess.getCollectionById(currentCollection.id).run).resolveAsync(
         onResult = (c) => c map (newCollection => if (newCollection.cards != currentCollection.cards) {
-          reloadCardsToCurrentFragment(newCollection.cards)
+          reloadCardsToCurrentFragment(newCollection.cards, reloadFragment)
         })
       )
     }
@@ -241,26 +237,25 @@ class CollectionsDetailsActivity
 }
 
 trait ScrolledListener {
-  def startScroll()
+  def startScroll(): Unit
 
-  def scrollY(scroll: Int, dy: Int)
+  def scrollY(scroll: Int, dy: Int): Unit
 
-  def scrollType(sType: Int)
+  def scrollType(sType: ScrollType): Unit
 
-  def pullToClose(scroll: Int, scrollType: Int, close: Boolean)
+  def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit
 
-  def close()
+  def openReorderMode(currentScrollType: ScrollType): Unit
+
+  def closeReorderMode(): Unit
+
+  def close(): Unit
 }
 
 trait ActionsScreenListener {
   def onStartFinishAction()
 
   def onEndFinishAction()
-}
-
-object ScrollType {
-  val up = 0
-  val down = 1
 }
 
 object CollectionsDetailsActivity {

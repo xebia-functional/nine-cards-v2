@@ -61,14 +61,16 @@ trait CardRepositorySpecification
       uri = mockUri,
       projection = allFields,
       where = s"$collectionId = ?",
-      whereParams = Seq(testCollectionId.toString))(
+      whereParams = Seq(testCollectionId.toString),
+      orderBy = s"${CardEntity.position} asc")(
         f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
       projection = allFields,
       where = s"$collectionId = ?",
-      whereParams = Seq(testNonExistingCollectionId.toString))(
+      whereParams = Seq(testNonExistingCollectionId.toString),
+      orderBy = s"${CardEntity.position} asc")(
         f = getListFromCursor(cardEntityFromCursor)) returns Seq.empty
 
     contentResolverWrapper.updateById(uri = mockUri, id = card.id, values = createUpdateCardValues) returns 1
@@ -110,7 +112,8 @@ trait CardRepositorySpecification
       uri = mockUri,
       projection = allFields,
       where = s"$collectionId = ?",
-      whereParams = Seq(testCollectionId.toString))(
+      whereParams = Seq(testCollectionId.toString),
+      orderBy = s"${CardEntity.position} asc")(
         f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.updateById(uri = mockUri, id = card.id, values = createUpdateCardValues) throws contentResolverException
