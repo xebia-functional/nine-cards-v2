@@ -64,7 +64,7 @@ trait DockAppRepositorySpecification
       projection = allFields,
       where = "",
       whereParams = Seq.empty,
-      orderBy = "")(
+      orderBy = s"${DockAppEntity.position} asc")(
       f = getListFromCursor(dockAppEntityFromCursor)) returns dockAppEntitySeq
 
     contentResolverWrapper.fetchAll(
@@ -72,7 +72,7 @@ trait DockAppRepositorySpecification
       projection = allFields,
       where = s"$position = ?",
       whereParams = Seq(testPosition.toString),
-      orderBy = "")(
+      orderBy = s"${DockAppEntity.position} asc")(
       f = getListFromCursor(dockAppEntityFromCursor)) returns dockAppEntitySeq
 
     contentResolverWrapper.fetchAll(
@@ -111,7 +111,7 @@ trait DockAppRepositorySpecification
       projection = allFields,
       where = "",
       whereParams = Seq.empty,
-      orderBy = "")(
+      orderBy = s"${DockAppEntity.position} asc")(
       f = getListFromCursor(dockAppEntityFromCursor)) throws contentResolverException
   }
 

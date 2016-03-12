@@ -17,7 +17,7 @@ trait DockAppsDeviceProcessImpl {
   self: DeviceConversions
     with DeviceProcessDependencies
     with ImplicitsDeviceException
-    with ImplicitsPersistenceServiceExceptions =>
+    with ImplicitsPersistenceServiceExceptions=>
 
   def generateDockApps(size: Int)(implicit context: ContextSupport) =
     (for {
@@ -41,7 +41,7 @@ trait DockAppsDeviceProcessImpl {
     val tasks = packageNames map (packageName =>
       persistenceServices.findAppByPackage(packageName).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
-  }.resolve[DockAppException]
+  }
 
   private[this] def matchAppsWithImages(apps: Seq[Application], images: Seq[(String, String)])(implicit context: ContextSupport) : Seq[DockApp] = {
     apps.zipWithIndex.map {
@@ -55,6 +55,6 @@ trait DockAppsDeviceProcessImpl {
     val tasks = apps map (app =>
       persistenceServices.createOrUpdateDockApp(toCreateOrUpdateDockAppRequest(app.name, AppDockType, app.intent, app.imagePath, app.position)).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
-  }.resolve[DockAppException]
+  }
 
 }

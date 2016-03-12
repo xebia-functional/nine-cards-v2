@@ -47,6 +47,8 @@ trait DeviceProcessData
   val statusCodeOk = 200
   val items = 5
 
+  val size = 4
+
   val name1 = "Scala Android"
   val packageName1 = "com.fortysevendeg.scala.android"
   val className1 = "ScalaAndroidActivity"

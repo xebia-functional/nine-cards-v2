@@ -31,6 +31,7 @@ trait AppsServicesImplSpecification
       val mockActivityInfo = mock[ActivityInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
       sampleResolveInfo.activityInfo = mockActivityInfo
+      sampleResolveInfo.activityInfo.icon = sampleApp.resourceIcon
       mockActivityInfo.name = sampleApp.className
       mockActivityInfo.applicationInfo = mockApplicationInfo
       mockApplicationInfo.packageName = sampleApp.packageName
@@ -45,7 +46,6 @@ trait AppsServicesImplSpecification
       samplePackageInfo.packageName = sampleApp.packageName
       mockApplicationInfo.name = sampleApp.name
       mockApplicationInfo.className = sampleApp.className
-      mockApplicationInfo.icon = sampleApp.resourceIcon
       samplePackageInfo.firstInstallTime = sampleApp.dateInstalled
       samplePackageInfo.lastUpdateTime = sampleApp.dateUpdate
       samplePackageInfo.versionCode = sampleApp.version.toInt
@@ -67,7 +67,11 @@ trait AppsServicesImplSpecification
     packageManager.resolveActivity(mockIntent, 0) returns mockApps.head
 
     val mockAppsServicesImpl = new AppsServicesImpl {
-      override def categoryLauncherIntent(): Intent = mockIntent
+      override def mainIntentByCategory(category: String): Intent = mockIntent
+
+      override def phoneIntent(): Intent = mockIntent
+
+      override def cameraIntent(): Intent = mockIntent
     }
   }
 
@@ -184,6 +188,29 @@ class AppsServicesImplSpec
       "returns an AppsInstalledException when the getPackageInfo method fails" in
         new AppsServicesImplScope with AppsServicesImplPackageInfoErrorScope {
           val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).run.run
+          result must beLike {
+            case Errata(e) => e.headOption must beSome.which {
+              case (_, (_, appsException)) => appsException must beLike {
+                case e: AppsInstalledException => e.cause must beSome.which(_ shouldEqual exception)
+              }
+            }
+          }
+        }
+    }
+
+    "getDefaultApps" should {
+
+      "returns the list of installed default apps when they exist" in
+        new AppsServicesImplScope {
+          val result = mockAppsServicesImpl.getDefaultApps(contextSupport).run.run
+          result must beLike {
+            case Answer(resultApplicationList) => resultApplicationList shouldEqual defaultApplicationList
+          }
+        }
+
+      "returns an AppsInstalledException when no default apps exist" in
+        new AppsServicesImplScope with AppsServicesImplErrorScope {
+          val result = mockAppsServicesImpl.getDefaultApps(contextSupport).run.run
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
               case (_, (_, appsException)) => appsException must beLike {
