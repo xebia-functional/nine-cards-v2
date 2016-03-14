@@ -152,11 +152,13 @@ object WorkSpaceItemMenuTweaks {
 
 object SearchBoxesAnimatedViewTweak {
 
-  def sbvUpdateContentView(contentView: ContentView) = Tweak[SearchBoxView] (view => view.updateContentView(contentView).run)
+  def sbvUpdateContentView(contentView: ContentView)(implicit theme: NineCardsTheme) =
+    Tweak[SearchBoxView] (view => view.updateContentView(contentView).run)
 
   def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxView] (_.listener = Some(listener))
 
-  def sbvUpdateHeaderIcon(resourceId: Int) = Tweak[SearchBoxView](view => view.updateHeaderIcon(resourceId).run)
+  def sbvUpdateHeaderIcon(resourceId: Int)(implicit theme: NineCardsTheme) =
+    Tweak[SearchBoxView](view => view.updateHeaderIcon(resourceId).run)
 
   def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[SearchBoxView] (_.addTextChangedListener(onChangeText))
 
@@ -300,7 +302,7 @@ object SwipeAnimatedDrawerViewTweaks {
 
   type W = SwipeAnimatedDrawerView
 
-  def sadvInitAnimation(contentView: ContentView, widthContainer: Int) = Tweak[W] { view =>
+  def sadvInitAnimation(contentView: ContentView, widthContainer: Int)(implicit theme: NineCardsTheme) = Tweak[W] { view =>
     view.initAnimation(contentView, widthContainer).run
   }
 

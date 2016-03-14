@@ -19,7 +19,7 @@
         <item name="android:clipToPadding">false</item>
     </style>
 
-    <style name="LauncherSearchAnimatedContentPanel">
+    <style name="LauncherSearchBox">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -62,6 +62,12 @@
         <item name="android:layout_width">@dimen/height_search_box</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <style name="LauncherAnimatedDrawer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="LauncherWorkSpacesContent">

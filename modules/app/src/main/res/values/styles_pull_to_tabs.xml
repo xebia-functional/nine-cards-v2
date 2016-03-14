@@ -14,4 +14,12 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="PullToTabsRecycler">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:overScrollMode">never</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+
 </resources>

@@ -1,14 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
 import android.support.v7.widget.RecyclerView
-import android.view.{View, ViewGroup}
-import android.widget.{FrameLayout, ImageView}
+import android.view.ViewGroup
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
@@ -38,13 +37,7 @@ trait DrawerStyles {
     } getOrElse tivPressedColor(theme.get(AppDrawerPressedColor))
   }
 
-  def recyclerStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[RecyclerView] = {
-    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-    rvFixedSize +
-      vPaddings(padding) +
-      vgClipToPadding(false) +
-      vOverScrollMode(View.OVER_SCROLL_NEVER)
-  }
+  def recyclerStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[RecyclerView] = rvFixedSize
 
   def paginationDrawerItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val margin = resGetDimensionPixelSize(R.dimen.margin_pager_drawer)
@@ -53,9 +46,5 @@ trait DrawerStyles {
       llLayoutMargin(margin, margin, margin, margin) +
       ivSrc(R.drawable.drawer_pager)
   }
-
-  def screenAnimationStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FrameLayout] =
-    vMatchParent +
-      vGone
 
 }

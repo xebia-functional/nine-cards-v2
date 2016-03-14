@@ -4,7 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
-import android.widget.{FrameLayout, ImageView, LinearLayout}
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -16,19 +16,19 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesAnimatedViewTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SwipeAnimatedDrawerViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
@@ -43,7 +43,7 @@ import scala.concurrent.Future
 trait DrawerComposer
   extends DrawerStyles
   with ContextSupportProvider
-  with SearchBoxAnimatedListener
+  with LauncherExecutor
   with PullToTabsViewStyles {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
@@ -60,17 +60,15 @@ trait DrawerComposer
 
   lazy val paginationDrawerPanel = Option(findView(TR.launcher_drawer_pagination_panel))
 
-  var recycler = slot[DrawerRecyclerView]
+  lazy val recycler = Option(findView(TR.launcher_drawer_recycler))
 
-  var tabs = slot[LinearLayout]
+  lazy val tabs = Option(findView(TR.launcher_drawer_tabs))
 
-  var pullToTabsView = slot[PullToTabsView]
+  lazy val pullToTabsView = Option(findView(TR.launcher_drawer_pull_to_tabs))
 
-  var screenAnimation = slot[SwipeAnimatedDrawerView]
+  lazy val screenAnimation = Option(findView(TR.launcher_drawer_swipe_animated))
 
-  lazy val searchBoxContentPanel = Option(findView(TR.launcher_search_box_content_panel))
-
-  var searchBoxView: Option[SearchBoxView] = None
+  lazy val searchBoxView = Option(findView(TR.launcher_search_box_content))
 
   lazy val appTabs = AppsMenuOption.list map {
     case AppsAlphabetical => TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.apps_alphabetical))
@@ -84,13 +82,73 @@ trait DrawerComposer
     case ContactsByLastCall => TabInfo(R.drawable.app_drawer_filter_last_call, getString(R.string.contacts_last))
   }
 
-  override def onHeaderIconClick(implicit context: ActivityContextWrapper): Unit =
-    (if (isTabsOpened) closeTabs else openTabs).run
-
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-    addWidgetsDrawer ~ transformDrawerUi
+  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+    val colorPrimary = theme.get(PrimaryColor)
+    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
+    (searchBoxView <~
+      sbvUpdateContentView(AppsView) <~
+      sbvChangeListener(SearchBoxAnimatedListener(
+        onHeaderIconClick = () => (if (isTabsOpened) closeTabs else openTabs).run,
+        onAppStoreIconClick = () => launchPlayStore,
+        onContactsIconClick = () => launchDial()
+      )) <~
+      sbvOnChangeText((text: String) => {
+        (text, getStatus, getTypeView) match {
+          case ("", Some(status), Some(AppsView)) =>
+            AppsMenuOption(status) foreach loadApps
+          case ("", Some(status), Some(ContactView)) =>
+            ContactsMenuOption(status) foreach loadContacts
+          case (t, _, Some(AppsView)) => loadAppsByKeyword(t)
+          case (t, _, Some(ContactView)) => loadContactsByKeyword(t)
+          case _ =>
+        }
+      })) ~
+      (tabs <~ tvClose) ~
+      (appDrawerMain <~ appDrawerMainStyle <~ On.click {
+        (if (getItemsCount == 0) {
+          loadAppsAlphabetical
+        } else {
+          Ui.nop
+        }) ~ revealInDrawer ~~ (searchPanel <~ vGone)
+      }) ~
+      (recycler <~
+        recyclerStyle <~
+        drvListener(DrawerRecyclerViewListener(
+          start = startMovementAppsContacts,
+          move = moveMovementAppsContacts,
+          end = endMovementAppsContacts,
+          changeContentView = changeContentView
+        )) <~
+        rvAddItemDecoration(new SelectedItemDecoration)) ~
+      (scrollerLayout <~
+        fslMarginRightBarContent(padding) <~
+        scrollableStyle(colorPrimary)) ~
+      (pullToTabsView <~
+        pdvHorizontalEnable(true) <~
+        (recycler map (rv => pdvHorizontalListener(rv.horizontalMovementListener)) getOrElse Tweak.blank) <~
+        ptvLinkTabs(
+          tabs = tabs,
+          start = Ui.nop,
+          end = Ui.nop) <~
+        ptvAddTabsAndActivate(appTabs, 0, None) <~
+        pdvResistance(resistance) <~
+        ptvListener(PullToTabsListener(
+          changeItem = (pos: Int) => {
+            ((getTypeView match {
+              case Some(AppsView) =>
+                AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
+              case Some(ContactView) =>
+                ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
+              case _ => Ui.nop
+            }) ~ (if (isTabsOpened) closeTabs else Ui.nop) ~ (searchBoxView <~ sbvClean)).run
+          }
+        ))) ~
+      (drawerContent <~ contentStyle) ~
+      loadAppsAlphabetical ~
+      createDrawerPagers
+  }
 
   protected def openTabs(implicit context: ActivityContextWrapper): Ui[_] =
     (tabs <~ tvOpen <~ showTabs) ~
@@ -108,14 +166,14 @@ trait DrawerComposer
         case _ =>
       }})
 
-  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] = {
+  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption)(implicit theme: NineCardsTheme): Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(option)) map (_.drawable)
     Ui(loadApps(option)) ~
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
       (recycler <~ drvSetType(option))
   }
 
-  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] = {
+  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption)(implicit theme: NineCardsTheme): Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
     Ui(loadContacts(option)) ~
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
@@ -144,90 +202,33 @@ trait DrawerComposer
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
   }
 
-  private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
-    val pullTabLayout = l[PullToTabsView](
-      w[DrawerRecyclerView] <~
-        recyclerStyle <~
-        drvSetType(AppsAlphabetical) <~
-        wire(recycler)
-    ) <~ wire(pullToTabsView)
+//  private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+//    val pullTabLayout = l[PullToTabsView](
+//      w[DrawerRecyclerView] <~
+//        recyclerStyle <~
+//        drvSetType(AppsAlphabetical) <~
+//        wire(recycler)
+//    ) <~ wire(pullToTabsView)
+//
+//    val tabsLayout = l[LinearLayout]() <~
+//      tvClose <~
+//      tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
+//      wire(tabs)
+//
+//    val screenAnimationLayout = l[SwipeAnimatedDrawerView]() <~
+//      screenAnimationStyle <~
+//      wire(screenAnimation)
+//
+//    (searchBoxContentPanel <~
+//      vgAddView((l[SearchBoxView]() <~ wire(searchBoxView) <~ sbvChangeListener(self)).get)) ~
+//      (scrollerLayout <~
+//        vgAddViewByIndex(l[FrameLayout](screenAnimationLayout, pullTabLayout, tabsLayout).get, 0)) ~
+//      createDrawerPagers
+//  }
 
-    val tabsLayout = l[LinearLayout]() <~
-      tvClose <~
-      tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
-      wire(tabs)
+//  private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
 
-    val screenAnimationLayout = l[SwipeAnimatedDrawerView]() <~
-      screenAnimationStyle <~
-      wire(screenAnimation)
-
-    (searchBoxContentPanel <~
-      vgAddView((l[SearchBoxView]() <~ wire(searchBoxView) <~ sbvChangeListener(self)).get)) ~
-      (scrollerLayout <~
-        vgAddViewByIndex(l[FrameLayout](screenAnimationLayout, pullTabLayout, tabsLayout).get, 0)) ~
-      createDrawerPagers
-  }
-
-  private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
-    val colorPrimary = theme.get(PrimaryColor)
-    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-    (searchBoxView <~
-      sbvUpdateContentView(AppsView) <~
-      sbvChangeListener(self) <~
-      sbvOnChangeText((text: String) => {
-        (text, getStatus, getTypeView) match {
-          case ("", Some(status), Some(AppsView)) =>
-            AppsMenuOption(status) foreach loadApps
-          case ("", Some(status), Some(ContactView)) =>
-            ContactsMenuOption(status) foreach loadContacts
-          case (t, _, Some(AppsView)) => loadAppsByKeyword(t)
-          case (t, _, Some(ContactView)) => loadContactsByKeyword(t)
-          case _ =>
-        }
-      })) ~
-      (appDrawerMain <~ appDrawerMainStyle <~ On.click {
-        (if (getItemsCount == 0) {
-          loadAppsAlphabetical
-        } else {
-          Ui.nop
-        }) ~ revealInDrawer ~~ (searchPanel <~ vGone)
-      }) ~
-      (recycler <~
-        drvListener(DrawerRecyclerViewListener(
-          start = startMovementAppsContacts,
-          move = moveMovementAppsContacts,
-          end = endMovementAppsContacts,
-          changeContentView = changeContentView
-        )) <~
-        rvAddItemDecoration(new SelectedItemDecoration)) ~
-      (scrollerLayout <~
-        fslMarginRightBarContent(padding) <~
-        scrollableStyle(colorPrimary)) ~
-      (pullToTabsView <~
-        pdvHorizontalEnable(true) <~
-        (recycler map (rv => pdvHorizontalListener(rv.horizontalMovementListener)) getOrElse Tweak.blank) <~
-        ptvLinkTabs(
-          tabs = tabs,
-          start = Ui.nop,
-          end = Ui.nop) <~
-        ptvAddTabsAndActivate(appTabs, 0, None) <~
-        pdvResistance(resistance) <~
-        ptvListener(PullToTabsListener(
-          changeItem = (pos: Int) => {
-            ((getTypeView match {
-                case Some(AppsView) =>
-                  AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
-                case Some(ContactView) =>
-                  ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
-                case _ => Ui.nop
-              }) ~ (if (isTabsOpened) closeTabs else Ui.nop) ~ (searchBoxView <~ sbvClean)).run
-          }
-        ))) ~
-      (drawerContent <~ contentStyle) ~
-      loadAppsAlphabetical
-  }
-
-  private[this] def startMovementAppsContacts(): Ui[_] =
+  private[this] def startMovementAppsContacts()(implicit theme: NineCardsTheme): Ui[_] =
     (pullToTabsView <~ pdvEnable(false)) ~
       (screenAnimation <~
         (getTypeView map (cv => sadvInitAnimation(cv, getDrawerWidth)) getOrElse Tweak.blank))

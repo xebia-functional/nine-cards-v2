@@ -10,7 +10,7 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/actions_recycler"
-            style="@style/ActionsRecycler"/>
+            style="@style/PullToTabsRecycler"/>
 
     </com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToTabsView>
 
