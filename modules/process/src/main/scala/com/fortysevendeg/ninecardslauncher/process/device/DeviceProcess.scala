@@ -33,7 +33,7 @@ trait DeviceProcess {
 
   /**
     * Get iterable by category of saved apps from the database
-    * @param orderBy indicates the order to fetch the apps
+    * @param category indicates the category
     * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
     *         information about the app
     * @throws AppException if exist some problem to get the apps

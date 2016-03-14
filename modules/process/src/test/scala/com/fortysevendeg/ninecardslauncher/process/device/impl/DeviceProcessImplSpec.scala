@@ -109,6 +109,9 @@ trait DeviceProcessSpecification
     mockPersistenceServices.fetchIterableApps(any, any) returns
       Service(Task(Result.answer(iterableCursorApps)))
 
+    mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns
+      Service(Task(Result.answer(iterableCursorApps)))
+
     mockPersistenceServices.fetchAlphabeticalAppsCounter returns
       Service(Task(Result.answer(appsCounters)))
 
@@ -301,6 +304,10 @@ trait DeviceProcessSpecification
     }
 
     mockPersistenceServices.fetchIterableApps(any, any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns Service {
       Task(Errata(persistenceServiceException))
     }
 
@@ -916,6 +923,30 @@ class DeviceProcessImplSpec
     "returns AppException if persistence service fails " in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.getIterableApps(GetByName)(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
+        }
+      }
+
+  }
+
+  "Get Iterable Saved Apps By Category" should {
+
+    "get iterable saved apps by category" in
+      new DeviceProcessScope {
+        val result = deviceProcess.getIterableAppsByCategory(category)(contextSupport).run.run
+        result must beLike {
+          case Answer(iter) =>
+            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        }
+        there was one(mockPersistenceServices).fetchIterableAppsByCategory(category, OrderByName, ascending = true)
+      }
+
+    "returns AppException if persistence service fails " in
+      new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
+        val result = deviceProcess.getIterableAppsByCategory(category)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
