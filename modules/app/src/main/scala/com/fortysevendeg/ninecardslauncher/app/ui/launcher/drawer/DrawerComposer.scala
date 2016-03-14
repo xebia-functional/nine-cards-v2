@@ -202,32 +202,6 @@ trait DrawerComposer
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
   }
 
-//  private[this] def addWidgetsDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
-//    val pullTabLayout = l[PullToTabsView](
-//      w[DrawerRecyclerView] <~
-//        recyclerStyle <~
-//        drvSetType(AppsAlphabetical) <~
-//        wire(recycler)
-//    ) <~ wire(pullToTabsView)
-//
-//    val tabsLayout = l[LinearLayout]() <~
-//      tvClose <~
-//      tabContentStyles(resGetDimensionPixelSize(R.dimen.fastscroller_bar_width)) <~
-//      wire(tabs)
-//
-//    val screenAnimationLayout = l[SwipeAnimatedDrawerView]() <~
-//      screenAnimationStyle <~
-//      wire(screenAnimation)
-//
-//    (searchBoxContentPanel <~
-//      vgAddView((l[SearchBoxView]() <~ wire(searchBoxView) <~ sbvChangeListener(self)).get)) ~
-//      (scrollerLayout <~
-//        vgAddViewByIndex(l[FrameLayout](screenAnimationLayout, pullTabLayout, tabsLayout).get, 0)) ~
-//      createDrawerPagers
-//  }
-
-//  private[this] def transformDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-
   private[this] def startMovementAppsContacts()(implicit theme: NineCardsTheme): Ui[_] =
     (pullToTabsView <~ pdvEnable(false)) ~
       (screenAnimation <~

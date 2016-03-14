@@ -266,29 +266,23 @@ object DialogToolbarTweaks {
 
   type W = DialogToolbar
 
-  def dtbInit(color: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    view.init(color).run
+  def dtbInit(color: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] (_.init(color).run)
+
+  def dtbExtended(implicit contextWrapper: ContextWrapper) = Tweak[W] {
+    _.changeToolbarHeight(resGetDimensionPixelSize(R.dimen.height_extended_toolbar_dialog)).run
   }
 
-  def dtbExtended(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    view.changeToolbarHeight(resGetDimensionPixelSize(R.dimen.height_extended_toolbar_dialog)).run
+  def dtbAddExtendedView(viewToAdd: View)(implicit contextWrapper: ContextWrapper) = Tweak[W] {
+    _.addExtendedView(viewToAdd).run
   }
 
-  def dtbAddExtendedView(viewToAdd: View)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    view.addExtendedView(viewToAdd).run
-  }
+  def dtbChangeText(resourceId: Int) = Tweak[W] (_.changeText(resourceId).run)
 
-  def dtbChangeText(resourceId: Int) = Tweak[W] { view =>
-    view.changeText(resourceId).run
-  }
+  def dtbChangeText(text: String) = Tweak[W] (_.changeText(text).run)
 
-  def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W]{ view =>
-    view.navigationClickListener(click).run
-  }
+  def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W] (_.navigationClickListener(click).run)
 
-  def dtvInflateMenu(res: Int) = Tweak[W]{ view =>
-    view.toolbar foreach(_.inflateMenu(res))
-  }
+  def dtvInflateMenu(res: Int) = Tweak[W](_.toolbar foreach(_.inflateMenu(res)))
 
   def dtvOnMenuItemClickListener(onItem: (Int) => Boolean) = Tweak[W]{ view =>
     view.toolbar foreach(_.setOnMenuItemClickListener(new OnMenuItemClickListener {

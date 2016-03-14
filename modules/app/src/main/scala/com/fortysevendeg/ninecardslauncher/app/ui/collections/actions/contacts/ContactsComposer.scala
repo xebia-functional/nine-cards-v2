@@ -33,7 +33,7 @@ trait ContactsComposer
 
   lazy val tabs = Option(findView(TR.actions_tabs))
 
-  lazy val appTabs = Seq(
+  lazy val contactsTabs = Seq(
     TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.contacts_alphabetical)),
     TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites))
   )
@@ -48,14 +48,14 @@ trait ContactsComposer
           true
         case _ => false
       }) <~
-      dtbChangeText(R.string.contacts) <~
+      dtbChangeText(R.string.allContacts) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (pullToTabsView <~
         ptvLinkTabs(
           tabs = tabs,
           start = Ui.nop,
           end = Ui.nop) <~
-        ptvAddTabsAndActivate(appTabs, 0, Some(colorPrimary)) <~
+        ptvAddTabsAndActivate(contactsTabs, 0, Some(colorPrimary)) <~
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
@@ -91,7 +91,7 @@ trait ContactsComposer
     showData ~
       (getAdapter map { adapter =>
         Ui(adapter.swapIterator(contacts)) ~
-          (rootContent <~ uiSnackbarShort(filter match {
+          (toolbar <~ dtbChangeText(filter match {
             case FavoriteContacts => R.string.favoriteContacts
             case _ => R.string.allContacts
           })) ~

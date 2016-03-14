@@ -32,6 +32,15 @@ trait DeviceProcess {
   def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
 
   /**
+    * Get iterable by category of saved apps from the database
+    * @param orderBy indicates the order to fetch the apps
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
+    *         information about the app
+    * @throws AppException if exist some problem to get the apps
+    */
+  def getIterableAppsByCategory(category: String)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
+
+  /**
     * Returns the number of times the first letter of an app is repeated alphabetically filtered by parameter
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter] contains
     *         information about the times is repeated an apps

@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServiceExce
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{DataCounter, App}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByName, AddAppRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -35,6 +35,11 @@ trait AppsDeviceProcessImpl {
   def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
       iter <- persistenceServices.fetchIterableApps(toFetchAppOrder(orderBy), orderBy.ascending)
+    } yield new IterableApps(iter)).resolve[AppException]
+
+  def getIterableAppsByCategory(category: String)(implicit context: ContextSupport) =
+    (for {
+      iter <- persistenceServices.fetchIterableAppsByCategory(category, OrderByName, ascending = true)
     } yield new IterableApps(iter)).resolve[AppException]
 
   def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
