@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{TermCounter, Contact, IterableContacts}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -73,7 +73,8 @@ trait ContactsComposer
 
   def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def generateContactsAdapter(contacts: IterableContacts, clickListener: (Contact) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
+  def generateContactsAdapter(contacts: IterableContacts, counters: Seq[TermCounter], clickListener: (Contact) => Unit)
+    (implicit uiContext: UiContext[_]): Ui[_] = {
     val adapter = new ContactsAdapter(contacts, clickListener, None)
     showData ~
       (recycler <~
@@ -81,11 +82,12 @@ trait ContactsComposer
         rvAdapter(adapter)) ~
       (loading <~ vGone) ~
       (recycler map { rv =>
-        scrollerLayout <~ fslLinkRecycler(rv)
+        scrollerLayout <~ fslLinkRecycler(rv) <~ fslCounters(counters)
       } getOrElse showGeneralError)
   }
 
-  def reloadContactsAdapter(contacts: IterableContacts, filter: ContactsFilter)(implicit uiContext: UiContext[_]): Ui[_] = {
+  def reloadContactsAdapter(contacts: IterableContacts, counters: Seq[TermCounter], filter: ContactsFilter)
+    (implicit uiContext: UiContext[_]): Ui[_] = {
     showData ~
       (getAdapter map { adapter =>
         Ui(adapter.swapIterator(contacts)) ~
@@ -93,7 +95,7 @@ trait ContactsComposer
             case FavoriteContacts => R.string.favoriteContacts
             case _ => R.string.allContacts
           })) ~
-          (scrollerLayout <~ fslReset) ~
+          (scrollerLayout <~ fslReset <~ fslCounters(counters)) ~
           (recycler <~ rvScrollToTop)
       } getOrElse showGeneralError)
   }
