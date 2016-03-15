@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toDockApp
 import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp, DockAppData}
+import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
@@ -78,7 +79,7 @@ class DockAppRepository(
   def fetchDockApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[Seq[DockApp], RepositoryException] =
+    orderBy: String = s"${DockAppEntity.position} asc"): ServiceDef2[Seq[DockApp], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
@@ -95,7 +96,7 @@ class DockAppRepository(
   def fetchIterableDockApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursor[DockApp], RepositoryException] =
+    orderBy: String = s"${DockAppEntity.position} asc"): ServiceDef2[IterableCursor[DockApp], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {

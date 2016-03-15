@@ -18,4 +18,11 @@ trait AppsServices {
    * @throws AppsInstalledException if exist some problem obtaining the installed app
    */
   def getApplication(packageName: String)(implicit context: ContextSupport): ServiceDef2[Application, AppsInstalledException]
+
+  /**
+    * Return a sequence with the default apps for ten predefined actions
+    * @return Sequence of `Application` with the data of the apps
+    * @throws AppsInstalledException if there was an error with trying to get the default apps
+    */
+  def getDefaultApps(implicit context: ContextSupport): ServiceDef2[Seq[Application], AppsInstalledException]
 }

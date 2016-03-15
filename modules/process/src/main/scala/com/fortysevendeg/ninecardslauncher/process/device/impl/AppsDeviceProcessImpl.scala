@@ -54,7 +54,7 @@ trait AppsDeviceProcessImpl {
   def saveInstalledApps(implicit context: ContextSupport) =
     (for {
       requestConfig <- apiUtils.getRequestConfig
-      installedApps <- appsService.getInstalledApplications
+      installedApps <- appsServices.getInstalledApplications
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
       appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
       apps = installedApps map { app =>
@@ -69,7 +69,7 @@ trait AppsDeviceProcessImpl {
 
   def saveApp(packageName: String)(implicit context: ContextSupport) =
     (for {
-      app <- appsService.getApplication(packageName)
+      app <- appsServices.getApplication(packageName)
       appCategory <- getAppCategory(packageName)
       appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
       _ <- persistenceServices.addApp(toAddAppRequest(app, appCategory, appPackagePath.path))
@@ -82,7 +82,7 @@ trait AppsDeviceProcessImpl {
 
   def updateApp(packageName: String)(implicit context: ContextSupport) =
     (for {
-      app <- appsService.getApplication(packageName)
+      app <- appsServices.getApplication(packageName)
       Some(appPersistence) <- persistenceServices.findAppByPackage(packageName)
       appCategory <- getAppCategory(packageName)
       appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
