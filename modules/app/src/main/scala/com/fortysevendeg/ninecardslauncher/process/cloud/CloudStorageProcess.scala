@@ -14,8 +14,16 @@ trait CloudStorageProcess {
   def getCloudStorageDevices(implicit context: ContextSupport): ServiceDef2[Seq[CloudStorageDeviceSummary], CloudStorageProcessException]
 
   /**
+    * Fetch a `CloudStorageDevice` by his android id
+    * @param androidId identifier of the devices
+    * @return the `CloudStorageDevice`
+    * @throws CloudStorageProcessException if the device not exists or the service throws an error
+    */
+  def getCloudStorageDeviceByAndroidId(androidId: String): ServiceDef2[CloudStorageDevice, CloudStorageProcessException]
+
+  /**
     * Fetch a `CloudStorageDevice` by his id
-    * @param cloudStorageResourceId identifier of the devices
+    * @param cloudStorageResourceId google drive identifier
     * @return the `CloudStorageDevice`
     * @throws CloudStorageProcessException if the device not exists or the service throws an error
     */
@@ -33,7 +41,7 @@ trait CloudStorageProcess {
     * @param collections the collections to be overwritten in the actual devices
     * @throws CloudStorageProcessException if the services throws an error
     */
-  def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection]): ServiceDef2[Unit, CloudStorageProcessException]
+  def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection])(implicit context: ContextSupport): ServiceDef2[Unit, CloudStorageProcessException]
 
 }
 

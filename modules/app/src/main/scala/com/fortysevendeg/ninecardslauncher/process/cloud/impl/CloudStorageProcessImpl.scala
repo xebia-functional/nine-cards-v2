@@ -35,6 +35,13 @@ class CloudStorageProcessImpl(
     androidId <- persistenceServices.getAndroidId
   } yield driveServicesSeq map (file => toDriveDevice(file, androidId))).resolve[CloudStorageProcessException]
 
+  def getCloudStorageDeviceByAndroidId(androidId: String) = (for {
+    driveFile <- driveServices.findFile(androidId)
+    json <- driveFile map
+      (df => driveServices.readFile(df.googleDriveId)) getOrElse Service(Task(Errata(DriveServicesException("Android Id don't found"))))
+    device <- parseDevice(json)
+  } yield device).resolve[CloudStorageProcessException]
+
   override def getCloudStorageDevice(cloudStorageResourceId: String) = (for {
     json <- driveServices.readFile(cloudStorageResourceId)
     device <- parseDevice(json)
@@ -46,14 +53,13 @@ class CloudStorageProcessImpl(
     _ <- createOrUpdateFile(file, cloudStorageDevice.deviceName, json, cloudStorageDevice.deviceId)
   } yield ()).resolve[CloudStorageProcessException]
 
-  override def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection]) = (for {
-    cloudStorageDevice <- persistenceServices.getAndroidId map { androidId =>
-      CloudStorageDevice(
-        deviceId = androidId,
-        deviceName = Build.MODEL,
-        documentVersion = CloudStorageProcess.actualDocumentVersion,
-        collections = collections)
-    }
+  override def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection])(implicit context: ContextSupport) = (for {
+    androidId <- persistenceServices.getAndroidId
+    cloudStorageDevice = CloudStorageDevice(
+      deviceId = androidId,
+      deviceName = Build.MODEL,
+      documentVersion = CloudStorageProcess.actualDocumentVersion,
+      collections = collections)
     _ <- createOrUpdateCloudStorageDevice(cloudStorageDevice)
   } yield ()).resolve[CloudStorageProcessException]
 

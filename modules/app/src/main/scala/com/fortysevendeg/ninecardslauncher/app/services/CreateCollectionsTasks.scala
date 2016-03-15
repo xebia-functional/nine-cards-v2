@@ -1,31 +1,27 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
 import java.io.File
-import java.util
 
-import android.app.Activity
-
-import scala.collection.JavaConverters._
-
-import android.content.pm.{PackageManager, ResolveInfo}
-import android.content.{ComponentName, Context, Intent, IntentFilter}
+import android.content.pm.ResolveInfo
+import android.content.{Context, Intent}
 import android.util.Log
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageCollection
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher.process.device.{DockAppException, _}
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserCollection
 import com.fortysevendeg.ninecardslauncher2.R
+import com.google.android.gms.common.api.GoogleApiClient
 import play.api.libs.json.Json
 import rapture.core.Answer
 
+import scala.collection.JavaConverters._
 import scalaz.concurrent.Task
 
 trait CreateCollectionsTasks
@@ -60,22 +56,27 @@ trait CreateCollectionsTasks
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
     } yield collections
 
-   def loadConfiguration(deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with UserConfigException with CollectionException with DockAppException] =
-    for {
-      - <- di.deviceProcess.resetSavedItems()
-      _ <- di.deviceProcess.saveInstalledApps
-      _ <- generateDockApps()
-      apps <- di.deviceProcess.getSavedApps(GetByName)
-      _ = setProcess(GettingAppsProcess)
-      userCollections <- di.userConfigProcess.getUserCollection(deviceId)
-      _ = setProcess(LoadingConfigProcess)
-      bitmaps <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(apps, userCollections))
-      _ = setProcess(CreatingCollectionsProcess)
-      collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(userCollections))
-    } yield collections
+   def loadConfiguration(
+     client: GoogleApiClient,
+     account: String,
+     deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with CloudStorageProcessException with CollectionException with DockAppException] = {
+     val cloudStorageProcess = di.createCloudStorageProcess(client, account)
+     for {
+       - <- di.deviceProcess.resetSavedItems()
+       _ <- di.deviceProcess.saveInstalledApps
+       _ <- generateDockApps()
+       apps <- di.deviceProcess.getSavedApps(GetByName)
+       _ = setProcess(GettingAppsProcess)
+       cloudStorageDevice <- cloudStorageProcess.getCloudStorageDeviceByAndroidId(deviceId)
+       _ = setProcess(LoadingConfigProcess)
+       bitmaps <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(apps, cloudStorageDevice.collections))
+       _ = setProcess(CreatingCollectionsProcess)
+       collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(cloudStorageDevice.collections))
+     } yield collections
+   }
 
-  private[this] def getAppsNotInstalled(apps: Seq[App], userCollections: Seq[UserCollection]): Seq[String] = {
-    val intents = userCollections flatMap (_.items map (item => Json.parse(item.intent).as[NineCardIntent]))
+  private[this] def getAppsNotInstalled(apps: Seq[App], collections: Seq[CloudStorageCollection]): Seq[String] = {
+    val intents = collections flatMap (_.items map (item => Json.parse(item.intent).as[NineCardIntent]))
     intents flatMap {
       _.extractPackageName() flatMap { pn =>
         if (!apps.exists(_.packageName == pn)) Option(pn) else None

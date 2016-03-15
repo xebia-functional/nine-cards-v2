@@ -42,7 +42,6 @@ case class FormedCollection(
   sharedCollectionSubscribed: Option[Boolean],
   items: Seq[FormedItem],
   collectionType: CollectionType,
-  constrains: Seq[String],
   icon: String,
   category: Option[NineCardCategory])
 

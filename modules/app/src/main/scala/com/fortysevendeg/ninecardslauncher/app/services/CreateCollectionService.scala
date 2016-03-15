@@ -7,12 +7,14 @@ import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
+import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.process.device.ImplicitsDeviceException
 import com.fortysevendeg.ninecardslauncher2.R
+import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -25,6 +27,7 @@ class CreateCollectionService
   with Contexts[Service]
   with ContextSupportProvider
   with CreateCollectionsTasks
+  with GoogleApiClientService
   with ImplicitsDeviceException
   with BroadcastDispatcher { self =>
 
@@ -68,18 +71,8 @@ class CreateCollectionService
 
     startForeground(notificationId, builder.build)
 
-    val service = loadDeviceId map loadConfiguration getOrElse createNewConfiguration
+    synchronizeDevice
 
-    Task.fork(service.run).resolveAsync(
-      onResult = collections => {
-        setState(stateSuccess)
-        closeService()
-      },
-      onException = ex => {
-        setState(stateFailure)
-        closeService()
-      }
-    )
     super.onStartCommand(intent, flags, startId)
   }
 
@@ -112,6 +105,22 @@ class CreateCollectionService
 
   override def onBind(intent: Intent): IBinder = javaNull
 
+  override def connected(client: GoogleApiClient, account: String): Unit = {
+    val service = loadDeviceId map (loadConfiguration(client, account, _)) getOrElse createNewConfiguration
+
+    Task.fork(service.run).resolveAsync(
+      onResult = collections => {
+        setState(stateSuccess)
+        closeService()
+      },
+      onException = ex => {
+        setState(stateFailure)
+        closeService()
+      }
+    )
+  }
+
+  override def error(message: String, maybeException: Option[Throwable]): Unit = closeService()
 }
 
 object CreateCollectionService {

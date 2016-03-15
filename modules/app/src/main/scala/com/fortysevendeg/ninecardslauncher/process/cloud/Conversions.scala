@@ -5,6 +5,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Coll
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem, UserDevice}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import play.api.libs.json.Json
+import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 
 object Conversions {
 

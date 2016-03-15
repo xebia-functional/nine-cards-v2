@@ -212,8 +212,8 @@ class ProfileActivity
   private[this] def loadUserAccounts(client: GoogleApiClient, username: String): Unit =
     Task.fork(loadAccounts(client, username).run).resolveAsyncUi(
       onResult = accountSyncs => {
-        setAccountsAdapter(accountSyncs)
         syncEnabled = true
+        setAccountsAdapter(accountSyncs)
       },
       onException = (_) => showError(R.string.errorConnectingGoogle, () => loadUserAccounts(client, username)),
       onPreTask = () => showLoading

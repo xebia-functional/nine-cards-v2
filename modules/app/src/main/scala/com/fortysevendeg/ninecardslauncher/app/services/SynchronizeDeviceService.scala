@@ -2,20 +2,21 @@ package com.fortysevendeg.ninecardslauncher.app.services
 
 import android.app.Service
 import android.content.Intent
-import android.os.{Bundle, IBinder}
-import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
+import android.os.IBinder
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientProvider
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps
+import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
-import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcessException, Conversions}
+import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
+import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import macroid.Contexts
 
 import scalaz.concurrent.Task
@@ -23,26 +24,22 @@ import scalaz.concurrent.Task
 class SynchronizeDeviceService
   extends Service
   with Contexts[Service]
-  with GoogleApiClientProvider
+  with ContextSupportProvider
+  with GoogleApiClientService
   with BroadcastDispatcher {
 
   self =>
 
-  import AppLog._
-  import Conversions._
-  import TasksOps._
   import SyncDeviceState._
 
   implicit lazy val di = new Injector
-
-  private[this] var statuses = GoogleApiClientStatuses()
 
   private var currentState: Option[String] = None
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     registerDispatchers
 
-    synchronizeDevice()
+    synchronizeDevice
 
     super.onStartCommand(intent, flags, startId)
   }
@@ -54,30 +51,6 @@ class SynchronizeDeviceService
     unregisterDispatcher
   }
 
-  override def tryToConnect(): Unit = statuses.apiClient foreach (_.connect())
-
-  override def onResolveConnectionError(): Unit =
-    error(getString(R.string.errorConnectingGoogle))
-
-  override def onRequestConnectionError(errorCode: Int): Unit =
-    error(getString(R.string.errorConnectingGoogle))
-
-  override def onConnected(bundle: Bundle): Unit =
-    statuses match {
-      case GoogleApiClientStatuses(Some(client), Some(account)) if client.isConnected =>
-        Task.fork(sync(client, account).run).resolveAsync(
-          _ => success(),
-          throwable => {
-            error(
-              message = getString(R.string.errorConnectingGoogle),
-              maybeException = Some(throwable))
-          })
-      case GoogleApiClientStatuses(Some(client), Some(account)) =>
-        tryToConnect()
-      case _ =>
-        error(getString(R.string.errorConnectingGoogle))
-    }
-
   override val actionsFilters: Seq[String] = SyncActionFilter.cases map (_.action)
 
   override def manageQuestion(action: String): Option[BroadAction] = SyncActionFilter(action) match {
@@ -85,24 +58,14 @@ class SynchronizeDeviceService
     case _ => None
   }
 
-  def synchronizeDevice(): Unit = {
-    Task.fork(di.userProcess.getUser.run).resolveAsync(
-      user => user.email match {
-        case Some(account) =>
-          val client = createGoogleDriveClient(account)
-          statuses = statuses.copy(
-            apiClient = Some(client),
-            username = Some(account))
-          client.connect()
-        case _ =>
-          error(getString(R.string.errorLoadingUser))
-      },
+  override def connected(client: GoogleApiClient, account: String): Unit =
+    Task.fork(sync(client, account).run).resolveAsync(
+      _ => success(),
       throwable => {
         error(
-          message = getString(R.string.errorLoadingUser),
+          message = getString(R.string.errorConnectingGoogle),
           maybeException = Some(throwable))
       })
-  }
 
   private[this] def sync(
     client: GoogleApiClient,
@@ -117,7 +80,7 @@ class SynchronizeDeviceService
 
   private[this] def success() = sendStateAndFinish(stateSuccess)
 
-  private[this] def error(message: String, maybeException: Option[Throwable] = None) = {
+  override def error(message: String, maybeException: Option[Throwable] = None) = {
     maybeException foreach (ex => printErrorMessage(ex))
     sendStateAndFinish(stateFailure)
   }
