@@ -1,13 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
-import java.io.File
-
-import android.content.pm.ResolveInfo
-import android.content.{Context, Intent}
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageCollection
@@ -16,15 +9,8 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardInt
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher.process.device.{DockAppException, _}
-import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserCollection
 import play.api.libs.json.Json
-import rapture.core.Answer
-
-import scala.collection.JavaConverters._
-import scalaz.concurrent.Task
 
 trait CreateCollectionsTasks
   extends Conversions
