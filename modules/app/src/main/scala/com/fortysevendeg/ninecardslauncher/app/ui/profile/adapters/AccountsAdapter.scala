@@ -1,15 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters
 
 import android.support.v7.widget.RecyclerView
+import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{AccountSync, Header}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{AccountSync, AccountSyncType, Header}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
-case class AccountsAdapter(items: Seq[AccountSync])(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
+case class AccountsAdapter(
+  items: Seq[AccountSync],
+  clickListener: (AccountSyncType) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderAccountsAdapter] {
 
   private[this] val headerType = 0
@@ -28,6 +32,12 @@ case class AccountsAdapter(items: Seq[AccountSync])(implicit activityContext: Ac
         new ViewHolderAccountsHeaderAdapter(view)
       case _ =>
         val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_account_item, parent, false)
+        view.setOnClickListener(new OnClickListener {
+          override def onClick(v: View): Unit = Option(v.getTag) match {
+            case Some(accountType: AccountSyncType) => clickListener(accountType)
+            case _ =>
+          }
+        })
         new ViewHolderAccountItemAdapter(view)
     }
 
@@ -65,6 +75,7 @@ case class ViewHolderAccountItemAdapter(content: View)(implicit context: Activit
 
   def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     (titleView <~ tvText(accountSync.title)) ~
-      (subtitleView <~ tvText(accountSync.subtitle getOrElse ""))
+      (subtitleView <~ tvText(accountSync.subtitle getOrElse "")) ~
+      (content <~ vTag2(accountSync.accountSyncType))
 
 }

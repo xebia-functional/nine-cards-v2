@@ -76,7 +76,7 @@ class CreateCollectionService
         closeService()
       },
       onException = ex => {
-        setState(stateFaliure)
+        setState(stateFailure)
         closeService()
       }
     )

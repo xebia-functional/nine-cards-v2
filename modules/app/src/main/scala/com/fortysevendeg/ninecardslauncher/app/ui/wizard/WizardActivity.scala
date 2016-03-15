@@ -54,7 +54,7 @@ class WizardActivity
 
   override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
     case (WizardStateActionFilter, Some(`stateSuccess`)) => storeCloudDevice()
-    case (WizardStateActionFilter, Some(`stateFaliure`)) => showUser.run
+    case (WizardStateActionFilter, Some(`stateFailure`)) => showUser.run
     case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => showWizard.run
     case _ =>
   }

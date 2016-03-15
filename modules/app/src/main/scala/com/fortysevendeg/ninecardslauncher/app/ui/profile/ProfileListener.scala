@@ -8,8 +8,9 @@ case object SubscriptionsTab extends ProfileTab
 
 case object AccountsTab extends ProfileTab
 
-trait ProfileTabListener {
+trait ProfileListener {
 
   def onProfileTabSelected(profileTab: ProfileTab): Unit
 
+  def onSyncActionClicked(): Unit
 }

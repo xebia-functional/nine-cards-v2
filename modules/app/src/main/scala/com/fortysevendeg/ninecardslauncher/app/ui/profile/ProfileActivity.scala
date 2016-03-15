@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.{Menu, MenuItem}
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientActivityProvider
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
@@ -31,11 +31,18 @@ class ProfileActivity
   with ContextSupportProvider
   with TypedFindView
   with SystemBarsTint
-  with ProfileTabListener
+  with ProfileListener
   with ProfileComposer
   with ProfileTasks
   with GoogleApiClientActivityProvider
-  with AppBarLayout.OnOffsetChangedListener {
+  with AppBarLayout.OnOffsetChangedListener
+  with BroadcastDispatcher {
+
+  self =>
+
+  import AppUtils._
+  import SyncDeviceState._
+  import TasksOps._
 
   implicit lazy val di = new Injector
 
@@ -50,6 +57,23 @@ class ProfileActivity
 
   var userProfileStatuses = UserProfileStatuses()
 
+  var syncEnabled: Boolean = false
+
+  override val actionsFilters: Seq[String] = SyncActionFilter.cases map (_.action)
+
+  override def manageCommand(action: String, data: Option[String]): Unit = (SyncActionFilter(action), data) match {
+    case (SyncStateActionFilter, Some(`stateSuccess`)) =>
+      // TODO - Reload adapter
+      syncEnabled = false
+    case (SyncStateActionFilter, Some(`stateFailure`)) =>
+      // TODO - Show error
+      syncEnabled = true
+    case (SyncAnswerActionFilter, Some(`stateSyncing`)) =>
+      // TODO - Show loading
+      syncEnabled = false
+    case _ =>
+  }
+
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     loadUserProfile()
@@ -63,6 +87,17 @@ class ProfileActivity
     }
 
     barLayout foreach (_.addOnOffsetChangedListener(this))
+  }
+
+  override def onResume(): Unit = {
+    super.onResume()
+    registerDispatchers
+    self ? SyncAskActionFilter.action
+  }
+
+  override def onPause(): Unit = {
+    super.onPause()
+    unregisterDispatcher
   }
 
   override def onStop(): Unit = {
@@ -134,12 +169,19 @@ class ProfileActivity
       }
   }
 
+  override def onSyncActionClicked(): Unit = if (syncEnabled) launchService()
+
   def onConnectedUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit = userProfile(name, email, avatarUrl).run
 
   def onConnectedPlusProfile(coverPhotoUrl: String): Unit = {}
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
     userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
+
+  def launchService(): Unit = {
+    syncEnabled = false
+    startService(new Intent(this, classOf[SynchronizeDeviceService]))
+  }
 
   private[this] def loadUserProfile(): Unit =
     Task.fork(loadUserEmail().run).resolveAsyncUi(
@@ -169,7 +211,10 @@ class ProfileActivity
 
   private[this] def loadUserAccounts(client: GoogleApiClient, username: String): Unit =
     Task.fork(loadAccounts(client, username).run).resolveAsyncUi(
-      onResult = accountSyncs => setAccountsAdapter(accountSyncs),
+      onResult = accountSyncs => {
+        setAccountsAdapter(accountSyncs)
+        syncEnabled = true
+      },
       onException = (_) => showError(R.string.errorConnectingGoogle, () => loadUserAccounts(client, username)),
       onPreTask = () => showLoading
     )

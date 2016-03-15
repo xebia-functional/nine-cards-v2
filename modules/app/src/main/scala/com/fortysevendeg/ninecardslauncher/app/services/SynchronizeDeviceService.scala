@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcessException, Conversions}
@@ -30,10 +31,13 @@ class SynchronizeDeviceService
   import AppLog._
   import Conversions._
   import TasksOps._
+  import SyncDeviceState._
 
   implicit lazy val di = new Injector
 
   private[this] var statuses = GoogleApiClientStatuses()
+
+  private var currentState: Option[String] = None
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
     registerDispatchers
@@ -74,7 +78,12 @@ class SynchronizeDeviceService
         error(getString(R.string.errorConnectingGoogle))
     }
 
-  override val actionsFilters: Seq[String] = GoogleDriveSyncActionFilter.cases map (_.action)
+  override val actionsFilters: Seq[String] = SyncActionFilter.cases map (_.action)
+
+  override def manageQuestion(action: String): Option[BroadAction] = SyncActionFilter(action) match {
+    case SyncAskActionFilter => Option(BroadAction(SyncAnswerActionFilter.action, currentState))
+    case _ => None
+  }
 
   def synchronizeDevice(): Unit = {
     Task.fork(di.userProcess.getUser.run).resolveAsync(
@@ -106,16 +115,19 @@ class SynchronizeDeviceService
     } yield ()
   }
 
-  private[this] def success() = {
-    self ! BroadAction(GoogleDriveSyncActionFilterSuccess.action)
-    closeService()
-  }
+  private[this] def success() = sendStateAndFinish(stateSuccess)
 
   private[this] def error(message: String, maybeException: Option[Throwable] = None) = {
     maybeException foreach (ex => printErrorMessage(ex))
-    self ! BroadAction(GoogleDriveSyncActionFilterError.action, Some(message))
+    sendStateAndFinish(stateFailure)
+  }
+
+  private[this] def sendStateAndFinish(state: String) = {
+    currentState = Option(state)
+    self ! BroadAction(SyncStateActionFilter.action, currentState)
     closeService()
   }
+
 
   private[this] def closeService() = {
     stopForeground(true)
