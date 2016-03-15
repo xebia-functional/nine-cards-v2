@@ -6,15 +6,14 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.services.api._
+import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
-import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServicesException, CallsServices}
+import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServices, CallsServicesException}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -72,6 +71,9 @@ trait DeviceProcessSpecification
 
     mockAppsServices.getApplication(packageName1)(contextSupport) returns
       Service(Task(Result.answer(applications.head)))
+
+    mockAppsServices.getDefaultApps(contextSupport) returns
+      Service(Task(Result.answer(applications)))
 
     val mockApiServices = mock[ApiServices]
 
@@ -226,6 +228,10 @@ trait DeviceProcessSpecification
     }
 
     mockAppsServices.getApplication(packageName1)(contextSupport) returns Service {
+      Task(Errata(appInstalledException))
+    }
+
+    mockAppsServices.getDefaultApps(contextSupport) returns Service {
       Task(Errata(appInstalledException))
     }
 
@@ -510,6 +516,17 @@ trait DeviceProcessSpecification
 
     mockPersistenceServices.deleteAllDockApps() returns
       Service(Task(Result.answer(dockAppsRemoved)))
+  }
+
+  trait DockAppsFindErrorScope {
+    self: DeviceProcessScope =>
+
+    mockPersistenceServices.findAppByPackage(any) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.createOrUpdateDockApp(any) returns
+      Service(Task(Result.answer((): Unit)))
   }
 
   trait DockAppsErrorScope {
@@ -1283,24 +1300,42 @@ class DeviceProcessImplSpec
 
   }
 
-  "Save Dock App" should {
+  "Generate Dock Apps" should {
 
     "returns a empty answer for a valid request" in
       new DeviceProcessScope with DockAppsScope {
-        val result = deviceProcess.saveDockApp(packageName1, intent, imagePath1, 0).run.run
+        val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
         result must beLike {
           case Answer(resultDockApp) =>
             resultDockApp shouldEqual ((): Unit)
         }
       }
 
-    "returns DockAppException when PersistenceService fails" in
-      new DeviceProcessScope with DockAppsErrorScope {
-        val result = deviceProcess.saveDockApp(packageName1, intent, imagePath1, 0).run.run
+    "returns DockAppException when AppService fails" in
+      new DeviceProcessScope with ErrorAppServicesProcessScope {
+        val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
           }
+        }
+      }
+
+    "returns an empty answer when PersistenceService fails finding the apps" in
+      new DeviceProcessScope with DockAppsFindErrorScope {
+        val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
+        }
+      }
+
+    "returns an empty answer when PersistenceService fails saving the apps" in
+      new DeviceProcessScope with DockAppsErrorScope {
+        val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
         }
       }
   }

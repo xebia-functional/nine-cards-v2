@@ -9,7 +9,6 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoIn
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import rapture.core.Answer
-import rapture.core.scalazInterop.ResultT
 
 import scalaz.concurrent.Task
 
@@ -19,7 +18,7 @@ trait CardsProcessImpl {
     with FormedCollectionConversions
     with ImplicitsPersistenceServiceExceptions =>
 
-  def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): ResultT[Task, Seq[Card], CardException] =
+  def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]) =
     (for {
       cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId))
       addedCardList <- addCardList(collectionId, addCardListRequest, cardList.size)
