@@ -12,8 +12,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
-import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
+import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Ui
 
@@ -22,6 +22,7 @@ import scalaz.concurrent.Task
 class ContactsFragment
   extends BaseActionFragment
   with ContactsComposer
+  with ContactTasks
   with NineCardIntentConversions {
 
   val tagDialog = "dialog"
@@ -30,11 +31,7 @@ class ContactsFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    initUi(checked => loadContacts(if (checked) {
-      AllContacts
-    } else {
-      FavoriteContacts
-    }, reload = true)).run
+    initUi(filter => loadContacts(filter, reload = true)).run
     loadContacts(AllContacts)
   }
 
@@ -59,16 +56,17 @@ class ContactsFragment
 
   private[this] def loadContacts(
     filter: ContactsFilter,
-    reload: Boolean = false): Unit = Task.fork(di.deviceProcess.getIterableContacts(filter).run).resolveAsyncUi(
+    reload: Boolean = false): Unit = Task.fork(getLoadContacts(filter).run).resolveAsyncUi(
     onPreTask = () => showLoading,
-    onResult = (contacts: IterableContacts) => if (reload) {
-      reloadContactsAdapter(contacts, filter)
-    } else {
-      generateContactsAdapter(contacts, contact => {
-        showDialog(contact)
-      })
+    onResult = {
+      case (contacts: IterableContacts, counters: Seq[TermCounter]) =>
+        if (reload) {
+          reloadContactsAdapter(contacts, counters, filter)
+        } else {
+          generateContactsAdapter(contacts, counters, contact => showDialog(contact))
+        }
     },
-    onException = (ex: Throwable) => showError(R.string.errorLoadingContacts, loadContacts(filter, reload))
+    onException = (ex: Throwable) => showError(R.string.errorLoadingContacts, loadContacts(filter, reload = true))
   )
 
   private[this] def showDialog(contact: Contact) = Task.fork(di.deviceProcess.getContact(contact.lookupKey).run).resolveAsync(

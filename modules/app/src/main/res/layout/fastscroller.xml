@@ -18,6 +18,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/fastscroller_bar_content"
         style="@style/FastScrollerBarContent">
 
         <ImageView

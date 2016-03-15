@@ -5,6 +5,7 @@
     <string name="edit">Editar</string>
     <string name="make_public">Hacer Pública</string>
     <string name="share">Compartir</string>
+    <string name="filter">Filtrar</string>
     <string name="loading">Cargando</string>
     <string name="contactUsError">Opps! Por favor contacta con nosotros si este problema persiste</string>
     <string name="formFieldError">¿Es posible que falte algo en el formulario?</string>

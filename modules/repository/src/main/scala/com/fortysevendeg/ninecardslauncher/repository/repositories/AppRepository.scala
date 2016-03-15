@@ -167,11 +167,12 @@ class AppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
+          val (where, param) = whereCategory(category)
           contentResolverWrapper.fetchAll(
             uri = appUri,
             projection = allFields,
-            where = s"${AppEntity.category} = ?",
-            whereParams = Seq(category),
+            where = where,
+            whereParams = Seq(param),
             orderBy = orderBy)(getListFromCursor(appEntityFromCursor)) map toApp
         }
       }
@@ -181,11 +182,12 @@ class AppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
+          val (where, param) = whereCategory(category)
           contentResolverWrapper.getCursor(
             uri = appUri,
             projection = allFields,
-            where = s"${AppEntity.category} = ?",
-            whereParams = Seq(category),
+            where = where,
+            whereParams = Seq(param),
             orderBy = orderBy).toIterator(appFromCursor)
         }
       }
@@ -233,6 +235,13 @@ class AppRepository(
       uri = appUri,
       projection = Seq(dateInstalled),
       orderBy = s"$dateInstalled DESC"))
+
+  private[this] def whereCategory(category: String): (String, String) = category match {
+    case t if t.startsWith(game) =>
+      (s"${AppEntity.category} LIKE ?", s"$category%")
+    case _ =>
+      (s"${AppEntity.category} = ?", category)
+  }
 
   private[this] def toDataCounter(
     fetchData: => Seq[String],

@@ -178,6 +178,8 @@ trait DeviceProcessData
 
   val dockAppsRemoved = 4
 
+  val category = "GAME"
+
   val applicationNoCached = Application(
     name = name4,
     packageName = packageName4,

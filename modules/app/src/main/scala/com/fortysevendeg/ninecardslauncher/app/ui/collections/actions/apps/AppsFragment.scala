@@ -9,9 +9,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, AppCardType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, AllAppsCategory, AppCardType, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{TermCounter, App, IterableApps}
 import com.fortysevendeg.ninecardslauncher2.R
 
 import scalaz.concurrent.Task
@@ -20,6 +20,7 @@ class AppsFragment
   extends BaseActionFragment
   with AppsComposer
   with UiExtensions
+  with AppsTasks
   with NineCardIntentConversions {
 
   val allApps = AllAppsCategory
@@ -30,37 +31,47 @@ class AppsFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    initUi(category == allApps, checked => loadApps(if (checked) {
+    val onlyAllApps = showOnlyAllApps
+    initUi(onlyAllApps, category, filter => loadApps(if (filter == AppsByCategory) {
       AppsByCategory
     } else {
       AllApps
     }, reload = true)).run
 
-    loadApps(if (category == allApps) AllApps else AppsByCategory)
+    loadApps(if (onlyAllApps) AllApps else AppsByCategory)
   }
 
   private[this] def loadApps(
     filter: AppsFilter,
-    reload: Boolean = false): Unit = // TODO Use filter by category in ticket 9C-350
-    Task.fork(di.deviceProcess.getIterableApps(GetByName).run).resolveAsyncUi(
+    reload: Boolean = false): Unit = {
+    val task = filter match {
+      case AllApps => getLoadApps(GetByName)
+      case AppsByCategory => getLoadAppsByCategory(category)
+    }
+    Task.fork(task.run).resolveAsyncUi(
       onPreTask = () => showLoading,
-      onResult = (apps: IterableApps) => if (reload) {
-        reloadAppsAdapter(apps, filter, category)
-      } else {
-        generateAppsAdapter(apps, filter, category, (app: App) => {
-          val card = AddCardRequest(
-            term = app.name,
-            packageName = Option(app.packageName),
-            cardType = AppCardType,
-            intent = toNineCardIntent(app),
-            imagePath = app.imagePath
-          )
-          activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
-          unreveal().run
-        })
+      onResult = {
+        case (apps: IterableApps, counters: Seq[TermCounter]) => if (reload) {
+          reloadAppsAdapter(apps, counters, filter, category)
+        } else {
+          generateAppsAdapter(apps, counters, filter, category, (app: App) => {
+            val card = AddCardRequest(
+              term = app.name,
+              packageName = Option(app.packageName),
+              cardType = AppCardType,
+              intent = toNineCardIntent(app),
+              imagePath = app.imagePath
+            )
+            activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
+            unreveal().run
+          })
+        }
       },
       onException = (ex: Throwable) => showError(R.string.errorLoadingApps, loadApps(filter, reload))
     )
+  }
+
+  private[this] def showOnlyAllApps: Boolean = category == allApps || category == Misc
 
 }
 

@@ -8,6 +8,7 @@
     <string name="edit">Edit</string>
     <string name="make_public">Make Public</string>
     <string name="share">Share</string>
+    <string name="filter">Filter</string>
     <string name="loading">Loading</string>
     <string name="contactUsError">Oops! Please contact us if this problem persists</string>
     <string name="formFieldError">Is it possible to miss something in the form?</string><!-- Pending review language -->

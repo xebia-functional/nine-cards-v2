@@ -7,15 +7,21 @@ import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
 import android.util.AttributeSet
 import android.view.MotionEvent._
 import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
-import android.view.{VelocityTracker, MotionEvent, ViewConfiguration, ViewGroup}
+import android.view._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{Swiping, SwipeController}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{SwipeController, Swiping}
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.ContextWrapper
+import macroid.Contexts
 
-class PullToDownView(context: Context)(implicit contextWrapper: ContextWrapper)
-  extends ViewGroup(context)
+class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)
+  extends ViewGroup(context, attr, defStyleAttr)
+  with Contexts[View]
   with SwipeController {
+
+  def this(context: Context) = this(context, javaNull, 0)
+
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   lazy val content = getChildAt(0)
 

@@ -4,13 +4,33 @@
     android:id="@+id/launcher_drawer_content"
     style="@style/LauncherDrawerContent">
 
-    <FrameLayout
-        style="@style/LauncherSearchAnimatedContentPanel"
-        android:id="@+id/launcher_search_box_content_panel" />
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxView
+        style="@style/LauncherSearchBox"
+        android:id="@+id/launcher_search_box_content" />
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout
         android:id="@+id/launcher_drawer_scroller_layout"
-        style="@style/LauncherDrawerInnerContent" />
+        style="@style/LauncherDrawerInnerContent">
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SwipeAnimatedDrawerView
+            android:id="@+id/launcher_drawer_swipe_animated"
+            style="@style/LauncherAnimatedDrawer"/>
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToTabsView
+            android:id="@+id/launcher_drawer_pull_to_tabs"
+            style="@style/PullToTabsContent">
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.DrawerRecyclerView
+                android:id="@+id/launcher_drawer_recycler"
+                style="@style/PullToTabsRecycler"/>
+
+        </com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToTabsView>
+
+        <LinearLayout
+            android:id="@+id/launcher_drawer_tabs"
+            style="@style/PullToTabsItem"/>
+
+    </com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout>
 
     <LinearLayout
         style="@style/LauncherPaginationPanel"
