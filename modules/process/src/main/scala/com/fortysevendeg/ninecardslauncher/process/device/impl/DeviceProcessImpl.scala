@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
@@ -14,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
 import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetsServices
 
 class DeviceProcessImpl(
-  val appsService: AppsServices,
+  val appsServices: AppsServices,
   val apiServices: ApiServices,
   val persistenceServices: PersistenceServices,
   val shortcutsServices: ShortcutsServices,
@@ -44,6 +43,9 @@ class DeviceProcessImpl(
   override def saveInstalledApps(implicit context: ContextSupport) = super.saveInstalledApps
 
   override def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) = super.getIterableApps(orderBy)
+
+  override def getIterableAppsByCategory(category: String)(implicit context: ContextSupport) =
+    super.getIterableAppsByCategory(category)
 
   override def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     super.getTermCountersForApps(orderBy)
@@ -85,8 +87,7 @@ class DeviceProcessImpl(
 
   override def getLastCalls(implicit context: ContextSupport) = super.getLastCalls
 
-  override def saveDockApp(packageName: String, intent: NineCardIntent, imagePath: String, position: Int) =
-    super.saveDockApp(packageName, intent, imagePath, position)
+  override def generateDockApps(size: Int)(implicit context: ContextSupport) = super.generateDockApps(size)
 
   override def getDockApps = super.getDockApps
 

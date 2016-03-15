@@ -10,6 +10,7 @@ import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.{GravityCompat, TintableBackgroundView}
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.support.v7.widget.{ListPopupWindow, PopupMenu, RecyclerView, SwitchCompat, Toolbar}
 import android.text.{Editable, TextWatcher}
 import android.view.View.OnClickListener
@@ -230,6 +231,11 @@ object ExtraTweaks {
   def rvScrollToTop: Tweak[RecyclerView] = Tweak[RecyclerView](_.scrollToPosition(0))
 
   def rvInvalidateItemDecorations: Tweak[RecyclerView] = Tweak[RecyclerView](_.invalidateItemDecorations())
+
+  def rvItemTouchHelperCallback(callback: ItemTouchHelper.Callback): Tweak[RecyclerView] = Tweak[RecyclerView] { rv =>
+    val touchHelper = new ItemTouchHelper(callback)
+    touchHelper.attachToRecyclerView(rv)
+  }
 
   def uiSnackbarShort(res: Int) = Tweak[View] { view =>
     Ui(Snackbar.make(view, res, Snackbar.LENGTH_SHORT).show()).run

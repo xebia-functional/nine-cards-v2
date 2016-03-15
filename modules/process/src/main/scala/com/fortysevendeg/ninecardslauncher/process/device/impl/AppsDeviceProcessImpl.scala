@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServiceExce
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{DataCounter, App}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByName, AddAppRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -37,6 +37,11 @@ trait AppsDeviceProcessImpl {
       iter <- persistenceServices.fetchIterableApps(toFetchAppOrder(orderBy), orderBy.ascending)
     } yield new IterableApps(iter)).resolve[AppException]
 
+  def getIterableAppsByCategory(category: String)(implicit context: ContextSupport) =
+    (for {
+      iter <- persistenceServices.fetchIterableAppsByCategory(category, OrderByName, ascending = true)
+    } yield new IterableApps(iter)).resolve[AppException]
+
   def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
       counters <- orderBy match {
@@ -54,7 +59,7 @@ trait AppsDeviceProcessImpl {
   def saveInstalledApps(implicit context: ContextSupport) =
     (for {
       requestConfig <- apiUtils.getRequestConfig
-      installedApps <- appsService.getInstalledApplications
+      installedApps <- appsServices.getInstalledApplications
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
       appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
       apps = installedApps map { app =>
@@ -69,7 +74,7 @@ trait AppsDeviceProcessImpl {
 
   def saveApp(packageName: String)(implicit context: ContextSupport) =
     (for {
-      app <- appsService.getApplication(packageName)
+      app <- appsServices.getApplication(packageName)
       appCategory <- getAppCategory(packageName)
       appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))
       _ <- persistenceServices.addApp(toAddAppRequest(app, appCategory, appPackagePath.path))
@@ -82,7 +87,7 @@ trait AppsDeviceProcessImpl {
 
   def updateApp(packageName: String)(implicit context: ContextSupport) =
     (for {
-      app <- appsService.getApplication(packageName)
+      app <- appsServices.getApplication(packageName)
       Some(appPersistence) <- persistenceServices.findAppByPackage(packageName)
       appCategory <- getAppCategory(packageName)
       appPackagePath <- imageServices.saveAppIcon(toAppPackage(app))

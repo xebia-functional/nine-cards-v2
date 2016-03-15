@@ -88,7 +88,8 @@ class CardRepository(
             uri = cardUri,
             projection = allFields,
             where = s"${CardEntity.collectionId} = ?",
-            whereParams = Seq(collectionId.toString))(getListFromCursor(cardEntityFromCursor)) map toCard
+            whereParams = Seq(collectionId.toString),
+            orderBy = s"${CardEntity.position} asc")(getListFromCursor(cardEntityFromCursor)) map toCard
         }
       }
     }

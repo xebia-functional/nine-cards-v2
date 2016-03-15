@@ -4,15 +4,19 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
-import android.view.View
+import android.support.v7.widget.Toolbar.OnMenuItemClickListener
+import android.view.{MenuItem, View}
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
@@ -148,22 +152,37 @@ object WorkSpaceItemMenuTweaks {
 
 object SearchBoxesAnimatedViewTweak {
 
-  def sbvUpdateContentView(contentView: ContentView) = Tweak[SearchBoxView] (view => view.updateContentView(contentView).run)
+  def sbvUpdateContentView(contentView: ContentView)(implicit theme: NineCardsTheme) =
+    Tweak[SearchBoxView] (view => view.updateContentView(contentView).run)
 
   def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxView] (_.listener = Some(listener))
 
-  def sbvUpdateHeaderIcon(resourceId: Int) = Tweak[SearchBoxView](view => view.updateHeaderIcon(resourceId).run)
+  def sbvUpdateHeaderIcon(resourceId: Int)(implicit theme: NineCardsTheme) =
+    Tweak[SearchBoxView](view => view.updateHeaderIcon(resourceId).run)
 
   def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[SearchBoxView] (_.addTextChangedListener(onChangeText))
 
   def sbvClean = Tweak[SearchBoxView] (view => view.clean.run)
 }
 
+object TabsViewTweaks {
+
+  val openedField = "opened"
+
+  def tvOpen = vAddField(openedField, true)
+
+  def tvClose = vAddField(openedField, false)
+
+  def isOpened = Excerpt[LinearLayout, Boolean] (_.getField[Boolean](openedField) getOrElse false)
+
+}
+
 object PullToTabsViewTweaks {
 
-  def ptvAddTabsAndActivate(items: Seq[TabInfo], index: Int) = Tweak[PullToTabsView](_.addTabs(items, Some(index)))
+  def ptvAddTabsAndActivate(items: Seq[TabInfo], index: Int, colorPrimary: Option[Int])(implicit theme: NineCardsTheme) =
+    Tweak[PullToTabsView](_.addTabs(items, colorPrimary, Some(index)))
 
-  def ptvAddTabs(items: Seq[TabInfo]) = Tweak[PullToTabsView](_.addTabs(items))
+  def ptvAddTabs(items: Seq[TabInfo], colorPrimary: Option[Int])(implicit theme: NineCardsTheme) = Tweak[PullToTabsView](_.addTabs(items, colorPrimary))
 
   def ptvLinkTabs(tabs: Option[LinearLayout], start: Ui[_], end: Ui[_]) = Tweak[PullToTabsView] { view =>
     view.linkTabsView(tabs, start, end).run
@@ -217,6 +236,8 @@ object FastScrollerLayoutTweak {
 
   def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
 
+  def fslMarginRightBarContent(pixels: Int) = Tweak[FastScrollerLayout](_.setMarginRightBarContent(pixels))
+
   def fslEnabledScroller(enabled: Boolean) = Tweak[FastScrollerLayout](_.setEnabledScroller(enabled))
 
   def fslReset = Tweak[FastScrollerLayout](_.reset)
@@ -245,24 +266,28 @@ object DialogToolbarTweaks {
 
   type W = DialogToolbar
 
-  def dtbInit(color: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    view.init(color).run
+  def dtbInit(color: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] (_.init(color).run)
+
+  def dtbExtended(implicit contextWrapper: ContextWrapper) = Tweak[W] {
+    _.changeToolbarHeight(resGetDimensionPixelSize(R.dimen.height_extended_toolbar_dialog)).run
   }
 
-  def dtbExtended(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    view.changeToolbarHeight(resGetDimensionPixelSize(R.dimen.height_extended_toolbar_dialog)).run
+  def dtbAddExtendedView(viewToAdd: View)(implicit contextWrapper: ContextWrapper) = Tweak[W] {
+    _.addExtendedView(viewToAdd).run
   }
 
-  def dtbAddExtendedView(viewToAdd: View)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    view.addExtendedView(viewToAdd).run
-  }
+  def dtbChangeText(resourceId: Int) = Tweak[W] (_.changeText(resourceId).run)
 
-  def dtbChangeText(resourceId: Int) = Tweak[W] { view =>
-    view.changeText(resourceId).run
-  }
+  def dtbChangeText(text: String) = Tweak[W] (_.changeText(text).run)
 
-  def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W]{ view =>
-    view.navigationClickListener(click).run
+  def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W] (_.navigationClickListener(click).run)
+
+  def dtvInflateMenu(res: Int) = Tweak[W](_.toolbar foreach(_.inflateMenu(res)))
+
+  def dtvOnMenuItemClickListener(onItem: (Int) => Boolean) = Tweak[W]{ view =>
+    view.toolbar foreach(_.setOnMenuItemClickListener(new OnMenuItemClickListener {
+      override def onMenuItemClick(menuItem: MenuItem): Boolean = onItem(menuItem.getItemId)
+    }))
   }
 
 }
@@ -271,7 +296,7 @@ object SwipeAnimatedDrawerViewTweaks {
 
   type W = SwipeAnimatedDrawerView
 
-  def sadvInitAnimation(contentView: ContentView, widthContainer: Int) = Tweak[W] { view =>
+  def sadvInitAnimation(contentView: ContentView, widthContainer: Int)(implicit theme: NineCardsTheme) = Tweak[W] { view =>
     view.initAnimation(contentView, widthContainer).run
   }
 

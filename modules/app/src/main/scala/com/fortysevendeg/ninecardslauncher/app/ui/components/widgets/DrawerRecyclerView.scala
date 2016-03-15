@@ -18,12 +18,13 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
-  extends RecyclerView(context, attr, defStyleAttr) { self =>
+class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
+  extends RecyclerView(context, attr, defStyleAttr)
+  with Contexts[View] { self =>
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   val durationAnimation = resGetInteger(android.R.integer.config_shortAnimTime)
 

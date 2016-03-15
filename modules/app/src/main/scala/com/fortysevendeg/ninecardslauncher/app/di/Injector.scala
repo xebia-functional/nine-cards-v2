@@ -112,7 +112,7 @@ class Injector(implicit contextSupport: ContextSupport) {
     persistenceServices = persistenceServices)
 
   lazy val deviceProcess = new DeviceProcessImpl(
-    appsService = appsServices,
+    appsServices = appsServices,
     apiServices = apiServices,
     persistenceServices = persistenceServices,
     shortcutsServices = shortcutsServices,

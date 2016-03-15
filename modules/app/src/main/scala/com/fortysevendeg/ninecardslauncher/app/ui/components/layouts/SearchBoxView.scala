@@ -20,17 +20,14 @@ import macroid.FullDsl._
 import macroid._
 
 class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
-  (implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme)
   extends FrameLayout(context, attrs, defStyle)
   with TypedFindView
-  with LauncherExecutor
+  with Contexts[View]
   with Styles { self =>
 
-  def this(context: Context)(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme) =
-    this(context, javaNull, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
-  def this(context: Context, attrs: AttributeSet)(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme) =
-    this(context, attrs, 0)
+  def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
   var listener: Option[SearchBoxAnimatedListener] = None
 
@@ -44,7 +41,7 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   (self <~ vgAddView(content)).run
 
-  def updateContentView(contentView: ContentView): Ui[_] =
+  def updateContentView(contentView: ContentView)(implicit theme: NineCardsTheme): Ui[_] =
     (icon <~ iconTweak(contentView)) ~
       (editText <~ searchBoxNameStyle(contentView match {
         case AppsView => R.string.searchApps
@@ -52,11 +49,11 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
       })) ~
       (headerIcon <~
         On.click {
-          Ui(listener foreach (_.onHeaderIconClick))
+          Ui(listener foreach (_.onHeaderIconClick()))
         }) ~
       (content <~ searchBoxContentStyle)
 
-  def updateHeaderIcon(resourceId: Int): Ui[_] = headerIcon <~ searchBoxButtonStyle(resourceId)
+  def updateHeaderIcon(resourceId: Int)(implicit theme: NineCardsTheme): Ui[_] = headerIcon <~ searchBoxButtonStyle(resourceId)
 
   def clean: Ui[_] = editText <~ (if (isEmpty) Tweak.blank else tvText("")) <~ etHideKeyboard
 
@@ -67,20 +64,25 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def isEmpty: Boolean = editText exists (_.getText.toString == "")
 
-  private[this] def iconTweak(contentView: ContentView) = contentView match {
+  private[this] def iconTweak(contentView: ContentView)(implicit theme: NineCardsTheme) = contentView match {
     case AppsView =>
       searchBoxButtonStyle(R.drawable.app_drawer_icon_google_play) +
-        On.click (Ui(launchPlayStore))
+        On.click {
+          Ui(listener foreach (_.onAppStoreIconClick()))
+        }
     case ContactView =>
       searchBoxButtonStyle(R.drawable.app_drawer_icon_phone) +
-        On.click (Ui(launchDial()))
+        On.click {
+          Ui(listener foreach (_.onContactsIconClick()))
+        }
   }
 
 }
 
-trait SearchBoxAnimatedListener {
-  def onHeaderIconClick(implicit context: ActivityContextWrapper): Unit
-}
+case class SearchBoxAnimatedListener(
+  onHeaderIconClick: () => Unit = () => {},
+  onAppStoreIconClick: () => Unit = () => {},
+  onContactsIconClick: () => Unit = () => {})
 
 trait Styles {
   def searchBoxContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =

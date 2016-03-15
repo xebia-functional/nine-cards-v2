@@ -47,6 +47,8 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def changeText(res: Int): Ui[_] = title <~ tvText(res)
 
+  def changeText(text: String): Ui[_] = title <~ tvText(text)
+
   def navigationClickListener(click: (View) => Ui[_]): Ui[_] = toolbar <~ tbNavigationOnClickListener(click)
 
 }

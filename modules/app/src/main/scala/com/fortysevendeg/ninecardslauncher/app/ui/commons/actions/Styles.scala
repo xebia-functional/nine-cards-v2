@@ -15,13 +15,7 @@ import macroid.{ContextWrapper, Tweak}
 
 trait Styles {
 
-  def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = {
-    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-    rvFixedSize +
-      vPadding(padding, padding, padding, padding) +
-      vgClipToPadding(false) +
-      vOverScrollMode(View.OVER_SCROLL_NEVER)
-  }
+  def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = rvFixedSize
 
   def fabButtonMenuStyle(color: Int)(implicit context: ContextWrapper): Tweak[FloatingActionButton] = {
     val iconFabButton = new PathMorphDrawable(

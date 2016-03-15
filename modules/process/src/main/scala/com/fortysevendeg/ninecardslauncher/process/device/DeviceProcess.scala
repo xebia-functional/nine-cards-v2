@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.process.device
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 
 trait DeviceProcess {
@@ -30,6 +29,15 @@ trait DeviceProcess {
     * @throws AppException if exist some problem to get the apps
     */
   def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
+
+  /**
+    * Get iterable by category of saved apps from the database
+    * @param category indicates the category
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
+    *         information about the app
+    * @throws AppException if exist some problem to get the apps
+    */
+  def getIterableAppsByCategory(category: String)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
 
   /**
     * Returns the number of times the first letter of an app is repeated alphabetically filtered by parameter
@@ -160,14 +168,11 @@ trait DeviceProcess {
   def getLastCalls(implicit context: ContextSupport): ServiceDef2[Seq[LastCallsContact], CallException]
 
   /**
-    * Get an installed app and store it in the repository
-    * @param packageName the packageName of the dock app to save
-    * @param intent the NineCardIntent of the dock app
-    * @param imagePath the path of the image of the dock app
-    * @param position the position in the dock
+    * Generate the docks apps available for user
+    * @param size of the dock apps needed
     * @throws DockAppException if exist some problem to get the app or storing it
     */
-  def saveDockApp(packageName:String, intent: NineCardIntent, imagePath: String, position: Int): ServiceDef2[Unit, DockAppException]
+  def generateDockApps(size: Int)(implicit context: ContextSupport): ServiceDef2[Unit, DockAppException]
 
   /**
     * Get the docks apps available for user
@@ -181,6 +186,6 @@ trait DeviceProcess {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp]
     * @throws DockAppException if exist some problem to get the app or storing it
     */
-  def deleteAllDockApps: ServiceDef2[Unit, DockAppException]
+  def deleteAllDockApps(): ServiceDef2[Unit, DockAppException]
 
 }

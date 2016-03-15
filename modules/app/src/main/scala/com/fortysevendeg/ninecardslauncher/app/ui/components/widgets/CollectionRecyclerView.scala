@@ -17,9 +17,9 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
   def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
 
-  var disableScroll = false
+  var statuses = CollectionRecyclerStatuses()
 
-  var enableAnimation = false
+  var scrollListener: Option[NineOnScrollListener] = None
 
   def createScrollListener(
     scrolled: (Int, Int, Int) => Int,
@@ -28,11 +28,15 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
       var scrollY = scrollListener map (_.scrollY) getOrElse 0
       override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = {
         super.onScrolled(recyclerView, dx, dy)
-        scrollY = scrolled(scrollY, dx, dy)
+        if (statuses.registerScroll) {
+          scrollY = scrolled(scrollY, dx, dy)
+        }
       }
       override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
         super.onScrollStateChanged(recyclerView, newState)
-        scrollStateChanged(scrollY, recyclerView, newState)
+        if (statuses.registerScroll) {
+          scrollStateChanged(scrollY, recyclerView, newState)
+        }
       }
     }
     clearOnScrollListeners()
@@ -40,16 +44,14 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
     scrollListener = Option(sl)
   }
 
-  var scrollListener: Option[NineOnScrollListener] = None
-
-  override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(disableScroll) {
+  override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(statuses.disableScroll) {
     true
   } else {
     super.dispatchTouchEvent(ev)
   }
 
   override def attachLayoutAnimationParameters(child: View, params: LayoutParams, index: Int, count: Int): Unit =
-    (enableAnimation, Option(getLayoutManager)) match {
+    (statuses.enableAnimation, Option(getLayoutManager)) match {
       case (true, Some(layoutManager: GridLayoutManager)) =>
         val animationParams = Option(params.layoutAnimationParameters) match {
           case Some(animParams: AnimationParameters) => animParams
@@ -75,4 +77,9 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
   }
 
 }
+
+case class CollectionRecyclerStatuses(
+  registerScroll: Boolean = true,
+  disableScroll: Boolean = false,
+  enableAnimation: Boolean = false)
 

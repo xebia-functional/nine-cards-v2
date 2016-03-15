@@ -7,8 +7,8 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import rapture.core.Answer
-import rapture.core.scalazInterop.ResultT
 
 import scalaz.concurrent.Task
 
@@ -18,7 +18,7 @@ trait CardsProcessImpl {
     with FormedCollectionConversions
     with ImplicitsPersistenceServiceExceptions =>
 
-  def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): ResultT[Task, Seq[Card], CardException] =
+  def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]) =
     (for {
       cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId))
       addedCardList <- addCardList(collectionId, addCardListRequest, cardList.size)
@@ -36,7 +36,10 @@ trait CardsProcessImpl {
     (for {
       Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
       cardList <- getCardsByCollectionId(collectionId)
-      _ <- updateCardList(reorderCardList(cardList, newPosition, card.position))
+      updatedCards = cardList.reorder(card.position, newPosition).zipWithIndex map {
+        case (c, index) => c.copy(position = index)
+      }
+      _ <- updateCardList(updatedCards)
     } yield ()).resolve[CardException]
 
   def editCard(collectionId: Int, cardId: Int, name: String) =
@@ -63,17 +66,6 @@ trait CardsProcessImpl {
   private[this] def moveCardList(cardList: Seq[Card], position: Int) =
     cardList map { card =>
       if (card.position > position) toNewPositionCard(card, position - 1) else card
-    }
-
-  private[this] def reorderCardList(cardList: Seq[Card], newPosition: Int, oldPosition: Int): Seq[Card] =
-    cardList map { card =>
-      val position = card.position
-      (newPosition, oldPosition, position) match {
-        case (n, o, p) if n < o && p > n && p < o => toNewPositionCard(card, p + 1)
-        case (n, o, p) if n > o && p < n && p > o => toNewPositionCard(card, p - 1)
-        case (n, o, _) if n < o || n > o => card
-        case _ => toNewPositionCard(card, newPosition)
-      }
     }
 
   private[this] def updateCard(card: Card) =

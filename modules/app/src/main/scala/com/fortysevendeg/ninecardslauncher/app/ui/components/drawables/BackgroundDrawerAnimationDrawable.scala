@@ -4,21 +4,21 @@ import android.graphics._
 import android.graphics.drawable.Drawable
 import com.fortysevendeg.macroid.extras.SnailsUtils
 
-class BackgroundDrawerAnimationDrawable(backgroundColor: Int, circleColor: Int)
+class BackgroundDrawerAnimationDrawable()
   extends Drawable {
 
   var statuses = BackgroundDrawerAnimationStatuses()
 
   lazy val circlePaint = {
     val paint = new Paint
-    paint.setColor(circleColor)
+    paint.setColor(statuses.circleColor)
     paint
   }
 
   override def draw(canvas: Canvas): Unit = {
     val bounds = getBounds
     val radius = SnailsUtils.calculateRadius(statuses.x, bounds.centerY(), bounds.width(), bounds.height())
-    canvas.drawColor(backgroundColor)
+    canvas.drawColor(statuses.backgroundColor)
     canvas.drawCircle(
       statuses.x,
       bounds.centerY(),
@@ -32,6 +32,10 @@ class BackgroundDrawerAnimationDrawable(backgroundColor: Int, circleColor: Int)
 
   override def getOpacity: Int = PixelFormat.TRANSPARENT
 
+  def setColors(backgroundColor: Int, circleColor: Int) = {
+    statuses = statuses.copy(backgroundColor = backgroundColor, circleColor = circleColor)
+  }
+
   def setData(p: Float, x: Int) = {
     statuses = statuses.copy(percentage = p, x = x)
     invalidateSelf()
@@ -41,5 +45,6 @@ class BackgroundDrawerAnimationDrawable(backgroundColor: Int, circleColor: Int)
 
 case class BackgroundDrawerAnimationStatuses(
   percentage: Float = 0,
-  x: Int = 0
-)
+  x: Int = 0,
+  backgroundColor: Int = 0,
+  circleColor: Int = 0)

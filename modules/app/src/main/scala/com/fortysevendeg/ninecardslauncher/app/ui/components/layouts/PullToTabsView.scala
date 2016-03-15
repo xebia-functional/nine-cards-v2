@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.support.v4.view.MotionEventCompat
+import android.util.AttributeSet
 import android.view.{LayoutInflater, MotionEvent, ViewGroup}
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
@@ -15,21 +16,22 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor, SearchBackgroundColor, SearchIconsColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
-  extends PullToDownView(context) {
+class PullToTabsView(context: Context, attr: AttributeSet, defStyleAttr: Int)
+  extends PullToDownView(context, attr, defStyleAttr) {
+
+  def this(context: Context) = this(context, javaNull, 0)
+
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   val heightTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_max_height)
 
   val distanceChangeTabs = resGetDimensionPixelSize(R.dimen.pulltotabs_distance_change_tabs)
-
-  val primaryColor = theme.get(PrimaryColor)
-
-  val defaultColor = theme.get(SearchIconsColor)
 
   var tabs = slot[LinearLayout]
 
@@ -79,16 +81,16 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
 
   def clear(): Unit = (tabs <~ vgRemoveAllViews).run
 
-  def addTabs(items: Seq[TabInfo], index: Option[Int] = None): Unit = {
+  def addTabs(items: Seq[TabInfo], colorPrimary: Option[Int] = None, index: Option[Int] = None)(implicit theme: NineCardsTheme): Unit = {
     index foreach (i => pullToTabsStatuses = pullToTabsStatuses.copy(selectedItem = i))
     val views = items.zipWithIndex map {
-      case (item, pos) => new TabView(item, pos, index contains pos)
+      case (item, pos) => new TabView(item, pos, index contains pos, colorPrimary)
     }
     val params = new LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1)
     (tabs <~ vgAddViews(views, params)).run
   }
 
-  class TabView(item: TabInfo, pos: Int, selected: Boolean)
+  class TabView(item: TabInfo, pos: Int, selected: Boolean, color: Option[Int])(implicit theme: NineCardsTheme)
     extends LinearLayout(context)
     with TypedFindView {
 
@@ -99,6 +101,10 @@ class PullToTabsView(context: Context)(implicit contextWrapper: ContextWrapper, 
     lazy val icon = findView(TR.tab_item_icon)
 
     lazy val name = findView(TR.tab_item_name)
+
+    val primaryColor = color getOrElse theme.get(PrimaryColor)
+
+    val defaultColor = theme.get(SearchIconsColor)
 
     val backgroundColor = getColorDark(theme.get(SearchBackgroundColor), 0.05f)
 

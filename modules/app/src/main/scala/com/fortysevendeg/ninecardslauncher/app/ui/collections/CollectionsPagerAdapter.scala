@@ -14,13 +14,11 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
 
   val fragments: mutable.WeakHashMap[Int, CollectionFragment] = mutable.WeakHashMap.empty
 
-  var scrollType = ScrollType.down
+  var statuses = CollectionsPagerAdapterStatuses()
 
-  var firstTime = false
-
-  private[this] def firstTimeInStartPosition(position: Int) = (firstTime, position == startPosition) match {
+  private[this] def firstTimeInStartPosition(position: Int) = (statuses.firstTime, position == startPosition) match {
     case (false, true) =>
-      firstTime = true
+      statuses = statuses.copy(firstTime = true)
       true
     case _ => false
   }
@@ -32,7 +30,7 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     bundle.putBoolean(CollectionFragment.keyAnimateCards, firstTimeInStartPosition(position))
     bundle.putSerializable(CollectionFragment.keyCollection, collections(position))
     bundle.putInt(CollectionFragment.keyCollectionId, collections(position).id)
-    bundle.putInt(CollectionFragment.keyScrollType, scrollType)
+    bundle.putString(CollectionFragment.keyScrollType, statuses.scrollType.toString)
     fragment.setArguments(bundle)
     fragment
   }
@@ -71,31 +69,36 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
   }
 
   def getCurrentFragmentPosition: Option[Int] = fragments collectFirst {
-    case (id, fragment) if fragment.activeFragment => id
+    case (id, fragment) if fragment.statuses.activeFragment => id
   }
 
   def getActiveFragment: Option[CollectionFragment] = fragments collectFirst {
-    case (_, fragment) if fragment.activeFragment => fragment
+    case (_, fragment) if fragment.statuses.activeFragment => fragment
   }
 
   def activateFragment(pos: Int): Unit = fragments foreach {
-    case (id, fragment) if id == pos => fragment.activeFragment = true
+    case (id, fragment) if id == pos => fragment.statuses = fragment.statuses.copy(activeFragment = true)
     case _ =>
   }
 
-  def setScrollType(sType: Int): Unit = scrollType = sType
+  def setScrollType(sType: ScrollType): Unit = statuses = statuses.copy(scrollType = sType)
 
   def notifyChanged(currentPosition: Int): Ui[_] = {
     val uis = fragments map {
       case (id, fragment) => id match {
         case `currentPosition` =>
-          fragment.activeFragment = true
-          Ui.nop
+          Ui {
+            fragment.statuses = fragment.statuses.copy(activeFragment = true, scrollType = statuses.scrollType)
+          }
         case _ =>
-          fragment.activeFragment = false
-          fragment.scrollType(scrollType)
+          fragment.statuses = fragment.statuses.copy(activeFragment = false)
+          fragment.scrollType(statuses.scrollType)
       }
     }
     Ui.sequence(uis.toSeq: _*)
   }
 }
+
+case class CollectionsPagerAdapterStatuses(
+  scrollType: ScrollType = ScrollDown,
+  firstTime: Boolean = false)

@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetsServices
 
 trait DeviceProcessDependencies {
 
-  val appsService: AppsServices
+  val appsServices: AppsServices
   val apiServices: ApiServices
   val persistenceServices: PersistenceServices
   val shortcutsServices: ShortcutsServices

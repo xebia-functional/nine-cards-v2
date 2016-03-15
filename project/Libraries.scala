@@ -20,7 +20,7 @@ object Libraries {
 
     def androidDep(module: String) = "com.android.support" % module % androidV
 
-    lazy val multiDexLib = "com.google.android" % "multidex" % multiDexV
+    lazy val multiDexLib = "com.android.support" % "multidex" % multiDexV
 
     lazy val androidProvidedLib = "com.google.android" % "android" % androidProvidedV % "provided"
 
