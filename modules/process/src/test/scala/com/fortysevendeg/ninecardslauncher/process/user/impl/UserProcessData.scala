@@ -23,17 +23,19 @@ trait UserProcessData
 
   val email = "example@47deg.com"
 
-  val device = Device(
-    name = "Nexus X",
-    deviceId = "",
-    secretToken = "",
-    permissions = Seq.empty)
+  val deviceName = "Nexus 47"
+
+  val deviceId = "XX-47-XX"
+
+  val secretToken = "EE-47-47-EE"
+
+  val permissions = Seq.empty
 
   val googleDevice = GoogleDevice(
-    name = device.name,
-    deviceId = device.deviceId,
-    secretToken = device.secretToken,
-    permissions = device.permissions)
+    name = deviceName,
+    deviceId = deviceId,
+    secretToken = secretToken,
+    permissions = permissions)
 
   val user = User(
     id = Option(userId),

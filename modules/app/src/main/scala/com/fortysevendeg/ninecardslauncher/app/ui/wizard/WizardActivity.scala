@@ -87,8 +87,8 @@ class WizardActivity
   override def onBackPressed(): Unit = {}
 
   def requestToken(username: String): Unit =
-    getAccountAndAndroidId(username) match {
-      case Some((account, _)) =>
+    getAccount(username) match {
+      case Some(account) =>
         val client = createGoogleDriveClient(username)
         clientStatuses = clientStatuses.copy(
           apiClient = Some(client),
@@ -132,10 +132,10 @@ class WizardActivity
     }
 
   private[this] def loadCloudDevices(client: GoogleApiClient, username: String, userPermissions: UserPermissions) =
-    getAccountAndAndroidId(username) match {
-      case Some((account, id)) =>
+    getAccount(username) match {
+      case Some(account) =>
         invalidateToken()
-        Task.fork(loadUserDevices(client, id, username, userPermissions).run).resolveAsyncUi(
+        Task.fork(loadUserDevices(client, username, userPermissions).run).resolveAsyncUi(
           userCloudDevices => showLoading ~ searchDevices(userCloudDevices),
           onLoadDevicesException)
       case _ => backToUser(R.string.errorConnectingGoogle).run
@@ -150,11 +150,8 @@ class WizardActivity
       case _ =>
     }
 
-  private[this] def getAccountAndAndroidId(username: String): Option[(Account, String)] =
-    for {
-      account <- accounts find (_.name == username)
-      androidId <- getAndroidId
-    } yield (account, androidId)
+  private[this] def getAccount(username: String): Option[Account] =
+    accounts find (_.name == username)
 
   private[this] def invalidateToken() = {
     getToken foreach (accountManager.invalidateAuthToken(accountType, _))

@@ -27,9 +27,15 @@ class UserProcessImpl(
 
   val emptyUserRequest = AddUserRequest(None, None, None, None, None, None)
 
-  override def signIn(email: String, device: Device)(implicit context: ContextSupport) = {
+  override def signIn(email: String, deviceName: String, token: String, permissions: Seq[String])(implicit context: ContextSupport) = {
     context.getActiveUserId map { id =>
       (for {
+        androidId <- persistenceServices.getAndroidId
+        device = Device(
+          name = deviceName,
+          deviceId = androidId,
+          secretToken = token,
+          permissions = permissions)
         loginResponse <- apiServices.login(email, toGoogleDevice(device))
         Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
         _ <- persistenceServices.updateUser(toUpdateRequest(id, email, userDB, loginResponse, device))

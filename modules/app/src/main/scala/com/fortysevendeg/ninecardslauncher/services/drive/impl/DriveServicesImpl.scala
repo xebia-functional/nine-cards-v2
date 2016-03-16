@@ -115,7 +115,7 @@ class DriveServicesImpl(client: GoogleApiClient)
   }
 
   private[this] def updateFile(driveId: String, f: (OutputStreamWriter) => Unit) =
-    openDriveFile(driveId) { driveContentsResult =>
+    openDriveFile(driveId, DriveFile.MODE_WRITE_ONLY) { driveContentsResult =>
       val contents = driveContentsResult.getDriveContents
       val writer = new OutputStreamWriter(contents.getOutputStream)
       f(writer)
@@ -123,14 +123,14 @@ class DriveServicesImpl(client: GoogleApiClient)
       contents.commit(client, javaNull).withResult(_ => Answer())
     }
 
-  private[this] def openDriveFile[R](driveId: String)(f: (DriveApi.DriveContentsResult) => core.Result[R, DriveServicesException]) = Service {
+  private[this] def openDriveFile[R](driveId: String, mode: Int = DriveFile.MODE_READ_ONLY)(f: (DriveApi.DriveContentsResult) => core.Result[R, DriveServicesException]) = Service {
     Task {
       Drive.DriveApi
         .fetchDriveId(client, driveId)
         .withResult { result =>
           result
             .getDriveId.asDriveFile()
-            .open(client, DriveFile.MODE_READ_ONLY, javaNull)
+            .open(client, mode, javaNull)
             .withResult(f(_))
         }
     }

@@ -41,22 +41,15 @@ trait WizardTasks
       _ = setToken(token)
       token2 <- getAuthToken(accountManager, account, driveScope)
     } yield UserPermissions(token, Seq(oauthScopes))
-
   }
 
   def loadUserDevices(
     client: GoogleApiClient,
-    androidId: String,
     username: String,
     userPermissions: UserPermissions): ServiceDef2[UserCloudDevices, UserException with UserConfigException with CloudStorageProcessException] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client, username)
-    val device = Device(
-        name = Build.MODEL,
-        deviceId = androidId,
-        secretToken = userPermissions.token,
-        permissions = userPermissions.oauthScopes)
     for {
-      response <- di.userProcess.signIn(username, device)
+      response <- di.userProcess.signIn(username, Build.MODEL, userPermissions.token, userPermissions.oauthScopes)
       cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
       userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudStorageResources)
     } yield userCloudDevices
