@@ -282,7 +282,6 @@ trait CollectionProcessImplData {
         sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
         items = Seq.empty,
         collectionType = collectionType,
-        constrains = Seq(constrains),
         icon = icon,
         category = Option(appsCategory))
     }
