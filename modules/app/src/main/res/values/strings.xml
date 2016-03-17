@@ -222,8 +222,7 @@
     <string name="subscriptions">Subscriptions</string>
     <string name="accounts">Accounts</string>
 
-    <string name="syncHeaderDevices">Devices</string>
-    <string name="syncHeaderSynchronize">Synchronization</string>
+    <string name="syncHeaderDevices">Other Devices</string>
     <string name="syncCurrent">Current device</string>
     <string name="syncLastSynced">Last synced: %s</string>
 
