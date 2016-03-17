@@ -64,12 +64,13 @@ class ProfileActivity
   override def manageCommand(action: String, data: Option[String]): Unit = (SyncActionFilter(action), data) match {
     case (SyncStateActionFilter, Some(`stateSuccess`)) =>
       // TODO - Reload adapter
+      showMessage(R.string.accountSynced).run
       syncEnabled = false
     case (SyncStateActionFilter, Some(`stateFailure`)) =>
-      // TODO - Show error
+      showMessage(R.string.errorSyncing).run
       syncEnabled = true
     case (SyncAnswerActionFilter, Some(`stateSyncing`)) =>
-      // TODO - Show loading
+      // Nothing now. We can show a loading here if it's necessary
       syncEnabled = false
     case _ =>
   }

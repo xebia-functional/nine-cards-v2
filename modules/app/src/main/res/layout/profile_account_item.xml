@@ -2,10 +2,24 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ProfileAccountsItemLayout">
-    <TextView
-        android:id="@+id/title"
-        style="@style/ProfileAccountsItemTitle"/>
-    <TextView
-        android:id="@+id/subtitle"
-        style="@style/ProfileAccountsItemSubtitle"/>
+
+    <ImageView
+        style="@style/ProfileAccountsItemIcon"/>
+
+    <LinearLayout
+        style="@style/ProfileAccountsItemLayoutData">
+
+        <TextView
+            android:id="@+id/profile_account_title"
+            style="@style/ProfileAccountsItemTitle"/>
+        <TextView
+            android:id="@+id/profile_account_subtitle"
+            style="@style/ProfileAccountsItemSubtitle"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/profile_account_action"
+        style="@style/ProfileAccountsItemAction"/>
+
 </LinearLayout>

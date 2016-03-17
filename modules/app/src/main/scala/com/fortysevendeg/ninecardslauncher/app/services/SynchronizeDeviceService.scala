@@ -26,9 +26,7 @@ class SynchronizeDeviceService
   with Contexts[Service]
   with ContextSupportProvider
   with GoogleApiClientService
-  with BroadcastDispatcher {
-
-  self =>
+  with BroadcastDispatcher { self =>
 
   import SyncDeviceState._
 

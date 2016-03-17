@@ -60,6 +60,9 @@
         <service
             android:name="com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService"/>
 
+        <service
+            android:name="com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService"/>
+
         <provider
             android:authorities="com.fortysevendeg.ninecardslauncher2"
             android:name="com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider"

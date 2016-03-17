@@ -30,10 +30,10 @@ trait ProfileTasks {
 
   private[this] def createSync(devices: Seq[CloudStorageDeviceSummary]): Seq[AccountSync] = {
     val currentDevice = devices.find(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate)
+      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = true)
     }
     val otherDevices = devices.filterNot(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = true)
+      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate)
     }
     val otherDevicesWithHeader = if (otherDevices.isEmpty) {
       Seq.empty

@@ -122,6 +122,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def clean(): Unit = {
     data = Seq.empty
+    previousParentView foreach(_.removeAllViews())
+    nextParentView foreach(_.removeAllViews())
+    frontParentView foreach(_.removeAllViews())
     removeAllViews()
   }
 

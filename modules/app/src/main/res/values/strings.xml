@@ -226,6 +226,10 @@
     <string name="syncCurrent">Current device</string>
     <string name="syncLastSynced">Last synced: %s</string>
 
+    <string name="accountSynced">Account synced</string>
+
+    <string name="errorSyncing">Error syncing account. Try again please</string>
+
     <string name="errorLoadingUser">Error loading user</string>
 
     <string name="logout">Logout</string>
