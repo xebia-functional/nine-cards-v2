@@ -65,7 +65,9 @@ trait CollectionsDetailsComposer
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
-  lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_toolbar)
+  lazy val elevation = resGetDimensionPixelSize(R.dimen.elevation_collection_default)
+
+  lazy val elevationUp = resGetDimensionPixelSize(R.dimen.elevation_collection_up)
 
   lazy val maxHeightToolbar = resGetDimensionPixelSize(R.dimen.height_toolbar_collection_details)
 
@@ -95,6 +97,18 @@ trait CollectionsDetailsComposer
 
   def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ uiSnackbarShort(error)
 
+  def elevationsDefault: Ui[_] =
+    (viewPager <~ vElevation(elevation)) ~
+      (tabs <~ vElevation(elevation)) ~
+      (toolbar <~ vElevation(elevation)) ~
+      (iconContent <~ vElevation(elevation))
+
+  def elevationsUp: Ui[_] =
+    (viewPager <~ vElevation(elevation)) ~
+      (tabs <~ vElevation(elevationUp)) ~
+      (toolbar <~ vElevation(elevationUp)) ~
+      (iconContent <~ vElevation(elevationUp))
+
   def drawCollections(collections: Seq[Collection], position: Int)
     (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
     val adapter = CollectionsPagerAdapter(manager.get, collections, position)
@@ -107,7 +121,7 @@ trait CollectionsDetailsComposer
           new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter()) }, 100) ~
-      (tabs <~ vVisible <~~ enterViews)
+      (tabs <~ vVisible <~~ enterViews) ~ elevationsDefault
   }
 
   def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_] = {
@@ -131,31 +145,30 @@ trait CollectionsDetailsComposer
   def translationScrollY(scroll: Int): Ui[_] = {
     val move = math.min(scroll, spaceMove)
     val ratio: Float = move.toFloat / spaceMove.toFloat
-    val newElevation = elevation + (if (ratio >= 1) 1 else 0)
+    val isTop = ratio >= 1
     val scale = 1 - (ratio / 2)
-    (tabs <~ vTranslationY(-move) <~ uiElevation(newElevation)) ~
-      (toolbar <~ tbReduceLayout(move * 2) <~ uiElevation(newElevation)) ~
-      (iconContent <~ uiElevation(newElevation) <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio))
+    (tabs <~ vTranslationY(-move)) ~
+      (toolbar <~ tbReduceLayout(move * 2)) ~
+      (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio)) ~
+      (if (isTop) elevationsUp else elevationsDefault)
   }
 
   def openReorderModeUi(current: ScrollType): Ui[_] =
     (tabs <~~
       applyAnimation(y = Some(-spaceMove), alpha = Some(0f)) <~
-      uiElevation(elevation + 1) <~
       vInvisible) ~
       (toolbar <~~
         applyAnimation(onUpdate = (ratio) => current match {
           case ScrollDown => toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = false))
           case _ => Ui.nop
-        }) <~
-        uiElevation(elevation + 1)) ~
-      (iconContent <~ vInvisible)
+        })) ~
+      elevationsUp ~
+      (iconContent <~ vAlpha(0))
 
   def closeReorderModeUi: Ui[_] =
-    (tabs <~
+    tabs <~
       vVisible <~~
-      applyAnimation(alpha = Some(1f))) ~
-      (iconContent <~ vVisible)
+      applyAnimation(alpha = Some(1f))
 
   def notifyScroll(sType: ScrollType): Ui[_] = (for {
     vp <- viewPager
