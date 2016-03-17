@@ -2,13 +2,13 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageCollectionItem}
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest, PrivateCard, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem}
 
 import scala.util.Random
 
@@ -44,20 +44,19 @@ trait Conversions
     number = item.number,
     category = item.category.toString)
 
-  def toSeqFormedCollection(collections: Seq[UserCollection]): Seq[FormedCollection] = collections map toFormedCollection
+  def toSeqFormedCollection(collections: Seq[CloudStorageCollection]): Seq[FormedCollection] = collections map toFormedCollection
 
-  def toFormedCollection(userCollection: UserCollection): FormedCollection = FormedCollection(
+  def toFormedCollection(userCollection: CloudStorageCollection): FormedCollection = FormedCollection(
     name = userCollection.name,
     originalSharedCollectionId = userCollection.sharedCollectionId,
     sharedCollectionId = userCollection.sharedCollectionId,
     sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed,
     items = userCollection.items map toFormedItem,
     collectionType = userCollection.collectionType,
-    constrains = userCollection.constrains,
     icon = userCollection.icon,
     category = userCollection.category)
 
-  def toFormedItem(item: UserCollectionItem): FormedItem = FormedItem(
+  def toFormedItem(item: CloudStorageCollectionItem): FormedItem = FormedItem(
     itemType = item.itemType,
     title = item.title,
     intent = item.intent)

@@ -30,6 +30,9 @@
     <dimen name="elevation_fab_button">6dp</dimen>
     <dimen name="elevation_fab_button_pressed">12dp</dimen>
 
+    <dimen name="elevation_collection_default">4dp</dimen>
+    <dimen name="elevation_collection_up">6dp</dimen>
+
     <dimen name="stroke_thin">1dp</dimen>
     <dimen name="stroke_default">2dp</dimen>
     <dimen name="stroke_large">4dp</dimen>

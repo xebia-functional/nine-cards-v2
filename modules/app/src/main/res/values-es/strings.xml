@@ -213,10 +213,13 @@
     <string name="subscriptions">Subscripciones</string>
     <string name="accounts">Cuentas</string>
 
-    <string name="syncHeaderDevices">Dispositivos</string>
-    <string name="syncHeaderSynchronize">Sincronización</string>
+    <string name="syncHeaderDevices">Otros Dispositivos</string>
     <string name="syncCurrent">Dispositivo actual</string>
     <string name="syncLastSynced">Última sincronización: %s</string>
+
+    <string name="accountSynced">Cuenta sincronizada</string>
+
+    <string name="errorSyncing">Error sincronizando cuenta. Inténtale de nuevo</string>
 
     <string name="errorLoadingUser">Error cargando usuario</string>
 
