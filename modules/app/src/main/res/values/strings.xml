@@ -345,6 +345,8 @@
     <string name="collectionDetailCardAnimationsTBD">TBD</string>
     <string name="collectionDetailCardAnimationsNoAnimation">No Animation</string>
 
+    <string name="collectionDetailAddCardsMessage">Add new cards to this collection</string>
+
     <string name="newAppTitle">New App</string>
     <string name="newAppSummary">New App Summary</string>
     <string name="installNewAppTBD">TBD</string>

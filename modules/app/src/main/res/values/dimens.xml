@@ -102,6 +102,9 @@
 
     <dimen name="size_actions_drag_drop">48dp</dimen>
 
+    <dimen name="padding_empty_collection_message">40dp</dimen>
+    <dimen name="padding_empty_collection_image">50dp</dimen>
+
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
     <dimen name="margin_app_drawer_fab_button">16dp</dimen>
