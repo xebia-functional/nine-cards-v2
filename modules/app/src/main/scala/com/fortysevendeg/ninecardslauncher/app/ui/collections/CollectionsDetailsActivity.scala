@@ -183,6 +183,10 @@ class CollectionsDetailsActivity
 
   override def scrollType(sType: ScrollType): Unit = notifyScroll(sType).run
 
+  override def onEmptyCollection(): Unit = loadFabButton(autoHide = false)
+
+  override def onFirstItemInCollection(): Unit = hideFabButton.run
+
   override def onBackPressed(): Unit = backByPriority.run
 
   override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
@@ -190,10 +194,7 @@ class CollectionsDetailsActivity
 
   override def close(): Unit = exitTransition.run
 
-  override def startScroll(): Unit = getCurrentCollection foreach { collection =>
-    val color = getIndexColor(collection.themedColorIndex)
-    showFabButton(color).run
-  }
+  override def startScroll(): Unit = loadFabButton(autoHide = true)
 
   override def onStartFinishAction(): Unit = turnOffFragmentContent.run
 
@@ -234,6 +235,11 @@ class CollectionsDetailsActivity
     case _ => None
   }
 
+  private[this] def loadFabButton(autoHide: Boolean = true): Unit = getCurrentCollection foreach { collection =>
+    val color = getIndexColor(collection.themedColorIndex)
+    showFabButton(color, autoHide).run
+  }
+
 }
 
 trait ScrolledListener {
@@ -248,6 +254,10 @@ trait ScrolledListener {
   def openReorderMode(currentScrollType: ScrollType): Unit
 
   def closeReorderMode(): Unit
+
+  def onEmptyCollection(): Unit
+
+  def onFirstItemInCollection(): Unit
 
   def close(): Unit
 }

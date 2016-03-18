@@ -1,42 +1,52 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
+import android.widget.{LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionRemove, ActionStateIdle, ActionStateReordering, ReorderItemTouchHelperCallback}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullToCloseView, PullingListener}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{CollectionRecyclerView, TintableImageView}
 import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchGoogleColor}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
-trait CollectionFragmentComposer
-  extends CollectionFragmentStyles {
+trait CollectionFragmentComposer {
 
   var statuses = CollectionStatuses()
 
   var scrolledListener: Option[ScrolledListener] = None
 
-  var recyclerView = slot[CollectionRecyclerView]
+  val emptyCollectionLayout: Option[LinearLayout]
 
-  var pullToCloseView = slot[PullToCloseView]
+  val emptyCollectionMessage: Option[TextView]
 
-  def layout(
+  val emptyCollectionImage: Option[TintableImageView]
+
+  val recyclerView: Option[CollectionRecyclerView]
+
+  val pullToCloseView: Option[PullToCloseView]
+
+  def initUi(
     animateCards: Boolean,
-    color: Int,
+    collection: Collection,
     onMoveItems: (Int, Int) => Unit,
-    onRemoveItem: (Int) => Unit)(implicit contextWrapper: ActivityContextWrapper) = {
+    onRemoveItem: (Int) => Unit)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
-      color = color,
+      color = resGetColor(getIndexColor(collection.themedColorIndex)),
       onChanged = {
         case (ActionStateReordering, _, position) =>
           statuses = statuses.copy(startPositionReorder = position)
@@ -54,29 +64,40 @@ trait CollectionFragmentComposer
           closeReorderMode.run
       })
 
-    (l[PullToCloseView](
-      w[CollectionRecyclerView] <~ wire(recyclerView) <~ recyclerStyle(animateCards, itemTouchCallback)
-    ) <~
-      pcvListener(PullToCloseListener(
-        close = () => scrolledListener foreach (_.close())
-      )) <~
-      wire(pullToCloseView) <~
-      pdvPullingListener(PullingListener(
-        start = () => (recyclerView <~ nrvDisableScroll(true)).run,
-        end = () => (recyclerView <~ nrvDisableScroll(false)).run,
-        scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, statuses.scrollType, close))
-      ))
-      ).get
-  }
-
-  def initUi(collection: Collection, animateCards: Boolean)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
-    recyclerView <~
+    (recyclerView <~
       vGlobalLayoutListener(view => {
         val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
         val padding = resGetDimensionPixelSize(R.dimen.padding_small)
         loadCollection(collection, padding, spaceMove, animateCards) ~
           uiHandler(startScroll(padding, spaceMove))
-      })
+      }) <~
+      rvItemTouchHelperCallback(itemTouchCallback) <~
+      (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)) ~
+      (pullToCloseView <~
+        pcvListener(PullToCloseListener(
+          close = () => scrolledListener foreach (_.close())
+        )) <~
+        pdvPullingListener(PullingListener(
+          start = () => (recyclerView <~ nrvDisableScroll(true)).run,
+          end = () => (recyclerView <~ nrvDisableScroll(false)).run,
+          scroll = (scroll: Int, close: Boolean) => scrolledListener foreach (_.pullToClose(scroll, statuses.scrollType, close))
+        )))
+  }
+
+  def showData(emptyCollection: Boolean)(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
+    if (emptyCollection) showEmptyCollection else showCollection
+
+  def showEmptyCollection(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme) = {
+    val color = theme.get(SearchGoogleColor)
+    (emptyCollectionMessage <~ tvColor(color)) ~
+      (emptyCollectionImage <~ tivDefaultColor(color)) ~
+      (emptyCollectionLayout <~ vVisible) ~
+      (recyclerView <~ vGone)
+  }
+
+  def showCollection: Ui[_] =
+    (recyclerView <~ vVisible) ~
+      (emptyCollectionLayout <~ vGone)
 
   def openReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)

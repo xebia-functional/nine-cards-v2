@@ -92,15 +92,10 @@ trait FabButtonBehaviour
 
   def fabMenuOpened: Boolean = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))
 
-  def isFabMenuVisible: Boolean = fabButton exists (_.getVisibility == View.VISIBLE)
-
-  def showFabButton(color: Int = 0)(implicit context: ActivityContextWrapper): Ui[_] = if (!isFabMenuVisible) {
-    postDelayedHideFabButton ~
+  def showFabButton(color: Int = 0, autoHide: Boolean = true)(implicit context: ActivityContextWrapper): Ui[_] =
+    (if (autoHide) postDelayedHideFabButton else Ui.nop) ~
       (fabButton <~ (if (color != 0) fbaColorResource(color) else Tweak.blank) <~ showFabMenu) ~
       (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)
-  } else {
-    resetDelayedHide
-  }
 
   def hideFabButton(implicit context: ActivityContextWrapper): Ui[_] =
     removeDelayedHideFabButton ~
@@ -120,8 +115,6 @@ trait FabButtonBehaviour
     runnableHideFabButton foreach handler.removeCallbacks
   }
 
-  private[this] def resetDelayedHide(implicit context: ActivityContextWrapper) =
-    removeDelayedHideFabButton ~ postDelayedHideFabButton
 
   protected def tagEquals(view: View, id: Int, value: String) =
     Option(view.getTag(id)).isDefined && view.getTag(id).equals(value)

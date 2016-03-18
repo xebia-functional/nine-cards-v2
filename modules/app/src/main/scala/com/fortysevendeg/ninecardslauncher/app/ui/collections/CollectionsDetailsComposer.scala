@@ -104,7 +104,7 @@ trait CollectionsDetailsComposer
       (tabs <~
         stlViewPager(viewPager) <~
         stlOnPageChangeListener(
-          new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
+          new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~ // TODO Use Collections in Adapter
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter()) }, 100) ~
       (tabs <~ vVisible <~~ enterViews)
@@ -371,7 +371,12 @@ trait CollectionsDetailsComposer
         case Left => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = true)
         case Right | Jump => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = false)
         case _ => Ui.nop
-      }) ~ adapter.notifyChanged(position) ~ hideFabButton
+      }) ~ adapter.notifyChanged(position) ~ (if (collection.cards.isEmpty) {
+        val color = getIndexColor(collection.themedColorIndex)
+        showFabButton(color = color, autoHide = false)
+      } else {
+        hideFabButton
+      })
   } getOrElse Ui.nop
 
   private[this] def updateToolbarColor(color: Int): Ui[_] =
@@ -419,7 +424,7 @@ case object Idle extends PageMovement
 case object Jump extends PageMovement
 
 class OnPageChangeCollectionsListener(
-  collections: Seq[Collection],
+  collections: Seq[Collection], // TODO Update this collection when the user change cards
   position: Int,
   updateToolbarColor: (Int) => Ui[_],
   updateCollection: (Collection, Int, PageMovement) => Ui[_])

@@ -9,13 +9,14 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher2.TypedResource._
+import com.fortysevendeg.ninecardslauncher2.{TR, _}
 import macroid.Contexts
 import rapture.core.Answer
 
@@ -26,6 +27,7 @@ class CollectionFragment
   with Contexts[Fragment]
   with ContextSupportProvider
   with UiExtensions
+  with TypedFindView
   with CollectionFragmentComposer {
 
   lazy val di = new Injector
@@ -45,11 +47,27 @@ class CollectionFragment
 
   lazy val collectionId = getInt(Seq(getArguments), keyCollectionId, 0)
 
-  override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View =
+  lazy val emptyCollectionLayout = Option(findView(TR.collection_detail_empty))
+
+  lazy val emptyCollectionMessage = Option(findView(TR.collection_empty_message))
+
+  lazy val emptyCollectionImage = Option(findView(TR.collection_empty_image))
+
+  lazy val recyclerView = Option(findView(TR.collection_detail_recycler))
+
+  lazy val pullToCloseView = Option(findView(TR.collection_detail_pull_to_close))
+
+  protected var rootView: Option[View] = None
+
+  override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
+
+  override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
+    val baseView = LayoutInflater.from(getActivity).inflate(TR.layout.collection_detail_fragment, container, false)
+    rootView = Some(baseView)
     collection map { col =>
-      layout(
+      initUi(
         animateCards = animateCards,
-        color = resGetColor(getIndexColor(col.themedColorIndex)),
+        collection = col,
         onMoveItems = (from: Int, to: Int) => {
           for {
             adapter <- getAdapter
@@ -68,14 +86,16 @@ class CollectionFragment
           } yield {
             activity.removeCard(adapter.collection.cards(position))
           }
-        })
+        }).run
     } getOrElse(throw new RuntimeException("Collection not found")) // TODO We should use an error screen
+    baseView
+  }
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     val sType = ScrollType(getArguments.getString(keyScrollType, ScrollDown.toString))
     val canScroll = collection exists (_.cards.length > numSpaces)
     statuses = statuses.copy(scrollType = sType, canScroll = canScroll)
-    collection foreach (c => initUi(c, animateCards).run)
+    collection foreach (c => showData(c.cards.isEmpty).run)
     super.onViewCreated(view, savedInstanceState)
   }
 
@@ -97,13 +117,17 @@ class CollectionFragment
   def addCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
     adapter.addCards(cards)
     updateScroll()
-    resetScroll.run
+    val emptyCollection = adapter.collection.cards.isEmpty
+    if (!emptyCollection) scrolledListener foreach (_.onFirstItemInCollection())
+    (resetScroll ~ showData(emptyCollection)).run
   }
 
   def removeCard(card: Card) = getAdapter foreach { adapter =>
     adapter.removeCard(card)
     updateScroll()
-    resetScroll.run
+    val emptyCollection = adapter.collection.cards.isEmpty
+    if (emptyCollection) scrolledListener foreach (_.onEmptyCollection())
+    (resetScroll ~ showData(emptyCollection)).run
   }
 
   def reloadCards(cards: Seq[Card]) = getAdapter foreach { adapter =>
