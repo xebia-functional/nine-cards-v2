@@ -83,7 +83,6 @@
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textColor">@color/text_empty_collection</item>
         <item name="android:fontFamily">sans-serif-regular</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="CollectionEmptyImage">

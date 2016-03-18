@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
+import android.util.Log
 import android.widget.{LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -178,6 +179,9 @@ trait CollectionFragmentComposer {
       rvAdapter(createAdapter(collection)) +
         getScrollListener(spaceMove)
     } else Tweak.blank
+
+    if (statuses.activeFragment && collection.position == 0 && collection.cards.isEmpty)
+      scrolledListener foreach (_.onEmptyCollection())
 
     recyclerView <~
       rvLayoutManager(new GridLayoutManager(contextWrapper.application, numInLine)) <~

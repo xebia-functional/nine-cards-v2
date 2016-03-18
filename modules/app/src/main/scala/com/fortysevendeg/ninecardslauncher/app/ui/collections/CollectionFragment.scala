@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
