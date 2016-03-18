@@ -8,10 +8,10 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.GoogleApiClientProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientActivityProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserPermissions
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
@@ -32,7 +32,7 @@ class WizardActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
-  with GoogleApiClientProvider
+  with GoogleApiClientActivityProvider
   with WizardListeners
   with WizardTasks
   with WizardPersistence
@@ -54,7 +54,7 @@ class WizardActivity
 
   override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
     case (WizardStateActionFilter, Some(`stateSuccess`)) => storeCloudDevice()
-    case (WizardStateActionFilter, Some(`stateFaliure`)) => showUser.run
+    case (WizardStateActionFilter, Some(`stateFailure`)) => showUser.run
     case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => showWizard.run
     case _ =>
   }
@@ -87,8 +87,8 @@ class WizardActivity
   override def onBackPressed(): Unit = {}
 
   def requestToken(username: String): Unit =
-    getAccountAndAndroidId(username) match {
-      case Some((account, _)) =>
+    getAccount(username) match {
+      case Some(account) =>
         val client = createGoogleDriveClient(username)
         clientStatuses = clientStatuses.copy(
           apiClient = Some(client),
@@ -132,29 +132,26 @@ class WizardActivity
     }
 
   private[this] def loadCloudDevices(client: GoogleApiClient, username: String, userPermissions: UserPermissions) =
-    getAccountAndAndroidId(username) match {
-      case Some((account, id)) =>
+    getAccount(username) match {
+      case Some(account) =>
         invalidateToken()
-        Task.fork(loadUserDevices(client, id, username, userPermissions).run).resolveAsyncUi(
+        Task.fork(loadUserDevices(client, username, userPermissions).run).resolveAsyncUi(
           userCloudDevices => showLoading ~ searchDevices(userCloudDevices),
           onLoadDevicesException)
       case _ => backToUser(R.string.errorConnectingGoogle).run
     }
 
   private[this] def storeCloudDevice(): Unit =
-    (getAndroidId, clientStatuses) match {
-      case (Some(androidId), GoogleApiClientStatuses(Some(client), Some(username), _)) =>
-        Task.fork(storeActualDevice(client, androidId, username).run).resolveAsyncUi(
+    clientStatuses match {
+      case GoogleApiClientStatuses(Some(client), Some(username), _) =>
+        Task.fork(storeActualDevice(client, username).run).resolveAsyncUi(
           _ => finishProcess,
           _ => finishProcess)
       case _ =>
     }
 
-  private[this] def getAccountAndAndroidId(username: String): Option[(Account, String)] =
-    for {
-      account <- accounts find (_.name == username)
-      androidId <- getAndroidId
-    } yield (account, androidId)
+  private[this] def getAccount(username: String): Option[Account] =
+    accounts find (_.name == username)
 
   private[this] def invalidateToken() = {
     getToken foreach (accountManager.invalidateAuthToken(accountType, _))

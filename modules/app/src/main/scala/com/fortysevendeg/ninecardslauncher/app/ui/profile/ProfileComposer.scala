@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, PublicationsAdapter, SubscriptionsAdapter}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{Device, AccountSync, AccountSyncType}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
@@ -28,7 +28,7 @@ trait ProfileComposer
     with TypedFindView
     with SystemBarsTint
     with Contexts[AppCompatActivity]
-    with ProfileTabListener =>
+    with ProfileListener =>
 
   lazy val rootLayout = Option(findView(TR.profile_root))
 
@@ -53,6 +53,8 @@ trait ProfileComposer
   lazy val iconIndicatorDrawable = new PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
+
+  def showMessage(res: Int): Ui[_] = rootLayout <~ uiSnackbarShort(res)
 
   def initUi(implicit uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] =
       (tabs <~ tlAddTabs(
@@ -103,8 +105,15 @@ trait ProfileComposer
 
   def setAccountsAdapter(items: Seq[AccountSync])
       (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    (recyclerView <~ vVisible <~ rvAdapter(new AccountsAdapter(items))) ~
+    (recyclerView <~ vVisible <~ rvAdapter(new AccountsAdapter(items, accountClickListener))) ~
       (loadingView <~ vInvisible)
+
+  private[this] def accountClickListener(position: Int, accountType: AccountSyncType): Unit =
+    accountType match {
+      case Device(true) => onSyncActionClicked()
+      case Device(false) => showMessage(R.string.todo).run
+      case _ =>
+    }
 
   override def onTabReselected(tab: Tab): Unit = {}
 

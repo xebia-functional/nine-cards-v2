@@ -222,10 +222,13 @@
     <string name="subscriptions">Subscriptions</string>
     <string name="accounts">Accounts</string>
 
-    <string name="syncHeaderDevices">Devices</string>
-    <string name="syncHeaderSynchronize">Synchronization</string>
+    <string name="syncHeaderDevices">Other Devices</string>
     <string name="syncCurrent">Current device</string>
     <string name="syncLastSynced">Last synced: %s</string>
+
+    <string name="accountSynced">Account synced</string>
+
+    <string name="errorSyncing">Error syncing account. Try again please</string>
 
     <string name="errorLoadingUser">Error loading user</string>
 

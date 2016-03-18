@@ -11,9 +11,7 @@ sealed trait AccountSyncType
 
 case object Header extends AccountSyncType
 
-case object Device extends AccountSyncType
-
-case object SyncDevice extends AccountSyncType
+case class Device(current: Boolean) extends AccountSyncType
 
 case class AccountSync(
   title: String,
@@ -27,17 +25,11 @@ object AccountSync {
       title = title,
       accountSyncType = Header)
 
-  def device(title: String, current: Boolean)(implicit context: ContextSupport) =
-    AccountSync(
-      title = title,
-      accountSyncType = Device,
-      subtitle = current.option(context.getResources.getString(R.string.syncCurrent)))
-
-  def syncDevice(title: String, syncDate: Date)(implicit context: ContextSupport) = {
+  def syncDevice(title: String, syncDate: Date, current: Boolean = false)(implicit context: ContextSupport) = {
     val time = new PrettyTime().format(syncDate)
     AccountSync(
       title = title,
-      accountSyncType = SyncDevice,
+      accountSyncType = Device(current),
       subtitle = Option(context.getResources.getString(R.string.syncLastSynced, time)))
   }
 

@@ -73,6 +73,9 @@ trait UserProcessSpecification
     mockPersistenceServices.addUser(any[AddUserRequest]) returns
       Service(Task(Result.answer(persistenceUser)))
 
+    mockPersistenceServices.getAndroidId(contextSupport) returns
+      Service(Task(Result.answer(deviceId)))
+
     val userProcess = new UserProcessImpl(mockApiServices, mockPersistenceServices)
 
   }
@@ -140,7 +143,7 @@ class UserProcessImplSpec
 
     "returns status code with initial installation calling to create installation in ApiServices" in
       new UserProcessScope {
-        val result = userProcess.signIn(email, device)(contextSupport).run.run
+        val result = userProcess.signIn(email, deviceName, secretToken, permissions)(contextSupport).run.run
 
         there was one(mockApiServices).login(anyString, any[GoogleDevice])
         there was one(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
@@ -155,7 +158,7 @@ class UserProcessImplSpec
 
       "returns status code with full installation calling to update installation in ApiServices" in
         new UserProcessScope {
-          val result = userProcess.signIn(email, device)(contextSupport).run.run
+          val result = userProcess.signIn(email, deviceName, secretToken, permissions)(contextSupport).run.run
 
           there was one(mockApiServices).login(anyString, any[GoogleDevice])
           there was one(mockApiServices).updateInstallation(any[String], any[Option[DeviceType]], any[Option[String]], any[Option[String]])
@@ -170,7 +173,7 @@ class UserProcessImplSpec
 
       "returns a UserException if login in ApiService returns a exception and shouldn't sync installation" in
         new UserProcessScope with LoginErrorUserProcessScope {
-          val result = userProcess.signIn(email, device)(contextSupport).run.run
+          val result = userProcess.signIn(email, deviceName, secretToken, permissions)(contextSupport).run.run
           there was one(mockApiServices).login(anyString, any[GoogleDevice])
           there was exactly(0)(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
           there was exactly(0)(mockApiServices).updateInstallation(any[String], any[Option[DeviceType]], any[Option[String]], any[Option[String]])
@@ -184,7 +187,7 @@ class UserProcessImplSpec
 
       "returns a UserException if save user fails and shouldn't sync installation" in
         new UserProcessScope with SaveUserErrorUserProcessScope {
-          val result = userProcess.signIn(email, device)(contextSupport).run.run
+          val result = userProcess.signIn(email, deviceName, secretToken, permissions)(contextSupport).run.run
           there was one(mockApiServices).login(anyString, any[GoogleDevice])
           there was one(mockPersistenceServices).updateUser(any[UpdateUserRequest])
           there was exactly(0)(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])

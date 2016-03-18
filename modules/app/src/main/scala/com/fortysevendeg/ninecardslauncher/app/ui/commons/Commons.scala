@@ -67,7 +67,13 @@ object ResultCodes {
 object WizardState {
   val stateCreatingCollections = "wizard-state-creating-collections"
   val stateSuccess = "wizard-state-success"
-  val stateFaliure = "wizard-state-faliure"
+  val stateFailure = "wizard-state-failure"
+}
+
+object SyncDeviceState {
+  val stateSyncing = "sync-device-state-syncing"
+  val stateSuccess = "sync-device-state-success"
+  val stateFailure = "sync-device-state-failure"
 }
 
 object AppUtils {
