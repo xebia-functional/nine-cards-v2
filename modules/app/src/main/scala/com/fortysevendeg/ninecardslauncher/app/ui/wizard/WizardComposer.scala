@@ -21,7 +21,7 @@ import macroid._
 trait WizardComposer
   extends WizardStyles {
 
-  self: TypedFindView with WizardListeners =>
+  self: TypedFindView =>
 
   val newConfigurationKey = "new_configuration"
 
@@ -65,7 +65,7 @@ trait WizardComposer
 
   def showMessage(message: Int): Ui[_] = rootLayout <~ uiSnackbarShort(message)
 
-  def initUi(accounts: Seq[Account])(implicit context: ActivityContextWrapper): Ui[_] = {
+  def initUi(accounts: Seq[Account])(implicit context: ActivityContextWrapper, presenter: WizardPresenter): Ui[_] = {
     val steps = createSteps
     addUsersToRadioGroup(accounts) ~
       (userAction <~
@@ -75,7 +75,7 @@ trait WizardComposer
           if (termsAccept) {
             usersSpinner map { view =>
               val username = view.getSelectedItem.toString
-              requestToken(username)
+              presenter.loadUser(username)
               showLoading
             } getOrElse showMessage(R.string.errorSelectUser)
           } else {
@@ -89,9 +89,9 @@ trait WizardComposer
             case i: RadioButton if i.isChecked =>
               val tag = i.getTag.toString
               if (tag == newConfigurationKey) {
-                launchService(None)
+                presenter.startService(None)
               } else {
-                launchService(Option(tag))
+                presenter.startService(Option(tag))
               }
               showWizard
           }
@@ -109,7 +109,7 @@ trait WizardComposer
           )).get)) ~
       (stepsAction <~
         diveInActionStyle <~
-        On.click(finishUi)) ~
+        On.click(Ui(presenter.goToLauncher()))) ~
       createPagers(steps)
   }
 
