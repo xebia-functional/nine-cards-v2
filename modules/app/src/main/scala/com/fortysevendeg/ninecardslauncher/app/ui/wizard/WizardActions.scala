@@ -6,22 +6,22 @@ import macroid.Ui
 
 trait WizardActions {
 
-  def onResultLoadUser(account: Account): Ui[_]
+  def onResultLoadUser(account: Account): Ui[Any]
 
-  def onExceptionLoadUser(): Ui[_]
+  def onExceptionLoadUser(): Ui[Any]
 
-  def onResultLoadAccount(userPermissions: UserPermissions): Ui[_]
+  def onResultLoadAccount(userPermissions: UserPermissions): Ui[Any]
 
-  def onExceptionLoadAccount(exception: Throwable): Ui[_]
+  def onExceptionLoadAccount(exception: Throwable): Ui[Any]
 
-  def onResultLoadDevices(devices: UserCloudDevices): Ui[_]
+  def onResultLoadDevices(devices: UserCloudDevices): Ui[Any]
 
-  def onExceptionLoadDevices(exception: Throwable): Ui[_]
+  def onExceptionLoadDevices(exception: Throwable): Ui[Any]
 
-  def onResultStoreCurrentDevice(unit: Unit): Ui[_]
+  def onResultStoreCurrentDevice(unit: Unit): Ui[Any]
 
-  def onExceptionStoreCurrentDevice(exception: Throwable): Ui[_]
+  def onExceptionStoreCurrentDevice(exception: Throwable): Ui[Any]
 
-  def onResultWizard(): Ui[_]
+  def onResultWizard(): Ui[Any]
 
 }

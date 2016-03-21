@@ -90,18 +90,18 @@ class WizardActivity
       case _ => finishProcess.run
     }
 
-  override def onResultLoadAccount(userPermissions: UserPermissions): Ui[_] = {
+  override def onResultLoadAccount(userPermissions: UserPermissions): Ui[Any] = {
     clientStatuses = clientStatuses.copy(userPermissions = Some(userPermissions))
     clientStatuses.apiClient foreach(_.connect())
     showLoading
   }
 
-  override def onExceptionLoadAccount(exception: Throwable): Ui[_] = exception match {
+  override def onExceptionLoadAccount(exception: Throwable): Ui[Any] = exception match {
     case ex: AuthTokenOperationCancelledException => backToUser(R.string.canceledGooglePermission)
     case _ => backToUser(R.string.errorConnectingGoogle)
   }
 
-  override def onResultLoadUser(account: Account): Ui[_] = Ui {
+  override def onResultLoadUser(account: Account): Ui[Any] = Ui {
     val client = createGoogleDriveClient(account.name)
     clientStatuses = clientStatuses.copy(
       apiClient = Some(client),
@@ -109,21 +109,21 @@ class WizardActivity
     presenter.loadAccount(account, client)
   }
 
-  override def onExceptionLoadUser(): Ui[_] = backToUser(R.string.errorConnectingGoogle)
+  override def onExceptionLoadUser(): Ui[Any] = backToUser(R.string.errorConnectingGoogle)
 
-  override def onResultLoadDevices(devices: UserCloudDevices): Ui[_] = showLoading ~ searchDevices(devices)
+  override def onResultLoadDevices(devices: UserCloudDevices): Ui[Any] = showLoading ~ searchDevices(devices)
 
-  override def onExceptionLoadDevices(exception: Throwable): Ui[_] = exception match {
+  override def onExceptionLoadDevices(exception: Throwable): Ui[Any] = exception match {
     case ex: UserException => backToUser(R.string.errorLoginUser)
     case ex: UserConfigException => backToUser(R.string.errorLoginUser)
     case _ => backToUser(R.string.errorConnectingGoogle)
   }
 
-  override def onResultStoreCurrentDevice(unit: Unit): Ui[_] = finishProcess
+  override def onResultStoreCurrentDevice(unit: Unit): Ui[Any] = finishProcess
 
-  override def onExceptionStoreCurrentDevice(exception: Throwable): Ui[_] = finishProcess
+  override def onExceptionStoreCurrentDevice(exception: Throwable): Ui[Any] = finishProcess
 
-  override def onResultWizard(): Ui[_] = Ui {
+  override def onResultWizard(): Ui[Any] = Ui {
     setResult(Activity.RESULT_OK)
     finish()
   }

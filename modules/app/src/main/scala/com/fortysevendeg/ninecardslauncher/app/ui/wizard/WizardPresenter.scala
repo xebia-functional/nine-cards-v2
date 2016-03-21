@@ -49,8 +49,7 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
 
   private[this] def setToken(token: String) = preferences.edit.putString(googleKeyToken, token).apply()
 
-  private[this] def getAccount(username: String): Option[Account] =
-    accounts find (_.name == username)
+  protected def getAccount(username: String): Option[Account] = accounts find (_.name == username)
 
   def getAccounts: Seq[Account] = accounts
 
