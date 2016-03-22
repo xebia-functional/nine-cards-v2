@@ -67,7 +67,7 @@ object CollectionTypes {
   val free = "FREE"
 }
 
-object CardType {
+object CardTypes {
   val app = "APP"
   val noInstalledApp = "NO_INSTALLED_APP"
   val phone = "PHONE"

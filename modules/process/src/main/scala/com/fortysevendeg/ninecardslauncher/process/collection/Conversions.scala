@@ -2,33 +2,19 @@ package com.fortysevendeg.ninecardslauncher.process.collection
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, NineCardIntent}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, _}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
-trait Conversions extends NineCardIntentConversions {
+trait Conversions extends CommonConversions {
 
   val resourceUtils = new ResourceUtils
 
   def toCollectionSeq(servicesCollectionSeq: Seq[ServicesCollection]) = servicesCollectionSeq map toCollection
-
-  def toCollection(servicesCollection: ServicesCollection) = Collection(
-    id = servicesCollection.id,
-    position = servicesCollection.position,
-    name = servicesCollection.name,
-    collectionType = CollectionType(servicesCollection.collectionType),
-    icon = servicesCollection.icon,
-    themedColorIndex = servicesCollection.themedColorIndex,
-    appsCategory = servicesCollection.appsCategory map (NineCardCategory(_)),
-    constrains = servicesCollection.constrains,
-    originalSharedCollectionId = servicesCollection.originalSharedCollectionId,
-    sharedCollectionId = servicesCollection.sharedCollectionId,
-    sharedCollectionSubscribed = servicesCollection.sharedCollectionSubscribed,
-    cards = servicesCollection.cards map toCard)
 
   def toAddCollectionRequest(addCollectionRequest: AddCollectionRequest, position: Int) = ServicesAddCollectionRequest(
     position = position,
@@ -78,19 +64,6 @@ trait Conversions extends NineCardIntentConversions {
     position = pos)
 
   def toCardSeq(servicesCardSeq: Seq[ServicesCard]) = servicesCardSeq map toCard
-
-  def toCard(servicesCard: ServicesCard) = Card(
-    id = servicesCard.id,
-    position = servicesCard.position,
-    micros = servicesCard.micros,
-    term = servicesCard.term,
-    packageName = servicesCard.packageName,
-    cardType = CardType(servicesCard.cardType),
-    intent = jsonToNineCardIntent(servicesCard.intent),
-    imagePath = servicesCard.imagePath,
-    starRating = servicesCard.starRating,
-    numDownloads = servicesCard.numDownloads,
-    notification = servicesCard.notification)
 
   def toServicesCard(card: Card) = ServicesCard(
     id = card.id,

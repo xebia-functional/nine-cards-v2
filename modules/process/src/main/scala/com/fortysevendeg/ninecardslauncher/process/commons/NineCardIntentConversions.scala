@@ -1,8 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.process.commons
 
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{NineCardIntent, NineCardIntentExtras, UnformedApp, UnformedContact}
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{UnformedApp, UnformedContact}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardIntentExtras, NineCardIntentImplicits, NineCardsIntentExtras}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, EmailCardType, PhoneCardType}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import play.api.libs.json.Json

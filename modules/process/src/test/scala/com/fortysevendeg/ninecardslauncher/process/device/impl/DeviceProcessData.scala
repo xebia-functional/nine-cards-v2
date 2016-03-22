@@ -3,9 +3,9 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import android.graphics.drawable.Drawable
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, WidgetDimensions, _}
 import com.fortysevendeg.ninecardslauncher.process.device.types._
@@ -14,32 +14,13 @@ import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => ServicesCall}
-import com.fortysevendeg.ninecardslauncher.services.commons._
+import com.fortysevendeg.ninecardslauncher.services.commons.{EmailCategory => ServicesEmailCategory, EmailHome => ServicesEmailHome, EmailOther => ServicesEmailOther, EmailWork => ServicesEmailWork, PhoneCategory => ServicesPhoneCategory, PhoneFaxHome => ServicesPhoneFaxHome, PhoneFaxWork => ServicesPhoneFaxWork, PhoneHome => ServicesPhoneHome, PhoneMain => ServicesPhoneMain, PhoneMobile => ServicesPhoneMobile, PhoneOther => ServicesPhoneOther, PhonePager => ServicesPhonePager, PhoneWork => ServicesPhoneWork}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{
-  App => ServicesApp,
-  DockApp=> ServicesDockApp,
-  DataCounter=> ServicesDataCounter,
-  IterableApps => ServicesIterableApps}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json
-import com.fortysevendeg.ninecardslauncher.services.commons.{
-  EmailCategory => ServicesEmailCategory,
-  EmailHome => ServicesEmailHome,
-  EmailWork => ServicesEmailWork,
-  EmailOther => ServicesEmailOther}
-import com.fortysevendeg.ninecardslauncher.services.commons.{
-  PhoneCategory => ServicesPhoneCategory,
-  PhoneHome => ServicesPhoneHome,
-  PhoneWork => ServicesPhoneWork,
-  PhoneMobile=> ServicesPhoneMobile,
-  PhoneMain => ServicesPhoneMain,
-  PhoneFaxWork => ServicesPhoneFaxWork,
-  PhoneFaxHome=> ServicesPhoneFaxHome,
-  PhonePager => ServicesPhonePager,
-  PhoneOther => ServicesPhoneOther}
 
 trait DeviceProcessData
   extends NineCardIntentConversions {

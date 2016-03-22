@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
-import android.accounts.{OperationCanceledException, Account, AccountManager}
+import android.accounts.{Account, AccountManager, OperationCanceledException}
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserPermissions, UserCloudDevices}
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -11,17 +11,15 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import rapture.core._
 
 import scala.reflect.ClassTag
-import scalaz.{-\/, \/-, \/}
 import scalaz.concurrent.Task
+import scalaz.{-\/, \/, \/-}
 
 trait WizardTasks
   extends ImplicitsCloudStorageProcessExceptions {

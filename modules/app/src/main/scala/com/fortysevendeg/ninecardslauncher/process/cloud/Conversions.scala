@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud
 
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageCollectionItem, CloudStorageDevice, CloudStorageDeviceSummary}
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem, UserDevice}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import play.api.libs.json.Json
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 
 object Conversions {
 

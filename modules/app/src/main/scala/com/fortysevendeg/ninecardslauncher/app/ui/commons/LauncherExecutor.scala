@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
-import android.app.{SearchManager, Activity}
+import android.app.{Activity, SearchManager}
 import android.content.{ComponentName, Intent}
 import android.net.Uri
 import android.provider.ContactsContract
@@ -8,9 +8,8 @@ import android.speech.RecognizerIntent
 import android.widget.Toast
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
-import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardsIntentExtras}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 
