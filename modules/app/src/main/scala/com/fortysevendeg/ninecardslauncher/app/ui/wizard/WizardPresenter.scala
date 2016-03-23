@@ -1,24 +1,23 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.{Account, AccountManager, OperationCanceledException}
-import android.content.{Intent, Context}
+import android.content.{Context, Intent}
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceSummary}
-import com.fortysevendeg.ninecardslauncher.process.cloud.{ImplicitsCloudStorageProcessExceptions, CloudStorageProcess, CloudStorageProcessException}
+import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
@@ -28,15 +27,14 @@ import scala.reflect.ClassTag
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/, \/-}
 
-class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityContextWrapper, contextSupport: ContextSupport)
-  extends ImplicitsCloudStorageProcessExceptions
+class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityContextWrapper)
+  extends Presenter
+  with ImplicitsCloudStorageProcessExceptions
   with ImplicitsAuthTokenException {
-
-  implicit lazy val di = new Injector
 
   private[this] val accountType = "com.google"
 
-  private[this] lazy val accountManager: AccountManager = AccountManager.get(contextWrapper.bestAvailable)
+  private[this] lazy val accountManager: AccountManager = AccountManager.get(contextSupport.context)
 
   private[this] lazy val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq
 
