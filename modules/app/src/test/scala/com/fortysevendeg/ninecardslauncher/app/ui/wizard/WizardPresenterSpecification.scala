@@ -5,13 +5,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserPermissions
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.utils.Await
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Result, Errata, Answer}
+import rapture.core.{Answer, Errata}
 
 import scala.concurrent.duration._
 import scalaz.concurrent.Task
@@ -82,14 +81,14 @@ class WizardPresenterSpec
 
     "return a successful account" in
       new WizardPresenterScope {
-        Await.result(presenter.loadAccount(account, mock[GoogleApiClient]), 1 seconds)
-        there was one(mockActions).onResultLoadAccount(userPermission)
+        presenter.loadAccount(account, mock[GoogleApiClient])
+        there was after(1 seconds).one(mockActions).onResultLoadAccount(userPermission)
       }
 
     "return a failed account" in
       new WizardPresenterScope {
-        Await.result(presenterFailed.loadAccount(account, mock[GoogleApiClient]), 1 seconds)
-        there was one(mockActions).onExceptionLoadAccount(requestUserPermissionsException)
+        presenterFailed.loadAccount(account, mock[GoogleApiClient])
+        there was after(1 seconds).one(mockActions).onExceptionLoadAccount(requestUserPermissionsException)
       }
 
   }
