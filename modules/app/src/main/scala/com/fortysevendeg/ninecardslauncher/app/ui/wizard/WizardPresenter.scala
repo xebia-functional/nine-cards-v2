@@ -29,7 +29,8 @@ import scalaz.concurrent.Task
 import scalaz.{-\/, \/, \/-}
 
 class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityContextWrapper, contextSupport: ContextSupport)
-  extends ImplicitsCloudStorageProcessExceptions {
+  extends ImplicitsCloudStorageProcessExceptions
+  with ImplicitsAuthTokenException {
 
   implicit lazy val di = new Injector
 
@@ -89,7 +90,7 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
 
   def goToLauncher(): Unit = actions.onResultWizard().run
 
-  private[this] def requestUserPermissions(
+  protected def requestUserPermissions(
     account: Account,
     client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] = {
     val oauthScopes = "androidmarket" // TODO - This should be removed when we switch off the server v1
@@ -99,6 +100,11 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
       _ = setToken(token)
       token2 <- getAuthToken(accountManager, account, driveScope)
     } yield UserPermissions(token, Seq(oauthScopes))
+  }
+
+  protected def invalidateToken(): Unit = {
+    getToken foreach (accountManager.invalidateAuthToken(accountType, _))
+    setToken(javaNull)
   }
 
   private[this] def loadCloudDevices(
@@ -122,11 +128,6 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
       collections <- di.collectionProcess.getCollections
       _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(collections map toCloudStorageCollection)
     } yield ()
-  }
-
-  private[this] def invalidateToken() = {
-    getToken foreach (accountManager.invalidateAuthToken(accountType, _))
-    setToken(javaNull)
   }
 
   private[this] def verifyAndUpdate(
@@ -171,10 +172,10 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
         case \/-(x) => Result.answer(x)
         case -\/(e: OperationCanceledException) => Errata(Seq((
           implicitly[ClassTag[AuthTokenOperationCancelledException]],
-          (e.getMessage, AuthTokenOperationCancelledException(e.getMessage, Some(e))))))
+          (e.getMessage, AuthTokenOperationCancelledExceptionImpl(e.getMessage, Some(e))))))
         case -\/(e) => Errata(Seq((
           implicitly[ClassTag[AuthTokenException]],
-          (e.getMessage, AuthTokenException(e.getMessage, Some(e))))))
+          (e.getMessage, AuthTokenExceptionImpl(e.getMessage, Some(e))))))
       }
     }
   }
