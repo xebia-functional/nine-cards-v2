@@ -1,14 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.di
 
+import com.facebook.stetho.okhttp.StethoInterceptor
 import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.cloud.impl.CloudStorageProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardsMoment, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.moment.MomentProcessConfig
+import com.fortysevendeg.ninecardslauncher.process.moment.impl.MomentProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl.SharedCollectionsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
@@ -30,8 +34,6 @@ import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.google.android.gms.common.api.GoogleApiClient
 import com.squareup.{okhttp => okHttp}
-import com.facebook.stetho.okhttp.StethoInterceptor
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientActivityProvider
 
 class Injector(implicit contextSupport: ContextSupport) {
 
@@ -135,6 +137,19 @@ class Injector(implicit contextSupport: ContextSupport) {
     persistenceServices = persistenceServices,
     contactsServices = contactsServices,
     appsServices = appsServices)
+
+  private[this] lazy val namesMoments: Map[NineCardsMoment, String] = (cases map {
+    moment =>
+      val identifier = resources.getIdentifier(moment.getIconResource, "string", contextSupport.getPackageName)
+      (moment, if (identifier != 0) resources.getString(identifier) else moment.name)
+  }).toMap
+
+  private[this] lazy val momentProcessConfig = MomentProcessConfig(
+    namesMoments = namesMoments)
+
+  lazy val momentProcess = new MomentProcessImpl(
+    momentProcessConfig = momentProcessConfig,
+    persistenceServices = persistenceServices)
 
   lazy val userProcess = new UserProcessImpl(
     apiServices = apiServices,

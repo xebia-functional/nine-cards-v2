@@ -26,17 +26,13 @@ case object WorkCollectionType extends CollectionType {
   override val name: String = work
 }
 
-case object TransitCollectionType extends CollectionType {
-  override val name: String = transit
-}
-
 case object FreeCollectionType extends CollectionType {
   override val name: String = free
 }
 
 object CollectionType {
 
-  val collectionTypes = Seq(AppsCollectionType, ContactsCollectionType, HomeMorningCollectionType, HomeNightCollectionType, WorkCollectionType, TransitCollectionType, FreeCollectionType)
+  val collectionTypes = Seq(AppsCollectionType, ContactsCollectionType, HomeMorningCollectionType, HomeNightCollectionType, WorkCollectionType, FreeCollectionType)
 
   def apply(name: String): CollectionType = collectionTypes find (_.name == name) getOrElse
     (throw new IllegalArgumentException(s"The key '$name' is not a valid CollectionType"))
