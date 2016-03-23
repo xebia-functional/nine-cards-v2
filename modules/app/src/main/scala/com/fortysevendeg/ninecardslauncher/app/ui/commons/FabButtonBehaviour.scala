@@ -93,7 +93,7 @@ trait FabButtonBehaviour
   def fabMenuOpened: Boolean = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))
 
   def showFabButton(color: Int = 0, autoHide: Boolean = true)(implicit context: ActivityContextWrapper): Ui[_] =
-    (if (autoHide) postDelayedHideFabButton else Ui.nop) ~
+    (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton) ~
       (fabButton <~ (if (color != 0) fbaColorResource(color) else Tweak.blank) <~ showFabMenu) ~
       (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)
 
