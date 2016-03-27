@@ -75,8 +75,7 @@ trait WizardComposer
           if (termsAccept) {
             usersSpinner map { view =>
               val username = view.getSelectedItem.toString
-              presenter.loadUser(username)
-              showLoading
+              presenter.connectAccount(username)
             } getOrElse showMessage(R.string.errorSelectUser)
           } else {
             showMessage(R.string.messageAcceptTerms)
@@ -87,13 +86,11 @@ trait WizardComposer
         On.click {
           devicesGroup <~ Transformer {
             case i: RadioButton if i.isChecked =>
-              val tag = i.getTag.toString
-              if (tag == newConfigurationKey) {
-                presenter.startService(None)
-              } else {
-                presenter.startService(Option(tag))
+              val tag = Option(i.getTag) map (_.toString)
+              tag match {
+                case Some(`newConfigurationKey`) => presenter.generateCollections(None)
+                case device => presenter.generateCollections(device)
               }
-              showWizard
           }
         }) ~
       (wizardWorkspaceContent <~
@@ -109,19 +106,51 @@ trait WizardComposer
           )).get)) ~
       (stepsAction <~
         diveInActionStyle <~
-        On.click(Ui(presenter.goToLauncher()))) ~
+        On.click(presenter.finishWizard())) ~
       createPagers(steps)
   }
 
   def finishProcess: Ui[Any] = stepsAction <~ vEnabled(true)
 
-  def addUsersToRadioGroup(accounts: Seq[Account])(implicit context: ActivityContextWrapper): Ui[Any] = {
+  def loadDevicesView(userCloudDevices: UserCloudDevices)(implicit context: ActivityContextWrapper): Ui[Any] =
+    addDevicesToRadioGroup(userCloudDevices.devices) ~
+      showDevicesView ~
+      (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, userCloudDevices.name)))
+
+  def showLoadingView(implicit context: ActivityContextWrapper): Ui[Any] =
+    (loadingRootLayout <~ vVisible) ~
+      (userRootLayout <~ vGone) ~
+      (wizardRootLayout <~ vGone) ~
+      (deviceRootLayout <~ vGone)
+
+  def showUserView(implicit context: ActivityContextWrapper): Ui[Any] =
+    (loadingRootLayout <~ vGone) ~
+      (userRootLayout <~ vVisible) ~
+      (wizardRootLayout <~ vGone) ~
+      (deviceRootLayout <~ vGone)
+
+  def showWizardView(implicit context: ActivityContextWrapper): Ui[Any] =
+    (loadingRootLayout <~ vGone) ~
+      (userRootLayout <~ vGone) ~
+      (wizardRootLayout <~ vVisible <~ rbvColor(resGetColor(R.color.wizard_background_step_0), forceFade = true)) ~
+      (deviceRootLayout <~ vGone)
+
+  def showDevicesView(implicit context: ActivityContextWrapper): Ui[Any] =
+    (loadingRootLayout <~ vGone) ~
+      (userRootLayout <~ vGone) ~
+      (wizardRootLayout <~ vGone) ~
+      (deviceRootLayout <~ vVisible)
+
+  def backToUser(errorMessage: Int)(implicit context: ActivityContextWrapper): Ui[Any] =
+    uiShortToast(errorMessage) ~ showUserView
+
+  private[this] def addUsersToRadioGroup(accounts: Seq[Account])(implicit context: ActivityContextWrapper): Ui[Any] = {
     val accountsName = accounts map (_.name) toArray
     val sa = new ArrayAdapter[String](context.getOriginal, android.R.layout.simple_spinner_dropdown_item, accountsName)
     usersSpinner <~ sAdapter(sa)
   }
 
-  def addDevicesToRadioGroup(devices: Seq[CloudStorageDevice])(implicit context: ActivityContextWrapper): Ui[Any] = {
+  private[this] def addDevicesToRadioGroup(devices: Seq[CloudStorageDevice])(implicit context: ActivityContextWrapper): Ui[Any] = {
     val radioViews = (devices map (device => userRadio(device.deviceName, device.deviceId))) :+
       userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey)
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
@@ -149,38 +178,6 @@ trait WizardComposer
 
   private[this] def userRadio(title: String, tag: String)(implicit context: ActivityContextWrapper): RadioButton =
     (w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)).get
-
-  def searchDevices(userCloudDevices: UserCloudDevices)(implicit context: ActivityContextWrapper): Ui[Any] =
-    addDevicesToRadioGroup(userCloudDevices.devices) ~
-      showDevices ~
-      (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, userCloudDevices.name)))
-
-  def showLoading(implicit context: ActivityContextWrapper): Ui[Any] =
-    (loadingRootLayout <~ vVisible) ~
-      (userRootLayout <~ vGone) ~
-      (wizardRootLayout <~ vGone) ~
-      (deviceRootLayout <~ vGone)
-
-  def showUser(implicit context: ActivityContextWrapper): Ui[Any] =
-    (loadingRootLayout <~ vGone) ~
-      (userRootLayout <~ vVisible) ~
-      (wizardRootLayout <~ vGone) ~
-      (deviceRootLayout <~ vGone)
-
-  def showWizard(implicit context: ActivityContextWrapper): Ui[Any] =
-    (loadingRootLayout <~ vGone) ~
-      (userRootLayout <~ vGone) ~
-      (wizardRootLayout <~ vVisible <~ rbvColor(resGetColor(R.color.wizard_background_step_0), forceFade = true)) ~
-      (deviceRootLayout <~ vGone)
-
-  def showDevices(implicit context: ActivityContextWrapper): Ui[Any] =
-    (loadingRootLayout <~ vGone) ~
-      (userRootLayout <~ vGone) ~
-      (wizardRootLayout <~ vGone) ~
-      (deviceRootLayout <~ vVisible)
-
-  def backToUser(errorMessage: Int)(implicit context: ActivityContextWrapper): Ui[Any] =
-    uiShortToast(errorMessage) ~ showUser
 
 }
 

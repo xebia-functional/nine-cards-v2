@@ -1,10 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.Account
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserPermissions
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
+import com.fortysevendeg.ninecardslauncher.process.user.UserException
+import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
 import org.specs2.mock.Mockito
@@ -24,26 +27,32 @@ trait WizardPresenterSpecification
 
   implicit val contextWrapper = mock[ActivityContextWrapper]
 
-  case class CustomException(message: String, cause: Option[Throwable] = None)
+  case class RequestUserPermissionException(message: String, cause: Option[Throwable] = None)
     extends RuntimeException(message)
     with AuthTokenException
     with AuthTokenOperationCancelledException
 
-  val requestUserPermissionsException = CustomException("", None)
+  val requestUserPermissionsException = RequestUserPermissionException("", None)
 
   trait WizardPresenterScope
     extends Scope {
 
+    val mockGoogleApiClient = mock[GoogleApiClient]
+
     val mockActions = mock[WizardActions]
-    mockActions.onResultLoadUser(account) returns Ui[Any]()
-    mockActions.onExceptionLoadUser() returns Ui[Any]()
-    mockActions.onResultLoadAccount(userPermission) returns Ui[Any]()
-    mockActions.onExceptionLoadAccount(requestUserPermissionsException) returns Ui[Any]()
+    mockActions.showLoading() returns Ui[Any]()
+    mockActions.showErrorConnectingGoogle() returns Ui[Any]()
+    mockActions.showErrorLoginUser() returns Ui[Any]()
+    mockActions.createGoogleApiClient(account) returns Ui[GoogleApiClient](mockGoogleApiClient)
+    mockActions.connectGoogleApiClient(userPermission) returns Ui[Any]()
 
     val presenter = new WizardPresenter(mockActions) {
       override protected def getAccount(username: String): Option[Account] = Some(account)
       override protected def requestUserPermissions(account: Account, client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] =
         Service(Task(Answer(userPermission)))
+      override protected def loadCloudDevices
+      (client: GoogleApiClient, username: String, userPermissions: UserPermissions): ServiceDef2[UserCloudDevices, UserException with UserConfigException with CloudStorageProcessException] =
+        Service(Task(Answer(userCloudDevices)))
       override protected def invalidateToken(): Unit = {}
     }
 
@@ -61,34 +70,31 @@ trait WizardPresenterSpecification
 class WizardPresenterSpec
   extends WizardPresenterSpecification {
 
-  "loadUser" should {
+  "connectAccount" should {
 
-    "return a successful account" in
+    "return a successful connecting account" in
       new WizardPresenterScope {
-        presenter.loadUser(accountName)
-        there was one(mockActions).onResultLoadUser(account)
+        presenter.connectAccount(accountName).get
+        there was after(1 seconds).one(mockActions).showLoading()
+        there was after(1 seconds).one(mockActions).createGoogleApiClient(account)
+        there was after(1 seconds).one(mockActions).connectGoogleApiClient(userPermission)
       }
 
-    "return a failed account" in
+    "return a failed connecting account" in
       new WizardPresenterScope {
-        presenterFailed.loadUser(accountName)
-        there was one(mockActions).onExceptionLoadUser()
+        presenterFailed.connectAccount(accountName).get
+        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
       }
 
   }
 
-  "loadAccount" should {
+  "getAccounts" should {
 
-    "return a successful account" in
+    "return a successful devices" in
       new WizardPresenterScope {
-        presenter.loadAccount(account, mock[GoogleApiClient])
-        there was after(1 seconds).one(mockActions).onResultLoadAccount(userPermission)
-      }
-
-    "return a failed account" in
-      new WizardPresenterScope {
-        presenterFailed.loadAccount(account, mock[GoogleApiClient])
-        there was after(1 seconds).one(mockActions).onExceptionLoadAccount(requestUserPermissionsException)
+        presenter.getDevices(mockGoogleApiClient, accountName, userPermission).get
+        there was after(1 seconds).one(mockActions).showLoading()
+        there was after(1 seconds).one(mockActions).showDevices(userCloudDevices)
       }
 
   }

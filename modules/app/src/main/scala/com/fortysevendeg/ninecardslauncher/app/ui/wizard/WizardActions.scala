@@ -2,26 +2,29 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.Account
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
+import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Ui
 
 trait WizardActions {
 
-  def onResultLoadUser(account: Account): Ui[Any]
+  def showLoading(): Ui[Any]
 
-  def onExceptionLoadUser(): Ui[Any]
+  def showErrorConnectingGoogle(): Ui[Any]
 
-  def onResultLoadAccount(userPermissions: UserPermissions): Ui[Any]
+  def showErrorLoginUser(): Ui[Any]
 
-  def onExceptionLoadAccount(exception: Throwable): Ui[Any]
+  def createGoogleApiClient(account: Account): Ui[GoogleApiClient]
 
-  def onResultLoadDevices(devices: UserCloudDevices): Ui[Any]
+  def connectGoogleApiClient(userPermissions: UserPermissions): Ui[Any]
 
-  def onExceptionLoadDevices(exception: Throwable): Ui[Any]
+  def showDevices(devices: UserCloudDevices): Ui[Any]
 
-  def onResultStoreCurrentDevice(unit: Unit): Ui[Any]
+  def showDiveIn(): Ui[Any]
 
-  def onExceptionStoreCurrentDevice(exception: Throwable): Ui[Any]
+  def startCreateCollectionsService(maybeKey: Option[String]): Ui[Any]
 
-  def onResultWizard(): Ui[Any]
+  def navigateToLauncher(): Ui[Any]
+
+  def navigateToWizard(): Ui[Any]
 
 }

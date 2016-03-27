@@ -1,10 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.{Account, AccountManager, OperationCanceledException}
-import android.content.{Context, Intent}
+import android.content.Context
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
@@ -20,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
-import macroid.ActivityContextWrapper
+import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.{Answer, Errata, Result}
 
 import scala.reflect.ClassTag
@@ -48,45 +47,46 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
 
   private[this] def setToken(token: String) = preferences.edit.putString(googleKeyToken, token).apply()
 
-  protected def getAccount(username: String): Option[Account] = accounts find (_.name == username)
+  def getAccounts: Ui[Seq[Account]] = Ui(accounts)
 
-  def getAccounts: Seq[Account] = accounts
-
-  def loadUser(username: String): Unit =
-    getAccount(username) match {
-      case Some(account) => actions.onResultLoadUser(account).run
-      case _ => actions.onExceptionLoadUser().run
-    }
-
-  def loadAccount(account: Account, client: GoogleApiClient): Unit = {
-    invalidateToken()
-    Task.fork(requestUserPermissions(account, client).run).resolveAsyncUi(
-      onResult = actions.onResultLoadAccount,
-      onException = actions.onExceptionLoadAccount)
+  def connectAccount(username: String): Ui[Any] = {
+    val account = getAccount(username)
+    actions.showLoading() ~
+      (account match {
+        case Some(acc) =>
+          val googleApiClient = actions.createGoogleApiClient(acc).get
+          loadAccount(acc, googleApiClient)
+        case _ => actions.showErrorConnectingGoogle()
+      })
   }
 
-  def loadDevices(client: GoogleApiClient,
+  def getDevices(client: GoogleApiClient,
     username: String,
-    userPermissions: UserPermissions): Unit = {
+    userPermissions: UserPermissions): Ui[Any] = {
     invalidateToken()
-    Task.fork(loadCloudDevices(client, username, userPermissions).run).resolveAsyncUi(
-      onResult = actions.onResultLoadDevices,
-      onException = actions.onExceptionLoadDevices)
+    actions.showLoading() ~ Ui {
+      Task.fork(loadCloudDevices(client, username, userPermissions).run).resolveAsyncUi(
+        onResult = (devices: UserCloudDevices) => actions.showDevices(devices),
+        onException = (ex: Throwable) => ex match {
+          case ex: UserException => actions.showErrorLoginUser()
+          case ex: UserConfigException => actions.showErrorLoginUser()
+          case _ => actions.showErrorConnectingGoogle()
+        })
+    }
   }
 
-  def storeCurrentDevice(client: GoogleApiClient, username: String): Unit = {
+  def saveCurrentDevice(client: GoogleApiClient, username: String): Ui[Any] = Ui {
     Task.fork(storeDevice(client, username).run).resolveAsyncUi(
-      onResult = actions.onResultStoreCurrentDevice,
-      onException = actions.onExceptionStoreCurrentDevice)
+      onResult = (_) => actions.showDiveIn(),
+      onException = (_) => actions.showDiveIn())
   }
 
-  def startService(maybeKey: Option[String]): Unit = {
-    val intent = new Intent(contextWrapper.getOriginal, classOf[CreateCollectionService])
-    maybeKey map (key => intent.putExtra(CreateCollectionService.keyDevice, key))
-    contextWrapper.getOriginal.startService(intent)
-  }
+  def generateCollections(maybeKey: Option[String]): Ui[Any] =
+    actions.startCreateCollectionsService(maybeKey) ~ actions.navigateToWizard()
 
-  def goToLauncher(): Unit = actions.onResultWizard().run
+  def finishWizard(): Ui[Any] = actions.navigateToLauncher()
+
+  protected def getAccount(username: String): Option[Account] = getAccounts.get find (_.name == username)
 
   protected def requestUserPermissions(
     account: Account,
@@ -105,7 +105,14 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
     setToken(javaNull)
   }
 
-  private[this] def loadCloudDevices(
+  private[this] def loadAccount(account: Account, client: GoogleApiClient): Ui[Any] = Ui {
+    invalidateToken()
+    Task.fork(requestUserPermissions(account, client).run).resolveAsyncUi(
+      onResult = (permissions: UserPermissions) => actions.connectGoogleApiClient(permissions),
+      onException = (ex: Throwable) => actions.showErrorConnectingGoogle())
+  }
+
+  protected def loadCloudDevices(
     client: GoogleApiClient,
     username: String,
     userPermissions: UserPermissions): ServiceDef2[UserCloudDevices, UserException with UserConfigException with CloudStorageProcessException] = {
