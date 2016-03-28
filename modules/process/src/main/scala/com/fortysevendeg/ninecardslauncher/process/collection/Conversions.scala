@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, NineCardIntent}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
