@@ -60,14 +60,63 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
+    <!-- Collection Detail -->
+
+    <style name="CollectionDetailLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="CollectionDetailEmpty">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">@dimen/space_enter_views_collection_detail</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="CollectionEmptyMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/padding_empty_collection_message</item>
+        <item name="android:text">@string/collectionDetailAddCardsMessage</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/text_empty_collection</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
+    </style>
+
+    <style name="CollectionEmptyImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/padding_empty_collection_image</item>
+        <item name="android:src">@drawable/placeholder_empty_collection</item>
+    </style>
+
+    <style name="CollectionDetailPullToClose">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="CollectionDetailView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingTop">@dimen/space_moving_collection_details</item>
+        <item name="android:paddingBottom">@dimen/padding_small</item>
+        <item name="android:paddingLeft">@dimen/padding_small</item>
+        <item name="android:paddingRight">@dimen/padding_small</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:overScrollMode">never</item>
+    </style>
+
     <!-- FAB Menu -->
 
-    <style name="CollectionsFabMenuContent">
+    <style name="CollectionsFabMenuContentParent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:cropToPadding">false</item>
-        <item name="android:elevation">@dimen/elevation_fab_button</item>
     </style>
+
+    <style name="CollectionsFabMenuContent" parent="CollectionsFabMenuContentParent"/>
 
     <style name="CollectionsFabButton">
         <item name="android:layout_width">wrap_content</item>

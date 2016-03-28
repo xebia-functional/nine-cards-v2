@@ -3,7 +3,6 @@
     <item name="view_type" type="id" />
     <item name="position" type="id" />
     <item name="use_layer_hardware" type="id" />
-    <item name="fab_menu_opened" type="id" />
     <item name="drawable_on" type="id" />
     <item name="drawable_off" type="id" />
     <item name="selected_item" type="id" />

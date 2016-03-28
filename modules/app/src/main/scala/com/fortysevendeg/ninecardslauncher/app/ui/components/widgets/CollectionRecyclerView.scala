@@ -8,14 +8,15 @@ import android.view.ViewGroup.LayoutParams
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
 import com.fortysevendeg.ninecardslauncher.commons._
-import macroid.ContextWrapper
+import macroid.{Contexts, ContextWrapper}
 
-class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
-  extends RecyclerView(context, attr, defStyleAttr) {
+class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
+  extends RecyclerView(context, attr, defStyleAttr)
+  with Contexts[View] {
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   var statuses = CollectionRecyclerStatuses()
 

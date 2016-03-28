@@ -17,4 +17,8 @@
         <!--<item name="android:elevation">@dimen/elevation_toolbar</item>-->
     <!--</style>-->
 
+    <style name="CollectionsFabMenuContent" parent="CollectionsFabMenuContentParent">
+        <item name="android:elevation">@dimen/elevation_fab_button</item>
+    </style>
+
 </resources>
