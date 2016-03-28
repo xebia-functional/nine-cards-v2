@@ -1,55 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.process.collection.models
+package com.fortysevendeg.ninecardslauncher.process.commons.models
 
 import android.content.Intent
 import android.content.Intent._
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardsIntentExtras._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
 import play.api.libs.json._
 
 import scala.collection.JavaConversions._
 import scala.util.Try
-
-case class UnformedApp(
-  name: String,
-  packageName: String,
-  className: String,
-  imagePath: String,
-  category: NineCardCategory)
-
-case class UnformedContact(
-  name: String,
-  lookupKey: String,
-  photoUri: String,
-  info: Option[ContactInfo] = None)
-
-case class ContactInfo(
-  emails: Seq[ContactEmail],
-  phones: Seq[ContactPhone])
-
-case class ContactEmail(
-  address: String,
-  category: String)
-
-case class ContactPhone(
-  number: String,
-  category: String)
-
-case class FormedCollection(
-  name: String,
-  originalSharedCollectionId: Option[String],
-  sharedCollectionId: Option[String],
-  sharedCollectionSubscribed: Option[Boolean],
-  items: Seq[FormedItem],
-  collectionType: CollectionType,
-  icon: String,
-  category: Option[NineCardCategory])
-
-case class FormedItem(
-  itemType: String,
-  title: String,
-  intent: String,
-  uriImage: Option[String] = None)
 
 case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
 

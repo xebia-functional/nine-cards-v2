@@ -208,6 +208,11 @@
     <string name="game_widgets">Juegos de Widgets</string>
     <string name="game_word">Palabras</string>
 
+    <!-- Moments -->
+    <string name="home">Hogar</string>
+    <string name="work">Trabajo</string>
+    <string name="night">Noche</string>
+
     <!-- Profile -->
     <string name="publications">Publicaciones</string>
     <string name="subscriptions">Subscripciones</string>

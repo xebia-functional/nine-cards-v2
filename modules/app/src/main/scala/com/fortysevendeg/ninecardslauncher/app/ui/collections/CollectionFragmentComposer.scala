@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
-import android.util.Log
 import android.widget.{LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -19,7 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToClos
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{CollectionRecyclerView, TintableImageView}
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchGoogleColor}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._

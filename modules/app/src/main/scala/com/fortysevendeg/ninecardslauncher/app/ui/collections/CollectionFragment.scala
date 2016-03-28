@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
@@ -14,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}

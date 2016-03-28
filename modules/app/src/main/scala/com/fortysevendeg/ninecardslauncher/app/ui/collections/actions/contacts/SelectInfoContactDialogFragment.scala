@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}

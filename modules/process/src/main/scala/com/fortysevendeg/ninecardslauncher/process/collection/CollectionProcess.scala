@@ -3,11 +3,13 @@ package com.fortysevendeg.ninecardslauncher.process.collection
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 
 trait CollectionProcess {
 
   /**
-   * Creates Collections with the apps installed in the device and their categories, finally it adds a Collection with the favourite contacts if it's possible
+    * Creates Collections with the apps installed in the device and their categories, finally it adds a Collection with the favourite contacts if it's possible
+ *
    * @param apps the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedApp] with the apps' data
    * @param contacts the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedContact] with the contacts' data
    * @return the List[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
@@ -17,6 +19,7 @@ trait CollectionProcess {
 
   /**
     * Generate Private Collections with the apps installed in the device and their categories
+ *
     * @param apps the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedApp] with the apps' data
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.PrivateCollection]
     * @throws CollectionException if there was an error creating the existing collections
@@ -25,6 +28,7 @@ trait CollectionProcess {
 
   /**
    * Creates Collections from some already formed and given Collections
+ *
    * @param items the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.FormedCollection] of Collections
    * @return the List[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
    * @throws CollectionException if there was an error creating the collections
@@ -33,6 +37,7 @@ trait CollectionProcess {
 
   /**
    * Gets the existing collections
+ *
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
    * @throws CollectionException if there was an error getting the existing collections
    */
@@ -40,6 +45,7 @@ trait CollectionProcess {
 
   /**
     * Get collections by collection id if exists
+ *
     * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
     * @throws CollectionException if there was an error getting the existing collections
     */
@@ -47,14 +53,16 @@ trait CollectionProcess {
 
   /**
    * Adds a new Collection after the last existing one
+ *
    * @param addCollectionRequest includes the necessary data to create a new collection (name, collectionType, icon, themedColorIndex and appsCategory(optional))
-   * @return the [[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]]
+    * @return the [[Collection]]
    * @throws CollectionException if there was an error getting the existing collections or adding the new one
    */
   def addCollection(addCollectionRequest: AddCollectionRequest): ServiceDef2[Collection, CollectionException]
 
   /**
    * Deletes a Collection and updates the position of the other Collections
+ *
    * @param collectionId the Id of the Collection
    * @throws CollectionException if there was an error finding the collection, getting the existing collections, deleting the collection or updating the rest of them
    */
@@ -62,12 +70,14 @@ trait CollectionProcess {
 
   /**
     * Deletes all Collections and Cards
+ *
     * @throws CollectionException if there was an error finding the collection, getting the existing collections, deleting the collection or updating the rest of them
     */
   def cleanCollections(): ServiceDef2[Unit, CollectionException]
 
   /**
    * Moves a Collection to another position and updates the position of the other Collections
+ *
    * @param position the position of the Collection to move
    * @param newPosition the new position of the Collection
    * @throws CollectionException if there was an error finding the collection, getting the existing collections or updating the position of all the collections
@@ -76,15 +86,17 @@ trait CollectionProcess {
 
   /**
    * Edits a Collection and allows to change the name and the appsCategory of the Collection
+ *
    * @param collectionId the Id of the Collection
    * @param editCollectionRequest includes the data that can be edit in a collection (name, icon, themedColorIndex and appsCategory)
-   * @return the [[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]]
+   * @return the [[Collection]]
    * @throws CollectionException if there was an error finding the collection or updating it
    */
   def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest): ServiceDef2[Collection, CollectionException]
 
   /**
    * Adds some new Cards after the last existing one in a given Collection
+ *
    * @param collectionId the Id of the Collection
    * @param addCardListRequest the Seq[com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest] includes the necessary data to create a new Card (term, packageName, intent and imagePath)
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Card] of the new cards
@@ -94,6 +106,7 @@ trait CollectionProcess {
 
   /**
    * Deletes a Card and updates the position of the other Cards in the Collection
+ *
    * @param collectionId the Id of the Collection
    * @param cardId the Id of the Card to delete
    * @throws CardException if there was an error finding the card, getting the existing collection's cards, deleting the card or updating the rest of them
@@ -102,6 +115,7 @@ trait CollectionProcess {
 
   /**
    * Moves a Card to another position and updates the position of the other Cards in the Collection
+ *
    * @param collectionId the Id of the Collection
    * @param cardId the Id of the Card to delete
    * @param newPosition the new position of the Card
@@ -111,16 +125,18 @@ trait CollectionProcess {
 
   /**
    * Edits a Card and allows to change its name
+ *
    * @param collectionId the Id of the Collection
    * @param cardId the Id of the Card to delete
    * @param name the new name of the Card
-   * @return the [[com.fortysevendeg.ninecardslauncher.process.collection.models.Card]]
+   * @return the [[Card]]
    * @throws CardException if there was an error finding the card or updating it
    */
   def editCard(collectionId: Int, cardId: Int, name: String): ServiceDef2[Card, CardException]
 
   /**
     * Convert cards not installed in card from a package name
+ *
     * @param packageName package name of app that we want to convert
     * @return [Unit]
     * @throws CardException if there was an error finding the card or updating it
