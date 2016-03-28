@@ -109,6 +109,10 @@ class WizardActivity
 
   override def showErrorConnectingGoogle(): Ui[Any] = backToUser(R.string.errorConnectingGoogle)
 
+  override def showErrorSelectUser(): Ui[Any] = showMessage(R.string.errorSelectUser)
+
+  override def showErrorAcceptTerms(): Ui[Any] = showMessage(R.string.messageAcceptTerms)
+
   override def showDevices(devices: UserCloudDevices): Ui[Any] = loadDevicesView(devices)
 
   override def showDiveIn(): Ui[Any] = finishProcess

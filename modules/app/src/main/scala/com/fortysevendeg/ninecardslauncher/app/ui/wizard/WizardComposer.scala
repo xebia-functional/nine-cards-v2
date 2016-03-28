@@ -72,14 +72,8 @@ trait WizardComposer
         defaultActionStyle <~
         On.click {
           val termsAccept = usersTerms exists (_.isChecked)
-          if (termsAccept) {
-            usersSpinner map { view =>
-              val username = view.getSelectedItem.toString
-              presenter.connectAccount(username)
-            } getOrElse showMessage(R.string.errorSelectUser)
-          } else {
-            showMessage(R.string.messageAcceptTerms)
-          }
+          val username = usersSpinner map (_.getSelectedItem.toString) getOrElse ""
+          presenter.connectAccount(username, termsAccept)
         }) ~
       (deviceAction <~
         defaultActionStyle <~

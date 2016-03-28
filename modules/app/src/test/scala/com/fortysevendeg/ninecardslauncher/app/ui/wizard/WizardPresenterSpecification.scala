@@ -43,6 +43,8 @@ trait WizardPresenterSpecification
     mockActions.showLoading() returns Ui[Any]()
     mockActions.showErrorConnectingGoogle() returns Ui[Any]()
     mockActions.showErrorLoginUser() returns Ui[Any]()
+    mockActions.showErrorAcceptTerms() returns Ui[Any]()
+    mockActions.showErrorSelectUser() returns Ui[Any]()
     mockActions.createGoogleApiClient(account) returns Ui[GoogleApiClient](mockGoogleApiClient)
     mockActions.connectGoogleApiClient(userPermission) returns Ui[Any]()
 
@@ -74,16 +76,22 @@ class WizardPresenterSpec
 
     "return a successful connecting account" in
       new WizardPresenterScope {
-        presenter.connectAccount(accountName).get
+        presenter.connectAccount(accountName, termsAccept = true).get
         there was after(1 seconds).one(mockActions).showLoading()
         there was after(1 seconds).one(mockActions).createGoogleApiClient(account)
         there was after(1 seconds).one(mockActions).connectGoogleApiClient(userPermission)
       }
 
-    "return a failed connecting account" in
+    "return a failed connecting account if terms wasn't accepted" in
       new WizardPresenterScope {
-        presenterFailed.connectAccount(accountName).get
-        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
+        presenter.connectAccount(accountName, termsAccept = false).get
+        there was after(1 seconds).one(mockActions).showErrorAcceptTerms()
+      }
+
+    "return a failed if username doesn't exist" in
+      new WizardPresenterScope {
+        presenterFailed.connectAccount(accountName, termsAccept = true).get
+        there was after(1 seconds).one(mockActions).showErrorSelectUser()
       }
 
   }

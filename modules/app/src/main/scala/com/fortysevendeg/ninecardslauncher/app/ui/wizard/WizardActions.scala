@@ -11,6 +11,10 @@ trait WizardActions {
 
   def showErrorConnectingGoogle(): Ui[Any]
 
+  def showErrorSelectUser(): Ui[Any]
+
+  def showErrorAcceptTerms(): Ui[Any]
+
   def showErrorLoginUser(): Ui[Any]
 
   def createGoogleApiClient(account: Account): Ui[GoogleApiClient]

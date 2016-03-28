@@ -49,15 +49,19 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
 
   def getAccounts: Ui[Seq[Account]] = Ui(accounts)
 
-  def connectAccount(username: String): Ui[Any] = {
+  def connectAccount(username: String, termsAccept: Boolean): Ui[Any] = {
     val account = getAccount(username)
-    actions.showLoading() ~
-      (account match {
-        case Some(acc) =>
-          val googleApiClient = actions.createGoogleApiClient(acc).get
-          loadAccount(acc, googleApiClient)
-        case _ => actions.showErrorConnectingGoogle()
-      })
+    if (termsAccept) {
+      actions.showLoading() ~
+        (account match {
+          case Some(acc) =>
+            val googleApiClient = actions.createGoogleApiClient(acc).get
+            loadAccount(acc, googleApiClient)
+          case _ => actions.showErrorSelectUser()
+        })
+    } else {
+      actions.showErrorAcceptTerms()
+    }
   }
 
   def getDevices(client: GoogleApiClient,
