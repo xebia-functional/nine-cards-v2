@@ -5,6 +5,8 @@ import android.support.design.widget.FloatingActionButton
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View}
 import android.widget.LinearLayout
+import ViewOps._
+import CommonsTweak._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -45,9 +47,9 @@ trait FabButtonBehaviour
 
   def initFabButton(implicit context: ActivityContextWrapper): Ui[_] =
     (fabMenuContent <~ On.click(
-      swapFabButton()
+      swapFabMenu()
     ) <~ vClickable(false)) ~
-      (fabButton <~ fabButtonMenuStyle <~ On.click(swapFabButton()))
+      (fabButton <~ fabButtonMenuStyle <~ On.click(swapFabMenu()))
 
   def loadMenuItems(items: Seq[FabItemMenu]): Ui[_] =
     fabMenu <~ Tweak[LinearLayout] { view =>
@@ -55,19 +57,18 @@ trait FabButtonBehaviour
         items foreach (view.addView(_, 0, param))
     }
 
-  def swapFabButton(doUpdateBars: Boolean = true)(implicit context: ActivityContextWrapper) = {
-    val isOpen = fabButton map (tagEquals(_, R.id.fab_menu_opened, open))
-    isOpen map { opened =>
-      val ui = (fabButton <~
-        vTag(R.id.fab_menu_opened, if (opened) close else open) <~
-        pmdAnimIcon(if (opened) IconTypes.ADD else IconTypes.CLOSE)) ~
-        (fabMenuContent <~
-          animFabButton(opened) <~
-          colorContentDialog(!opened) <~
-          vClickable(!opened)) ~
-        (if (opened) postDelayedHideFabButton else removeDelayedHideFabButton)
-      ui ~ (if (doUpdateBars) updateBars(opened) else Ui.nop)
-    } getOrElse Ui.nop
+  def swapFabMenu(doUpdateBars: Boolean = true)(implicit context: ActivityContextWrapper): Ui[Any] = {
+    val open = isMenuOpened
+    val autoHide = isAutoHide
+    val ui = (fabButton <~
+      vAddField(opened, !open) <~
+      pmdAnimIcon(if (open) IconTypes.ADD else IconTypes.CLOSE)) ~
+      (fabMenuContent <~
+        animFabButton(open) <~
+        colorContentDialog(!open) <~
+        vClickable(!open)) ~
+      (if (open && autoHide) postDelayedHideFabButton else removeDelayedHideFabButton)
+    ui ~ (if (doUpdateBars) updateBars(open) else Ui.nop)
   }
 
   def colorContentDialog(paint: Boolean)(implicit context: ActivityContextWrapper) =
@@ -90,12 +91,20 @@ trait FabButtonBehaviour
       }
   }
 
-  def fabMenuOpened: Boolean = fabButton exists (tagValue(_, R.id.fab_menu_opened).equals(open))
+  def isFabButtonVisible: Boolean = fabButton exists (_.getVisibility == View.VISIBLE)
+
+  def isMenuOpened: Boolean = fabButton flatMap (_.getField[Boolean](opened)) getOrElse false
+
+  private[this] def isAutoHide: Boolean = fabButton flatMap (_.getField[Boolean](autoHideKey)) getOrElse false
 
   def showFabButton(color: Int = 0, autoHide: Boolean = true)(implicit context: ActivityContextWrapper): Ui[_] =
-    (if (autoHide) postDelayedHideFabButton else Ui.nop) ~
-      (fabButton <~ (if (color != 0) fbaColorResource(color) else Tweak.blank) <~ showFabMenu) ~
-      (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)
+    if (isFabButtonVisible && autoHide) {
+      resetDelayedHide
+    } else {
+      (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton) ~
+        (fabButton <~ (if (color != 0) fbaColorResource(color) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
+        (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)
+    }
 
   def hideFabButton(implicit context: ActivityContextWrapper): Ui[_] =
     removeDelayedHideFabButton ~
@@ -104,6 +113,9 @@ trait FabButtonBehaviour
   def changeItemsColor(color: Int)(implicit context: ActivityContextWrapper) = Transformer {
     case item: FabItemMenu => item <~ fimBackgroundColor(resGetColor(color))
   }
+
+  private[this] def resetDelayedHide(implicit context: ActivityContextWrapper) =
+    removeDelayedHideFabButton ~ postDelayedHideFabButton
 
   private[this] def postDelayedHideFabButton(implicit context: ActivityContextWrapper) = Ui {
     val runnable = new RunnableWrapper()
@@ -135,7 +147,7 @@ trait FabButtonStyle {
       defaultIcon = IconTypes.ADD,
       defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default))
     ivSrc(iconFabButton) +
-      vTag(R.id.fab_menu_opened, close) +
+      vAddField(opened, false) +
       vGone
   }
 
@@ -143,6 +155,6 @@ trait FabButtonStyle {
 
 object FabButtonTags {
   val fabButtonItem = "fab_button"
-  val open = "open"
-  val close = "close"
+  val opened = "opened"
+  val autoHideKey = "autoHide"
 }

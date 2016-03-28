@@ -269,8 +269,8 @@ trait CollectionsDetailsComposer
     if (reloadFragment) fragment.reloadCards(cards)
   }
 
-  def backByPriority(implicit theme: NineCardsTheme): Ui[_] = if (fabMenuOpened) {
-    swapFabButton()
+  def backByPriority(implicit theme: NineCardsTheme): Ui[_] = if (isMenuOpened) {
+    swapFabMenu()
   } else if (isActionShowed) {
     unrevealActionFragment
   } else {
@@ -415,7 +415,7 @@ trait CollectionsDetailsComposer
     })
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
-    swapFabButton(doUpdateBars = false) ~
+    swapFabMenu(doUpdateBars = false) ~
       (fragmentContent <~ colorContentDialog(paint = true) <~ vClickable(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
