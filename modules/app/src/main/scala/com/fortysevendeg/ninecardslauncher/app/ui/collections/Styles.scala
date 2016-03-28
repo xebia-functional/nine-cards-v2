@@ -68,22 +68,6 @@ trait Styles {
 
 }
 
-trait CollectionFragmentStyles {
-
-  def recyclerStyle(animateCards: Boolean, callback: ReorderItemTouchHelperCallback)
-    (implicit context: ContextWrapper): Tweak[CollectionRecyclerView] = {
-    val paddingTop = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-    vMatchParent +
-      vPadding(padding, paddingTop, padding, padding) +
-      vgClipToPadding(false) +
-      vOverScrollMode(View.OVER_SCROLL_NEVER) +
-      rvItemTouchHelperCallback(callback) +
-      (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)
-  }
-
-}
-
 trait CollectionAdapterStyles {
 
   val iconContentHeightRatio = .6f

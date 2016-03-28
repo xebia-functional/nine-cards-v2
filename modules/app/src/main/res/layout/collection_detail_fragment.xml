@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToCloseView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/collection_pull_to_close"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/collection_detail_layout"
+             style="@style/CollectionDetailLayout">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/collection_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <LinearLayout
+            android:id="@+id/collection_detail_empty"
+            style="@style/CollectionDetailEmpty">
 
-</com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToCloseView>
+        <TextView
+                android:id="@+id/collection_empty_message"
+                style="@style/CollectionEmptyMessage"/>
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                android:id="@+id/collection_empty_image"
+                style="@style/CollectionEmptyImage"/>
+
+    </LinearLayout>
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToCloseView
+            android:id="@+id/collection_detail_pull_to_close"
+            style="@style/CollectionDetailPullToClose">
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
+                android:id="@+id/collection_detail_recycler"
+                style="@style/CollectionDetailView"/>
+
+    </com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToCloseView>
+
+</FrameLayout>

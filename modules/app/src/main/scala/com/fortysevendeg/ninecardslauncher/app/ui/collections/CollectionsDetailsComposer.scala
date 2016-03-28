@@ -21,7 +21,6 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
@@ -33,8 +32,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, FabButtonBehaviour, SystemBarsTint}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, SnailsCommons, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
@@ -118,7 +118,7 @@ trait CollectionsDetailsComposer
       (tabs <~
         stlViewPager(viewPager) <~
         stlOnPageChangeListener(
-          new OnPageChangeCollectionsListener(collections, position, updateToolbarColor, updateCollection))) ~
+          new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
       uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
       uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter()) }, 100) ~
       (tabs <~ vVisible <~~ enterViews) ~ elevationsDefault
@@ -269,8 +269,8 @@ trait CollectionsDetailsComposer
     if (reloadFragment) fragment.reloadCards(cards)
   }
 
-  def backByPriority(implicit theme: NineCardsTheme): Ui[_] = if (fabMenuOpened) {
-    swapFabButton()
+  def backByPriority(implicit theme: NineCardsTheme): Ui[_] = if (isMenuOpened) {
+    swapFabMenu()
   } else if (isActionShowed) {
     unrevealActionFragment
   } else {
@@ -384,7 +384,12 @@ trait CollectionsDetailsComposer
         case Left => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = true)
         case Right | Jump => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = false)
         case _ => Ui.nop
-      }) ~ adapter.notifyChanged(position) ~ hideFabButton
+      }) ~ adapter.notifyChanged(position) ~ (if (collection.cards.isEmpty) {
+        val color = getIndexColor(collection.themedColorIndex)
+        showFabButton(color = color, autoHide = false)
+      } else {
+        hideFabButton
+      })
   } getOrElse Ui.nop
 
   private[this] def updateToolbarColor(color: Int): Ui[_] =
@@ -410,9 +415,83 @@ trait CollectionsDetailsComposer
     })
     getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
-    swapFabButton(doUpdateBars = false) ~
+    swapFabMenu(doUpdateBars = false) ~
       (fragmentContent <~ colorContentDialog(paint = true) <~ vClickable(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
+  }
+
+
+  class OnPageChangeCollectionsListener(
+   position: Int,
+   updateToolbarColor: (Int) => Ui[_],
+   updateCollection: (Collection, Int, PageMovement) => Ui[_])
+   (implicit context: ContextWrapper, theme: NineCardsTheme)
+    extends OnPageChangeListener {
+
+    var lastPosition = -1
+
+    var currentPosition = if (position == 0) position else -1
+
+    var currentMovement: PageMovement = if (position == 0) Left else Loading
+
+    private[this] def getColor(col: Collection): Int = resGetColor(getIndexColor(col.themedColorIndex))
+
+    private[this] def jump(from: Collection, to: Collection) = {
+      val valueAnimator = ValueAnimator.ofInt(0, 100)
+      valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        override def onAnimationUpdate(value: ValueAnimator): Unit = {
+          val color = interpolateColors(value.getAnimatedFraction, getColor(from), getColor(to))
+          updateToolbarColor(color).run
+        }
+      })
+      valueAnimator.start()
+    }
+
+    override def onPageScrollStateChanged(state: Int): Unit = state match {
+      case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
+      case _ =>
+    }
+
+    override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit =
+      currentMovement match {
+        case Loading => // Nothing
+        case Start => // First time, we change automatically the movement
+          currentMovement = if (currentPosition > 0) Jump else Idle
+        case Jump => // Nothing. The animation was triggered in onPageSelected
+        case _ => // Scrolling to left or right
+          for {
+            current <- getCollection(position)
+            next <- getCollection(position + 1)
+          } yield {
+            val color = interpolateColors(positionOffset, getColor(current), getColor(next))
+            updateToolbarColor(color).run
+          }
+      }
+
+    override def onPageSelected(position: Int): Unit = {
+      val pageMovement: PageMovement = (position, currentPosition) match {
+        case (p, cp) if cp == -1 => Start
+        case (p, cp) if p > cp && p - cp > 1 => Jump
+        case (p, cp) if p < cp && cp - p > 1 => Jump
+        case (p, cp) if p < cp => Left
+        case _ => Right
+      }
+      lastPosition = currentPosition
+      currentPosition = position
+      currentMovement = pageMovement
+      pageMovement match {
+        case Jump =>
+          for {
+            last <- getCollection(lastPosition)
+            current <- getCollection(currentPosition)
+          } yield jump(last, current)
+        case _ =>
+      }
+      getCollection(position) foreach { collection =>
+        updateCollection(collection, position, pageMovement).run
+      }
+    }
+
   }
 
 }
@@ -431,69 +510,3 @@ case object Idle extends PageMovement
 
 case object Jump extends PageMovement
 
-class OnPageChangeCollectionsListener(
-  collections: Seq[Collection],
-  position: Int,
-  updateToolbarColor: (Int) => Ui[_],
-  updateCollection: (Collection, Int, PageMovement) => Ui[_])
-  (implicit context: ContextWrapper, theme: NineCardsTheme)
-  extends OnPageChangeListener {
-
-  var lastPosition = -1
-
-  var currentPosition = if (position == 0) position else -1
-
-  var currentMovement: PageMovement = if (position == 0) Left else Loading
-
-  private[this] def getColor(col: Collection): Int = resGetColor(getIndexColor(col.themedColorIndex))
-
-  private[this] def jump(from: Collection, to: Collection) = {
-    val valueAnimator = ValueAnimator.ofInt(0, 100)
-    valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      override def onAnimationUpdate(value: ValueAnimator): Unit = {
-        val color = interpolateColors(value.getAnimatedFraction, getColor(from), getColor(to))
-        updateToolbarColor(color).run
-      }
-    })
-    valueAnimator.start()
-  }
-
-  override def onPageScrollStateChanged(state: Int): Unit = state match {
-    case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
-    case _ =>
-  }
-
-  override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit =
-    currentMovement match {
-      case Loading => // Nothing
-      case Start => // First time, we change automatically the movement
-        currentMovement = if (currentPosition > 0) Jump else Idle
-      case Jump => // Nothing. The animation was triggered in onPageSelected
-      case _ => // Scrolling to left or right
-        val selectedCollection: Collection = collections(position)
-        val nextCollection: Option[Collection] = collections.lift(position + 1)
-        nextCollection map { next =>
-          val color = interpolateColors(positionOffset, getColor(selectedCollection), getColor(next))
-          updateToolbarColor(color).run
-        }
-    }
-
-  override def onPageSelected(position: Int): Unit = {
-    val pageMovement: PageMovement = (position, currentPosition) match {
-      case (p, cp) if cp == -1 => Start
-      case (p, cp) if p > cp && p - cp > 1 => Jump
-      case (p, cp) if p < cp && cp - p > 1 => Jump
-      case (p, cp) if p < cp => Left
-      case _ => Right
-    }
-    lastPosition = currentPosition
-    currentPosition = position
-    currentMovement = pageMovement
-    pageMovement match {
-      case Jump => jump(collections(lastPosition), collections(currentPosition))
-      case _ =>
-    }
-    updateCollection(collections(position), position, pageMovement).run
-  }
-
-}
