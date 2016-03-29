@@ -96,6 +96,13 @@ trait MomentProcessImplSpecification
 
   }
 
+  trait GeneratePrivateMoments
+    extends MomentProcessImplData {
+
+    self: MomentProcessScope =>
+
+  }
+
   trait ValidDeleteAllMomentsPersistenceServicesResponses
     extends MomentProcessImplData {
 
@@ -151,23 +158,34 @@ class MomentProcessImplSpec
         }
       }
 
-    "returns a MomentException if the service throws a exception adding the collection" in
+    "returns an empty list if the service throws a exception adding the collection" in
       new MomentProcessScope with ErrorCreateMomentAddCollectionPersistenceServicesResponses {
         val result = momentProcess.createMoments(contextSupport).run.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[MomentException]
-          }
+          case Answer(resultSeqMoment) =>
+            resultSeqMoment shouldEqual Nil
         }
       }
 
-    "returns a MomentException if the service throws a exception adding the moment" in
+    "returns an empty list if the service throws a exception adding the moment" in
       new MomentProcessScope with ErrorCreateMomentAddMomentPersistenceServicesResponses {
         val result = momentProcess.createMoments(contextSupport).run.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[MomentException]
-          }
+          case Answer(resultSeqMoment) =>
+            resultSeqMoment shouldEqual Nil
+        }
+      }
+  }
+
+  "generatePrivateMoments" should {
+
+    "return the three moment's collections created" in
+      new MomentProcessScope with GeneratePrivateMoments {
+        val result = momentProcess.generatePrivateMoments(seqApps, position)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultSeqMoment) =>
+            resultSeqMoment.size shouldEqual 3
+            resultSeqMoment map (_.collectionType) shouldEqual seqMomentCollections.map(_.collectionType)
         }
       }
   }

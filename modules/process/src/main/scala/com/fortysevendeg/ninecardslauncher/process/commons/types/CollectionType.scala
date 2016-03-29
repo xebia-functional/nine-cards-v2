@@ -32,7 +32,7 @@ case object FreeCollectionType extends CollectionType {
 
 object CollectionType {
 
-  val momentsCollectionTypes = Seq(HomeMorningCollectionType, HomeNightCollectionType, WorkCollectionType)
+  val momentsCollectionTypes = Seq(HomeMorningCollectionType, WorkCollectionType, HomeNightCollectionType)
 
   val generalCollectionTypes = Seq(AppsCollectionType, ContactsCollectionType, FreeCollectionType)
 
