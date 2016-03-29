@@ -1,68 +1,49 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
-import android.accounts._
+import android.accounts.Account
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientActivityProvider
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserPermissions
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{Contexts, Ui}
 
 import scala.util.Try
-import scalaz.concurrent.Task
-
-case class GoogleApiClientStatuses(
-  apiClient: Option[GoogleApiClient] = None,
-  username: Option[String] = None,
-  userPermissions: Option[UserPermissions] = None)
 
 class WizardActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with GoogleApiClientActivityProvider
-  with WizardListeners
-  with WizardTasks
-  with WizardPersistence
+  with WizardActions
   with TypedFindView
   with WizardComposer
   with BroadcastDispatcher { self =>
 
-  implicit lazy val di = new Injector
-
-  private[this] val accountType = "com.google"
-
-  lazy val accountManager: AccountManager = AccountManager.get(this)
-
-  lazy val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq
-
   var clientStatuses = GoogleApiClientStatuses()
+
+  implicit lazy val presenter = new WizardPresenter(self)
 
   override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
     case (WizardStateActionFilter, Some(`stateSuccess`)) => storeCloudDevice()
-    case (WizardStateActionFilter, Some(`stateFailure`)) => showUser.run
-    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => showWizard.run
+    case (WizardStateActionFilter, Some(`stateFailure`)) => showUserView.run
+    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => showWizardView.run
     case _ =>
   }
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.wizard_activity)
-    (showUser ~ initUi(accounts)).run
+    (showUserView ~ initUi(presenter.getAccounts.get)).run
   }
 
   override def onResume(): Unit = {
@@ -86,88 +67,71 @@ class WizardActivity
 
   override def onBackPressed(): Unit = {}
 
-  def requestToken(username: String): Unit =
-    getAccount(username) match {
-      case Some(account) =>
-        val client = createGoogleDriveClient(username)
-        clientStatuses = clientStatuses.copy(
-          apiClient = Some(client),
-          username = Some(username))
-        invalidateToken()
-        Task.fork(requestUserPermissions(accountManager, account, client).run).resolveAsyncUi(
-          userPermissions => {
-            clientStatuses = clientStatuses.copy(userPermissions = Some(userPermissions))
-            client.connect()
-            showLoading
-          },
-          onRequestTokensException)
-      case _ => backToUser(R.string.errorLoginUser).run
-    }
-
-  def finishUi: Ui[_] = Ui {
-    setResult(Activity.RESULT_OK)
-    finish()
-  }
-
-  def launchService(maybeKey: Option[String]): Unit = {
-    val intent = new Intent(this, classOf[CreateCollectionService])
-    maybeKey map (key => intent.putExtra(CreateCollectionService.keyDevice, key))
-    startService(intent)
-  }
-
   // TODO - Implement error code
   override def onRequestConnectionError(errorCode: Int): Unit =
-    backToUser(R.string.errorConnectingGoogle).run
+    showErrorConnectingGoogle().run
 
-  override def onResolveConnectionError(): Unit = backToUser(R.string.errorConnectingGoogle).run
+  override def onResolveConnectionError(): Unit = showErrorConnectingGoogle().run
 
   override def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
 
   override def onConnected(bundle: Bundle): Unit =
     clientStatuses match {
       case GoogleApiClientStatuses(Some(client), Some(username), Some(userPermissions)) =>
-        loadCloudDevices(client, username, userPermissions)
+        presenter.getDevices(client, username, userPermissions).run
       case _ =>
-        backToUser(R.string.errorConnectingGoogle).run
-    }
-
-  private[this] def loadCloudDevices(client: GoogleApiClient, username: String, userPermissions: UserPermissions) =
-    getAccount(username) match {
-      case Some(account) =>
-        invalidateToken()
-        Task.fork(loadUserDevices(client, username, userPermissions).run).resolveAsyncUi(
-          userCloudDevices => showLoading ~ searchDevices(userCloudDevices),
-          onLoadDevicesException)
-      case _ => backToUser(R.string.errorConnectingGoogle).run
+        showErrorConnectingGoogle().run
     }
 
   private[this] def storeCloudDevice(): Unit =
     clientStatuses match {
       case GoogleApiClientStatuses(Some(client), Some(username), _) =>
-        Task.fork(storeActualDevice(client, username).run).resolveAsyncUi(
-          _ => finishProcess,
-          _ => finishProcess)
-      case _ =>
+        presenter.saveCurrentDevice(client, username).run
+      case _ => finishProcess.run
     }
 
-  private[this] def getAccount(username: String): Option[Account] =
-    accounts find (_.name == username)
+  override def showLoading(): Ui[Any] = showLoadingView
 
-  private[this] def invalidateToken() = {
-    getToken foreach (accountManager.invalidateAuthToken(accountType, _))
-    setToken(javaNull)
+  override def createGoogleApiClient(account: Account): Ui[GoogleApiClient] = Ui {
+    val client = createGoogleDriveClient(account.name)
+    clientStatuses = clientStatuses.copy(
+      apiClient = Some(client),
+      username = Some(account.name))
+    client
   }
 
-  private[this] def onRequestTokensException[E >: Exception](exception: E): Ui[_] = exception match {
-    case ex: AuthTokenOperationCancelledException => backToUser(R.string.canceledGooglePermission)
-    case _ => backToUser(R.string.errorConnectingGoogle)
+  override def connectGoogleApiClient(userPermissions: UserPermissions): Ui[Any] = Ui {
+    clientStatuses = clientStatuses.copy(userPermissions = Some(userPermissions))
+    clientStatuses.apiClient foreach (_.connect())
   }
 
-  private[this] def onLoadDevicesException[E >: Exception](exception: E): Ui[_] = exception match {
-    case ex: UserException => backToUser(R.string.errorLoginUser)
-    case ex: UserConfigException => backToUser(R.string.errorLoginUser)
-    case _ => backToUser(R.string.errorConnectingGoogle)
+  override def showErrorLoginUser(): Ui[Any] = backToUser(R.string.errorLoginUser)
+
+  override def showErrorConnectingGoogle(): Ui[Any] = backToUser(R.string.errorConnectingGoogle)
+
+  override def showErrorSelectUser(): Ui[Any] = showMessage(R.string.errorSelectUser)
+
+  override def showErrorAcceptTerms(): Ui[Any] = showMessage(R.string.messageAcceptTerms)
+
+  override def showDevices(devices: UserCloudDevices): Ui[Any] = loadDevicesView(devices)
+
+  override def showDiveIn(): Ui[Any] = finishProcess
+
+  override def navigateToLauncher(): Ui[Any] = Ui {
+    setResult(Activity.RESULT_OK)
+    finish()
   }
 
+  override def navigateToWizard(): Ui[Any] = showWizardView
+
+  override def startCreateCollectionsService(maybeKey: Option[String]): Ui[Any] = Ui {
+    val intent = new Intent(this, classOf[CreateCollectionService])
+    maybeKey foreach (key => intent.putExtra(CreateCollectionService.keyDevice, key))
+    startService(intent)
+  }
 }
 
+case class GoogleApiClientStatuses(
+  apiClient: Option[GoogleApiClient] = None,
+  username: Option[String] = None,
+  userPermissions: Option[UserPermissions] = None)

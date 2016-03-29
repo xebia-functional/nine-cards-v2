@@ -108,6 +108,7 @@ class ReorderItemTouchHelperCallback(
     Option(recyclerView.getAdapter) match {
       case Some(listener: ReorderItemTouchListener) =>
         listener.onItemMove(statuses.from, statuses.to)
+      case _ =>
     }
     true
   }
