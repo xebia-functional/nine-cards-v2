@@ -8,21 +8,34 @@ import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.commons
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentConversions, MomentException}
 
 trait PrivateCollectionsTasks
-  extends Conversions {
+  extends Conversions
+  with MomentConversions {
 
   def getPrivateCollections(implicit di: Injector, contextSupport: ContextSupport):
-  ServiceDef2[Seq[commons.models.PrivateCollection], AppException with CollectionException] =
+  ServiceDef2[Seq[commons.models.PrivateCollection], AppException with CollectionException with MomentException] =
     for {
       collections <- di.collectionProcess.getCollections
       apps <- di.deviceProcess.getSavedApps(GetByName)
-      newCollections <- di.collectionProcess.generatePrivateCollections(toSeqUnformedApp(apps))
-    } yield newCollections filterNot { newCollection =>
-      newCollection.appsCategory match {
-        case Some(category) => (collections flatMap (_.appsCategory)) contains category
-        case _ => false
+      unformedApps = toSeqUnformedApp(apps)
+      newCollections <- di.collectionProcess.generatePrivateCollections(unformedApps)
+      newMomentCollections <- di.momentProcess.generatePrivateMoments(unformedApps map toApp, newCollections.length)
+    } yield {
+      val privateCollections = newCollections filterNot { newCollection =>
+        newCollection.appsCategory match {
+          case Some(category) => (collections flatMap (_.appsCategory)) contains category
+          case _ => false
+        }
       }
+      val privateMoments = newMomentCollections filterNot { newMomentCollection =>
+        newMomentCollection.collectionType match {
+          case collectionType => (collections map (_.collectionType)) contains collectionType
+          case _ => false
+        }
+      }
+      privateCollections ++ privateMoments
     }
 
   def addCollection(privateCollection: commons.models.PrivateCollection)(implicit di: Injector, contextSupport: ContextSupport):

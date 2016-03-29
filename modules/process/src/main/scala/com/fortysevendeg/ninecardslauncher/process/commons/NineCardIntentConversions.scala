@@ -3,8 +3,9 @@ package com.fortysevendeg.ninecardslauncher.process.commons
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{UnformedApp, UnformedContact}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardIntentExtras, NineCardIntentImplicits, NineCardsIntentExtras}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardIntentExtras}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, EmailCardType, PhoneCardType}
+import com.fortysevendeg.ninecardslauncher.process.moment.models.{App => MomentApp}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
 import play.api.libs.json.Json
@@ -16,6 +17,15 @@ trait NineCardIntentConversions {
   def nineCardIntentToJson(intent: NineCardIntent) = Json.toJson(intent).toString()
 
   def toNineCardIntent(item: UnformedApp) = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(item.packageName),
+      class_name = Option(item.className)))
+    intent.setAction(openApp)
+    intent.setClassName(item.packageName, item.className)
+    intent
+  }
+
+  def toNineCardIntent(item: MomentApp) = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(item.packageName),
       class_name = Option(item.className)))
