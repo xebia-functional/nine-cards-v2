@@ -8,14 +8,18 @@ object AppLog {
   val tag = "9cards"
 
   def printErrorMessage(ex: Throwable, message: Option[String] = None) = {
-    Crashlytics.logException(ex)
-    val outputEx = Option(ex.getCause) getOrElse ex
-    Log.e(tag, message getOrElse errorMessage(outputEx), outputEx)
+    try {
+      Crashlytics.logException(ex)
+      val outputEx = Option(ex.getCause) getOrElse ex
+      Log.e(tag, message getOrElse errorMessage(outputEx), outputEx)
+    } catch { case _: Throwable => }
   }
 
   def printErrorTaskMessage(header: String, exs: Seq[Throwable]) = {
-    Log.e(tag, header)
-    exs foreach (ex => printErrorMessage(ex, Some(errorMessage(ex))))
+    try {
+      Log.e(tag, header)
+      exs foreach (ex => printErrorMessage(ex, Some(errorMessage(ex))))
+    } catch { case _: Throwable => }
   }
 
   private[this] def errorMessage(ex: Throwable): String =
