@@ -22,7 +22,8 @@ trait MomentProcessImplSpecification
   val persistenceServiceException = PersistenceServiceException("")
 
   trait MomentProcessScope
-    extends Scope {
+    extends Scope 
+    with MomentProcessImplData { 
 
     val resources = mock[Resources]
 
@@ -42,8 +43,7 @@ trait MomentProcessImplSpecification
 
   }
 
-  trait ValidCreateMomentPersistenceServicesResponses
-    extends MomentProcessImplData {
+  trait ValidCreateMomentPersistenceServicesResponses {
 
     self: MomentProcessScope =>
 
@@ -54,8 +54,7 @@ trait MomentProcessImplSpecification
 
   }
 
-  trait ErrorCreateMomentFetchCollectionsPersistenceServicesResponses
-    extends MomentProcessImplData {
+  trait ErrorCreateMomentFetchCollectionsPersistenceServicesResponses {
 
     self: MomentProcessScope =>
 
@@ -63,8 +62,7 @@ trait MomentProcessImplSpecification
 
   }
 
-  trait ErrorCreateMomentFetchAppsPersistenceServicesResponses
-    extends MomentProcessImplData {
+  trait ErrorCreateMomentFetchAppsPersistenceServicesResponses {
 
     self: MomentProcessScope =>
 
@@ -73,8 +71,7 @@ trait MomentProcessImplSpecification
 
   }
 
-  trait ErrorCreateMomentAddCollectionPersistenceServicesResponses
-    extends MomentProcessImplData {
+  trait ErrorCreateMomentAddCollectionPersistenceServicesResponses {
 
     self: MomentProcessScope =>
 
@@ -84,8 +81,7 @@ trait MomentProcessImplSpecification
 
   }
 
-  trait ErrorCreateMomentAddMomentPersistenceServicesResponses
-    extends MomentProcessImplData {
+  trait ErrorCreateMomentAddMomentPersistenceServicesResponses {
 
     self: MomentProcessScope =>
 
@@ -96,15 +92,7 @@ trait MomentProcessImplSpecification
 
   }
 
-  trait GeneratePrivateMoments
-    extends MomentProcessImplData {
-
-    self: MomentProcessScope =>
-
-  }
-
-  trait ValidDeleteAllMomentsPersistenceServicesResponses
-    extends MomentProcessImplData {
+  trait ValidDeleteAllMomentsPersistenceServicesResponses {
 
     self: MomentProcessScope =>
 
@@ -112,8 +100,7 @@ trait MomentProcessImplSpecification
 
   }
 
-  trait ErrorDeleteAllMomentsPersistenceServicesResponses
-    extends MomentProcessImplData {
+  trait ErrorDeleteAllMomentsPersistenceServicesResponses {
 
     self: MomentProcessScope =>
 
@@ -180,7 +167,7 @@ class MomentProcessImplSpec
   "generatePrivateMoments" should {
 
     "return the three moment's collections created" in
-      new MomentProcessScope with GeneratePrivateMoments {
+      new MomentProcessScope {
         val result = momentProcess.generatePrivateMoments(seqApps, position)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqMoment) =>

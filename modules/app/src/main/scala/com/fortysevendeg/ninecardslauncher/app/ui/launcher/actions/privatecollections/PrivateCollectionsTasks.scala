@@ -5,8 +5,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection._
-import com.fortysevendeg.ninecardslauncher.process.commons
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentConversions, MomentException}
 
@@ -15,7 +14,7 @@ trait PrivateCollectionsTasks
   with MomentConversions {
 
   def getPrivateCollections(implicit di: Injector, contextSupport: ContextSupport):
-  ServiceDef2[Seq[commons.models.PrivateCollection], AppException with CollectionException with MomentException] =
+  ServiceDef2[Seq[PrivateCollection], AppException with CollectionException with MomentException] =
     for {
       collections <- di.collectionProcess.getCollections
       apps <- di.deviceProcess.getSavedApps(GetByName)
@@ -38,7 +37,7 @@ trait PrivateCollectionsTasks
       privateCollections ++ privateMoments
     }
 
-  def addCollection(privateCollection: commons.models.PrivateCollection)(implicit di: Injector, contextSupport: ContextSupport):
+  def addCollection(privateCollection: PrivateCollection)(implicit di: Injector, contextSupport: ContextSupport):
   ServiceDef2[Collection, CollectionException with CardException] =
     for {
       collection <- di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection))

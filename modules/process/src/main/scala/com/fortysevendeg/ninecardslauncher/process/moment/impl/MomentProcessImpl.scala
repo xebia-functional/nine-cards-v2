@@ -88,7 +88,7 @@ class MomentProcessImpl(
     position: Int): Seq[PrivateCollection] = collectionTypes match {
     case Nil => acc
     case h :: t =>
-      val insert = generatePrivateMomentsCollection(items, h, acc.length + position)
+      val insert = generatePrivateMomentsCollection(items, h, acc.length + position + 1)
       val a = if (insert.cards.nonEmpty) acc :+ insert else acc
       generatePrivateMomentsCollections(items, t, a, position)
   }
