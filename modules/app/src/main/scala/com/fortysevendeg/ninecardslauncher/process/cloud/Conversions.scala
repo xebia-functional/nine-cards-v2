@@ -22,7 +22,8 @@ object Conversions {
       deviceId = userDevice.deviceId,
       deviceName = userDevice.deviceName,
       documentVersion = CloudStorageProcess.actualDocumentVersion,
-      userDevice.collections map toCloudStorageCollection)
+      userDevice.collections map toCloudStorageCollection,
+      moments = Seq.empty)
 
   def toCloudStorageCollection(userCollection: UserCollection) =
     CloudStorageCollection(
@@ -33,7 +34,8 @@ object Conversions {
       items = userCollection.items map toCloudStorageCollectionItem,
       collectionType = userCollection.collectionType,
       icon = userCollection.icon,
-      category = userCollection.category)
+      category = userCollection.category,
+      moment = None)
 
   def toCloudStorageCollectionItem(userCollectionItem: UserCollectionItem) =
     CloudStorageCollectionItem(
@@ -46,7 +48,8 @@ object Conversions {
       deviceId = deviceId,
       deviceName = deviceName,
       documentVersion = CloudStorageProcess.actualDocumentVersion,
-      collections map toCloudStorageCollection)
+      collections map toCloudStorageCollection,
+      moments = Seq.empty)
 
   def toCloudStorageCollection(collection: Collection) =
     CloudStorageCollection(
@@ -57,7 +60,8 @@ object Conversions {
       items = collection.cards map toCloudStorageCollectionItem,
       collectionType = collection.collectionType,
       icon = collection.icon,
-      category = collection.appsCategory)
+      category = collection.appsCategory,
+      moment = None)
 
   def toCloudStorageCollectionItem(card: Card) =
     CloudStorageCollectionItem(

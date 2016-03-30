@@ -59,7 +59,8 @@ class CloudStorageProcessImpl(
       deviceId = androidId,
       deviceName = Build.MODEL,
       documentVersion = CloudStorageProcess.actualDocumentVersion,
-      collections = collections)
+      collections = collections,
+      moments = Seq.empty)
     _ <- createOrUpdateCloudStorageDevice(cloudStorageDevice)
   } yield ()).resolve[CloudStorageProcessException]
 
