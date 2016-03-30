@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.moment.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
@@ -10,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
 import com.fortysevendeg.ninecardslauncher.process.moment._
-import com.fortysevendeg.ninecardslauncher.process.moment.models.App
+import com.fortysevendeg.ninecardslauncher.process.moment.models.{Moment, App}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import rapture.core.Answer
 
@@ -24,6 +25,8 @@ class MomentProcessImpl(
   with ImplicitsMomentException
   with ImplicitsPersistenceServiceExceptions
   with MomentConversions {
+
+  override def getMoments: ServiceDef2[Seq[Moment], MomentException] = (persistenceServices.fetchMoments map toMomentSeq).resolve[MomentException]
 
   override def createMoments(implicit context: ContextSupport) =
     (for {
