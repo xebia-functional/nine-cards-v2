@@ -7,10 +7,10 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Card
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
+import com.fortysevendeg.ninecardslauncher.process.commons.types.ShortcutCardType
 import com.fortysevendeg.ninecardslauncher.process.device.ShortcutException
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{ShortcutCardType, CardType}
 import rapture.core.Result
 
 import scala.util.Random

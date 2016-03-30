@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.device.models
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{EmailCategory, PhoneCategory, DockType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{DockType, EmailCategory, NineCardCategory, PhoneCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
 
 case class App(

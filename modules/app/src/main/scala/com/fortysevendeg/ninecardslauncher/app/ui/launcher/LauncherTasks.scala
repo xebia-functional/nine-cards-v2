@@ -4,10 +4,9 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.collection.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, IterableApps, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, ContactException, ContactsFilter, DockAppException, GetAppOrder}
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
 
 trait LauncherTasks {
 

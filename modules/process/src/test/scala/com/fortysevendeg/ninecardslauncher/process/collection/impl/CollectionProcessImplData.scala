@@ -1,9 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import com.fortysevendeg.ninecardslauncher.process.collection.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
+import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._

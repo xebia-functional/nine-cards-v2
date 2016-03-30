@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdapter}
 import android.view.ViewGroup
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import macroid.{ContextWrapper, Ui}
 
 import scala.collection.mutable

@@ -60,14 +60,15 @@ object NineCardCategories {
 object CollectionTypes {
   val apps = "APPS"
   val contacts = "CONTACTS"
-  val homeMorning = "HOME_MORNING"
-  val homeNight = "HOME_NIGHT"
+  val moment = "MOMENTS"
+  val homeMorning = "HOME"
+  val homeNight = "NIGHT"
   val work = "WORK"
   val transit = "TRANSIT"
   val free = "FREE"
 }
 
-object CardType {
+object CardTypes {
   val app = "APP"
   val noInstalledApp = "NO_INSTALLED_APP"
   val phone = "PHONE"
@@ -85,10 +86,9 @@ object DockAppTypes {
 }
 
 object NineCardsMoments {
-  val homeMorningMoment = "home_morning"
-  val workMoment = "work"
-  val homeNightMoment = "home_night"
-  val transitMoment = "transit"
+  val homeMorningMoment = "HOME"
+  val workMoment = "WORK"
+  val homeNightMoment = "NIGHT"
 }
 
 object Spaces {
