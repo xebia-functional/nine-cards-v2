@@ -61,8 +61,8 @@ object CollectionTypes {
   val apps = "APPS"
   val contacts = "CONTACTS"
   val moment = "MOMENTS"
-  val homeMorning = "HOME"
-  val homeNight = "NIGHT"
+  val homeMorning = "HOME_MORNING"
+  val homeNight = "HOME_NIGHT"
   val work = "WORK"
   val transit = "TRANSIT"
   val free = "FREE"
@@ -86,8 +86,8 @@ object DockAppTypes {
 }
 
 object NineCardsMoments {
-  val homeMorningMoment = "HOME"
-  val workMoment = "WORK"
+  val homeMorningMoment = "HOME_MORNING"
+  val workMoment = "HOME_NIGHT"
   val homeNightMoment = "NIGHT"
 }
 

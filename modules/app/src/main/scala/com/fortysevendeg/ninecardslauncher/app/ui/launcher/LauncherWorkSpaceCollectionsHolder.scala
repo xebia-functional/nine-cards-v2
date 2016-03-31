@@ -4,9 +4,6 @@ import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.util.Pair
-import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.widget._
@@ -16,14 +13,11 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.CollectionItemTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -32,13 +26,13 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
-class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityContext: ActivityContextWrapper)
+class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDimen: Dimen)(implicit contextWrapper: ContextWrapper)
   extends LauncherWorkSpaceHolder
   with CollectionsGroupStyle {
 
   var grid = slot[GridLayout]
 
-  val views = 0 until numSpaces map (new CollectionItem(_))
+  val views = 0 until numSpaces map (position => new CollectionItem(presenter, position))
 
   addView((l[GridLayout]() <~ wire(grid) <~ collectionGridStyle).get)
 
@@ -68,8 +62,8 @@ class LauncherWorkSpaceCollectionsHolder(parentDimen: Dimen)(implicit activityCo
 
 }
 
-class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityContextWrapper)
-  extends FrameLayout(activityContext.application)
+class CollectionItem(presenter: LauncherPresenter, positionInGrid: Int)(implicit contextWrapper: ContextWrapper)
+  extends FrameLayout(contextWrapper.application)
   with CollectionItemStyle {
 
   var collection: Option[Collection] = None
@@ -87,34 +81,19 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
       w[ImageView] <~ wire(icon) <~ iconStyle,
       w[TextView] <~ wire(name) <~ nameStyle
     ) <~ collectionItemStyle <~ On.click {
-      collection map { c =>
-        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-          activityContext.getOriginal,
-          new Pair[View, String](icon.get, getContentTransitionName(c.position)))
-        val intent = createIntent[CollectionsDetailsActivity]
-        intent.putExtra(startPosition, c.position)
-        intent.putExtra(indexColorToolbar, c.themedColorIndex)
-        intent.putExtra(iconToolbar, c.icon)
-        uiStartIntentWithOptions(intent, options)
-      } getOrElse Ui.nop
+      presenter.goToCollection(icon, collection)
     } <~ On.longClick {
-      for {
-        c <- collection
-        activity <- activity[LauncherActivity]
-      } yield activity.removeCollection(c)
-      Ui(true)
+      presenter.removeCollection(collection) ~ Ui(true)
     } <~ vUseLayerHardware).get)
 
   def populate(collection: Collection) = {
     this.collection = Some(collection)
-    populateIcon(collection, iconCollectionWorkspace(collection.icon)).run
+    val resIcon = iconCollectionWorkspace(collection.icon)
+    ((icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
+      (name <~ tvText(collection.name))).run
   }
 
-  private def populateIcon(collection: Collection, resIcon: Int): Ui[_] =
-    (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
-      (name <~ tvText(collection.name))
-
-  private def createBackground(indexColor: Int): Drawable = {
+  private[this] def createBackground(indexColor: Int): Drawable = {
     val color = resGetColor(getIndexColor(indexColor))
 
     Lollipop ifSupportedThen {
@@ -130,7 +109,7 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
     }
   }
 
-  private def getDrawable(color: Int): Drawable = {
+  private[this] def getDrawable(color: Int): Drawable = {
     val drawableColor = createShapeDrawable(color)
     Lollipop ifSupportedThen {
       drawableColor
@@ -144,7 +123,7 @@ class CollectionItem(positionInGrid: Int)(implicit activityContext: ActivityCont
     }
   }
 
-  private def createShapeDrawable(color: Int) = {
+  private[this] def createShapeDrawable(color: Int) = {
     val drawableColor = new ShapeDrawable(new OvalShape())
     drawableColor.getPaint.setColor(color)
     drawableColor.getPaint.setStyle(Paint.Style.FILL)

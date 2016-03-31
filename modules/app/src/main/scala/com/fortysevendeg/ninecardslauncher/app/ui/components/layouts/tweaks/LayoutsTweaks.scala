@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -40,6 +41,8 @@ object LauncherWorkSpacesTweaks {
         getCollectionsItems(t, acc, n)
     }
   }
+
+  def lwsPresenter(presenter: LauncherPresenter) = Tweak[W] (_.presenter = Some(presenter))
 
   def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] {
     workspaces =>

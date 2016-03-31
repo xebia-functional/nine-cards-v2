@@ -28,7 +28,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Swip
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherComposer
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherPresenter, LauncherComposer}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
@@ -46,7 +46,7 @@ trait DrawerComposer
   with LauncherExecutor
   with PullToTabsViewStyles {
 
-  self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer with DrawerListeners =>
+  self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer =>
 
   val pages = 2
 
@@ -84,7 +84,7 @@ trait DrawerComposer
 
   def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
 
-  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+  def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] = {
     val colorPrimary = theme.get(PrimaryColor)
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     (searchBoxView <~
@@ -97,11 +97,11 @@ trait DrawerComposer
       sbvOnChangeText((text: String) => {
         (text, getStatus, getTypeView) match {
           case ("", Some(status), Some(AppsView)) =>
-            AppsMenuOption(status) foreach loadApps
+            AppsMenuOption(status) foreach (option => presenter.loadApps(option).run)
           case ("", Some(status), Some(ContactView)) =>
-            ContactsMenuOption(status) foreach loadContacts
-          case (t, _, Some(AppsView)) => loadAppsByKeyword(t)
-          case (t, _, Some(ContactView)) => loadContactsByKeyword(t)
+            ContactsMenuOption(status) foreach (option => presenter.loadContacts(option).run)
+          case (t, _, Some(AppsView)) => presenter.loadAppsByKeyword(t).run
+          case (t, _, Some(ContactView)) => presenter.loadContactsByKeyword(t).run
           case _ =>
         }
       })) ~
@@ -166,21 +166,21 @@ trait DrawerComposer
         case _ =>
       }})
 
-  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption)(implicit theme: NineCardsTheme): Ui[_] = {
+  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption)(implicit theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(option)) map (_.drawable)
-    Ui(loadApps(option)) ~
+    presenter.loadApps(option) ~
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
       (recycler <~ drvSetType(option))
   }
 
-  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption)(implicit theme: NineCardsTheme): Ui[_] = {
+  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption)(implicit theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
-    Ui(loadContacts(option)) ~
+    presenter.loadContacts(option) ~
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
       (recycler <~ drvSetType(option))
   }
 
-  private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+  private[this] def loadAppsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(ContactsAlphabetical)) map (_.drawable)
     loadAppsAndSaveStatus(AppsAlphabetical) ~
       (recycler <~ drvSetType(AppsAlphabetical)) ~
@@ -191,7 +191,7 @@ trait DrawerComposer
       (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
   }
 
-  private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+  private[this] def loadContactsAlphabetical(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(AppsAlphabetical)) map (_.drawable)
     loadContactsAndSaveStatus(ContactsAlphabetical) ~
       (recycler <~ drvSetType(ContactsAlphabetical)) ~
@@ -216,7 +216,7 @@ trait DrawerComposer
       (screenAnimation <~ sadvEndAnimation(duration))
 
   private[this] def changeContentView(contentView: ContentView)
-    (implicit activityContextWrapper: ActivityContextWrapper, nineCardsTheme: NineCardsTheme): Ui[_] =
+    (implicit activityContextWrapper: ActivityContextWrapper, nineCardsTheme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] =
     (searchBoxView <~ sbvUpdateContentView(contentView) <~ sbvClean) ~
       closeCursorAdapter ~
       (contentView match {
@@ -232,7 +232,7 @@ trait DrawerComposer
     (paginationDrawerPanel <~ reloadPager(0)) ~
       (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
 
-  def revealOutDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] = {
+  def revealOutDrawer(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] = {
     val searchIsEmpty = searchBoxView exists (_.isEmpty)
     (searchPanel <~ vVisible) ~
       (searchBoxView <~ sbvClean) ~
@@ -280,7 +280,7 @@ trait DrawerComposer
     paginationDrawerPanel <~ vgAddViews(pagerViews)
   }
 
-  private[this] def resetData(searchIsEmpty: Boolean)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
+  private[this] def resetData(searchIsEmpty: Boolean)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter) =
     if (searchIsEmpty && isShowingAppsAlphabetical) {
       (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
     } else {

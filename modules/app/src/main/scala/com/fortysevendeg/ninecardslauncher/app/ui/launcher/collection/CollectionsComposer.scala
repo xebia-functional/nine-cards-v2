@@ -26,7 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawa
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpaces, LauncherWorkSpacesListener, WorkSpaceItemMenu}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherTags
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherPresenter, LauncherTags}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
@@ -106,14 +106,14 @@ trait CollectionsComposer
 
   var dockApps: Seq[DockApp] = Seq.empty
 
-  def initCollectionsUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
+  def initCollectionsUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager], presenter: LauncherPresenter): Ui[_] =
     addWidgetsCollections ~ transformCollections
 
   private[this] def addWidgetsCollections(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
     workspacesContent <~
       vgAddView((w[LauncherWorkSpaces] <~ wire(workspaces)).get)
 
-  private[this] def transformCollections(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
+  private[this] def transformCollections(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager], presenter: LauncherPresenter): Ui[_] =
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
         (goToMenuOption(itemId) ~ closeMenu()).run
@@ -121,6 +121,7 @@ trait CollectionsComposer
       })) ~
       (menuCollectionRoot <~ vGone) ~
       (workspaces <~
+        lwsPresenter(presenter) <~
         lwsListener(
           LauncherWorkSpacesListener(
             onStartOpenMenu = startOpenCollectionMenu,
@@ -153,7 +154,7 @@ trait CollectionsComposer
 
   def showMessage(message: Int): Ui[_] = drawerLayout <~ uiSnackbarShort(message)
 
-  def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
+  def showLoadingView(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
   def createCollections(
     collections: Seq[Collection],
@@ -220,6 +221,8 @@ trait CollectionsComposer
       execute(app.intent)
     }
   }
+
+  def getCountCollections: Int = workspaces map (_.getCountCollections) getOrElse 0
 
   protected def isEmptyCollections = workspaces exists (_.isEmptyCollections)
 
