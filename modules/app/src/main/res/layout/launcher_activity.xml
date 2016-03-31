@@ -19,9 +19,9 @@
 
             <include layout="@layout/search_view_panel"/>
 
-            <FrameLayout
-                style="@style/LauncherWorkSpacesContent"
-                android:id="@+id/launcher_work_spaces_content"/>
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherWorkSpaces
+                style="@style/LauncherWorkSpaces"
+                android:id="@+id/launcher_work_spaces"/>
 
             <LinearLayout
                 style="@style/LauncherPaginationPanel"

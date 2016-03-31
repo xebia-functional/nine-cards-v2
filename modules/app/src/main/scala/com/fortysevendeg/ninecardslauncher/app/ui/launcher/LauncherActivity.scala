@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.dialogs.RemoveCollectionDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection

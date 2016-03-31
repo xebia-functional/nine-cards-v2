@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails
 
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.view.View
@@ -10,7 +10,7 @@ import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
 
-object Snails {
+object LauncherSnails {
 
   def pagerAppear(implicit context: ContextWrapper): Snail[View] = Snail[View] { view =>
     val duration = resGetInteger(R.integer.anim_duration_pager_appear)

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 
 import android.content.res.ColorStateList
 import android.graphics.Paint
@@ -19,7 +19,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.CollectionItemTweaks._
+import CollectionItemTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{CollectionItemStyle, CollectionsGroupStyle, LauncherPresenter}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R

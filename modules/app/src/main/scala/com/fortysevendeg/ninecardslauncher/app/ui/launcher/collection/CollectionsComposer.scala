@@ -25,12 +25,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehavi
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpaces, LauncherWorkSpacesListener, WorkSpaceItemMenu}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherPresenter, LauncherTags}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Snails._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkSpaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherPresenter, LauncherTags}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -58,8 +59,6 @@ trait CollectionsComposer
 
   val pageCollections = 1
 
-  var workspaces: Option[LauncherWorkSpaces] = None
-
   lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
 
   lazy val navigationView = Option(findView(TR.launcher_navigation_view))
@@ -76,7 +75,7 @@ trait CollectionsComposer
 
   lazy val content = Option(findView(TR.launcher_content))
 
-  lazy val workspacesContent = Option(findView(TR.launcher_work_spaces_content))
+  lazy val workspaces = Option(findView(TR.launcher_work_spaces))
 
   lazy val appDrawerPanel = Option(findView(TR.launcher_drawer_panel))
 
@@ -106,14 +105,11 @@ trait CollectionsComposer
 
   var dockApps: Seq[DockApp] = Seq.empty
 
-  def initCollectionsUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager], presenter: LauncherPresenter): Ui[_] =
-    addWidgetsCollections ~ transformCollections
-
-  private[this] def addWidgetsCollections(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[_] =
-    workspacesContent <~
-      vgAddView((w[LauncherWorkSpaces] <~ wire(workspaces)).get)
-
-  private[this] def transformCollections(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager], presenter: LauncherPresenter): Ui[_] =
+  def initCollectionsUi
+  (implicit context: ActivityContextWrapper,
+    theme: NineCardsTheme,
+    managerContext: FragmentManagerContext[Fragment, FragmentManager],
+    presenter: LauncherPresenter): Ui[_] =
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
         (goToMenuOption(itemId) ~ closeMenu()).run
@@ -226,7 +222,11 @@ trait CollectionsComposer
 
   protected def isEmptyCollections = workspaces exists (_.isEmptyCollections)
 
-  protected def getItemsForFabMenu(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]) = Seq(
+  protected def getItemsForFabMenu
+  (implicit context: ActivityContextWrapper,
+    theme: NineCardsTheme,
+    managerContext: FragmentManagerContext[Fragment, FragmentManager],
+    presenter: LauncherPresenter) = Seq(
     (w[WorkSpaceItemMenu] <~ workspaceButtonCreateCollectionStyle <~ FuncOn.click { view: View =>
       showAction(f[NewCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection))
     }).get,

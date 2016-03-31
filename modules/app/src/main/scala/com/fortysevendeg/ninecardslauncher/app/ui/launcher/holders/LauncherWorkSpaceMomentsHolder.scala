@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 
 import android.graphics.Color
 import android.view.Gravity

@@ -37,20 +37,14 @@ trait NewCollectionComposer
 
   def showMessage(message: Int): Ui[_] = content <~ uiSnackbarShort(message)
 
-  def initUi(storeCollection: (String, String, Int) => Unit): Ui[_] =
+  def initUi(implicit presenter: NewCollectionPresenter): Ui[_] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.newCollection) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
-        On.click(
-          (for {
-            name <- getName
-            category <- getCategory
-            index <- getColor
-          } yield Ui(storeCollection(name, category.getIconResource, index))) getOrElse showMessage(R.string.formFieldError)
-        )) ~
+        On.click(presenter.saveCollection(getName, getCategory, getColor))) ~
       setCategory(Communication) ~
       setIndexColor(0) ~
       (colorContent <~ On.click {

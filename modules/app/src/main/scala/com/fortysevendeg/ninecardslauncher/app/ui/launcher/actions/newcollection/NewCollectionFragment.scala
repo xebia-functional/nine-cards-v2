@@ -6,21 +6,20 @@ import android.os.Bundle
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{FreeCollectionType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Ui
 
-import scalaz.concurrent.Task
-
-class NewCollectionFragment
+class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
   extends BaseActionFragment
   with NewCollectionComposer
-  with NineCardIntentConversions {
+  with NewCollectionActions
+  with NineCardIntentConversions { self =>
+
+  implicit lazy val presenter = new NewCollectionPresenter(self)
 
   override def getLayoutId: Int = R.layout.new_collection
 
@@ -28,7 +27,7 @@ class NewCollectionFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    initUi(saveCollection).run
+    initUi.run
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
@@ -51,25 +50,15 @@ class NewCollectionFragment
     ui.run
   }
 
-  private[this] def saveCollection(name: String, icon: String, index: Int) = {
-    val request = AddCollectionRequest(
-      name = name,
-      collectionType = FreeCollectionType,
-      icon = icon,
-      themedColorIndex = index,
-      appsCategory = None
-    )
-    Task.fork(di.collectionProcess.addCollection(request).run).resolveAsyncUi(
-      onResult = (c) => {
-        activity[LauncherActivity] map { launcherActivity =>
-          launcherActivity.addCollection(c)
-        }
-        hideKeyboard ~ unreveal()
-      },
-      onException = (ex) => showMessage(R.string.contactUsError)
-    )
+  override def addCollection(collection: Collection): Ui[Any] = {
+    launcherPresenter.addCollection(collection) ~
+      hideKeyboard ~
+      unreveal()
   }
 
+  override def showMessageContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
+
+  override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
 }
 
 object NewCollectionFragment {
