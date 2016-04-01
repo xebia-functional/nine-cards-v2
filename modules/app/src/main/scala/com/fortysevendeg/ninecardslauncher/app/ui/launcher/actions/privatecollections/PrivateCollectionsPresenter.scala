@@ -7,8 +7,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{PrivateCollection, Collection}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.MomentConversions
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentConversions, MomentException}
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task

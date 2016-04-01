@@ -86,8 +86,8 @@ object DockAppTypes {
 }
 
 object NineCardsMoments {
-  val homeMorningMoment = "HOME_MORNING"
-  val workMoment = "HOME_NIGHT"
+  val homeMorningMoment = "HOME"
+  val workMoment = "WORK"
   val homeNightMoment = "NIGHT"
 }
 
