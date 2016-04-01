@@ -32,7 +32,11 @@ case object FreeCollectionType extends CollectionType {
 
 object CollectionType {
 
-  val collectionTypes = Seq(AppsCollectionType, ContactsCollectionType, HomeMorningCollectionType, HomeNightCollectionType, WorkCollectionType, FreeCollectionType)
+  val momentsCollectionTypes = Seq(HomeMorningCollectionType, WorkCollectionType, HomeNightCollectionType)
+
+  val generalCollectionTypes = Seq(AppsCollectionType, ContactsCollectionType, FreeCollectionType)
+
+  val collectionTypes = generalCollectionTypes ++ momentsCollectionTypes
 
   def apply(name: String): CollectionType = collectionTypes find (_.name == name) getOrElse
     (throw new IllegalArgumentException(s"The key '$name' is not a valid CollectionType"))

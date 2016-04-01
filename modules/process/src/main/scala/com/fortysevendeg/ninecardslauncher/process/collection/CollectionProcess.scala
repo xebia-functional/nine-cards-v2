@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, PrivateCollection}
 
 trait CollectionProcess {
 

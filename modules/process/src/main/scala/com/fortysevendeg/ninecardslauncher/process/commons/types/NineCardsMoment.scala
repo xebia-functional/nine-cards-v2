@@ -23,9 +23,9 @@ case object HomeNightMoment extends NineCardsMoment {
 
 object NineCardsMoment {
 
-  val cases = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment)
+  val moments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment)
 
-  def apply(name: String): NineCardsMoment = cases find (_.name == name) getOrElse
+  def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse
     (throw new IllegalArgumentException(s"$name not found"))
 
 }

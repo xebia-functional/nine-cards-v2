@@ -4,8 +4,9 @@ import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageCollectionItem}
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest, PrivateCard, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.models
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{PrivateCard, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp

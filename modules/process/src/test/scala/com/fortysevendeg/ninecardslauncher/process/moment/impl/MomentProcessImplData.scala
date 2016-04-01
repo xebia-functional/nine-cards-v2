@@ -5,8 +5,9 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, CollectionType, NineCardCategory}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, App => ServicesApp, MomentTimeSlot => ServicesMomentTimeSlot, Moment => ServicesMoment}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.process.moment.models.App
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -54,6 +55,9 @@ trait MomentProcessImplData {
   val days = Seq(0, 1, 1, 1, 1, 1, 0)
 
   val collectionId1 = 1
+  val homeAppPackageName = "com.google.android.apps.plus"
+  val nightAppPackageName = "com.Slack"
+  val workAppPackageName = "com.google.android.apps.photos"
 
   def createSeqCollection(
     num: Int = 3,
@@ -76,6 +80,36 @@ trait MomentProcessImplData {
           position = position,
           name = name,
           collectionType = collectionType,
+          icon = icon,
+          themedColorIndex = themedColorIndex,
+          appsCategory = None,
+          constrains = Option(constrains),
+          originalSharedCollectionId = Option(originalSharedCollectionId),
+          sharedCollectionId = Option(sharedCollectionId),
+          sharedCollectionSubscribed = sharedCollectionSubscribed,
+          cards = cards))
+
+  def createSeqMomentCollection(
+     num: Int = 3,
+     id: Int = collectionId,
+     position: Int = position,
+     name: String = name,
+     collectionType: Seq[CollectionType] = momentsCollectionTypes,
+     icon: String = icon,
+     themedColorIndex: Int = themedColorIndex,
+     appsCategory: NineCardCategory = appsCategory,
+     constrains: String = constrains,
+     originalSharedCollectionId: String = originalSharedCollectionId,
+     sharedCollectionId: String = sharedCollectionId,
+     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
+     cards: Seq[Card] = seqCard) =
+    (0 until num) map (
+      item =>
+        Collection(
+          id = id + item,
+          position = position,
+          name = name,
+          collectionType = collectionType(item),
           icon = icon,
           themedColorIndex = themedColorIndex,
           appsCategory = None,
@@ -218,6 +252,27 @@ trait MomentProcessImplData {
         to = to,
         days = days))
 
+  val homeApp =
+    App(
+      name = name,
+      packageName = homeAppPackageName,
+      className = className1,
+      imagePath = imagePath)
+
+  val workApp =
+    App(
+      name = name,
+      packageName = workAppPackageName,
+      className = className1,
+      imagePath = imagePath)
+
+  val nightApp =
+    App(
+      name = name,
+      packageName = nightAppPackageName,
+      className = className1,
+      imagePath = imagePath)
+
   val seqCard = createSeqCard()
 
   val seqCollection = createSeqCollection()
@@ -226,6 +281,8 @@ trait MomentProcessImplData {
   val servicesCollection = seqServicesCollection(0)
 
   val seqServicesApps = createSeqServicesApp()
+  val seqApps = Seq(homeApp, workApp, nightApp)
+  val seqMomentCollections = createSeqMomentCollection()
   val seqServicesMoments = createSeqServicesMoment()
   val servicesMoment = seqServicesMoments(0)
 

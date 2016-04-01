@@ -227,7 +227,7 @@ case object GameWidgets extends NineCardCategory {
 
 object NineCardCategory {
 
-  val customCategories = Seq(AllAppsCategory, AllCategories, Custom, Misc)
+  val customCategories = Seq(AllAppsCategory, AllCategories, Custom, Misc, ContactsCategory)
 
   val appsCategories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
     Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,

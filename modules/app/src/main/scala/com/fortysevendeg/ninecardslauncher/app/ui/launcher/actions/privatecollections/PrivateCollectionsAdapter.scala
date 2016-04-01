@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecolle
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.process.collection.PrivateCollection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 

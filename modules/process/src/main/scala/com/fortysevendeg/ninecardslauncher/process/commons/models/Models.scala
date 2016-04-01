@@ -29,3 +29,18 @@ case class Card(
   numDownloads: Option[String] = None,
   notification: Option[String] = None) extends Serializable
 
+case class PrivateCollection(
+  name: String,
+  collectionType: CollectionType,
+  icon: String,
+  themedColorIndex: Int,
+  appsCategory: Option[NineCardCategory] = None,
+  cards: Seq[PrivateCard])
+
+case class PrivateCard(
+  term: String,
+  packageName: Option[String],
+  cardType: CardType,
+  intent: NineCardIntent,
+  imagePath: String)
+
