@@ -5,8 +5,8 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageCollection
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher.process.device.{DockAppException, _}
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
@@ -39,7 +39,7 @@ trait CreateCollectionsTasks
   def loadConfiguration(
    client: GoogleApiClient,
    account: String,
-   deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with CloudStorageProcessException with CollectionException with DockAppException] = {
+   deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with CloudStorageProcessException with CollectionException with DockAppException with MomentException] = {
    val cloudStorageProcess = di.createCloudStorageProcess(client, account)
    for {
      - <- di.deviceProcess.resetSavedItems()
@@ -52,8 +52,12 @@ trait CreateCollectionsTasks
      bitmaps <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(apps, cloudStorageDevice.collections))
      _ = setProcess(CreatingCollectionsProcess)
      collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(cloudStorageDevice.collections))
+     _ <- di.momentProcess.saveMoments(cloudStorageDevice.moments map toMoment)
    } yield collections
   }
+
+  private[this] def getCollectionId(cloudStorageCollection: CloudStorageCollection, collections: Seq[Collection]) =
+    collections.find(cloudStorageCollection.name == _.name) map (_.id)
 
   private[this] def getAppsNotInstalled(apps: Seq[App], collections: Seq[CloudStorageCollection]): Seq[String] = {
     val intents = collections flatMap (_.items map (item => Json.parse(item.intent).as[NineCardIntent]))

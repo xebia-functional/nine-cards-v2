@@ -46,12 +46,25 @@ trait MomentConversions extends CommonConversions {
     intent = nineCardIntentToJson(toNineCardIntent(item)),
     imagePath = item.imagePath)
 
-  def toAddMomentRequest(collectionId: Int, moment: NineCardsMoment) =
+  def toAddMomentRequest(moment: Moment) =
     AddMomentRequest(
-      collectionId = Option(collectionId),
+      collectionId = moment.collectionId,
+      timeslot = moment.timeslot map toServicesMomentTimeSlot,
+      wifi = moment.wifi,
+      headphone = moment.headphone)
+
+  def toAddMomentRequest(collectionId: Option[Int], moment: NineCardsMoment) =
+    AddMomentRequest(
+      collectionId = collectionId,
       timeslot = toServicesMomentTimeSlotSeq(moment),
       wifi = Seq.empty,
       headphone = false)
+
+  def toServicesMomentTimeSlot(timeSlot: MomentTimeSlot) =
+    ServicesMomentTimeSlot(
+      from = timeSlot.from,
+      to = timeSlot.to,
+      days = timeSlot.days)
 
   def toServicesMomentTimeSlotSeq(moment: NineCardsMoment) =
     moment match {

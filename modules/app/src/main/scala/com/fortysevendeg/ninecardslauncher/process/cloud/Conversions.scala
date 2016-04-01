@@ -1,8 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud
 
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageCollectionItem, CloudStorageDevice, CloudStorageDeviceSummary}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.moment.models.{MomentTimeSlot, Moment}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem, UserDevice}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import play.api.libs.json.Json
@@ -35,7 +36,7 @@ object Conversions {
       collectionType = userCollection.collectionType,
       icon = userCollection.icon,
       category = userCollection.category,
-      moment = None)
+      moment = None) //TODO match with collectionType
 
   def toCloudStorageCollectionItem(userCollectionItem: UserCollectionItem) =
     CloudStorageCollectionItem(
@@ -43,15 +44,7 @@ object Conversions {
       title = userCollectionItem.title,
       intent = userCollectionItem.intent)
 
-  def toCloudStorageDevice(deviceId: String, deviceName: String, collections: Seq[Collection]) =
-    CloudStorageDevice(
-      deviceId = deviceId,
-      deviceName = deviceName,
-      documentVersion = CloudStorageProcess.actualDocumentVersion,
-      collections map toCloudStorageCollection,
-      moments = Seq.empty)
-
-  def toCloudStorageCollection(collection: Collection) =
+  def toCloudStorageCollection(collection: Collection, moment: Option[Moment]) =
     CloudStorageCollection(
       name = collection.name,
       originalSharedCollectionId = collection.originalSharedCollectionId,
@@ -61,11 +54,23 @@ object Conversions {
       collectionType = collection.collectionType,
       icon = collection.icon,
       category = collection.appsCategory,
-      moment = None)
+      moment = moment map toCloudStorageMoment)
 
   def toCloudStorageCollectionItem(card: Card) =
     CloudStorageCollectionItem(
       itemType = card.cardType.name,
       title = card.term,
       intent = Json.toJson(card.intent).toString())
+
+  def toCloudStorageMoment(moment: Moment) =
+    CloudStorageMoment(
+      timeslot = moment.timeslot map toCloudStorageMomentTimeSlot,
+      wifi = moment.wifi,
+      headphones = moment.headphone)
+
+  def toCloudStorageMomentTimeSlot(timeSlot: MomentTimeSlot) =
+    CloudStorageMomentTimeSlot(
+      from = timeSlot.from,
+      to = timeSlot.to,
+      days = timeSlot.days)
 }

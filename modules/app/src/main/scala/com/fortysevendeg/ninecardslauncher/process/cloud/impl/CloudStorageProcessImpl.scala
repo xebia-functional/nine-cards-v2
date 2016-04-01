@@ -5,8 +5,8 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageDevice}
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageImplicits._
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageDevice, CloudStorageMoment}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, Conversions, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
@@ -53,14 +53,14 @@ class CloudStorageProcessImpl(
     _ <- createOrUpdateFile(file, cloudStorageDevice.deviceName, json, cloudStorageDevice.deviceId)
   } yield ()).resolve[CloudStorageProcessException]
 
-  override def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection])(implicit context: ContextSupport) = (for {
+  override def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection], moments: Seq[CloudStorageMoment])(implicit context: ContextSupport) = (for {
     androidId <- persistenceServices.getAndroidId
     cloudStorageDevice = CloudStorageDevice(
       deviceId = androidId,
       deviceName = Build.MODEL,
       documentVersion = CloudStorageProcess.actualDocumentVersion,
       collections = collections,
-      moments = Seq.empty)
+      moments = moments)
     _ <- createOrUpdateCloudStorageDevice(cloudStorageDevice)
   } yield ()).resolve[CloudStorageProcessException]
 

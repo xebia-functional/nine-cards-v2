@@ -2,13 +2,14 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageCollectionItem}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageMomentTimeSlot, CloudStorageMoment, CloudStorageCollection, CloudStorageCollectionItem}
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.models
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{PrivateCard, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
+import com.fortysevendeg.ninecardslauncher.process.moment.models.{MomentTimeSlot, Moment}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 
@@ -173,5 +174,18 @@ trait NineCardIntentConversions {
     intent.setClassName(packageName, className)
     intent
   }
+
+  def toMoment(cloudStorageMoment: CloudStorageMoment) =
+    Moment(
+      collectionId = None,
+      timeslot = cloudStorageMoment.timeslot map toTimeSlot,
+      wifi = cloudStorageMoment.wifi,
+      headphone = cloudStorageMoment.headphones)
+
+  def toTimeSlot(cloudStorageMomentTimeSlot: CloudStorageMomentTimeSlot) =
+    MomentTimeSlot(
+      from = cloudStorageMomentTimeSlot.from,
+      to = cloudStorageMomentTimeSlot.to,
+      days = cloudStorageMomentTimeSlot.days)
 
 }

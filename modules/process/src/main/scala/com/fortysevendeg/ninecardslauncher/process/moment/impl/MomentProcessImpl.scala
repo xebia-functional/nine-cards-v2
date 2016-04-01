@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
 import com.fortysevendeg.ninecardslauncher.process.moment._
 import com.fortysevendeg.ninecardslauncher.process.moment.models.{Moment, App}
+import com.fortysevendeg.ninecardslauncher.services.persistence
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import rapture.core.Answer
 
@@ -35,6 +36,11 @@ class MomentProcessImpl(
       servicesApp <- persistenceServices.fetchApps(OrderByName, ascending = true)
       moments <- createMoments(servicesApp map toApp, position)
     } yield moments).resolve[MomentException]
+
+  override def saveMoments(items: Seq[Moment])(implicit context: ContextSupport) = Service {
+      val tasks = items map (item => persistenceServices.addMoment(toAddMomentRequest(item)).run)
+      Task.gatherUnordered(tasks) map (c => CatchAll[MomentException](c.collect { case Answer(m) => toMoment(m)}))
+    }
 
   override def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport) = Service {
     Task {
@@ -66,15 +72,20 @@ class MomentProcessImpl(
   private[this] def createMoment(apps: Seq[App], moment: NineCardsMoment, position: Int) =
     (for {
       collection <- persistenceServices.addCollection(generateAddCollection(apps, moment, position))
-      _ <- persistenceServices.addMoment(toAddMomentRequest(collection.id, moment))
+      _ <- persistenceServices.addMoment(toAddMomentRequest(Option(collection.id), moment))
     } yield toCollection(collection)).resolve[MomentException]
 
   private[this] def generateAddCollection(items: Seq[App], moment: NineCardsMoment, position: Int): AddCollectionRequest = {
+    val collectionType = moment match{
+      case HomeMorningMoment => HomeMorningCollectionType
+      case WorkMoment => WorkCollectionType
+      case HomeNightMoment => HomeNightCollectionType
+    }
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
       name = momentProcessConfig.namesMoments.getOrElse(moment, moment.getStringResource),
-      collectionType = moment.name,
+      collectionType = collectionType.name,
       icon = moment.getIconResource,
       themedColorIndex = themeIndex,
       appsCategory = None,
