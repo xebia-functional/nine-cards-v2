@@ -9,6 +9,8 @@ import com.fortysevendeg.ninecardslauncher.process.collection.CollectionExceptio
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
+import com.fortysevendeg.ninecardslauncher.process.user.UserException
+import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
@@ -32,7 +34,7 @@ class LauncherPresenter(actions: LauncherActions)(implicit contextWrapper: Activ
     } getOrElse actions.showContactUsError()
 
   def removeCollection(collection: Collection): Ui[Any] = Ui {
-    Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
+    Task.fork(deleteCollection(collection.id).run).resolveAsyncUi(
       onResult = (_) => actions.removeCollection(collection),
       onException = (_) => actions.showContactUsError()
     )
@@ -44,7 +46,7 @@ class LauncherPresenter(actions: LauncherActions)(implicit contextWrapper: Activ
         // Check if there are collections in DB, if there aren't we go to wizard
         case (Nil, _) => actions.goToWizard()
         case (collections, apps) =>
-          Task.fork(di.userProcess.getUser.run).resolveAsyncUi(
+          Task.fork(getUser().run).resolveAsyncUi(
             onResult = user => actions.loadUserProfile(user))
           actions.loadCollections(collections, apps)
       },
@@ -101,6 +103,32 @@ class LauncherPresenter(actions: LauncherActions)(implicit contextWrapper: Activ
       collection <- maybeCollection
     } yield actions.goToCollection(view, collection)) getOrElse actions.showContactUsError()
 
+  protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
+    di.collectionProcess.deleteCollection(id)
+
+  protected def getUser(): ServiceDef2[User, UserException] = di.userProcess.getUser
+
+  protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
+    for {
+      collections <- di.collectionProcess.getCollections
+      dockApps <- di.deviceProcess.getDockApps
+    } yield {
+      android.util.Log.d("9cards", s"${collections.length} -- ${dockApps.length}")
+      (collections, dockApps)
+    }
+
+  protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
+    for {
+      iterableApps <- di.deviceProcess.getIterableApps(order)
+      counters <- di.deviceProcess.getTermCountersForApps(order)
+    } yield (iterableApps, counters)
+
+  protected def getLoadContacts(order: ContactsFilter): ServiceDef2[(IterableContacts, Seq[TermCounter]), ContactException] =
+    for {
+      iterableContacts <- di.deviceProcess.getIterableContacts(order)
+      counters <- di.deviceProcess.getTermCountersForContacts(order)
+    } yield (iterableContacts, counters)
+
   private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
     case AppsAlphabetical => GetByName
     case AppsByCategories => GetByCategory
@@ -112,25 +140,5 @@ class LauncherPresenter(actions: LauncherActions)(implicit contextWrapper: Activ
     case _ => AllContacts
   }
 
-  private[this] def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
-    for {
-      collections <- di.collectionProcess.getCollections
-      dockApps <- di.deviceProcess.getDockApps
-    } yield {
-      android.util.Log.d("9cards", s"${collections.length} -- ${dockApps.length}")
-      (collections, dockApps)
-    }
-
-  private[this] def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
-    for {
-      iterableApps <- di.deviceProcess.getIterableApps(order)
-      counters <- di.deviceProcess.getTermCountersForApps(order)
-    } yield (iterableApps, counters)
-
-  private[this] def getLoadContacts(order: ContactsFilter): ServiceDef2[(IterableContacts, Seq[TermCounter]), ContactException] =
-    for {
-      iterableContacts <- di.deviceProcess.getIterableContacts(order)
-      counters <- di.deviceProcess.getTermCountersForContacts(order)
-    } yield (iterableContacts, counters)
 
 }
