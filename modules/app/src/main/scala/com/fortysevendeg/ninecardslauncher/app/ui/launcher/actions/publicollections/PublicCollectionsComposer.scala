@@ -34,7 +34,7 @@ trait PublicCollectionsComposer
   with LauncherExecutor
   with NineCardIntentConversions {
 
-  self: TypedFindView with BaseActionFragment with PublicCollectionsListener =>
+  self: TypedFindView with BaseActionFragment =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
@@ -49,7 +49,7 @@ trait PublicCollectionsComposer
     (categoriesSorted map (_._1), categoriesSorted map (_._2))
   }
 
-  def initUi: Ui[_] =
+  def initUi(implicit presenter: PublicCollectionsPresenter): Ui[_] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.publicCollections) <~
@@ -70,11 +70,11 @@ trait PublicCollectionsComposer
             onMenuItemClickListener = (item: MenuItem) => {
               item.getItemId match {
                 case R.id.top =>
-                  (typeFilter <~ tvText(R.string.top)).run
-                  changeTypeSharedCollection(TopSharedCollection)
+                  ((typeFilter <~ tvText(R.string.top)) ~
+                    presenter.loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)).run
                 case R.id.latest =>
-                  (typeFilter <~ tvText(R.string.latest)).run
-                  changeTypeSharedCollection(LatestSharedCollection)
+                  ((typeFilter <~ tvText(R.string.latest)) ~
+                    presenter.loadPublicCollectionsByTypeSharedCollection(LatestSharedCollection)).run
                 case _ =>
               }
               true
@@ -87,8 +87,8 @@ trait PublicCollectionsComposer
             menu = categoryNamesMenu,
             onItemClickListener = (position: Int) => {
               categories.lift(position) foreach { category =>
-                (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)).run
-                changeCategory(category)
+                ((categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)) ~
+                  presenter.loadPublicCollectionsByCategory(category)).run
               }
             },
             width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
@@ -96,11 +96,11 @@ trait PublicCollectionsComposer
         }) ~
       (recycler <~ recyclerStyle)
 
-  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+  def showLoadingView: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def addPublicCollections(
-    sharedCollections: Seq[SharedCollection])(implicit uiContext: UiContext[_]): Ui[_] = {
-    val adapter = new PublicCollectionsAdapter(sharedCollections, saveSharedCollection)
+  def reloadPublicCollections(
+    sharedCollections: Seq[SharedCollection])(implicit uiContext: UiContext[_], presenter: PublicCollectionsPresenter): Ui[_] = {
+    val adapter = new PublicCollectionsAdapter(sharedCollections)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -111,8 +111,7 @@ trait PublicCollectionsComposer
 }
 
 case class ViewHolderPublicCollectionsLayoutAdapter(
-  content: ViewGroup,
-  clickListener: (SharedCollection) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
+  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: PublicCollectionsPresenter)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView
   with LauncherExecutor {
@@ -153,7 +152,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
       (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag2(position)) ~
-      (addCollection <~ On.click(Ui(clickListener(collection)))) ~
+      (addCollection <~ On.click(presenter.saveSharedCollection(collection))) ~
       (shareCollection <~ On.click(Ui(launchShare(collection.shareLink))))
   }
 
