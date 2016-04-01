@@ -4,16 +4,19 @@ import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{PrivateCollection, Collection}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
+import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
+import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.MomentConversions
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
 class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
-  with Conversions {
+  with Conversions
+  with MomentConversions {
 
   def loadPrivateCollections(): Ui[Any] = Ui {
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
@@ -29,16 +32,27 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   }
 
   private[this] def getPrivateCollections:
-  ServiceDef2[Seq[PrivateCollection], AppException with CollectionException] =
+  ServiceDef2[Seq[PrivateCollection], AppException with CollectionException with MomentException] =
     for {
       collections <- di.collectionProcess.getCollections
       apps <- di.deviceProcess.getSavedApps(GetByName)
-      newCollections <- di.collectionProcess.generatePrivateCollections(toSeqUnformedApp(apps))
-    } yield newCollections filterNot { newCollection =>
-      newCollection.appsCategory match {
-        case Some(category) => (collections flatMap (_.appsCategory)) contains category
-        case _ => false
+      unformedApps = toSeqUnformedApp(apps)
+      newCollections <- di.collectionProcess.generatePrivateCollections(unformedApps)
+      newMomentCollections <- di.momentProcess.generatePrivateMoments(unformedApps map toApp, newCollections.length)
+    } yield {
+      val privateCollections = newCollections filterNot { newCollection =>
+        newCollection.appsCategory match {
+          case Some(category) => (collections flatMap (_.appsCategory)) contains category
+          case _ => false
+        }
       }
+      val privateMoments = newMomentCollections filterNot { newMomentCollection =>
+        newMomentCollection.collectionType match {
+          case collectionType => (collections map (_.collectionType)) contains collectionType
+          case _ => false
+        }
+      }
+      privateCollections ++ privateMoments
     }
 
   private[this] def addCollection(privateCollection: PrivateCollection):
@@ -47,6 +61,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       collection <- di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection))
       cards <- di.collectionProcess.addCards(collection.id, privateCollection.cards map toAddCollectionRequest)
     } yield collection.copy(cards = cards)
+
 
 }
 
