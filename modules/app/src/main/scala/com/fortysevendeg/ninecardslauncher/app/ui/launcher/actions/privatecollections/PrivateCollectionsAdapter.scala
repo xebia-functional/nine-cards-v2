@@ -7,13 +7,13 @@ import com.fortysevendeg.ninecardslauncher.process.collection.PrivateCollection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 
-case class PrivateCollectionsAdapter(privateCollections: Seq[PrivateCollection], clickListener: (PrivateCollection) => Unit)
-  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
+case class PrivateCollectionsAdapter(privateCollections: Seq[PrivateCollection])
+  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], presenter: PrivateCollectionsPresenter)
   extends RecyclerView.Adapter[ViewHolderPrivateCollectionsLayoutAdapter] {
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderPrivateCollectionsLayoutAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.private_collections_item, parent, false).asInstanceOf[ViewGroup]
-    new ViewHolderPrivateCollectionsLayoutAdapter(view, clickListener)
+    new ViewHolderPrivateCollectionsLayoutAdapter(view)
   }
 
   override def getItemCount: Int = privateCollections.size
