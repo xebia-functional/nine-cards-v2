@@ -15,7 +15,6 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
@@ -152,7 +151,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
       (author <~ tvText(collection.author)) ~
       (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
       (downloads <~ tvText(s"${collection.views}")) ~
-      (content <~ vTag2(position)) ~
+      (content <~ vTag(position)) ~
       (addCollection <~ On.click(Ui(clickListener(collection)))) ~
       (shareCollection <~ On.click(Ui(launchShare(collection.shareLink))))
   }

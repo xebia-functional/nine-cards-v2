@@ -6,8 +6,9 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.EditTextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, RequestCodes}
@@ -35,7 +36,7 @@ trait NewCollectionComposer
 
   lazy val iconImage = Option(findView(TR.new_collection_select_icon_image))
 
-  def showMessage(message: Int): Ui[_] = content <~ uiSnackbarShort(message)
+  def showMessage(message: Int): Ui[_] = content <~ vSnackbarShort(message)
 
   def initUi(storeCollection: (String, String, Int) => Unit): Ui[_] =
     (toolbar <~
@@ -82,7 +83,7 @@ trait NewCollectionComposer
 
   def setCategory(category: NineCardCategory): Ui[_] =
     iconImage <~
-      vTag2(category) <~
+      vTag(category) <~
       ivSrc(ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category.name)), Color.GRAY))
 
   def setIndexColor(index: Int): Ui[_] = {
@@ -95,7 +96,7 @@ trait NewCollectionComposer
     drawable.getPaint.setStyle(Style.FILL)
     drawable.getPaint.setAntiAlias(true)
     colorImage <~
-      vTag2(index) <~
+      vTag(index) <~
       ivSrc(drawable)
   }
 
@@ -113,6 +114,6 @@ trait NewCollectionComposer
 
   private[this] def getColor = colorImage map (c => Int.unbox(c.getTag))
 
-  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
+  def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
 }

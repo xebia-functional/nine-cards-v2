@@ -10,7 +10,6 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
@@ -97,7 +96,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup, clickListe
       (downloads <~ tvText(recommendedApp.downloads)) ~
       (description <~ (recommendedApp.description map (d => tvText(d) + vVisible) getOrElse vGone)) ~
       (tag <~ tvText(if (recommendedApp.free) resGetString(R.string.free) else "")) ~
-      (content <~ vTag2(position)) ~
+      (content <~ vTag(position)) ~
       Ui.sequence(screensUi: _*) ~
       (installNow <~ On.click(clickListener(recommendedApp)))
   }

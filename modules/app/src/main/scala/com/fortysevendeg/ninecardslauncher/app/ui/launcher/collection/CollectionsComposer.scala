@@ -14,9 +14,10 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
+import com.fortysevendeg.macroid.extras.NavigationViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
@@ -151,7 +152,7 @@ trait CollectionsComposer
         clickAppDrawerItem(view)
       })
 
-  def showMessage(message: Int): Ui[_] = drawerLayout <~ uiSnackbarShort(message)
+  def showMessage(message: Int): Ui[_] = drawerLayout <~ vSnackbarShort(message)
 
   def showLoading(implicit context: ActivityContextWrapper): Ui[_] = loading <~ vVisible
 
