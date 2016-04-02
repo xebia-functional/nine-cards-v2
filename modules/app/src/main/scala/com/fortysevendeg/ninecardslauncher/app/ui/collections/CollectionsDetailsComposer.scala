@@ -29,7 +29,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommenda
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
@@ -95,7 +94,7 @@ trait CollectionsDetailsComposer
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
 
-  def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ uiSnackbarShort(error)
+  def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ vSnackbarShort(error)
 
   def elevationsDefault: Ui[_] =
     (viewPager <~ vElevation(elevation)) ~

@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
@@ -79,7 +78,7 @@ trait AppsComposer
 
   def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
 
-  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
+  def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
   def generateAppsAdapter(
     apps: IterableApps,

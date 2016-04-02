@@ -10,8 +10,8 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, PublicationsAdapter, SubscriptionsAdapter}
@@ -54,7 +54,7 @@ trait ProfileComposer
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
-  def showMessage(res: Int): Ui[_] = rootLayout <~ uiSnackbarShort(res)
+  def showMessage(res: Int): Ui[_] = rootLayout <~ vSnackbarShort(res)
 
   def initUi(implicit uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] =
       (tabs <~ tlAddTabs(
@@ -90,7 +90,7 @@ trait ProfileComposer
   def showLoading: Ui[_] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
 
   def showError(message: Int, clickAction: () => Unit): Ui[_] =
-    (rootLayout <~ uiSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
+    (rootLayout <~ vSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
       (loadingView <~ vInvisible)
 
   def setPublicationsAdapter(items: Seq[String])

@@ -15,7 +15,6 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
@@ -43,7 +42,7 @@ trait PrivateCollectionsComposer
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
+  def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
   def addPrivateCollections(
     privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_]): Ui[_] = {
@@ -91,7 +90,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
         vgRemoveAllViews <~
         automaticAlignment(appsRow2, cardsRow2)) ~
       (name <~ tvText(privateCollection.name)) ~
-      (content <~ vTag2(position)) ~
+      (content <~ vTag(position)) ~
       (addCollection <~ On.click(Ui(clickListener(privateCollection))))
   }
 

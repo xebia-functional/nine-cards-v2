@@ -6,7 +6,6 @@ import android.view.View
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -29,7 +28,7 @@ object CommonsTweak {
     }
   }
 
-  def vSetPosition(position: Int) = vTag2(R.id.position, position)
+  def vSetPosition(position: Int) = vTag(R.id.position, position)
 
   def vSetType(t: String) = vTag(R.id.view_type, t)
 
