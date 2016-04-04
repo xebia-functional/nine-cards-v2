@@ -47,7 +47,11 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
 
   private[this] def setToken(token: String) = preferences.edit.putString(googleKeyToken, token).apply()
 
-  def getAccounts: Seq[Account] = accounts
+  def initialize(): Unit = actions.initialize(accounts).run
+
+  def goToUser(): Unit = actions.goToUser().run
+
+  def goToWizard(): Unit = actions.goToWizard().run
 
   def connectAccount(username: String, termsAccept: Boolean): Unit = if (termsAccept) {
     getAccount(username) match {
@@ -100,7 +104,7 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
 
   def connectionError(): Unit = actions.showErrorConnectingGoogle().run
 
-  protected def getAccount(username: String): Option[Account] = getAccounts find (_.name == username)
+  protected def getAccount(username: String): Option[Account] = accounts find (_.name == username)
 
   protected def requestUserPermissions(
     account: Account,
@@ -208,6 +212,12 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
 }
 
 trait WizardUiActions {
+
+  def initialize(accounts: Seq[Account]): Ui[Any]
+
+  def goToUser(): Ui[Any]
+
+  def goToWizard(): Ui[Any]
 
   def showLoading(): Ui[Any]
 

@@ -27,28 +27,31 @@ class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    initUi.run
+    presenter.initialize()
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
-    val ui = (requestCode, resultCode) match {
+    (requestCode, resultCode) match {
       case (RequestCodes.selectInfoIcon, Activity.RESULT_OK) =>
-        Option(data) flatMap (d => Option(d.getExtras)) map {
+        val maybeCategory = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(NewCollectionFragment.iconRequest) =>
-            setCategory(NineCardCategory(extras.getString(NewCollectionFragment.iconRequest)))
-          case _ => Ui.nop
-        } getOrElse showGeneralError
+            Some(NineCardCategory(extras.getString(NewCollectionFragment.iconRequest)))
+          case _ => None
+        } getOrElse None
+        presenter.updateCategory(maybeCategory)
       case (RequestCodes.selectInfoColor, Activity.RESULT_OK) =>
-        Option(data) flatMap (d => Option(d.getExtras)) map {
+        val maybeIndexColor = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(NewCollectionFragment.colorRequest) =>
-            setIndexColor(extras.getInt(NewCollectionFragment.colorRequest))
-          case _ => Ui.nop
-        } getOrElse showGeneralError
-      case _ => Ui.nop
+            Some(extras.getInt(NewCollectionFragment.colorRequest))
+          case _ => None
+        } getOrElse None
+        presenter.updateColor(maybeIndexColor)
+      case _ =>
     }
-    ui.run
   }
+
+  override def initialize(): Ui[Any] = initUi
 
   override def addCollection(collection: Collection): Ui[Any] = {
     launcherPresenter.addCollection(collection)
@@ -58,6 +61,10 @@ class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
   override def showMessageContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
 
   override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
+
+  override def updateCategory(nineCardCategory: NineCardCategory): Ui[Any] = setCategory(nineCardCategory)
+
+  override def updateColor(indexColor: Int): Ui[Any] = setIndexColor(indexColor)
 }
 
 object NewCollectionFragment {

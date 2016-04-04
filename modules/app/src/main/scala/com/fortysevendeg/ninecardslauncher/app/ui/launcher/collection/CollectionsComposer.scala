@@ -46,8 +46,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait CollectionsComposer
   extends Styles
-  with ActionsBehaviours
-  with LauncherExecutor {
+  with ActionsBehaviours {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint =>
 
@@ -134,8 +133,8 @@ trait CollectionsComposer
       (burgerIcon <~ burgerButtonStyle <~ On.click(
         drawerLayout <~ dlOpenDrawer
       )) ~
-      (googleIcon <~ googleButtonStyle <~ On.click(Ui(launchSearch))) ~
-      (micIcon <~ micButtonStyle <~ On.click(Ui(launchVoiceSearch))) ~
+      (googleIcon <~ googleButtonStyle <~ On.click(Ui(presenter.launchSearch))) ~
+      (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch))) ~
       (appDrawer1 <~ drawerItemStyle <~ vSetPosition(0) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
       }) ~
@@ -193,6 +192,8 @@ trait CollectionsComposer
 
   def closeCollectionMenu(): Ui[_] = workspaces <~ lwsCloseMenu
 
+  def cleanWorkspaces(): Ui[_] = workspaces <~ lwsClean
+
   def isMenuVisible: Boolean = drawerLayout exists (_.isDrawerOpen(GravityCompat.START))
 
   def isCollectionMenuVisible: Boolean = workspaces exists (_.workSpacesStatuses.openedMenu)
@@ -213,9 +214,9 @@ trait CollectionsComposer
     case _ => Ui.nop
   }
 
-  protected def clickAppDrawerItem(view: View)(implicit context: ActivityContextWrapper): Ui[_] = Ui {
+  protected def clickAppDrawerItem(view: View)(implicit context: ActivityContextWrapper, presenter: LauncherPresenter): Ui[_] = Ui {
     view.getPosition flatMap dockApps.lift foreach { app =>
-      execute(app.intent)
+      presenter.execute(app.intent)
     }
   }
 

@@ -17,6 +17,11 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   with Conversions
   with MomentConversions {
 
+  def initialize(): Unit = {
+    loadPrivateCollections()
+    actions.initialize().run
+  }
+
   def loadPrivateCollections(): Unit = {
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
@@ -65,6 +70,8 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
 }
 
 trait PrivateCollectionsActions {
+
+  def initialize(): Ui[Any]
 
   def showLoading(): Ui[Any]
 

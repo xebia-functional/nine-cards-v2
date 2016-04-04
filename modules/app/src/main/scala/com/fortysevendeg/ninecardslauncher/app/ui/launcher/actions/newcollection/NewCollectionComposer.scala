@@ -108,6 +108,4 @@ trait NewCollectionComposer
 
   private[this] def getColor = colorImage map (c => Int.unbox(c.getTag))
 
-  def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
-
 }

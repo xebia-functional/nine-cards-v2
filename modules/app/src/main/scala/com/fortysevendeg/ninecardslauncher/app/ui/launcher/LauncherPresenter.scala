@@ -1,8 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
+import android.content.Context
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.analytics._
+import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
@@ -16,9 +19,64 @@ import macroid.{ActivityContextWrapper, Ui}
 import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatuses)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter {
+  extends Presenter
+  with NineCardIntentConversions
+  with LauncherExecutor
+  with AnalyticDispatcher { self =>
 
-  def registerUser(): Unit = Task.fork(di.userProcess.register.run).resolveAsync()
+  override def getApplicationContext: Context = contextWrapper.application
+
+  def initialize(): Unit = {
+    Task.fork(di.userProcess.register.run).resolveAsync()
+    actions.initialize.run
+  }
+
+  def resume(): Unit = if (statuses.isEmptyCollectionsInWorkspace) {
+    loadCollectionsAndDockApps()
+  }
+
+  def back(): Unit = actions.back.run
+
+  def resetAction(): Unit = actions.resetAction.run
+
+  def connectUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit =
+    actions.showUserProfile(name, email, avatarUrl).run
+
+  def connectPlusProfile(coverPhotoUrl: String): Unit =
+    actions.showPlusProfile(coverPhotoUrl).run
+
+  def logout(): Unit = actions.logout.run
+
+  def openApp(app: App): Unit = if (statuses.isTabsOpened) {
+    actions.closeTabs.run
+  } else {
+    self !>>
+      TrackEvent(
+        screen = CollectionDetailScreen,
+        category = AppCategory(app.category),
+        action = OpenAction,
+        label = Some(ProvideLabel(app.packageName)),
+        value = Some(OpenAppFromAppDrawerValue))
+    execute(toNineCardIntent(app))
+  }
+
+  def openSettings(app: App) = if (statuses.isTabsOpened) {
+    actions.closeTabs.run
+  } else {
+    launchSettings(app.packageName)
+  }
+
+  def openContact(contact: Contact) = if (statuses.isTabsOpened) {
+    actions.closeTabs.run
+  } else {
+    executeContact(contact.lookupKey)
+  }
+
+  def openLastCall(contact: LastCallsContact) = if (statuses.isTabsOpened) {
+    actions.closeTabs.run
+  } else {
+    execute(phoneToNineCardIntent(contact.number))
+  }
 
   def addCollection(collection: Collection): Unit = actions.addCollection(collection).run
 
@@ -142,6 +200,20 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
 
 trait LauncherUiActions {
 
+  def initialize: Ui[Any]
+
+  def back: Ui[Any]
+
+  def resetAction: Ui[Any]
+
+  def logout: Ui[Any]
+
+  def closeTabs: Ui[Any]
+
+  def showUserProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
+
+  def showPlusProfile(coverPhotoUrl: String): Ui[Any]
+
   def addCollection(collection: Collection): Ui[Any]
 
   def showDialogForRemoveCollection(collection: Collection): Ui[Any]
@@ -177,6 +249,10 @@ trait LauncherUiActions {
 
 trait LauncherViewStatuses {
 
+  def isEmptyCollectionsInWorkspace: Boolean
+
   def canRemoveCollections: Boolean
+
+  def isTabsOpened: Boolean
 
 }

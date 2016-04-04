@@ -12,7 +12,7 @@ class Presenter(implicit contextWrapper: ContextWrapper)
 
   implicit lazy val di = new Injector
 
-  def getTheme: Ui[NineCardsTheme] = Ui {
+  def getTheme: NineCardsTheme = {
     di.themeProcess.getSelectedTheme.run.run match {
       case Answer(t) => t
       case _ => getDefaultTheme

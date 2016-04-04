@@ -42,7 +42,6 @@ import scala.concurrent.Future
 trait DrawerComposer
   extends DrawerStyles
   with ContextSupportProvider
-  with LauncherExecutor
   with PullToTabsViewStyles {
 
   self: AppCompatActivity with TypedFindView with SystemBarsTint with LauncherComposer =>
@@ -89,9 +88,9 @@ trait DrawerComposer
     (searchBoxView <~
       sbvUpdateContentView(AppsView) <~
       sbvChangeListener(SearchBoxAnimatedListener(
-        onHeaderIconClick = () => (if (isTabsOpened) closeTabs else openTabs).run,
-        onAppStoreIconClick = () => launchPlayStore,
-        onContactsIconClick = () => launchDial()
+        onHeaderIconClick = () => (if (isDrawerTabsOpened) closeDrawerTabs else openTabs).run,
+        onAppStoreIconClick = () => presenter.launchPlayStore,
+        onContactsIconClick = () => presenter.launchDial()
       )) <~
       sbvOnChangeText((text: String) => {
         (text, getStatus, getTypeView) match {
@@ -141,7 +140,7 @@ trait DrawerComposer
               case Some(ContactView) =>
                 ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
               case _ => Ui.nop
-            }) ~ (if (isTabsOpened) closeTabs else Ui.nop) ~ (searchBoxView <~ sbvClean)).run
+            }) ~ (if (isDrawerTabsOpened) closeDrawerTabs else Ui.nop) ~ (searchBoxView <~ sbvClean)).run
           }
         ))) ~
       (drawerContent <~ contentStyle) ~
@@ -153,7 +152,7 @@ trait DrawerComposer
     (tabs <~ tvOpen <~ showTabs) ~
       (recycler <~ hideList)
 
-  protected def closeTabs(implicit context: ActivityContextWrapper): Ui[_] =
+  protected def closeDrawerTabs(implicit context: ActivityContextWrapper): Ui[_] =
     (tabs <~ tvClose <~ hideTabs) ~
       (recycler <~ showList)
 
@@ -260,7 +259,7 @@ trait DrawerComposer
       })
   }
 
-  protected def isTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
+  protected def isDrawerTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
 
   private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
 

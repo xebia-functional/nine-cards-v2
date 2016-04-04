@@ -17,7 +17,7 @@ import macroid.{Contexts, Ui}
 
 import scala.util.Try
 
-class WizardUiActivity
+class WizardActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
@@ -35,16 +35,19 @@ class WizardUiActivity
   override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
-    case (WizardStateActionFilter, Some(`stateSuccess`)) => storeCloudDevice()
-    case (WizardStateActionFilter, Some(`stateFailure`)) => showUserView.run
-    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => showWizardView.run
+    case (WizardStateActionFilter, Some(`stateSuccess`)) =>
+      presenter.saveCurrentDevice(clientStatuses.apiClient, clientStatuses.username)
+    case (WizardStateActionFilter, Some(`stateFailure`)) =>
+      presenter.goToUser()
+    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) =>
+      presenter.goToWizard()
     case _ =>
   }
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.wizard_activity)
-    (showUserView ~ initUi(presenter.getAccounts)).run
+    presenter.initialize()
   }
 
   override def onResume(): Unit = {
@@ -78,8 +81,11 @@ class WizardUiActivity
   override def onConnected(bundle: Bundle): Unit =
     presenter.getDevices(clientStatuses.apiClient, clientStatuses.username, clientStatuses.userPermissions)
 
-  private[this] def storeCloudDevice(): Unit =
-    presenter.saveCurrentDevice(clientStatuses.apiClient, clientStatuses.username)
+  override def initialize(accounts: Seq[Account]): Ui[Any] = showUserView ~ initUi(accounts)
+
+  override def goToUser(): Ui[Any] = showUserView
+
+  override def goToWizard(): Ui[Any] = showWizardView
 
   override def showLoading(): Ui[Any] = showLoadingView
 

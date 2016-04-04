@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardUiActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.device.ImplicitsDeviceException
 import com.fortysevendeg.ninecardslauncher2.R
@@ -57,7 +57,7 @@ class CreateCollectionService
 
     setState(stateCreatingCollections)
 
-    val notificationIntent: Intent = new Intent(this, classOf[WizardUiActivity])
+    val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
     val title: String = getString(R.string.workingNotificationTitle)
     builder.
       setContentTitle(title).

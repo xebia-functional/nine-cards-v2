@@ -21,6 +21,11 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
 
   protected var statuses = PublicCollectionStatuses(Communication, TopSharedCollection)
 
+  def initialize(): Unit = {
+    loadPublicCollections()
+    actions.initialize().run
+  }
+
   def loadPublicCollectionsByCategory(category: NineCardCategory): Unit = {
     statuses = statuses.copy(category = category)
     actions.updateCategory(category).run
@@ -69,6 +74,8 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
 }
 
 trait PublicCollectionsUiActions {
+
+  def initialize(): Ui[Any]
 
   def showLoading(): Ui[Any]
 

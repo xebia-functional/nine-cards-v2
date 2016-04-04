@@ -26,9 +26,10 @@ class PublicCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    presenter.loadPublicCollections()
-    initUi.run
+    presenter.initialize()
   }
+
+  override def initialize(): Ui[Any] = initUi
 
   override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError, () => {
     presenter.loadPublicCollections()
