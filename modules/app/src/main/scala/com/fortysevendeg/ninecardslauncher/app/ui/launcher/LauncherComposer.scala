@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.WindowManager
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsComposer

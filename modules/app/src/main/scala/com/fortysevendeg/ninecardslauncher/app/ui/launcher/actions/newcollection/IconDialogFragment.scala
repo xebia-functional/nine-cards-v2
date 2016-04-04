@@ -14,7 +14,6 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
@@ -61,7 +60,7 @@ case class IconDialogFragment(categorySelected: NineCardCategory)(implicit conte
     ((text <~
       (if (select) tvColorResource(R.color.text_selected_color_dialog) else Tweak.blank) <~
       tvText(name) <~
-      tvCompoundDrawablesWithIntrinsicBounds2(left = Some(colorizeDrawable))) ~
+      tvCompoundDrawablesWithIntrinsicBounds(left = Some(colorizeDrawable))) ~
       (icon <~ (if (select) ivSrc(drawable) else Tweak.blank)) ~
       (this <~ On.click{
         Ui {

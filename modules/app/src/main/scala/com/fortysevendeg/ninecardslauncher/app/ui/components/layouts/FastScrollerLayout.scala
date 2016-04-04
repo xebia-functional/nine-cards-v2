@@ -16,10 +16,10 @@ import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
@@ -257,11 +257,11 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     case FastScrollerText => text <~ tvText(term)
     case FastScrollerCategory =>
       icon <~
-        tvCompoundDrawablesWithIntrinsicBounds2Resources(top = getIconResource(NineCardCategory(term).getIconResource)) <~
+        tvCompoundDrawablesWithIntrinsicBoundsResources(top = getIconResource(NineCardCategory(term).getIconResource)) <~
         tvText(getStringResource(NineCardCategory(term).getStringResource))
     case FastScrollerInstallationDate =>
       icon <~
-        tvCompoundDrawablesWithIntrinsicBounds2Resources(top = R.drawable.app_drawer_filter_installation_date) <~
+        tvCompoundDrawablesWithIntrinsicBoundsResources(top = R.drawable.app_drawer_filter_installation_date) <~
         tvText(getStringResource(term))
   }
 

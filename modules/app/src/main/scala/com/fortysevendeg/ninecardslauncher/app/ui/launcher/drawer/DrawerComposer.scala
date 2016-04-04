@@ -11,7 +11,6 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
@@ -82,7 +81,7 @@ trait DrawerComposer
     case ContactsByLastCall => TabInfo(R.drawable.app_drawer_filter_last_call, getString(R.string.contacts_last))
   }
 
-  def showGeneralError: Ui[_] = drawerContent <~ uiSnackbarShort(R.string.contactUsError)
+  def showGeneralError: Ui[_] = drawerContent <~ vSnackbarShort(R.string.contactUsError)
 
   def initDrawerUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] = {
     val colorPrimary = theme.get(PrimaryColor)

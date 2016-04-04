@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.StepsWorkspacesTweaks._
@@ -63,7 +63,7 @@ trait WizardComposer
     StepData(R.drawable.wizard_05, resGetString(R.string.wizard_step_5))
   )
 
-  def showMessage(message: Int): Ui[Any] = rootLayout <~ uiSnackbarShort(message)
+  def showMessage(message: Int): Ui[Any] = rootLayout <~ vSnackbarShort(message)
 
   def initUi(accounts: Seq[Account])(implicit context: ActivityContextWrapper, presenter: WizardPresenter): Ui[Any] = {
     val steps = createSteps

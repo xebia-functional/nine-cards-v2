@@ -15,7 +15,6 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
@@ -90,8 +89,8 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
         vgRemoveAllViews <~
         automaticAlignment(appsRow2, cardsRow2)) ~
       (name <~ tvText(privateCollection.name)) ~
-      (content <~ vTag2(position)) ~
-      (addCollection <~ On.click(presenter.saveCollection(privateCollection)))
+      (content <~ vTag(position)) ~
+      (addCollection <~ On.click(Ui(clickListener(privateCollection))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

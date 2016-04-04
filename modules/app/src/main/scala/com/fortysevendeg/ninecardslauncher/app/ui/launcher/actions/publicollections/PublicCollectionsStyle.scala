@@ -4,7 +4,6 @@ import android.view.Gravity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
@@ -22,7 +21,7 @@ trait PublicCollectionsStyle {
       tvColorResource(R.color.tab_public_collection_dialog) +
       vPadding(paddingTop = paddingDefault, paddingBottom = paddingDefault, paddingRight = paddingLarge) +
       tvDrawablePadding(paddingSmall) +
-      tvCompoundDrawablesWithIntrinsicBounds2Resources(right = R.drawable.tab_menu_indicator)
+      tvCompoundDrawablesWithIntrinsicBoundsResources(right = R.drawable.tab_menu_indicator)
   }
 
 }

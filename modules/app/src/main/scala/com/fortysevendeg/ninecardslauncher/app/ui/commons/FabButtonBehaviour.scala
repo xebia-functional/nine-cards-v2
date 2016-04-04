@@ -5,12 +5,11 @@ import android.support.design.widget.FloatingActionButton
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View}
 import android.widget.LinearLayout
-import ViewOps._
 import CommonsTweak._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
@@ -101,8 +100,10 @@ trait FabButtonBehaviour
     if (isFabButtonVisible && autoHide) {
       resetDelayedHide
     } else {
+      val colorDefault = resGetColor(color)
+      val colorDark = ColorsUtils.getColorDark(colorDefault)
       (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton) ~
-        (fabButton <~ (if (color != 0) fbaColorResource(color) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
+        (fabButton <~ (if (color != 0) fbaColor(colorDefault, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
         (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)
     }
 
