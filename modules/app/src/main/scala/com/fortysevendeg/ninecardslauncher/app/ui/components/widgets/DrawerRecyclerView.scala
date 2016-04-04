@@ -8,9 +8,9 @@ import android.view.ViewGroup.LayoutParams
 import android.view.animation.GridLayoutAnimationController.{AnimationParameters => GridAnimationParameters}
 import android.view.animation.LayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.commons._

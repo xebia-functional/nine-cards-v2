@@ -6,7 +6,6 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
@@ -31,7 +30,7 @@ trait ShortcutComposer
 
   def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def showGeneralError: Ui[_] = rootContent <~ uiSnackbarShort(R.string.contactUsError)
+  def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
   def addShortcuts(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit) = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
@@ -58,7 +57,7 @@ case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context:
   def bind(shortcut: Shortcut, position: Int): Ui[_] =
     (icon <~ (shortcut.icon map ivSrc getOrElse Tweak.blank)) ~
       (name <~ tvText(shortcut.title)) ~
-      (content <~ vTag2(position))
+      (content <~ vTag(position))
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
