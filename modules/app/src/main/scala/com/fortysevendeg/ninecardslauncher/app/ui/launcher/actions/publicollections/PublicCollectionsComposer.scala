@@ -151,7 +151,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
       (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
-      (addCollection <~ On.click(Ui(clickListener(collection)))) ~
+      (addCollection <~ On.click(presenter.saveSharedCollection(collection))) ~
       (shareCollection <~ On.click(Ui(launchShare(collection.shareLink))))
   }
 

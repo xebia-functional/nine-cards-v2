@@ -42,7 +42,7 @@ trait PrivateCollectionsComposer
 
   def showLoadingView: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def showError(res: Int): Ui[_] = rootContent <~ uiSnackbarShort(res)
+  def showError(res: Int): Ui[_] = rootContent <~ vSnackbarShort(res)
 
   def reloadPrivateCollections(
     privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Ui[_] = {
@@ -90,7 +90,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
         automaticAlignment(appsRow2, cardsRow2)) ~
       (name <~ tvText(privateCollection.name)) ~
       (content <~ vTag(position)) ~
-      (addCollection <~ On.click(Ui(clickListener(privateCollection))))
+      (addCollection <~ On.click(presenter.saveCollection(privateCollection)))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

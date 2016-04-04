@@ -93,9 +93,7 @@ class LauncherActivity
     val ft = getSupportFragmentManager.beginTransaction()
     Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
     ft.addToBackStack(javaNull)
-    val dialog = new RemoveCollectionDialogFragment(() => {
-      presenter.removeCollection(collection).run
-    })
+    val dialog = new RemoveCollectionDialogFragment(collection)
     dialog.show(ft, tagDialog)
   }
 
