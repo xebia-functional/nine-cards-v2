@@ -12,26 +12,24 @@ import scalaz.concurrent.Task
 class NewCollectionPresenter (actions: NewCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter {
 
-  def saveCollection(maybeName: Option[String], maybeCategory: Option[NineCardCategory], maybeIndex: Option[Int]): Ui[Any] =
+  def saveCollection(maybeName: Option[String], maybeCategory: Option[NineCardCategory], maybeIndex: Option[Int]): Unit =
     (for {
       name <- maybeName
       category <- maybeCategory
       index <- maybeIndex
     } yield {
-      Ui {
-        val request = AddCollectionRequest(
-          name = name,
-          collectionType = FreeCollectionType,
-          icon = category.getIconResource,
-          themedColorIndex = index,
-          appsCategory = None
-        )
-        Task.fork(di.collectionProcess.addCollection(request).run).resolveAsyncUi(
-          onResult = (c) => actions.addCollection(c),
-          onException = (ex) => actions.showMessageContactUsError
-        )
-      }
-    }) getOrElse actions.showMessageFormFieldError
+      val request = AddCollectionRequest(
+        name = name,
+        collectionType = FreeCollectionType,
+        icon = category.getIconResource,
+        themedColorIndex = index,
+        appsCategory = None
+      )
+      Task.fork(di.collectionProcess.addCollection(request).run).resolveAsyncUi(
+        onResult = (c) => actions.addCollection(c),
+        onException = (ex) => actions.showMessageContactUsError
+      )
+    }) getOrElse actions.showMessageFormFieldError.run
 
 }
 

@@ -15,38 +15,36 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class LauncherPresenter(actions: LauncherActions)(implicit contextWrapper: ActivityContextWrapper)
+class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatuses)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter {
 
-  def registerUser(): Ui[Any] = Ui {
-    Task.fork(di.userProcess.register.run).resolveAsync()
-  }
+  def registerUser(): Unit = Task.fork(di.userProcess.register.run).resolveAsync()
 
-  def addCollection(collection: Collection): Ui[Any] = actions.addCollection(collection)
+  def addCollection(collection: Collection): Unit = actions.addCollection(collection).run
 
-  def removeCollection(maybeCollection: Option[Collection]): Ui[Any] =
+  def removeCollection(maybeCollection: Option[Collection]): Unit =
     maybeCollection map { collection =>
-      if (actions.canRemoveCollections().get) {
-        actions.showDialogForRemoveCollection(collection)
+      if (statuses.canRemoveCollections) {
+        actions.showDialogForRemoveCollection(collection).run
       } else {
-        actions.showMinimumOneCollectionMessage()
+        actions.showMinimumOneCollectionMessage().run
       }
-    } getOrElse actions.showContactUsError()
+    } getOrElse actions.showContactUsError().run
 
-  def removeCollection(collection: Collection): Ui[Any] = Ui {
+  def removeCollection(collection: Collection): Unit = {
     Task.fork(deleteCollection(collection.id).run).resolveAsyncUi(
       onResult = (_) => actions.removeCollection(collection),
       onException = (_) => actions.showContactUsError()
     )
   }
 
-  def loadCollectionsAndDockApps(): Ui[Any] = Ui {
+  def loadCollectionsAndDockApps(): Unit = {
     Task.fork(getLauncherApps.run).resolveAsyncUi(
       onResult = {
         // Check if there are collections in DB, if there aren't we go to wizard
         case (Nil, _) => actions.goToWizard()
         case (collections, apps) =>
-          Task.fork(getUser().run).resolveAsyncUi(
+          Task.fork(getUser.run).resolveAsyncUi(
             onResult = user => actions.loadUserProfile(user))
           actions.loadCollections(collections, apps)
       },
@@ -55,7 +53,7 @@ class LauncherPresenter(actions: LauncherActions)(implicit contextWrapper: Activ
     )
   }
 
-  def loadApps(appsMenuOption: AppsMenuOption): Ui[Any] = Ui {
+  def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     Task.fork(getLoadApps(getAppOrder).run).resolveAsyncUi(
       onResult = {
@@ -68,7 +66,7 @@ class LauncherPresenter(actions: LauncherActions)(implicit contextWrapper: Activ
     )
   }
 
-  def loadContacts(contactsMenuOption: ContactsMenuOption): Ui[Any] = Ui {
+  def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
     contactsMenuOption match {
       case ContactsByLastCall =>
         Task.fork(di.deviceProcess.getLastCalls.run).resolveAsyncUi(
@@ -83,30 +81,30 @@ class LauncherPresenter(actions: LauncherActions)(implicit contextWrapper: Activ
     }
   }
 
-  def loadAppsByKeyword(keyword: String): Ui[Any] = Ui {
+  def loadAppsByKeyword(keyword: String): Unit = {
     Task.fork(di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName).run).resolveAsyncUi(
       onResult = {
         case (apps: IterableApps) => actions.reloadAppsInDrawer(apps = apps)
       })
   }
 
-  def loadContactsByKeyword(keyword: String): Ui[Any] = Ui {
+  def loadContactsByKeyword(keyword: String): Unit = {
     Task.fork(di.deviceProcess.getIterableContactsByKeyWord(keyword).run).resolveAsyncUi(
       onResult = {
         case (contacts: IterableContacts) => actions.reloadContactsInDrawer(contacts = contacts)
       })
   }
 
-  def goToCollection(maybeView: Option[View], maybeCollection: Option[Collection]): Ui[Any] =
+  def goToCollection(maybeView: Option[View], maybeCollection: Option[Collection]): Unit =
     (for {
       view <- maybeView
       collection <- maybeCollection
-    } yield actions.goToCollection(view, collection)) getOrElse actions.showContactUsError()
+    } yield actions.goToCollection(view, collection).run) getOrElse actions.showContactUsError().run
 
   protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
     di.collectionProcess.deleteCollection(id)
 
-  protected def getUser(): ServiceDef2[User, UserException] = di.userProcess.getUser
+  protected def getUser: ServiceDef2[User, UserException] = di.userProcess.getUser
 
   protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
     for {
@@ -140,5 +138,45 @@ class LauncherPresenter(actions: LauncherActions)(implicit contextWrapper: Activ
     case _ => AllContacts
   }
 
+}
+
+trait LauncherUiActions {
+
+  def addCollection(collection: Collection): Ui[Any]
+
+  def showDialogForRemoveCollection(collection: Collection): Ui[Any]
+
+  def removeCollection(collection: Collection): Ui[Any]
+
+  def showContactUsError(): Ui[Any]
+
+  def showMinimumOneCollectionMessage(): Ui[Any]
+
+  def showLoading(): Ui[Any]
+
+  def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any]
+
+  def loadUserProfile(user: User): Ui[Any]
+
+  def goToWizard(): Ui[Any]
+
+  def goToCollection(view: View, collection: Collection): Ui[Any]
+
+  def reloadAppsInDrawer(
+    apps: IterableApps,
+    getAppOrder: GetAppOrder = GetByName,
+    counters: Seq[TermCounter] = Seq.empty): Ui[Any]
+
+  def reloadContactsInDrawer(
+    contacts: IterableContacts,
+    counters: Seq[TermCounter] = Seq.empty): Ui[_]
+
+  def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
+
+}
+
+trait LauncherViewStatuses {
+
+  def canRemoveCollections: Boolean
 
 }

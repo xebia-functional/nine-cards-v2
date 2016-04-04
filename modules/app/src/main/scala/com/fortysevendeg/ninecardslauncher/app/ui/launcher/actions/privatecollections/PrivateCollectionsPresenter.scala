@@ -17,14 +17,14 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   with Conversions
   with MomentConversions {
 
-  def loadPrivateCollections(): Ui[Any] = Ui {
+  def loadPrivateCollections(): Unit = {
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (privateCollections: Seq[PrivateCollection]) => actions.addPrivateCollections(privateCollections),
       onException = (ex: Throwable) => actions.showContactUsError())
   }
 
-  def saveCollection(privateCollection: PrivateCollection): Ui[Any] = Ui {
+  def saveCollection(privateCollection: PrivateCollection): Unit = {
     Task.fork(addCollection(privateCollection).run).resolveAsyncUi(
       onResult = (c) => actions.addCollection(c),
       onException = (ex) => actions.showContactUsError())

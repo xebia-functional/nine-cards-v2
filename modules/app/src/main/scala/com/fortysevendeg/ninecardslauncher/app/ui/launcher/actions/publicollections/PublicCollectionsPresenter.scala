@@ -15,30 +15,32 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class PublicCollectionsPresenter (actions: PublicCollectionsActions)(implicit contextWrapper: ActivityContextWrapper)
+class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
   with Conversions {
 
   protected var statuses = PublicCollectionStatuses(Communication, TopSharedCollection)
 
-  def loadPublicCollectionsByCategory(category: NineCardCategory): Ui[Any] = {
+  def loadPublicCollectionsByCategory(category: NineCardCategory): Unit = {
     statuses = statuses.copy(category = category)
+    actions.updateCategory(category).run
     loadPublicCollections()
   }
 
-  def loadPublicCollectionsByTypeSharedCollection(typeSharedCollection: TypeSharedCollection): Ui[Any] = {
+  def loadPublicCollectionsByTypeSharedCollection(typeSharedCollection: TypeSharedCollection): Unit = {
     statuses = statuses.copy(typeSharedCollection = typeSharedCollection)
+    actions.updateTypeCollection(typeSharedCollection).run
     loadPublicCollections()
   }
 
-  def loadPublicCollections(): Ui[Any] = Ui {
+  def loadPublicCollections(): Unit = {
     Task.fork(getSharedCollections(statuses.category, statuses.typeSharedCollection).run).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (sharedCollections: Seq[SharedCollection]) => actions.loadPublicCollections(sharedCollections),
       onException = (ex: Throwable) => actions.showContactUsError())
   }
 
-  def saveSharedCollection(sharedCollection: SharedCollection): Ui[Any] = Ui {
+  def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
     Task.fork(addCollection(sharedCollection).run).resolveAsyncUi(
       onResult = (c) => actions.addCollection(c),
       onException = (ex) => actions.showContactUsError())
@@ -66,7 +68,7 @@ class PublicCollectionsPresenter (actions: PublicCollectionsActions)(implicit co
 
 }
 
-trait PublicCollectionsActions {
+trait PublicCollectionsUiActions {
 
   def showLoading(): Ui[Any]
 
@@ -75,6 +77,10 @@ trait PublicCollectionsActions {
   def addCollection(collection: Collection): Ui[Any]
 
   def loadPublicCollections(sharedCollections: Seq[SharedCollection]): Ui[Any]
+
+  def updateCategory(category: NineCardCategory): Ui[Any]
+
+  def updateTypeCollection(typeSharedCollection: TypeSharedCollection): Ui[Any]
 
 }
 

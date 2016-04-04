@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.dialogs.RemoveCollectionDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardUiActivity
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
@@ -30,7 +30,8 @@ class LauncherActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
-  with LauncherActions
+  with LauncherUiActions
+  with LauncherViewStatuses
   with ActionsScreenListener
   with LauncherComposer
   with SystemBarsTint
@@ -39,7 +40,7 @@ class LauncherActivity
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
-  implicit lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
+  implicit lazy val presenter: LauncherPresenter = new LauncherPresenter(self, self)
 
   implicit lazy val theme: NineCardsTheme = presenter.getTheme.get
 
@@ -52,14 +53,15 @@ class LauncherActivity
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     setContentView(R.layout.launcher_activity)
-    (presenter.registerUser() ~ initUi).run
+    presenter.registerUser()
+    initUi.run
     initAllSystemBarsTint
   }
 
   override def onResume(): Unit = {
     super.onResume()
     if (isEmptyCollections) {
-      presenter.loadCollectionsAndDockApps().run
+      presenter.loadCollectionsAndDockApps()
     }
   }
 
@@ -114,7 +116,7 @@ class LauncherActivity
     uiStartIntentWithOptions(intent, options)
   }
 
-  override def canRemoveCollections(): Ui[Boolean] = Ui(getCountCollections > 1)
+  override def canRemoveCollections: Boolean = getCountCollections > 1
 
   def onConnectedUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit = userProfileMenu(name, email, avatarUrl).run
 
@@ -132,7 +134,7 @@ class LauncherActivity
   override def showLoading(): Ui[Any] = showLoadingView
 
   override def goToWizard(): Ui[_] = Ui {
-    val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardActivity])
+    val wizardIntent = new Intent(LauncherActivity.this, classOf[WizardUiActivity])
     startActivity(wizardIntent)
   }
 

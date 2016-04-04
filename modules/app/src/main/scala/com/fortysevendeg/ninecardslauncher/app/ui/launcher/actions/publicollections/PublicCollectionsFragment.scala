@@ -6,6 +6,8 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TypeSharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Ui
@@ -14,7 +16,7 @@ class PublicCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
   extends BaseActionFragment
   with PublicCollectionsComposer
   with NineCardIntentConversions
-  with PublicCollectionsActions { self =>
+  with PublicCollectionsUiActions { self =>
 
   implicit lazy val presenter: PublicCollectionsPresenter = new PublicCollectionsPresenter(self)
 
@@ -24,7 +26,8 @@ class PublicCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    (presenter.loadPublicCollections() ~ initUi).run
+    presenter.loadPublicCollections()
+    initUi.run
   }
 
   override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError, () => {
@@ -34,10 +37,17 @@ class PublicCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
   override def loadPublicCollections(sharedCollections: Seq[SharedCollection]): Ui[Any] =
     reloadPublicCollections(sharedCollections)
 
-  override def addCollection(collection: Collection): Ui[Any] =
-    launcherPresenter.addCollection(collection) ~ unreveal()
+  override def addCollection(collection: Collection): Ui[Any] = {
+    launcherPresenter.addCollection(collection)
+    unreveal()
+  }
 
   override def showLoading(): Ui[Any] = showLoadingView
+
+  override def updateCategory(category: NineCardCategory): Ui[Any] = changeCategoryName(category)
+
+  override def updateTypeCollection(typeSharedCollection: TypeSharedCollection): Ui[Any] = changeTypeCollection(typeSharedCollection)
+
 }
 
 

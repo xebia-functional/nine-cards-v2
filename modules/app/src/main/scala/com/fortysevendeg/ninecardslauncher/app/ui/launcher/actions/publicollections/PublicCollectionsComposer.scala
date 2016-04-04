@@ -22,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawa
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{LatestSharedCollection, TopSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TypeSharedCollection, LatestSharedCollection, TopSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -67,15 +67,11 @@ trait PublicCollectionsComposer
           typeFilter <~ vPopupMenuShow(
             menu = R.menu.type_public_collection_menu,
             onMenuItemClickListener = (item: MenuItem) => {
-              item.getItemId match {
-                case R.id.top =>
-                  ((typeFilter <~ tvText(R.string.top)) ~
-                    presenter.loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)).run
-                case R.id.latest =>
-                  ((typeFilter <~ tvText(R.string.latest)) ~
-                    presenter.loadPublicCollectionsByTypeSharedCollection(LatestSharedCollection)).run
-                case _ =>
-              }
+              presenter.loadPublicCollectionsByTypeSharedCollection(
+                item.getItemId match {
+                  case R.id.top => TopSharedCollection
+                  case _ => LatestSharedCollection
+                })
               true
             })
         }) ~
@@ -85,10 +81,7 @@ trait PublicCollectionsComposer
             layout = R.layout.list_item_popup_menu,
             menu = categoryNamesMenu,
             onItemClickListener = (position: Int) => {
-              categories.lift(position) foreach { category =>
-                ((categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)) ~
-                  presenter.loadPublicCollectionsByCategory(category)).run
-              }
+              categories.lift(position) foreach presenter.loadPublicCollectionsByCategory
             },
             width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
             height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
@@ -105,6 +98,14 @@ trait PublicCollectionsComposer
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone)
+  }
+
+  def changeCategoryName(category: NineCardCategory) =
+    categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)
+
+  def changeTypeCollection(typeSharedCollection: TypeSharedCollection) = typeSharedCollection match {
+    case TopSharedCollection => typeFilter <~ tvText(R.string.top)
+    case LatestSharedCollection => typeFilter <~ tvText(R.string.latest)
   }
 
 }
@@ -151,7 +152,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
       (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
-      (addCollection <~ On.click(presenter.saveSharedCollection(collection))) ~
+      (addCollection <~ On.click(Ui(presenter.saveSharedCollection(collection)))) ~
       (shareCollection <~ On.click(Ui(launchShare(collection.shareLink))))
   }
 

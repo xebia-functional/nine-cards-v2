@@ -90,7 +90,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
         automaticAlignment(appsRow2, cardsRow2)) ~
       (name <~ tvText(privateCollection.name)) ~
       (content <~ vTag(position)) ~
-      (addCollection <~ On.click(presenter.saveCollection(privateCollection)))
+      (addCollection <~ On.click(Ui(presenter.saveCollection(privateCollection))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

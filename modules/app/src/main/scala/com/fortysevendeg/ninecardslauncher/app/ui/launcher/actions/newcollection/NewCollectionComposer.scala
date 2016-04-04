@@ -45,7 +45,7 @@ trait NewCollectionComposer
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
-        On.click(presenter.saveCollection(getName, getCategory, getColor))) ~
+        On.click(Ui(presenter.saveCollection(getName, getCategory, getColor)))) ~
       setCategory(Communication) ~
       setIndexColor(0) ~
       (colorContent <~ On.click {

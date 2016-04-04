@@ -82,9 +82,10 @@ class CollectionItem(presenter: LauncherPresenter, positionInGrid: Int)(implicit
       w[ImageView] <~ wire(icon) <~ iconStyle,
       w[TextView] <~ wire(name) <~ nameStyle
     ) <~ collectionItemStyle <~ On.click {
-      presenter.goToCollection(icon, collection)
+      Ui(presenter.goToCollection(icon, collection))
     } <~ On.longClick {
-      presenter.removeCollection(collection) ~ Ui(true)
+      presenter.removeCollection(collection)
+      Ui(true)
     } <~ vUseLayerHardware).get)
 
   def populate(collection: Collection) = {

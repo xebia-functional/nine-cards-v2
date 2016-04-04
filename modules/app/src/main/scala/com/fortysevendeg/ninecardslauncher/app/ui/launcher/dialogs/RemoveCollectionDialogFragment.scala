@@ -20,7 +20,7 @@ class RemoveCollectionDialogFragment(collection: Collection)(implicit contextWra
       setMessage(R.string.removeCollectionMessage).
       setPositiveButton(android.R.string.ok, new OnClickListener {
         override def onClick(dialog: DialogInterface, which: Int): Unit = {
-          presenter.removeCollection(collection).run
+          presenter.removeCollection(collection)
           dismiss()
         }
       }).

@@ -43,7 +43,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:label=""
-            android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity" />
+            android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardUiActivity" />
 
         <activity
             android:theme="@style/AppThemeSolid"

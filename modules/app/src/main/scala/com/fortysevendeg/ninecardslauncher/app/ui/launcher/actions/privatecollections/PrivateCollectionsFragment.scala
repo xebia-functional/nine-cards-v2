@@ -23,14 +23,17 @@ class PrivateCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    (presenter.loadPrivateCollections() ~ initUi).run
+    presenter.loadPrivateCollections()
+    initUi.run
   }
 
   override def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any] =
     reloadPrivateCollections(privateCollections)
 
-  override def addCollection(collection: Collection): Ui[Any] =
-    launcherPresenter.addCollection(collection) ~ unreveal()
+  override def addCollection(collection: Collection): Ui[Any] = {
+    launcherPresenter.addCollection(collection)
+    unreveal()
+  }
 
   override def showLoading(): Ui[Any] = showLoadingView
 

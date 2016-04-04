@@ -17,19 +17,20 @@ import macroid.{Contexts, Ui}
 
 import scala.util.Try
 
-class WizardActivity
+class WizardUiActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with GoogleApiClientActivityProvider
-  with WizardActions
+  with WizardUiActions
+  with WizardViewStatuses
   with TypedFindView
   with WizardComposer
   with BroadcastDispatcher { self =>
 
   var clientStatuses = GoogleApiClientStatuses()
 
-  implicit lazy val presenter = new WizardPresenter(self)
+  implicit lazy val presenter = new WizardPresenter(self, self)
 
   override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
@@ -43,7 +44,7 @@ class WizardActivity
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.wizard_activity)
-    (showUserView ~ initUi(presenter.getAccounts.get)).run
+    (showUserView ~ initUi(presenter.getAccounts)).run
   }
 
   override def onResume(): Unit = {
@@ -68,31 +69,21 @@ class WizardActivity
   override def onBackPressed(): Unit = {}
 
   // TODO - Implement error code
-  override def onRequestConnectionError(errorCode: Int): Unit =
-    showErrorConnectingGoogle().run
+  override def onRequestConnectionError(errorCode: Int): Unit = presenter.connectionError()
 
-  override def onResolveConnectionError(): Unit = showErrorConnectingGoogle().run
+  override def onResolveConnectionError(): Unit = presenter.connectionError()
 
   override def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
 
   override def onConnected(bundle: Bundle): Unit =
-    clientStatuses match {
-      case GoogleApiClientStatuses(Some(client), Some(username), Some(userPermissions)) =>
-        presenter.getDevices(client, username, userPermissions).run
-      case _ =>
-        showErrorConnectingGoogle().run
-    }
+    presenter.getDevices(clientStatuses.apiClient, clientStatuses.username, clientStatuses.userPermissions)
 
   private[this] def storeCloudDevice(): Unit =
-    clientStatuses match {
-      case GoogleApiClientStatuses(Some(client), Some(username), _) =>
-        presenter.saveCurrentDevice(client, username).run
-      case _ => finishProcess.run
-    }
+    presenter.saveCurrentDevice(clientStatuses.apiClient, clientStatuses.username)
 
   override def showLoading(): Ui[Any] = showLoadingView
 
-  override def createGoogleApiClient(account: Account): Ui[GoogleApiClient] = Ui {
+  override def createGoogleApiClient(account: Account): GoogleApiClient = {
     val client = createGoogleDriveClient(account.name)
     clientStatuses = clientStatuses.copy(
       apiClient = Some(client),

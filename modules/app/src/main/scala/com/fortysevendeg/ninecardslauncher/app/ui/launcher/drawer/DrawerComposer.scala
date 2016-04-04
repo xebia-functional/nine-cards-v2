@@ -96,11 +96,11 @@ trait DrawerComposer
       sbvOnChangeText((text: String) => {
         (text, getStatus, getTypeView) match {
           case ("", Some(status), Some(AppsView)) =>
-            AppsMenuOption(status) foreach (option => presenter.loadApps(option).run)
+            AppsMenuOption(status) foreach (option => presenter.loadApps(option))
           case ("", Some(status), Some(ContactView)) =>
-            ContactsMenuOption(status) foreach (option => presenter.loadContacts(option).run)
-          case (t, _, Some(AppsView)) => presenter.loadAppsByKeyword(t).run
-          case (t, _, Some(ContactView)) => presenter.loadContactsByKeyword(t).run
+            ContactsMenuOption(status) foreach (option => presenter.loadContacts(option))
+          case (t, _, Some(AppsView)) => presenter.loadAppsByKeyword(t)
+          case (t, _, Some(ContactView)) => presenter.loadContactsByKeyword(t)
           case _ =>
         }
       })) ~
@@ -167,15 +167,15 @@ trait DrawerComposer
 
   private[this] def loadAppsAndSaveStatus(option: AppsMenuOption)(implicit theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(option)) map (_.drawable)
-    presenter.loadApps(option) ~
-      (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
+    presenter.loadApps(option)
+    (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
       (recycler <~ drvSetType(option))
   }
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption)(implicit theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
-    presenter.loadContacts(option) ~
-      (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
+    presenter.loadContacts(option)
+    (searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
       (recycler <~ drvSetType(option))
   }
 

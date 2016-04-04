@@ -51,9 +51,8 @@ class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
   }
 
   override def addCollection(collection: Collection): Ui[Any] = {
-    launcherPresenter.addCollection(collection) ~
-      hideKeyboard ~
-      unreveal()
+    launcherPresenter.addCollection(collection)
+    hideKeyboard ~ unreveal()
   }
 
   override def showMessageContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
