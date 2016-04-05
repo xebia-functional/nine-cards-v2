@@ -6,7 +6,7 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException, CollectionProcessConfig}
+import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionExceptionImpl, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
@@ -503,7 +503,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.getCollections.run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -534,7 +534,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.getCollectionById(collectionId1).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -610,7 +610,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.addCollection(addCollectionRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -620,7 +620,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.addCollection(addCollectionRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -642,7 +642,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.deleteCollection(collectionId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -652,7 +652,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.deleteCollection(collectionId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -662,7 +662,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.deleteCollection(collectionId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -672,7 +672,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.deleteCollection(collectionId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -703,7 +703,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.cleanCollections().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -713,7 +713,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.cleanCollections().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -736,7 +736,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.reorderCollection(0, newPosition).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -746,7 +746,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.reorderCollection(0, newPosition).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -777,7 +777,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.editCollection(collectionId, editCollectionRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }
@@ -787,7 +787,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.editCollection(collectionId, editCollectionRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionException]
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
           }
         }
       }

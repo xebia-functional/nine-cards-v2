@@ -22,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawa
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{LatestSharedCollection, TopSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TypeSharedCollection, LatestSharedCollection, TopSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -33,7 +33,7 @@ trait PublicCollectionsComposer
   with LauncherExecutor
   with NineCardIntentConversions {
 
-  self: TypedFindView with BaseActionFragment with PublicCollectionsListener =>
+  self: TypedFindView with BaseActionFragment =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
@@ -48,7 +48,7 @@ trait PublicCollectionsComposer
     (categoriesSorted map (_._1), categoriesSorted map (_._2))
   }
 
-  def initUi: Ui[_] =
+  def initUi(implicit presenter: PublicCollectionsPresenter): Ui[_] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.publicCollections) <~
@@ -67,15 +67,11 @@ trait PublicCollectionsComposer
           typeFilter <~ vPopupMenuShow(
             menu = R.menu.type_public_collection_menu,
             onMenuItemClickListener = (item: MenuItem) => {
-              item.getItemId match {
-                case R.id.top =>
-                  (typeFilter <~ tvText(R.string.top)).run
-                  changeTypeSharedCollection(TopSharedCollection)
-                case R.id.latest =>
-                  (typeFilter <~ tvText(R.string.latest)).run
-                  changeTypeSharedCollection(LatestSharedCollection)
-                case _ =>
-              }
+              presenter.loadPublicCollectionsByTypeSharedCollection(
+                item.getItemId match {
+                  case R.id.top => TopSharedCollection
+                  case _ => LatestSharedCollection
+                })
               true
             })
         }) ~
@@ -85,21 +81,18 @@ trait PublicCollectionsComposer
             layout = R.layout.list_item_popup_menu,
             menu = categoryNamesMenu,
             onItemClickListener = (position: Int) => {
-              categories.lift(position) foreach { category =>
-                (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)).run
-                changeCategory(category)
-              }
+              categories.lift(position) foreach presenter.loadPublicCollectionsByCategory
             },
             width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
             height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
         }) ~
       (recycler <~ recyclerStyle)
 
-  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+  def showLoadingView: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def addPublicCollections(
-    sharedCollections: Seq[SharedCollection])(implicit uiContext: UiContext[_]): Ui[_] = {
-    val adapter = new PublicCollectionsAdapter(sharedCollections, saveSharedCollection)
+  def reloadPublicCollections(
+    sharedCollections: Seq[SharedCollection])(implicit uiContext: UiContext[_], presenter: PublicCollectionsPresenter): Ui[_] = {
+    val adapter = new PublicCollectionsAdapter(sharedCollections)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -107,11 +100,18 @@ trait PublicCollectionsComposer
       (loading <~ vGone)
   }
 
+  def changeCategoryName(category: NineCardCategory) =
+    categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)
+
+  def changeTypeCollection(typeSharedCollection: TypeSharedCollection) = typeSharedCollection match {
+    case TopSharedCollection => typeFilter <~ tvText(R.string.top)
+    case LatestSharedCollection => typeFilter <~ tvText(R.string.latest)
+  }
+
 }
 
 case class ViewHolderPublicCollectionsLayoutAdapter(
-  content: ViewGroup,
-  clickListener: (SharedCollection) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
+  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: PublicCollectionsPresenter)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView
   with LauncherExecutor {
@@ -152,7 +152,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
       (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
-      (addCollection <~ On.click(Ui(clickListener(collection)))) ~
+      (addCollection <~ On.click(Ui(presenter.saveSharedCollection(collection)))) ~
       (shareCollection <~ On.click(Ui(launchShare(collection.shareLink))))
   }
 

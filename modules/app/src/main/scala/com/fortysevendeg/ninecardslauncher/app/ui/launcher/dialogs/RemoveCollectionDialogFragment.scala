@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.dialogs
 
 import android.app.Dialog
 import android.content.DialogInterface
@@ -6,10 +6,12 @@ import android.content.DialogInterface.OnClickListener
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
-class RemoveCollectionDialogFragment(onClickListener: () => Unit)(implicit contextWrapper: ContextWrapper)
+class RemoveCollectionDialogFragment(collection: Collection)(implicit contextWrapper: ContextWrapper, presenter: LauncherPresenter)
   extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
@@ -18,7 +20,8 @@ class RemoveCollectionDialogFragment(onClickListener: () => Unit)(implicit conte
       setMessage(R.string.removeCollectionMessage).
       setPositiveButton(android.R.string.ok, new OnClickListener {
         override def onClick(dialog: DialogInterface, which: Int): Unit = {
-          onClickListener()
+          presenter.removeCollection(collection)
+          dismiss()
         }
       }).
       setNegativeButton(android.R.string.cancel, new OnClickListener {

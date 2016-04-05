@@ -38,20 +38,14 @@ trait NewCollectionComposer
 
   def showMessage(message: Int): Ui[_] = content <~ vSnackbarShort(message)
 
-  def initUi(storeCollection: (String, String, Int) => Unit): Ui[_] =
+  def initUi(implicit presenter: NewCollectionPresenter): Ui[_] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.newCollection) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
-        On.click(
-          (for {
-            name <- getName
-            category <- getCategory
-            index <- getColor
-          } yield Ui(storeCollection(name, category.getIconResource, index))) getOrElse showMessage(R.string.formFieldError)
-        )) ~
+        On.click(Ui(presenter.saveCollection(getName, getCategory, getColor)))) ~
       setCategory(Communication) ~
       setIndexColor(0) ~
       (colorContent <~ On.click {
@@ -113,7 +107,5 @@ trait NewCollectionComposer
   }
 
   private[this] def getColor = colorImage map (c => Int.unbox(c.getTag))
-
-  def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
 }

@@ -28,7 +28,7 @@ import scala.reflect.ClassTag
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/, \/-}
 
-class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityContextWrapper)
+class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
   with ImplicitsCloudStorageProcessExceptions
   with ImplicitsAuthTokenException {
@@ -49,54 +49,69 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
 
   private[this] def setToken(token: String) = preferences.edit.putString(googleKeyToken, token).apply()
 
-  def getAccounts: Ui[Seq[Account]] = Ui(accounts)
+  def initialize(): Unit = actions.initialize(accounts).run
 
-  def connectAccount(username: String, termsAccept: Boolean): Ui[Any] = {
-    val account = getAccount(username)
-    if (termsAccept) {
-      actions.showLoading() ~
-        (account match {
-          case Some(acc) =>
-            val googleApiClient = actions.createGoogleApiClient(acc).get
-            loadAccount(acc, googleApiClient)
-          case _ => actions.showErrorSelectUser()
-        })
-    } else {
-      actions.showErrorAcceptTerms()
+  def goToUser(): Unit = actions.goToUser().run
+
+  def goToWizard(): Unit = actions.goToWizard().run
+
+  def connectAccount(username: String, termsAccept: Boolean): Unit = if (termsAccept) {
+    getAccount(username) match {
+      case Some(acc) =>
+        val googleApiClient = statuses.createGoogleApiClient(acc)
+        loadAccount(acc, googleApiClient)
+      case _ => actions.showErrorSelectUser().run
     }
+  } else {
+    actions.showErrorAcceptTerms().run
   }
 
-  def getDevices(client: GoogleApiClient,
-    username: String,
-    userPermissions: UserPermissions): Ui[Any] = {
-    invalidateToken()
-    actions.showLoading() ~ Ui {
+  def getDevices(
+    maybeClient: Option[GoogleApiClient],
+    maybeUsername: Option[String],
+    maybeUserPermissions: Option[UserPermissions]
+  ): Unit = {
+    (for {
+      client <- maybeClient
+      username <- maybeUsername
+      userPermissions <- maybeUserPermissions
+    } yield {
+      invalidateToken()
       Task.fork(loadCloudDevices(client, username, userPermissions).run).resolveAsyncUi(
+        onPreTask = () => actions.showLoading(),
         onResult = (devices: UserCloudDevices) => actions.showDevices(devices),
         onException = (ex: Throwable) => ex match {
           case ex: UserException => actions.showErrorLoginUser()
           case ex: UserConfigException => actions.showErrorLoginUser()
           case _ => actions.showErrorConnectingGoogle()
         })
-    }
+    }) getOrElse actions.showErrorConnectingGoogle().run
   }
 
-  def saveCurrentDevice(client: GoogleApiClient, username: String): Ui[Any] = Ui {
-    Task.fork(storeDevice(client, username).run).resolveAsyncUi(
-      onResult = (_) => actions.showDiveIn(),
-      onException = (_) => actions.showDiveIn())
+  def saveCurrentDevice(maybeClient: Option[GoogleApiClient], maybeUsername: Option[String]): Unit = {
+    (for {
+      client <- maybeClient
+      username <- maybeUsername
+    } yield {
+      Task.fork(storeDevice(client, username).run).resolveAsyncUi(
+        onResult = (_) => actions.showDiveIn(),
+        onException = (_) => actions.showDiveIn())
+    }) getOrElse actions.showDiveIn().run
   }
 
-  def generateCollections(maybeKey: Option[String]): Ui[Any] =
-    actions.startCreateCollectionsService(maybeKey) ~ actions.navigateToWizard()
+  def generateCollections(maybeKey: Option[String]): Unit =
+    (actions.startCreateCollectionsService(maybeKey) ~ actions.navigateToWizard()).run
 
-  def finishWizard(): Ui[Any] = actions.navigateToLauncher()
+  def finishWizard(): Unit = actions.navigateToLauncher().run
 
-  protected def getAccount(username: String): Option[Account] = getAccounts.get find (_.name == username)
+  def connectionError(): Unit = actions.showErrorConnectingGoogle().run
+
+  protected def getAccount(username: String): Option[Account] = accounts find (_.name == username)
 
   protected def requestUserPermissions(
     account: Account,
-    client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] = {
+    client: GoogleApiClient
+  ): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] = {
     val oauthScopes = "androidmarket" // TODO - This should be removed when we switch off the server v1
     val driveScope = resGetString(R.string.oauth_scopes)
     for {
@@ -111,17 +126,19 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
     setToken(javaNull)
   }
 
-  private[this] def loadAccount(account: Account, client: GoogleApiClient): Ui[Any] = Ui {
+  private[this] def loadAccount(account: Account, client: GoogleApiClient): Unit = {
     invalidateToken()
     Task.fork(requestUserPermissions(account, client).run).resolveAsyncUi(
       onResult = (permissions: UserPermissions) => actions.connectGoogleApiClient(permissions),
-      onException = (ex: Throwable) => actions.showErrorConnectingGoogle())
+      onException = (ex: Throwable) => actions.showErrorConnectingGoogle(),
+      onPreTask = () => actions.showLoading())
   }
 
   protected def loadCloudDevices(
     client: GoogleApiClient,
     username: String,
-    userPermissions: UserPermissions): ServiceDef2[UserCloudDevices, UserException with UserConfigException with CloudStorageProcessException] = {
+    userPermissions: UserPermissions
+  ): ServiceDef2[UserCloudDevices, UserException with UserConfigException with CloudStorageProcessException] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client, username)
     for {
       response <- di.userProcess.signIn(username, Build.MODEL, userPermissions.token, userPermissions.oauthScopes)
@@ -133,7 +150,8 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
 
   private[this] def storeDevice(
     client: GoogleApiClient,
-    username: String): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException] = {
+    username: String
+  ): ServiceDef2[Unit, CollectionException  with MomentException with CloudStorageProcessException] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client, username)
     for {
       collections <- di.collectionProcess.getCollections
@@ -150,7 +168,8 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
   private[this] def verifyAndUpdate(
     cloudStorageProcess: CloudStorageProcess,
     name: String,
-    cloudStorageResources: Seq[CloudStorageDeviceSummary]): ServiceDef2[UserCloudDevices, UserConfigException with CloudStorageProcessException] = {
+    cloudStorageResources: Seq[CloudStorageDeviceSummary]
+  ): ServiceDef2[UserCloudDevices, UserConfigException with CloudStorageProcessException] = {
     if (cloudStorageResources.isEmpty) {
       for {
         userInfo <- di.userConfigProcess.getUserInfo
@@ -167,12 +186,12 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
 
   private[this] def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDevice]) = Service {
     val tasks = cloudStorageDevices map (d => cloudStorageProcess.createOrUpdateCloudStorageDevice(d).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r}))
+    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
   }
 
   private[this] def loadFromCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageResources: Seq[CloudStorageDeviceSummary]) = Service {
     val tasks = cloudStorageResources map (r => cloudStorageProcess.getCloudStorageDevice(r.resourceId).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r}))
+    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
   }
 
   private[this] def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer()))
@@ -180,9 +199,10 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
   private[this] def getAuthToken(
     accountManager: AccountManager,
     account: Account,
-    scopes: String): ServiceDef2[String, AuthTokenException with AuthTokenOperationCancelledException] = Service {
+    scopes: String
+  ): ServiceDef2[String, AuthTokenException with AuthTokenOperationCancelledException] = Service {
     Task {
-      \/.fromTryCatchNonFatal{
+      \/.fromTryCatchNonFatal {
         val result = accountManager.getAuthToken(account, scopes, javaNull, contextWrapper.getOriginal, javaNull, javaNull).getResult
         result.getString(AccountManager.KEY_AUTHTOKEN)
       } match {
@@ -196,5 +216,43 @@ class WizardPresenter(actions: WizardActions)(implicit contextWrapper: ActivityC
       }
     }
   }
+
+}
+
+trait WizardUiActions {
+
+  def initialize(accounts: Seq[Account]): Ui[Any]
+
+  def goToUser(): Ui[Any]
+
+  def goToWizard(): Ui[Any]
+
+  def showLoading(): Ui[Any]
+
+  def showErrorConnectingGoogle(): Ui[Any]
+
+  def showErrorSelectUser(): Ui[Any]
+
+  def showErrorAcceptTerms(): Ui[Any]
+
+  def showErrorLoginUser(): Ui[Any]
+
+  def connectGoogleApiClient(userPermissions: UserPermissions): Ui[Any]
+
+  def showDevices(devices: UserCloudDevices): Ui[Any]
+
+  def showDiveIn(): Ui[Any]
+
+  def startCreateCollectionsService(maybeKey: Option[String]): Ui[Any]
+
+  def navigateToLauncher(): Ui[Any]
+
+  def navigateToWizard(): Ui[Any]
+
+}
+
+trait WizardViewStatuses {
+
+  def createGoogleApiClient(account: Account): GoogleApiClient
 
 }

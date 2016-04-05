@@ -22,28 +22,32 @@ class WizardActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with GoogleApiClientActivityProvider
-  with WizardActions
+  with WizardUiActions
+  with WizardViewStatuses
   with TypedFindView
   with WizardComposer
   with BroadcastDispatcher { self =>
 
   var clientStatuses = GoogleApiClientStatuses()
 
-  implicit lazy val presenter = new WizardPresenter(self)
+  implicit lazy val presenter = new WizardPresenter(self, self)
 
   override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
-    case (WizardStateActionFilter, Some(`stateSuccess`)) => storeCloudDevice()
-    case (WizardStateActionFilter, Some(`stateFailure`)) => showUserView.run
-    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) => showWizardView.run
+    case (WizardStateActionFilter, Some(`stateSuccess`)) =>
+      presenter.saveCurrentDevice(clientStatuses.apiClient, clientStatuses.username)
+    case (WizardStateActionFilter, Some(`stateFailure`)) =>
+      presenter.goToUser()
+    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) =>
+      presenter.goToWizard()
     case _ =>
   }
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.wizard_activity)
-    (showUserView ~ initUi(presenter.getAccounts.get)).run
+    presenter.initialize()
   }
 
   override def onResume(): Unit = {
@@ -68,31 +72,24 @@ class WizardActivity
   override def onBackPressed(): Unit = {}
 
   // TODO - Implement error code
-  override def onRequestConnectionError(errorCode: Int): Unit =
-    showErrorConnectingGoogle().run
+  override def onRequestConnectionError(errorCode: Int): Unit = presenter.connectionError()
 
-  override def onResolveConnectionError(): Unit = showErrorConnectingGoogle().run
+  override def onResolveConnectionError(): Unit = presenter.connectionError()
 
   override def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
 
   override def onConnected(bundle: Bundle): Unit =
-    clientStatuses match {
-      case GoogleApiClientStatuses(Some(client), Some(username), Some(userPermissions)) =>
-        presenter.getDevices(client, username, userPermissions).run
-      case _ =>
-        showErrorConnectingGoogle().run
-    }
+    presenter.getDevices(clientStatuses.apiClient, clientStatuses.username, clientStatuses.userPermissions)
 
-  private[this] def storeCloudDevice(): Unit =
-    clientStatuses match {
-      case GoogleApiClientStatuses(Some(client), Some(username), _) =>
-        presenter.saveCurrentDevice(client, username).run
-      case _ => finishProcess.run
-    }
+  override def initialize(accounts: Seq[Account]): Ui[Any] = showUserView ~ initUi(accounts)
+
+  override def goToUser(): Ui[Any] = showUserView
+
+  override def goToWizard(): Ui[Any] = showWizardView
 
   override def showLoading(): Ui[Any] = showLoadingView
 
-  override def createGoogleApiClient(account: Account): Ui[GoogleApiClient] = Ui {
+  override def createGoogleApiClient(account: Account): GoogleApiClient = {
     val client = createGoogleDriveClient(account.name)
     clientStatuses = clientStatuses.copy(
       apiClient = Some(client),

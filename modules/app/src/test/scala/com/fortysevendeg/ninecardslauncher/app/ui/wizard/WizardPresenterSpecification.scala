@@ -39,16 +39,18 @@ trait WizardPresenterSpecification
 
     val mockGoogleApiClient = mock[GoogleApiClient]
 
-    val mockActions = mock[WizardActions]
+    val mockActions = mock[WizardUiActions]
     mockActions.showLoading() returns Ui[Any]()
     mockActions.showErrorConnectingGoogle() returns Ui[Any]()
     mockActions.showErrorLoginUser() returns Ui[Any]()
     mockActions.showErrorAcceptTerms() returns Ui[Any]()
     mockActions.showErrorSelectUser() returns Ui[Any]()
-    mockActions.createGoogleApiClient(account) returns Ui[GoogleApiClient](mockGoogleApiClient)
     mockActions.connectGoogleApiClient(userPermission) returns Ui[Any]()
 
-    val presenter = new WizardPresenter(mockActions) {
+    val mockStatuses = mock[WizardViewStatuses]
+    mockStatuses.createGoogleApiClient(account) returns mockGoogleApiClient
+
+    val presenter = new WizardPresenter(mockActions, mockStatuses) {
       override protected def getAccount(username: String): Option[Account] = Some(account)
       override protected def requestUserPermissions(account: Account, client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] =
         Service(Task(Answer(userPermission)))
@@ -58,7 +60,7 @@ trait WizardPresenterSpecification
       override protected def invalidateToken(): Unit = {}
     }
 
-    val presenterFailed = new WizardPresenter(mockActions) {
+    val presenterFailed = new WizardPresenter(mockActions, mockStatuses) {
       override protected def getAccount(username: String): Option[Account] = None
       override protected def requestUserPermissions(account: Account, client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] =
         Service(Task(Errata(requestUserPermissionsException)))
@@ -72,37 +74,55 @@ trait WizardPresenterSpecification
 class WizardPresenterSpec
   extends WizardPresenterSpecification {
 
-  "connectAccount" should {
+  "Connect Account" should {
 
     "return a successful connecting account" in
       new WizardPresenterScope {
-        presenter.connectAccount(accountName, termsAccept = true).get
+        presenter.connectAccount(accountName, termsAccept = true)
         there was after(1 seconds).one(mockActions).showLoading()
-        there was after(1 seconds).one(mockActions).createGoogleApiClient(account)
         there was after(1 seconds).one(mockActions).connectGoogleApiClient(userPermission)
+        there was after(1 seconds).one(mockStatuses).createGoogleApiClient(account)
       }
 
     "return a failed connecting account if terms wasn't accepted" in
       new WizardPresenterScope {
-        presenter.connectAccount(accountName, termsAccept = false).get
+        presenter.connectAccount(accountName, termsAccept = false)
         there was after(1 seconds).one(mockActions).showErrorAcceptTerms()
       }
 
     "return a failed if username doesn't exist" in
       new WizardPresenterScope {
-        presenterFailed.connectAccount(accountName, termsAccept = true).get
+        presenterFailed.connectAccount(accountName, termsAccept = true)
         there was after(1 seconds).one(mockActions).showErrorSelectUser()
       }
 
   }
 
-  "getAccounts" should {
+  "Get Devices" should {
 
     "return a successful devices" in
       new WizardPresenterScope {
-        presenter.getDevices(mockGoogleApiClient, accountName, userPermission).get
+        presenter.getDevices(Some(mockGoogleApiClient), Some(accountName), Some(userPermission))
         there was after(1 seconds).one(mockActions).showLoading()
         there was after(1 seconds).one(mockActions).showDevices(userCloudDevices)
+      }
+
+    "error if Google Api Client don't exist" in
+      new WizardPresenterScope {
+        presenter.getDevices(None, Some(accountName), Some(userPermission))
+        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
+      }
+
+    "error if account name don't exist" in
+      new WizardPresenterScope {
+        presenter.getDevices(None, Some(accountName), Some(userPermission))
+        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
+      }
+
+    "error if user permission don't exist" in
+      new WizardPresenterScope {
+        presenter.getDevices(Some(mockGoogleApiClient), Some(accountName), None)
+        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
       }
 
   }
