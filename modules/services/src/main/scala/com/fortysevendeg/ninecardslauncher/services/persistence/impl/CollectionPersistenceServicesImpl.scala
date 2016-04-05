@@ -4,11 +4,10 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, MomentData, Moment}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection}
-import rapture.core.scalazInterop.ResultT
 import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
@@ -20,10 +19,11 @@ trait CollectionPersistenceServicesImpl {
     with ImplicitsPersistenceServiceExceptions
     with CardPersistenceServicesImpl =>
 
-  def addCollection(request: AddCollectionRequest): ResultT[Task, Collection, PersistenceServiceException] =
+  def addCollection(request: AddCollectionRequest) =
     (for {
       collection <- collectionRepository.addCollection(toRepositoryCollectionData(request))
       addedCards <- addCards(request.cards map (_.copy(collectionId = Option(collection.id))))
+      _ <- addMoment(request.moment map (_.copy(collectionId = Option(collection.id))))
     } yield toCollection(collection).copy(cards = addedCards)).resolve[PersistenceServiceException]
 
   def deleteAllCollections() =
@@ -110,5 +110,12 @@ trait CollectionPersistenceServicesImpl {
       Task.gatherUnordered(result) map (
         list =>
           CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => collection })))
+  }
+
+  private[this] def addMoment(maybeMoment: Option[AddMomentRequest]): ServiceDef2[Unit, RepositoryException] = {
+    maybeMoment match {
+      case Some(moment) => momentRepository.addMoment(toRepositoryMomentData(moment)) map (_ => ())
+      case None => Service(Task(Result.answer[Unit, RepositoryException]()))
+    }
   }
 }

@@ -690,7 +690,7 @@ trait PersistenceServicesData {
     headphone: Boolean = headphone): AddMomentRequest =
     AddMomentRequest(
       collectionId = collectionId,
-      timeslot = timeslot,
+      timeSlot = timeslot,
       wifi = wifi,
       headphone = headphone)
 

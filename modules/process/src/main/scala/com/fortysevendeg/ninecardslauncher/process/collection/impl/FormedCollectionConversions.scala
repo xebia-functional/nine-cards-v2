@@ -7,12 +7,13 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{MomentTimeSlot, Moment, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory, _}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{MomentTimeSlot => ServicesMomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddMomentRequest, AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
 
@@ -46,8 +47,8 @@ trait FormedCollectionConversions
     originalSharedCollectionId = formedCollection.sharedCollectionId,
     sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
     sharedCollectionId = formedCollection.sharedCollectionId,
-    cards = toAddCardRequest(formedCollection.items)
-  )
+    cards = toAddCardRequest(formedCollection.items),
+    moment = formedCollection.moment map toAddMomentRequest)
 
   def toAddCardRequest(items: Seq[FormedItem])(implicit context: ContextSupport): Seq[AddCardRequest] =
     items.zipWithIndex.map(zipped => toAddCardRequest(zipped._1, zipped._2))
@@ -63,6 +64,19 @@ trait FormedCollectionConversions
       imagePath = item.uriImage getOrElse "" // UI will create the default image
     )
   }
+
+  def toAddMomentRequest(moment: Moment): AddMomentRequest =
+    AddMomentRequest(
+      collectionId = moment.collectionId,
+      timeslot = moment.timeslot map toMomentTimeSlot,
+      wifi = moment.wifi,
+      headphone = moment.headphone)
+
+  def toMomentTimeSlot(timeSlot: MomentTimeSlot) =
+    ServicesMomentTimeSlot(
+      from = timeSlot.from,
+      to = timeSlot.to,
+      days = timeSlot.days)
 
   def createPrivateCollections(
     apps: Seq[UnformedApp],
@@ -129,7 +143,8 @@ trait FormedCollectionConversions
       themedColorIndex = themeIndex,
       appsCategory = Some(category.name),
       sharedCollectionSubscribed = Option(false),
-      cards = toAddCardRequestSeq(appsCategory)
+      cards = toAddCardRequestSeq(appsCategory),
+      moment = None
     )
   }
 
@@ -144,7 +159,8 @@ trait FormedCollectionConversions
       themedColorIndex = themeIndex,
       appsCategory = None,
       sharedCollectionSubscribed = Option(false),
-      cards = toAddCardRequestByContacts(contacts)
+      cards = toAddCardRequestByContacts(contacts),
+      moment = None
     )
   }
 

@@ -27,7 +27,8 @@ trait Conversions extends CommonConversions {
     originalSharedCollectionId = addCollectionRequest.originalSharedCollectionId,
     sharedCollectionId = addCollectionRequest.sharedCollectionId,
     sharedCollectionSubscribed = addCollectionRequest.sharedCollectionSubscribed,
-    cards = Seq())
+    cards = Seq(),
+    moment = None)
 
   def toFindCollectionByIdRequest(collectionId: Int) = FindCollectionByIdRequest(
     id = collectionId)

@@ -2,14 +2,13 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageMomentTimeSlot, CloudStorageMoment, CloudStorageCollection, CloudStorageCollectionItem}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageCollectionItem, CloudStorageMoment, CloudStorageMomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.models
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{PrivateCard, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, PrivateCard, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
-import com.fortysevendeg.ninecardslauncher.process.moment.models.{MomentTimeSlot, Moment}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 
@@ -57,7 +56,8 @@ trait Conversions
     items = userCollection.items map toFormedItem,
     collectionType = userCollection.collectionType,
     icon = userCollection.icon,
-    category = userCollection.category)
+    category = userCollection.category,
+    moment = userCollection.moment map toMoment)
 
   def toFormedItem(item: CloudStorageCollectionItem): FormedItem = FormedItem(
     itemType = item.itemType,

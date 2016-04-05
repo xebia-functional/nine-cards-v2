@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.moment
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.moment.models._
 
 trait MomentProcess {

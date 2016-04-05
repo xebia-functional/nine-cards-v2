@@ -2,8 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.cloud
 
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.moment.models.{MomentTimeSlot, Moment}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem, UserDevice}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
 import play.api.libs.json.Json
@@ -36,7 +35,7 @@ object Conversions {
       collectionType = userCollection.collectionType,
       icon = userCollection.icon,
       category = userCollection.category,
-      moment = None) //TODO match with collectionType
+      moment = None)
 
   def toCloudStorageCollectionItem(userCollectionItem: UserCollectionItem) =
     CloudStorageCollectionItem(

@@ -5,14 +5,13 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
 import com.fortysevendeg.ninecardslauncher.process.moment._
-import com.fortysevendeg.ninecardslauncher.process.moment.models.{Moment, App}
-import com.fortysevendeg.ninecardslauncher.services.persistence
+import com.fortysevendeg.ninecardslauncher.process.moment.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import rapture.core.Answer
 
@@ -90,8 +89,8 @@ class MomentProcessImpl(
       themedColorIndex = themeIndex,
       appsCategory = None,
       sharedCollectionSubscribed = Option(false),
-      cards = toAddCardRequestSeq(items)
-    )
+      cards = toAddCardRequestSeq(items),
+      moment = None)
   }
 
   @tailrec
