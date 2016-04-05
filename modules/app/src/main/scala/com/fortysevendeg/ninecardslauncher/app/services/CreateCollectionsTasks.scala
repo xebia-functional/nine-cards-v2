@@ -56,9 +56,6 @@ trait CreateCollectionsTasks
    } yield collections
   }
 
-  private[this] def getCollectionId(cloudStorageCollection: CloudStorageCollection, collections: Seq[Collection]) =
-    collections.find(cloudStorageCollection.name == _.name) map (_.id)
-
   private[this] def getAppsNotInstalled(apps: Seq[App], collections: Seq[CloudStorageCollection]): Seq[String] = {
     val intents = collections flatMap (_.items map (item => Json.parse(item.intent).as[NineCardIntent]))
     intents flatMap {
