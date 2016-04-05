@@ -28,12 +28,7 @@ trait PrivateCollectionsTasks
           case _ => false
         }
       }
-      val privateMoments = newMomentCollections filterNot { newMomentCollection =>
-        newMomentCollection.collectionType match {
-          case collectionType => (collections map (_.collectionType)) contains collectionType
-          case _ => false
-        }
-      }
+      val privateMoments = newMomentCollections filterNot (newMomentCollection => (collections map (_.collectionType)) contains newMomentCollection.collectionType)
       privateCollections ++ privateMoments
     }
 
