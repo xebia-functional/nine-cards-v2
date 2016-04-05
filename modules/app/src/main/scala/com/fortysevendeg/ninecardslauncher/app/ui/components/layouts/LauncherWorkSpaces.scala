@@ -8,19 +8,22 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceMomentsHolder, LauncherWorkSpaceCollectionsHolder}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit activityContext: ActivityContextWrapper)
+class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
 
-  def this(context: Context)(implicit activityContext: ActivityContextWrapper) = this(context, javaNull, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit activityContext: ActivityContextWrapper) = this(context, attr, 0)
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
+
+  var presenter: Option[LauncherPresenter] = None
 
   var workSpacesStatuses = LauncherWorkSpacesStatuses()
 
@@ -55,7 +58,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def createView(viewType: Int): LauncherWorkSpaceHolder = WorkSpaceType(viewType) match {
     case MomentWorkSpace => new LauncherWorkSpaceMomentsHolder
-    case CollectionsWorkSpace => new LauncherWorkSpaceCollectionsHolder(statuses.dimen)
+    case CollectionsWorkSpace =>
+      presenter map (p => new LauncherWorkSpaceCollectionsHolder(p, statuses.dimen)) getOrElse(throw new RuntimeException("Missing LauncherPresenter"))
   }
 
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
@@ -243,8 +247,8 @@ case class LauncherWorkSpacesListener(
   onUpdateOpenMenu: (Float) => Ui[_] = (f) => Ui.nop,
   onEndOpenMenu: (Boolean) => Ui[_] = (b) => Ui.nop)
 
-class LauncherWorkSpaceHolder(implicit activityContext: ActivityContextWrapper)
-  extends FrameLayout(activityContext.application)
+class LauncherWorkSpaceHolder(implicit contextWrapper: ContextWrapper)
+  extends FrameLayout(contextWrapper.application)
 
 case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collection] = Seq.empty)
 

@@ -29,7 +29,7 @@ trait PrivateCollectionsComposer
   with LauncherExecutor
   with NineCardIntentConversions {
 
-  self: TypedFindView with BaseActionFragment with PrivateCollectionsListener =>
+  self: TypedFindView with BaseActionFragment =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
@@ -40,13 +40,13 @@ trait PrivateCollectionsComposer
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
-  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+  def showLoadingView: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
+  def showError(res: Int): Ui[_] = rootContent <~ vSnackbarShort(res)
 
-  def addPrivateCollections(
-    privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_]): Ui[_] = {
-    val adapter = new PrivateCollectionsAdapter(privateCollections, saveCollection)
+  def reloadPrivateCollections(
+    privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Ui[_] = {
+    val adapter = new PrivateCollectionsAdapter(privateCollections)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -57,8 +57,7 @@ trait PrivateCollectionsComposer
 }
 
 case class ViewHolderPrivateCollectionsLayoutAdapter(
-  content: ViewGroup,
-  clickListener: (PrivateCollection) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
+  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: PrivateCollectionsPresenter)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -91,7 +90,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
         automaticAlignment(appsRow2, cardsRow2)) ~
       (name <~ tvText(privateCollection.name)) ~
       (content <~ vTag(position)) ~
-      (addCollection <~ On.click(Ui(clickListener(privateCollection))))
+      (addCollection <~ On.click(Ui(presenter.saveCollection(privateCollection))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

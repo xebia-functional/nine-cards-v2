@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsComposer
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{DrawerComposer, DrawerListeners}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerComposer
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
@@ -17,14 +17,17 @@ trait LauncherComposer
   extends CollectionsComposer
   with DrawerComposer {
 
-  self: AppCompatActivity with TypedFindView with SystemBarsTint with DrawerListeners =>
+  self: AppCompatActivity with TypedFindView with SystemBarsTint =>
 
-  def initUi(implicit context: ActivityContextWrapper, theme: NineCardsTheme, managerContext: FragmentManagerContext[Fragment, FragmentManager]) =
+  def initUi(implicit context: ActivityContextWrapper,
+    theme: NineCardsTheme,
+    managerContext: FragmentManagerContext[Fragment, FragmentManager],
+    presenter: LauncherPresenter) =
     prepareBars ~ initCollectionsUi ~ initDrawerUi
 
-  def backByPriority(implicit context: ActivityContextWrapper, manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme): Ui[_] =
-    if (isTabsOpened) {
-      closeTabs
+  def backByPriority(implicit context: ActivityContextWrapper, manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme, presenter: LauncherPresenter): Ui[_] =
+    if (isDrawerTabsOpened) {
+      closeDrawerTabs
     } else if (isMenuVisible) {
       closeMenu()
     } else if (isDrawerVisible) {

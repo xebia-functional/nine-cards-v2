@@ -21,15 +21,16 @@ import macroid._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
-  (context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
+  (context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)
+  with Contexts[View]
   with LongClickHandler { self =>
 
   type PageChangedObserver = (Int => Unit)
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   var listener = new AnimatedWorkSpacesListener
 
@@ -60,9 +61,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   val params = new LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
-  var previousParentView: Option[FrameLayout] = Some(new FrameLayout(contextWrapper.application))
-  var nextParentView: Option[FrameLayout] = Some(new FrameLayout(contextWrapper.application))
-  var frontParentView: Option[FrameLayout] = Some(new FrameLayout(contextWrapper.application))
+  var previousParentView: Option[FrameLayout] = Some(new FrameLayout(context))
+  var nextParentView: Option[FrameLayout] = Some(new FrameLayout(context))
+  var frontParentView: Option[FrameLayout] = Some(new FrameLayout(context))
 
   var previousView = slot[Holder]
   var previewViewType = 0

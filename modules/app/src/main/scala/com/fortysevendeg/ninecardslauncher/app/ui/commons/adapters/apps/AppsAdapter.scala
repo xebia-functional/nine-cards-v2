@@ -21,7 +21,7 @@ case class AppsAdapter(
   var apps: IterableApps,
   clickListener: (App) => Unit,
   longClickListener: Option[(App) => Unit])
-  (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_])
+  (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[AppsIterableHolder]
   with FastScrollerListener {
 

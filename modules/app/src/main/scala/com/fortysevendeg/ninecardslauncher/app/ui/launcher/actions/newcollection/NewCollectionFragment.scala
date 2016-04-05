@@ -6,21 +6,20 @@ import android.os.Bundle
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{FreeCollectionType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Ui
 
-import scalaz.concurrent.Task
-
-class NewCollectionFragment
+class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
   extends BaseActionFragment
   with NewCollectionComposer
-  with NineCardIntentConversions {
+  with NewCollectionActions
+  with NineCardIntentConversions { self =>
+
+  implicit lazy val presenter = new NewCollectionPresenter(self)
 
   override def getLayoutId: Int = R.layout.new_collection
 
@@ -28,48 +27,45 @@ class NewCollectionFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    initUi(saveCollection).run
+    presenter.initialize()
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
-    val ui = (requestCode, resultCode) match {
+    (requestCode, resultCode) match {
       case (RequestCodes.selectInfoIcon, Activity.RESULT_OK) =>
-        Option(data) flatMap (d => Option(d.getExtras)) map {
+        val maybeCategory = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(NewCollectionFragment.iconRequest) =>
-            setCategory(NineCardCategory(extras.getString(NewCollectionFragment.iconRequest)))
-          case _ => Ui.nop
-        } getOrElse showGeneralError
+            Some(NineCardCategory(extras.getString(NewCollectionFragment.iconRequest)))
+          case _ => None
+        } getOrElse None
+        presenter.updateCategory(maybeCategory)
       case (RequestCodes.selectInfoColor, Activity.RESULT_OK) =>
-        Option(data) flatMap (d => Option(d.getExtras)) map {
+        val maybeIndexColor = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(NewCollectionFragment.colorRequest) =>
-            setIndexColor(extras.getInt(NewCollectionFragment.colorRequest))
-          case _ => Ui.nop
-        } getOrElse showGeneralError
-      case _ => Ui.nop
+            Some(extras.getInt(NewCollectionFragment.colorRequest))
+          case _ => None
+        } getOrElse None
+        presenter.updateColor(maybeIndexColor)
+      case _ =>
     }
-    ui.run
   }
 
-  private[this] def saveCollection(name: String, icon: String, index: Int) = {
-    val request = AddCollectionRequest(
-      name = name,
-      collectionType = FreeCollectionType,
-      icon = icon,
-      themedColorIndex = index,
-      appsCategory = None
-    )
-    Task.fork(di.collectionProcess.addCollection(request).run).resolveAsyncUi(
-      onResult = (c) => {
-        activity[LauncherActivity] map { launcherActivity =>
-          launcherActivity.addCollection(c)
-        }
-        hideKeyboard ~ unreveal()
-      },
-      onException = (ex) => showMessage(R.string.contactUsError)
-    )
+  override def initialize(): Ui[Any] = initUi
+
+  override def addCollection(collection: Collection): Ui[Any] = Ui {
+    launcherPresenter.addCollection(collection)
   }
 
+  override def showMessageContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
+
+  override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
+
+  override def updateCategory(nineCardCategory: NineCardCategory): Ui[Any] = setCategory(nineCardCategory)
+
+  override def updateColor(indexColor: Int): Ui[Any] = setIndexColor(indexColor)
+
+  override def close(): Ui[Any] = hideKeyboard ~ unreveal()
 }
 
 object NewCollectionFragment {

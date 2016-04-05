@@ -71,19 +71,23 @@ trait WizardComposer
       (userAction <~
         defaultActionStyle <~
         On.click {
-          val termsAccept = usersTerms exists (_.isChecked)
-          val username = usersSpinner map (_.getSelectedItem.toString) getOrElse ""
-          presenter.connectAccount(username, termsAccept)
+          Ui {
+            val termsAccept = usersTerms exists (_.isChecked)
+            val username = usersSpinner map (_.getSelectedItem.toString) getOrElse ""
+            presenter.connectAccount(username, termsAccept)
+          }
         }) ~
       (deviceAction <~
         defaultActionStyle <~
         On.click {
           devicesGroup <~ Transformer {
             case i: RadioButton if i.isChecked =>
-              val tag = Option(i.getTag) map (_.toString)
-              tag match {
-                case Some(`newConfigurationKey`) => presenter.generateCollections(None)
-                case device => presenter.generateCollections(device)
+              Ui {
+                val tag = Option(i.getTag) map (_.toString)
+                tag match {
+                  case Some(`newConfigurationKey`) => presenter.generateCollections(None)
+                  case device => presenter.generateCollections(device)
+                }
               }
           }
         }) ~
@@ -100,7 +104,7 @@ trait WizardComposer
           )).get)) ~
       (stepsAction <~
         diveInActionStyle <~
-        On.click(presenter.finishWizard())) ~
+        On.click(Ui(presenter.finishWizard()))) ~
       createPagers(steps)
   }
 
