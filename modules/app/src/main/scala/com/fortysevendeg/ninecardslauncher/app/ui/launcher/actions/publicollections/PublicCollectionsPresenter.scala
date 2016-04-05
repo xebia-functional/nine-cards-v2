@@ -47,7 +47,7 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
     Task.fork(addCollection(sharedCollection).run).resolveAsyncUi(
-      onResult = (c) => actions.addCollection(c),
+      onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showContactUsError())
   }
 
@@ -88,6 +88,8 @@ trait PublicCollectionsUiActions {
   def updateCategory(category: NineCardCategory): Ui[Any]
 
   def updateTypeCollection(typeSharedCollection: TypeSharedCollection): Ui[Any]
+
+  def close(): Ui[Any]
 
 }
 

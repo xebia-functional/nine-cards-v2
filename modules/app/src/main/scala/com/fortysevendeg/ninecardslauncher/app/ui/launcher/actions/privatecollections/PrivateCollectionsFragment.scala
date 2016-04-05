@@ -31,14 +31,15 @@ class PrivateCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
   override def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any] =
     reloadPrivateCollections(privateCollections)
 
-  override def addCollection(collection: Collection): Ui[Any] = {
+  override def addCollection(collection: Collection): Ui[Any] = Ui {
     launcherPresenter.addCollection(collection)
-    unreveal()
   }
 
   override def showLoading(): Ui[Any] = showLoadingView
 
   override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError)
+
+  override def close(): Ui[Any] = unreveal()
 }
 
 

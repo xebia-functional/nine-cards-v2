@@ -38,9 +38,8 @@ class PublicCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
   override def loadPublicCollections(sharedCollections: Seq[SharedCollection]): Ui[Any] =
     reloadPublicCollections(sharedCollections)
 
-  override def addCollection(collection: Collection): Ui[Any] = {
+  override def addCollection(collection: Collection): Ui[Any] = Ui {
     launcherPresenter.addCollection(collection)
-    unreveal()
   }
 
   override def showLoading(): Ui[Any] = showLoadingView
@@ -49,6 +48,7 @@ class PublicCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def updateTypeCollection(typeSharedCollection: TypeSharedCollection): Ui[Any] = changeTypeCollection(typeSharedCollection)
 
+  override def close(): Ui[Any] = unreveal()
 }
 
 

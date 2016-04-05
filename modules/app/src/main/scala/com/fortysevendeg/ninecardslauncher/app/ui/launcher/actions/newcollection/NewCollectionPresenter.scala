@@ -28,7 +28,7 @@ class NewCollectionPresenter (actions: NewCollectionActions)(implicit contextWra
         appsCategory = None
       )
       Task.fork(di.collectionProcess.addCollection(request).run).resolveAsyncUi(
-        onResult = (c) => actions.addCollection(c),
+        onResult = (c) => actions.addCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
       )
     }) getOrElse actions.showMessageFormFieldError.run
@@ -60,5 +60,7 @@ trait NewCollectionActions {
   def showMessageContactUsError: Ui[Any]
 
   def showMessageFormFieldError: Ui[Any]
+
+  def close(): Ui[Any]
 
 }

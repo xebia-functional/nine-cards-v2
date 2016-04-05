@@ -31,7 +31,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
 
   def saveCollection(privateCollection: PrivateCollection): Unit = {
     Task.fork(addCollection(privateCollection).run).resolveAsyncUi(
-      onResult = (c) => actions.addCollection(c),
+      onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showContactUsError())
   }
 
@@ -81,4 +81,5 @@ trait PrivateCollectionsActions {
 
   def addCollection(collection: Collection): Ui[Any]
 
+  def close(): Ui[Any]
 }

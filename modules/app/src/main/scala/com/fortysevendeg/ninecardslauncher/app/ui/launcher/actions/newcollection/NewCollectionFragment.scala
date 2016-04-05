@@ -53,9 +53,8 @@ class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def initialize(): Ui[Any] = initUi
 
-  override def addCollection(collection: Collection): Ui[Any] = {
+  override def addCollection(collection: Collection): Ui[Any] = Ui {
     launcherPresenter.addCollection(collection)
-    hideKeyboard ~ unreveal()
   }
 
   override def showMessageContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
@@ -65,6 +64,8 @@ class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
   override def updateCategory(nineCardCategory: NineCardCategory): Ui[Any] = setCategory(nineCardCategory)
 
   override def updateColor(indexColor: Int): Ui[Any] = setIndexColor(indexColor)
+
+  override def close(): Ui[Any] = hideKeyboard ~ unreveal()
 }
 
 object NewCollectionFragment {
