@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.commons.contentresolver
 
-import android.content.{ContentResolver, ContentValues}
+import java.util
+
+import android.content.{ContentProviderOperation, ContentResolver, ContentValues}
 import android.database.Cursor
 import android.net.Uri
 import android.net.Uri._
@@ -17,18 +19,21 @@ trait ContentResolverWrapper {
 
   def insert(
     uri: Uri,
-    values: Map[String, Any]): Int
+    values: Map[String, Any],
+    notificationUri: Option[Uri] = None): Int
 
   def delete(
     uri: Uri,
     where: String = "",
-    whereParams: Seq[String] = Seq.empty): Int
+    whereParams: Seq[String] = Seq.empty,
+    notificationUri: Option[Uri] = None): Int
 
   def deleteById(
     uri: Uri,
     id: Int,
     where: String = "",
-    whereParams: Seq[String] = Seq.empty): Int
+    whereParams: Seq[String] = Seq.empty,
+    notificationUri: Option[Uri] = None): Int
 
   def fetch[T](
     uri: Uri,
@@ -56,14 +61,20 @@ trait ContentResolverWrapper {
     uri: Uri,
     values: Map[String, Any],
     where: String = "",
-    whereParams: Seq[String] = Seq.empty): Int
+    whereParams: Seq[String] = Seq.empty,
+    notificationUri: Option[Uri] = None): Int
 
   def updateById(
     uri: Uri,
     id: Int,
     values: Map[String, Any],
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty): Int
+    notificationUri: Option[Uri] = None): Int
+
+  def updateByIds(
+    authority: String,
+    uri: Uri,
+    idAndValues: Seq[(Int, Map[String, Any])],
+    notificationUri: Option[Uri] = None): Seq[Int]
 }
 
 class ContentResolverWrapperImpl(contentResolver: ContentResolver)
@@ -79,38 +90,75 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
 
   override def insert(
     uri: Uri,
-    values: Map[String, Any]): Int = {
+    values: Map[String, Any],
+    notificationUri: Option[Uri] = None): Int = {
     val response = contentResolver.insert(uri, map2ContentValue(values))
-    Integer.parseInt(response.getPathSegments.get(1))
+    val idString = response.getPathSegments.get(1)
+    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    Integer.parseInt(idString)
   }
 
   override def update(
     uri: Uri,
     values: Map[String, Any],
     where: String = "",
-    whereParams: Seq[String] = Seq.empty): Int =
-    contentResolver.update(uri, map2ContentValue(values), where, whereParams.toArray)
+    whereParams: Seq[String] = Seq.empty,
+    notificationUri: Option[Uri] = None): Int = {
+    val updatedRowCount = contentResolver.update(uri, map2ContentValue(values), where, whereParams.toArray)
+    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    updatedRowCount
+  }
 
   override def updateById(
     uri: Uri,
     id: Int,
     values: Map[String, Any],
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty): Int =
-    contentResolver.update(withAppendedPath(uri, id.toString), map2ContentValue(values), where, whereParams.toArray)
+    notificationUri: Option[Uri] = None): Int = {
+    val updatedRowCount = contentResolver.update(withAppendedPath(uri, id.toString), map2ContentValue(values), "", Seq.empty.toArray)
+    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    updatedRowCount
+  }
+
+  override def updateByIds(
+    authority: String,
+    uri: Uri,
+    idAndValues: Seq[(Int, Map[String, Any])],
+    notificationUri: Option[Uri] = None): Seq[Int] = {
+
+    val operations = idAndValues map {
+      case (id, values) =>
+        ContentProviderOperation.newUpdate(withAppendedPath(uri, id.toString))
+          .withValues(map2ContentValue(values))
+          .build()
+    }
+
+    import scala.collection.JavaConverters._
+    val result = contentResolver.applyBatch(authority, new util.ArrayList(operations.asJava))
+
+    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    result map (_.count.toInt)
+  }
 
   override def delete(
     uri: Uri,
     where: String = "",
-    whereParams: Seq[String] = Seq.empty): Int =
-    contentResolver.delete(uri, where, whereParams.toArray)
+    whereParams: Seq[String] = Seq.empty,
+    notificationUri: Option[Uri] = None): Int = {
+    val deletedRowCount = contentResolver.delete(uri, where, whereParams.toArray)
+    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    deletedRowCount
+  }
 
   override def deleteById(
     uri: Uri,
     id: Int,
     where: String = "",
-    whereParams: Seq[String] = Seq.empty): Int =
-    contentResolver.delete(withAppendedPath(uri, id.toString), where, whereParams.toArray)
+    whereParams: Seq[String] = Seq.empty,
+    notificationUri: Option[Uri] = None): Int = {
+    val deletedRowCount = contentResolver.delete(withAppendedPath(uri, id.toString), where, whereParams.toArray)
+    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    deletedRowCount
+  }
 
   override def fetch[T](
     uri: Uri,

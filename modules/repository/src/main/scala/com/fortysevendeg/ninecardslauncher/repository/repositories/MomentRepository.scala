@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
@@ -12,6 +13,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
+import scala.language.postfixOps
 import scalaz.concurrent.Task
 
 class MomentRepository(
@@ -20,6 +22,8 @@ class MomentRepository(
   extends ImplicitsRepositoryExceptions {
 
   val momentUri = uriCreator.parse(momentUriString)
+
+  val momentNotificationUri = uriCreator.parse(momentUriNotificationString)
 
   def addMoment(data: MomentData): ServiceDef2[Moment, RepositoryException] =
     Service {
@@ -33,7 +37,8 @@ class MomentRepository(
 
           val id = contentResolverWrapper.insert(
             uri = momentUri,
-            values = values)
+            values = values,
+            notificationUri = Some(momentNotificationUri))
 
           Moment(id = id, data = data)
         }
@@ -46,7 +51,8 @@ class MomentRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = momentUri,
-            where = where)
+            where = where,
+            notificationUri = Some(momentNotificationUri))
         }
       }
     }
@@ -57,7 +63,8 @@ class MomentRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = momentUri,
-            id = moment.id)
+            id = moment.id,
+            notificationUri = Some(momentNotificationUri))
         }
       }
     }
@@ -121,7 +128,8 @@ class MomentRepository(
           contentResolverWrapper.updateById(
             uri = momentUri,
             id = item.id,
-            values = values)
+            values = values,
+            notificationUri = Some(momentNotificationUri))
         }
       }
     }

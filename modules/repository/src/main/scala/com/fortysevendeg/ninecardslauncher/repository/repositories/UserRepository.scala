@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IterableCursor, ContentResolverWrapper, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toUser
@@ -11,7 +11,9 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import IterableCursor._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 
+import scala.language.postfixOps
 import scalaz.concurrent.Task
 
 class UserRepository(
@@ -20,6 +22,8 @@ class UserRepository(
   extends ImplicitsRepositoryExceptions {
 
   val userUri = uriCreator.parse(userUriString)
+
+  val userNotificationUri = uriCreator.parse(userUriNotificationString)
 
   def addUser(data: UserData): ServiceDef2[User, RepositoryException] =
     Service {
@@ -35,7 +39,8 @@ class UserRepository(
 
           val id = contentResolverWrapper.insert(
             uri = userUri,
-            values = values)
+            values = values,
+            notificationUri = Some(userNotificationUri))
 
           User(id = id, data = data)
         }
@@ -48,7 +53,8 @@ class UserRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = userUri,
-            where = where)
+            where = where,
+            notificationUri = Some(userNotificationUri))
         }
       }
     }
@@ -59,7 +65,8 @@ class UserRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = userUri,
-            id = user.id)
+            id = user.id,
+            notificationUri = Some(userNotificationUri))
         }
       }
     }
@@ -119,7 +126,8 @@ class UserRepository(
           contentResolverWrapper.updateById(
             uri = userUri,
             id = item.id,
-            values = values)
+            values = values,
+            notificationUri = Some(userNotificationUri))
         }
       }
     }

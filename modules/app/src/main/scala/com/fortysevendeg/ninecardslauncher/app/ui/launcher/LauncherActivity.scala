@@ -57,6 +57,11 @@ class LauncherActivity
     presenter.resume()
   }
 
+  override def onPause(): Unit = {
+    super.onPause()
+    presenter.pause()
+  }
+
   override def onStartFinishAction(): Unit = presenter.resetAction()
 
   override def onEndFinishAction(): Unit = removeActionFragment

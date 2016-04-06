@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, C
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services._
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -35,11 +36,8 @@ trait CardsProcessImpl {
   def reorderCard(collectionId: Int, cardId: Int, newPosition: Int) =
     (for {
       Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
-      cardList <- getCardsByCollectionId(collectionId)
-      updatedCards = cardList.reorder(card.position, newPosition).zipWithIndex map {
-        case (c, index) => c.copy(position = index)
-      }
-      _ <- updateCardList(updatedCards)
+      if card.position != newPosition
+      _ <- reorderServiceCard(collectionId, card, newPosition)
     } yield ()).resolve[CardException]
 
   def editCard(collectionId: Int, cardId: Int, name: String) =
@@ -68,15 +66,25 @@ trait CardsProcessImpl {
       if (card.position > position) toNewPositionCard(card, position - 1) else card
     }
 
+  private[this] def reorderServiceCard(collectionId: Int, card: persistence.models.Card, newPosition: Int) =
+    (for {
+      cardList <- getCardsByCollectionId(collectionId)
+      (from, to) = if (card.position > newPosition) (newPosition, card.position) else (card.position, newPosition)
+      updatedCards = cardList.reorderRange(card.position, newPosition).zip(from to to) map {
+        case (c, index) => c.copy(position = index)
+      }
+      _ <- updateCardList(updatedCards)
+    } yield ()).resolve[CardException]
+
   private[this] def updateCard(card: Card) =
     (for {
       _ <- persistenceServices.updateCard(toServicesUpdateCardRequest(card))
     } yield ()).resolve[CardException]
 
-  private[this] def updateCardList(cardList: Seq[Card]) = Service {
-    val tasks = cardList map (card => updateCard(card).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CardException](c.collect { case Answer(r) => r}))
-  }
+  private[this] def updateCardList(cardList: Seq[Card]) =
+    (for {
+      _ <- persistenceServices.updateCards(toServicesUpdateCardsRequest(cardList))
+    } yield ()).resolve[CardException]
 
   private[this] def getCardsByCollectionId(collectionId: Int) = (
     persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]

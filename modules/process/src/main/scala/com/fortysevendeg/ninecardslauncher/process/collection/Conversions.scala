@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, _}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, _}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
 trait Conversions extends CommonConversions {
@@ -103,6 +103,9 @@ trait Conversions extends CommonConversions {
 
   def toFindCardByIdRequest(cardId: Int) = FindCardByIdRequest(
     id = cardId)
+
+  def toServicesUpdateCardsRequest(cards: Seq[Card]) =
+    ServicesUpdateCardsRequest(cards map toServicesUpdateCardRequest)
 
   def toServicesUpdateCardRequest(card: Card) = ServicesUpdateCardRequest(
     id = card.id,

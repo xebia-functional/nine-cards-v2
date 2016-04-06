@@ -15,6 +15,8 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import rapture.core.{Answer, Errata}
 
+import scala.language.postfixOps
+
 trait UserRepositorySpecification
   extends Specification
   with DisjunctionMatchers
@@ -39,11 +41,20 @@ trait UserRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createUserValues) returns testId
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createUserValues,
+      notificationUri = Some(mockUri)) returns testId
 
-    contentResolverWrapper.delete(mockUri, where = "") returns 1
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) returns 1
 
-    contentResolverWrapper.deleteById(mockUri, testId) returns 1
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testId,
+      notificationUri = Some(mockUri)) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -57,7 +68,11 @@ trait UserRepositorySpecification
       projection = allFields)(
         f = getEntityFromCursor(userEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(mockUri, testId, createUserValues) returns 1
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = testId,
+      values = createUserValues,
+      notificationUri = Some(mockUri)) returns 1
   }
 
   trait ErrorUserRepositoryResponses
@@ -69,11 +84,20 @@ trait UserRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createUserValues) throws contentResolverException
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createUserValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.deleteById(mockUri, testId) throws contentResolverException
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testId,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -81,7 +105,11 @@ trait UserRepositorySpecification
       projection = allFields)(
         f = getEntityFromCursor(userEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(mockUri, testId, createUserValues) throws contentResolverException
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = testId,
+      values = createUserValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
   }
 
 }
@@ -132,9 +160,9 @@ class UserRepositorySpec
           val result = userRepository.addUser(data = createUserData).run.run
 
           result must beLike {
-            case Answer(user) =>
-              user.id shouldEqual testId
-              user.data.userId shouldEqual testUserIdOption
+            case Answer(userResponse) =>
+              userResponse.id shouldEqual testId
+              userResponse.data.userId shouldEqual testUserIdOption
           }
         }
 

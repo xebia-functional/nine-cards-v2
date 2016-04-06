@@ -58,6 +58,8 @@ case class FindCardByIdRequest(id: Int)
 
 case class FetchCardsByCollectionRequest(collectionId: Int)
 
+case class UpdateCardsRequest(updateCardRequests: Seq[UpdateCardRequest])
+
 case class UpdateCardRequest(
   id: Int,
   position: Int,

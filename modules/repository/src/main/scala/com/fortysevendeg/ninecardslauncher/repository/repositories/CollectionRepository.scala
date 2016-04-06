@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IterableCursor, ContentResolverWrapper, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
@@ -14,6 +14,9 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import IterableCursor._
 import RepositoryUtils._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
+
+import scala.language.postfixOps
 import scalaz.concurrent.Task
 
 class CollectionRepository(
@@ -22,6 +25,8 @@ class CollectionRepository(
   extends ImplicitsRepositoryExceptions {
 
   val collectionUri = uriCreator.parse(collectionUriString)
+
+  val collectionNotificationUri = uriCreator.parse(collectionUriNotificationString)
 
   def addCollection(data: CollectionData): ServiceDef2[Collection, RepositoryException] =
     Service {
@@ -41,7 +46,8 @@ class CollectionRepository(
 
           val id = contentResolverWrapper.insert(
             uri = collectionUri,
-            values = values)
+            values = values,
+            notificationUri = Some(collectionNotificationUri))
 
           Collection(id = id, data = data)
         }
@@ -54,7 +60,8 @@ class CollectionRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = collectionUri,
-            where = where)
+            where = where,
+            notificationUri = Some(collectionNotificationUri))
         }
       }
     }
@@ -65,7 +72,8 @@ class CollectionRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = collectionUri,
-            id = collection.id)
+            id = collection.id,
+            notificationUri = Some(collectionNotificationUri))
         }
       }
     }
@@ -147,7 +155,8 @@ class CollectionRepository(
           contentResolverWrapper.updateById(
             uri = collectionUri,
             id = collection.id,
-            values = values)
+            values = values,
+            notificationUri = Some(collectionNotificationUri))
         }
       }
     }

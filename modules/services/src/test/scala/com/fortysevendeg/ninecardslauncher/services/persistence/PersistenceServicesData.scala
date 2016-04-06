@@ -516,6 +516,12 @@ trait PersistenceServicesData {
 
   def createFindCardByIdRequest(id: Int): FindCardByIdRequest = FindCardByIdRequest(id = id)
 
+  def createUpdateCardsRequest(
+    num: Int = 5,
+    id: Int = cardId) =
+    UpdateCardsRequest(
+      List.tabulate(num)(item => createUpdateCardRequest(id = id + item)))
+
   def createUpdateCardRequest(
     id: Int = cardId,
     position: Int = position,

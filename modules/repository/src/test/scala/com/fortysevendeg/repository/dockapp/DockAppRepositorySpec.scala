@@ -39,11 +39,20 @@ trait DockAppRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createDockAppValues) returns testId
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createDockAppValues,
+      notificationUri = Some(mockUri)) returns testId
 
-    contentResolverWrapper.delete(mockUri, where = "") returns 1
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) returns 1
 
-    contentResolverWrapper.deleteById(mockUri, testId) returns 1
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testId,
+      notificationUri = Some(mockUri)) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -57,7 +66,11 @@ trait DockAppRepositorySpecification
       projection = allFields)(
         f = getEntityFromCursor(dockAppEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(mockUri, testId, createDockAppValues) returns 1
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = testId,
+      values = createDockAppValues,
+      notificationUri = Some(mockUri)) returns 1
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -92,11 +105,20 @@ trait DockAppRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createDockAppValues) throws contentResolverException
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createDockAppValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.deleteById(mockUri, testId) throws contentResolverException
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testId,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -104,7 +126,11 @@ trait DockAppRepositorySpecification
       projection = allFields)(
         f = getEntityFromCursor(dockAppEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(mockUri, testId, createDockAppValues) throws contentResolverException
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = testId,
+      values = createDockAppValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
