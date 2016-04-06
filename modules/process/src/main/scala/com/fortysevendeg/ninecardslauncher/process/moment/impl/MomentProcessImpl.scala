@@ -71,7 +71,6 @@ class MomentProcessImpl(
   private[this] def createMoment(apps: Seq[App], moment: NineCardsMoment, position: Int) =
     (for {
       collection <- persistenceServices.addCollection(generateAddCollection(apps, moment, position))
-      _ <- persistenceServices.addMoment(toAddMomentRequest(Option(collection.id), moment))
     } yield toCollection(collection)).resolve[MomentException]
 
   private[this] def generateAddCollection(items: Seq[App], moment: NineCardsMoment, position: Int): AddCollectionRequest = {
@@ -90,7 +89,7 @@ class MomentProcessImpl(
       appsCategory = None,
       sharedCollectionSubscribed = Option(false),
       cards = toAddCardRequestSeq(items),
-      moment = None)
+      moment = Option(toAddMomentRequest(moment)))
   }
 
   @tailrec

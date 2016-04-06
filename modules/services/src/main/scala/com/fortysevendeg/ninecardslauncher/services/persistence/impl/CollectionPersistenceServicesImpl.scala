@@ -115,7 +115,7 @@ trait CollectionPersistenceServicesImpl {
   private[this] def addMoment(maybeMoment: Option[AddMomentRequest]): ServiceDef2[Unit, RepositoryException] = {
     maybeMoment match {
       case Some(moment) => momentRepository.addMoment(toRepositoryMomentData(moment)) map (_ => ())
-      case None => Service(Task(Result.answer[Unit, RepositoryException]()))
+      case None => Service(Task(Result.answer[Unit, RepositoryException]((): Unit)))
     }
   }
 }

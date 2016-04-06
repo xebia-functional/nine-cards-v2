@@ -53,9 +53,9 @@ trait MomentConversions extends CommonConversions {
       wifi = moment.wifi,
       headphone = moment.headphone)
 
-  def toAddMomentRequest(collectionId: Option[Int], moment: NineCardsMoment) =
+  def toAddMomentRequest(moment: NineCardsMoment) =
     AddMomentRequest(
-      collectionId = collectionId,
+      collectionId = None,
       timeslot = toServicesMomentTimeSlotSeq(moment),
       wifi = Seq.empty,
       headphone = false)
