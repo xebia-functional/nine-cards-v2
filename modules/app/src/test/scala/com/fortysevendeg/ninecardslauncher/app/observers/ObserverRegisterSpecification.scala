@@ -53,6 +53,14 @@ class ObserverRegisterSpec
 
     }
 
+    "call to unregister observer with the right params" in new ObserverRegisterScope with MockBehaviours {
+
+      observerRegister.unregisterObserver
+
+      there was one(contextResolver).unregisterContentObserver(any[ContentObserver])
+
+    }
+
   }
 
 }

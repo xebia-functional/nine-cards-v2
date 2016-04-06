@@ -74,7 +74,7 @@ object Settings {
   lazy val commonsSettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= commonsDependencies)
 
-  // Commons Module
+  // Android classes for Mock Module
   lazy val mockAndroidSettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= mockAndroidDependencies)
 
