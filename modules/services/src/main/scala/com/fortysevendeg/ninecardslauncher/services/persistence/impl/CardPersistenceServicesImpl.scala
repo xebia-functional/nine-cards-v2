@@ -59,4 +59,9 @@ trait CardPersistenceServicesImpl {
       updated <- cardRepository.updateCard(toRepositoryCard(request))
     } yield updated).resolve[PersistenceServiceException]
 
+  def updateCards(request: UpdateCardsRequest) =
+    (for {
+      updated <- cardRepository.updateCards(request.updateCardRequests map toRepositoryCard)
+    } yield updated).resolve[PersistenceServiceException]
+
 }
