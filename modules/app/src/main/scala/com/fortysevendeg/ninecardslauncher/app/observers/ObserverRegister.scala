@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.UriCreator
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri
 
-class ObserverRegister(uriCreator: UriCreator) {
+class ObserverRegister(uriCreator: UriCreator)(implicit contextSupport: ContextSupport) {
 
   import NotificationUri._
 
@@ -12,10 +12,10 @@ class ObserverRegister(uriCreator: UriCreator) {
 
   val observer = new NineCardsObserver
 
-  def registerObserver(implicit contextSupport: ContextSupport): Unit =
+  def registerObserver(): Unit =
     contextSupport.getContentResolver.registerContentObserver(baseUri, true, observer)
 
-  def unregisterObserver(implicit contextSupport: ContextSupport): Unit =
+  def unregisterObserver(): Unit =
     contextSupport.getContentResolver.unregisterContentObserver(observer)
 
 }
