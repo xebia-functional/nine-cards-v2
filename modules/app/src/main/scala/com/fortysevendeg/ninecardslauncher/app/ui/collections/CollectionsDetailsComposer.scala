@@ -87,7 +87,7 @@ trait CollectionsDetailsComposer
   def updateBarsInFabMenuHide: Ui[_] =
     getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
-  def initUi(indexColor: Int, iconCollection: String)(implicit theme: NineCardsTheme) =
+  def initUi(indexColor: Int, iconCollection: String)(implicit theme: NineCardsTheme, presenter: CollectionsPagerPresenter) =
     (tabs <~ tabsStyle <~ vInvisible) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
@@ -109,7 +109,7 @@ trait CollectionsDetailsComposer
       (iconContent <~ vElevation(elevationUp))
 
   def drawCollections(collections: Seq[Collection], position: Int)
-    (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
+    (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme, collectionsPresenter: CollectionsPagerPresenter) = {
     val adapter = CollectionsPagerAdapter(manager.get, collections, position)
     (root <~ SnailsCommons.fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
       (viewPager <~ vpAdapter(adapter)) ~
@@ -182,7 +182,7 @@ trait CollectionsDetailsComposer
     (newRatio * (spaceMove * 2)).toInt
   }
 
-  private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
+  private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme, presenter: CollectionsPagerPresenter) = Seq(
     (w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>
         val category = getCurrentCollection flatMap (_.appsCategory)

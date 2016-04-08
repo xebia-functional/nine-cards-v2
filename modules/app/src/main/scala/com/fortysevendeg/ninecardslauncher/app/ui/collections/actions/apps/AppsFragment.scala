@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 import android.os.Bundle
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.{CollectionsPagerPresenter, CollectionsDetailsActivity}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 
 import scalaz.concurrent.Task
 
-class AppsFragment
+class AppsFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter)
   extends BaseActionFragment
   with AppsComposer
   with UiExtensions
@@ -62,7 +62,7 @@ class AppsFragment
               intent = toNineCardIntent(app),
               imagePath = app.imagePath
             )
-            activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
+            collectionsPagerPresenter.addCards(Seq(card))
             unreveal().run
           })
         }

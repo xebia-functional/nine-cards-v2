@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.{CollectionsPagerPresenter, CollectionsDetailsActivity}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -19,7 +19,7 @@ import macroid.Ui
 
 import scalaz.concurrent.Task
 
-class ContactsFragment
+class ContactsFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter)
   extends BaseActionFragment
   with ContactsComposer
   with ContactTasks
@@ -43,7 +43,7 @@ class ContactsFragment
           case extras if extras.containsKey(ContactsFragment.addCardRequest) =>
             extras.get(ContactsFragment.addCardRequest) match {
               case card: AddCardRequest =>
-                activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
+                collectionsPagerPresenter.addCards(Seq(card))
                 unreveal()
               case _ => showGeneralError
             }

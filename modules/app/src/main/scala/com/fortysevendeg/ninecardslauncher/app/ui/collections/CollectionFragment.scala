@@ -17,25 +17,21 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
-import macroid.Contexts
+import macroid.{Ui, Contexts}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
-class CollectionFragment
+class CollectionFragment(implicit collectionsPresenter: CollectionsPagerPresenter, theme: NineCardsTheme)
   extends Fragment
   with Contexts[Fragment]
   with ContextSupportProvider
   with UiExtensions
   with TypedFindView
-  with CollectionFragmentComposer {
+  with CollectionUiActions
+  with CollectionFragmentComposer { self =>
 
-  lazy val di = new Injector
-
-  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
-    case Answer(t) => t
-    case _ => getDefaultTheme
-  }
+  implicit lazy val presenter = new CollectionPresenter(self)
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
@@ -72,20 +68,13 @@ class CollectionFragment
           for {
             adapter <- getAdapter
             collection = adapter.collection
-            activity <- activity[CollectionsDetailsActivity]
-          } yield {
-            Task.fork(di.collectionProcess.reorderCard(collection.id, collection.cards(to).id, to).run).resolveAsync(
-              onResult = (_) => activity.reloadCards(false)
-            )
-          }
+          } yield presenter.reorderCard(collection.id, collection.cards(to).id, to)
         },
         onRemoveItem = (position: Int) => {
           for {
             adapter <- getAdapter
-            activity <- activity[CollectionsDetailsActivity]
-          } yield {
-            activity.removeCard(adapter.collection.cards(position))
-          }
+            card <- adapter.collection.cards.lift(position)
+          } yield collectionsPresenter.removeCard(card)
         }).run
     } getOrElse(throw new RuntimeException("Collection not found")) // TODO We should use an error screen
     baseView
@@ -110,6 +99,10 @@ class CollectionFragment
   override def onDetach(): Unit = {
     super.onDetach()
     scrolledListener = None
+  }
+
+  override def reloadCards(): Ui[Any] = Ui {
+    collectionsPresenter.reloadCards(false)
   }
 
   def bindAnimatedAdapter() = if (animateCards) collection foreach (c => setAnimatedAdapter(c).run)

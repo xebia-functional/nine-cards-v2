@@ -8,14 +8,10 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -47,19 +43,6 @@ trait RecommendationsComposer
       rvAdapter(adapter)) ~
       (loading <~ vGone)
   }
-
-  def onInstallNowClick(app: RecommendedApp): Ui[_] =
-    Ui {
-      launchGooglePlay(app.packageName)
-      val card = AddCardRequest(
-        term = app.title,
-        packageName = Option(app.packageName),
-        cardType = NoInstalledAppCardType,
-        intent = toNineCardIntent(app),
-        imagePath = "")
-      activity[CollectionsDetailsActivity] foreach (_.addCards(Seq(card)))
-    } ~
-      unreveal()
 
 }
 
