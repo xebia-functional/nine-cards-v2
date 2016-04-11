@@ -234,7 +234,7 @@ trait MomentProcessImplData {
     timeslot: Seq[ServicesMomentTimeSlot] = createSeqServicesMomentTimeSlot(),
     wifi: Seq[String] = Seq.empty,
     headphone: Boolean = false) =
-    (1 until num) map (item =>
+    (0 until num) map (item =>
       ServicesMoment(
         id = id + item,
         collectionId = collectionId,
@@ -248,6 +248,29 @@ trait MomentProcessImplData {
     days: Seq[Int] = days)=
     (1 until 3) map (item =>
       ServicesMomentTimeSlot(
+        from = from,
+        to = to,
+        days = days))
+
+  def createSeqMoment(
+    num: Int = 3,
+    collectionId: Option[Int] = Option(collectionId1),
+    timeslot: Seq[MomentTimeSlot] = createSeqMomentTimeSlot(),
+    wifi: Seq[String] = Seq.empty,
+    headphone: Boolean = false) =
+    (0 until num) map (item =>
+      Moment(
+        collectionId = collectionId,
+        timeslot = timeslot,
+        wifi = wifi,
+        headphone = headphone))
+
+  def createSeqMomentTimeSlot(
+    from: String = from,
+    to: String = to,
+    days: Seq[Int] = days)=
+    (1 until 3) map (item =>
+      MomentTimeSlot(
         from = from,
         to = to,
         days = days))
@@ -285,5 +308,5 @@ trait MomentProcessImplData {
   val seqMomentCollections = createSeqMomentCollection()
   val seqServicesMoments = createSeqServicesMoment()
   val servicesMoment = seqServicesMoments(0)
-
+  val seqMoments = createSeqMoment()
 }

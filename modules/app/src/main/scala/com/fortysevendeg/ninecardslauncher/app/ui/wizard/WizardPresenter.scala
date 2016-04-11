@@ -15,6 +15,8 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, Collection}
+import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import com.fortysevendeg.ninecardslauncher2.R
@@ -149,13 +151,19 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
   private[this] def storeDevice(
     client: GoogleApiClient,
     username: String
-  ): ServiceDef2[Unit, CollectionException with CloudStorageProcessException] = {
+  ): ServiceDef2[Unit, CollectionException  with MomentException with CloudStorageProcessException] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client, username)
     for {
       collections <- di.collectionProcess.getCollections
-      _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(collections map toCloudStorageCollection)
+      moments <- di.momentProcess.getMoments
+      _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+        collections = addMomentsToCollections(collections, moments),
+        moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
     } yield ()
   }
+
+  private[this] def addMomentsToCollections(collections: Seq[Collection], moments: Seq[Moment]) =
+    collections map (collection => toCloudStorageCollection(collection, moments.find(_.collectionId == Option(collection.id))))
 
   private[this] def verifyAndUpdate(
     cloudStorageProcess: CloudStorageProcess,

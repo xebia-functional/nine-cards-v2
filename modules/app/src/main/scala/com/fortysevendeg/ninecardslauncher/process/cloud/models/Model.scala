@@ -22,7 +22,8 @@ case class CloudStorageDevice(
   deviceId: String,
   deviceName: String,
   documentVersion: Int,
-  collections: Seq[CloudStorageCollection])
+  collections: Seq[CloudStorageCollection],
+  moments: Seq[CloudStorageMoment])
 
 case class CloudStorageCollection(
   name: String,
@@ -32,9 +33,20 @@ case class CloudStorageCollection(
   items: Seq[CloudStorageCollectionItem],
   collectionType: CollectionType,
   icon: String,
-  category: Option[NineCardCategory])
+  category: Option[NineCardCategory],
+  moment: Option[CloudStorageMoment])
 
 case class CloudStorageCollectionItem(
   itemType: String,
   title: String,
   intent: String)
+
+case class CloudStorageMoment(
+  timeslot: Seq[CloudStorageMomentTimeSlot],
+  wifi: Seq[String],
+  headphones: Boolean)
+
+case class CloudStorageMomentTimeSlot(
+  from: String,
+  to: String,
+  days: Seq[Int])

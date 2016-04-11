@@ -3,8 +3,9 @@ package com.fortysevendeg.ninecardslauncher.process.moment.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -25,6 +26,8 @@ class MomentProcessImpl(
   with ImplicitsPersistenceServiceExceptions
   with MomentConversions {
 
+  override def getMoments: ServiceDef2[Seq[Moment], MomentException] = (persistenceServices.fetchMoments map toMomentSeq).resolve[MomentException]
+
   override def createMoments(implicit context: ContextSupport) =
     (for {
       collections <- persistenceServices.fetchCollections //TODO - Issue #394 - Change this service's call for a new one to be created that returns the number of created collections
@@ -32,6 +35,11 @@ class MomentProcessImpl(
       servicesApp <- persistenceServices.fetchApps(OrderByName, ascending = true)
       moments <- createMoments(servicesApp map toApp, position)
     } yield moments).resolve[MomentException]
+
+  override def saveMoments(items: Seq[Moment])(implicit context: ContextSupport) = Service {
+      val tasks = items map (item => persistenceServices.addMoment(toAddMomentRequest(item)).run)
+      Task.gatherUnordered(tasks) map (c => CatchAll[MomentException](c.collect { case Answer(m) => toMoment(m)}))
+    }
 
   override def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport) = Service {
     Task {
@@ -63,21 +71,25 @@ class MomentProcessImpl(
   private[this] def createMoment(apps: Seq[App], moment: NineCardsMoment, position: Int) =
     (for {
       collection <- persistenceServices.addCollection(generateAddCollection(apps, moment, position))
-      _ <- persistenceServices.addMoment(toAddMomentRequest(collection.id, moment))
     } yield toCollection(collection)).resolve[MomentException]
 
   private[this] def generateAddCollection(items: Seq[App], moment: NineCardsMoment, position: Int): AddCollectionRequest = {
+    val collectionType = moment match{
+      case HomeMorningMoment => HomeMorningCollectionType
+      case WorkMoment => WorkCollectionType
+      case HomeNightMoment => HomeNightCollectionType
+    }
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
       name = momentProcessConfig.namesMoments.getOrElse(moment, moment.getStringResource),
-      collectionType = moment.name,
+      collectionType = collectionType.name,
       icon = moment.getIconResource,
       themedColorIndex = themeIndex,
       appsCategory = None,
       sharedCollectionSubscribed = Option(false),
-      cards = toAddCardRequestSeq(items)
-    )
+      cards = toAddCardRequestSeq(items),
+      moment = Option(toAddMomentRequest(moment)))
   }
 
   @tailrec

@@ -564,7 +564,8 @@ trait PersistenceServicesData {
       originalSharedCollectionId = Option(originalSharedCollectionId),
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
-      cards = createSeqAddCardRequest())
+      cards = createSeqAddCardRequest(),
+      moment = Option(createAddMomentRequest()))
 
   def createDeleteCollectionRequest(collection: Collection): DeleteCollectionRequest =
     DeleteCollectionRequest(collection = collection)
