@@ -86,16 +86,15 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
     }) getOrElse actions.showErrorConnectingGoogle().run
   }
 
-  def saveCurrentDevice(maybeClient: Option[GoogleApiClient], maybeUsername: Option[String]): Unit = {
-    (for {
-      client <- maybeClient
-      username <- maybeUsername
-    } yield {
-      Task.fork(storeDevice(client, username).run).resolveAsyncUi(
-        onResult = (_) => actions.showDiveIn(),
-        onException = (_) => actions.showDiveIn())
-    }) getOrElse actions.showDiveIn().run
-  }
+  def saveCurrentDevice(maybeClient: Option[GoogleApiClient]): Unit =
+    maybeClient match {
+      case Some(client) =>
+        Task.fork(storeDevice(client).run).resolveAsyncUi(
+          onResult = (_) => actions.showDiveIn(),
+          onException = (_) => actions.showDiveIn())
+      case None =>
+        actions.showDiveIn().run
+    }
 
   def generateCollections(maybeKey: Option[String]): Unit =
     (actions.startCreateCollectionsService(maybeKey) ~ actions.navigateToWizard()).run
@@ -137,7 +136,7 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
     username: String,
     userPermissions: UserPermissions
   ): ServiceDef2[UserCloudDevices, UserException with UserConfigException with CloudStorageProcessException] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client, username)
+    val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       response <- di.userProcess.signIn(username, Build.MODEL, userPermissions.token, userPermissions.oauthScopes)
       cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
@@ -146,11 +145,8 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
 
   }
 
-  private[this] def storeDevice(
-    client: GoogleApiClient,
-    username: String
-  ): ServiceDef2[Unit, CollectionException with CloudStorageProcessException] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client, username)
+  private[this] def storeDevice(client: GoogleApiClient): ServiceDef2[Unit, CollectionException with CloudStorageProcessException] = {
+    val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       collections <- di.collectionProcess.getCollections
       _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(collections map toCloudStorageCollection)

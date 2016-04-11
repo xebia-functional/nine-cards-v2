@@ -38,9 +38,8 @@ trait CreateCollectionsTasks
 
   def loadConfiguration(
    client: GoogleApiClient,
-   account: String,
    deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with CloudStorageProcessException with CollectionException with DockAppException] = {
-   val cloudStorageProcess = di.createCloudStorageProcess(client, account)
+   val cloudStorageProcess = di.createCloudStorageProcess(client)
    for {
      - <- di.deviceProcess.resetSavedItems()
      _ <- di.deviceProcess.saveInstalledApps

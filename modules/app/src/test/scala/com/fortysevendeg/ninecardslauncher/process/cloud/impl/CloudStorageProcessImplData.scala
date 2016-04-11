@@ -11,6 +11,8 @@ import scalaz.Scalaz._
 
 trait CloudStorageProcessImplData {
 
+  val driveServiceFile = generateDriveServiceFile
+
   val driveServiceFileSeq: Seq[DriveServiceFile] = 1 to 10 map (_ => generateDriveServiceFile)
 
   val driveServiceFileEmptySeq = Seq.empty[DriveServiceFile]
@@ -24,6 +26,8 @@ trait CloudStorageProcessImplData {
       modifiedDate = DateTime.now().minusMonths(3).toDate)
 
   val driveId = "drive-id"
+
+  val fileId = "file-id"
 
   val deviceId = "device-id"
 

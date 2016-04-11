@@ -108,10 +108,10 @@ trait ProfileComposer
     (recyclerView <~ vVisible <~ rvAdapter(new AccountsAdapter(items, accountClickListener))) ~
       (loadingView <~ vInvisible)
 
-  private[this] def accountClickListener(position: Int, accountType: AccountSyncType): Unit =
-    accountType match {
+  private[this] def accountClickListener(position: Int, accountSync: AccountSync): Unit =
+    accountSync.accountSyncType match {
       case Device(true) => onSyncActionClicked()
-      case Device(false) => showMessage(R.string.todo).run
+      case Device(false) => accountSync.resourceId foreach onRemoveActionClicked
       case _ =>
     }
 

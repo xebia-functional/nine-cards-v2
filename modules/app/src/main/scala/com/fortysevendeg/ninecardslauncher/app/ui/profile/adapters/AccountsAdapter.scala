@@ -13,7 +13,7 @@ import macroid.FullDsl._
 
 case class AccountsAdapter(
   items: Seq[AccountSync],
-  clickListener: (Int, AccountSyncType) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
+  clickListener: (Int, AccountSync) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderAccountsAdapter] {
 
   private[this] val headerType = 0
@@ -33,7 +33,7 @@ case class AccountsAdapter(
       case _ =>
         val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_account_item, parent, false)
         new ViewHolderAccountItemAdapter(view,
-          (position: Int, accountType: AccountSyncType) => Ui(clickListener(position, accountType)))
+          (position: Int, accountSync: AccountSync) => Ui(clickListener(position, accountSync)))
     }
 
   override def getItemViewType(position: Int): Int =
@@ -63,7 +63,7 @@ case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: Acti
 
 case class ViewHolderAccountItemAdapter(
   content: View,
-  onClick: (Int, AccountSyncType) => Ui[_])(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+  onClick: (Int, AccountSync) => Ui[_])(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
   extends ViewHolderAccountsAdapter(content) {
 
   lazy val title = Option(findView(TR.profile_account_title))
@@ -84,7 +84,7 @@ case class ViewHolderAccountItemAdapter(
       } else {
         R.drawable.icon_account_delete
       }) <~ On.click {
-        onClick(getAdapterPosition, accountSync.accountSyncType)
+        onClick(getAdapterPosition, accountSync)
       })
   }
 

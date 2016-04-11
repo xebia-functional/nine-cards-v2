@@ -12,6 +12,8 @@ import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientActivityProvider
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.RemoveAccountDeviceDialogFragment
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.api.GoogleApiClient
@@ -21,9 +23,7 @@ import rapture.core.Answer
 import scala.util.Try
 import scalaz.concurrent.Task
 
-case class GoogleApiClientStatuses(
-  apiClient: Option[GoogleApiClient] = None,
-  username: Option[String] = None)
+case class GoogleApiClientStatuses(apiClient: Option[GoogleApiClient] = None)
 
 class ProfileActivity
   extends AppCompatActivity
@@ -58,6 +58,8 @@ class ProfileActivity
   var userProfileStatuses = UserProfileStatuses()
 
   var syncEnabled: Boolean = false
+
+  val tagDialog = "dialog"
 
   override val actionsFilters: Seq[String] = SyncActionFilter.cases map (_.action)
 
@@ -103,7 +105,7 @@ class ProfileActivity
 
   override def onStop(): Unit = {
     clientStatuses match {
-      case GoogleApiClientStatuses(Some(client), _) => Try(client.disconnect())
+      case GoogleApiClientStatuses(Some(client)) => Try(client.disconnect())
       case _ =>
     }
     super.onStop()
@@ -143,8 +145,8 @@ class ProfileActivity
   override def onConnected(bundle: Bundle): Unit = {
     super.onConnected(bundle)
     clientStatuses match {
-      case GoogleApiClientStatuses(Some(client), Some(email)) if client.isConnected =>
-        loadUserAccounts(client, email)
+      case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
+        loadUserAccounts(client)
       case _ => showError(R.string.errorConnectingGoogle, () => tryToConnect())
     }
   }
@@ -160,9 +162,9 @@ class ProfileActivity
       setSubscriptionsAdapter(sampleItems("Subscription")).run
     case AccountsTab =>
       clientStatuses match {
-        case GoogleApiClientStatuses(Some(client), Some(email)) if client.isConnected =>
-          loadUserAccounts(client, email)
-        case GoogleApiClientStatuses(Some(client), Some(email)) =>
+        case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
+          loadUserAccounts(client)
+        case GoogleApiClientStatuses(Some(client)) =>
           tryToConnect()
           showLoading.run
         case _ =>
@@ -171,6 +173,8 @@ class ProfileActivity
   }
 
   override def onSyncActionClicked(): Unit = if (syncEnabled) launchService()
+
+  override def onRemoveActionClicked(resourceId: String): Unit = showDialogForDeleteDevice(resourceId).run
 
   def onConnectedUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit = userProfile(name, email, avatarUrl).run
 
@@ -201,22 +205,20 @@ class ProfileActivity
     Task.fork(loadUserEmail().run).resolveAsyncUi(
       onResult = email => Ui {
         val client = email map createGoogleDriveClient
-        clientStatuses = clientStatuses.copy(
-          apiClient = client,
-          username = email)
+        clientStatuses = clientStatuses.copy(apiClient = client)
         client foreach (_.connect())
       },
       onException = (_) => showError(R.string.errorLoadingUser, loadUserInfo),
       onPreTask = () => showLoading
     )
 
-  private[this] def loadUserAccounts(client: GoogleApiClient, username: String): Unit =
-    Task.fork(loadAccounts(client, username).run).resolveAsyncUi(
+  private[this] def loadUserAccounts(client: GoogleApiClient): Unit =
+    Task.fork(loadAccounts(client).run).resolveAsyncUi(
       onResult = accountSyncs => {
         syncEnabled = true
         setAccountsAdapter(accountSyncs)
       },
-      onException = (_) => showError(R.string.errorConnectingGoogle, () => loadUserAccounts(client, username)),
+      onException = (_) => showError(R.string.errorConnectingGoogle, () => loadUserAccounts(client)),
       onPreTask = () => showLoading
     )
 
@@ -227,5 +229,23 @@ class ProfileActivity
         finish()
       },
       onException = (_) => showError(R.string.contactUsError, quit))
+
+  private[this] def deleteDevice(resourceId: String): Unit =
+    clientStatuses match {
+      case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
+        Task.fork(deleteAccountDevice(client, resourceId).run).resolveAsyncUi(
+          onResult = (_) => Ui(loadUserAccounts(client)),
+          onException = (_) => showError(R.string.contactUsError, () => deleteDevice(resourceId)),
+          onPreTask = () => showLoading)
+      case _ => showError(R.string.errorConnectingGoogle, () => tryToConnect())
+    }
+
+  private[this] def showDialogForDeleteDevice(resourceId: String): Ui[Any] = Ui {
+    val ft = getSupportFragmentManager.beginTransaction()
+    Option(getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    val dialog = new RemoveAccountDeviceDialogFragment(() => deleteDevice(resourceId))
+    dialog.show(ft, tagDialog)
+  }
 
 }

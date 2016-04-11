@@ -43,6 +43,14 @@ trait CloudStorageProcess {
     */
   def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection])(implicit context: ContextSupport): ServiceDef2[Unit, CloudStorageProcessException]
 
+  /**
+    * Delete a `CloudStorageDevice` by his android id
+    * @param androidId identifier of the devices
+    * @return Unit
+    * @throws CloudStorageProcessException if the device not exists or the service throws an error
+    */
+  def deleteCloudStorageDevice(androidId: String): ServiceDef2[Unit, CloudStorageProcessException]
+
 }
 
 object CloudStorageProcess {

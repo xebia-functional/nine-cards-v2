@@ -56,8 +56,8 @@ class SynchronizeDeviceService
     case _ => None
   }
 
-  override def connected(client: GoogleApiClient, account: String): Unit =
-    Task.fork(sync(client, account).run).resolveAsync(
+  override def connected(client: GoogleApiClient): Unit =
+    Task.fork(sync(client).run).resolveAsync(
       _ => success(),
       throwable => {
         error(
@@ -65,10 +65,8 @@ class SynchronizeDeviceService
           maybeException = Some(throwable))
       })
 
-  private[this] def sync(
-    client: GoogleApiClient,
-    account: String): ServiceDef2[Unit, CollectionException with CloudStorageProcessException] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client, account)
+  private[this] def sync(client: GoogleApiClient): ServiceDef2[Unit, CollectionException with CloudStorageProcessException] = {
+    val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       collections <- di.collectionProcess.getCollections
       _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
@@ -95,7 +93,3 @@ class SynchronizeDeviceService
     stopSelf()
   }
 }
-
-case class GoogleApiClientStatuses(
-  apiClient: Option[GoogleApiClient] = None,
-  username: Option[String] = None)

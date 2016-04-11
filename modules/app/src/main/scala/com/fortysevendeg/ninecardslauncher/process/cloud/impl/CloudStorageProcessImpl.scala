@@ -63,6 +63,9 @@ class CloudStorageProcessImpl(
     _ <- createOrUpdateCloudStorageDevice(cloudStorageDevice)
   } yield ()).resolve[CloudStorageProcessException]
 
+  override def deleteCloudStorageDevice(fileId: String) =
+    driveServices.deleteFile(fileId).resolve[CloudStorageProcessException]
+
   private[this] def parseDevice(json: String): ServiceDef2[CloudStorageDevice, CloudStorageProcessException] = Service {
     Task {
       Try(Json.parse(json).as[CloudStorageDevice]) match {

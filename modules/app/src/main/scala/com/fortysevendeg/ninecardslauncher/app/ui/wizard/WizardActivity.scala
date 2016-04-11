@@ -36,7 +36,7 @@ class WizardActivity
 
   override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
     case (WizardStateActionFilter, Some(`stateSuccess`)) =>
-      presenter.saveCurrentDevice(clientStatuses.apiClient, clientStatuses.username)
+      presenter.saveCurrentDevice(clientStatuses.apiClient)
     case (WizardStateActionFilter, Some(`stateFailure`)) =>
       presenter.goToUser()
     case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) =>
