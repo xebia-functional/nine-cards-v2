@@ -1,10 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
 
-import android.support.v7.widget.RecyclerView
-import android.view.{View, ViewGroup}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
@@ -14,27 +10,32 @@ import macroid._
 
 import scala.math.Ordering.Implicits._
 
-trait ShortcutComposer
-  extends Styles {
+trait ShortcutIuActionsImpl
+  extends ShortcutIuActions
+  with Styles {
 
   self: TypedFindView with BaseActionFragment =>
 
+  implicit val presenter: ShortcutPresenter
+
   lazy val recycler = Option(findView(TR.actions_recycler))
 
-  def initUi: Ui[_] =
+  override def initialize(): Ui[Any] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.shortcuts) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
-  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+  override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
+  override def close(): Ui[Any] = unreveal()
 
-  def addShortcuts(shortcuts: Seq[Shortcut], clickListener: (Shortcut) => Unit) = {
+  override def showLoadingShortcutsError(): Ui[Any] = showError(R.string.errorLoadingShortcuts, presenter.loadShortcuts())
+
+  override def loadShortcuts(shortcuts: Seq[Shortcut]): Ui[Any] = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
-    val adapter = new ShortcutAdapter(sortedShortcuts, clickListener)
+    val adapter = new ShortcutAdapter(sortedShortcuts)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -43,22 +44,5 @@ trait ShortcutComposer
   }
 
   private[this] def sortByTitle(shortcut: Shortcut) = shortcut.title map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
-
-}
-
-case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
-
-  lazy val icon = Option(findView(TR.simple_item_icon))
-
-  lazy val name = Option(findView(TR.simple_item_name))
-
-  def bind(shortcut: Shortcut, position: Int): Ui[_] =
-    (icon <~ (shortcut.icon map ivSrc getOrElse Tweak.blank)) ~
-      (name <~ tvText(shortcut.title)) ~
-      (content <~ vTag(position))
-
-  override def findViewById(id: Int): View = content.findViewById(id)
 
 }
