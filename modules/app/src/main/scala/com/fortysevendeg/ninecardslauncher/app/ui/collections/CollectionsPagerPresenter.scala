@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.os.Handler
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -18,10 +19,11 @@ import scala.util.Random
 import scalaz.concurrent.Task
 
 class CollectionsPagerPresenter(
-  actions: CollectionsUiActions,
-  status: CollectionViewStatuses)(implicit activityContextWrapper: ActivityContextWrapper)
+  actions: CollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Presenter
   with NineCardIntentConversions { self =>
+
+  var collections: Seq[Collection] = Seq.empty
 
   def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): Unit = {
     (actions.initialize(indexColor, icon) ~ (
@@ -36,13 +38,14 @@ class CollectionsPagerPresenter(
       if (isStateChanged) {
         actions.showCollections(collections, position)
       } else {
-        actions.saveCollections(collections)
+        self.collections = collections
+        Ui.nop
       },
       onException = (ex: Throwable) => actions.showContactUsError
     )
   }
 
-  def reloadCards(reloadFragment: Boolean): Unit = status.getCurrentCollection foreach { collection =>
+  def reloadCards(reloadFragment: Boolean): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.getCollectionById(collection.id).run).resolveAsync(
       onResult = (c) => c map (newCollection => if (newCollection.cards != collection.cards) {
         actions.reloadCards(newCollection.cards, reloadFragment).run
@@ -50,13 +53,13 @@ class CollectionsPagerPresenter(
     )
   }
 
-  def addCards(cards: Seq[AddCardRequest]): Unit = status.getCurrentCollection foreach { collection =>
+  def addCards(cards: Seq[AddCardRequest]): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.addCards(collection.id, cards).run).resolveAsyncUi(
       onResult = actions.addCards
     )
   }
 
-  def removeCard(card: Card): Unit = status.getCurrentCollection foreach { collection =>
+  def removeCard(card: Card): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.deleteCard(collection.id, card.id).run).resolveAsyncUi(
       onResult = (_) => actions.removeCards(card)
     )
@@ -66,6 +69,14 @@ class CollectionsPagerPresenter(
     Task.fork(createShortcut(collectionId, name, shortcutIntent, bitmap).run).resolveAsyncUi(
       onResult = actions.addCards
     )
+  }
+
+  def ensureDrawCollection(position: Int): Unit = if (collections.isEmpty) {
+    new Handler().postDelayed(new Runnable {
+      override def run(): Unit = ensureDrawCollection(position)
+    }, 200)
+  } else {
+    actions.showCollections(collections, position).run
   }
 
   private[this] def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]):
@@ -95,8 +106,6 @@ trait CollectionsUiActions {
 
   def startToolbarTransition(position: Int): Ui[Any]
 
-  def saveCollections(collections: Seq[Collection]): Ui[Any]
-
   def showCollections(collections: Seq[Collection], position: Int): Ui[Any]
 
   def reloadCards(cards: Seq[Card], reloadFragments: Boolean): Ui[Any]
@@ -105,10 +114,5 @@ trait CollectionsUiActions {
 
   def removeCards(card: Card): Ui[Any]
 
-}
-
-trait CollectionViewStatuses {
-
   def getCurrentCollection: Option[Collection]
-
 }

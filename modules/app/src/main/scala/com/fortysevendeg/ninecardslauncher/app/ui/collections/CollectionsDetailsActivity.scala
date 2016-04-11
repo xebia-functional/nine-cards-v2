@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.Intent._
 import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
+import android.support.v4.app.{FragmentManager, Fragment}
 import android.support.v7.app.AppCompatActivity
 import android.view._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
@@ -26,29 +27,25 @@ class CollectionsDetailsActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
-  with CollectionsDetailsComposer
+  with CollectionsUiActionsImpl
   with TypedFindView
   with UiExtensions
   with ScrolledListener
   with ActionsScreenListener
   with SystemBarsTint
-  with BroadcastDispatcher
-  with CollectionsUiActions
-  with CollectionViewStatuses { self =>
+  with BroadcastDispatcher { self =>
 
   val tagDialog = "dialog"
 
   val defaultPosition = 0
 
+  val defaultIndexColor = 0
+
   val defaultIcon = ""
 
   val defaultStateChanged = false
 
-  var collections: Seq[Collection] = Seq.empty
-
-  implicit lazy val presenter = new CollectionsPagerPresenter(self, self)
-
-  implicit lazy val theme: NineCardsTheme = presenter.getTheme
+  override lazy val presenter = new CollectionsPagerPresenter(self)
 
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
@@ -68,7 +65,7 @@ class CollectionsDetailsActivity
     val indexColor = getInt(
       Seq(bundle, getIntent.getExtras),
       indexColorToolbar,
-      defaultPosition)
+      defaultIndexColor)
 
     val icon = getString(
       Seq(bundle, getIntent.getExtras),
@@ -81,6 +78,10 @@ class CollectionsDetailsActivity
       defaultStateChanged)
 
     setContentView(R.layout.collections_detail_activity)
+
+    toolbar foreach setSupportActionBar
+    getSupportActionBar.setDisplayHomeAsUpEnabled(true)
+    getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
 
     presenter.initialize(indexColor, icon, position, isStateChanged)
 
@@ -126,7 +127,6 @@ class CollectionsDetailsActivity
         case _ =>
       }
     }
-
   }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
@@ -141,44 +141,7 @@ class CollectionsDetailsActivity
     case _ => super.onOptionsItemSelected(item)
   }
 
-  override def initialize(indexColor: Int, icon: String): Ui[Any] =
-    initUi(indexColor, icon) ~ Ui {
-      toolbar foreach setSupportActionBar
-      getSupportActionBar.setDisplayHomeAsUpEnabled(true)
-      getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
-      initSystemStatusBarTint
-    }
-
-  override def startToolbarTransition(position: Int): Ui[Any] = Ui {
-    configureEnterTransition(position, () => ensureDrawCollection(position).run)
-  }
-
-  override def saveCollections(collections: Seq[Collection]): Ui[Any] = Ui {
-    self.collections = collections
-  }
-
-  override def showCollections(collections: Seq[Collection], position: Int): Ui[Any] =
-    drawCollections(collections, position)
-
-  override def reloadCards(cards: Seq[Card], reloadFragments: Boolean): Ui[Any] = Ui {
-    reloadCardsToCurrentFragment(cards, reloadFragments)
-  }
-
-  override def addCards(cards: Seq[Card]): Ui[Any] = Ui {
-    addCardsToCurrentFragment(cards)
-  }
-
-  override def removeCards(card: Card): Ui[Any] = Ui {
-    removeCardFromCurrentFragment(card)
-  }
-
-  override def showContactUsError: Ui[Any] = showError()
-
-  def ensureDrawCollection(position: Int): Ui[_] = if (collections.isEmpty) {
-    uiHandlerDelayed(ensureDrawCollection(position), 200)
-  } else {
-    drawCollections(collections, position)
-  }
+  override def onBackPressed(): Unit = backByPriority.run
 
   override def scrollY(scroll: Int, dy: Int): Unit = translationScrollY(scroll).run
 
@@ -191,8 +154,6 @@ class CollectionsDetailsActivity
   override def onEmptyCollection(): Unit = loadFabButton(autoHide = false)
 
   override def onFirstItemInCollection(): Unit = hideFabButton.run
-
-  override def onBackPressed(): Unit = backByPriority.run
 
   override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
     pullCloseScrollY(scroll, scrollType, close).run

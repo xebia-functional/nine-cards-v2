@@ -6,7 +6,6 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
@@ -29,7 +28,7 @@ trait AppsIuActionsImpl
 
   self: TypedFindView with BaseActionFragment =>
 
-  val presenter: AppsPresenter
+  implicit val presenter: AppsPresenter
 
   val collectionsPresenter: CollectionsPagerPresenter
 
@@ -66,7 +65,7 @@ trait AppsIuActionsImpl
       dtvInflateMenu(R.menu.contact_dialog_menu) +
         dtvOnMenuItemClickListener(onItem = {
           case R.id.action_filter =>
-            (if (isTabsOpened) closeTabs else openTabs).run
+            (if (isTabsOpened) closeTabs() else openTabs()).run
             true
           case _ => false
         })
@@ -83,6 +82,8 @@ trait AppsIuActionsImpl
   }
 
   override def showLoading(): Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+
+  override def closeTabs(): Ui[_] = (tabs <~ tvClose <~ hideTabs) ~ (recycler <~ showList)
 
   override def showLoadingAppsError(filter: AppsFilter): Ui[Any] =
     showError(R.string.errorLoadingApps, presenter.loadApps(filter))
@@ -115,7 +116,7 @@ trait AppsIuActionsImpl
     counters: Seq[TermCounter],
     filter: AppsFilter,
     category: NineCardCategory,
-    clickListener: (App) => Unit)(implicit uiContext: UiContext[_]) = {
+    clickListener: (App) => Unit) = {
     val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
     val adapter = new AppsAdapter(
       apps = apps,
@@ -138,7 +139,7 @@ trait AppsIuActionsImpl
     apps: IterableApps,
     counters: Seq[TermCounter],
     filter: AppsFilter,
-    category: NineCardCategory)(implicit uiContext: UiContext[_]): Ui[_] = {
+    category: NineCardCategory): Ui[_] = {
     val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
     showData ~
       (getAdapter map { adapter =>
@@ -159,19 +160,13 @@ trait AppsIuActionsImpl
     }
   }
 
-  private[this] def generateTabs(category: NineCardCategory)(implicit contextWrapper: ContextWrapper) = Seq(
+  private[this] def generateTabs(category: NineCardCategory) = Seq(
     TabInfo(
       iconCollectionDetail(category.getIconResource),
       resGetString(category.getStringResource) getOrElse getString(R.string.appsByCategory)),
     TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.all_apps))
   )
 
-  def openTabs: Ui[_] =
-    (tabs <~ tvOpen <~ showTabs) ~
-      (recycler <~ hideList)
-
-  def closeTabs: Ui[_] =
-    (tabs <~ tvClose <~ hideTabs) ~
-      (recycler <~ showList)
+  private[this] def openTabs(): Ui[_] = (tabs <~ tvOpen <~ showTabs) ~ (recycler <~ hideList)
 
 }

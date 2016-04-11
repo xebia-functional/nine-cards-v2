@@ -40,7 +40,7 @@ trait LauncherComposer
       Ui.nop
     }
 
-  def turnOffFragmentContent(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
+  def turnOffFragmentContent(implicit contextWrapper: ContextWrapper): Ui[_] =
     fragmentContent <~ vClickable(false)
 
   private[this] def prepareBars(implicit context: ActivityContextWrapper) =

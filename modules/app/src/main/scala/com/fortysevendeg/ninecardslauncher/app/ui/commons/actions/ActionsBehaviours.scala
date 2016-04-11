@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
 import android.support.v4.app.{Fragment, FragmentManager}
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
-import macroid.{ActivityContextWrapper, FragmentManagerContext, Ui}
+import macroid.{ContextWrapper, FragmentManagerContext, Ui}
 
 trait ActionsBehaviours {
 
@@ -13,7 +13,7 @@ trait ActionsBehaviours {
 
   lazy val fragmentContent = Option(findView(TR.action_fragment_content))
 
-  def turnOffFragmentContent(implicit activityContextWrapper: ActivityContextWrapper): Ui[_]
+  def turnOffFragmentContent(implicit contextWrapper: ContextWrapper): Ui[_]
 
   def removeActionFragment(implicit managerContext: FragmentManagerContext[Fragment, FragmentManager]): Unit =
     findFragmentByTag(nameActionFragment) map removeFragment
