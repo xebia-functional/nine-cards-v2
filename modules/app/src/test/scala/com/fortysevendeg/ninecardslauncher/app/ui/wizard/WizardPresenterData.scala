@@ -29,7 +29,8 @@ trait WizardPresenterData {
     deviceId = deviceId,
     deviceName = deviceName,
     documentVersion = 1,
-    collections = Seq.empty
+    collections = Seq.empty,
+    moments = Seq.empty
   )
 
   val userCloudDevices = UserCloudDevices(
@@ -51,7 +52,8 @@ trait WizardPresenterData {
     items = items,
     collectionType = AppsCollectionType,
     icon = "icon",
-    category = Some(Social)
+    category = Some(Social),
+    moment = None
   )
 
 }

@@ -44,3 +44,13 @@ case class PrivateCard(
   intent: NineCardIntent,
   imagePath: String)
 
+case class Moment(
+  collectionId: Option[Int],
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
+  headphone: Boolean)
+
+case class MomentTimeSlot(
+  from: String,
+  to: String,
+  days: Seq[Int])
