@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.models
 
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Moment
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
 
 case class UnformedApp(
@@ -35,7 +36,8 @@ case class FormedCollection(
    items: Seq[FormedItem],
    collectionType: CollectionType,
    icon: String,
-   category: Option[NineCardCategory])
+   category: Option[NineCardCategory],
+   moment: Option[Moment])
 
 case class FormedItem(
   itemType: String,

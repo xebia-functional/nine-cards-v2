@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, Coll
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -70,6 +70,8 @@ trait CollectionProcessImplData {
   val collectionsRemoved = Random.nextInt(2)
   val cardsRemoved = Random.nextInt(2)
 
+  val momentId = Random.nextInt(5)
+
   val application1 = Application(
     name = name1,
     packageName = packageName1,
@@ -97,6 +99,17 @@ trait CollectionProcessImplData {
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
+
+  val momentTimeSlot = MomentTimeSlot(
+    from = "8:00",
+    to = "19:00",
+    days = Seq(0, 1, 1, 1, 1, 1, 0))
+
+  val moment = Moment(
+    collectionId = Option(collectionId1),
+    timeslot = Seq(momentTimeSlot),
+    wifi = Seq.empty,
+    headphone = false)
 
   def createSeqCollection(
     num: Int = 5,
@@ -284,7 +297,8 @@ trait CollectionProcessImplData {
         items = Seq.empty,
         collectionType = collectionType,
         icon = icon,
-        category = Option(appsCategory))
+        category = Option(appsCategory),
+        moment = Option(moment))
     }
 
   val seqFormedCollection = createSeqFormedCollection()

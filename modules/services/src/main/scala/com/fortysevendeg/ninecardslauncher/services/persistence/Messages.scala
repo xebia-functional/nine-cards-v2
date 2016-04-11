@@ -94,7 +94,8 @@ case class AddCollectionRequest(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Option[Boolean],
-  cards: Seq[AddCardRequest])
+  cards: Seq[AddCardRequest],
+  moment: Option[AddMomentRequest])
 
 case class DeleteCollectionsRequest(where: String)
 

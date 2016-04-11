@@ -261,7 +261,9 @@ class CloudStorageProcessImplSpec
             anyString,
             anyString) returns Service(Task(Answer(())))
 
-          cloudStorageProcess.createOrUpdateActualCloudStorageDevice(cloudStorageDevice.collections).run.run
+          cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+            cloudStorageDevice.collections,
+            cloudStorageDevice.moments).run.run
         }
 
       "call to update file in Service with a valid Json when the file does exists" in
@@ -272,13 +274,18 @@ class CloudStorageProcessImplSpec
             anyString,
             anyString) returns Service(Task(Answer(())))
 
-          cloudStorageProcess.createOrUpdateActualCloudStorageDevice(cloudStorageDevice.collections).run.run
+          cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+            cloudStorageDevice.collections,
+            cloudStorageDevice.moments).run.run
         }
 
       "return a CloudStorageProcessException when the service return an exception" in
         new CloudStorageProcessImplScope with WithErrorDriveServices with CloudStorageProcessImplData {
 
-          val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(cloudStorageDevice.collections).run.run
+          val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+            cloudStorageDevice.collections,
+            cloudStorageDevice.moments).run.run
+
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
               case (_, (_, exception)) => exception must beLike {

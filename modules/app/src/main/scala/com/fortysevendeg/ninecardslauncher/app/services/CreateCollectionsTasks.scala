@@ -5,8 +5,8 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageCollection
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher.process.device.{DockAppException, _}
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
@@ -38,7 +38,7 @@ trait CreateCollectionsTasks
 
   def loadConfiguration(
    client: GoogleApiClient,
-   deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with CloudStorageProcessException with CollectionException with DockAppException] = {
+   deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with CloudStorageProcessException with CollectionException with DockAppException with MomentException] = {
    val cloudStorageProcess = di.createCloudStorageProcess(client)
    for {
      - <- di.deviceProcess.resetSavedItems()
@@ -51,6 +51,7 @@ trait CreateCollectionsTasks
      bitmaps <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(apps, cloudStorageDevice.collections))
      _ = setProcess(CreatingCollectionsProcess)
      collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(cloudStorageDevice.collections))
+     _ <- di.momentProcess.saveMoments(cloudStorageDevice.moments map toMoment)
    } yield collections
   }
 

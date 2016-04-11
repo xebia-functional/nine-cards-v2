@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.cloud
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageDevice, CloudStorageDeviceSummary}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageDevice, CloudStorageDeviceSummary, CloudStorageMoment}
 
 trait CloudStorageProcess {
 
@@ -41,7 +41,7 @@ trait CloudStorageProcess {
     * @param collections the collections to be overwritten in the actual devices
     * @throws CloudStorageProcessException if the services throws an error
     */
-  def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection])(implicit context: ContextSupport): ServiceDef2[Unit, CloudStorageProcessException]
+  def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection], moments: Seq[CloudStorageMoment])(implicit context: ContextSupport): ServiceDef2[Unit, CloudStorageProcessException]
 
   /**
     * Delete a `CloudStorageDevice` by his android id

@@ -6,17 +6,19 @@ import android.os.IBinder
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleApiClientService
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
+import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, Collection}
+import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
-import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import macroid.Contexts
 
 import scalaz.concurrent.Task
@@ -65,14 +67,20 @@ class SynchronizeDeviceService
           maybeException = Some(throwable))
       })
 
-  private[this] def sync(client: GoogleApiClient): ServiceDef2[Unit, CollectionException with CloudStorageProcessException] = {
+  private[this] def sync(
+    client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       collections <- di.collectionProcess.getCollections
+      moments <- di.momentProcess.getMoments
       _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-        collections = collections map toCloudStorageCollection)
+        collections = addMomentsToCollections(collections, moments),
+        moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
     } yield ()
   }
+
+  private[this] def addMomentsToCollections(collections: Seq[Collection], moments: Seq[Moment]) =
+    collections map (collection => toCloudStorageCollection(collection, moments.find(_.collectionId == Option(collection.id))))
 
   private[this] def success() = sendStateAndFinish(stateSuccess)
 

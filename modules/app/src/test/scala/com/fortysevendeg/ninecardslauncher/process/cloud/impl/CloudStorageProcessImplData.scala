@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageCollectionItem, CloudStorageDevice}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
@@ -39,12 +39,17 @@ trait CloudStorageProcessImplData {
 
   val numItemsPerCollection = 1
 
+  val numMoments = 2
+
+  val numTimeSlot = 2
+
   val cloudStorageDevice =
     CloudStorageDevice(
       deviceId,
       deviceName,
       documentVersion,
-      generateCollections(numCollections, numItemsPerCollection))
+      generateCollections(numCollections, numItemsPerCollection),
+      generateMoments(numMoments, numTimeSlot))
 
   def generateCollections(num: Int, numItems: Int): Seq[CloudStorageCollection] = 1 to num map { i =>
     CloudStorageCollection(
@@ -55,7 +60,8 @@ trait CloudStorageProcessImplData {
       generateCollectionItems(num: Int),
       collectionType = FreeCollectionType,
       icon = s"Collection Icon $num",
-      category = Business.some)
+      category = Business.some,
+      None)
   }
 
   def generateCollectionItems(num: Int): Seq[CloudStorageCollectionItem] = 1 to num map { i =>
@@ -65,13 +71,28 @@ trait CloudStorageProcessImplData {
       s"Item intent $num")
   }
 
+  def generateMoments(num: Int, numItems: Int): Seq[CloudStorageMoment] = 1 to num map { i =>
+    CloudStorageMoment(
+      timeslot = generateTimeSlots(num: Int),
+      wifi = Seq(s"Wifi_Network $num", s"Mobile $num "),
+      headphones = false)
+  }
+
+  def generateTimeSlots(num: Int): Seq[CloudStorageMomentTimeSlot] = 1 to num map { i =>
+    CloudStorageMomentTimeSlot(
+      "8:00",
+      "19:00",
+      Seq(0, 1, 1, 1, 1, 1, 0))
+  }
+
   val validCloudStorageDeviceJson =
     s"""
       |{
       | "deviceId": "$deviceId",
       | "deviceName": "$deviceName",
       | "documentVersion": $documentVersion,
-      | "collections": [${generateCollectionsJson(numCollections, numItemsPerCollection).mkString(",")}]
+      | "collections": [${generateCollectionsJson(numCollections, numItemsPerCollection).mkString(",")}],
+      | "moments": [${generateMomentsJson(numMoments, numTimeSlot).mkString(",")}]
       |}
     """.stripMargin
 
@@ -97,6 +118,26 @@ trait CloudStorageProcessImplData {
       | "title": "Item Title $num",
       | "intent": "Item intent $num"
       |}
+    """.stripMargin
+  }
+
+  def generateMomentsJson(num: Int, numItems: Int): Seq[String] = 1 to num map { i =>
+    s"""
+       |{
+       | "timeslot": [${generateTimeSlotJson(numItems).mkString(",")}],
+       | "wifi": ["Wifi_Network $num", "Mobile $num "],
+       | "headphones": false
+       |}
+    """.stripMargin
+  }
+
+  def generateTimeSlotJson(num: Int): Seq[String] = 1 to num map { i =>
+    s"""
+       |{
+       | "from": "8:00",
+       | "to": "19:00",
+       | "days": [0, 1, 1, 1, 1, 1, 0]
+       |}
     """.stripMargin
   }
 

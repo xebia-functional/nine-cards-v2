@@ -81,13 +81,18 @@ trait MomentProcessImplSpecification
 
   }
 
-  trait ErrorCreateMomentAddMomentPersistenceServicesResponses {
+  trait ValidSaveMomentPersistenceServicesResponses {
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
-    mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns Service(Task(Result.answer(seqServicesApps)))
-    mockPersistenceServices.addCollection(any) returns Service(Task(Result.answer(servicesCollection)))
+    mockPersistenceServices.addMoment(any) returns Service(Task(Result.answer(servicesMoment)))
+
+  }
+
+  trait ErrorSaveMomentPersistenceServicesResponses {
+
+    self: MomentProcessScope =>
+
     mockPersistenceServices.addMoment(any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
@@ -153,15 +158,28 @@ class MomentProcessImplSpec
             resultSeqMoment shouldEqual Nil
         }
       }
+  }
 
-    "returns an empty list if the service throws a exception adding the moment" in
-      new MomentProcessScope with ErrorCreateMomentAddMomentPersistenceServicesResponses {
-        val result = momentProcess.createMoments(contextSupport).run.run
+  "saveMoments" should {
+
+    "return the three moments saved" in
+      new MomentProcessScope with ValidSaveMomentPersistenceServicesResponses {
+        val result = momentProcess.saveMoments(seqMoments)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqMoment) =>
-            resultSeqMoment shouldEqual Nil
+            resultSeqMoment.size shouldEqual seqMoments.size
         }
       }
+
+    "returns empty moments when persistence services fails" in
+      new MomentProcessScope with ErrorSaveMomentPersistenceServicesResponses {
+        val result = momentProcess.saveMoments(seqMoments)(contextSupport).run.run
+        result must beLike {
+          case Answer(resultSeqMoment) =>
+            resultSeqMoment.size shouldEqual 0
+        }
+      }
+
   }
 
   "generatePrivateMoments" should {
