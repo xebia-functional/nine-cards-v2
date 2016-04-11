@@ -296,7 +296,7 @@ class CloudStorageProcessImplSpec
     "return a valid response when the service find the device" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        driveServices.deleteFile(fileId) returns Service(Task(Answer(Unit)))
+        driveServices.deleteFile(driveId) returns Service(Task(Answer(Unit)))
 
         val result = cloudStorageProcess.deleteCloudStorageDevice(driveId).run.run
         result must beAnInstanceOf[Answer[Unit, CloudStorageProcessException]]
