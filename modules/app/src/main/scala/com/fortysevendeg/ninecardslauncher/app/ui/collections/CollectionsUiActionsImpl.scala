@@ -93,6 +93,14 @@ trait CollectionsUiActionsImpl
       (icon <~ ivSrc(iconCollectionDetail(iconCollection))) ~
       Ui (initSystemStatusBarTint)
 
+  override def back(): Ui[Any] = if (isMenuOpened) {
+    swapFabMenu()
+  } else if (isActionShowed) {
+    unrevealActionFragment
+  } else {
+    exitTransition
+  }
+
   override def startToolbarTransition(position: Int): Ui[Any] = Ui {
     configureEnterTransition(position)
   }
@@ -277,14 +285,6 @@ trait CollectionsUiActionsImpl
     (fragmentContent <~
       colorContentDialog(paint = false) <~
       vClickable(false)) ~ updateBarsInFabMenuHide
-
-  def backByPriority: Ui[_] = if (isMenuOpened) {
-    swapFabMenu()
-  } else if (isActionShowed) {
-    unrevealActionFragment
-  } else {
-    exitTransition
-  }
 
   def exitTransition: Ui[Any] = {
     val activity = activityContextWrapper.getOriginal

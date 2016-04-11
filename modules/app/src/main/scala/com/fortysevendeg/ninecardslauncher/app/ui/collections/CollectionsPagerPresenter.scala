@@ -23,27 +23,24 @@ class CollectionsPagerPresenter(
   extends Presenter
   with NineCardIntentConversions { self =>
 
+  val delay = 200
+
   var collections: Seq[Collection] = Seq.empty
 
   def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): Unit = {
     (actions.initialize(indexColor, icon) ~ (
-      if (isStateChanged) {
-        Ui.nop
-      } else {
-        actions.startToolbarTransition(position)
-      }
-      )).run
+      if (isStateChanged) Ui.nop else actions.startToolbarTransition(position))).run
     Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
       onResult = (collections: Seq[Collection]) =>
-      if (isStateChanged) {
-        actions.showCollections(collections, position)
-      } else {
+      if (isStateChanged) actions.showCollections(collections, position) else {
         self.collections = collections
         Ui.nop
       },
       onException = (ex: Throwable) => actions.showContactUsError
     )
   }
+
+  def back(): Unit = actions.back().run
 
   def reloadCards(reloadFragment: Boolean): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.getCollectionById(collection.id).run).resolveAsync(
@@ -74,7 +71,7 @@ class CollectionsPagerPresenter(
   def ensureDrawCollection(position: Int): Unit = if (collections.isEmpty) {
     new Handler().postDelayed(new Runnable {
       override def run(): Unit = ensureDrawCollection(position)
-    }, 200)
+    }, delay)
   } else {
     actions.showCollections(collections, position).run
   }
@@ -101,6 +98,8 @@ class CollectionsPagerPresenter(
 trait CollectionsUiActions {
 
   def initialize(indexColor: Int, icon: String): Ui[Any]
+
+  def back(): Ui[Any]
 
   def showContactUsError: Ui[Any]
 

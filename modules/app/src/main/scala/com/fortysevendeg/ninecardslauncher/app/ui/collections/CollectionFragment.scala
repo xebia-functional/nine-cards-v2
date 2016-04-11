@@ -68,7 +68,8 @@ class CollectionFragment(implicit collectionsPresenter: CollectionsPagerPresente
           for {
             adapter <- getAdapter
             collection = adapter.collection
-          } yield presenter.reorderCard(collection.id, collection.cards(to).id, to)
+            card <- collection.cards.lift(to)
+          } yield presenter.reorderCard(collection.id, card.id, to)
         },
         onRemoveItem = (position: Int) => {
           for {

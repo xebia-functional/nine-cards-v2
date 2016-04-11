@@ -29,16 +29,24 @@ class ContactsFragment(implicit collectionsPagerPresenter: CollectionsPagerPrese
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
+
+    def readExtras = Option(data) flatMap (d => Option(d.getExtras))
+
+    def readExtraProperty(extras: Bundle, extra: String): Option[AnyRef] =
+      if (extras.containsKey(ContactsFragment.addCardRequest)) {
+        Option(extras.get(ContactsFragment.addCardRequest))
+      } else {
+        None
+      }
+
     (requestCode, resultCode) match {
       case (RequestCodes.selectInfoContact, Activity.RESULT_OK) =>
-        val maybeRequest = Option(data) flatMap (d => Option(d.getExtras)) map {
-          case extras if extras.containsKey(ContactsFragment.addCardRequest) =>
-             extras.get(ContactsFragment.addCardRequest) match {
-              case card: AddCardRequest => Some(card)
-              case _ => None
-            }
-          case _ => None
-        } getOrElse None
+        val maybeRequest = readExtras flatMap { extras =>
+          readExtraProperty(extras, ContactsFragment.addCardRequest) match {
+            case Some(card: AddCardRequest) => Some(card)
+            case _ => None
+          }
+        }
         presenter.addContact(maybeRequest)
       case _ =>
     }

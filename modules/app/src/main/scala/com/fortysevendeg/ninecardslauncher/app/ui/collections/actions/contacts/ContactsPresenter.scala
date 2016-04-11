@@ -25,19 +25,13 @@ class ContactsPresenter(actions: ContactsIuActions)(implicit activityContextWrap
     onResult = {
       case (contacts: IterableContacts, counters: Seq[TermCounter]) =>
         actions.showContacts(filter, contacts, counters, reload) ~
-          (if (actions.isTabsOpened) {
-            actions.closeTabs()
-          } else {
-            Ui.nop
-          })
+          (if (actions.isTabsOpened) actions.closeTabs() else Ui.nop)
     },
     onException = (ex: Throwable) => actions.showLoadingContactsError(filter)
   )
 
   def showContact(lookupKey: String): Unit = Task.fork(di.deviceProcess.getContact(lookupKey).run).resolveAsyncUi(
-    onResult = (contact: Contact) => {
-      actions.showDialog(contact)
-    },
+    onResult = actions.showDialog,
     onException = (ex: Throwable) => actions.showGeneralError()
   )
 

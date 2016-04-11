@@ -141,7 +141,7 @@ class CollectionsDetailsActivity
     case _ => super.onOptionsItemSelected(item)
   }
 
-  override def onBackPressed(): Unit = backByPriority.run
+  override def onBackPressed(): Unit = presenter.back()
 
   override def scrollY(scroll: Int, dy: Int): Unit = translationScrollY(scroll).run
 
