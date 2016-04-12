@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.Collec
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionRemove, ActionStateIdle, ActionStateReordering, ReorderItemTouchHelperCallback}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullingListener}
@@ -79,7 +79,7 @@ trait CollectionUiActionsImpl
                 }
                 // Update the scroll removing one element
                 updateScroll(-1)
-              case _ =>
+              case NoAction =>
                 for {
                   adapter <- getAdapter
                   collection = adapter.collection
