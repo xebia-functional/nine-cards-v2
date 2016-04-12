@@ -1,12 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.process.moment.impl
 
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{MomentTimeSlot, Moment, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -14,10 +13,10 @@ import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
 import com.fortysevendeg.ninecardslauncher.process.moment._
 import com.fortysevendeg.ninecardslauncher.process.moment.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.wifi.{WifiServicesException, WifiServices}
+import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
+import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import rapture.core.Answer
-import org.joda.time.DateTime
 
 import scala.annotation.tailrec
 import scalaz.concurrent.Task
@@ -66,12 +65,12 @@ class MomentProcessImpl(
     } yield {
       val moments = serviceMoments map toMoment
 
-      val moment = wifi match {
+      val filteredMoments = wifi match {
         case Some(w) => filterMoments(moments.filter(moment => moment.wifi.contains(w)))
         case None => filterMoments(moments)
       }
 
-      moment.headOption
+      filteredMoments.headOption
     }).resolve[MomentException]
 
   private[this] def filterMoments(moments: Seq[Moment]) =

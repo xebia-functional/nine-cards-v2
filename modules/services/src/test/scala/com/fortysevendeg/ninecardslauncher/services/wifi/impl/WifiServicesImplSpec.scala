@@ -64,7 +64,7 @@ class WifiServicesImplSpec
     new WifiImplScope with WifiErrorScope {
       val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
       result must beLike {
-        case Answer(resultSSID) => resultSSID shouldEqual None
+        case Answer(resultSSID) => resultSSID shouldEqual Some("")
       }
     }
 }

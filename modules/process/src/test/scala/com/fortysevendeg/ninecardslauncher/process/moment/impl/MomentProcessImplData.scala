@@ -59,6 +59,8 @@ trait MomentProcessImplData {
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"
 
+  val ssid: String = Random.nextString(5)
+
   def createSeqCollection(
     num: Int = 3,
     id: Int = collectionId,
@@ -309,4 +311,7 @@ trait MomentProcessImplData {
   val seqServicesMoments = createSeqServicesMoment()
   val servicesMoment = seqServicesMoments(0)
   val seqMoments = createSeqMoment()
+  val moment = seqMoments(0)
+
+  val ssidOption = Option(ssid)
 }

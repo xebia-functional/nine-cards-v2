@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcessConfig}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByName, PersistenceServiceException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.wifi.{WifiServicesException, WifiServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -20,6 +21,7 @@ trait MomentProcessImplSpecification
   with Mockito {
 
   val persistenceServiceException = PersistenceServiceException("")
+  val wifiServiceException = WifiServicesException("")
 
   trait MomentProcessScope
     extends Scope 
@@ -34,12 +36,15 @@ trait MomentProcessImplSpecification
     val momentProcessConfig = MomentProcessConfig(Map.empty)
 
     val mockPersistenceServices = mock[PersistenceServices]
+    val mockWifiServices = mock[WifiServices]
+
     val mockIntent = mock[Intent]
     val mockNineCardIntent = mock[NineCardIntent]
 
     val momentProcess = new MomentProcessImpl(
       momentProcessConfig = momentProcessConfig,
-      persistenceServices = mockPersistenceServices)
+      persistenceServices = mockPersistenceServices,
+      wifiServices = mockWifiServices)
 
   }
 
@@ -110,6 +115,41 @@ trait MomentProcessImplSpecification
     self: MomentProcessScope =>
 
     mockPersistenceServices.deleteAllMoments() returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+    self: MomentProcessScope =>
+
+    mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(seqServicesMoments)))
+    mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(ssidOption)))
+
+  }
+
+  trait ValidGetBestAvailableMomentNoSSIDResponses {
+
+    self: MomentProcessScope =>
+
+    mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(seqServicesMoments)))
+    mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(None)))
+
+  }
+
+  trait ErrorGetBestAvailableMomentPersistenceServicesResponses {
+
+    self: MomentProcessScope =>
+
+    mockPersistenceServices.fetchMoments returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
+  trait ErrorGetBestAvailableMomentWifiServicesResponses {
+
+    self: MomentProcessScope =>
+
+    mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(seqServicesMoments)))
+    mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Errata(wifiServiceException)))
 
   }
 
@@ -209,6 +249,47 @@ class MomentProcessImplSpec
     "returns a MomentException if the service throws a exception deleting the moments" in
       new MomentProcessScope with ErrorDeleteAllMomentsPersistenceServicesResponses {
         val result = momentProcess.deleteAllMoments().run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[MomentException]
+          }
+        }
+      }
+  }
+
+  "getBestAvailableMoment" should {
+
+    "returns a successful answer for a valid request with an SSID available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual None
+        }
+      }
+
+    "returns a successful answer for a valid request without an SSID available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentNoSSIDResponses {
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual seqMoments.headOption
+        }
+      }
+
+    "returns a MomentException if the service throws a exception getting the moments" in
+      new MomentProcessScope with ErrorGetBestAvailableMomentPersistenceServicesResponses {
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[MomentException]
+          }
+        }
+      }
+
+    "returns a MomentException if the service throws a exception getting the current SSID" in
+      new MomentProcessScope with ErrorGetBestAvailableMomentWifiServicesResponses {
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[MomentException]
