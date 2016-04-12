@@ -4,12 +4,12 @@ import android.graphics.PointF
 import android.support.v7.widget.LinearLayoutManager._
 import android.support.v7.widget.LinearSmoothScroller._
 import android.support.v7.widget.RecyclerView.State
-import android.support.v7.widget.{LinearLayoutManager, LinearSmoothScroller, RecyclerView}
+import android.support.v7.widget.{GridLayoutManager, LinearLayoutManager, LinearSmoothScroller, RecyclerView}
 import android.util.DisplayMetrics
+import macroid.ContextWrapper
 
-trait ScrollingLinearLayoutManager {
-
-  self: LinearLayoutManager =>
+class ScrollingLinearLayoutManager(columns: Int)(implicit contextWrapper: ContextWrapper)
+  extends GridLayoutManager(contextWrapper.application, columns) { self =>
 
   var blockScroll = false
 

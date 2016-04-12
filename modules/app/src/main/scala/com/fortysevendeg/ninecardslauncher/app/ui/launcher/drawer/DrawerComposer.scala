@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, SystemBarsTint, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
@@ -27,8 +27,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Swip
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherPresenter, LauncherComposer}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherComposer, LauncherPresenter}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
@@ -319,17 +319,14 @@ trait DrawerComposer
     counters: Seq[TermCounter],
     signalType: FastScrollerSignalType = FastScrollerText)(implicit contextWrapper: ContextWrapper) = {
     val searchIsEmpty = searchBoxView exists (_.isEmpty)
-    val animationTweaks = getTypeView map {
-      case AppsView =>
-        (if (searchIsEmpty) rvLayoutAnimation(R.anim.appdrawer_apps_layout_animation) else Tweak.blank) +
-          vAddField(SelectedItemDecoration.showLine, true)
-      case ContactView =>
-        (if (searchIsEmpty) rvLayoutAnimation(R.anim.appdrawer_contacts_layout_animation) else Tweak.blank) +
-          vAddField(SelectedItemDecoration.showLine, false)
+    val addFieldTweaks = getTypeView map {
+      case AppsView => vAddField(SelectedItemDecoration.showLine, true)
+      case ContactView => vAddField(SelectedItemDecoration.showLine, false)
     } getOrElse Tweak.blank
     (recycler <~
       rvLayoutManager(layoutManager) <~
-      animationTweaks <~
+      (if (searchIsEmpty) rvLayoutAnimation(R.anim.list_slide_in_bottom_animation) else Tweak.blank) <~
+      addFieldTweaks <~
       rvAdapter(adapter) <~
       rvScrollToTop) ~
       scrollerLayoutUi(counters, signalType)

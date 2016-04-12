@@ -7,7 +7,6 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
@@ -24,6 +23,8 @@ case class AppsAdapter(
   (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[AppsIterableHolder]
   with FastScrollerListener {
+
+  val columnsLists = 4
 
   val heightItem = resGetDimensionPixelSize(R.dimen.height_app_item)
 
@@ -50,8 +51,7 @@ case class AppsAdapter(
     AppsIterableHolder(view)
   }
 
-  def getLayoutManager: GridLayoutManager =
-    new GridLayoutManager(activityContext.application, columnsLists) with ScrollingLinearLayoutManager
+  def getLayoutManager: GridLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
 
   def swapIterator(iter: IterableApps) = {
     apps.close()
