@@ -69,6 +69,8 @@ class PersistenceServicesImpl(
 
   override def updateCard(request: UpdateCardRequest) = super.updateCard(request)
 
+  override def updateCards(request: UpdateCardsRequest) = super.updateCards(request)
+
   override def addCollection(request: AddCollectionRequest) = super.addCollection(request)
 
   override def deleteAllCollections() = super.deleteAllCollections()

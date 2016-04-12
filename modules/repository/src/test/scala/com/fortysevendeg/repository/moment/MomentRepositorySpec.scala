@@ -40,11 +40,20 @@ trait MomentRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createMomentValues) returns testId
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createMomentValues,
+      notificationUri = Some(mockUri)) returns testId
 
-    contentResolverWrapper.delete(mockUri, where = "") returns 1
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) returns 1
 
-    contentResolverWrapper.deleteById(mockUri, testId) returns 1
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testId,
+      notificationUri = Some(mockUri)) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -58,7 +67,11 @@ trait MomentRepositorySpecification
       projection = allFields)(
         f = getEntityFromCursor(momentEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(mockUri, testId, createMomentValues) returns 1
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = testId,
+      values = createMomentValues,
+      notificationUri = Some(mockUri)) returns 1
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -91,7 +104,10 @@ trait MomentRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createMomentValuesCollection) returns testId
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createMomentValuesCollection,
+      notificationUri = Some(mockUri)) returns testId
   }
 
   trait ErrorMomentRepositoryResponses
@@ -103,11 +119,20 @@ trait MomentRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createMomentValues) throws contentResolverException
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createMomentValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.deleteById(mockUri, testId) throws contentResolverException
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testId,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -115,7 +140,11 @@ trait MomentRepositorySpecification
       projection = allFields)(
         f = getEntityFromCursor(momentEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(mockUri, testId, createMomentValues) throws contentResolverException
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = testId,
+      values = createMomentValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,

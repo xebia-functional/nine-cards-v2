@@ -74,6 +74,10 @@ object Settings {
   lazy val commonsSettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= commonsDependencies)
 
+  // Android classes for Mock Module
+  lazy val mockAndroidSettings = basicSettings ++ librarySettings ++
+    Seq(libraryDependencies ++= mockAndroidDependencies)
+
   // Basic Setting for all modules
   lazy val basicSettings = Seq(
     scalaVersion := Versions.scalaV,
@@ -152,6 +156,9 @@ object Settings {
     androidProvidedLib,
     specs2,
     mockito)
+
+  lazy val mockAndroidDependencies = Seq(
+    androidProvidedLib)
 
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,

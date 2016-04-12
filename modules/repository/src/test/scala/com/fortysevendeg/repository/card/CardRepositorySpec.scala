@@ -15,6 +15,8 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import rapture.core.{Answer, Errata}
 
+import scala.language.postfixOps
+
 trait CardRepositorySpecification
   extends Specification
   with DisjunctionMatchers
@@ -39,11 +41,20 @@ trait CardRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createInsertCardValues) returns testCardId
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createInsertCardValues,
+      notificationUri = Some(mockUri)) returns testCardId
 
-    contentResolverWrapper.delete(mockUri, where = "") returns 1
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) returns 1
 
-    contentResolverWrapper.deleteById(mockUri, testCardId) returns 1
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testCardId,
+      notificationUri = Some(mockUri)) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -73,7 +84,11 @@ trait CardRepositorySpecification
       orderBy = s"${CardEntity.position} asc")(
         f = getListFromCursor(cardEntityFromCursor)) returns Seq.empty
 
-    contentResolverWrapper.updateById(uri = mockUri, id = card.id, values = createUpdateCardValues) returns 1
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = card.id,
+      values = createUpdateCardValues,
+      notificationUri = Some(mockUri)) returns 1
   }
 
   trait ValidAllCardsRepositoryResponses
@@ -96,11 +111,20 @@ trait CardRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createInsertCardValues) throws contentResolverException
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createInsertCardValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.deleteById(mockUri, testCardId) throws contentResolverException
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testCardId,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -116,7 +140,11 @@ trait CardRepositorySpecification
       orderBy = s"${CardEntity.position} asc")(
         f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(uri = mockUri, id = card.id, values = createUpdateCardValues) throws contentResolverException
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = card.id,
+      values = createUpdateCardValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
   }
 
   trait ErrorAllCardsRepositoryResponses
@@ -190,9 +218,9 @@ class CardRepositorySpec
           val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run.run
 
           result must beLike {
-            case Answer(card) =>
-              card.id shouldEqual testCardId
-              card.data.intent shouldEqual testIntent
+            case Answer(cardResult) =>
+              cardResult.id shouldEqual testCardId
+              cardResult.data.intent shouldEqual testIntent
           }
         }
 

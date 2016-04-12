@@ -177,6 +177,14 @@ trait PersistenceServices {
   def updateCard(request: UpdateCardRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
+    * Bulk update of the data of some cards from the repository
+    * @param request includes the data to update the cards
+    * @return a Seq[Int] if the cards has been updated correctly
+    * @throws PersistenceServiceException if exist some problem updating the card
+    */
+  def updateCards(request: UpdateCardsRequest): ServiceDef2[Seq[Int], PersistenceServiceException]
+
+  /**
     * Adds an collection to the repository
     * @param request includes the necessary data to create a new collection in the repository
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection

@@ -31,9 +31,14 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
     actions.initialize.run
   }
 
-  def resume(): Unit = if (statuses.isEmptyCollectionsInWorkspace) {
-    loadCollectionsAndDockApps()
+  def resume(): Unit = {
+    di.observerRegister.registerObserver
+    if (statuses.isEmptyCollectionsInWorkspace) {
+      loadCollectionsAndDockApps()
+    }
   }
+
+  def pause(): Unit = di.observerRegister.unregisterObserver
 
   def back(): Unit = actions.back.run
 

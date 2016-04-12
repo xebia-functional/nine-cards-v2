@@ -84,8 +84,14 @@ class CollectionsDetailsActivity
     registerDispatchers
   }
 
+  override def onResume(): Unit = {
+    super.onResume()
+    di.observerRegister.registerObserver
+  }
+
   override def onPause(): Unit = {
     super.onPause()
+    di.observerRegister.unregisterObserver
     overridePendingTransition(0, 0)
   }
 
