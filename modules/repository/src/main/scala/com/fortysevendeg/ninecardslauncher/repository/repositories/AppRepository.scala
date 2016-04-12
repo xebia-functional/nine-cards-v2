@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.repository.model.{App, AppData, DataC
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import org.joda.time.DateTime
 
@@ -22,6 +23,8 @@ class AppRepository(
   extends ImplicitsRepositoryExceptions {
 
   val appUri = uriCreator.parse(appUriString)
+
+  val appNotificationUri = uriCreator.parse(appUriNotificationString)
 
   val abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
 
@@ -47,7 +50,8 @@ class AppRepository(
 
           val id = contentResolverWrapper.insert(
             uri = appUri,
-            values = values)
+            values = values,
+            notificationUri = Some(appNotificationUri))
 
           App(
             id = id,
@@ -62,7 +66,8 @@ class AppRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = appUri,
-            where = where)
+            where = where,
+            notificationUri = Some(appNotificationUri))
         }
       }
     }
@@ -73,7 +78,8 @@ class AppRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = appUri,
-            id = app.id)
+            id = app.id,
+            notificationUri = Some(appNotificationUri))
         }
       }
     }
@@ -85,7 +91,8 @@ class AppRepository(
           contentResolverWrapper.delete(
             uri = appUri,
             where = s"${AppEntity.packageName} = ?",
-            whereParams = Seq(packageName))
+            whereParams = Seq(packageName),
+            notificationUri = Some(appNotificationUri))
         }
       }
     }
@@ -212,7 +219,8 @@ class AppRepository(
           contentResolverWrapper.updateById(
             uri = appUri,
             id = app.id,
-            values = values
+            values = values,
+            notificationUri = Some(appNotificationUri)
           )
         }
       }
