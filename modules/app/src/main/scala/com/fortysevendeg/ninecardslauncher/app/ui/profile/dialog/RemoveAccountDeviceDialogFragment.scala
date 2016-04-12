@@ -17,14 +17,10 @@ class RemoveAccountDeviceDialogFragment(onClickListener: () => Unit)(implicit co
     new AlertDialog.Builder(getActivity).
       setMessage(R.string.removeAccountSyncMessage).
       setPositiveButton(android.R.string.ok, new OnClickListener {
-        override def onClick(dialog: DialogInterface, which: Int): Unit = {
-          onClickListener()
-        }
+        override def onClick(dialog: DialogInterface, which: Int): Unit = onClickListener()
       }).
       setNegativeButton(android.R.string.cancel, new OnClickListener {
-        override def onClick(dialog: DialogInterface, which: Int): Unit = {
-          dismiss()
-        }
+        override def onClick(dialog: DialogInterface, which: Int): Unit = dismiss()
       }).
       create()
   }

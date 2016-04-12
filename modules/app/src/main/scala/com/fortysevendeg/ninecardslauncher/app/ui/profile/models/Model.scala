@@ -21,12 +21,16 @@ case class AccountSync(
 
 object AccountSync {
 
-  def header(title: String) =
+  def header(title: String): AccountSync =
     AccountSync(
       title = title,
       accountSyncType = Header)
 
-  def syncDevice(title: String, syncDate: Date, current: Boolean = false, resourceId: String)(implicit context: ContextSupport) = {
+  def syncDevice(
+    title: String,
+    syncDate: Date,
+    current: Boolean = false,
+    resourceId: String)(implicit context: ContextSupport): AccountSync = {
     val time = new PrettyTime().format(syncDate)
     AccountSync(
       title = title,
