@@ -48,7 +48,7 @@ trait CollectionProcessImplData {
 
   val cardId = Random.nextInt(10)
   val position: Int = Random.nextInt(10)
-  val newPosition: Int = Random.nextInt(10)
+  val newPosition: Int = position + Random.nextInt(10)
   val oldPosition: Int = Random.nextInt(10)
   val micros: Int = Random.nextInt(10)
   val term: String = Random.nextString(5)

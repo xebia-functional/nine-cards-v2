@@ -2,7 +2,8 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IterableCursor, ContentResolverWrapper, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toDockApp
@@ -22,6 +23,8 @@ class DockAppRepository(
 
   val dockAppUri = uriCreator.parse(dockAppUriString)
 
+  val dockAppNotificationUri = uriCreator.parse(dockAppUriNotificationString)
+
   def addDockApp(data: DockAppData): ServiceDef2[DockApp, RepositoryException] =
     Service {
       Task {
@@ -35,7 +38,8 @@ class DockAppRepository(
 
           val id = contentResolverWrapper.insert(
             uri = dockAppUri,
-            values = values)
+            values = values,
+            notificationUri = Some(dockAppNotificationUri))
 
           DockApp(id = id, data = data)
         }
@@ -48,7 +52,8 @@ class DockAppRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = dockAppUri,
-            where = where)
+            where = where,
+            notificationUri = Some(dockAppNotificationUri))
         }
       }
     }
@@ -59,7 +64,8 @@ class DockAppRepository(
         CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = dockAppUri,
-            id = dockApp.id)
+            id = dockApp.id,
+            notificationUri = Some(dockAppNotificationUri))
         }
       }
     }
@@ -124,7 +130,8 @@ class DockAppRepository(
           contentResolverWrapper.updateById(
             uri = dockAppUri,
             id = item.id,
-            values = values)
+            values = values,
+            notificationUri = Some(dockAppNotificationUri))
         }
       }
     }

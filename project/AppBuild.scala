@@ -32,25 +32,31 @@ object AppBuild extends Build {
       packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask)
     )
     .settings(appSettings: _*)
+    .dependsOn(mockAndroid % "test->test")
 
   lazy val process = Project(id = "process", base = file("modules/process"))
     .settings(processSettings: _*)
     .androidBuildWith(services)
+    .dependsOn(mockAndroid % "test->test")
 
   lazy val services = Project(id = "services", base = file("modules/services"))
     .settings(servicesSettings: _*)
-    .dependsOn(api, repository)
+    .dependsOn(api, repository, mockAndroid % "test->test")
 
   lazy val api = Project(id = "api", base = file("modules/api"))
     .settings(apiSettings: _*)
-    .dependsOn(commons)
+    .dependsOn(commons, mockAndroid % "test->test")
 
   lazy val repository = Project(id = "repository", base = file("modules/repository"))
     .settings(repositorySettings: _*)
-    .dependsOn(commons)
+    .dependsOn(commons, mockAndroid % "test->test")
 
   lazy val commons = Project(id = "commons", base = file("modules/commons"))
     .settings(commonsSettings: _*)
+    .dependsOn(mockAndroid % "test->test")
+
+  lazy val mockAndroid = (project in file("modules/mock-android"))
+    .settings(mockAndroidSettings: _*)
 
   lazy val tests = Project(id = "tests", base = file("modules/tests"))
     .settings(commonsSettings: _*)
