@@ -1,66 +1,93 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
+import android.support.v4.app.Fragment
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
-import android.widget.{LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{ActionRemove, ActionStateIdle, ActionStateReordering, ReorderItemTouchHelperCallback}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullToCloseView, PullingListener}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullingListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{CollectionRecyclerView, TintableImageView}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchGoogleColor}
-import com.fortysevendeg.ninecardslauncher2.R
-import macroid.FullDsl._
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
+import macroid.FullDsl._
 
-trait CollectionFragmentComposer {
+trait CollectionUiActionsImpl
+  extends CollectionUiActions {
+
+  self: TypedFindView with Contexts[Fragment] =>
+
+  implicit val presenter: CollectionPresenter
+
+  val collectionsPresenter: CollectionsPagerPresenter
+
+  implicit val theme: NineCardsTheme
+
+  implicit val uiContext: UiContext[_]
 
   var statuses = CollectionStatuses()
 
   var scrolledListener: Option[ScrolledListener] = None
 
-  val emptyCollectionLayout: Option[LinearLayout]
+  lazy val emptyCollectionLayout = Option(findView(TR.collection_detail_empty))
 
-  val emptyCollectionMessage: Option[TextView]
+  lazy val emptyCollectionMessage = Option(findView(TR.collection_empty_message))
 
-  val emptyCollectionImage: Option[TintableImageView]
+  lazy val emptyCollectionImage = Option(findView(TR.collection_empty_image))
 
-  val recyclerView: Option[CollectionRecyclerView]
+  lazy val recyclerView = Option(findView(TR.collection_detail_recycler))
 
-  val pullToCloseView: Option[PullToCloseView]
+  lazy val pullToCloseView = Option(findView(TR.collection_detail_pull_to_close))
 
-  def initUi(
+  override def updateStatus(canScroll: Boolean, sType: ScrollType): Ui[Any] = Ui {
+    statuses = statuses.copy(scrollType = sType, canScroll = canScroll)
+  }
+
+  override def initialize(
     animateCards: Boolean,
-    collection: Collection,
-    onMoveItems: (Int, Int) => Unit,
-    onRemoveItem: (Int) => Unit)(implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
+    collection: Collection): Ui[_] = {
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
       color = resGetColor(getIndexColor(collection.themedColorIndex)),
       onChanged = {
         case (ActionStateReordering, _, position) =>
-          statuses = statuses.copy(startPositionReorder = position)
-          openReorderMode.run
-        case (ActionStateIdle, action, position) =>
-          action match {
-            case ActionRemove =>
-              // If we are removing card, first we move the card to the place where we begin the movement
-              getAdapter foreach(_.onItemMove(position, statuses.startPositionReorder))
-              onRemoveItem(statuses.startPositionReorder)
-              // Update the scroll removing one element
-              updateScroll(-1)
-            case _ => onMoveItems(statuses.startPositionReorder, position)
+          if (!isPulling) {
+            statuses = statuses.copy(startPositionReorder = position)
+            openReorderMode.run
           }
-          closeReorderMode.run
+        case (ActionStateIdle, action, position) =>
+          if (!isPulling) {
+            action match {
+              case ActionRemove =>
+                for {
+                  adapter <- getAdapter
+                  card <- adapter.collection.cards.lift(position)
+                } yield {
+                  // If we are removing card, first we move the card to the place where we begin the movement
+                  adapter.onItemMove(position, statuses.startPositionReorder)
+                  collectionsPresenter.removeCard(card)
+                }
+                // Update the scroll removing one element
+                updateScroll(-1)
+              case _ =>
+                for {
+                  adapter <- getAdapter
+                  collection = adapter.collection
+                  card <- collection.cards.lift(position)
+                } yield presenter.reorderCard(collection.id, card.id, position)
+            }
+            closeReorderMode.run
+          }
       })
 
     (recyclerView <~
@@ -83,10 +110,11 @@ trait CollectionFragmentComposer {
         )))
   }
 
-  def showData(emptyCollection: Boolean)(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme): Ui[_] =
-    if (emptyCollection) showEmptyCollection else showCollection
+  override def reloadCards(): Ui[Any] = Ui {
+    collectionsPresenter.reloadCards(false)
+  }
 
-  def showEmptyCollection(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme) = {
+  override def showEmptyCollection(): Ui[Any] = {
     val color = theme.get(SearchGoogleColor)
     (emptyCollectionMessage <~ tvColor(color)) ~
       (emptyCollectionImage <~ tivDefaultColor(color)) ~
@@ -94,11 +122,49 @@ trait CollectionFragmentComposer {
       (recyclerView <~ vGone)
   }
 
-  def showCollection: Ui[_] =
+  override def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): Ui[Any] =
+    if (animateCards) {
+      val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+      recyclerView <~
+        rvAdapter(createAdapter(collection)) <~
+        nrvScheduleLayoutAnimation <~
+        getScrollListener(spaceMove)
+    } else {
+      Ui.nop
+    }
+
+  override def addCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
+    adapter.addCards(cards)
+    updateScroll()
+    val emptyCollection = adapter.collection.cards.isEmpty
+    if (!emptyCollection) scrolledListener foreach (_.onFirstItemInCollection())
+    resetScroll ~ showData(emptyCollection)
+  } getOrElse Ui.nop
+
+  override def removeCard(card: Card): Ui[Any] = getAdapter map { adapter =>
+    adapter.removeCard(card)
+    updateScroll()
+    val emptyCollection = adapter.collection.cards.isEmpty
+    if (emptyCollection) scrolledListener foreach (_.onEmptyCollection())
+    resetScroll ~ showData(emptyCollection)
+  } getOrElse Ui.nop
+
+  override def reloadCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
+    adapter.updateCards(cards)
+    updateScroll()
+    resetScroll
+  } getOrElse Ui.nop
+
+  override def showData(emptyCollection: Boolean): Ui[_] =
+    if (emptyCollection) showEmptyCollection() else showCollection()
+
+  private[this] def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get getOrElse false
+
+  private[this] def showCollection(): Ui[_] =
     (recyclerView <~ vVisible) ~
       (emptyCollectionLayout <~ vGone)
 
-  def openReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
+  private[this] def openReorderMode: Ui[_] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     scrolledListener foreach (_.openReorderMode(statuses.scrollType))
     scrolledListener foreach (_.scrollType(ScrollUp))
@@ -108,7 +174,7 @@ trait CollectionFragmentComposer {
         nrvRegisterScroll(false))
   }
 
-  def closeReorderMode(implicit contextWrapper: ActivityContextWrapper): Ui[_] = {
+  private[this] def closeReorderMode: Ui[_] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     scrolledListener foreach (_.closeReorderMode())
@@ -123,20 +189,11 @@ trait CollectionFragmentComposer {
         nrvRegisterScroll(true))
   }
 
-  def resetScroll(implicit contextWrapper: ActivityContextWrapper): Ui[_] =
+  def resetScroll: Ui[_] =
     recyclerView <~
       getScrollListener(resGetDimensionPixelSize(R.dimen.space_moving_collection_details))
 
-  def setAnimatedAdapter(collection: Collection)
-    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
-    val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-    recyclerView <~
-      rvAdapter(createAdapter(collection)) <~
-      nrvScheduleLayoutAnimation <~
-      getScrollListener(spaceMove)
-  }
-
-  def scrollType(newScrollType: ScrollType)(implicit contextWrapper: ContextWrapper): Ui[_] = {
+  def scrollType(newScrollType: ScrollType): Ui[_] = {
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     (statuses.canScroll, statuses.scrollType) match {
@@ -170,8 +227,7 @@ trait CollectionFragmentComposer {
     statuses = statuses.updateScroll(adapter.collection.cards.length + offset)
   }
 
-  private[this] def loadCollection(collection: Collection, padding: Int, spaceMove: Int, animateCards: Boolean)
-    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] = {
+  private[this] def loadCollection(collection: Collection, padding: Int, spaceMove: Int, animateCards: Boolean): Ui[_] = {
 
     val adapterTweaks = if (!animateCards) {
       rvAdapter(createAdapter(collection)) +
@@ -182,18 +238,18 @@ trait CollectionFragmentComposer {
       scrolledListener foreach (_.onEmptyCollection())
 
     recyclerView <~
-      rvLayoutManager(new GridLayoutManager(contextWrapper.application, numInLine)) <~
+      rvLayoutManager(new GridLayoutManager(fragmentContextWrapper.application, numInLine)) <~
       rvFixedSize <~
       adapterTweaks <~
-      rvAddItemDecoration(new CollectionItemDecorator) <~
+      rvAddItemDecoration(new CollectionItemDecoration) <~
       rvItemAnimator(new DefaultItemAnimator)
   }
 
-  private[this] def getScrollListener(spaceMove: Int)(implicit contextWrapper: ActivityContextWrapper) =
+  private[this] def getScrollListener(spaceMove: Int) =
     nrvCollectionScrollListener(
       scrolled = (scrollY: Int, dx: Int, dy: Int) => {
         val sy = scrollY + dy
-        if (statuses.activeFragment && statuses.canScroll) {
+        if (statuses.activeFragment && statuses.canScroll && !isPulling) {
           scrolledListener foreach (_.scrollY(sy, dy))
         }
         sy
@@ -202,7 +258,8 @@ trait CollectionFragmentComposer {
         if (newState == RecyclerView.SCROLL_STATE_DRAGGING) scrolledListener foreach (_.startScroll())
         if (statuses.activeFragment &&
           newState == RecyclerView.SCROLL_STATE_IDLE &&
-          statuses.canScroll) {
+          statuses.canScroll &&
+          !isPulling) {
           scrolledListener foreach { sl =>
             val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
             if (scrollY < spaceMove && moveTo != scrollY) recyclerView.smoothScrollBy(0, moveTo - scrollY)
@@ -212,7 +269,7 @@ trait CollectionFragmentComposer {
       }
     )
 
-  private[this] def startScroll(padding: Int, spaceMove: Int)(implicit contextWrapper: ContextWrapper): Ui[_] =
+  private[this] def startScroll(padding: Int, spaceMove: Int): Ui[_] =
     (statuses.canScroll, statuses.scrollType) match {
       case (true, ScrollUp) => recyclerView <~ vScrollBy(0, spaceMove)
       case (true, ScrollDown) => recyclerView <~ vScrollBy(0, 0)
@@ -221,8 +278,7 @@ trait CollectionFragmentComposer {
       case _ => Ui.nop
     }
 
-  private[this] def createAdapter(collection: Collection)
-    (implicit contextWrapper: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) = {
+  private[this] def createAdapter(collection: Collection) = {
     // In Android Design Library 23.0.1 has a problem calculating the height. We have to subtract 25 dp. We should to check this when we'll change to a new version
     val heightCard = recyclerView map (view => (view.getHeight - (25 dp) - (view.getPaddingBottom + view.getPaddingTop)) / numInLine) getOrElse 0
     new CollectionAdapter(collection, heightCard)

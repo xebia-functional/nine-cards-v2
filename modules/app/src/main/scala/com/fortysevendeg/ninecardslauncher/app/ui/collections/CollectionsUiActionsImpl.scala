@@ -14,12 +14,14 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails
+import CollectionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.prefs.AnimationsPref
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
@@ -101,6 +103,10 @@ trait CollectionsUiActionsImpl
     exitTransition
   }
 
+  override def destroy(): Ui[Any] = Ui {
+    getAdapter foreach(_.clear())
+  }
+
   override def startToolbarTransition(position: Int): Ui[Any] = Ui {
     configureEnterTransition(position)
   }
@@ -117,7 +123,7 @@ trait CollectionsUiActionsImpl
             stlOnPageChangeListener(
               new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
           uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
-          uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter()) }, 100) ~
+          uiHandlerDelayed(Ui { getActivePresenter foreach (_.bindAnimatedAdapter()) }, 100) ~
           (tabs <~ vVisible <~~ enterViews) ~
           elevationsDefault
       case _ => Ui.nop
@@ -126,33 +132,33 @@ trait CollectionsUiActionsImpl
   override def reloadCards(cards: Seq[Card], reloadFragments: Boolean): Ui[Any] = Ui {
     for {
       adapter <- getAdapter
-      fragment <- adapter.getActiveFragment
+      presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
       adapter.updateCardFromCollection(currentPosition, cards)
-      if (reloadFragments) fragment.reloadCards(cards)
+      if (reloadFragments) presenter.reloadCards(cards)
     }
   }
 
   override def addCards(cards: Seq[Card]): Ui[Any] = Ui {
     for {
       adapter <- getAdapter
-      fragment <- adapter.getActiveFragment
+      presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
       adapter.addCardsToCollection(currentPosition, cards)
-      fragment.addCards(cards)
+      presenter.addCards(cards)
     }
   }
 
   override def removeCards(card: Card): Ui[Any] = Ui {
     for {
       adapter <- getAdapter
-      fragment <- adapter.getActiveFragment
+      presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
       adapter.removeCardFromCollection(currentPosition, card)
-      fragment.removeCard(card)
+      presenter.removeCard(card)
     }
   }
 
@@ -276,10 +282,10 @@ trait CollectionsUiActionsImpl
 
   private[this] def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
 
-  private[this] def getActiveFragment: Option[CollectionFragment] = for {
+  private[this] def getActivePresenter: Option[CollectionPresenter] = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
-  } yield fragment
+  } yield fragment.presenter
 
   def turnOffFragmentContent(implicit contextWrapper: ContextWrapper): Ui[_] =
     (fragmentContent <~

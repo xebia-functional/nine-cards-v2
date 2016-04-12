@@ -207,7 +207,6 @@ object PullToCloseViewTweaks {
 
 }
 
-
 object PullToDownViewTweaks {
 
   def pdvPullingListener(pullToDownListener: PullingListener) =
@@ -230,6 +229,8 @@ object PullToDownViewTweaks {
     Tweak[PullToDownView] { view =>
       view.pullToDownStatuses = view.pullToDownStatuses.copy(resistance = resistance)
     }
+
+  def pdvIsPulling() = Excerpt[PullToDownView, Boolean] (_.pullToDownStatuses.action == Pulling)
 
 }
 

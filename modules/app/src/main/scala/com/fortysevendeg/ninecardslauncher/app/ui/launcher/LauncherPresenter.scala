@@ -168,10 +168,7 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
     for {
       collections <- di.collectionProcess.getCollections
       dockApps <- di.deviceProcess.getDockApps
-    } yield {
-      android.util.Log.d("9cards", s"${collections.length} -- ${dockApps.length}")
-      (collections, dockApps)
-    }
+    } yield (collections, dockApps)
 
   protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
     for {

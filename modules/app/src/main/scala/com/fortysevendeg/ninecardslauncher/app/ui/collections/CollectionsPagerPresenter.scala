@@ -42,6 +42,8 @@ class CollectionsPagerPresenter(
 
   def back(): Unit = actions.back().run
 
+  def destroy(): Unit = actions.destroy().run
+
   def reloadCards(reloadFragment: Boolean): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.getCollectionById(collection.id).run).resolveAsync(
       onResult = (c) => c map (newCollection => if (newCollection.cards != collection.cards) {
@@ -100,6 +102,8 @@ trait CollectionsUiActions {
   def initialize(indexColor: Int, icon: String): Ui[Any]
 
   def back(): Ui[Any]
+
+  def destroy(): Ui[Any]
 
   def showContactUsError: Ui[Any]
 

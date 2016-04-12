@@ -98,6 +98,8 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     }
     Ui.sequence(uis.toSeq: _*)
   }
+
+  def clear(): Unit = fragments.clear()
 }
 
 case class CollectionsPagerAdapterStatuses(

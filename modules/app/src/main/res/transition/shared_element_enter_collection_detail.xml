@@ -11,10 +11,10 @@
     <changeImageTransform/>
     <transitionSet android:transitionOrdering="sequential">
         <transition
-            class="com.fortysevendeg.ninecardslauncher.app.ui.collections.RevealTransition"
+            class="com.fortysevendeg.ninecardslauncher.app.ui.collections.prefs.RevealTransition"
             android:transitionVisibilityMode="mode_out"/>
         <transition
-            class="com.fortysevendeg.ninecardslauncher.app.ui.collections.RevealTransition"
+            class="com.fortysevendeg.ninecardslauncher.app.ui.collections.prefs.RevealTransition"
             android:transitionVisibilityMode="mode_in"/>
         <targets>
             <target android:targetId="@id/collections_toolbar"/>
