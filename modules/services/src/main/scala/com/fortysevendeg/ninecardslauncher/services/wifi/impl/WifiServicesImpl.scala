@@ -10,20 +10,20 @@ import com.fortysevendeg.ninecardslauncher.services.wifi.{WifiServicesException,
 
 import scalaz.concurrent.Task
 
-class WifiServicesImpl(implicit contextSupport: ContextSupport)
+class WifiServicesImpl
   extends WifiServices
   with ImplicitsWifiExceptions {
 
-  override def getCurrentSSID = Service {
+  override def getCurrentSSID(implicit contextSupport: ContextSupport) = Service {
     Task {
       CatchAll[WifiServicesException] {
 
-        val connManager = contextSupport.context.getSystemService(Context.CONNECTIVITY_SERVICE).asInstanceOf[ConnectivityManager]
+        val connManager = getConnManager
         val networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
 
         val ssid =
           if (networkInfo.isConnected) {
-            val wifiManager = contextSupport.context.getSystemService(Context.WIFI_SERVICE).asInstanceOf[WifiManager]
+            val wifiManager = getWifiManager
             val connectionInfo = Option(wifiManager.getConnectionInfo)
             connectionInfo map (_.getSSID.replace("\"", ""))
           } else None
@@ -31,4 +31,9 @@ class WifiServicesImpl(implicit contextSupport: ContextSupport)
       }
     }
   }
+
+  protected def getConnManager(implicit contextSupport: ContextSupport) = contextSupport.context.getSystemService(Context.CONNECTIVITY_SERVICE).asInstanceOf[ConnectivityManager]
+
+  protected def getWifiManager(implicit contextSupport: ContextSupport) = contextSupport.context.getSystemService(Context.WIFI_SERVICE).asInstanceOf[WifiManager]
+
 }
