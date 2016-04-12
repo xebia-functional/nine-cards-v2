@@ -2,12 +2,13 @@ package com.fortysevendeg.ninecardslauncher.app.di
 
 import com.facebook.stetho.okhttp.StethoInterceptor
 import com.fortysevendeg.ninecardslauncher.api.services._
+import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.cloud.impl.CloudStorageProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardsMoment, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
@@ -175,5 +176,7 @@ class Injector(implicit contextSupport: ContextSupport) {
     val services = new DriveServicesImpl(client)
     new CloudStorageProcessImpl(services, persistenceServices)
   }
+
+  lazy val observerRegister = new ObserverRegister(uriCreator)
 
 }

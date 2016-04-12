@@ -39,11 +39,20 @@ trait CollectionRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createCollectionValues) returns testCollectionId
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createCollectionValues,
+      notificationUri = Some(mockUri)) returns testCollectionId
 
-    contentResolverWrapper.delete(mockUri, where = "") returns 1
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) returns 1
 
-    contentResolverWrapper.deleteById(mockUri, testCollectionId) returns 1
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testCollectionId,
+      notificationUri = Some(mockUri)) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -97,7 +106,11 @@ trait CollectionRepositorySpecification
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
-    contentResolverWrapper.updateById(mockUri, testCollectionId, createCollectionValues) returns 1
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = testCollectionId,
+      values = createCollectionValues,
+      notificationUri = Some(mockUri)) returns 1
   }
 
   trait ErrorCollectionRepositoryResponses
@@ -109,11 +122,20 @@ trait CollectionRepositorySpecification
 
     uriCreator.parse(any) returns mockUri
 
-    contentResolverWrapper.insert(mockUri, createCollectionValues) throws contentResolverException
+    contentResolverWrapper.insert(
+      uri = mockUri,
+      values = createCollectionValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.delete(mockUri, where = "") throws contentResolverException
+    contentResolverWrapper.delete(
+      uri = mockUri,
+      where = "",
+      notificationUri = Some(mockUri)) throws contentResolverException
 
-    contentResolverWrapper.deleteById(mockUri, testCollectionId) throws contentResolverException
+    contentResolverWrapper.deleteById(
+      uri = mockUri,
+      id = testCollectionId,
+      notificationUri = Some(mockUri)) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -145,7 +167,11 @@ trait CollectionRepositorySpecification
       orderBy = "")(
         f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
-    contentResolverWrapper.updateById(mockUri, testCollectionId, createCollectionValues) throws contentResolverException
+    contentResolverWrapper.updateById(
+      uri = mockUri,
+      id = testCollectionId,
+      values = createCollectionValues,
+      notificationUri = Some(mockUri)) throws contentResolverException
   }
 
 }

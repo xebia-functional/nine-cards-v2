@@ -64,7 +64,7 @@ trait CollectionProcessImplSpecification
 
     mockPersistenceServices.fetchCards returns Service(Task(Result.answer(seqServicesCard)))
 
-    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(cardId)))
+    mockPersistenceServices.updateCards(any) returns Service(Task(Result.answer(Seq(1))))
 
     mockAppsServices.getApplication(packageName1)(contextSupport) returns
       Service(Task(Result.answer(application1)))
@@ -364,7 +364,7 @@ trait CollectionProcessImplSpecification
     mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
     mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
     mockPersistenceServices.deleteCard(any) returns Service(Task(Result.answer(cardId)))
-    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(cardId)))
+    mockPersistenceServices.updateCards(any) returns Service(Task(Result.answer(Seq(1))))
 
   }
 
@@ -406,7 +406,7 @@ trait CollectionProcessImplSpecification
     mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
     mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
     mockPersistenceServices.deleteCard(any) returns Service(Task(Result.answer(cardId)))
-    mockPersistenceServices.updateCard(any) returns Service(Task(Errata(persistenceServiceException)))
+    mockPersistenceServices.updateCards(any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
 
@@ -417,7 +417,7 @@ trait CollectionProcessImplSpecification
 
     mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
     mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
-    mockPersistenceServices.updateCard(any) returns Service(Task(Result.answer(cardId)))
+    mockPersistenceServices.updateCards(any) returns Service(Task(Result.answer(Seq(1))))
 
   }
 
@@ -447,7 +447,7 @@ trait CollectionProcessImplSpecification
 
     mockPersistenceServices.findCardById(any) returns Service(Task(Result.answer(Option(servicesCard))))
     mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
-    mockPersistenceServices.updateCard(any) returns Service(Task(Errata(persistenceServiceException)))
+    mockPersistenceServices.updateCards(any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
 
@@ -865,12 +865,13 @@ class CollectionProcessImplSpec
         }
       }
 
-    "returns an empty answer if the service throws a exception updating the cards" in
+    "returns a CardException if the service throws a exception updating the cards" in
       new CollectionProcessScope with ErrorDeleteUpdateCardPersistenceServicesResponses {
         val result = collectionProcess.deleteCard(collectionId, cardId).run.run
         result must beLike {
-          case Answer(resultCollection) =>
-            resultCollection shouldEqual ((): Unit)
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CardException]
+          }
         }
       }
 
@@ -907,12 +908,13 @@ class CollectionProcessImplSpec
         }
       }
 
-    "returns a successful answer if the service throws a exception updating the cards" in
+    "returns a CardException if the service throws a exception updating the cards" in
       new CollectionProcessScope with ErrorReorderUpdateCardPersistenceServicesResponses {
         val result = collectionProcess.reorderCard(collectionId, cardId, newPosition).run.run
         result must beLike {
-          case Answer(resultCollection) =>
-            resultCollection shouldEqual ((): Unit)
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CardException]
+          }
         }
       }
   }

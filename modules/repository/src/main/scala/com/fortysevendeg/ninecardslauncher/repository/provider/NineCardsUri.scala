@@ -6,16 +6,18 @@ object NineCardsUri {
 
   val contentPrefix = "content://"
 
-  val appUriString = s"$contentPrefix$authorityPart/${AppEntity.table}"
+  val baseUriString = s"$contentPrefix$authorityPart"
 
-  val cardUriString = s"$contentPrefix$authorityPart/${CardEntity.table}"
+  val appUriString = s"$baseUriString/${AppEntity.table}"
 
-  val collectionUriString = s"$contentPrefix$authorityPart/${CollectionEntity.table}"
+  val cardUriString = s"$baseUriString/${CardEntity.table}"
 
-  val dockAppUriString = s"$contentPrefix$authorityPart/${DockAppEntity.table}"
+  val collectionUriString = s"$baseUriString/${CollectionEntity.table}"
 
-  val momentUriString = s"$contentPrefix$authorityPart/${MomentEntity.table}"
+  val dockAppUriString = s"$baseUriString/${DockAppEntity.table}"
 
-  val userUriString = s"$contentPrefix$authorityPart/${UserEntity.table}"
+  val momentUriString = s"$baseUriString/${MomentEntity.table}"
+
+  val userUriString = s"$baseUriString/${UserEntity.table}"
 
 }

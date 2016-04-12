@@ -94,6 +94,8 @@ trait PersistenceServicesSpecification
 
     mockCardRepository.updateCard(repoCard) returns Service(Task(Result.answer(item)))
 
+    mockCardRepository.updateCards(seqRepoCard) returns Service(Task(Result.answer(item to items)))
+
     mockCollectionRepository.addCollection(repoCollectionData) returns Service(Task(Result.answer(repoCollection)))
 
     mockCollectionRepository.deleteCollections() returns Service(Task(Result.answer(items)))
@@ -214,6 +216,8 @@ trait PersistenceServicesSpecification
     mockCardRepository.findCardById(cardId) returns Service(Task(Result.errata(exception)))
 
     mockCardRepository.updateCard(repoCard) returns Service(Task(Result.errata(exception)))
+
+    mockCardRepository.updateCards(seqRepoCard) returns Service(Task(Result.errata(exception)))
 
     mockCollectionRepository.addCollection(repoCollectionData) returns Service(Task(Result.errata(exception)))
 
@@ -894,6 +898,30 @@ class PersistenceServicesSpec
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
       val result = persistenceServices.updateCard(createUpdateCardRequest()).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
+  "updateCards" should {
+
+    "return the sequence with the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.updateCards(createUpdateCardsRequest()).run.run
+
+      result must beLike {
+        case Answer(updated) =>
+          updated shouldEqual (item to items)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.updateCards(createUpdateCardsRequest()).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
