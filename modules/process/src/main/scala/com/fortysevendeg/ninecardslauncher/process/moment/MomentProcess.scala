@@ -49,5 +49,12 @@ trait MomentProcess {
     */
   def deleteAllMoments(): ServiceDef2[Unit, MomentException]
 
+  /**
+    * Gets the best available moments
+    *
+    * @return the best com.fortysevendeg.ninecardslauncher.process.moment.models.Moment
+    * @throws MomentException if there was an error getting the best moment
+    */
+  def getBestAvailableMoment(implicit context: ContextSupport): ServiceDef2[Option[Moment], MomentException]
 
 }

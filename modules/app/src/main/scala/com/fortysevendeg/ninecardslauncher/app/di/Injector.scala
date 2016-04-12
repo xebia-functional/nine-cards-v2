@@ -29,6 +29,8 @@ import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
+import com.fortysevendeg.ninecardslauncher.services.wifi.impl.WifiServicesImpl
 import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
@@ -147,9 +149,12 @@ class Injector(implicit contextSupport: ContextSupport) {
   private[this] lazy val momentProcessConfig = MomentProcessConfig(
     namesMoments = namesMoments)
 
+  private[this] lazy val wifiServices = new WifiServicesImpl()
+
   lazy val momentProcess = new MomentProcessImpl(
     momentProcessConfig = momentProcessConfig,
-    persistenceServices = persistenceServices)
+    persistenceServices = persistenceServices,
+    wifiServices = wifiServices)
 
   lazy val userProcess = new UserProcessImpl(
     apiServices = apiServices,
