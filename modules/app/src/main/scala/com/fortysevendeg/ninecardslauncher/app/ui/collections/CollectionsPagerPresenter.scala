@@ -40,6 +40,10 @@ class CollectionsPagerPresenter(
     )
   }
 
+  def resume(): Unit = di.observerRegister.registerObserver
+
+  def pause(): Unit = di.observerRegister.unregisterObserver
+
   def back(): Unit = actions.back().run
 
   def destroy(): Unit = actions.destroy().run

@@ -86,12 +86,12 @@ class CollectionsDetailsActivity
 
   override def onResume(): Unit = {
     super.onResume()
-    di.observerRegister.registerObserver
+    presenter.resume()
   }
 
   override def onPause(): Unit = {
     super.onPause()
-    di.observerRegister.unregisterObserver
+    presenter.pause()
     overridePendingTransition(0, 0)
   }
 
