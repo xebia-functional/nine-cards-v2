@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections
+package com.fortysevendeg.ninecardslauncher.app.ui.collections.prefs
 
 import android.animation.Animator.AnimatorListener
 import android.animation.{Animator, AnimatorListenerAdapter, TimeInterpolator}

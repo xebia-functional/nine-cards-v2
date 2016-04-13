@@ -6,61 +6,47 @@ import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
-import rapture.core.Answer
 
 import scala.util.Try
-import scalaz.concurrent.Task
 
 class CollectionsDetailsActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
-  with CollectionsDetailsComposer
+  with CollectionsUiActionsImpl
   with TypedFindView
   with UiExtensions
   with ScrolledListener
   with ActionsScreenListener
   with SystemBarsTint
-  with BroadcastDispatcher
-  with CollectionDetailsTasks {
+  with BroadcastDispatcher { self =>
 
   val tagDialog = "dialog"
 
   val defaultPosition = 0
 
+  val defaultIndexColor = 0
+
   val defaultIcon = ""
 
-  val defaultToDoAnimation = true
+  val defaultStateChanged = false
 
-  implicit lazy val di = new Injector
-
-  var collections: Seq[Collection] = Seq.empty
-
-  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
-    case Answer(t) => t
-    case _ => getDefaultTheme
-  }
+  override lazy val presenter = new CollectionsPagerPresenter(self)
 
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (AppsActionFilter(action), data) match {
-    case (AppInstalledActionFilter, _) => reloadCards(true)
+    case (AppInstalledActionFilter, _) => presenter.reloadCards(true)
     case _ =>
   }
 
@@ -75,64 +61,43 @@ class CollectionsDetailsActivity
     val indexColor = getInt(
       Seq(bundle, getIntent.getExtras),
       indexColorToolbar,
-      defaultPosition)
+      defaultIndexColor)
 
     val icon = getString(
       Seq(bundle, getIntent.getExtras),
       iconToolbar,
       defaultIcon)
 
-    val doAnimation = getBoolean(
+    val isStateChanged = getBoolean(
       Seq(bundle, getIntent.getExtras),
-      toDoAnimation,
-      defaultToDoAnimation)
+      stateChanged,
+      defaultStateChanged)
 
     setContentView(R.layout.collections_detail_activity)
-
-    initUi(indexColor, icon).run
 
     toolbar foreach setSupportActionBar
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
     getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
 
-    initSystemStatusBarTint
-
-    if (doAnimation) {
-      configureEnterTransition(position, () => ensureDrawCollection(position).run)
-      Task.fork(di.collectionProcess.getCollections.run).resolveAsync(
-        onResult = (c: Seq[Collection]) => collections = c,
-        onException = (ex: Throwable) => showError().run
-      )
-    } else {
-      Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
-        onResult = (c: Seq[Collection]) => drawCollections(c, position),
-        onException = (ex: Throwable) => showError()
-      )
-    }
+    presenter.initialize(indexColor, icon, position, isStateChanged)
 
     registerDispatchers
   }
 
   override def onResume(): Unit = {
     super.onResume()
-    di.observerRegister.registerObserver
+    presenter.resume()
   }
 
   override def onPause(): Unit = {
     super.onPause()
-    di.observerRegister.unregisterObserver
+    presenter.pause()
     overridePendingTransition(0, 0)
   }
 
   override def onDestroy(): Unit = {
     super.onDestroy()
     unregisterDispatcher
-  }
-
-  def ensureDrawCollection(position: Int): Ui[_] = if (collections.isEmpty) {
-    uiHandlerDelayed(ensureDrawCollection(position), 200)
-  } else {
-    drawCollections(collections, position)
   }
 
   override def finishAfterTransition(): Unit = {
@@ -142,7 +107,7 @@ class CollectionsDetailsActivity
 
   override def onSaveInstanceState(outState: Bundle): Unit = {
     outState.putInt(startPosition, getCurrentPosition getOrElse defaultPosition)
-    outState.putBoolean(toDoAnimation, false)
+    outState.putBoolean(stateChanged, true)
     getCurrentCollection foreach { collection =>
       outState.putInt(indexColorToolbar, collection.themedColorIndex)
       outState.putString(iconToolbar, collection.icon)
@@ -159,14 +124,11 @@ class CollectionsDetailsActivity
           val shortcutIntent = b.getParcelable[Intent](EXTRA_SHORTCUT_INTENT)
           getCurrentCollection foreach { collection =>
             val maybeBitmap = getBitmapFromShortcutIntent(b)
-            Task.fork(createShortcut(collection.id, shortcutName, shortcutIntent, maybeBitmap).run).resolveAsync(
-              onResult = addCardsToCurrentFragment(_)
-            )
+            presenter.addShortcut(collection.id, shortcutName, shortcutIntent, maybeBitmap)
           }
         case _ =>
       }
     }
-
   }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
@@ -181,6 +143,8 @@ class CollectionsDetailsActivity
     case _ => super.onOptionsItemSelected(item)
   }
 
+  override def onBackPressed(): Unit = presenter.back()
+
   override def scrollY(scroll: Int, dy: Int): Unit = translationScrollY(scroll).run
 
   override def openReorderMode(current: ScrollType): Unit = openReorderModeUi(current).run
@@ -193,8 +157,6 @@ class CollectionsDetailsActivity
 
   override def onFirstItemInCollection(): Unit = hideFabButton.run
 
-  override def onBackPressed(): Unit = backByPriority.run
-
   override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
     pullCloseScrollY(scroll, scrollType, close).run
 
@@ -205,28 +167,6 @@ class CollectionsDetailsActivity
   override def onStartFinishAction(): Unit = turnOffFragmentContent.run
 
   override def onEndFinishAction(): Unit = removeActionFragment
-
-  def addCards(cards: Seq[AddCardRequest]): Unit =
-    getCurrentCollection foreach { collection =>
-      Task.fork(createCards(collection.id, cards).run).resolveAsync(
-        onResult = addCardsToCurrentFragment(_)
-      )
-    }
-
-  def removeCard(card: Card): Unit = getCurrentCollection foreach { collection =>
-    Task.fork(removeCard(collection.id, card.id).run).resolveAsync(
-      onResult = (_) => removeCardFromCurrentFragment(card)
-    )
-  }
-
-  def reloadCards(reloadFragment: Boolean): Unit =
-    getCurrentCollection foreach { currentCollection =>
-      Task.fork(di.collectionProcess.getCollectionById(currentCollection.id).run).resolveAsync(
-        onResult = (c) => c map (newCollection => if (newCollection.cards != currentCollection.cards) {
-          reloadCardsToCurrentFragment(newCollection.cards, reloadFragment)
-        })
-      )
-    }
 
   private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
     case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
@@ -278,7 +218,7 @@ object CollectionsDetailsActivity {
   val startPosition = "start_position"
   val indexColorToolbar = "color_toolbar"
   val iconToolbar = "icon_toolbar"
-  val toDoAnimation = "to_do_animation"
+  val stateChanged = "state_changed"
   val snapshotName = "snapshot"
 
   def getContentTransitionName(position: Int) = s"icon_$position"
