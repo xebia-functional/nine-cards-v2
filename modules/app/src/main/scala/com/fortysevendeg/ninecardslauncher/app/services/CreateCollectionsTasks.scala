@@ -24,7 +24,7 @@ trait CreateCollectionsTasks
 
   def createNewConfiguration: ServiceDef2[Seq[Collection], ResetException with AppException with ContactException with CollectionException with DockAppException with MomentException] =
     for {
-      - <- di.deviceProcess.resetSavedItems()
+      _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
       _ = setProcess(GettingAppsProcess)
       _ <- di.deviceProcess.generateDockApps(dockAppsSize)
@@ -42,7 +42,7 @@ trait CreateCollectionsTasks
    deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with CloudStorageProcessException with CollectionException with DockAppException with MomentException] = {
    val cloudStorageProcess = di.createCloudStorageProcess(client, account)
    for {
-     - <- di.deviceProcess.resetSavedItems()
+     _ <- di.deviceProcess.resetSavedItems()
      _ <- di.deviceProcess.saveInstalledApps
      _ <- di.deviceProcess.generateDockApps(dockAppsSize)
      apps <- di.deviceProcess.getSavedApps(GetByName)
