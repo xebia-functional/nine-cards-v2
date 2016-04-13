@@ -212,8 +212,10 @@ class ProfileActivity
       onPreTask = () => showLoading
     )
 
-  private[this] def loadUserAccounts(client: GoogleApiClient): Unit =
-    Task.fork(loadAccounts(client).run).resolveAsyncUi(
+  private[this] def loadUserAccounts(
+    client: GoogleApiClient,
+    filterOutResourceIds: Seq[String] = Seq.empty): Unit =
+    Task.fork(loadAccounts(client, filterOutResourceIds).run).resolveAsyncUi(
       onResult = accountSyncs => {
         syncEnabled = true
         setAccountsAdapter(accountSyncs)
@@ -234,7 +236,7 @@ class ProfileActivity
     clientStatuses match {
       case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
         Task.fork(deleteAccountDevice(client, resourceId).run).resolveAsyncUi(
-          onResult = (_) => Ui(loadUserAccounts(client)),
+          onResult = (_) => Ui(loadUserAccounts(client, Seq(resourceId))),
           onException = (_) => showError(R.string.contactUsError, () => deleteDevice(resourceId)),
           onPreTask = () => showLoading)
       case _ => showError(R.string.errorConnectingGoogle, () => tryToConnect())
