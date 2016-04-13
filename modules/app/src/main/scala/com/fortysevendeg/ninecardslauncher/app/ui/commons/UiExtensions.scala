@@ -42,15 +42,6 @@ trait UiExtensions {
 
 object SafeUi {
 
-  def activity[A](implicit c: ActivityContextWrapper): Option[A] =
-    c.original match {
-      case WeakReference(activity: A) => Some(activity)
-      case _ => None
-    }
-
-  def createIntent[T <: Activity](implicit c: ActivityContextWrapper, m: Manifest[T]) =
-    new Intent(c.application, m.runtimeClass)
-
   def uiStartIntent(intent: Intent)(implicit c: ActivityContextWrapper): Ui[Unit] =
     startIntent(_.startActivity(intent))
 

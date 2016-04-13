@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections
+package com.fortysevendeg.ninecardslauncher.app.ui.collections.snails
 
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.view.View
-import android.view.animation.{DecelerateInterpolator, AccelerateDecelerateInterpolator}
+import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInterpolator}
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -11,7 +11,7 @@ import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
 
-object Snails {
+object CollectionsSnails {
 
   def changeIcon(resDrawable: Int, fromLeft: Boolean)(implicit context: ContextWrapper): Snail[ImageView] = Snail[ImageView] {
     view =>

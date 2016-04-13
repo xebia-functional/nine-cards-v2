@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections
+package com.fortysevendeg.ninecardslauncher.app.ui.collections.styles
 
 import android.content.res.ColorStateList
 import android.graphics.Color

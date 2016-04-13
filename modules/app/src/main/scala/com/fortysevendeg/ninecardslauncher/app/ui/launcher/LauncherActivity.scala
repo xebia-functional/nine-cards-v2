@@ -111,7 +111,7 @@ class LauncherActivity
     val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
       self,
       new Pair[View, String](view, getContentTransitionName(collection.position)))
-    val intent = createIntent[CollectionsDetailsActivity]
+    val intent = new Intent(self, classOf[CollectionsDetailsActivity])
     intent.putExtra(startPosition, collection.position)
     intent.putExtra(indexColorToolbar, collection.themedColorIndex)
     intent.putExtra(iconToolbar, collection.icon)

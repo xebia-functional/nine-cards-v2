@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdapter}
 import android.view.ViewGroup
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.{ContextWrapper, Ui}
 
 import scala.collection.mutable
 
 case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collections: Seq[Collection], startPosition: Int)
-  (implicit context: ContextWrapper)
+  (implicit context: ContextWrapper, collectionsPresenter: CollectionsPagerPresenter, theme: NineCardsTheme)
   extends FragmentStatePagerAdapter(fragmentManager) {
 
   val fragments: mutable.WeakHashMap[Int, CollectionFragment] = mutable.WeakHashMap.empty
@@ -24,7 +25,7 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
   }
 
   override def getItem(position: Int): Fragment = {
-    val fragment = new CollectionFragment()
+    val fragment = new CollectionFragment
     val bundle = new Bundle()
     bundle.putInt(CollectionFragment.keyPosition, position)
     bundle.putBoolean(CollectionFragment.keyAnimateCards, firstTimeInStartPosition(position))
@@ -97,6 +98,8 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     }
     Ui.sequence(uis.toSeq: _*)
   }
+
+  def clear(): Unit = fragments.clear()
 }
 
 case class CollectionsPagerAdapterStatuses(
