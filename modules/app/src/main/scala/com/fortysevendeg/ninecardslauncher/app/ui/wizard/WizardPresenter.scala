@@ -1,9 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.{Account, AccountManager, OperationCanceledException}
-import android.content.Context
+import android.app.Activity
+import android.content.{Context, Intent}
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
@@ -15,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
@@ -28,7 +30,7 @@ import scala.reflect.ClassTag
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/, \/-}
 
-class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(implicit contextWrapper: ActivityContextWrapper)
+class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
   with ImplicitsCloudStorageProcessExceptions
   with ImplicitsAuthTokenException {
@@ -58,7 +60,7 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
   def connectAccount(username: String, termsAccept: Boolean): Unit = if (termsAccept) {
     getAccount(username) match {
       case Some(acc) =>
-        val googleApiClient = statuses.createGoogleApiClient(acc)
+        val googleApiClient = actions.createGoogleApiClient(acc)
         loadAccount(acc, googleApiClient)
       case _ => actions.showErrorSelectUser().run
     }
@@ -99,10 +101,19 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
     }) getOrElse actions.showDiveIn().run
   }
 
-  def generateCollections(maybeKey: Option[String]): Unit =
-    (actions.startCreateCollectionsService(maybeKey) ~ actions.navigateToWizard()).run
+  def generateCollections(maybeKey: Option[String]): Unit = (
+    Ui {
+      val activity = contextWrapper.getOriginal
+      val intent = new Intent(activity, classOf[CreateCollectionService])
+      maybeKey foreach (key => intent.putExtra(CreateCollectionService.keyDevice, key))
+      activity.startService(intent)
+    } ~ actions.goToWizard()).run
 
-  def finishWizard(): Unit = actions.navigateToLauncher().run
+  def finishWizard(): Unit = {
+    val activity = contextWrapper.getOriginal
+    activity.setResult(Activity.RESULT_OK)
+    activity.finish()
+  }
 
   def connectionError(): Unit = actions.showErrorConnectingGoogle().run
 
@@ -151,7 +162,7 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
   private[this] def storeDevice(
     client: GoogleApiClient,
     username: String
-  ): ServiceDef2[Unit, CollectionException  with MomentException with CloudStorageProcessException] = {
+  ): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client, username)
     for {
       collections <- di.collectionProcess.getCollections
@@ -243,16 +254,5 @@ trait WizardUiActions {
 
   def showDiveIn(): Ui[Any]
 
-  def startCreateCollectionsService(maybeKey: Option[String]): Ui[Any]
-
-  def navigateToLauncher(): Ui[Any]
-
-  def navigateToWizard(): Ui[Any]
-
-}
-
-trait WizardViewStatuses {
-
   def createGoogleApiClient(account: Account): GoogleApiClient
-
 }

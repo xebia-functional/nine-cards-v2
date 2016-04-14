@@ -153,6 +153,16 @@ object WorkSpaceItemMenuTweaks {
 
 }
 
+object StepsWorkspacesTweaks {
+  type W = StepsWorkspaces
+
+  def swData(data: Seq[StepData]) = Tweak[W] { view =>
+    view.data = data
+    view.init()
+  }
+
+}
+
 object SearchBoxesAnimatedViewTweak {
 
   def sbvUpdateContentView(contentView: ContentView)(implicit theme: NineCardsTheme) =
