@@ -13,7 +13,7 @@ trait ActionsBehaviours {
 
   lazy val fragmentContent = Option(findView(TR.action_fragment_content))
 
-  def turnOffFragmentContent(implicit contextWrapper: ContextWrapper): Ui[_]
+  def turnOffFragmentContent: Ui[_]
 
   def removeActionFragment(implicit managerContext: FragmentManagerContext[Fragment, FragmentManager]): Unit =
     findFragmentByTag(nameActionFragment) map removeFragment
