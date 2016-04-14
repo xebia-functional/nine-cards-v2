@@ -52,6 +52,10 @@ class ContactsFragment(implicit collectionsPagerPresenter: CollectionsPagerPrese
     }
   }
 
+  override def onDestroy(): Unit = {
+    presenter.destroy()
+    super.onDestroy()
+  }
 }
 
 object ContactsFragment {

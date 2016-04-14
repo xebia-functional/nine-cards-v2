@@ -18,6 +18,8 @@ class ContactsPresenter(actions: ContactsIuActions)(implicit activityContextWrap
     loadContacts(AllContacts, reload = false)
   }
 
+  def destroy(): Unit = actions.destroy().run
+
   def loadContacts(
     filter: ContactsFilter,
     reload: Boolean = true): Unit = Task.fork(getLoadContacts(filter).run).resolveAsyncUi(
@@ -49,6 +51,8 @@ class ContactsPresenter(actions: ContactsIuActions)(implicit activityContextWrap
 trait ContactsIuActions {
 
   def initialize(): Ui[Any]
+
+  def destroy(): Ui[Any]
 
   def showLoading(): Ui[Any]
 
