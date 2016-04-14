@@ -60,7 +60,7 @@ class CloudStorageProcessImpl(
       deviceName = Build.MODEL,
       documentVersion = CloudStorageProcess.actualDocumentVersion,
       collections = collections,
-      moments = moments)
+      moments = Some(moments))
     _ <- createOrUpdateCloudStorageDevice(cloudStorageDevice)
   } yield ()).resolve[CloudStorageProcessException]
 

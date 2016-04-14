@@ -4,7 +4,7 @@ import android.accounts.{Account, AccountManager, OperationCanceledException}
 import android.content.Context
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
@@ -176,7 +176,7 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
       for {
         devices <- loadFromCloud(cloudStorageProcess, cloudStorageResources)
         _ <- fakeUserConfigException
-      } yield UserCloudDevices(name, devices)
+      } yield UserCloudDevices(name, devices.flatten)
     }
   }
 
@@ -187,7 +187,12 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
 
   private[this] def loadFromCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageResources: Seq[CloudStorageDeviceSummary]) = Service {
     val tasks = cloudStorageResources map (r => cloudStorageProcess.getCloudStorageDevice(r.resourceId).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
+    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect {
+      case Answer(r) => Some(r)
+      case e@Errata(_) =>
+        AppLog.printErrorTaskMessage(s"Error parsing cloud device", e.exceptions)
+        None
+    }))
   }
 
   private[this] def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer()))

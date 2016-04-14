@@ -49,7 +49,7 @@ trait CloudStorageProcessImplData {
       deviceName,
       documentVersion,
       generateCollections(numCollections, numItemsPerCollection),
-      generateMoments(numMoments, numTimeSlot))
+      Some(generateMoments(numMoments, numTimeSlot)))
 
   def generateCollections(num: Int, numItems: Int): Seq[CloudStorageCollection] = 1 to num map { i =>
     CloudStorageCollection(

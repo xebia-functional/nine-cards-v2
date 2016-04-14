@@ -51,7 +51,8 @@ trait CreateCollectionsTasks
      bitmaps <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(apps, cloudStorageDevice.collections))
      _ = setProcess(CreatingCollectionsProcess)
      collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(cloudStorageDevice.collections))
-     _ <- di.momentProcess.saveMoments(cloudStorageDevice.moments map toMoment)
+     momentSeq = cloudStorageDevice.moments map (_ map toMoment) getOrElse Seq.empty
+     _ <- di.momentProcess.saveMoments(momentSeq)
    } yield collections
   }
 
