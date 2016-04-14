@@ -23,7 +23,7 @@ object Conversions {
       deviceName = userDevice.deviceName,
       documentVersion = CloudStorageProcess.actualDocumentVersion,
       userDevice.collections map toCloudStorageCollection,
-      moments = Seq.empty)
+      moments = None)
 
   def toCloudStorageCollection(userCollection: UserCollection) =
     CloudStorageCollection(

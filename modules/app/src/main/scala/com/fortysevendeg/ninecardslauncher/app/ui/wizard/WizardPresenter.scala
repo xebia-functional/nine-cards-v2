@@ -4,7 +4,7 @@ import android.accounts.{Account, AccountManager, OperationCanceledException}
 import android.content.Context
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
@@ -88,16 +88,15 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
     }) getOrElse actions.showErrorConnectingGoogle().run
   }
 
-  def saveCurrentDevice(maybeClient: Option[GoogleApiClient], maybeUsername: Option[String]): Unit = {
-    (for {
-      client <- maybeClient
-      username <- maybeUsername
-    } yield {
-      Task.fork(storeDevice(client, username).run).resolveAsyncUi(
-        onResult = (_) => actions.showDiveIn(),
-        onException = (_) => actions.showDiveIn())
-    }) getOrElse actions.showDiveIn().run
-  }
+  def saveCurrentDevice(maybeClient: Option[GoogleApiClient]): Unit =
+    maybeClient match {
+      case Some(client) =>
+        Task.fork(storeDevice(client).run).resolveAsyncUi(
+          onResult = (_) => actions.showDiveIn(),
+          onException = (_) => actions.showDiveIn())
+      case None =>
+        actions.showDiveIn().run
+    }
 
   def generateCollections(maybeKey: Option[String]): Unit =
     (actions.startCreateCollectionsService(maybeKey) ~ actions.navigateToWizard()).run
@@ -139,7 +138,7 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
     username: String,
     userPermissions: UserPermissions
   ): ServiceDef2[UserCloudDevices, UserException with UserConfigException with CloudStorageProcessException] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client, username)
+    val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       response <- di.userProcess.signIn(username, Build.MODEL, userPermissions.token, userPermissions.oauthScopes)
       cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
@@ -148,11 +147,8 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
 
   }
 
-  private[this] def storeDevice(
-    client: GoogleApiClient,
-    username: String
-  ): ServiceDef2[Unit, CollectionException  with MomentException with CloudStorageProcessException] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client, username)
+  private[this] def storeDevice(client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException] = {
+    val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       collections <- di.collectionProcess.getCollections
       moments <- di.momentProcess.getMoments
@@ -180,7 +176,7 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
       for {
         devices <- loadFromCloud(cloudStorageProcess, cloudStorageResources)
         _ <- fakeUserConfigException
-      } yield UserCloudDevices(name, devices)
+      } yield UserCloudDevices(name, devices.flatten)
     }
   }
 
@@ -191,7 +187,12 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
 
   private[this] def loadFromCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageResources: Seq[CloudStorageDeviceSummary]) = Service {
     val tasks = cloudStorageResources map (r => cloudStorageProcess.getCloudStorageDevice(r.resourceId).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
+    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect {
+      case Answer(r) => Some(r)
+      case e@Errata(_) =>
+        AppLog.printErrorTaskMessage(s"Error parsing cloud device", e.exceptions)
+        None
+    }))
   }
 
   private[this] def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer()))

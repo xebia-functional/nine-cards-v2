@@ -30,7 +30,7 @@ trait WizardPresenterData {
     deviceName = deviceName,
     documentVersion = 1,
     collections = Seq.empty,
-    moments = Seq.empty
+    moments = None
   )
 
   val userCloudDevices = UserCloudDevices(
