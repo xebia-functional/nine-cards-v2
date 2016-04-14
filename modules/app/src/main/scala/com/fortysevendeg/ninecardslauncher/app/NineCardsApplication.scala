@@ -18,6 +18,7 @@ class NineCardsApplication
     // In old version BuildConfig returns a NoClassDefFoundError
     // Fix this problem in issue #212
     try {
+      Fabric.`with`(self, new Crashlytics())
       if (BuildConfig.DEBUG) {
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
           .detectDiskReads()
@@ -40,18 +41,11 @@ class NineCardsApplication
     } catch {
       case _: Throwable =>
     }
-    startCrashlytics()
   }
 
   override def attachBaseContext(base: Context): Unit = {
     super.attachBaseContext(base)
     MultiDex.install(this)
-  }
-
-  private[this] def startCrashlytics() = {
-    new Handler().post(new Runnable {
-      override def run(): Unit = Fabric.`with`(self, new Crashlytics())
-    })
   }
 
 }

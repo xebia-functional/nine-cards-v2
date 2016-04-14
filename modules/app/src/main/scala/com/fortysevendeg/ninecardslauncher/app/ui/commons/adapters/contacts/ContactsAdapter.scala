@@ -26,6 +26,8 @@ case class ContactsAdapter(
   extends RecyclerView.Adapter[ContactsIterableHolder]
   with FastScrollerListener {
 
+  val columnsLists = 1
+
   val heightItem = resGetDimensionPixelSize(R.dimen.height_contact_item)
 
   override def getItemCount: Int = contacts.count()
@@ -51,8 +53,7 @@ case class ContactsAdapter(
     ContactsIterableHolder(view)
   }
 
-  def getLayoutManager: LinearLayoutManager =
-    new LinearLayoutManager(activityContext.application) with ScrollingLinearLayoutManager
+  def getLayoutManager: LinearLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
 
   def swapIterator(iter: IterableContacts) = {
     contacts.close()
@@ -62,11 +63,11 @@ case class ContactsAdapter(
 
   def close() = contacts.close()
 
-  override def getHeightAllRows: Int = contacts.count() * getHeightItem
+  override def getHeightAllRows: Int = contacts.count() / columnsLists * getHeightItem
 
   override def getHeightItem: Int = heightItem
 
-  override def getColumns: Int = 1
+  override def getColumns: Int = columnsLists
 
 }
 

@@ -14,7 +14,7 @@ import com.bumptech.glide.load.model.stream.StreamModelLoader
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.ViewTarget
-import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority}
+import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority, RequestManager}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -22,52 +22,65 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
+import scala.util.Try
+
 object AsyncImageTweaks {
   type W = ImageView
 
   def ivUri(uri: String)(implicit context: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      glide()
-        .load(uri)
-        .crossFade()
-        .into(imageView)
+      glide() foreach { glide =>
+        glide
+          .load(uri)
+          .crossFade()
+          .into(imageView)
+      }
     }
   )
 
   def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      loadCardUri(
-        imageView = imageView,
-        request = glide().load(uri),
-        uri = uri,
-        char = name.substring(0, 1),
-        circular = circular)
+      glide() foreach { glide =>
+        loadCardUri(
+          imageView = imageView,
+          request = glide.load(uri),
+          uri = uri,
+          char = name.substring(0, 1),
+          circular = circular)
+      }
     })
 
   def ivUriContact(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      makeRequest(
-        request = glide().using(new ContactPhotoLoader(context.application.getContentResolver)).load(Uri.parse(uri)),
-        imageView = imageView,
-        char = name.substring(0, 1),
-        circular = circular,
-        fadeInFailed = false)
+      glide() foreach { glide =>
+        makeRequest(
+          request = glide.using(new ContactPhotoLoader(context.application.getContentResolver)).load(Uri.parse(uri)),
+          imageView = imageView,
+          char = name.substring(0, 1),
+          circular = circular,
+          fadeInFailed = false)
+      }
     })
 
   def ivUriContactInfo(uri: String, header: Boolean = true)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
-      makeContactRequest(
-        request = glide().using(new ContactPhotoLoader(context.application.getContentResolver)).load(Uri.parse(uri)),
-        imageView = imageView,
-        header = header,
-        fadeInFailed = false)
+      glide() foreach { glide =>
+        makeContactRequest(
+          request = glide.using(new ContactPhotoLoader(context.application.getContentResolver)).load(Uri.parse(uri)),
+          imageView = imageView,
+          header = header,
+          fadeInFailed = false)
+      }
     })
 
-  private[this] def glide()(implicit uiContext: UiContext[_]) = uiContext match {
-    case c: ApplicationUiContext => Glide.`with`(c.value)
-    case c: ActivityUiContext => Glide.`with`(c.value)
-    case c: FragmentUiContext => Glide.`with`(c.value)
-  }
+  private[this] def glide()(implicit uiContext: UiContext[_]): Option[RequestManager] =
+    Try {
+      uiContext match {
+        case c: ApplicationUiContext => Glide.`with`(c.value)
+        case c: ActivityUiContext => Glide.`with`(c.value)
+        case c: FragmentUiContext => Glide.`with`(c.value)
+      }
+    }.toOption
 
   private[this] def loadCardUri(
     imageView: ImageView,

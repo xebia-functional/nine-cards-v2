@@ -79,6 +79,10 @@ trait ContactsIuActionsImpl
 
   override def closeTabs(): Ui[_] = (tabs <~ tvClose <~ hideTabs) ~ (recycler <~ showList)
 
+  override def destroy(): Ui[Any] = Ui {
+    getAdapter foreach(_.close())
+  }
+
   override def showContacts(
     filter: ContactsFilter,
     contacts: IterableContacts,
