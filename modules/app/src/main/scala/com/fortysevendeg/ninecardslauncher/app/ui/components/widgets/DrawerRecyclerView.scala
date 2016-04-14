@@ -1,12 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView.LayoutManager
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams
-import android.view.animation.GridLayoutAnimationController.{AnimationParameters => GridAnimationParameters}
-import android.view.animation.LayoutAnimationController.AnimationParameters
+import android.view.animation.AnimationUtils
+import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -74,9 +73,9 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
     Option(getLayoutManager) match {
       case (Some(layoutManager: GridLayoutManager)) =>
         val animationParams = Option(params.layoutAnimationParameters) match {
-          case Some(animParams: GridAnimationParameters) => animParams
+          case Some(animParams: AnimationParameters) => animParams
           case _ =>
-            val animParams = new GridAnimationParameters()
+            val animParams = new AnimationParameters()
             params.layoutAnimationParameters = animParams
             animParams
         }
@@ -88,16 +87,6 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
         val invertedIndex = count - 1 - index
         animationParams.column = columns - 1 - (invertedIndex % columns)
         animationParams.row = animationParams.rowsCount - 1 - invertedIndex / columns
-      case (Some(layoutManager: LayoutManager)) =>
-        val animationParams = Option(params.layoutAnimationParameters) match {
-          case Some(animParams: AnimationParameters) => animParams
-          case _ =>
-            val animParams = new AnimationParameters()
-            params.layoutAnimationParameters = animParams
-            animParams
-        }
-        animationParams.count = count
-        animationParams.index = index
       case _ => super.attachLayoutAnimationParameters(child, params, index, count)
     }
 

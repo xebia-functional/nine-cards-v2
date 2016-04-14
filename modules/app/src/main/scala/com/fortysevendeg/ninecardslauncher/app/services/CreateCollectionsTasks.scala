@@ -24,7 +24,7 @@ trait CreateCollectionsTasks
 
   def createNewConfiguration: ServiceDef2[Seq[Collection], ResetException with AppException with ContactException with CollectionException with DockAppException with MomentException] =
     for {
-      - <- di.deviceProcess.resetSavedItems()
+      _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
       _ = setProcess(GettingAppsProcess)
       _ <- di.deviceProcess.generateDockApps(dockAppsSize)
@@ -38,11 +38,10 @@ trait CreateCollectionsTasks
 
   def loadConfiguration(
    client: GoogleApiClient,
-   account: String,
    deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with CloudStorageProcessException with CollectionException with DockAppException with MomentException] = {
-   val cloudStorageProcess = di.createCloudStorageProcess(client, account)
+   val cloudStorageProcess = di.createCloudStorageProcess(client)
    for {
-     - <- di.deviceProcess.resetSavedItems()
+     _ <- di.deviceProcess.resetSavedItems()
      _ <- di.deviceProcess.saveInstalledApps
      _ <- di.deviceProcess.generateDockApps(dockAppsSize)
      apps <- di.deviceProcess.getSavedApps(GetByName)
@@ -52,7 +51,8 @@ trait CreateCollectionsTasks
      bitmaps <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(apps, cloudStorageDevice.collections))
      _ = setProcess(CreatingCollectionsProcess)
      collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(cloudStorageDevice.collections))
-     _ <- di.momentProcess.saveMoments(cloudStorageDevice.moments map toMoment)
+     momentSeq = cloudStorageDevice.moments map (_ map toMoment) getOrElse Seq.empty
+     _ <- di.momentProcess.saveMoments(momentSeq)
    } yield collections
   }
 

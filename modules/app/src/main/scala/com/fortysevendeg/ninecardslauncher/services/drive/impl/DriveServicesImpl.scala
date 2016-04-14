@@ -4,14 +4,15 @@ import java.io.{InputStream, OutputStreamWriter}
 
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.services.drive.{DriveResourceNotAvailable, DriveRateLimitExceeded, DriveSigInRequired}
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.services.drive.{DriveRateLimitExceeded, DriveResourceNotAvailable, DriveSigInRequired}
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
-import com.fortysevendeg.ninecardslauncher.services.drive.{Conversions, DriveServicesException, DriveServices}
+import com.fortysevendeg.ninecardslauncher.services.drive.{Conversions, DriveServices, DriveServicesException}
 import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, PendingResult, Result}
 import com.google.android.gms.drive._
 import com.google.android.gms.drive.metadata.CustomPropertyKey
-import com.google.android.gms.drive.query.{SortableField, SortOrder, Filters, Query}
+import com.google.android.gms.drive.query.{Filters, Query, SortOrder, SortableField}
 import rapture.core
 import rapture.core.{Answer, Errata}
 
@@ -72,6 +73,19 @@ class DriveServicesImpl(client: GoogleApiClient)
         .continually(content.read)
         .takeWhile(_ != -1)
         .foreach(writer.write))
+
+  def deleteFile(driveId: String) = Service {
+    Task {
+      Drive.DriveApi
+        .fetchDriveId(client, driveId)
+        .withResult { result =>
+          result
+            .getDriveId.asDriveFile()
+            .delete(client)
+            .withResult(_ => Answer(Unit))
+        }
+    }
+  }
 
   private[this] def searchFiles[R](query: Option[Query])(f: (Seq[Metadata]) => R) = Service {
     Task {

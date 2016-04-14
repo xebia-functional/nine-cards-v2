@@ -230,6 +230,8 @@
 
     <string name="logout">Salir</string>
 
+    <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
+
     <!-- Preferences -->
 
     <!-- Preferences Default Launcher -->

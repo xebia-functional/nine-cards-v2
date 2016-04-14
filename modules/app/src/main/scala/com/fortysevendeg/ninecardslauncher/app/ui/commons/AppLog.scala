@@ -9,9 +9,9 @@ object AppLog {
 
   def printErrorMessage(ex: Throwable, message: Option[String] = None) = {
     try {
-      Crashlytics.logException(ex)
       val outputEx = Option(ex.getCause) getOrElse ex
       Log.e(tag, message getOrElse errorMessage(outputEx), outputEx)
+      Crashlytics.logException(ex)
     } catch { case _: Throwable => }
   }
 

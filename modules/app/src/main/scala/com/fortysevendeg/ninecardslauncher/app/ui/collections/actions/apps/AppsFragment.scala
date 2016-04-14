@@ -29,6 +29,10 @@ class AppsFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter
     presenter.initialize()
   }
 
+  override def onDestroy(): Unit = {
+    presenter.destroy()
+    super.onDestroy()
+  }
 }
 
 object AppsFragment {

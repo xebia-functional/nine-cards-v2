@@ -239,6 +239,8 @@
 
     <string name="logout">Logout</string>
 
+    <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
+
     <!-- Preferences -->
 
     <!-- Preferences Default Launcher -->

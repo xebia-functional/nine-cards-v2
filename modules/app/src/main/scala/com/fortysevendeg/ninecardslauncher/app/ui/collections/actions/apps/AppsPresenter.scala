@@ -24,6 +24,8 @@ case class AppsPresenter(
     loadApps(if (onlyAllApps) AllApps else AppsByCategory, reload = false)
   }
 
+  def destroy(): Unit = actions.destroy().run
+
   def loadApps(
     filter: AppsFilter,
     reload: Boolean = true): Unit = {
@@ -76,6 +78,8 @@ trait AppsIuActions {
   def showLoading(): Ui[Any]
 
   def closeTabs(): Ui[Any]
+
+  def destroy(): Ui[Any]
 
   def showLoadingAppsError(filter: AppsFilter): Ui[Any]
 

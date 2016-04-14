@@ -23,7 +23,7 @@ case class CloudStorageDevice(
   deviceName: String,
   documentVersion: Int,
   collections: Seq[CloudStorageCollection],
-  moments: Seq[CloudStorageMoment])
+  moments: Option[Seq[CloudStorageMoment]])
 
 case class CloudStorageCollection(
   name: String,

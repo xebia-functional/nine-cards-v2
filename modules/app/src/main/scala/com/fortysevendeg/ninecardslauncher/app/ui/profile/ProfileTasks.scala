@@ -17,9 +17,23 @@ trait ProfileTasks {
 
   def loadUserEmail(): ServiceDef2[Option[String], UserException] = di.userProcess.getUser.map(_.email)
 
-  def loadAccounts(client: GoogleApiClient, email: String): ServiceDef2[Seq[AccountSync], CloudStorageProcessException] =  {
-    val cloudStorageProcess = di.createCloudStorageProcess(client, email)
-    cloudStorageProcess.getCloudStorageDevices.map(devices => createSync(devices))
+  def loadAccounts(
+    client: GoogleApiClient,
+    filterOutResourceIds: Seq[String] = Seq.empty): ServiceDef2[Seq[AccountSync], CloudStorageProcessException] =  {
+    val cloudStorageProcess = di.createCloudStorageProcess(client)
+    cloudStorageProcess.getCloudStorageDevices.map { devices =>
+      val filteredDevices = if (filterOutResourceIds.isEmpty) {
+        devices
+      } else {
+        devices.filterNot(d => filterOutResourceIds.contains(d.resourceId))
+      }
+      createSync(filteredDevices)
+    }
+  }
+
+  def deleteAccountDevice(client: GoogleApiClient, driveId: String): ServiceDef2[Unit, CloudStorageProcessException] =  {
+    val cloudStorageProcess = di.createCloudStorageProcess(client)
+    cloudStorageProcess.deleteCloudStorageDevice(driveId)
   }
 
   def logout(): ServiceDef2[Unit, CollectionException with DockAppException with MomentException with UserException] =
@@ -32,10 +46,10 @@ trait ProfileTasks {
 
   private[this] def createSync(devices: Seq[CloudStorageDeviceSummary]): Seq[AccountSync] = {
     val currentDevice = devices.find(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = true)
+      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = true, resourceId = d.resourceId)
     }
     val otherDevices = devices.filterNot(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate)
+      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, resourceId = d.resourceId)
     }
     val otherDevicesWithHeader = if (otherDevices.isEmpty) {
       Seq.empty

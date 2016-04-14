@@ -13,4 +13,6 @@ trait ProfileListener {
   def onProfileTabSelected(profileTab: ProfileTab): Unit
 
   def onSyncActionClicked(): Unit
+
+  def onRemoveActionClicked(resourceId: String): Unit
 }

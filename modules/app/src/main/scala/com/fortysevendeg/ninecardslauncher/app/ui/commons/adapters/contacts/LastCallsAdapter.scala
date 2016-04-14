@@ -33,6 +33,8 @@ case class LastCallsAdapter(
   extends RecyclerView.Adapter[LastCallsContactHolder]
   with FastScrollerListener {
 
+  val columnsLists = 1
+
   val heightItem = resGetDimensionPixelSize(R.dimen.height_contact_item)
 
   override def getItemCount: Int = contacts.length
@@ -50,14 +52,13 @@ case class LastCallsAdapter(
     LastCallsContactHolder(view)
   }
 
-  def getLayoutManager: LinearLayoutManager =
-    new LinearLayoutManager(activityContext.application) with ScrollingLinearLayoutManager
+  def getLayoutManager: LinearLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
 
-  override def getHeightAllRows: Int = contacts.length * getHeightItem
+  override def getHeightAllRows: Int = contacts.length / columnsLists * getHeightItem
 
   override def getHeightItem: Int = heightItem
 
-  override def getColumns: Int = 1
+  override def getColumns: Int = columnsLists
 }
 
 case class LastCallsContactHolder(content: View)
