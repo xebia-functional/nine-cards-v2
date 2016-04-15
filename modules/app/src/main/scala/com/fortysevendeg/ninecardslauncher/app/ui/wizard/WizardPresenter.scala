@@ -1,9 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.{Account, AccountManager, OperationCanceledException}
-import android.content.Context
+import android.app.Activity
+import android.content.{Context, Intent}
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
@@ -28,7 +30,7 @@ import scala.reflect.ClassTag
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/, \/-}
 
-class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(implicit contextWrapper: ActivityContextWrapper)
+class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
   with ImplicitsCloudStorageProcessExceptions
   with ImplicitsAuthTokenException {
@@ -58,7 +60,7 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
   def connectAccount(username: String, termsAccept: Boolean): Unit = if (termsAccept) {
     getAccount(username) match {
       case Some(acc) =>
-        val googleApiClient = statuses.createGoogleApiClient(acc)
+        val googleApiClient = actions.createGoogleApiClient(acc)
         loadAccount(acc, googleApiClient)
       case _ => actions.showErrorSelectUser().run
     }
@@ -98,10 +100,19 @@ class WizardPresenter(actions: WizardUiActions, statuses: WizardViewStatuses)(im
         actions.showDiveIn().run
     }
 
-  def generateCollections(maybeKey: Option[String]): Unit =
-    (actions.startCreateCollectionsService(maybeKey) ~ actions.navigateToWizard()).run
+  def generateCollections(maybeKey: Option[String]): Unit = (
+    Ui {
+      val activity = contextWrapper.getOriginal
+      val intent = new Intent(activity, classOf[CreateCollectionService])
+      maybeKey foreach (key => intent.putExtra(CreateCollectionService.keyDevice, key))
+      activity.startService(intent)
+    } ~ actions.goToWizard()).run
 
-  def finishWizard(): Unit = actions.navigateToLauncher().run
+  def finishWizard(): Unit = {
+    val activity = contextWrapper.getOriginal
+    activity.setResult(Activity.RESULT_OK)
+    activity.finish()
+  }
 
   def connectionError(): Unit = actions.showErrorConnectingGoogle().run
 
@@ -244,16 +255,5 @@ trait WizardUiActions {
 
   def showDiveIn(): Ui[Any]
 
-  def startCreateCollectionsService(maybeKey: Option[String]): Ui[Any]
-
-  def navigateToLauncher(): Ui[Any]
-
-  def navigateToWizard(): Ui[Any]
-
-}
-
-trait WizardViewStatuses {
-
   def createGoogleApiClient(account: Account): GoogleApiClient
-
 }

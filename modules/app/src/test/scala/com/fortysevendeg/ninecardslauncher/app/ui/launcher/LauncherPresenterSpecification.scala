@@ -51,28 +51,24 @@ trait LauncherPresenterSpecification
     mockActions.showLoading() returns Ui[Any]()
     mockActions.showContactUsError() returns Ui[Any]()
     mockActions.showMinimumOneCollectionMessage() returns Ui[Any]()
-    mockActions.showDialogForRemoveCollection(collection) returns Ui[Any]()
-    mockActions.goToWizard() returns Ui[Any]()
     mockActions.addCollection(collection) returns Ui[Any]()
     mockActions.loadUserProfile(user)
+    mockActions.canRemoveCollections returns canRemoveCollections
 
-    val mockStatuses = mock[LauncherViewStatuses]
-    mockStatuses.canRemoveCollections returns canRemoveCollections
-
-    val presenter = new LauncherPresenter(mockActions, mockStatuses) {
+    val presenter = new LauncherPresenter(mockActions) {
       override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
         Service(Task(Answer(())))
       override protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
         Service(Task(Answer((collectionSeq, dockAppSeq))))
-      override protected def getUser(): ServiceDef2[User, UserException] = Service(Task(Answer(user)))
+      override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Answer(user)))
     }
 
-    val presenterFailed = new LauncherPresenter(mockActions, mockStatuses) {
+    val presenterFailed = new LauncherPresenter(mockActions) {
       override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
         Service(Task(Errata(collectionException)))
       override protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
         Service(Task(Errata(launcherAppsException)))
-      override protected def getUser(): ServiceDef2[User, UserException] = Service(Task(Errata(userException)))
+      override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Errata(userException)))
     }
 
   }
@@ -97,7 +93,8 @@ class LauncherPresenterSpec
     "show dialog returning a successful data and it can remove collections" in
       new WizardPresenterScope {
         presenter.removeCollection(Some(collection))
-        there was after(1 seconds).one(mockActions).showDialogForRemoveCollection(collection)
+        there was after(1 seconds).no(mockActions).showMinimumOneCollectionMessage()
+        there was after(1 seconds).no(mockActions).showContactUsError()
       }
 
     "show message returning a successful data and it can't remove collections" in
@@ -149,13 +146,13 @@ class LauncherPresenterSpec
         override val collectionSeq: Seq[Collection] = Seq.empty
 
         presenter.loadCollectionsAndDockApps()
-        there was after(1 seconds).one(mockActions).goToWizard()
+        there was after(1 seconds).no(mockActions).loadCollections(any, any)
       }
 
     "go to wizard returning a failed loading collections" in
       new WizardPresenterScope {
         presenterFailed.loadCollectionsAndDockApps()
-        there was after(1 seconds).one(mockActions).goToWizard()
+        there was after(1 seconds).no(mockActions).loadCollections(any, any)
       }
 
   }

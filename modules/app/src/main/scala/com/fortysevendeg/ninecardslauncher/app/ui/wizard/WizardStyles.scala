@@ -12,7 +12,8 @@ import macroid._
 
 trait WizardStyles {
 
-  def defaultActionStyle(implicit context: ActivityContextWrapper): Tweak[Button] = vBackgroundTint(resGetColor(R.color.primary))
+  def defaultActionStyle(implicit context: ActivityContextWrapper): Tweak[Button] =
+    vBackgroundTint(resGetColor(R.color.primary))
 
   def diveInActionStyle(implicit context: ActivityContextWrapper): Tweak[Button] =
     vInvisible +

@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.profile
 
+import android.app.Activity
 import android.support.design.widget.TabLayout
 import android.support.design.widget.TabLayout.Tab
 import android.support.v7.app.AppCompatActivity
@@ -8,27 +9,29 @@ import android.view.View
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, PublicationsAdapter, SubscriptionsAdapter}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{Device, AccountSync, AccountSyncType}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{AccountSync, Device}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
-trait ProfileComposer
-  extends ProfileStyles
+trait ProfileUiActionsImpl
+  extends ProfileUiActions
+  with ProfileStyles
   with TabLayout.OnTabSelectedListener {
 
-  self: AppCompatActivity
-    with TypedFindView
-    with SystemBarsTint
-    with Contexts[AppCompatActivity]
-    with ProfileListener =>
+  self: TypedFindView with SystemBarsTint with Contexts[AppCompatActivity] =>
+
+  implicit val presenter: ProfilePresenter
+
+  implicit val uiContext: UiContext[Activity]
+
+  implicit lazy val theme = presenter.getTheme
 
   lazy val rootLayout = Option(findView(TR.profile_root))
 
@@ -56,17 +59,29 @@ trait ProfileComposer
 
   def showMessage(res: Int): Ui[_] = rootLayout <~ vSnackbarShort(res)
 
-  def initUi(implicit uiContext: UiContext[_], theme: NineCardsTheme): Ui[_] =
+  override def initialize(): Ui[_] =
       (tabs <~ tlAddTabs(
-        (getString(R.string.publications), PublicationsTab),
-        (getString(R.string.subscriptions), SubscriptionsTab),
-        (getString(R.string.accounts), AccountsTab))) ~
+        (resGetString(R.string.publications), PublicationsTab),
+        (resGetString(R.string.subscriptions), SubscriptionsTab),
+        (resGetString(R.string.accounts), AccountsTab))) ~
       (tabs <~ tlSetListener(this)) ~
       (recyclerView <~
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
-      Ui(onProfileTabSelected(PublicationsTab))
+      Ui(presenter.loadPublications())
 
-  def userProfile(name: String, email: String, avatarUrl: Option[String])(implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Ui[_] =
+  override def showLoading(): Ui[_] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
+
+  override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
+
+  override def showConnectingGoogleError(clickAction: () => Unit): Ui[Any] = showError(R.string.errorConnectingGoogle, clickAction)
+
+  override def showLoadingUserError(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingUser, clickAction)
+
+  override def showSyncingError(): Ui[Any] = showMessage(R.string.errorSyncing)
+
+  override def showMessageAccountSynced(): Ui[Any] = showMessage(R.string.accountSynced)
+
+  override def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
     (userName <~ tvText(name)) ~
     (userEmail <~ tvText(email)) ~
       (userAvatar <~
@@ -76,42 +91,37 @@ trait ProfileComposer
         }) <~
         menuAvatarStyle)
 
-  def handleToolbarVisibility(percentage: Float): Ui[_] = toolbar match {
+  override def setAccountsAdapter(items: Seq[AccountSync]): Ui[Any] =
+    (recyclerView <~ vVisible <~ rvAdapter(new AccountsAdapter(items, accountClickListener))) ~
+      (loadingView <~ vInvisible)
+
+  override def setPublicationsAdapter(items: Seq[String]): Ui[Any] =
+    (recyclerView <~ vVisible <~ rvAdapter(new PublicationsAdapter(items))) ~
+      (loadingView <~ vInvisible)
+
+  override def setSubscriptionsAdapter(items: Seq[String]): Ui[Any] =
+    (recyclerView <~ vVisible <~ rvAdapter(new SubscriptionsAdapter(items))) ~
+      (loadingView <~ vInvisible)
+
+  override def handleToolbarVisibility(percentage: Float): Ui[Any] = toolbar match {
     case Some(t) if percentage >= 0.5 && t.getVisibility == View.VISIBLE => toolbar <~ SnailsCommons.fadeOut()
     case Some(t) if percentage < 0.5 && t.getVisibility == View.INVISIBLE => toolbar <~ SnailsCommons.fadeIn()
     case _ => Ui.nop
   }
 
-  def handleProfileVisibility(percentage: Float)(implicit context: ContextWrapper): Ui[_] = {
+  override def handleProfileVisibility(percentage: Float): Ui[Any] = {
     val alpha = if (percentage <= 0.5f) 1f - (percentage * 2)  else 0f
     userContainer <~ vAlpha(alpha)
   }
 
-  def showLoading: Ui[_] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
-
-  def showError(message: Int, clickAction: () => Unit): Ui[_] =
+  private[this] def showError(message: Int, clickAction: () => Unit): Ui[_] =
     (rootLayout <~ vSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
-      (loadingView <~ vInvisible)
-
-  def setPublicationsAdapter(items: Seq[String])
-      (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    (recyclerView <~ vVisible <~ rvAdapter(new PublicationsAdapter(items))) ~
-      (loadingView <~ vInvisible)
-
-  def setSubscriptionsAdapter(items: Seq[String])
-      (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    (recyclerView <~ vVisible <~ rvAdapter(new SubscriptionsAdapter(items))) ~
-      (loadingView <~ vInvisible)
-
-  def setAccountsAdapter(items: Seq[AccountSync])
-      (implicit uiContext: UiContext[_], theme: NineCardsTheme) =
-    (recyclerView <~ vVisible <~ rvAdapter(new AccountsAdapter(items, accountClickListener))) ~
       (loadingView <~ vInvisible)
 
   private[this] def accountClickListener(position: Int, accountSync: AccountSync): Unit =
     accountSync.accountSyncType match {
-      case Device(true) => onSyncActionClicked()
-      case Device(false) => accountSync.resourceId foreach onRemoveActionClicked
+      case Device(true) => presenter.launchService()
+      case Device(false) => accountSync.resourceId foreach presenter.showDialogForDeleteDevice
       case _ =>
     }
 
@@ -119,10 +129,11 @@ trait ProfileComposer
 
   override def onTabUnselected(tab: Tab): Unit = {}
 
-  override def onTabSelected(tab: Tab): Unit = {
-    tab.getTag match {
-      case tab: ProfileTab => onProfileTabSelected(tab)
-      case _ =>
-    }
+  override def onTabSelected(tab: Tab): Unit = tab.getTag match {
+    case PublicationsTab => presenter.loadPublications()
+    case SubscriptionsTab => presenter.loadSubscriptions()
+    case AccountsTab => presenter.loadUserAccounts()
+    case _ =>
   }
+
 }

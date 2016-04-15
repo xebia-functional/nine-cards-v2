@@ -46,11 +46,9 @@ trait WizardPresenterSpecification
     mockActions.showErrorAcceptTerms() returns Ui[Any]()
     mockActions.showErrorSelectUser() returns Ui[Any]()
     mockActions.connectGoogleApiClient(userPermission) returns Ui[Any]()
+    mockActions.createGoogleApiClient(account) returns mockGoogleApiClient
 
-    val mockStatuses = mock[WizardViewStatuses]
-    mockStatuses.createGoogleApiClient(account) returns mockGoogleApiClient
-
-    val presenter = new WizardPresenter(mockActions, mockStatuses) {
+    val presenter = new WizardPresenter(mockActions) {
       override protected def getAccount(username: String): Option[Account] = Some(account)
       override protected def requestUserPermissions(account: Account, client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] =
         Service(Task(Answer(userPermission)))
@@ -60,7 +58,7 @@ trait WizardPresenterSpecification
       override protected def invalidateToken(): Unit = {}
     }
 
-    val presenterFailed = new WizardPresenter(mockActions, mockStatuses) {
+    val presenterFailed = new WizardPresenter(mockActions) {
       override protected def getAccount(username: String): Option[Account] = None
       override protected def requestUserPermissions(account: Account, client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] =
         Service(Task(Errata(requestUserPermissionsException)))
@@ -81,7 +79,7 @@ class WizardPresenterSpec
         presenter.connectAccount(accountName, termsAccept = true)
         there was after(1 seconds).one(mockActions).showLoading()
         there was after(1 seconds).one(mockActions).connectGoogleApiClient(userPermission)
-        there was after(1 seconds).one(mockStatuses).createGoogleApiClient(account)
+        there was after(1 seconds).one(mockActions).createGoogleApiClient(account)
       }
 
     "return a failed connecting account if terms wasn't accepted" in

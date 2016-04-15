@@ -287,7 +287,7 @@ trait CollectionsUiActionsImpl
     fragment <- adapter.getActiveFragment
   } yield fragment.presenter
 
-  def turnOffFragmentContent(implicit contextWrapper: ContextWrapper): Ui[_] =
+  def turnOffFragmentContent: Ui[_] =
     (fragmentContent <~
       colorContentDialog(paint = false) <~
       vClickable(false)) ~ updateBarsInFabMenuHide
