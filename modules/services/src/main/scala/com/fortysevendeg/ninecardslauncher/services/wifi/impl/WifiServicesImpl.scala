@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.wifi.{WifiServicesException, ImplicitsWifiExceptions, WifiServices}
 
+import scala.util.Try
 import scalaz.concurrent.Task
 
 class WifiServicesImpl
@@ -18,22 +19,29 @@ class WifiServicesImpl
     Task {
       CatchAll[WifiServicesException] {
 
-        val connManager = getConnManager
-        val networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+        val connManager = getConnectivityManager
+        val networkInfo = connManager map (_.getNetworkInfo(ConnectivityManager.TYPE_WIFI))
 
-        val ssid =
-          if (networkInfo.isConnected) {
+        val ssid = networkInfo map { n =>
+          if (n.isConnected) {
             val wifiManager = getWifiManager
-            val connectionInfo = Option(wifiManager.getConnectionInfo)
+            val connectionInfo = wifiManager map (_.getConnectionInfo)
             connectionInfo map (_.getSSID.replace("\"", ""))
           } else None
-        ssid
+        }
+        ssid.flatten
       }
     }
   }
 
-  protected def getConnManager(implicit contextSupport: ContextSupport) = contextSupport.context.getSystemService(Context.CONNECTIVITY_SERVICE).asInstanceOf[ConnectivityManager]
+  protected def getConnectivityManager(implicit contextSupport: ContextSupport): Option[ConnectivityManager] =
+    Try {
+      contextSupport.context.getSystemService(Context.CONNECTIVITY_SERVICE).asInstanceOf[ConnectivityManager]
+    }.toOption
 
-  protected def getWifiManager(implicit contextSupport: ContextSupport) = contextSupport.context.getSystemService(Context.WIFI_SERVICE).asInstanceOf[WifiManager]
+  protected def getWifiManager(implicit contextSupport: ContextSupport): Option[WifiManager]  =
+    Try {
+      contextSupport.context.getSystemService(Context.WIFI_SERVICE).asInstanceOf[WifiManager]
+    }.toOption
 
 }

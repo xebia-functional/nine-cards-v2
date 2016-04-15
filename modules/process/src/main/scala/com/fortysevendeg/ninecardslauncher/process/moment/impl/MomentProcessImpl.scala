@@ -62,47 +62,33 @@ class MomentProcessImpl(
     (for {
       serviceMoments <- persistenceServices.fetchMoments
       wifi <- wifiServices.getCurrentSSID
-    } yield {
-      val moments = serviceMoments map toMoment
+      moments = serviceMoments map toMoment
+      momentsPrior = moments sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
+    } yield momentsPrior.headOption).resolve[MomentException]
 
-      val filteredMoments = wifi match {
-        case Some(w) => filterMoments(moments.filter(moment => moment.wifi.contains(w)))
-        case None => filterMoments(moments)
-      }
+  protected def getNowDateTime = DateTime.now()
 
-      filteredMoments.headOption
-    }).resolve[MomentException]
+  private[this] def prioritizedMoments(moment1: Moment, moment2: Moment, wifi: Option[String]): Boolean = {
 
-  private[this] def filterMoments(moments: Seq[Moment]) =
-    moments.filter(filterMomentByDateTime)
+    val now = getNowDateTime
 
-  private[this] def filterMomentByDateTime(moment: Moment) = {
-
-    val now = DateTime.now()
-
-    val dayOfWeek = moment.timeslot.headOption match {
-      case Some(t) => t.days(now.getDayOfWeek)
-      case None => throw new MomentException("")
+    (isHappenning(moment1, now), isHappenning(moment2, now), wifi) match {
+      case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.contains(w) => true
+      case (h1, h2, Some(w)) if h1 == h2 && moment2.wifi.contains(w) => false
+      case (true, false, _) => true
+      case (false, true, _) => false
+      case (true, true, _) => true
+      case (false, false, _) => false
+      case _ => false
     }
-
-    val timeslot = moment.timeslot map (timeslot => toDateTime(now, timeslot))
-
-    val (from, to) = timeslot.headOption match {
-      case Some((f, t)) => (f, t)
-      case None => throw new MomentException("")
-    }
-
-    val (from1, to1) = timeslot.lift(1) match {
-      case Some((f, t)) => (f, t)
-      case None => throw new MomentException("")
-    }
-
-    (((now.isAfter(from) && now.isBefore(to))
-      || (if (timeslot.size > 1) now.isAfter(from1) && now.isBefore(to1) else false))
-      && dayOfWeek == 1)
   }
 
-  private[this] def toDateTime(now: DateTime, timeslot: MomentTimeSlot) = {
+  private[this] def isHappenning(moment: Moment, now: DateTime): Boolean = moment.timeslot exists { slot =>
+    val (fromSlot, toSlot) = toDateTime(now, slot)
+    fromSlot.isBeforeNow && toSlot.isAfterNow && slot.days.lift(now.getDayOfWeek).contains(1)
+  }
+
+  private[this] def toDateTime(now: DateTime, timeslot: MomentTimeSlot): (DateTime, DateTime) = {
 
     val formatter = DateTimeFormat.forPattern("HH:mm")
 

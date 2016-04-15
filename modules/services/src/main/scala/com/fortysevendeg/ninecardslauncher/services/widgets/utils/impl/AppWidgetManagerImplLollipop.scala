@@ -22,7 +22,6 @@ class AppWidgetManagerImplLollipop(implicit contextSupport: ContextSupport)
       userHandle <- getUserHandle
       appWidgetProviderInfo <- getAppWidgetProviderInfo(userHandle)
     } yield {
-      userHandle
       val label = getLabel(appWidgetProviderInfo)
       val iconImage = getIconImage(appWidgetProviderInfo)
       val previewImageView = getPreviewImage(appWidgetProviderInfo)

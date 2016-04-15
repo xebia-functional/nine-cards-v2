@@ -27,9 +27,9 @@ trait WifiImplSpecification
 
     val wifiServicesImpl = new WifiServicesImpl {
 
-      override protected def getConnManager(implicit contextSupport: ContextSupport) = mockConnectivityManager
+      override protected def getConnectivityManager(implicit contextSupport: ContextSupport) = Option(mockConnectivityManager)
 
-      override protected def getWifiManager(implicit contextSupport: ContextSupport) = mockWifiManager
+      override protected def getWifiManager(implicit contextSupport: ContextSupport) = Option(mockWifiManager)
 
     }
 
