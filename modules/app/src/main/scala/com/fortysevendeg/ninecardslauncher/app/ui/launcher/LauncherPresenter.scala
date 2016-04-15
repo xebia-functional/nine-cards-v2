@@ -169,7 +169,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       })
   }
 
-  def goToCollection(maybeView: Option[View], maybeCollection: Option[Collection]): Unit =
+  def goToCollection(maybeView: Option[View], maybeCollection: Option[Collection]): Unit = {
+    def createIntent(context: Context, collection: Collection) = {
+      val intent = new Intent(context, classOf[CollectionsDetailsActivity])
+      intent.putExtra(startPosition, collection.position)
+      intent.putExtra(indexColorToolbar, collection.themedColorIndex)
+      intent.putExtra(iconToolbar, collection.icon)
+    }
+
     (for {
       view <- maybeView
       collection <- maybeCollection
@@ -178,12 +185,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
         activity,
         new Pair[View, String](view, getContentTransitionName(collection.position)))
-      val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
-      intent.putExtra(startPosition, collection.position)
-      intent.putExtra(indexColorToolbar, collection.themedColorIndex)
-      intent.putExtra(iconToolbar, collection.icon)
-      activity.startActivity(intent, options.toBundle)
+      activity.startActivity(createIntent(activity, collection), options.toBundle)
     }) getOrElse actions.showContactUsError().run
+  }
 
   def goToWizard(): Unit = {
     contextWrapper.original.get foreach { activity =>

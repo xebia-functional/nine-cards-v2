@@ -112,9 +112,9 @@ trait LauncherUiActionsImpl
   def turnOffFragmentContent: Ui[_] =
     fragmentContent <~ vClickable(false)
 
-  private[this] def prepareBars = {
-    val activity = activityContextWrapper.getOriginal
+  private[this] def prepareBars =
     KitKat.ifSupportedThen {
+      val activity = activityContextWrapper.getOriginal
       val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
       val sbHeight = getStatusBarHeight
       val nbHeight = getNavigationBarHeight
@@ -130,11 +130,12 @@ trait LauncherUiActionsImpl
           actionFragmentContent <~ vElevation(elevation)
         } getOrElse Ui.nop)
     } getOrElse Ui.nop
-  }
 
   def reloadPager(currentPage: Int) = Transformer {
-    case i: ImageView if i.isPosition(currentPage) => i <~ vActivated(true) <~~ pagerAppear
-    case i: ImageView => i <~ vActivated(false)
+    case imageView: ImageView if imageView.isPosition(currentPage) =>
+      imageView <~ vActivated(true) <~~ pagerAppear
+    case imageView: ImageView =>
+      imageView <~ vActivated(false)
   }
 
 }
