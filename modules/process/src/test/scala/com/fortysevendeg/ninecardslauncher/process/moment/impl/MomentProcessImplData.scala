@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import org.joda.time.DateTime
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -313,5 +314,159 @@ trait MomentProcessImplData {
   val seqMoments = createSeqMoment()
   val moment = seqMoments(0)
 
-  val ssidOption = Option(ssid)
+  val now = DateTime.now()
+
+  val nowMorning = now.withDayOfWeek(2).withTime(10, 0, 0, 0)
+  val nowLateNight = now.withDayOfWeek(2).withTime(3, 0, 0, 0)
+  val nowAfternoon = now.withDayOfWeek(2).withTime(18, 0, 0, 0)
+  val nowNight = now.withDayOfWeek(2).withTime(21, 0, 0, 0)
+  val nowMorningWeekend = now.withDayOfWeek(7).withTime(10, 0, 0, 0)
+
+  val homeMorningCollectionId = Option(1)
+  val homeWifi = Seq("homeWifi")
+  val homeMorningFrom = "08:00"
+  val homeMorningTo = "19:00"
+  val homeMorningDays = Seq(1, 1, 1, 1, 1, 1, 1)
+
+  val homeMorningServicesTimeSlot =
+    Seq(ServicesMomentTimeSlot(
+      from = homeMorningFrom,
+      to = homeMorningTo,
+      days = homeMorningDays))
+
+  val homeMorningServicesMoment =
+    ServicesMoment(
+      id = 1,
+      collectionId = homeMorningCollectionId,
+      timeslot = homeMorningServicesTimeSlot,
+      wifi = homeWifi,
+      headphone = false)
+
+  val homeMorningTimeSlot =
+    Seq(MomentTimeSlot(
+      from = homeMorningFrom,
+      to = homeMorningTo,
+      days = homeMorningDays))
+
+  val homeMorningMoment =
+    Moment(
+      collectionId = homeMorningCollectionId,
+      timeslot = homeMorningTimeSlot,
+      wifi = homeWifi,
+      headphone = false)
+
+  val workCollectionId = Option(2)
+  val workWifi = Seq("workWifi")
+  val workFrom = "08:00"
+  val workTo = "17:00"
+  val workDays = Seq(0, 1, 1, 1, 1, 1, 0)
+
+  val workServicesTimeSlot =
+    Seq(ServicesMomentTimeSlot(
+      from = workFrom,
+      to = workTo,
+      days = workDays))
+
+  val workServicesMoment =
+    ServicesMoment(
+      id = 2,
+      collectionId = workCollectionId,
+      timeslot = workServicesTimeSlot,
+      wifi = workWifi,
+      headphone = false)
+
+  val workTimeSlot =
+    Seq(MomentTimeSlot(
+      from = workFrom,
+      to = workTo,
+      days = workDays))
+
+  val workMoment =
+    Moment(
+      collectionId = workCollectionId,
+      timeslot = workTimeSlot,
+      wifi = workWifi,
+      headphone = false)
+
+  val homeNightCollectionId = Option(3)
+  val homeNightFrom1 = "19:00"
+  val homeNightTo1 = "23:59"
+  val homeNightFrom2 = "00:00"
+  val homeNightTo2 = "08:00"
+  val homeNightDays = Seq(1, 1, 1, 1, 1, 1, 1)
+
+  val homeNightServicesTimeSlot =
+    Seq(
+      ServicesMomentTimeSlot(
+        from = homeNightFrom1,
+        to = homeNightTo1,
+        days = homeNightDays),
+      ServicesMomentTimeSlot(
+        from = homeNightFrom2,
+        to = homeNightTo2,
+        days = homeNightDays))
+
+  val homeNightServicesMoment =
+    ServicesMoment(
+      id = 3,
+      collectionId = homeNightCollectionId,
+      timeslot = homeNightServicesTimeSlot,
+      wifi = homeWifi,
+      headphone = false)
+
+  val homeNightTimeSlot =
+    Seq(
+      MomentTimeSlot(
+        from = homeNightFrom1,
+        to = homeNightTo1,
+        days = homeNightDays),
+      MomentTimeSlot(
+        from = homeNightFrom2,
+        to = homeNightTo2,
+        days = homeNightDays))
+
+  val homeNightMoment =
+    Moment(
+      collectionId = homeNightCollectionId,
+      timeslot = homeNightTimeSlot,
+      wifi = homeWifi,
+      headphone = false)
+
+  val dayNoWifiCollectionId = Option(4)
+  val dayNoWifiWifi = Seq.empty
+  val dayNoWifiFrom1 = "8:00"
+  val dayNoWifiTo1 = "22:00"
+  val dayNoWifiDays = Seq(1, 1, 1, 1, 1, 1, 1)
+
+  val dayNoWifiServicesTimeSlot =
+    Seq(
+      ServicesMomentTimeSlot(
+        from = dayNoWifiFrom1,
+        to = dayNoWifiTo1,
+        days = dayNoWifiDays))
+
+  val dayNoWifiServicesMoment =
+    ServicesMoment(
+      id = 4,
+      collectionId = dayNoWifiCollectionId,
+      timeslot = dayNoWifiServicesTimeSlot,
+      wifi = dayNoWifiWifi,
+      headphone = false)
+
+  val dayNoWifiTimeSlot =
+    Seq(
+      MomentTimeSlot(
+        from = dayNoWifiFrom1,
+        to = dayNoWifiTo1,
+        days = dayNoWifiDays))
+
+  val dayNoWifiMoment =
+    Moment(
+      collectionId = dayNoWifiCollectionId,
+      timeslot = dayNoWifiTimeSlot,
+      wifi = dayNoWifiWifi,
+      headphone = false)
+
+  val servicesMomentSeq = Seq(homeMorningServicesMoment, workServicesMoment, homeNightServicesMoment, dayNoWifiServicesMoment)
+
 }

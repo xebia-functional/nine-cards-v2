@@ -122,18 +122,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(seqServicesMoments)))
-    mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(ssidOption)))
-
-  }
-
-  trait ValidGetBestAvailableMomentNoSSIDResponses {
-
-    self: MomentProcessScope =>
-
-    mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(seqServicesMoments)))
-    mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(None)))
-
+    mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(servicesMomentSeq)))
   }
 
   trait ErrorGetBestAvailableMomentPersistenceServicesResponses {
@@ -148,7 +137,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(seqServicesMoments)))
+    mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(servicesMomentSeq)))
     mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Errata(wifiServiceException)))
 
   }
@@ -259,21 +248,203 @@ class MomentProcessImplSpec
 
   "getBestAvailableMoment" should {
 
-    "returns a successful answer for a valid request with an SSID available" in
+    "returns the best available moment in the morning with the home's wifi available" in
       new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(homeWifi.headOption)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowMorning
+        }
+
         val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Answer(resultMoment) =>
-            resultMoment shouldEqual None
+            resultMoment shouldEqual Some(homeMorningMoment)
         }
       }
 
-    "returns a successful answer for a valid request without an SSID available" in
-      new MomentProcessScope with ValidGetBestAvailableMomentNoSSIDResponses {
+    "returns the best available moment in the afternoon with the home's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(homeWifi.headOption)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowAfternoon
+        }
+
         val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Answer(resultMoment) =>
-            resultMoment shouldEqual seqMoments.headOption
+            resultMoment shouldEqual Some(homeMorningMoment)
+        }
+      }
+
+    "returns the best available moment in the night with the home's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(homeWifi.headOption)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowNight
+        }
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual Some(homeNightMoment)
+        }
+      }
+
+    "returns the best available moment in the late night with the home's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(homeWifi.headOption)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowLateNight
+        }
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual Some(homeNightMoment)
+        }
+      }
+
+    "returns the best available moment in the morning with the work's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(workWifi.headOption)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowMorning
+        }
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual Some(workMoment)
+        }
+      }
+
+    "returns the best available moment in the afternoon with the work's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(workWifi.headOption)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowAfternoon
+        }
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual Some(dayNoWifiMoment)
+        }
+      }
+
+    "returns the best available moment in the morning with no wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(None)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowMorning
+        }
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual Some(dayNoWifiMoment)
+        }
+      }
+
+    "returns the best available moment in the afternoon with no wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(None)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowAfternoon
+        }
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual Some(dayNoWifiMoment)
+        }
+      }
+
+    "returns the best available moment in the night with no wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(None)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowLateNight
+        }
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual Some(homeNightMoment)
+        }
+      }
+
+    "returns the best available moment in the morning on a weekend with the work's wifi availablee" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(workWifi.headOption)))
+
+        override val momentProcess = new MomentProcessImpl(
+          momentProcessConfig = momentProcessConfig,
+          persistenceServices = mockPersistenceServices,
+          wifiServices = mockWifiServices) {
+
+          override protected def getNowDateTime = nowMorningWeekend
+        }
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment shouldEqual Some(dayNoWifiMoment)
         }
       }
 

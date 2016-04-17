@@ -66,13 +66,11 @@ class MomentProcessImpl(
       momentsPrior = moments sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
     } yield momentsPrior.headOption).resolve[MomentException]
 
-  protected def getNowDateTime = DateTime.now()
-
   private[this] def prioritizedMoments(moment1: Moment, moment2: Moment, wifi: Option[String]): Boolean = {
 
     val now = getNowDateTime
 
-    (isHappenning(moment1, now), isHappenning(moment2, now), wifi) match {
+    (isHappening(moment1, now), isHappening(moment2, now), wifi) match {
       case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.contains(w) => true
       case (h1, h2, Some(w)) if h1 == h2 && moment2.wifi.contains(w) => false
       case (true, false, _) => true
@@ -83,10 +81,18 @@ class MomentProcessImpl(
     }
   }
 
-  private[this] def isHappenning(moment: Moment, now: DateTime): Boolean = moment.timeslot exists { slot =>
+  private[this] def isHappening(moment: Moment, now: DateTime): Boolean = moment.timeslot exists { slot =>
     val (fromSlot, toSlot) = toDateTime(now, slot)
-    fromSlot.isBeforeNow && toSlot.isAfterNow && slot.days.lift(now.getDayOfWeek).contains(1)
+    fromSlot.isBefore(now) && toSlot.isAfter(now) && slot.days.lift(getDayOfWeek(now)).contains(1)
   }
+
+  protected def getNowDateTime = DateTime.now()
+
+  protected def getDayOfWeek(now: DateTime) =
+    now.getDayOfWeek match {
+      case 7 => 0
+      case d => d
+    }
 
   private[this] def toDateTime(now: DateTime, timeslot: MomentTimeSlot): (DateTime, DateTime) = {
 
