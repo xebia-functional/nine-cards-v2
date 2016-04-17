@@ -68,4 +68,12 @@ trait DriveServices {
     */
   def updateFile(driveId: String, content: InputStream): ServiceDef2[Unit, DriveServicesException]
 
+  /**
+    * Try to delete the file
+    * @param driveId that identifies the file to be updated
+    * @return Unit
+    * @throws DriveServicesException if there was an error or there is no file with this identifier
+    */
+  def deleteFile(driveId: String): ServiceDef2[Unit, DriveServicesException]
+
 }

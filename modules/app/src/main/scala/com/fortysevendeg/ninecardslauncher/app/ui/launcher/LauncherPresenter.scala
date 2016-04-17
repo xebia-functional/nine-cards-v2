@@ -1,12 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import android.content.Context
+import android.content.{Context, Intent}
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.util.Pair
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -14,15 +22,18 @@ import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatuses)(implicit contextWrapper: ActivityContextWrapper)
+class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
   with NineCardIntentConversions
   with LauncherExecutor
   with AnalyticDispatcher { self =>
+
+  val tagDialog = "dialog"
 
   override def getApplicationContext: Context = contextWrapper.application
 
@@ -32,13 +43,13 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
   }
 
   def resume(): Unit = {
-    di.observerRegister.registerObserver
-    if (statuses.isEmptyCollectionsInWorkspace) {
+    di.observerRegister.registerObserver()
+    if (actions.isEmptyCollectionsInWorkspace) {
       loadCollectionsAndDockApps()
     }
   }
 
-  def pause(): Unit = di.observerRegister.unregisterObserver
+  def pause(): Unit = di.observerRegister.unregisterObserver()
 
   def back(): Unit = actions.back.run
 
@@ -52,7 +63,7 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
 
   def logout(): Unit = actions.logout.run
 
-  def openApp(app: App): Unit = if (statuses.isTabsOpened) {
+  def openApp(app: App): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
     self !>>
@@ -65,19 +76,19 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
     execute(toNineCardIntent(app))
   }
 
-  def openSettings(app: App) = if (statuses.isTabsOpened) {
+  def openSettings(app: App) = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
     launchSettings(app.packageName)
   }
 
-  def openContact(contact: Contact) = if (statuses.isTabsOpened) {
+  def openContact(contact: Contact) = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
     executeContact(contact.lookupKey)
   }
 
-  def openLastCall(contact: LastCallsContact) = if (statuses.isTabsOpened) {
+  def openLastCall(contact: LastCallsContact) = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
     execute(phoneToNineCardIntent(contact.number))
@@ -86,13 +97,13 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
   def addCollection(collection: Collection): Unit = actions.addCollection(collection).run
 
   def removeCollection(maybeCollection: Option[Collection]): Unit =
-    maybeCollection map { collection =>
-      if (statuses.canRemoveCollections) {
-        actions.showDialogForRemoveCollection(collection).run
+    (maybeCollection map { collection =>
+      if (actions.canRemoveCollections) {
+        Ui(showDialogForRemoveCollection(collection))
       } else {
-        actions.showMinimumOneCollectionMessage().run
+        actions.showMinimumOneCollectionMessage()
       }
-    } getOrElse actions.showContactUsError().run
+    } getOrElse actions.showContactUsError()).run
 
   def removeCollection(collection: Collection): Unit = {
     Task.fork(deleteCollection(collection.id).run).resolveAsyncUi(
@@ -105,13 +116,13 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
     Task.fork(getLauncherApps.run).resolveAsyncUi(
       onResult = {
         // Check if there are collections in DB, if there aren't we go to wizard
-        case (Nil, _) => actions.goToWizard()
+        case (Nil, _) => Ui(goToWizard())
         case (collections, apps) =>
           Task.fork(getUser.run).resolveAsyncUi(
             onResult = user => actions.loadUserProfile(user))
           actions.loadCollections(collections, apps)
       },
-      onException = (ex: Throwable) => actions.goToWizard(),
+      onException = (ex: Throwable) => Ui(goToWizard()),
       onPreTask = () => actions.showLoading()
     )
   }
@@ -158,11 +169,32 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
       })
   }
 
-  def goToCollection(maybeView: Option[View], maybeCollection: Option[Collection]): Unit =
+  def goToCollection(maybeView: Option[View], maybeCollection: Option[Collection]): Unit = {
+    def createIntent(context: Context, collection: Collection) = {
+      val intent = new Intent(context, classOf[CollectionsDetailsActivity])
+      intent.putExtra(startPosition, collection.position)
+      intent.putExtra(indexColorToolbar, collection.themedColorIndex)
+      intent.putExtra(iconToolbar, collection.icon)
+    }
+
     (for {
       view <- maybeView
       collection <- maybeCollection
-    } yield actions.goToCollection(view, collection).run) getOrElse actions.showContactUsError().run
+      activity <- contextWrapper.original.get
+    } yield {
+      val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+        activity,
+        new Pair[View, String](view, getContentTransitionName(collection.position)))
+      activity.startActivity(createIntent(activity, collection), options.toBundle)
+    }) getOrElse actions.showContactUsError().run
+  }
+
+  def goToWizard(): Unit = {
+    contextWrapper.original.get foreach { activity =>
+      val wizardIntent = new Intent(activity, classOf[WizardActivity])
+      activity.startActivity(wizardIntent)
+    }
+  }
 
   protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
     di.collectionProcess.deleteCollection(id)
@@ -173,10 +205,7 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
     for {
       collections <- di.collectionProcess.getCollections
       dockApps <- di.deviceProcess.getDockApps
-    } yield {
-      android.util.Log.d("9cards", s"${collections.length} -- ${dockApps.length}")
-      (collections, dockApps)
-    }
+    } yield (collections, dockApps)
 
   protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
     for {
@@ -201,6 +230,21 @@ class LauncherPresenter(actions: LauncherUiActions, statuses: LauncherViewStatus
     case _ => AllContacts
   }
 
+  private[this] def showDialogForRemoveCollection(collection: Collection): Unit = {
+    contextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        val ft = activity.getSupportFragmentManager.beginTransaction()
+        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+        ft.addToBackStack(javaNull)
+        val dialog = new AlertDialogFragment(
+          message = R.string.removeCollectionMessage,
+          positiveAction = () => removeCollection(collection)
+        )
+        dialog.show(ft, tagDialog)
+      case _ =>
+    }
+  }
+
 }
 
 trait LauncherUiActions {
@@ -221,8 +265,6 @@ trait LauncherUiActions {
 
   def addCollection(collection: Collection): Ui[Any]
 
-  def showDialogForRemoveCollection(collection: Collection): Ui[Any]
-
   def removeCollection(collection: Collection): Ui[Any]
 
   def showContactUsError(): Ui[Any]
@@ -235,10 +277,6 @@ trait LauncherUiActions {
 
   def loadUserProfile(user: User): Ui[Any]
 
-  def goToWizard(): Ui[Any]
-
-  def goToCollection(view: View, collection: Collection): Ui[Any]
-
   def reloadAppsInDrawer(
     apps: IterableApps,
     getAppOrder: GetAppOrder = GetByName,
@@ -249,10 +287,6 @@ trait LauncherUiActions {
     counters: Seq[TermCounter] = Seq.empty): Ui[_]
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
-
-}
-
-trait LauncherViewStatuses {
 
   def isEmptyCollectionsInWorkspace: Boolean
 

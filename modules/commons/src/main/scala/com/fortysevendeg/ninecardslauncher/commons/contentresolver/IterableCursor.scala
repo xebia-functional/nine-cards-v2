@@ -12,12 +12,12 @@ object IterableCursor {
 
   implicit class RichCursor(c: Cursor) {
     private def implicitIterator[T](f: => T) = new IterableCursor[T] {
-      override def count() = c.getCount
+      override def count(): Int = if (c.isClosed) 0 else c.getCount
       override def moveToPosition(pos: Int): T = {
         c.moveToPosition(pos)
         f
       }
-      override def close(): Unit = c.close()
+      override def close(): Unit = if (!c.isClosed) c.close()
     }
 
     private def implicitIter[T](f: => T) = implicitIterator[T](f)

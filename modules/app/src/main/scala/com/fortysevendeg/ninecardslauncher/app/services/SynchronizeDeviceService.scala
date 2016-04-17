@@ -58,8 +58,8 @@ class SynchronizeDeviceService
     case _ => None
   }
 
-  override def connected(client: GoogleApiClient, account: String): Unit =
-    Task.fork(sync(client, account).run).resolveAsync(
+  override def connected(client: GoogleApiClient): Unit =
+    Task.fork(sync(client).run).resolveAsync(
       _ => success(),
       throwable => {
         error(
@@ -68,9 +68,8 @@ class SynchronizeDeviceService
       })
 
   private[this] def sync(
-    client: GoogleApiClient,
-    account: String): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client, account)
+    client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException] = {
+    val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       collections <- di.collectionProcess.getCollections
       moments <- di.momentProcess.getMoments
@@ -102,7 +101,3 @@ class SynchronizeDeviceService
     stopSelf()
   }
 }
-
-case class GoogleApiClientStatuses(
-  apiClient: Option[GoogleApiClient] = None,
-  username: Option[String] = None)

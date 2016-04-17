@@ -1,32 +1,27 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import java.util
-
 import android.animation.ValueAnimator
-import android.annotation.TargetApi
-import android.app.SharedElementCallback
-import android.os.{Build, Bundle}
-import android.support.v4.app.{Fragment, FragmentManager}
+import android.os.Bundle
+import android.support.v4.app.FragmentActivity
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.transition.{Transition, TransitionInflater}
-import android.view.{Gravity, View, ViewGroup}
-import android.widget.FrameLayout
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import android.view.View
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.Snails._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails
+import CollectionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.prefs.AnimationsPref
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
@@ -44,15 +39,20 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait CollectionsDetailsComposer
-  extends Styles
+trait CollectionsUiActionsImpl
+  extends CollectionsUiActions
+  with Styles
   with ActionsBehaviours
-  with FabButtonBehaviour {
+  with FabButtonBehaviour
+  with AnimationsPref {
 
-  self: AppCompatActivity with SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] =>
+  self: SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] =>
+
+  implicit val presenter: CollectionsPagerPresenter
+
+  implicit lazy val theme: NineCardsTheme = presenter.getTheme
 
   val resistanceDisplacement = .2f
 
@@ -87,40 +87,85 @@ trait CollectionsDetailsComposer
   def updateBarsInFabMenuHide: Ui[_] =
     getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
-  def initUi(indexColor: Int, iconCollection: String)(implicit theme: NineCardsTheme) =
+  override def initialize(indexColor: Int, iconCollection: String): Ui[Any] =
     (tabs <~ tabsStyle <~ vInvisible) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
-      (icon <~ ivSrc(iconCollectionDetail(iconCollection)))
+      (icon <~ ivSrc(iconCollectionDetail(iconCollection))) ~
+      Ui (initSystemStatusBarTint)
 
-  def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ vSnackbarShort(error)
+  override def back(): Ui[Any] = if (isMenuOpened) {
+    swapFabMenu()
+  } else if (isActionShowed) {
+    unrevealActionFragment
+  } else {
+    exitTransition
+  }
 
-  def elevationsDefault: Ui[_] =
-    (viewPager <~ vElevation(elevation)) ~
-      (tabs <~ vElevation(elevation)) ~
-      (toolbar <~ vElevation(elevation)) ~
-      (iconContent <~ vElevation(elevation))
+  override def destroy(): Ui[Any] = Ui {
+    getAdapter foreach(_.clear())
+  }
 
-  def elevationsUp: Ui[_] =
-    (viewPager <~ vElevation(elevation)) ~
-      (tabs <~ vElevation(elevationUp)) ~
-      (toolbar <~ vElevation(elevationUp)) ~
-      (iconContent <~ vElevation(elevationUp))
+  override def startToolbarTransition(position: Int): Ui[Any] = Ui {
+    configureEnterTransition(position)
+  }
 
-  def drawCollections(collections: Seq[Collection], position: Int)
-    (implicit manager: FragmentManagerContext[Fragment, FragmentManager], theme: NineCardsTheme) = {
-    val adapter = CollectionsPagerAdapter(manager.get, collections, position)
-    (root <~ SnailsCommons.fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
-      (viewPager <~ vpAdapter(adapter)) ~
-      Ui(adapter.activateFragment(position)) ~
-      (tabs <~
-        stlViewPager(viewPager) <~
-        stlOnPageChangeListener(
-          new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
-      uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
-      uiHandlerDelayed(Ui { getActiveFragment foreach (_.bindAnimatedAdapter()) }, 100) ~
-      (tabs <~ vVisible <~~ enterViews) ~ elevationsDefault
+  override def showCollections(collections: Seq[Collection], position: Int): Ui[Any] =
+    activityContextWrapper.getOriginal match {
+      case fragmentActivity: FragmentActivity =>
+        val adapter = CollectionsPagerAdapter(fragmentActivity.getSupportFragmentManager, collections, position)
+        (root <~ SnailsCommons.fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
+          (viewPager <~ vpAdapter(adapter)) ~
+          Ui(adapter.activateFragment(position)) ~
+          (tabs <~
+            stlViewPager(viewPager) <~
+            stlOnPageChangeListener(
+              new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
+          uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
+          uiHandlerDelayed(Ui { getActivePresenter foreach (_.bindAnimatedAdapter()) }, 100) ~
+          (tabs <~ vVisible <~~ enterViews) ~
+          elevationsDefault
+      case _ => Ui.nop
+    }
+
+  override def reloadCards(cards: Seq[Card], reloadFragments: Boolean): Ui[Any] = Ui {
+    for {
+      adapter <- getAdapter
+      presenter <- getActivePresenter
+      currentPosition <- adapter.getCurrentFragmentPosition
+    } yield {
+      adapter.updateCardFromCollection(currentPosition, cards)
+      if (reloadFragments) presenter.reloadCards(cards)
+    }
+  }
+
+  override def addCards(cards: Seq[Card]): Ui[Any] = Ui {
+    for {
+      adapter <- getAdapter
+      presenter <- getActivePresenter
+      currentPosition <- adapter.getCurrentFragmentPosition
+    } yield {
+      adapter.addCardsToCollection(currentPosition, cards)
+      presenter.addCards(cards)
+    }
+  }
+
+  override def removeCards(card: Card): Ui[Any] = Ui {
+    for {
+      adapter <- getAdapter
+      presenter <- getActivePresenter
+      currentPosition <- adapter.getCurrentFragmentPosition
+    } yield {
+      adapter.removeCardFromCollection(currentPosition, card)
+      presenter.removeCard(card)
+    }
+  }
+
+  override def showContactUsError: Ui[Any] = showError()
+
+  override def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
+    adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
   }
 
   def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_] = {
@@ -177,12 +222,26 @@ trait CollectionsDetailsComposer
       adapter.notifyChanged(vp.getCurrentItem)
     }) getOrElse Ui.nop
 
+  private[this] def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ vSnackbarShort(error)
+
+  private[this] def elevationsDefault: Ui[_] =
+    (viewPager <~ vElevation(elevation)) ~
+      (tabs <~ vElevation(elevation)) ~
+      (toolbar <~ vElevation(elevation)) ~
+      (iconContent <~ vElevation(elevation))
+
+  private[this] def elevationsUp: Ui[_] =
+    (viewPager <~ vElevation(elevation)) ~
+      (tabs <~ vElevation(elevationUp)) ~
+      (toolbar <~ vElevation(elevationUp)) ~
+      (iconContent <~ vElevation(elevationUp))
+
   private[this] def calculateReduce(ratio: Float, spaceMove: Int, reversed: Boolean) = {
     val newRatio = if (reversed) 1f - ratio else ratio
     (newRatio * (spaceMove * 2)).toInt
   }
 
-  private[this] def getItemsForFabMenu(implicit theme: NineCardsTheme) = Seq(
+  private[this] def getItemsForFabMenu = Seq(
     (w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>
         val category = getCurrentCollection flatMap (_.appsCategory)
@@ -214,166 +273,33 @@ trait CollectionsDetailsComposer
     view.requestLayout()
   }
 
-  private[this] def uiElevation(elevation: Float) = Lollipop.ifSupportedThen {
-    vElevation(elevation)
-  }.getOrElse(Tweak.blank)
-
-  def getAdapter: Option[CollectionsPagerAdapter] = viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
+  private[this] def getAdapter: Option[CollectionsPagerAdapter] = viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
     case adapter: CollectionsPagerAdapter => Some(adapter)
     case _ => None
   }
 
   def getCurrentPosition: Option[Int] = getAdapter flatMap ( _.getCurrentFragmentPosition )
 
-  def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
-    adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
-  }
+  private[this] def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
 
-  def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
-
-  def getActiveFragment(): Option[CollectionFragment] = for {
+  private[this] def getActivePresenter: Option[CollectionPresenter] = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
-  } yield fragment
+  } yield fragment.presenter
 
-  def turnOffFragmentContent(implicit activityContextWrapper: ActivityContextWrapper): Ui[_] =
+  def turnOffFragmentContent: Ui[_] =
     (fragmentContent <~
       colorContentDialog(paint = false) <~
       vClickable(false)) ~ updateBarsInFabMenuHide
 
-  protected def addCardsToCurrentFragment(c: Seq[Card]) = for {
-    adapter <- getAdapter
-    fragment <- adapter.getActiveFragment
-    currentPosition <- adapter.getCurrentFragmentPosition
-  } yield {
-      adapter.addCardsToCollection(currentPosition, c)
-      fragment.addCards(c)
-    }
-
-  protected def removeCardFromCurrentFragment(c: Card) = for {
-    adapter <- getAdapter
-    fragment <- adapter.getActiveFragment
-    currentPosition <- adapter.getCurrentFragmentPosition
-  } yield {
-      adapter.removeCardFromCollection(currentPosition, c)
-      fragment.removeCard(c)
-    }
-
-  protected def reloadCardsToCurrentFragment(cards: Seq[Card], reloadFragment: Boolean) = for {
-    adapter <- getAdapter
-    fragment <- adapter.getActiveFragment
-    currentPosition <- adapter.getCurrentFragmentPosition
-  } yield {
-    adapter.updateCardFromCollection(currentPosition, cards)
-    if (reloadFragment) fragment.reloadCards(cards)
-  }
-
-  def backByPriority(implicit theme: NineCardsTheme): Ui[_] = if (isMenuOpened) {
-    swapFabMenu()
-  } else if (isActionShowed) {
-    unrevealActionFragment
-  } else {
-    exitTransition
-  }
-
-  def exitTransition(implicit theme: NineCardsTheme) =
+  def exitTransition: Ui[Any] = {
+    val activity = activityContextWrapper.getOriginal
     ((toolbar <~ exitViews()) ~
       (tabs <~ exitViews()) ~
       (iconContent <~ exitViews()) ~
       (root <~ vBackgroundColorResource(android.R.color.transparent))) ~
       (viewPager <~~ exitViews(up = false)) ~~
-      Ui(finish())
-
-  def configureEnterTransition(
-    position: Int,
-    end: (() => Unit)) = Lollipop.ifSupportedThen {
-    configureEnterTransitionLollipop(position, end)
-  } getOrElse end()
-
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private[this] def configureEnterTransitionLollipop(
-    position: Int,
-    end: (() => Unit)) = {
-
-    val enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.shared_element_enter_collection_detail)
-    getWindow.setSharedElementEnterTransition(enterTransition)
-
-    iconContent foreach (_.setTransitionName(getContentTransitionName(position)))
-
-    setEnterSharedElementCallback(new SharedElementCallback {
-
-      var snapshot: Option[View] = None
-
-      override def onSharedElementStart(
-        sharedElementNames: util.List[String],
-        sharedElements: util.List[View],
-        sharedElementSnapshots: util.List[View]): Unit = {
-        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, relayoutContainer = false)
-        snapshot foreach (_.setVisibility(View.VISIBLE))
-        findViewById(R.id.collections_toolbar).setVisibility(View.INVISIBLE)
-      }
-
-      override def onSharedElementEnd(
-        sharedElementNames: util.List[String],
-        sharedElements: util.List[View],
-        sharedElementSnapshots: util.List[View]): Unit = {
-        addSnapshot(sharedElementNames, sharedElements, sharedElementSnapshots, relayoutContainer = true)
-        snapshot foreach (_.setVisibility(View.INVISIBLE))
-        findViewById(R.id.collections_toolbar).setVisibility(View.VISIBLE)
-      }
-
-      override def onMapSharedElements(
-        names: util.List[String],
-        sharedElements: util.Map[String, View]): Unit =
-        findViewById(R.id.collections_toolbar).setVisibility(View.INVISIBLE)
-
-      private[this] def addSnapshot(
-        sharedElementNames: util.List[String],
-        sharedElements: util.List[View],
-        sharedElementSnapshots: util.List[View],
-        relayoutContainer: Boolean) = {
-        if (snapshot.isEmpty) {
-          val transitionName = getContentTransitionName(position)
-          sharedElementNames.zipWithIndex foreach {
-            case (name, index) if name.equals(transitionName) =>
-              val element = sharedElements.get(index).asInstanceOf[FrameLayout]
-              val snapshotView = sharedElementSnapshots.get(index)
-              val width = snapshotView.getWidth
-              val height = snapshotView.getHeight
-              val layoutParams = new FrameLayout.LayoutParams(width, height)
-              layoutParams.gravity = Gravity.CENTER
-              val widthSpec = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY)
-              val heightSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
-              snapshotView.measure(widthSpec, heightSpec)
-              snapshotView.layout(0, 0, width, height)
-              snapshotView.setTransitionName(snapshotName)
-              if (relayoutContainer) {
-                val container = findViewById(R.id.collections_root).asInstanceOf[ViewGroup]
-                val left = (container.getWidth - width) / 2
-                val top = (container.getHeight - height) / 2
-                element.measure(widthSpec, heightSpec)
-                element.layout(left, top, left + width, top + height)
-              }
-              snapshot = Option(snapshotView)
-              element.addView(snapshotView, layoutParams)
-            case _ =>
-          }
-        }
-      }
-
-    })
-
-    getWindow.getSharedElementEnterTransition.addListener(new Transition.TransitionListener {
-      override def onTransitionStart(transition: Transition): Unit = {}
-
-      override def onTransitionCancel(transition: Transition): Unit = {}
-
-      override def onTransitionEnd(transition: Transition): Unit = end()
-
-      override def onTransitionPause(transition: Transition): Unit = {}
-
-      override def onTransitionResume(transition: Transition): Unit = {}
-    })
+      Ui(activity.finish())
   }
 
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[_] = getAdapter map {
@@ -424,7 +350,6 @@ trait CollectionsDetailsComposer
    position: Int,
    updateToolbarColor: (Int) => Ui[_],
    updateCollection: (Collection, Int, PageMovement) => Ui[_])
-   (implicit context: ContextWrapper, theme: NineCardsTheme)
     extends OnPageChangeListener {
 
     var lastPosition = -1

@@ -26,15 +26,15 @@ trait GoogleApiClientService
   override def onRequestConnectionError(errorCode: Int): Unit =
     error(getString(R.string.errorConnectingGoogle))
 
-  def connected(client: GoogleApiClient, account: String): Unit
+  def connected(client: GoogleApiClient): Unit
 
   def error(message: String, maybeException: Option[Throwable] = None): Unit
 
   override def onConnected(bundle: Bundle): Unit =
     statuses match {
-      case GoogleApiClientStatuses(Some(client), Some(account)) if client.isConnected =>
-        connected(client, account)
-      case GoogleApiClientStatuses(Some(client), Some(account)) =>
+      case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
+        connected(client)
+      case GoogleApiClientStatuses(Some(client)) =>
         tryToConnect()
       case _ =>
         error(getString(R.string.errorConnectingGoogle))
@@ -45,9 +45,7 @@ trait GoogleApiClientService
       user => user.email match {
         case Some(account) =>
           val client = createGoogleDriveClient(account)
-          statuses = statuses.copy(
-            apiClient = Some(client),
-            username = Some(account))
+          statuses = statuses.copy(apiClient = Some(client))
           client.connect()
         case _ =>
           error(getString(R.string.errorLoadingUser))
@@ -61,6 +59,4 @@ trait GoogleApiClientService
 
 }
 
-case class GoogleApiClientStatuses(
-  apiClient: Option[GoogleApiClient] = None,
-  username: Option[String] = None)
+case class GoogleApiClientStatuses(apiClient: Option[GoogleApiClient] = None)

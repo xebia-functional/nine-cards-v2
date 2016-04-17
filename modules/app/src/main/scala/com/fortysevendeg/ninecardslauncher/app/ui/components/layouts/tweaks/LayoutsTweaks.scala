@@ -153,6 +153,16 @@ object WorkSpaceItemMenuTweaks {
 
 }
 
+object StepsWorkspacesTweaks {
+  type W = StepsWorkspaces
+
+  def swData(data: Seq[StepData]) = Tweak[W] { view =>
+    view.data = data
+    view.init()
+  }
+
+}
+
 object SearchBoxesAnimatedViewTweak {
 
   def sbvUpdateContentView(contentView: ContentView)(implicit theme: NineCardsTheme) =
@@ -207,7 +217,6 @@ object PullToCloseViewTweaks {
 
 }
 
-
 object PullToDownViewTweaks {
 
   def pdvPullingListener(pullToDownListener: PullingListener) =
@@ -230,6 +239,8 @@ object PullToDownViewTweaks {
     Tweak[PullToDownView] { view =>
       view.pullToDownStatuses = view.pullToDownStatuses.copy(resistance = resistance)
     }
+
+  def pdvIsPulling() = Excerpt[PullToDownView, Boolean] (_.pullToDownStatuses.action == Pulling)
 
 }
 

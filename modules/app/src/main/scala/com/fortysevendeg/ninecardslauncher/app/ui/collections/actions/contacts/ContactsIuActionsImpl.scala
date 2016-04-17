@@ -2,7 +2,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{TabInfo, PullToTabsListener}
@@ -11,16 +12,25 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{TermCounter, Contact, IterableContacts}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
-trait ContactsComposer
-  extends Styles {
+trait ContactsIuActionsImpl
+  extends ContactsIuActions
+  with Styles {
 
   self: TypedFindView with BaseActionFragment =>
+
+  implicit val presenter: ContactsPresenter
+
+  val collectionsPresenter: CollectionsPagerPresenter
+
+  val tagDialog = "dialog"
 
   val resistance = 2.4f
 
@@ -37,13 +47,13 @@ trait ContactsComposer
     TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites))
   )
 
-  def initUi(onChange: (ContactsFilter) => Unit): Ui[_] =
+  override def initialize(): Ui[_] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtvInflateMenu(R.menu.contact_dialog_menu) <~
       dtvOnMenuItemClickListener(onItem = {
         case R.id.action_filter =>
-          (if (isTabsOpened) closeTabs else openTabs).run
+          (if (isTabsOpened) closeTabs() else openTabs()).run
           true
         case _ => false
       }) <~
@@ -58,21 +68,57 @@ trait ContactsComposer
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
-            (Ui(onChange(if (pos == 0) AllContacts else FavoriteContacts)) ~
-              (if (isTabsOpened) closeTabs else Ui.nop)).run
+            presenter.loadContacts(if (pos == 0) AllContacts else FavoriteContacts)
           }
         ))) ~
       (recycler <~ recyclerStyle) ~
       (tabs <~ tvClose) ~
       (scrollerLayout <~ fslColor(colorPrimary))
 
-  def showLoading: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError
+  override def showLoading(): Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError
 
-  def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
+  override def closeTabs(): Ui[_] = (tabs <~ tvClose <~ hideTabs) ~ (recycler <~ showList)
 
-  def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
+  override def destroy(): Ui[Any] = Ui {
+    getAdapter foreach(_.close())
+  }
 
-  def generateContactsAdapter(contacts: IterableContacts, counters: Seq[TermCounter], clickListener: (Contact) => Unit)
+  override def showContacts(
+    filter: ContactsFilter,
+    contacts: IterableContacts,
+    counters: Seq[TermCounter],
+    reload: Boolean): Ui[Any] = {
+    if (reload) {
+      reloadContactsAdapter(contacts, counters, filter)
+    } else {
+      generateContactsAdapter(contacts, counters, contact => presenter.showContact(contact.lookupKey))
+    }
+  }
+
+  override def showGeneralError(): Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
+
+  override def showLoadingContactsError(filter: ContactsFilter): Ui[Any] =
+    showError(R.string.errorLoadingApps, presenter.loadContacts(filter))
+
+  override def showDialog(contact: Contact): Ui[_] = Ui {
+    val ft = getFragmentManager.beginTransaction()
+    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    val dialog = new SelectInfoContactDialogFragment(contact)
+    dialog.setTargetFragment(this, RequestCodes.selectInfoContact)
+    dialog.show(ft, tagDialog)
+  }
+
+  override def contactAdded(card: AddCardRequest): Ui[Any] = {
+    collectionsPresenter.addCards(Seq(card))
+    unreveal()
+  }
+
+  override def isTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
+
+  private[this] def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
+
+  private[this] def generateContactsAdapter(contacts: IterableContacts, counters: Seq[TermCounter], clickListener: (Contact) => Unit)
     (implicit uiContext: UiContext[_]): Ui[_] = {
     val adapter = new ContactsAdapter(contacts, clickListener, None)
     showData ~
@@ -85,7 +131,7 @@ trait ContactsComposer
       } getOrElse showGeneralError)
   }
 
-  def reloadContactsAdapter(contacts: IterableContacts, counters: Seq[TermCounter], filter: ContactsFilter)
+  private[this] def reloadContactsAdapter(contacts: IterableContacts, counters: Seq[TermCounter], filter: ContactsFilter)
     (implicit uiContext: UiContext[_]): Ui[_] = {
     showData ~
       (getAdapter map { adapter =>
@@ -106,14 +152,6 @@ trait ContactsComposer
     }
   }
 
-  private[this] def isTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
-
-  protected def openTabs: Ui[_] =
-    (tabs <~ tvOpen <~ showTabs) ~
-      (recycler <~ hideList)
-
-  protected def closeTabs: Ui[_] =
-    (tabs <~ tvClose <~ hideTabs) ~
-      (recycler <~ showList)
+  protected def openTabs(): Ui[_] = (tabs <~ tvOpen <~ showTabs) ~ (recycler <~ hideList)
 
 }

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections
+package com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog
 
 import android.app.Dialog
 import android.content.DialogInterface
@@ -9,22 +9,18 @@ import android.support.v7.app.AlertDialog
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
-class RemoveCardDialogFragment(onClickListener: () => Unit)(implicit contextWrapper: ContextWrapper)
+class RemoveAccountDeviceDialogFragment(onClickListener: () => Unit)(implicit contextWrapper: ContextWrapper)
   extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
 
     new AlertDialog.Builder(getActivity).
-      setMessage(R.string.removeCardMessage).
+      setMessage(R.string.removeAccountSyncMessage).
       setPositiveButton(android.R.string.ok, new OnClickListener {
-        override def onClick(dialog: DialogInterface, which: Int): Unit = {
-          onClickListener()
-        }
+        override def onClick(dialog: DialogInterface, which: Int): Unit = onClickListener()
       }).
       setNegativeButton(android.R.string.cancel, new OnClickListener {
-        override def onClick(dialog: DialogInterface, which: Int): Unit = {
-          dismiss()
-        }
+        override def onClick(dialog: DialogInterface, which: Int): Unit = dismiss()
       }).
       create()
   }

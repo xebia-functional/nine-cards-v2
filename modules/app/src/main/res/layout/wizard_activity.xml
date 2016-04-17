@@ -74,9 +74,9 @@
         <LinearLayout
             style="@style/WizardStepsContent">
 
-            <FrameLayout
-                android:id="@+id/wizard_steps_workspace_content"
-                style="@style/WizardStepsWorkspaceContent" />
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.StepsWorkspaces
+                android:id="@+id/wizard_steps_workspace"
+                style="@style/WizardStepsWorkspace" />
 
             <Button
                 android:id="@+id/wizard_steps_action"

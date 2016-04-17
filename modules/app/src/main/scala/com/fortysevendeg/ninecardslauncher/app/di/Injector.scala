@@ -5,6 +5,7 @@ import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
 import com.fortysevendeg.ninecardslauncher.process.cloud.impl.CloudStorageProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
@@ -172,7 +173,7 @@ class Injector(implicit contextSupport: ContextSupport) {
     apiServices = apiServices,
     persistenceServices = persistenceServices)
 
-  def createCloudStorageProcess(client: GoogleApiClient, account: String) = {
+  def createCloudStorageProcess(client: GoogleApiClient): CloudStorageProcess = {
     val services = new DriveServicesImpl(client)
     new CloudStorageProcessImpl(services, persistenceServices)
   }
