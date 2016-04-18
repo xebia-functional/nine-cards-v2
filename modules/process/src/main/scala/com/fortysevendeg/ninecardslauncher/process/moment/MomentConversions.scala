@@ -57,7 +57,7 @@ trait MomentConversions extends CommonConversions {
     AddMomentRequest(
       collectionId = None,
       timeslot = toServicesMomentTimeSlotSeq(moment),
-      wifi = Seq.empty,
+      wifi = toWifiSeq(moment),
       headphone = false)
 
   def toServicesMomentTimeSlot(timeSlot: MomentTimeSlot) =
@@ -66,11 +66,18 @@ trait MomentConversions extends CommonConversions {
       to = timeSlot.to,
       days = timeSlot.days)
 
+  def toWifiSeq(moment: NineCardsMoment) =
+    moment match {
+      case HomeMorningMoment => Seq.empty
+      case WorkMoment => Seq.empty
+      case HomeNightMoment => Seq.empty
+    }
+
   def toServicesMomentTimeSlotSeq(moment: NineCardsMoment) =
     moment match {
-      case HomeMorningMoment => Seq(ServicesMomentTimeSlot(from = "8:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-      case WorkMoment => Seq(ServicesMomentTimeSlot(from = "8:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
-      case HomeNightMoment => Seq(ServicesMomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), ServicesMomentTimeSlot(from = "0:00", to = "8:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      case HomeMorningMoment => Seq(ServicesMomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      case WorkMoment => Seq(ServicesMomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
+      case HomeNightMoment => Seq(ServicesMomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), ServicesMomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
     }
 
   def toPrivateCard(app: App) =
