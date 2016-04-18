@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.process.moment.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
 import org.joda.time.DateTime
+import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 import rapture.core.Answer
 
@@ -90,8 +91,13 @@ class MomentProcessImpl(
 
   protected def getDayOfWeek(now: DateTime) =
     now.getDayOfWeek match {
-      case 7 => 0
-      case d => d
+      case SUNDAY => 0
+      case MONDAY => 1
+      case TUESDAY => 2
+      case WEDNESDAY => 3
+      case THURSDAY => 4
+      case FRIDAY => 5
+      case SATURDAY => 6
     }
 
   private[this] def toDateTime(now: DateTime, timeslot: MomentTimeSlot): (DateTime, DateTime) = {
