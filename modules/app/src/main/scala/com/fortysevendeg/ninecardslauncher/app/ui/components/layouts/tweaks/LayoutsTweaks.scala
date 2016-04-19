@@ -9,6 +9,7 @@ import android.view.{MenuItem, View}
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
@@ -44,58 +45,65 @@ object LauncherWorkSpacesTweaks {
 
   def lwsPresenter(presenter: LauncherPresenter) = Tweak[W] (_.presenter = Some(presenter))
 
-  def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] {
-    workspaces =>
-      workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
-      workspaces.init(pageSelected)
+  def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] { workspaces =>
+    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    workspaces.init(pageSelected)
   }
 
   def lwsClean = Tweak[W] (_.clean())
 
-  def lwsAddCollection(collection: Collection) = Tweak[W] {
-    workspaces =>
-      workspaces.data.lastOption foreach { data =>
-        val lastWorkspaceHasSpace = data.collections.size < numSpaces
-        if (lastWorkspaceHasSpace) {
-          workspaces.data = workspaces.data map { d =>
-            if (d == data) {
-              d.copy(collections = d.collections :+ collection)
-            } else {
-              d
-            }
+  def lwsAddCollection(collection: Collection) = Tweak[W] { workspaces =>
+    workspaces.data.lastOption foreach { data =>
+      val lastWorkspaceHasSpace = data.collections.size < numSpaces
+      if (lastWorkspaceHasSpace) {
+        workspaces.data = workspaces.data map { d =>
+          if (d == data) {
+            d.copy(collections = d.collections :+ collection)
+          } else {
+            d
           }
-        } else {
-          workspaces.data = workspaces.data :+ LauncherData(CollectionsWorkSpace, Seq(collection))
         }
-        workspaces.selectPosition(workspaces.data.size - 1)
-        workspaces.reset()
+      } else {
+        workspaces.data = workspaces.data :+ LauncherData(CollectionsWorkSpace, Seq(collection))
       }
+      workspaces.selectPosition(workspaces.data.size - 1)
+    }
   }
 
-  def lwsRemoveCollection(collection: Collection) = Tweak[W] {
-    workspaces =>
-      // We remove a collection in sequence and fix positions
-      val collections = (workspaces.data flatMap (_.collections.filterNot(_ == collection))).zipWithIndex map {
-        case (col, index) => col.copy(position = index)
-      }
-      val maybeWorkspaceCollection = workspaces.data find (_.collections contains collection)
-      val maybePage = maybeWorkspaceCollection map workspaces.data.indexOf
-      workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
-      val page = maybePage map { page =>
-        if (workspaces.data.isDefinedAt(page)) page else workspaces.data.length - 1
-      } getOrElse defaultPage
-      workspaces.selectPosition(page)
-      workspaces.reset()
-
-
+  def lwsRemoveCollection(collection: Collection) = Tweak[W] { workspaces =>
+    // We remove a collection in sequence and fix positions
+    val collections = (workspaces.data flatMap (_.collections.filterNot(_ == collection))).zipWithIndex map {
+      case (col, index) => col.copy(position = index)
+    }
+    val maybeWorkspaceCollection = workspaces.data find (_.collections contains collection)
+    val maybePage = maybeWorkspaceCollection map workspaces.data.indexOf
+    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    val page = maybePage map { page =>
+      if (workspaces.data.isDefinedAt(page)) page else workspaces.data.length - 1
+    } getOrElse defaultPage
+    workspaces.selectPosition(page)
   }
+
+  def lwsReloadReorderedCollections(from: Int, to: Int) = Tweak[W] { workspaces =>
+    val cols = workspaces.data flatMap (_.collections)
+    val collections = cols.reorder(from, to)
+    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    val page = workspaces.data.lift(workspaces.currentPage()) map (_ => workspaces.currentPage()) getOrElse defaultPage
+    workspaces.selectPosition(page)
+  }
+
+  def lwsReloadCollections() = Tweak[W] { workspaces =>
+    val collections = workspaces.data flatMap (_.collections)
+    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    val page = workspaces.data.lift(workspaces.currentPage()) map (_ => workspaces.currentPage()) getOrElse defaultPage
+    workspaces.selectPosition(page)
+  }
+
   def lwsListener(listener: LauncherWorkSpacesListener) = Tweak[W] (_.workSpacesListener = listener)
 
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
 
-  def lwsCloseMenu = Tweak[W] { view =>
-    view.closeMenu().run
-  }
+  def lwsCloseMenu = Tweak[W] (_.closeMenu().run)
 
 }
 

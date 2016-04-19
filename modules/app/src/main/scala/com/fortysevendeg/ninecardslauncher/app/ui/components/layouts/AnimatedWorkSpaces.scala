@@ -143,6 +143,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def isPosition(position: Int): Boolean = statuses.currentItem == position
 
+  def currentPage(): Int = statuses.currentItem
+
   def isFirst: Boolean = isPosition(0)
 
   def isLast: Boolean = isPosition(data.length - 1)

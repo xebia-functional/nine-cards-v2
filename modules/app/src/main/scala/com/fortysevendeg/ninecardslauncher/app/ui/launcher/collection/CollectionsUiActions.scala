@@ -158,6 +158,10 @@ trait CollectionsUiActions
       createPager(selectedPageDefault)
   }
 
+  def reloadReorderedCollections(from: Int, to: Int): Ui[Any] = workspaces <~ lwsReloadReorderedCollections(from, to)
+
+  def reloadCollections(): Ui[Any] = workspaces <~ lwsReloadCollections()
+
   def userProfileMenu(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
     (menuName <~ tvText(name)) ~
       (menuEmail <~ tvText(email)) ~

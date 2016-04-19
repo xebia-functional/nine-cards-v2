@@ -7,4 +7,5 @@
     <item name="drawable_off" type="id" />
     <item name="selected_item" type="id" />
     <item name="fields_map" type="id" />
+    <item name="running_animation" type="id" />
 </resources>

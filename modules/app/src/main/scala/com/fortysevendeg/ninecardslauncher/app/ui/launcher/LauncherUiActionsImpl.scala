@@ -56,6 +56,10 @@ trait LauncherUiActionsImpl
   override def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any] =
     createCollections(collections, apps)
 
+  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any] = reloadReorderedCollections(from, to)
+
+  def reloadCollectionsFailed(): Ui[Any] = reloadCollections()
+
   override def showUserProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any] = userProfileMenu(name, email, avatarUrl)
 
   override def showPlusProfile(coverPhotoUrl: String): Ui[Any] = plusProfileMenu(coverPhotoUrl)
@@ -102,6 +106,16 @@ trait LauncherUiActionsImpl
   override def logout: Ui[Any] = cleanWorkspaces() ~ Ui(presenter.goToWizard())
 
   override def closeTabs: Ui[Any] = closeDrawerTabs
+
+  def startReorder: Ui[Any] =
+    (appDrawerPanel <~ fade(out = true)) ~
+      (paginationPanel <~ fade(out = true)) ~
+      (searchPanel <~ fade(out = true))
+
+  def endReorder: Ui[Any] =
+    (appDrawerPanel <~ fade(out = false)) ~
+      (paginationPanel <~ fade(out = false)) ~
+      (searchPanel <~ fade(out = false))
 
   override def isTabsOpened: Boolean = isDrawerTabsOpened
 

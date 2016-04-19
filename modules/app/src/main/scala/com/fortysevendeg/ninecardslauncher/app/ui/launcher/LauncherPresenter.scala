@@ -35,6 +35,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   val tagDialog = "dialog"
 
+  var statuses = LauncherPresenterStatuses()
+
   override def getApplicationContext: Context = contextWrapper.application
 
   def initialize(): Unit = {
@@ -62,6 +64,25 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.showPlusProfile(coverPhotoUrl).run
 
   def logout(): Unit = actions.logout.run
+
+  def startDrag(position: Int): Unit = {
+    statuses = statuses.startReorder(position)
+    actions.startReorder.run
+  }
+
+  def draggingTo(position: Int): Unit = {
+    statuses = statuses.reordering(position)
+ }
+
+  def drop(): Unit = {
+    actions.endReorder.run
+    val from = statuses.startPositionReorderMode
+    val to = statuses.currentPositionReorderMode
+    Task.fork(di.collectionProcess.reorderCollection(from, to).run).resolveAsyncUi(
+      onResult = (_) => actions.reloadCollectionsAfterReorder(from, to),
+      onException = (_) => actions.reloadCollectionsFailed() ~ actions.showContactUsError())
+    statuses = statuses.endReorder()
+  }
 
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
@@ -259,6 +280,10 @@ trait LauncherUiActions {
 
   def closeTabs: Ui[Any]
 
+  def startReorder: Ui[Any]
+
+  def endReorder: Ui[Any]
+
   def showUserProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
 
   def showPlusProfile(coverPhotoUrl: String): Ui[Any]
@@ -274,6 +299,10 @@ trait LauncherUiActions {
   def showLoading(): Ui[Any]
 
   def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any]
+
+  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
+
+  def reloadCollectionsFailed(): Ui[Any]
 
   def loadUserProfile(user: User): Ui[Any]
 
@@ -295,3 +324,25 @@ trait LauncherUiActions {
   def isTabsOpened: Boolean
 
 }
+
+case class LauncherPresenterStatuses(
+  mode: LauncherMode = NormalMode,
+  startPositionReorderMode: Int = 0,
+  currentPositionReorderMode: Int = 0) {
+
+  def startReorder(position: Int): LauncherPresenterStatuses =
+    copy(startPositionReorderMode = position, currentPositionReorderMode = position, mode = ReorderMode)
+
+  def reordering(position: Int): LauncherPresenterStatuses =
+    copy(currentPositionReorderMode = position)
+
+  def endReorder(): LauncherPresenterStatuses =
+    copy(startPositionReorderMode = 0, currentPositionReorderMode = 0, mode = NormalMode)
+
+}
+
+sealed trait LauncherMode
+
+case object NormalMode extends LauncherMode
+
+case object ReorderMode extends LauncherMode
