@@ -38,7 +38,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   lazy val sizeCalculateMovement = getHeight
 
   def getCountCollections: Int = data map {
-    case item@LauncherData(CollectionsWorkSpace, _) => item.collections.length
+    case item@LauncherData(CollectionsWorkSpace, _, _) => item.collections.length
     case _ => 0
   } sum
 
@@ -64,7 +64,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
     view match {
-      case Some(v: LauncherWorkSpaceCollectionsHolder) => v.populate(data.collections)
+      case Some(v: LauncherWorkSpaceCollectionsHolder) =>
+        v.populate(data.collections, data.positionByType)
       case _ => Ui.nop
     }
 
@@ -250,7 +251,7 @@ case class LauncherWorkSpacesListener(
 class LauncherWorkSpaceHolder(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(contextWrapper.application)
 
-case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collection] = Seq.empty)
+case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collection] = Seq.empty, positionByType: Int = 0)
 
 sealed trait WorkSpaceType {
   val value: Int

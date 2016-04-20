@@ -183,7 +183,7 @@ trait CollectionsUiActions
   def uiActionCollection(action: UiAction, collection: Collection): Ui[_] =
     action match {
       case Add => (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
-      case Remove => (workspaces <~ lwsRemoveCollection(collection)) ~ reloadPagerAndActiveLast
+      case Remove => (workspaces <~ lwsRemoveCollection(collection.id)) ~ reloadPagerAndActiveLast
     }
 
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer

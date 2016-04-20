@@ -33,12 +33,17 @@ object LauncherWorkSpacesTweaks {
   @tailrec
   private def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
     collections match {
-      case Nil if newLauncherData.collections.nonEmpty => acc :+ newLauncherData
-      case Nil => acc
-      case h :: t if newLauncherData.collections.length == numSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(CollectionsWorkSpace, Seq(h)))
+      case Nil if newLauncherData.collections.nonEmpty =>
+        acc :+ newLauncherData
+      case Nil =>
+        acc
+      case h :: t if newLauncherData.collections.length == numSpaces =>
+        val nextPosition = acc.count(_.workSpaceType == CollectionsWorkSpace)
+        getCollectionsItems(t, acc :+ newLauncherData, LauncherData(CollectionsWorkSpace, Seq(h), nextPosition))
       case h :: t =>
         val g: Seq[Collection] = newLauncherData.collections :+ h
-        val n = LauncherData(CollectionsWorkSpace, g)
+        val nextPosition = acc.count(_.workSpaceType == CollectionsWorkSpace)
+        val n = LauncherData(CollectionsWorkSpace, g, nextPosition)
         getCollectionsItems(t, acc, n)
     }
   }
@@ -70,12 +75,12 @@ object LauncherWorkSpacesTweaks {
     }
   }
 
-  def lwsRemoveCollection(collection: Collection) = Tweak[W] { workspaces =>
+  def lwsRemoveCollection(collectionId: Int) = Tweak[W] { workspaces =>
     // We remove a collection in sequence and fix positions
-    val collections = (workspaces.data flatMap (_.collections.filterNot(_ == collection))).zipWithIndex map {
+    val collections = (workspaces.data flatMap (_.collections.filterNot(_.id == collectionId))).zipWithIndex map {
       case (col, index) => col.copy(position = index)
     }
-    val maybeWorkspaceCollection = workspaces.data find (_.collections contains collection)
+    val maybeWorkspaceCollection = workspaces.data find (_.collections map (_.id) contains collectionId)
     val maybePage = maybeWorkspaceCollection map workspaces.data.indexOf
     workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
     val page = maybePage map { page =>
