@@ -32,7 +32,6 @@ trait PersistenceServicesData {
   val appId: Int =  Random.nextInt(10)
   val className: String = Random.nextString(5)
   val resourceIcon: Int = Random.nextInt(10)
-  val colorPrimary: String = Random.nextString(5)
   val dateInstalled: Long = Random.nextLong()
   val dateUpdate: Long = Random.nextLong()
   val version: String = Random.nextString(5)
@@ -41,8 +40,6 @@ trait PersistenceServicesData {
   val packageName: String = Random.nextString(5)
   val nonExistentPackageName: String = "nonExistentPackageName"
   val category: String = Random.nextString(5)
-  val starRating: Double = Random.nextDouble()
-  val numDownloads: String = Random.nextString(5)
   val ratingsCount: Int = Random.nextInt(10)
   val commentCount: Int = Random.nextInt(10)
 
@@ -53,7 +50,6 @@ trait PersistenceServicesData {
   val icon: String = Random.nextString(5)
   val themedColorIndex: Int = Random.nextInt(10)
   val appsCategory: String = Random.nextString(5)
-  val constrains: String = Random.nextString(5)
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
   val nonExistentSharedCollectionId: String = Random.nextString(5)
@@ -63,7 +59,6 @@ trait PersistenceServicesData {
   val nonExistentCardId: Int = Random.nextInt(10) + 100
   val position: Int = Random.nextInt(10)
   val nonExistentPosition: Int = Random.nextInt(10) + 100
-  val micros: Int = Random.nextInt(10)
   val term: String = Random.nextString(5)
   val cardType: String = Random.nextString(5)
   val intent: String = Random.nextString(5)
@@ -105,7 +100,6 @@ trait PersistenceServicesData {
     className: String = className,
     category: String = category,
     imagePath: String = imagePath,
-    colorPrimary: String = colorPrimary,
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
@@ -117,7 +111,6 @@ trait PersistenceServicesData {
       className = className,
       category = category,
       imagePath = imagePath,
-      colorPrimary = colorPrimary,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
@@ -135,7 +128,6 @@ trait PersistenceServicesData {
     className: String = className,
     category: String = category,
     imagePath: String = imagePath,
-    colorPrimary: String = colorPrimary,
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
@@ -145,7 +137,6 @@ trait PersistenceServicesData {
     className = className,
     category = category,
     imagePath = imagePath,
-    colorPrimary = colorPrimary,
     dateInstalled = dateInstalled,
     dateUpdate = dateUpdate,
     version = version,
@@ -160,7 +151,6 @@ trait PersistenceServicesData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -174,7 +164,6 @@ trait PersistenceServicesData {
         icon = icon,
         themedColorIndex = themedColorIndex,
         appsCategory = Option(appsCategory),
-        constrains = Option(constrains),
         originalSharedCollectionId = Option(originalSharedCollectionId),
         sharedCollectionId = Option(sharedCollectionId),
         sharedCollectionSubscribed = sharedCollectionSubscribed,
@@ -193,7 +182,6 @@ trait PersistenceServicesData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): RepositoryCollectionData =
@@ -204,7 +192,6 @@ trait PersistenceServicesData {
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = Option(appsCategory),
-      constrains = Option(constrains),
       originalSharedCollectionId = Option(originalSharedCollectionId),
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed))
@@ -213,52 +200,40 @@ trait PersistenceServicesData {
     num: Int = 5,
     collectionId: Int = collectionId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): Seq[AddCardRequest] = List.tabulate(num)(
     item => AddCardRequest(
       collectionId = Option(collectionId),
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification)))
 
   def createSeqCard(
     num: Int = 5,
     id: Int = cardId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): Seq[Card] = List.tabulate(num)(
     item => Card(
       id = id + item,
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification)))
 
   def createSeqRepoCard(
@@ -269,25 +244,19 @@ trait PersistenceServicesData {
 
   def createRepoCardData(
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): RepositoryCardData =
     RepositoryCardData(
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification))
 
   def createSeqUser(
@@ -442,7 +411,6 @@ trait PersistenceServicesData {
     className: String = className,
     category: String = category,
     imagePath: String = imagePath,
-    colorPrimary: String = colorPrimary,
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
@@ -453,7 +421,6 @@ trait PersistenceServicesData {
       className = className,
       category = category,
       imagePath = imagePath,
-      colorPrimary = colorPrimary,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
@@ -466,7 +433,6 @@ trait PersistenceServicesData {
     className: String = className,
     category: String = category,
     imagePath: String = imagePath,
-    colorPrimary: String = colorPrimary,
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
@@ -478,7 +444,6 @@ trait PersistenceServicesData {
       className = className,
       category = category,
       imagePath = imagePath,
-      colorPrimary = colorPrimary,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
@@ -487,26 +452,20 @@ trait PersistenceServicesData {
   def createAddCardRequest(
     collectionId: Int = collectionId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): AddCardRequest =
     AddCardRequest(
       collectionId = Option(collectionId),
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification))
 
   def createDeleteCardRequest(card: Card): DeleteCardRequest = DeleteCardRequest(card = card)
@@ -525,26 +484,20 @@ trait PersistenceServicesData {
   def createUpdateCardRequest(
     id: Int = cardId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): UpdateCardRequest =
     UpdateCardRequest(
       id = id,
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification))
 
   def createAddCollectionRequest(
@@ -554,7 +507,6 @@ trait PersistenceServicesData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -566,7 +518,6 @@ trait PersistenceServicesData {
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = Option(appsCategory),
-      constrains = Option(constrains),
       originalSharedCollectionId = Option(originalSharedCollectionId),
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
@@ -592,7 +543,6 @@ trait PersistenceServicesData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -605,7 +555,6 @@ trait PersistenceServicesData {
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = Option(appsCategory),
-      constrains = Option(constrains),
       originalSharedCollectionId = Option(originalSharedCollectionId),
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),

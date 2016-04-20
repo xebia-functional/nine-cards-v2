@@ -43,7 +43,6 @@ trait FormedCollectionConversions
     icon = formedCollection.icon,
     themedColorIndex = position % numSpaces,
     appsCategory = formedCollection.category map(_.name),
-    constrains = None,
     originalSharedCollectionId = formedCollection.sharedCollectionId,
     sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
     sharedCollectionId = formedCollection.sharedCollectionId,

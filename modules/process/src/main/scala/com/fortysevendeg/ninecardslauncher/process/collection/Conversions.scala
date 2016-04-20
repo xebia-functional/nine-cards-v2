@@ -23,7 +23,6 @@ trait Conversions extends CommonConversions {
     icon = addCollectionRequest.icon,
     themedColorIndex = addCollectionRequest.themedColorIndex,
     appsCategory = addCollectionRequest.appsCategory map(_.name),
-    constrains = addCollectionRequest.constrains,
     originalSharedCollectionId = addCollectionRequest.originalSharedCollectionId,
     sharedCollectionId = addCollectionRequest.sharedCollectionId,
     sharedCollectionSubscribed = addCollectionRequest.sharedCollectionSubscribed,
