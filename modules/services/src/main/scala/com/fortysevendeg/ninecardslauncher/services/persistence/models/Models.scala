@@ -7,7 +7,6 @@ case class App(
   className: String,
   category: String,
   imagePath: String,
-  colorPrimary: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
@@ -21,7 +20,6 @@ case class Collection(
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[String] = None,
-  constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Boolean,
@@ -30,14 +28,11 @@ case class Collection(
 case class Card(
   id: Int,
   position: Int,
-  micros: Int = 0,
   term: String,
   packageName: Option[String],
   cardType: String,
   intent: String,
   imagePath: String,
-  starRating: Option[Double] = None,
-  numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
 case class User(

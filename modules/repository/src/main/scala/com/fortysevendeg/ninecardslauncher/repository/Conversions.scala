@@ -13,7 +13,6 @@ object Conversions {
       className = app.data.className,
       category = app.data.category,
       imagePath = app.data.imagePath,
-      colorPrimary = app.data.colorPrimary,
       dateInstalled = app.data.dateInstalled,
       dateUpdate = app.data.dateUpdate,
       version = app.data.version,
@@ -23,14 +22,11 @@ object Conversions {
     id = cardEntity.id,
     data = CardData(
       position = cardEntity.data.position,
-      micros = cardEntity.data.micros,
       term = cardEntity.data.term,
       packageName = Option[String](cardEntity.data.packageName),
       cardType = cardEntity.data.`type`,
       intent = cardEntity.data.intent,
       imagePath = cardEntity.data.imagePath,
-      starRating = Option[Double](cardEntity.data.starRating),
-      numDownloads = Option[String](cardEntity.data.numDownloads),
       notification = Option[String](cardEntity.data.notification)))
 
   def toCollection(collectionEntity: CollectionEntity): Collection = Collection(
@@ -42,7 +38,6 @@ object Conversions {
       icon = collectionEntity.data.icon,
       themedColorIndex = collectionEntity.data.themedColorIndex,
       appsCategory = Option[String](collectionEntity.data.appsCategory),
-      constrains = Option[String](collectionEntity.data.constrains),
       originalSharedCollectionId = Option[String](collectionEntity.data.originalSharedCollectionId),
       sharedCollectionId = Option[String](collectionEntity.data.sharedCollectionId),
       sharedCollectionSubscribed = Option[Boolean](collectionEntity.data.sharedCollectionSubscribed)))

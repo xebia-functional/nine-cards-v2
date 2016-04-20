@@ -13,7 +13,6 @@ case class CollectionEntityData(
   icon: String,
   themedColorIndex: Int,
   appsCategory: String,
-  constrains: String,
   originalSharedCollectionId: String,
   sharedCollectionId: String,
   sharedCollectionSubscribed: Boolean)
@@ -26,7 +25,6 @@ object CollectionEntity {
   val icon = "icon"
   val themedColorIndex = "themedColorIndex"
   val appsCategory = "appsCategory"
-  val constrains = "constrains"
   val originalSharedCollectionId = "originalSharedCollectionId"
   val sharedCollectionId = "sharedCollectionId"
   val sharedCollectionSubscribed = "sharedCollectionSubscribed"
@@ -39,7 +37,6 @@ object CollectionEntity {
     icon,
     themedColorIndex,
     appsCategory,
-    constrains,
     originalSharedCollectionId,
     sharedCollectionId,
     sharedCollectionSubscribed)
@@ -54,7 +51,6 @@ object CollectionEntity {
         icon = cursor.getString(cursor.getColumnIndex(icon)),
         themedColorIndex = cursor.getInt(cursor.getColumnIndex(themedColorIndex)),
         appsCategory = cursor.getString(cursor.getColumnIndex(appsCategory)),
-        constrains = cursor.getString(cursor.getColumnIndex(constrains)),
         originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(originalSharedCollectionId)),
         sharedCollectionId = cursor.getString(cursor.getColumnIndex(sharedCollectionId)),
         sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(sharedCollectionSubscribed)) > 0))
@@ -72,6 +68,5 @@ object CollectionEntity {
        |${CollectionEntity.appsCategory} TEXT,
        |${CollectionEntity.originalSharedCollectionId} TEXT,
        |${CollectionEntity.sharedCollectionId} TEXT,
-       |${CollectionEntity.sharedCollectionSubscribed} INTEGER,
-       |${CollectionEntity.constrains} TEXT )""".stripMargin
+       |${CollectionEntity.sharedCollectionSubscribed} INTEGER)""".stripMargin
 }

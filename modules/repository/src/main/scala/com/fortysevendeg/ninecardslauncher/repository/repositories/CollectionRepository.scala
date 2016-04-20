@@ -3,6 +3,8 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
@@ -11,10 +13,8 @@ import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, Collect
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.{allFields, position, _}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
+import com.fortysevendeg.ninecardslauncher.repository.repositories.RepositoryUtils._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
-import IterableCursor._
-import RepositoryUtils._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 
 import scala.language.postfixOps
 import scalaz.concurrent.Task
@@ -39,7 +39,6 @@ class CollectionRepository(
             icon -> data.icon,
             themedColorIndex -> data.themedColorIndex,
             appsCategory -> flatOrNull(data.appsCategory),
-            constrains -> flatOrNull(data.constrains),
             originalSharedCollectionId -> flatOrNull(data.originalSharedCollectionId),
             sharedCollectionId -> flatOrNull(data.sharedCollectionId),
             sharedCollectionSubscribed -> (data.sharedCollectionSubscribed orNull))
@@ -147,7 +146,6 @@ class CollectionRepository(
             icon -> collection.data.icon,
             themedColorIndex -> collection.data.themedColorIndex,
             appsCategory -> (collection.data.appsCategory orNull),
-            constrains -> (collection.data.constrains orNull),
             originalSharedCollectionId -> (collection.data.originalSharedCollectionId orNull),
             sharedCollectionId -> (collection.data.sharedCollectionId orNull),
             sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed orNull))

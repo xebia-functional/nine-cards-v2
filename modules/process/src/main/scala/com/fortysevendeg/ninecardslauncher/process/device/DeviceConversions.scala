@@ -37,7 +37,6 @@ trait DeviceConversions extends NineCardIntentConversions {
       className = app.className,
       category = NineCardCategory(app.category),
       imagePath = app.imagePath,
-      colorPrimary = app.colorPrimary,
       dateInstalled = app.dateInstalled,
       dateUpdate = app.dateUpdate,
       version = app.version,
