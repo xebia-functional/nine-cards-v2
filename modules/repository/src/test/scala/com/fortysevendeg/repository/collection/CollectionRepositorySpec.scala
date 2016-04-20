@@ -188,7 +188,6 @@ trait CollectionMockCursor
     (icon, 4, collectionSeq map (_.data.icon), StringDataType),
     (themedColorIndex, 5, collectionSeq map (_.data.themedColorIndex), IntDataType),
     (appsCategory, 6, collectionSeq map (_.data.appsCategory orNull), StringDataType),
-    (constrains, 7, collectionSeq map (_.data.constrains orNull), StringDataType),
     (originalSharedCollectionId, 8, collectionSeq map (_.data.originalSharedCollectionId orNull), StringDataType),
     (sharedCollectionId, 9, collectionSeq map (_.data.sharedCollectionId orNull), StringDataType),
     (sharedCollectionSubscribed, 10, collectionSeq map (item => if (item.data.sharedCollectionSubscribed getOrElse false) 1 else 0), IntDataType)
@@ -209,7 +208,6 @@ trait EmptyCollectionMockCursor
     (icon, 4, Seq.empty, StringDataType),
     (themedColorIndex, 5, Seq.empty, IntDataType),
     (appsCategory, 6, Seq.empty, StringDataType),
-    (constrains, 7, Seq.empty, StringDataType),
     (originalSharedCollectionId, 8, Seq.empty, StringDataType),
     (sharedCollectionId, 9, Seq.empty, StringDataType),
     (sharedCollectionSubscribed, 10, Seq.empty, IntDataType)

@@ -173,9 +173,6 @@ trait CardMockCursor
     (cardType, 5, cardSeq map (_.data.cardType), StringDataType),
     (intent, 6, cardSeq map (_.data.intent), StringDataType),
     (imagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
-    (starRating, 8, cardSeq map (_.data.starRating getOrElse 0.0d), DoubleDataType),
-    (micros, 9, cardSeq map (_.data.micros), IntDataType),
-    (numDownloads, 10, cardSeq map (_.data.numDownloads orNull), StringDataType),
     (notification, 11, cardSeq map (_.data.notification orNull), StringDataType)
   )
 
@@ -195,9 +192,6 @@ trait EmptyCardMockCursor
     (cardType, 5, Seq.empty, StringDataType),
     (intent, 6, Seq.empty, StringDataType),
     (imagePath, 7, Seq.empty, StringDataType),
-    (starRating, 8, Seq.empty, DoubleDataType),
-    (micros, 9, Seq.empty, IntDataType),
-    (numDownloads, 10, Seq.empty, StringDataType),
     (notification, 11, Seq.empty, StringDataType)
   )
 
