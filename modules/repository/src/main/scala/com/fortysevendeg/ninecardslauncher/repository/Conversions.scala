@@ -57,7 +57,8 @@ object Conversions {
       collectionId = Option[Int](momentEntity.data.collectionId),
       timeslot = momentEntity.data.timeslot,
       wifi = momentEntity.data.wifi,
-      headphone = momentEntity.data.headphone))
+      headphone = momentEntity.data.headphone,
+      momentType = Option[String](momentEntity.data.momentType)))
 
   def toUser(userEntity: UserEntity): User = User(
     id = userEntity.id,

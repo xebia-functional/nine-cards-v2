@@ -150,7 +150,8 @@ case class AddMomentRequest(
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
-  headphone: Boolean)
+  headphone: Boolean,
+  momentType: Option[String])
 
 case class DeleteMomentsRequest(where: String)
 
@@ -163,5 +164,6 @@ case class UpdateMomentRequest(
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
-  headphone: Boolean)
+  headphone: Boolean,
+  momentType: Option[String])
 

@@ -69,7 +69,8 @@ trait FormedCollectionConversions
       collectionId = moment.collectionId,
       timeslot = moment.timeslot map toMomentTimeSlot,
       wifi = moment.wifi,
-      headphone = moment.headphone)
+      headphone = moment.headphone,
+      momentType = moment.momentType)
 
   def toMomentTimeSlot(timeSlot: MomentTimeSlot) =
     ServicesMomentTimeSlot(

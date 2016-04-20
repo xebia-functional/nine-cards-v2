@@ -16,7 +16,8 @@ trait MomentConversions extends CommonConversions {
     collectionId = servicesMoment.collectionId,
     timeslot = servicesMoment.timeslot map toTimeSlot,
     wifi = servicesMoment.wifi,
-    headphone = servicesMoment.headphone)
+    headphone = servicesMoment.headphone,
+    momentType = servicesMoment.momentType)
 
   def toTimeSlot(servicesMomentTimeSlot:  ServicesMomentTimeSlot) = MomentTimeSlot(
     from = servicesMomentTimeSlot.from,
@@ -51,14 +52,16 @@ trait MomentConversions extends CommonConversions {
       collectionId = moment.collectionId,
       timeslot = moment.timeslot map toServicesMomentTimeSlot,
       wifi = moment.wifi,
-      headphone = moment.headphone)
+      headphone = moment.headphone,
+      momentType = moment.momentType)
 
   def toAddMomentRequest(moment: NineCardsMoment) =
     AddMomentRequest(
       collectionId = None,
       timeslot = toServicesMomentTimeSlotSeq(moment),
       wifi = toWifiSeq(moment),
-      headphone = false)
+      headphone = false,
+      momentType = Option(moment.name))
 
   def toServicesMomentTimeSlot(timeSlot: MomentTimeSlot) =
     ServicesMomentTimeSlot(

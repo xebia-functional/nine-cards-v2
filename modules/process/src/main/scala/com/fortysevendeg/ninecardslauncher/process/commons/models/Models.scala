@@ -44,7 +44,8 @@ case class Moment(
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
-  headphone: Boolean)
+  headphone: Boolean,
+  momentType: Option[String])
 
 case class MomentTimeSlot(
   from: String,

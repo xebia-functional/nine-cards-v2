@@ -18,7 +18,8 @@ trait MomentConversions {
       collectionId = moment.data.collectionId,
       timeslot = Json.parse(moment.data.timeslot).as[Seq[MomentTimeSlot]],
       wifi = if (moment.data.wifi.isEmpty) List.empty else moment.data.wifi.split(",").toList,
-      headphone = moment.data.headphone)
+      headphone = moment.data.headphone,
+      momentType = moment.data.momentType)
 
   def toRepositoryMoment(moment: Moment): RepositoryMoment =
     RepositoryMoment(
@@ -27,7 +28,8 @@ trait MomentConversions {
         collectionId = moment.collectionId,
         timeslot = Json.toJson(moment.timeslot).toString,
         wifi = moment.wifi.mkString(","),
-        headphone = moment.headphone))
+        headphone = moment.headphone,
+        momentType = moment.momentType))
 
   def toRepositoryMoment(request: UpdateMomentRequest): RepositoryMoment =
     RepositoryMoment(
@@ -36,12 +38,14 @@ trait MomentConversions {
         collectionId = request.collectionId,
         timeslot = Json.toJson(request.timeslot).toString,
         wifi = request.wifi.mkString(","),
-        headphone = request.headphone))
+        headphone = request.headphone,
+        momentType = request.momentType))
 
   def toRepositoryMomentData(request: AddMomentRequest): RepositoryMomentData =
     RepositoryMomentData(
       collectionId = request.collectionId,
       timeslot = Json.toJson(request.timeslot).toString,
       wifi = request.wifi.mkString(","),
-      headphone = request.headphone)
+      headphone = request.headphone,
+      momentType = request.momentType)
 }

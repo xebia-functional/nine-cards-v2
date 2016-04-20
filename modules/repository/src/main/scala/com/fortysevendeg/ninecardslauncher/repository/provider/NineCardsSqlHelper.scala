@@ -40,9 +40,7 @@ class NineCardsSqlHelper(context: Context)
         db.execSQL("DROP TABLE GeoInfo")
         db.execSQL(MomentEntity.createTableSQL)
       case 10 =>
-        db.execSQL(s"ALTER TABLE ${AppEntity.table} DROP COLUMN colorPrimary TEXT")
-        db.execSQL(s"ALTER TABLE ${CollectionEntity.table} DROP COLUMN constrains TEXT")
-        db.execSQL(s"ALTER TABLE ${CardEntity.table} DROP COLUMN starRating, micros, numDownloads TEXT")
+        db.execSQL(s"ALTER TABLE ${MomentEntity.table} ADD COLUMN ${MomentEntity.momentType} TEXT")
     }
 
     new Handler().post(() => execVersionsDB(oldVersion, newVersion))
