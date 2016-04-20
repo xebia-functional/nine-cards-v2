@@ -17,7 +17,14 @@
             style="@style/LauncherRootContent"
             android:id="@+id/launcher_content">
 
-            <include layout="@layout/search_view_panel"/>
+            <FrameLayout
+                style="@style/LauncherTopBox">
+
+                <include layout="@layout/collections_actions_view_panel"/>
+
+                <include layout="@layout/search_view_panel"/>
+
+            </FrameLayout>
 
             <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherWorkSpaces
                 style="@style/LauncherWorkSpaces"

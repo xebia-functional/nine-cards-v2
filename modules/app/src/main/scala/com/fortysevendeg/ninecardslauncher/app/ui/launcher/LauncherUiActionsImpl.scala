@@ -8,6 +8,7 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
@@ -107,15 +108,21 @@ trait LauncherUiActionsImpl
 
   override def closeTabs: Ui[Any] = closeDrawerTabs
 
-  def startReorder: Ui[Any] =
-    (appDrawerPanel <~ fade(out = true)) ~
-      (paginationPanel <~ fade(out = true)) ~
-      (searchPanel <~ fade(out = true))
+  override def startReorder: Ui[Any] =
+    (appDrawerPanel <~ fadeOut()) ~
+      (paginationPanel <~ fadeOut()) ~
+      (searchPanel <~ fadeOut()) ~
+      (collectionActionsPanel <~ fadeIn())
 
-  def endReorder: Ui[Any] =
-    (appDrawerPanel <~ fade(out = false)) ~
-      (paginationPanel <~ fade(out = false)) ~
-      (searchPanel <~ fade(out = false))
+  override def endReorder: Ui[Any] =
+    (appDrawerPanel <~ fadeIn()) ~
+      (paginationPanel <~ fadeIn()) ~
+      (searchPanel <~ fadeIn()) ~
+      (collectionActionsPanel <~~ fadeOut())
+
+  private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
+
+  private[this] def fadeOut() = applyAnimation(alpha = Some(0)) + vGone
 
   override def isTabsOpened: Boolean = isDrawerTabsOpened
 

@@ -10,6 +10,7 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -52,7 +53,7 @@ trait CollectionItemStyle {
   def startDrag(): Tweak[View] = Tweak[View] { view =>
     val dragData = ClipData.newPlainText("", "")
     val shadow = new View.DragShadowBuilder(view)
-    view.startDrag(dragData, shadow, javaNull, 0)
+    view.startDrag(dragData, shadow, ReorderCollection, 0)
   }
 
 }

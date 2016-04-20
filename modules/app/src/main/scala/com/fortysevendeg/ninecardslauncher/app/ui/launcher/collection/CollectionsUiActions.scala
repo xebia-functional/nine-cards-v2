@@ -86,6 +86,10 @@ trait CollectionsUiActions
 
   lazy val searchPanel = Option(findView(TR.launcher_search_panel))
 
+  lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
+
+  lazy val collectionRemoveAction = Option(findView(TR.launcher_collections_action_remove))
+
   lazy val burgerIcon = Option(findView(TR.launcher_burger_icon))
 
   lazy val googleIcon = Option(findView(TR.launcher_google_icon))
@@ -137,7 +141,8 @@ trait CollectionsUiActions
       }) ~
       (appDrawer4 <~ drawerItemStyle <~ vSetPosition(3) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
-      })
+      }) ~
+      (collectionRemoveAction <~ removeActionStyle)
 
   def showMessage(message: Int): Ui[_] = drawerLayout <~ vSnackbarShort(message)
 

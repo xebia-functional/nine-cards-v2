@@ -86,7 +86,9 @@ object LauncherWorkSpacesTweaks {
 
   def lwsReloadReorderedCollections(from: Int, to: Int) = Tweak[W] { workspaces =>
     val cols = workspaces.data flatMap (_.collections)
-    val collections = cols.reorder(from, to)
+    val collections = cols.reorder(from, to).zipWithIndex map {
+      case (collection, index) => collection.copy(position = index)
+    }
     workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
     val page = workspaces.data.lift(workspaces.currentPage()) map (_ => workspaces.currentPage()) getOrElse defaultPage
     workspaces.selectPosition(page)

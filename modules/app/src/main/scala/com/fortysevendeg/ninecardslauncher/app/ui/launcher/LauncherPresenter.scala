@@ -65,9 +65,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def logout(): Unit = actions.logout.run
 
-  def startDrag(position: Int): Unit = {
-    statuses = statuses.startReorder(position)
-    actions.startReorder.run
+  def startDrag(maybeCollection: Option[Collection], position: Int): Unit = {
+    maybeCollection map { collection =>
+      statuses = statuses.startReorder(collection, position)
+      actions.startReorder.run
+    } getOrElse {
+      actions.showContactUsError().run
+    }
   }
 
   def draggingTo(position: Int): Unit = {
@@ -117,8 +121,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def addCollection(collection: Collection): Unit = actions.addCollection(collection).run
 
-  def removeCollection(maybeCollection: Option[Collection]): Unit =
-    (maybeCollection map { collection =>
+  def removeCollectionInReorderMode(): Unit =
+    (statuses.collectionReorderMode map { collection =>
       if (actions.canRemoveCollections) {
         Ui(showDialogForRemoveCollection(collection))
       } else {
@@ -327,17 +331,28 @@ trait LauncherUiActions {
 
 case class LauncherPresenterStatuses(
   mode: LauncherMode = NormalMode,
+  collectionReorderMode: Option[Collection] = None,
   startPositionReorderMode: Int = 0,
   currentPositionReorderMode: Int = 0) {
 
-  def startReorder(position: Int): LauncherPresenterStatuses =
-    copy(startPositionReorderMode = position, currentPositionReorderMode = position, mode = ReorderMode)
+  def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
+    copy(
+      startPositionReorderMode = position,
+      collectionReorderMode = Some(collection),
+      currentPositionReorderMode = position,
+      mode = ReorderMode)
 
   def reordering(position: Int): LauncherPresenterStatuses =
     copy(currentPositionReorderMode = position)
 
   def endReorder(): LauncherPresenterStatuses =
-    copy(startPositionReorderMode = 0, currentPositionReorderMode = 0, mode = NormalMode)
+    copy(
+      startPositionReorderMode = 0,
+      collectionReorderMode = None,
+      currentPositionReorderMode = 0,
+      mode = NormalMode)
+
+  def isReording(): Boolean = mode == ReorderMode
 
 }
 

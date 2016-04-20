@@ -4,6 +4,8 @@ import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
+import android.os.Handler
+import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
@@ -24,6 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.CollectionItemTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{DragLauncherType, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{CollectionItemStyle, CollectionsGroupStyle, LauncherPresenter}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
@@ -79,17 +82,26 @@ class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDim
   private[this] def vDragListener(): Tweak[View] = Tweak[View] { view =>
     view.setOnDragListener(new OnDragListener {
       override def onDrag(v: View, event: DragEvent): Boolean = {
-        (event.getAction, isRunningReorderAnimation) match {
-          case (DragEvent.ACTION_DRAG_LOCATION, false) =>
+        (event.getAction, DragLauncherType(event.getLocalState), presenter.statuses.isReording(), isRunningReorderAnimation) match {
+          case (ACTION_DRAG_LOCATION, ReorderCollection, true, false) =>
             val lastCurrentPosition = presenter.statuses.currentPositionReorderMode
             val currentPosition = calculatePosition(event.getX, event.getY)
             if (lastCurrentPosition != currentPosition) {
               reorder(lastCurrentPosition, currentPosition).run
               presenter.draggingTo(currentPosition)
             }
-          case (DragEvent.ACTION_DROP, false) =>
+          case (ACTION_DROP | ACTION_DRAG_ENDED, ReorderCollection, true, false) =>
             resetPlaces.run
             presenter.drop()
+          case (ACTION_DROP | ACTION_DRAG_ENDED, ReorderCollection, true, true) =>
+            // we are waiting that the animation is finished in order to reset views
+            val duration = resGetInteger(R.integer.anim_duration_normal)
+            new Handler().postDelayed(new Runnable {
+              override def run(): Unit = {
+                resetPlaces.run
+                presenter.drop()
+              }
+            }, duration)
           case _ =>
         }
         true
@@ -131,18 +143,20 @@ class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDim
     val view = getView(from)
     view <~ applyAnimation(
       xBy = Some(displacementHorizontal),
-      yBy = Some(displacementVertical)) <~
-      vRunningAnimation(true)
+      yBy = Some(displacementVertical))
   }
 
   private[this] def resetPlaces: Ui[Any] = {
     val start = presenter.statuses.startPositionReorderMode
     val current = presenter.statuses.currentPositionReorderMode
-    val collectionsReordered = (views map (_.collection)).reorder(start, current)
+    val collectionsReordered = (views map (_.collection)).reorder(start, current).zipWithIndex map {
+      case (collection, index) => collection map(_.copy(position = index))
+    }
     Ui.sequence(views.zip(collectionsReordered) map {
       case (view, maybeCollection) =>
         (view <~
           (maybeCollection map ciPopulate getOrElse Tweak.blank) <~
+          vClearAnimation <~
           vTranslationX(0) <~
           vTranslationY(0) <~
           vVisible) ~
@@ -174,6 +188,8 @@ case class CollectionItem(
   extends FrameLayout(contextWrapper.application)
   with CollectionItemStyle {
 
+  val positionDraggingItem = numSpaces
+
   var positionInGrid = originalPosition
 
   var collection: Option[Collection] = None
@@ -186,8 +202,6 @@ case class CollectionItem(
 
   var name = slot[TextView]
 
-  setTag(positionInGrid)
-
   addView(
     (l[LinearLayout](
       w[ImageView] <~ wire(icon) <~ iconStyle,
@@ -195,18 +209,24 @@ case class CollectionItem(
     ) <~
       wire(layout) <~
       collectionItemStyle <~
-      On.click {
-        Ui(presenter.goToCollection(icon, collection))
-      } <~
-      On.longClick {
-        presenter.startDrag(positionInGrid)
-        (this <~ vGone) ~ (layout <~ startDrag()) ~ Ui(true)
-      } <~ vUseLayerHardware).get)
+      vUseLayerHardware).get)
 
   def populate(collection: Collection): Unit = {
     this.collection = Some(collection)
+    android.util.Log.d("9cards", s"${this.collection.get.name} - ${this.collection.get.position}")
     val resIcon = iconCollectionWorkspace(collection.icon)
-    ((icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
+    ((layout <~
+      On.click {
+        Ui(presenter.goToCollection(icon, this.collection))
+      } <~
+      On.longClick {
+        presenter.startDrag(this.collection, positionInGrid)
+        (this.collection map { _ =>
+          (this <~ vGone) ~ Ui(positionInGrid = positionDraggingItem) ~ (layout <~ startDrag())
+        } getOrElse Ui.nop).run
+        Ui(true)
+      }) ~
+      (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
       (name <~ tvText(collection.name))).run
   }
 

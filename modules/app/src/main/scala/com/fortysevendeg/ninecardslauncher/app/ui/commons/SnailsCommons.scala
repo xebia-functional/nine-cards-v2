@@ -173,6 +173,7 @@ object SnailsCommons {
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       view.setAlpha(0)
+      view.setVisibility(View.VISIBLE)
       val animator = view
         .animate
         .setInterpolator(new DecelerateInterpolator())
@@ -181,7 +182,6 @@ object SnailsCommons {
           override def onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            view.setVisibility(View.VISIBLE)
             animPromise.trySuccess()
           }
         })
@@ -228,6 +228,7 @@ object SnailsCommons {
     onUpdate: (Float) => Ui[_] = (_) => Ui.nop)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
+      view.setRunningAnimation(true)
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 

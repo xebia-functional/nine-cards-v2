@@ -5,7 +5,7 @@
     style="@style/LauncherDrawerContent">
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxView
-        style="@style/LauncherSearchBox"
+        style="@style/LauncherTopBox"
         android:id="@+id/launcher_search_box_content" />
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout
