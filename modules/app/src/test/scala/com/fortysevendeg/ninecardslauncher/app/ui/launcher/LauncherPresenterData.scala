@@ -36,7 +36,6 @@ trait LauncherPresenterData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory),
-    constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)

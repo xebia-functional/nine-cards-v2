@@ -27,7 +27,6 @@ trait CollectionProcessImplData {
   val themedColorIndex: Int = Random.nextInt(10)
   val appsCategory: NineCardCategory = appsCategories(Random.nextInt(appsCategories.length))
   val appsCategoryName = appsCategory.name
-  val constrains: String = Random.nextString(5)
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
   val nonExistentSharedCollectionId: String = Random.nextString(5)
@@ -40,7 +39,6 @@ trait CollectionProcessImplData {
   val category1 = "category1"
   val imagePath1 = "imagePath1"
   val resourceIcon1 = 1
-  val colorPrimary1 = "colorPrimary"
   val dateInstalled1 = 1L
   val dateUpdate1 = 1L
   val version1 = "22"
@@ -50,14 +48,11 @@ trait CollectionProcessImplData {
   val position: Int = Random.nextInt(10)
   val newPosition: Int = position + Random.nextInt(10)
   val oldPosition: Int = Random.nextInt(10)
-  val micros: Int = Random.nextInt(10)
   val term: String = Random.nextString(5)
   val packageName = Random.nextString(5)
   val className = Random.nextString(5)
   val cardType: CardType = cardTypes(Random.nextInt(cardTypes.length))
   val imagePath: String = Random.nextString(5)
-  val starRating = Random.nextDouble()
-  val numDownloads = Random.nextString(5)
   val ratingsCount = Random.nextInt()
   val commentCount = Random.nextInt()
   val notification: String = Random.nextString(5)
@@ -77,7 +72,6 @@ trait CollectionProcessImplData {
     packageName = packageName1,
     className = className1,
     resourceIcon = resourceIcon1,
-    colorPrimary = colorPrimary1,
     dateInstalled = dateInstalled1,
     dateUpdate = dateUpdate1,
     version = version1,
@@ -95,7 +89,6 @@ trait CollectionProcessImplData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory.name),
-    constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
@@ -120,7 +113,6 @@ trait CollectionProcessImplData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: NineCardCategory = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -135,7 +127,6 @@ trait CollectionProcessImplData {
           icon = icon,
           themedColorIndex = themedColorIndex,
           appsCategory = Option(appsCategory),
-          constrains = Option(constrains),
           originalSharedCollectionId = Option(originalSharedCollectionId),
           sharedCollectionId = Option(sharedCollectionId),
           sharedCollectionSubscribed = sharedCollectionSubscribed,
@@ -150,7 +141,6 @@ trait CollectionProcessImplData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: NineCardCategory = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
@@ -163,7 +153,6 @@ trait CollectionProcessImplData {
         icon = icon,
         themedColorIndex = themedColorIndex,
         appsCategory = Option(appsCategory.name),
-        constrains = Option(constrains),
         originalSharedCollectionId = Option(originalSharedCollectionId),
         sharedCollectionId = Option(sharedCollectionId),
         sharedCollectionSubscribed = sharedCollectionSubscribed))
@@ -172,54 +161,42 @@ trait CollectionProcessImplData {
     num: Int = 5,
     id: Int = cardId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: CardType = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification) =
     (0 until 5) map (item =>
       Card(
         id = id + item,
         position = position,
-        micros = micros,
         term = term,
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
         imagePath = imagePath,
-        starRating = Option(starRating),
-        numDownloads = Option(numDownloads),
         notification = Option(notification)))
 
   def createSeqServicesCard(
     num: Int = 5,
     id: Int = cardId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: CardType = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification) =
     (1 until 5) map (item =>
       ServicesCard(
         id = id + item,
         position = position,
-        micros = micros,
         term = term,
         packageName = Option(packageName),
         cardType = cardType.name,
         intent = intent,
         imagePath = imagePath,
-        starRating = Option(starRating),
-        numDownloads = Option(numDownloads),
         notification = Option(notification)))
 
   def createSeqUnformedApps(num: Int = 150) =
@@ -245,14 +222,11 @@ trait CollectionProcessImplData {
   val servicesCard = ServicesCard(
     id = cardId,
     position = position,
-    micros = micros,
     term = term,
     packageName = Option(packageName),
     cardType = cardType.name,
     intent = intent,
     imagePath = imagePath,
-    starRating = Option(starRating),
-    numDownloads = Option(numDownloads),
     notification = Option(notification))
   val seqServicesCard = Seq(servicesCard) ++ createSeqServicesCard()
 
@@ -282,7 +256,6 @@ trait CollectionProcessImplData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory.name),
-    constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
@@ -333,7 +306,6 @@ trait CollectionProcessImplData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategoryName),
-    constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
@@ -346,7 +318,6 @@ trait CollectionProcessImplData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory),
-    constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
@@ -365,7 +336,6 @@ trait CollectionProcessImplData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory),
-    constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
@@ -388,39 +358,30 @@ trait CollectionProcessImplData {
     num: Int = 3,
     id: Int = cardId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: CardType = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification) =
     (0 until 3) map (item =>
       Card(
         id = id,
         position = position,
-        micros = micros,
         term = term,
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
         imagePath = imagePath,
-        starRating = Option(starRating),
-        numDownloads = Option(numDownloads),
         notification = Option(notification)))
 
   def updatedCard = Card(
     id = cardId,
     position = position,
-    micros = micros,
     term = name,
     packageName = Option(packageName),
     cardType = cardType,
     intent = Json.parse(intent).as[NineCardIntent],
     imagePath = imagePath,
-    starRating = Option(starRating),
-    numDownloads = Option(numDownloads),
     notification = Option(notification))
 }

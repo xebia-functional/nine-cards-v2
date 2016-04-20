@@ -21,7 +21,6 @@ trait MomentProcessImplData {
   val icon: String = Random.nextString(5)
   val themedColorIndex: Int = Random.nextInt(10)
   val appsCategory: NineCardCategory = appsCategories(Random.nextInt(appsCategories.length))
-  val constrains: String = Random.nextString(5)
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
   val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
@@ -31,7 +30,6 @@ trait MomentProcessImplData {
   val className1 = "ScalaAndroidActivity"
   val category1 = "category1"
   val imagePath1 = "imagePath1"
-  val colorPrimary1 = "colorPrimary"
   val dateInstalled1 = 1L
   val dateUpdate1 = 1L
   val version1 = "22"
@@ -41,13 +39,10 @@ trait MomentProcessImplData {
   val momentId = Random.nextInt(10)
   val cardId = Random.nextInt(10)
   val position: Int = Random.nextInt(10)
-  val micros: Int = Random.nextInt(10)
   val term: String = Random.nextString(5)
   val packageName = Random.nextString(5)
   val cardType: CardType = cardTypes(Random.nextInt(cardTypes.length))
   val imagePath: String = Random.nextString(5)
-  val starRating = Random.nextDouble()
-  val numDownloads = Random.nextString(5)
   val notification: String = Random.nextString(5)
   val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
 
@@ -71,7 +66,6 @@ trait MomentProcessImplData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: NineCardCategory = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -86,7 +80,6 @@ trait MomentProcessImplData {
           icon = icon,
           themedColorIndex = themedColorIndex,
           appsCategory = None,
-          constrains = Option(constrains),
           originalSharedCollectionId = Option(originalSharedCollectionId),
           sharedCollectionId = Option(sharedCollectionId),
           sharedCollectionSubscribed = sharedCollectionSubscribed,
@@ -101,7 +94,6 @@ trait MomentProcessImplData {
      icon: String = icon,
      themedColorIndex: Int = themedColorIndex,
      appsCategory: NineCardCategory = appsCategory,
-     constrains: String = constrains,
      originalSharedCollectionId: String = originalSharedCollectionId,
      sharedCollectionId: String = sharedCollectionId,
      sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -116,7 +108,6 @@ trait MomentProcessImplData {
           icon = icon,
           themedColorIndex = themedColorIndex,
           appsCategory = None,
-          constrains = Option(constrains),
           originalSharedCollectionId = Option(originalSharedCollectionId),
           sharedCollectionId = Option(sharedCollectionId),
           sharedCollectionSubscribed = sharedCollectionSubscribed,
@@ -131,7 +122,6 @@ trait MomentProcessImplData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: NineCardCategory = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
@@ -144,7 +134,6 @@ trait MomentProcessImplData {
         icon = icon,
         themedColorIndex = themedColorIndex,
         appsCategory = Option(appsCategory.name),
-        constrains = Option(constrains),
         originalSharedCollectionId = Option(originalSharedCollectionId),
         sharedCollectionId = Option(sharedCollectionId),
         sharedCollectionSubscribed = sharedCollectionSubscribed))
@@ -153,54 +142,42 @@ trait MomentProcessImplData {
     num: Int = 5,
     id: Int = cardId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: CardType = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification) =
     (0 until num) map (item =>
       Card(
         id = id + item,
         position = position,
-        micros = micros,
         term = term,
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
         imagePath = imagePath,
-        starRating = Option(starRating),
-        numDownloads = Option(numDownloads),
         notification = Option(notification)))
 
   def createSeqServicesCard(
     num: Int = 5,
     id: Int = cardId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: CardType = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification) =
     (1 until num) map (item =>
       ServicesCard(
         id = id + item,
         position = position,
-        micros = micros,
         term = term,
         packageName = Option(packageName),
         cardType = cardType.name,
         intent = intent,
         imagePath = imagePath,
-        starRating = Option(starRating),
-        numDownloads = Option(numDownloads),
         notification = Option(notification)))
 
   def createSeqServicesApp(
@@ -211,7 +188,6 @@ trait MomentProcessImplData {
     className: String = className1,
     category: String = category1,
     imagePath: String = imagePath1,
-    colorPrimary: String = colorPrimary1,
     dateInstalled: Long = dateInstalled1,
     dateUpdate: Long = dateUpdate1,
     version: String = version1,
@@ -224,7 +200,6 @@ trait MomentProcessImplData {
         className = className,
         category = category,
         imagePath = imagePath,
-        colorPrimary = colorPrimary,
         dateInstalled = dateInstalled,
         dateUpdate = dateUpdate,
         version = version,
