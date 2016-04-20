@@ -91,6 +91,8 @@ trait PersistenceServicesData {
 
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
+  val momentType1: String = "Home"
+
 
   def createSeqApp(
     num: Int = 5,
@@ -341,14 +343,16 @@ trait PersistenceServicesData {
     collectionId: Option[Int] = collectionIdOption,
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
-    headphone: Boolean = headphone): Seq[Moment] = List.tabulate(num)(
+    headphone: Boolean = headphone,
+    momentType: Option[String] = Option(momentType1)): Seq[Moment] = List.tabulate(num)(
     item =>
       Moment(
         id = id + item,
         collectionId = collectionId,
         timeslot = timeslot,
         wifi = wifi,
-        headphone = headphone))
+        headphone = headphone,
+        momentType = momentType))
 
   def createSeqRepoMoment(
     num: Int = 5,
@@ -360,12 +364,14 @@ trait PersistenceServicesData {
     collectionId: Option[Int] = collectionIdOption,
     timeslot: String = timeslotJson,
     wifiString: String = wifiString,
-    headphone: Boolean = headphone): RepositoryMomentData =
+    headphone: Boolean = headphone,
+    momentType: Option[String] = Option(momentType1)): RepositoryMomentData =
     RepositoryMomentData(
       collectionId = collectionId,
       timeslot = timeslot,
       wifi = wifiString,
-      headphone = headphone)
+      headphone = headphone,
+      momentType = momentType)
 
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp(0)
@@ -643,12 +649,14 @@ trait PersistenceServicesData {
     collectionId: Option[Int] = collectionIdOption,
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
-    headphone: Boolean = headphone): AddMomentRequest =
+    headphone: Boolean = headphone,
+    momentType: Option[String] = Option(momentType1)): AddMomentRequest =
     AddMomentRequest(
       collectionId = collectionId,
       timeslot = timeslot,
       wifi = wifi,
-      headphone = headphone)
+      headphone = headphone,
+      momentType = momentType)
 
   def createDeleteMomentRequest(moment: Moment): DeleteMomentRequest =
     DeleteMomentRequest(moment = moment)
@@ -661,13 +669,15 @@ trait PersistenceServicesData {
     collectionId: Option[Int] = collectionIdOption,
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
-    headphone: Boolean = headphone): UpdateMomentRequest =
+    headphone: Boolean = headphone,
+    momentType: Option[String] = Option(momentType1)): UpdateMomentRequest =
     UpdateMomentRequest(
       id = id,
       collectionId = collectionId,
       timeslot = timeslot,
       wifi = wifi,
-      headphone = headphone)
+      headphone = headphone,
+      momentType = momentType)
 
   val dataCounters = 1 to 10 map createDataCounter
 

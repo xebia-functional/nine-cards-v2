@@ -54,6 +54,7 @@ trait MomentProcessImplData {
   val homeAppPackageName = "com.google.android.apps.plus"
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"
+  val momentType1 = "Home"
 
   val ssid: String = Random.nextString(5)
 
@@ -211,14 +212,16 @@ trait MomentProcessImplData {
     collectionId: Option[Int] = Option(collectionId1),
     timeslot: Seq[ServicesMomentTimeSlot] = createSeqServicesMomentTimeSlot(),
     wifi: Seq[String] = Seq.empty,
-    headphone: Boolean = false) =
+    headphone: Boolean = false,
+    momentType: Option[String] = Option(momentType1)) =
     (0 until num) map (item =>
       ServicesMoment(
         id = id + item,
         collectionId = collectionId,
         timeslot = timeslot,
         wifi = wifi,
-        headphone = headphone))
+        headphone = headphone,
+        momentType = momentType))
 
   def createSeqServicesMomentTimeSlot(
     from: String = from,
@@ -235,13 +238,15 @@ trait MomentProcessImplData {
     collectionId: Option[Int] = Option(collectionId1),
     timeslot: Seq[MomentTimeSlot] = createSeqMomentTimeSlot(),
     wifi: Seq[String] = Seq.empty,
-    headphone: Boolean = false) =
+    headphone: Boolean = false,
+    momentType: Option[String] = Option(momentType1)) =
     (0 until num) map (item =>
       Moment(
         collectionId = collectionId,
         timeslot = timeslot,
         wifi = wifi,
-        headphone = headphone))
+        headphone = headphone,
+        momentType = momentType))
 
   def createSeqMomentTimeSlot(
     from: String = from,
@@ -315,7 +320,8 @@ trait MomentProcessImplData {
       collectionId = homeMorningCollectionId,
       timeslot = homeMorningServicesTimeSlot,
       wifi = homeWifi,
-      headphone = false)
+      headphone = false,
+      momentType = Option(momentType1))
 
   val homeMorningTimeSlot =
     Seq(MomentTimeSlot(
@@ -328,7 +334,8 @@ trait MomentProcessImplData {
       collectionId = homeMorningCollectionId,
       timeslot = homeMorningTimeSlot,
       wifi = homeWifi,
-      headphone = false)
+      headphone = false,
+      momentType = Option(momentType1))
 
   val workCollectionId = Option(2)
   val workWifi = Seq("workWifi")
@@ -348,7 +355,8 @@ trait MomentProcessImplData {
       collectionId = workCollectionId,
       timeslot = workServicesTimeSlot,
       wifi = workWifi,
-      headphone = false)
+      headphone = false,
+      momentType = Option(momentType1))
 
   val workTimeSlot =
     Seq(MomentTimeSlot(
@@ -361,7 +369,8 @@ trait MomentProcessImplData {
       collectionId = workCollectionId,
       timeslot = workTimeSlot,
       wifi = workWifi,
-      headphone = false)
+      headphone = false,
+      momentType = Option(momentType1))
 
   val homeNightCollectionId = Option(3)
   val homeNightFrom1 = "19:00"
@@ -387,7 +396,8 @@ trait MomentProcessImplData {
       collectionId = homeNightCollectionId,
       timeslot = homeNightServicesTimeSlot,
       wifi = homeWifi,
-      headphone = false)
+      headphone = false,
+      momentType = Option(momentType1))
 
   val homeNightTimeSlot =
     Seq(
@@ -405,7 +415,8 @@ trait MomentProcessImplData {
       collectionId = homeNightCollectionId,
       timeslot = homeNightTimeSlot,
       wifi = homeWifi,
-      headphone = false)
+      headphone = false,
+      momentType = Option(momentType1))
 
   val dayNoWifiCollectionId = Option(4)
   val dayNoWifiWifi = Seq.empty
@@ -426,7 +437,8 @@ trait MomentProcessImplData {
       collectionId = dayNoWifiCollectionId,
       timeslot = dayNoWifiServicesTimeSlot,
       wifi = dayNoWifiWifi,
-      headphone = false)
+      headphone = false,
+      momentType = Option(momentType1))
 
   val dayNoWifiTimeSlot =
     Seq(
@@ -440,7 +452,8 @@ trait MomentProcessImplData {
       collectionId = dayNoWifiCollectionId,
       timeslot = dayNoWifiTimeSlot,
       wifi = dayNoWifiWifi,
-      headphone = false)
+      headphone = false,
+      momentType = Option(momentType1))
 
   val servicesMomentSeq = Seq(homeMorningServicesMoment, workServicesMoment, homeNightServicesMoment, dayNoWifiServicesMoment)
 

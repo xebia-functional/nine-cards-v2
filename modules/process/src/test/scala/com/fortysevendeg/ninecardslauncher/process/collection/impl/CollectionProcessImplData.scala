@@ -66,6 +66,7 @@ trait CollectionProcessImplData {
   val cardsRemoved = Random.nextInt(2)
 
   val momentId = Random.nextInt(5)
+  val momentType = Random.nextString(5)
 
   val application1 = Application(
     name = name1,
@@ -102,7 +103,8 @@ trait CollectionProcessImplData {
     collectionId = Option(collectionId1),
     timeslot = Seq(momentTimeSlot),
     wifi = Seq.empty,
-    headphone = false)
+    headphone = false,
+    momentType = Option(momentType))
 
   def createSeqCollection(
     num: Int = 5,

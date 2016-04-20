@@ -39,7 +39,7 @@ trait MomentRepositoryTestData {
         timeslot = testTimeslot,
         wifi = testWifi,
         headphone = testHeadphone,
-        momentType = testMomentType)))
+        momentType = Option(testMomentType))))
 
   def createMomentValues = Map[String, Any](
     MomentEntity.collectionId -> (testCollectionIdOption orNull),
@@ -52,7 +52,7 @@ trait MomentRepositoryTestData {
     timeslot = testTimeslot,
     wifi = testWifi,
     headphone = testHeadphone,
-    momentType = testMomentType)
+    momentType = Option(testMomentType))
 
   def createMomentValuesCollection = Map[String, Any](
     MomentEntity.collectionId -> (None orNull),
@@ -65,5 +65,5 @@ trait MomentRepositoryTestData {
     timeslot = testTimeslot,
     wifi = testWifi,
     headphone = testHeadphone,
-    momentType = testMomentType)
+    momentType = Option(testMomentType))
 }
