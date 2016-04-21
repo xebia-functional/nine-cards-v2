@@ -45,7 +45,8 @@ trait MomentRepositoryTestData {
     MomentEntity.collectionId -> (testCollectionIdOption orNull),
     MomentEntity.timeslot -> testTimeslot,
     MomentEntity.wifi -> testWifi,
-    MomentEntity.headphone -> testHeadphone)
+    MomentEntity.headphone -> testHeadphone,
+    MomentEntity.momentType -> testMomentType)
 
   def createMomentData = MomentData(
     collectionId = testCollectionIdOption,
@@ -58,7 +59,8 @@ trait MomentRepositoryTestData {
     MomentEntity.collectionId -> (None orNull),
     MomentEntity.timeslot -> testTimeslot,
     MomentEntity.wifi -> testWifi,
-    MomentEntity.headphone -> testHeadphone)
+    MomentEntity.headphone -> testHeadphone,
+    MomentEntity.momentType -> testMomentType)
 
   def createMomentDataCollection = MomentData(
     collectionId = None,

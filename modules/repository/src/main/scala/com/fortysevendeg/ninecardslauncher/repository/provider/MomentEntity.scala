@@ -26,7 +26,8 @@ object MomentEntity {
     collectionId,
     timeslot,
     wifi,
-    headphone)
+    headphone,
+    momentType)
 
   def momentEntityFromCursor(cursor: Cursor): MomentEntity =
     MomentEntity(
