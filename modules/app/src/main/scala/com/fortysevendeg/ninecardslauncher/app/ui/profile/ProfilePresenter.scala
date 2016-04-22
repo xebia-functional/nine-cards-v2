@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.profile
 
+import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Presenter, ResultCodes, UserProfileProvider, UserProfileStatuses}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
@@ -10,21 +12,27 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDevi
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.RemoveAccountDeviceDialogFragment
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher2.R
+import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
 
-import scala.util.Try
+import scala.util.{Failure, Try}
 import scalaz.concurrent.Task
 
 class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter {
+  extends Presenter
+  with GoogleApiClientProvider {
+
+  import Statuses._
 
   val tagDialog = "dialog"
 
@@ -34,16 +42,20 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   var syncEnabled: Boolean = false
 
-  def saveClientStatus(cs: GoogleApiClientStatuses): Unit = clientStatuses = cs
+  override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
+    if (connectionResult.hasResolution) {
+      Try(connectionResult.startResolutionForResult(actions.getActivityForIntent, resolveGooglePlayConnection)) match {
+        case Failure(e) => showError()
+        case _ =>
+      }
+    } else {
+      showError()
+    }
 
-  def saveProfileStatus(ps: UserProfileStatuses): Unit = userProfileStatuses = ps
-
-  def connectGoogleApiClient(): Unit = clientStatuses.apiClient foreach (_.connect())
-
-  def connected(): Unit = clientStatuses match {
+  override def onConnected(bundle: Bundle): Unit = clientStatuses match {
     case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
       loadUserAccounts(client)
-    case _ => actions.showConnectingGoogleError(() => connectGoogleApiClient()).run
+    case _ => actions.showConnectingGoogleError(() => tryToConnect()).run
   }
 
   def initialize(): Unit = {
@@ -91,7 +103,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
       loadUserAccounts(client)
     case GoogleApiClientStatuses(Some(client)) =>
-      connectGoogleApiClient()
+      tryToConnect()
       actions.showLoading().run
     case _ =>
       loadUserInfo()
@@ -109,7 +121,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   private[this] def sampleItems(tab: String) = 1 to 20 map (i => s"$tab Item $i")
 
-  def showError(): Unit = actions.showConnectingGoogleError(() => connectGoogleApiClient()).run
+  def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
 
   def showDialogForDeleteDevice(resourceId: String): Unit = {
     contextWrapper.original.get match {
@@ -123,8 +135,20 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
   }
 
-  def activityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
-    userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
+  def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean =
+    (requestCode, resultCode) match {
+      case (`resolveGooglePlayConnection`, Activity.RESULT_OK) =>
+        tryToConnect()
+        true
+      case (`resolveGooglePlayConnection`, _) =>
+        showError()
+        true
+      case (`resolveConnectedUser`, _) =>
+        userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
+        true
+      case _ => false
+    }
+
 
   def quit(): Unit =
     Task.fork(logout().run).resolveAsyncUi(
@@ -143,10 +167,12 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
   }
 
+  private[this] def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
+
   private[this] def loadUserInfo(): Unit =
     Task.fork(loadUserEmail().run).resolveAsyncUi(
       onResult = email => Ui {
-        val client = email map actions.createGoogleDriveClient
+        val client = email map createGoogleDriveClient
         clientStatuses = clientStatuses.copy(apiClient = client)
         client foreach (_.connect())
       },
@@ -173,7 +199,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
           onResult = (_) => Ui(loadUserAccounts(client, Seq(resourceId))),
           onException = (_) => actions.showContactUsError(() => deleteDevice(resourceId)),
           onPreTask = () => actions.showLoading())
-      case _ => actions.showConnectingGoogleError(() => connectGoogleApiClient())
+      case _ => actions.showConnectingGoogleError(() => tryToConnect())
     }
 
   private[this] def loadUserEmail(): ServiceDef2[Option[String], UserException] = di.userProcess.getUser.map(_.email)
@@ -224,6 +250,12 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
 }
 
+object Statuses {
+
+  case class GoogleApiClientStatuses(apiClient: Option[GoogleApiClient] = None)
+
+}
+
 trait ProfileUiActions {
 
   def initialize(): Ui[Any]
@@ -240,7 +272,9 @@ trait ProfileUiActions {
 
   def showMessageAccountSynced(): Ui[Any]
 
-  def createGoogleDriveClient(account: String): GoogleApiClient
+  def getActivityForIntent: Activity
+
+//  def createGoogleDriveClient(account: String): GoogleApiClient
 
   def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_]
 
