@@ -48,6 +48,6 @@ object MomentEntity {
         |${MomentEntity.collectionId} INTEGER,
         |${MomentEntity.timeslot} TEXT not null,
         |${MomentEntity.wifi} TEXT not null,
-        |${MomentEntity.headphone} INTEGER not null),
-        |${MomentEntity.momentType} TEXT""".stripMargin
+        |${MomentEntity.headphone} INTEGER not null,
+        |${MomentEntity.momentType} TEXT)""".stripMargin
 }

@@ -68,6 +68,9 @@ object Conversions {
       sessionToken = Option[String](userEntity.data.sessionToken),
       installationId = Option[String](userEntity.data.installationId),
       deviceToken = Option[String](userEntity.data.deviceToken),
-      androidToken = Option[String](userEntity.data.androidToken)))
+      androidToken = Option[String](userEntity.data.androidToken),
+      name = Option[String](userEntity.data.name),
+      avatar = Option[String](userEntity.data.avatar),
+      cover = Option[String](userEntity.data.cover)))
 
 }

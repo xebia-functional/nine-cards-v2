@@ -13,7 +13,10 @@ case class UserEntityData(
   sessionToken: String,
   installationId: String,
   deviceToken: String,
-  androidToken: String)
+  androidToken: String,
+  name: String,
+  avatar: String,
+  cover: String)
 
 object UserEntity {
   val table = "User"
@@ -23,6 +26,9 @@ object UserEntity {
   val installationId = "installationId"
   val deviceToken = "deviceToken"
   val androidToken = "androidToken"
+  val name = "name"
+  val avatar = "avatar"
+  val cover = "cover"
 
   val allFields = Seq[String](
     NineCardsSqlHelper.id,
@@ -31,7 +37,10 @@ object UserEntity {
     sessionToken,
     installationId,
     deviceToken,
-    androidToken)
+    androidToken,
+    name,
+    avatar,
+    cover)
 
   def userEntityFromCursor(cursor: Cursor): UserEntity =
     UserEntity(
@@ -42,7 +51,10 @@ object UserEntity {
         sessionToken = cursor.getString(cursor.getColumnIndex(sessionToken)),
         installationId = cursor.getString(cursor.getColumnIndex(installationId)),
         deviceToken = cursor.getString(cursor.getColumnIndex(deviceToken)),
-        androidToken = cursor.getString(cursor.getColumnIndex(androidToken))))
+        androidToken = cursor.getString(cursor.getColumnIndex(androidToken)),
+        name = cursor.getString(cursor.getColumnIndex(name)),
+        avatar = cursor.getString(cursor.getColumnIndex(avatar)),
+        cover = cursor.getString(cursor.getColumnIndex(cover))))
 
   def userFromCursor(cursor: Cursor): User = toUser(userEntityFromCursor(cursor))
 
@@ -54,6 +66,9 @@ object UserEntity {
         |${UserEntity.sessionToken} INTEGER,
         |${UserEntity.installationId} TEXT,
         |${UserEntity.deviceToken} TEXT,
-        |${UserEntity.androidToken} INTEGER)""".stripMargin
+        |${UserEntity.androidToken} INTEGER,
+        |${UserEntity.name} TEXT,
+        |${UserEntity.avatar } TEXT,
+        |${UserEntity.cover} TEXT)""".stripMargin
 
 }

@@ -116,7 +116,10 @@ case class AddUserRequest(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String])
+  androidToken: Option[String],
+  name: Option[String],
+  avatar: Option[String],
+  cover: Option[String])
 
 case class DeleteUsersRequest(where: String)
 
@@ -131,7 +134,10 @@ case class UpdateUserRequest(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String])
+  androidToken: Option[String],
+  name: Option[String],
+  avatar: Option[String],
+  cover: Option[String])
 
 case class CreateOrUpdateDockAppRequest(
   name: String,

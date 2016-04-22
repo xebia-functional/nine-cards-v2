@@ -41,6 +41,9 @@ class NineCardsSqlHelper(context: Context)
         db.execSQL(MomentEntity.createTableSQL)
       case 10 =>
         db.execSQL(s"ALTER TABLE ${MomentEntity.table} ADD COLUMN ${MomentEntity.momentType} TEXT")
+        db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.name} TEXT, ")
+        db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.avatar} TEXT, ")
+        db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.cover} TEXT, ")
     }
 
     new Handler().post(() => execVersionsDB(oldVersion, newVersion))

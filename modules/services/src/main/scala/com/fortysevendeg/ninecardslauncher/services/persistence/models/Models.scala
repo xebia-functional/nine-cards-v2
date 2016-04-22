@@ -42,7 +42,10 @@ case class User(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String])
+  androidToken: Option[String],
+  name: Option[String],
+  avatar: Option[String],
+  cover: Option[String])
 
 case class DockApp(
   id: Int,

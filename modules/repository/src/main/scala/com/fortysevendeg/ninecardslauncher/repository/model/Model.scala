@@ -75,7 +75,10 @@ case class UserData(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String])
+  androidToken: Option[String],
+  name: Option[String],
+  avatar: Option[String],
+  cover: Option[String])
 
 case class DataCounter(term: String, count: Int)
 
