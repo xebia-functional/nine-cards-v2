@@ -132,6 +132,10 @@ trait WizardUiActionsImpl
 
   override def showErrorAcceptTerms(): Ui[Any] = showMessage(R.string.messageAcceptTerms)
 
+  override def showErrorAndroidMarketNotAccepted(): Ui[Any] = Ui.nop
+
+  override def showErrorGoogleDriveNotAccepted(): Ui[Any] = Ui.nop
+
   override def showDevices(devices: UserCloudDevices): Ui[Any] =
     addDevicesToRadioGroup(devices.devices) ~
       showDevices ~

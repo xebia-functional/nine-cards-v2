@@ -42,15 +42,15 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   import Statuses._
 
-  private[this] val accountType = "com.google"
+  val accountType = "com.google"
 
-  private[this] lazy val accountManager: AccountManager = AccountManager.get(contextSupport.context)
+  val googleKeyPreferences = "__google_auth__"
 
-  private[this] lazy val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq
+  val googleKeyToken = "__google_token__"
 
-  private[this] val googleKeyPreferences = "__google_auth__"
+  lazy val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq
 
-  private[this] val googleKeyToken = "__google_token__"
+  lazy val accountManager: AccountManager = AccountManager.get(contextSupport.context)
 
   lazy val preferences = contextWrapper.bestAvailable.getSharedPreferences(googleKeyPreferences, Context.MODE_PRIVATE)
 
@@ -140,9 +140,9 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }
   }
 
-  protected def getAccount(username: String): Option[Account] = accounts find (_.name == username)
+  private[this] def getAccount(username: String): Option[Account] = accounts find (_.name == username)
 
-  protected def requestUserPermissions(
+  private[this] def requestUserPermissions(
     account: Account,
     scopes: String,
     client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] = {
@@ -151,12 +151,12 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     } yield UserPermissions(token, Seq(scopes))
   }
 
-  protected def invalidateToken(): Unit = {
+  private[this] def invalidateToken(): Unit = {
     getToken foreach (accountManager.invalidateAuthToken(accountType, _))
     setToken(javaNull)
   }
 
-  protected def loadCloudDevices(
+  private[this] def loadCloudDevices(
     client: GoogleApiClient,
     username: String,
     userPermissions: UserPermissions
@@ -180,11 +180,12 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     invalidateToken()
     val scopes = "androidmarket"
     Task.fork(requestUserPermissions(account, scopes, client).run).resolveAsyncUi(
-      onResult = (permissions: UserPermissions) => Ui(requestGooglePermission(account, client)),
+      onResult = (permissions: UserPermissions) => {
+        requestGooglePermission(account, client)
+        Ui.nop
+      },
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException =>
-          // TODO - Dialog
-          actions.showErrorConnectingGoogle()
+        case ex: AuthTokenOperationCancelledException => actions.showErrorAndroidMarketNotAccepted()
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
       onPreTask = () => actions.showLoading())
@@ -200,9 +201,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         clientStatuses.apiClient foreach (_.connect())
       },
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException =>
-          // TODO - Dialog
-          actions.showErrorConnectingGoogle()
+        case ex: AuthTokenOperationCancelledException => actions.showErrorGoogleDriveNotAccepted()
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
       onPreTask = () => actions.showLoading())
@@ -329,6 +328,10 @@ trait WizardUiActions {
   def showErrorAcceptTerms(): Ui[Any]
 
   def showErrorLoginUser(): Ui[Any]
+
+  def showErrorAndroidMarketNotAccepted(): Ui[Any]
+
+  def showErrorGoogleDriveNotAccepted(): Ui[Any]
 
   def showDevices(devices: UserCloudDevices): Ui[Any]
 

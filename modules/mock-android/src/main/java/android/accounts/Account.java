@@ -8,7 +8,10 @@ public class Account implements Parcelable {
     public String type;
     public static Creator<Account> CREATOR = null;
 
-    public Account(String name, String type) {}
+    public Account(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
 
     public Account(Parcel in) {}
 

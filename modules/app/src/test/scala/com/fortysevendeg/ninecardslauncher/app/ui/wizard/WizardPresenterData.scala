@@ -9,6 +9,8 @@ trait WizardPresenterData {
 
   val accountName = "device@47deg.com"
 
+  val nonExistingAccountName = "non-existing@47deg.com"
+
   val accountType = "com.google"
 
   val account = new Account(accountName, accountType)
@@ -22,6 +24,10 @@ trait WizardPresenterData {
   val nameDevice = "Nexus 47"
 
   val deviceId = "XXX-47"
+
+  val androidMarketScopes = "androidmarket"
+
+  val googleScopes = "fakeGoogleScope"
 
   val deviceName = nameDevice
 
