@@ -112,6 +112,22 @@ object LauncherWorkSpacesTweaks {
 
   def lwsCloseMenu = Tweak[W] (_.closeMenu().run)
 
+  def lwsPrepareItemsScreenInReorder(position: Int) = Tweak[W] (_.prepareItemsScreenInReorder(position).run)
+
+  def lwsCountCollections() = Excerpt[W, Int] (_.getCountCollections)
+
+  def lwsCountCollectionScreens() = Excerpt[W, Int] (_.getCountCollectionScreens)
+
+  def lwsEmptyCollections() = Excerpt[W, Boolean] (_.isEmptyCollections)
+
+  def lwsCanMoveToNextScreen() = Excerpt[W, Boolean] (_.nextScreen.isDefined)
+
+  def lwsNextScreen() = Excerpt[W, Option[Int]] (_.nextScreen)
+
+  def lwsPreviousScreen() = Excerpt[W, Option[Int]] (_.previousScreen)
+
+  def lwsCanMoveToPreviousScreen() = Excerpt[W, Boolean] (_.previousScreen.isDefined)
+
 }
 
 object AnimatedWorkSpacesTweaks {
@@ -121,6 +137,10 @@ object AnimatedWorkSpacesTweaks {
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
   def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
+
+  def awsCurrentWorkSpace() = Excerpt[W, Int] (_.statuses.currentItem)
+
+  def awsCountWorkSpace() = Excerpt[W, Int] (_.getWorksSpacesCount)
 
 }
 

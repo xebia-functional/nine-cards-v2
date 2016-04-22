@@ -35,7 +35,7 @@ object SnailsCommons {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.success()
+            animPromise.trySuccess()
           }
         }).start()
       animPromise.future
@@ -55,7 +55,7 @@ object SnailsCommons {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             view.setVisibility(View.GONE)
-            animPromise.success()
+            animPromise.trySuccess()
           }
         }).start()
       animPromise.future
@@ -79,7 +79,7 @@ object SnailsCommons {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.success()
+            animPromise.trySuccess()
           }
         }).start()
       animPromise.future
@@ -102,7 +102,7 @@ object SnailsCommons {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.success()
+            animPromise.trySuccess()
           }
         }).start()
       animPromise.future
@@ -132,7 +132,7 @@ object SnailsCommons {
           override def onAnimationEnd(animation: Animator) = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.success()
+            animPromise.trySuccess()
           }
         }).start()
       animPromise.future
@@ -160,7 +160,7 @@ object SnailsCommons {
         override def onAnimationEnd(animation: Animator): Unit = {
           super.onAnimationEnd(animation)
           view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-          animPromise.success()
+          animPromise.trySuccess()
         }
       })
       valueAnimator.start()

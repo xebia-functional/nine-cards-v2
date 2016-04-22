@@ -76,7 +76,17 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def draggingTo(position: Int): Unit = {
     statuses = statuses.reordering(position)
- }
+  }
+
+  def draggingToNextScreen(position: Int): Unit = {
+    actions.goToNextScreenReordering().run
+    statuses = statuses.reordering(position)
+  }
+
+  def draggingToPreviousScreen(position: Int): Unit = {
+    actions.goToPreviousScreenReordering().run
+    statuses = statuses.reordering(position)
+  }
 
   def drop(): Unit = {
     actions.endReorder.run
@@ -302,6 +312,10 @@ trait LauncherUiActions {
 
   def showLoading(): Ui[Any]
 
+  def goToPreviousScreenReordering(): Ui[Any]
+
+  def goToNextScreenReordering(): Ui[Any]
+
   def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any]
 
   def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
@@ -352,7 +366,7 @@ case class LauncherPresenterStatuses(
       currentPositionReorderMode = 0,
       mode = NormalMode)
 
-  def isReording(): Boolean = mode == ReorderMode
+  def isReordering(): Boolean = mode == ReorderMode
 
 }
 

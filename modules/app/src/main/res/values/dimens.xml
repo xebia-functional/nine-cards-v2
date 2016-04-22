@@ -45,6 +45,7 @@
     <!-- WorkSpace -->
     <dimen name="size_workspace_menu_item">50dp</dimen>
     <dimen name="max_width_workspace_menu_item">100dp</dimen>
+    <dimen name="size_edge_between_workspaces">15dp</dimen>
 
     <!-- FAB -->
     <dimen name="margin_fab_button">0dp</dimen>

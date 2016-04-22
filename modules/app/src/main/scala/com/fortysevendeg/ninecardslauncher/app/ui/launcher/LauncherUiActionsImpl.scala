@@ -8,6 +8,7 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
@@ -19,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -53,6 +55,24 @@ trait LauncherUiActionsImpl
   override def showMinimumOneCollectionMessage(): Ui[Any] = showMessage(R.string.minimumOneCollectionMessage)
 
   override def showLoading(): Ui[Any] = showCollectionsLoading
+
+  override def goToPreviousScreenReordering(): Ui[Any] = {
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
+    if (canMoveToPreviousScreen) {
+      goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1))
+    } else {
+      Ui.nop
+    }
+  }
+
+  override def goToNextScreenReordering(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
+    if (canMoveToNextScreen) {
+      goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0))
+    } else {
+      Ui.nop
+    }
+  }
 
   override def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any] =
     createCollections(collections, apps)
@@ -122,7 +142,7 @@ trait LauncherUiActionsImpl
 
   private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
 
-  private[this] def fadeOut() = applyAnimation(alpha = Some(0)) + vGone
+  private[this] def fadeOut() = applyAnimation(alpha = Some(0)) + vInvisible
 
   override def isTabsOpened: Boolean = isDrawerTabsOpened
 

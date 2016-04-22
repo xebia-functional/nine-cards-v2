@@ -26,6 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.CollectionItemTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{DragLauncherType, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{CollectionItemStyle, CollectionsGroupStyle, LauncherPresenter}
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -35,15 +36,25 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
-class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDimen: Dimen)(implicit contextWrapper: ContextWrapper)
+class LauncherWorkSpaceCollectionsHolder(
+  presenter: LauncherPresenter,
+  parentDimen: Dimen)(implicit contextWrapper: ContextWrapper)
   extends LauncherWorkSpaceHolder
   with CollectionsGroupStyle {
+
+  val handler = new Handler()
+
+  var task: Option[Runnable] = None
+
+  val sizeEdgeBetweenWorkspaces = resGetDimensionPixelSize(R.dimen.size_edge_between_workspaces)
 
   val widthSpace = parentDimen.width / numInLine
 
   val heightSpace = parentDimen.height / numInLine
 
   var positionScreen = 0
+
+  var countCollectionScreens = 0
 
   var grid: Option[GridLayout] = slot[GridLayout]
 
@@ -60,8 +71,9 @@ class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDim
       height = heightSpace) <~
     vDragListener()).run
 
-  def populate(collections: Seq[Collection], positionScreen: Int): Ui[_] = {
+  def populate(collections: Seq[Collection], positionScreen: Int, countCollectionScreens: Int): Ui[_] = {
     this.positionScreen = positionScreen
+    this.countCollectionScreens = countCollectionScreens
     val uiSeq = for {
       row <- 0 until numInLine
       column <- 0 until numInLine
@@ -78,29 +90,77 @@ class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDim
     Ui.sequence(uiSeq: _*)
   }
 
+  def prepareItemsScreenInReorder(position: Int): Ui[Any] = {
+    val startReorder = presenter.statuses.startPositionReorderMode
+    val screenOfCollection = (toPositionCollection(0) <= startReorder) && (toPositionCollection(numSpaces) > startReorder)
+    if (screenOfCollection) {
+      Ui.sequence(views map { view =>
+        if (view.positionInGrid == startReorder) {
+          view.convertToDraggingItem() ~ (view <~ vInvisible)
+        } else if (view.collection.isEmpty) {
+          view <~ vInvisible
+        } else {
+          view <~ vVisible
+        }
+      }: _*) ~ reorder(startReorder, position, animation = false)
+    } else {
+      Ui.sequence(views map { view =>
+        if (view.positionInGrid == toPositionCollection(position)) {
+          view.convertToDraggingItem() ~ (view <~ vInvisible)
+        } else if (view.collection.isEmpty) {
+          view <~ vInvisible
+        } else {
+          view <~ vVisible
+        }
+      }: _*)
+    }
+  }
+
+  private[this] def resetAllPositions(): Ui[Any] = Ui.sequence(views map { view =>
+    view <~ backToPosition() <~ (view.collection map (_ => vVisible) getOrElse vInvisible)
+  }: _*)
+
   private[this] def vDragListener(): Tweak[View] = Tweak[View] { view =>
     view.setOnDragListener(new OnDragListener {
       override def onDrag(v: View, event: DragEvent): Boolean = {
-        (event.getAction, DragLauncherType(event.getLocalState), presenter.statuses.isReording(), isRunningReorderAnimation) match {
+        (event.getAction, DragLauncherType(event.getLocalState), presenter.statuses.isReordering(), isRunningReorderAnimation) match {
           case (ACTION_DRAG_LOCATION, ReorderCollection, true, false) =>
             val lastCurrentPosition = presenter.statuses.currentPositionReorderMode
-            val currentPosition = calculatePosition(event.getX, event.getY)
-            if (lastCurrentPosition != currentPosition) {
-              reorder(lastCurrentPosition, currentPosition).run
-              presenter.draggingTo(currentPosition)
+            val x = event.getX
+            val y = event.getY
+            val canMoveToLeft = positionScreen > 0
+            val canMoveToRight = positionScreen < countCollectionScreens - 1
+            (calculateEdge(x), canMoveToLeft, canMoveToRight) match {
+              case (LeftEdge, true, _) =>
+                delayedTask(() => {
+                  resetAllPositions().run
+                  presenter.draggingToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
+                })
+              case (RightEdge, _, true) =>
+                delayedTask(() => {
+                  resetAllPositions().run
+                  presenter.draggingToNextScreen(toPositionCollection(0) + numSpaces)
+                })
+              case (NoEdge, _ , _) =>
+                clearTask()
+                val space = calculatePosition(x, y)
+                val existCollectionInSpace = (views.lift(space) flatMap(_.collection)).isDefined
+                val currentPosition = toPositionCollection(space)
+                if (existCollectionInSpace && lastCurrentPosition != currentPosition) {
+                  reorder(lastCurrentPosition, currentPosition).run
+                  presenter.draggingTo(currentPosition)
+                }
+              case _ =>
             }
           case (ACTION_DROP | ACTION_DRAG_ENDED, ReorderCollection, true, false) =>
             resetPlaces.run
             presenter.drop()
           case (ACTION_DROP | ACTION_DRAG_ENDED, ReorderCollection, true, true) =>
             // we are waiting that the animation is finished in order to reset views
-            val duration = resGetInteger(R.integer.anim_duration_normal)
-            new Handler().postDelayed(new Runnable {
-              override def run(): Unit = {
-                resetPlaces.run
-                presenter.drop()
-              }
-            }, duration)
+            delayedTask(() => {
+              resetPlaces.run
+              presenter.drop()
+            }, resGetInteger(R.integer.anim_duration_normal))
           case _ =>
         }
         true
@@ -108,12 +168,12 @@ class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDim
     })
   }
 
-  private[this] def reorder(currentPosition: Int, toPosition: Int): Ui[Any] = {
+  private[this] def reorder(currentPosition: Int, toPosition: Int, animation: Boolean = true): Ui[Any] =
     if (currentPosition < toPosition) {
       val from = currentPosition + 1
       val to = toPosition
       val transforms = from to to map { pos =>
-        move(pos, pos - 1)
+        move(pos, pos - 1, animation)
       }
       val updatePositions = from to to map { pos =>
         getView(pos) map (view => Ui(view.positionInGrid = pos - 1)) getOrElse Ui.nop
@@ -123,7 +183,7 @@ class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDim
       val from = toPosition
       val to = currentPosition
       val transforms = from until to map { pos =>
-        move(pos, pos  + 1)
+        move(pos, pos  + 1, animation)
       }
       val updatePositions = from until to map { pos =>
         getView(pos) map (view => Ui(view.positionInGrid = pos + 1)) getOrElse Ui.nop
@@ -132,31 +192,43 @@ class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDim
     } else {
       Ui.nop
     }
-  }
 
-  private[this] def move(from: Int, to: Int): Ui[Any] = {
+  private[this] def move(from: Int, to: Int, animation: Boolean): Ui[Any] = {
     val (fromColumn, fromRow) = place(from)
     val (toColumn, toRow) = place(to)
     val displacementHorizontal = (toColumn - fromColumn) * widthSpace
     val displacementVertical = (toRow - fromRow) * heightSpace
     val view = getView(from)
-    view <~ applyAnimation(
-      xBy = Some(displacementHorizontal),
-      yBy = Some(displacementVertical))
+    if (animation) {
+      view <~ applyAnimation(
+        xBy = Some(displacementHorizontal),
+        yBy = Some(displacementVertical))
+    } else {
+      view <~
+        vTranslationX(displacementHorizontal) <~
+        vTranslationY(displacementVertical)
+    }
   }
 
   private[this] def resetPlaces: Ui[Any] = {
     val start = toPositionGrid(presenter.statuses.startPositionReorderMode)
     val current = toPositionGrid(presenter.statuses.currentPositionReorderMode)
     val collectionsReordered = (views map (_.collection)).reorder(start, current).zipWithIndex map {
-      case (collection, index) => collection map(_.copy(position = toPositionScreen(index)))
+      case (collection, index) =>
+        val positionCollection = toPositionCollection(index)
+        // if it's the collection that the user is dragging, we put the collection stored.
+        // when the user is reordering in other screen the collection isn't the same on the view
+        if (positionCollection == presenter.statuses.currentPositionReorderMode) {
+          presenter.statuses.collectionReorderMode
+        } else {
+          collection map (_.copy(position = positionCollection))
+        }
     }
     Ui.sequence(views.zip(collectionsReordered) map {
       case (view, Some(collection)) =>
         view  <~
           vClearAnimation <~
-          vTranslationX(0) <~
-          vTranslationY(0) <~
+          backToPosition() <~
           ciPopulate(collection)
       case _ => Ui.nop
     }:_*)
@@ -173,23 +245,43 @@ class LauncherWorkSpaceCollectionsHolder(presenter: LauncherPresenter, parentDim
   private[this] def calculatePosition(x: Float, y: Float): Int = {
     val column = x.toInt / widthSpace
     val row = y.toInt / heightSpace
-    toPositionScreen((row * numInLine) + column)
+    (row * numInLine) + column
   }
 
-  private[this] def toPositionScreen(position: Int) = position + (positionScreen * numSpaces)
+  private[this] def calculateEdge(x: Float): Edge = if (x < sizeEdgeBetweenWorkspaces) {
+    LeftEdge
+  } else if (x > parentDimen.width - sizeEdgeBetweenWorkspaces) {
+    RightEdge
+  } else {
+    NoEdge
+  }
+
+  private[this] def toPositionCollection(position: Int) = position + (positionScreen * numSpaces)
 
   private[this] def toPositionGrid(position: Int) = position - (positionScreen * numSpaces)
 
   private[this] def isRunningReorderAnimation: Boolean = views exists (_.isRunningAnimation)
 
+  private[this] def delayedTask(runTask: () => Unit, duration: Int = 500): Unit = if (task.isEmpty) {
+    val runnable = new Runnable {
+      override def run(): Unit = runTask()
+    }
+    task = Option(runnable)
+    handler.postDelayed(runnable, duration)
+  }
+
+  private[this] def clearTask(): Unit =  if (task.isDefined) {
+    task foreach handler.removeCallbacks
+    task = None
+  }
+
+  private[this] def backToPosition() = vTranslationX(0) + vTranslationY(0)
 }
 
 case class CollectionItem(
   presenter: LauncherPresenter)(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(contextWrapper.application)
   with CollectionItemStyle {
-
-  val positionDraggingItem = numSpaces
 
   var positionInGrid = 0
 
@@ -223,13 +315,15 @@ case class CollectionItem(
       On.longClick {
         presenter.startDrag(this.collection, positionInGrid)
         (this.collection map { _ =>
-          (this <~ vInvisible) ~ Ui(positionInGrid = positionDraggingItem) ~ (layout <~ startDrag())
+          (this <~ vInvisible) ~ convertToDraggingItem() ~ (layout <~ startDrag())
         } getOrElse Ui.nop).run
         Ui(true)
       }) ~
       (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
       (name <~ tvText(collection.name))).run
   }
+
+  def convertToDraggingItem(): Ui[Any] = Ui(positionInGrid = positionDraggingItem)
 
   private[this] def createBackground(indexColor: Int): Drawable = {
     val color = resGetColor(getIndexColor(indexColor))
@@ -271,6 +365,10 @@ case class CollectionItem(
 
 }
 
+object LauncherWorkSpaceCollectionsHolder {
+  val positionDraggingItem = Int.MaxValue
+}
+
 object CollectionItemTweaks {
   type W = CollectionItem
 
@@ -278,3 +376,11 @@ object CollectionItemTweaks {
 
   def ciOff() = vInvisible + Tweak[W](_.collection = None)
 }
+
+sealed trait Edge
+
+case object LeftEdge extends Edge
+
+case object RightEdge extends Edge
+
+case object NoEdge extends Edge

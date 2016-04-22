@@ -42,6 +42,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => 0
   } sum
 
+  def getCountCollectionScreens: Int = data count(_.workSpaceType == CollectionsWorkSpace)
+
   def isEmptyCollections: Boolean = getCountCollections == 0
 
   def isMomentWorkSpace: Boolean = data(statuses.currentItem).workSpaceType.isMomentWorkSpace
@@ -51,6 +53,22 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def isCollectionWorkSpace: Boolean = !isMomentWorkSpace
 
   def isCollectionWorkSpace(page: Int): Boolean = !isMomentWorkSpace(page)
+
+  def nextScreen: Option[Int] = {
+    val current = statuses.currentItem
+    if (current + 1 < getWorksSpacesCount) Some(current + 1) else None
+  }
+
+  def previousScreen: Option[Int] = {
+    val current = statuses.currentItem
+    if (current > 0) Some(current - 1) else None
+  }
+
+  def prepareItemsScreenInReorder(position: Int): Ui[Any] = frontView match {
+    case Some(collectionWorkspace: LauncherWorkSpaceCollectionsHolder) =>
+      collectionWorkspace.prepareItemsScreenInReorder(position)
+    case _ => Ui.nop
+  }
 
   override def getItemViewTypeCount: Int = 2
 
@@ -65,7 +83,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
     view match {
       case Some(v: LauncherWorkSpaceCollectionsHolder) =>
-        v.populate(data.collections, data.positionByType)
+        v.populate(data.collections, data.positionByType, getCountCollectionScreens)
       case _ => Ui.nop
     }
 
