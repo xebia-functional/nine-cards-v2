@@ -247,6 +247,14 @@ trait PersistenceServices {
   def updateCollection(request: UpdateCollectionRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
+    * Bulk update of the data of some collections from the repository
+    * @param request includes the data to update the cards
+    * @return a Seq[Int] if the cards has been updated correctly
+    * @throws PersistenceServiceException if exist some problem updating the card
+    */
+  def updateCollections(request: UpdateCollectionsRequest): ServiceDef2[Seq[Int], PersistenceServiceException]
+
+  /**
     * Obtains the android id from the repository
     * @return an String with the android id
     * @throws AndroidIdNotFoundException if exist some problem obtaining the android id

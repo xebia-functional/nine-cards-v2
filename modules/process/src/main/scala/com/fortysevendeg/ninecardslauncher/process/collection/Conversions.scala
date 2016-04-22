@@ -7,7 +7,14 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, _}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{
+  AddCardRequest => ServicesAddCardRequest,
+  AddCollectionRequest => ServicesAddCollectionRequest,
+  UpdateCardRequest => ServicesUpdateCardRequest,
+  UpdateCardsRequest => ServicesUpdateCardsRequest,
+  UpdateCollectionRequest => ServicesUpdateCollectionRequest,
+  UpdateCollectionsRequest => ServicesUpdateCollectionsRequest,
+_ }
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
 trait Conversions extends CommonConversions {
@@ -46,6 +53,9 @@ trait Conversions extends CommonConversions {
     sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = Option(collection.sharedCollectionSubscribed),
     cards = collection.cards map toServicesCard)
+
+  def toServicesUpdateCollectionsRequest(collections: Seq[Collection]) =
+    ServicesUpdateCollectionsRequest(collections map toServicesUpdateCollectionRequest)
 
   def toUpdatedCollection(collection: Collection, editCollectionRequest: EditCollectionRequest) =  Collection(
     id = collection.id,

@@ -92,9 +92,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.endReorder.run
     val from = statuses.startPositionReorderMode
     val to = statuses.currentPositionReorderMode
-    Task.fork(di.collectionProcess.reorderCollection(from, to).run).resolveAsyncUi(
-      onResult = (_) => actions.reloadCollectionsAfterReorder(from, to),
-      onException = (_) => actions.reloadCollectionsFailed() ~ actions.showContactUsError())
+    if (from != to) {
+      Task.fork(di.collectionProcess.reorderCollection(from, to).run).resolveAsyncUi(
+        onResult = (_) => actions.reloadCollectionsAfterReorder(from, to),
+        onException = (_) => actions.reloadCollectionsFailed() ~ actions.showContactUsError())
+    }
     statuses = statuses.endReorder()
   }
 

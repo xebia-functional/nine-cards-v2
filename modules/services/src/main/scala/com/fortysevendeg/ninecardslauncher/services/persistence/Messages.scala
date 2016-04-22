@@ -123,6 +123,8 @@ case class UpdateCollectionRequest(
   sharedCollectionSubscribed: Option[Boolean],
   cards: Seq[Card])
 
+case class UpdateCollectionsRequest(updateCollectionsRequests: Seq[UpdateCollectionRequest])
+
 case class AddUserRequest(
   userId: Option[String],
   email: Option[String],
