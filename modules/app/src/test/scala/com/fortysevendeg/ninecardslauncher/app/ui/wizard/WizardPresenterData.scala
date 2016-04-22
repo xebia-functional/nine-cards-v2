@@ -15,6 +15,8 @@ trait WizardPresenterData {
 
   val account = new Account(accountName, accountType)
 
+  val accounts = Seq(account)
+
   val token = "fake-token"
 
   val permissions = Seq.empty

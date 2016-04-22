@@ -71,7 +71,11 @@ trait WizardPresenterSpecification
     mockEditor.putString(any, any) returns mockEditor
 
     mockContext.getResources returns mockResources
+
+    mockActions.initialize(any) returns Ui[Any]()
     mockActions.showLoading() returns Ui[Any]()
+    mockActions.goToUser() returns Ui[Any]()
+    mockActions.goToWizard() returns Ui[Any]()
     mockActions.showErrorConnectingGoogle() returns Ui[Any]()
     mockActions.showErrorLoginUser() returns Ui[Any]()
     mockActions.showErrorAcceptTerms() returns Ui[Any]()
@@ -98,6 +102,36 @@ trait WizardPresenterSpecification
 class WizardPresenterSpec
   extends WizardPresenterSpecification {
 
+  "Initialize" should {
+
+    "call to initialize in Actions with the accounts" in new WizardPresenterScope {
+
+      presenter.initialize()
+
+      there was after(1.seconds).one(mockActions).initialize(accounts)
+    }
+  }
+
+  "Go to User" should {
+
+    "call to Go to User in Actions" in new WizardPresenterScope {
+
+      presenter.goToUser()
+
+      there was after(1.seconds).one(mockActions).goToUser()
+    }
+  }
+
+  "Go to Wizard" should {
+
+    "call to Go to Wizard in Actions" in new WizardPresenterScope {
+
+      presenter.goToWizard()
+
+      there was after(1.seconds).one(mockActions).goToWizard()
+    }
+  }
+
   "Connect Account" should {
 
     "return a successful connecting account" in
@@ -115,11 +149,11 @@ class WizardPresenterSpec
 
         presenter.connectAccount(accountName, termsAccept = true)
 
-        there was after(1 seconds).two(mockActions).showLoading()
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
-        there was after(1 seconds).one(mockAccountManager).invalidateAuthToken(presenter.accountType, token)
+        there was after(1.seconds).two(mockActions).showLoading()
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
+        there was after(1.seconds).one(mockAccountManager).invalidateAuthToken(presenter.accountType, token)
       }
 
     "return a successful connecting account with does not call to invalidate auth token if there is no token stored" in
@@ -137,23 +171,23 @@ class WizardPresenterSpec
 
         presenter.connectAccount(accountName, termsAccept = true)
 
-        there was after(1 seconds).two(mockActions).showLoading()
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
-        there was after(1 seconds).no(mockAccountManager).invalidateAuthToken(any, any)
+        there was after(1.seconds).two(mockActions).showLoading()
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
+        there was after(1.seconds).no(mockAccountManager).invalidateAuthToken(any, any)
       }
 
     "call to show error accept term in Actions when the terms are not accepted" in
       new WizardPresenterScope {
         presenter.connectAccount(accountName, termsAccept = false)
-        there was after(1 seconds).one(mockActions).showErrorAcceptTerms()
+        there was after(1.seconds).one(mockActions).showErrorAcceptTerms()
       }
 
     "call to show error select user in Actions when there is no account" in
       new WizardPresenterScope {
         presenter.connectAccount(nonExistingAccountName, termsAccept = true)
-        there was after(1 seconds).one(mockActions).showErrorSelectUser()
+        there was after(1.seconds).one(mockActions).showErrorSelectUser()
       }
 
     "call to show error Android Market not accepted in Actions when there is a Operation Cancelled error requesting Market token" in
@@ -167,9 +201,9 @@ class WizardPresenterSpec
 
         presenter.connectAccount(accountName, termsAccept = true)
 
-        there was after(1 seconds).one(mockActions).showLoading()
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockActions).showErrorAndroidMarketNotAccepted()
+        there was after(1.seconds).one(mockActions).showLoading()
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockActions).showErrorAndroidMarketNotAccepted()
       }
 
     "call to show error Google Drive not accepted in Actions when there is a Operation Cancelled error requesting Drive token" in
@@ -193,10 +227,10 @@ class WizardPresenterSpec
 
         presenter.connectAccount(accountName, termsAccept = true)
 
-        there was after(1 seconds).two(mockActions).showLoading()
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockActions).showErrorGoogleDriveNotAccepted()
+        there was after(1.seconds).two(mockActions).showLoading()
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockActions).showErrorGoogleDriveNotAccepted()
       }
 
     "call to show error connecting Google in Actions when there an unexpected error requesting Market token" in
@@ -210,9 +244,9 @@ class WizardPresenterSpec
 
         presenter.connectAccount(accountName, termsAccept = true)
 
-        there was after(1 seconds).one(mockActions).showLoading()
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
+        there was after(1.seconds).one(mockActions).showLoading()
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
       }
 
     "call to show error connecting Google in Actions when there an unexpected error requesting Drive token" in
@@ -236,10 +270,10 @@ class WizardPresenterSpec
 
         presenter.connectAccount(accountName, termsAccept = true)
 
-        there was after(1 seconds).two(mockActions).showLoading()
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
+        there was after(1.seconds).two(mockActions).showLoading()
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
       }
 
   }
@@ -249,26 +283,26 @@ class WizardPresenterSpec
 //    "return a successful devices" in
 //      new WizardPresenterScope {
 //        presenter.getDevices(Some(mockGoogleApiClient), Some(accountName), Some(userPermission))
-//        there was after(1 seconds).one(mockActions).showLoading()
-//        there was after(1 seconds).one(mockActions).showDevices(userCloudDevices)
+//        there was after(1.seconds).one(mockActions).showLoading()
+//        there was after(1.seconds).one(mockActions).showDevices(userCloudDevices)
 //      }
 //
 //    "error if Google Api Client don't exist" in
 //      new WizardPresenterScope {
 //        presenter.getDevices(None, Some(accountName), Some(userPermission))
-//        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
+//        there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
 //      }
 //
 //    "error if account name don't exist" in
 //      new WizardPresenterScope {
 //        presenter.getDevices(None, Some(accountName), Some(userPermission))
-//        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
+//        there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
 //      }
 //
 //    "error if user permission don't exist" in
 //      new WizardPresenterScope {
 //        presenter.getDevices(Some(mockGoogleApiClient), Some(accountName), None)
-//        there was after(1 seconds).one(mockActions).showErrorConnectingGoogle()
+//        there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
 //      }
 //
 //  }
