@@ -73,6 +73,9 @@ trait PersistenceServicesData {
   val installationId: String = Random.nextString(5)
   val deviceToken: String = Random.nextString(5)
   val androidToken: String = Random.nextString(5)
+  val nameUser: String = Random.nextString(5)
+  val avatar: String = Random.nextString(5)
+  val cover: String = Random.nextString(5)
 
   val dockAppId: Int = Random.nextInt(10)
   val nonExistentDockAppId: Int = Random.nextInt(10) + 100
@@ -269,7 +272,10 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): Seq[User] = List.tabulate(num)(
+    androidToken: String = androidToken,
+    name: String = nameUser,
+    avatar: String = avatar,
+    cover: String = cover): Seq[User] = List.tabulate(num)(
     item =>
       User(
         id = id + item,
@@ -278,7 +284,10 @@ trait PersistenceServicesData {
         sessionToken = Option(sessionToken),
         installationId = Option(installationId),
         deviceToken = Option(deviceToken),
-        androidToken = Option(androidToken)))
+        androidToken = Option(androidToken),
+        name = Option(name),
+        avatar = Option(avatar),
+        cover = Option(cover)))
 
   def createSeqRepoUser(
     num: Int = 5,
@@ -292,14 +301,20 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): RepositoryUserData =
+    androidToken: String = androidToken,
+    name: String = nameUser,
+    avatar: String = avatar,
+    cover: String = cover): RepositoryUserData =
     RepositoryUserData(
       userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken))
+      androidToken = Option(androidToken),
+      name = Option(name),
+      avatar = Option(avatar),
+      cover = Option(cover))
 
   def createSeqDockApp(
     num: Int = 5,
@@ -572,14 +587,20 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): AddUserRequest =
+    androidToken: String = androidToken,
+    name: String = nameUser,
+    avatar: String = avatar,
+    cover: String = cover): AddUserRequest =
     AddUserRequest(
       userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken))
+      androidToken = Option(androidToken),
+      name = Option(name),
+      avatar = Option(avatar),
+      cover = Option(cover))
 
   def createDeleteUserRequest(user: User): DeleteUserRequest =
     DeleteUserRequest(user = user)
@@ -594,7 +615,10 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): UpdateUserRequest =
+    androidToken: String = androidToken,
+    name: String = nameUser,
+    avatar: String = avatar,
+    cover: String = cover): UpdateUserRequest =
     UpdateUserRequest(
       id = id,
       userId = Option(userId),
@@ -602,7 +626,10 @@ trait PersistenceServicesData {
       sessionToken = Option(sessionToken),
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken))
+      androidToken = Option(androidToken),
+      name = Option(name),
+      avatar = Option(avatar),
+      cover = Option(cover))
 
   def createCreateOrUpdateDockAppRequest(
     name: String = name,

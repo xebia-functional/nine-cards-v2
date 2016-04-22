@@ -27,6 +27,4 @@ class ApiUtils(persistenceServices: PersistenceServices)
       case _ => Result.errata(ApiServiceException("Session token doesn't exists"))
     }
   }
-
-
 }
