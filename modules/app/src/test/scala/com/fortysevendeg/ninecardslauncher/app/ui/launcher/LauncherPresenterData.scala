@@ -66,6 +66,9 @@ trait LauncherPresenterData {
     userId = Option(userId),
     installationId = None,
     deviceToken = None,
-    androidToken = None)
+    androidToken = None,
+    name = None,
+    avatar = None,
+    cover = None)
 
 }
