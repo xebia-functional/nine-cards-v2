@@ -7,6 +7,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.Statuses.GoogleApiClientStatuses
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
@@ -409,6 +410,63 @@ class WizardPresenterSpec
         there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.keyDevice, intentKey)
         there was after(1.seconds).one(mockContext).startService(mockIntent)
     }
+  }
+
+  "Finish Wizard" should {
+
+    "set the result and call finish in the activity" in
+      new WizardPresenterScope {
+
+        presenter.finishWizard()
+
+        there was after(1.seconds).one(mockContext).setResult(Activity.RESULT_OK)
+        there was after(1.seconds).one(mockContext).finish()
+    }
+
+  }
+
+  "Activity Result" should {
+
+    "return true and call to connect in Google Api Client when pass `resolveGooglePlayConnection` and RESULT_OK" in
+      new WizardPresenterScope {
+        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+
+        val result = presenter.activityResult(RequestCodes.resolveGooglePlayConnection, Activity.RESULT_OK, javaNull)
+
+        result should beTrue
+
+        there was after(1.seconds).one(mockGoogleApiClient).connect()
+    }
+
+    "return true and call show error connecting google when pass `resolveGooglePlayConnection` and a value distinct to RESULT_OK" in
+      new WizardPresenterScope {
+        val result = presenter.activityResult(RequestCodes.resolveGooglePlayConnection, Activity.RESULT_CANCELED, javaNull)
+
+        result should beTrue
+
+        there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
+    }
+
+    "return true and call show error connecting google when pass a different request code" in
+      new WizardPresenterScope {
+        val result = presenter.activityResult(RequestCodes.goToProfile, Activity.RESULT_OK, javaNull)
+
+        result should beFalse
+    }
+
+  }
+
+  "Stop" should {
+
+    "call to disconnect in the Google Api client" in
+      new WizardPresenterScope {
+        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+
+        presenter.stop()
+
+        there was after(1.seconds).one(mockGoogleApiClient).disconnect()
+    }
+
   }
 
 }
