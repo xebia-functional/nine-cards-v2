@@ -1,19 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
-import android.accounts
-import android.accounts.{Account, AccountManager, AccountManagerFuture, OperationCanceledException}
+import android.accounts.{AccountManager, AccountManagerFuture, OperationCanceledException}
 import android.app.Activity
-import android.content.{Context, SharedPreferences}
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.os.Bundle
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
+import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.Statuses.GoogleApiClientStatuses
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
+import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
+import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionExceptionImpl, CollectionProcess}
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcess}
+import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
 import org.specs2.mock.Mockito
@@ -22,7 +22,6 @@ import org.specs2.specification.Scope
 import rapture.core.{Answer, Errata}
 
 import scala.concurrent.duration._
-//import scala.language.postfixOps
 import scalaz.concurrent.Task
 
 trait WizardPresenterSpecification
@@ -40,9 +39,19 @@ trait WizardPresenterSpecification
   trait WizardPresenterScope
     extends Scope {
 
-    implicit val contextSupport = mock[ContextSupport]
+    implicit val mockContextSupport = mock[ContextSupport]
 
-    implicit val contextWrapper = mock[ActivityContextWrapper]
+    implicit val mockContextWrapper = mock[ActivityContextWrapper]
+
+    val mockInjector = mock[Injector]
+
+    val mockCloudStorageProcess = mock[CloudStorageProcess]
+
+    val mockCollectionProcess = mock[CollectionProcess]
+
+    val mockMomentProcess = mock[MomentProcess]
+
+    val mockUserConfigProcess = mock[UserConfigProcess]
 
     val mockGoogleApiClient = mock[GoogleApiClient]
 
@@ -62,9 +71,17 @@ trait WizardPresenterSpecification
 
     val mockActions = mock[WizardUiActions]
 
-    contextWrapper.getOriginal returns mockContext
+    mockContextWrapper.getOriginal returns mockContext
 
-    contextWrapper.bestAvailable returns mockContext
+    mockContextWrapper.bestAvailable returns mockContext
+
+    mockInjector.createCloudStorageProcess(any) returns mockCloudStorageProcess
+
+    mockInjector.collectionProcess returns mockCollectionProcess
+
+    mockInjector.momentProcess returns mockMomentProcess
+
+    mockInjector.userConfigProcess returns mockUserConfigProcess
 
     mockSharedPreferences.edit() returns mockEditor
 
@@ -80,16 +97,19 @@ trait WizardPresenterSpecification
     mockActions.showErrorLoginUser() returns Ui[Any]()
     mockActions.showErrorAcceptTerms() returns Ui[Any]()
     mockActions.showErrorSelectUser() returns Ui[Any]()
-
-
+    mockActions.showDiveIn() returns Ui[Any]()
 
     val presenter = new WizardPresenter(mockActions) {
 
-      lazy override val accounts = Seq(account)
+      override implicit def contextSupport(implicit ctx: ContextWrapper): ContextSupport = mockContextSupport
 
-      lazy override val accountManager = mockAccountManager
+      override implicit lazy val di: Injector = mockInjector
 
-      lazy override val preferences = mockSharedPreferences
+      override lazy val accounts = Seq(account)
+
+      override lazy val accountManager = mockAccountManager
+
+      override lazy val preferences = mockSharedPreferences
 
       override def createGoogleDriveClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient = mockGoogleApiClient
 
@@ -278,33 +298,85 @@ class WizardPresenterSpec
 
   }
 
-//  "Get Devices" should {
-//
-//    "return a successful devices" in
-//      new WizardPresenterScope {
-//        presenter.getDevices(Some(mockGoogleApiClient), Some(accountName), Some(userPermission))
-//        there was after(1.seconds).one(mockActions).showLoading()
-//        there was after(1.seconds).one(mockActions).showDevices(userCloudDevices)
-//      }
-//
-//    "error if Google Api Client don't exist" in
-//      new WizardPresenterScope {
-//        presenter.getDevices(None, Some(accountName), Some(userPermission))
-//        there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
-//      }
-//
-//    "error if account name don't exist" in
-//      new WizardPresenterScope {
-//        presenter.getDevices(None, Some(accountName), Some(userPermission))
-//        there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
-//      }
-//
-//    "error if user permission don't exist" in
-//      new WizardPresenterScope {
-//        presenter.getDevices(Some(mockGoogleApiClient), Some(accountName), None)
-//        there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
-//      }
-//
-//  }
+  "Save Current Device" should {
+
+    "call to show dive in Actions and create or update actual cloud storage device with the right params in CloudStorageProcess" in
+      new WizardPresenterScope {
+        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+
+        mockCollectionProcess.getCollections returns Service(Task(Answer(Seq(collection))))
+        mockMomentProcess.getMoments returns Service(Task(Answer(moments)))
+        mockCloudStorageProcess.createOrUpdateActualCloudStorageDevice(any, any)(any) returns Service(Task(Answer(Unit)))
+
+        presenter.saveCurrentDevice()
+
+        there was after(1.seconds).one(mockCloudStorageProcess).createOrUpdateActualCloudStorageDevice(
+          Seq(cloudStorageCollection),
+          Seq(cloudStorageMoment))(mockContextSupport)
+        there was after(1.seconds).one(mockActions).showDiveIn()
+      }
+
+    "call to show dive in Actions but not to CloudStorageProcess if the collection process returns an error" in
+      new WizardPresenterScope {
+        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+
+        mockCollectionProcess.getCollections returns Service(Task(Errata(CollectionExceptionImpl(""))))
+        mockMomentProcess.getMoments returns Service(Task(Answer(moments)))
+        mockCloudStorageProcess.createOrUpdateActualCloudStorageDevice(any, any)(any) returns Service(Task(Answer(Unit)))
+
+        presenter.saveCurrentDevice()
+
+        there was after(1.seconds).no(mockCloudStorageProcess).createOrUpdateActualCloudStorageDevice(any, any)(any)
+        there was after(1.seconds).one(mockActions).showDiveIn()
+      }
+
+    "call to show dive in Actions but not to CloudStorageProcess if the moment process returns an error" in
+      new WizardPresenterScope {
+        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+
+        mockCollectionProcess.getCollections returns Service(Task(Answer(Seq(collection))))
+        mockMomentProcess.getMoments returns Service(Task(Errata(MomentException(""))))
+        mockCloudStorageProcess.createOrUpdateActualCloudStorageDevice(any, any)(any) returns Service(Task(Answer(Unit)))
+
+        presenter.saveCurrentDevice()
+
+        there was after(1.seconds).no(mockCloudStorageProcess).createOrUpdateActualCloudStorageDevice(any, any)(any)
+        there was after(1.seconds).one(mockActions).showDiveIn()
+      }
+
+    "call to connectAccount if the Google Api Client is not set but had set an account" in
+      new WizardPresenterScope {
+        presenter.clientStatuses = GoogleApiClientStatuses(username = Some(accountName))
+
+        mockAccountManager.getAuthToken(any, any, any, any[Activity], any, any) returns mockAccountManagerFuture
+
+        mockAccountManagerFuture.getResult returns mockBundle
+
+        mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
+
+        mockResources.getString(anyInt) returns googleScopes
+
+        mockSharedPreferences.getString(any, any) returns token
+
+        presenter.saveCurrentDevice()
+
+        there was after(1.seconds).two(mockActions).showLoading()
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
+        there was after(1.seconds).one(mockAccountManager).invalidateAuthToken(presenter.accountType, token)
+
+      }
+
+    "call to go to user in Actions if neither the Google Api Client or the account is set" in
+      new WizardPresenterScope {
+        presenter.clientStatuses = GoogleApiClientStatuses()
+
+        presenter.saveCurrentDevice()
+
+        there was after(1.seconds).one(mockActions).goToUser()
+      }
+
+  }
 
 }

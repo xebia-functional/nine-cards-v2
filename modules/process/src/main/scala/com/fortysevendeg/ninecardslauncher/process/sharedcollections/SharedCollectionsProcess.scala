@@ -19,13 +19,13 @@ trait SharedCollectionsProcess {
   def getSharedCollectionsByCategory(
     category: NineCardCategory,
     typeShareCollection: TypeSharedCollection,
-    offset: Int,
-    limit: Int)(implicit context: ContextSupport): ServiceDef2[Seq[SharedCollection], SharedCollectionsExceptions]
+    offset: Int = 0,
+    limit: Int = 50)(implicit context: ContextSupport): ServiceDef2[Seq[SharedCollection], SharedCollectionsExceptions]
 
   /**
     * Persist a [[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]]
     * @param sharedCollection the defined collection to create
-    * @param return unit, to signify successful completion
+    * @return unit, to signify successful completion
     * @throws SharedCollectionsExceptions if the service cannot create the collection for some reason
     */
   def createSharedCollection(

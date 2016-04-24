@@ -9,7 +9,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
@@ -34,7 +34,7 @@ trait BaseActionFragment
 
   val defaultValue = 0
 
-  implicit lazy val di: Injector = new Injector
+  implicit lazy val di: Injector = new InjectorImpl
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 

@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.di
 
+import android.content.res.Resources
 import com.facebook.stetho.okhttp.StethoInterceptor
 import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
@@ -7,18 +8,24 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
 import com.fortysevendeg.ninecardslauncher.process.cloud.impl.CloudStorageProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
+import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcess, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
+import com.fortysevendeg.ninecardslauncher.process.device.DeviceProcess
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentProcessConfig
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentProcess, MomentProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.moment.impl.MomentProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendationsProcess
 import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsProcess
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl.SharedCollectionsProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.theme.ThemeProcess
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.user.UserProcess
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
 import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigProcessImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
@@ -31,7 +38,6 @@ import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
 import com.fortysevendeg.ninecardslauncher.services.wifi.impl.WifiServicesImpl
 import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
 import com.fortysevendeg.rest.client.ServiceClient
@@ -39,7 +45,33 @@ import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.google.android.gms.common.api.GoogleApiClient
 import com.squareup.{okhttp => okHttp}
 
-class Injector(implicit contextSupport: ContextSupport) {
+trait Injector {
+
+  def resources: Resources
+
+  def recommendationsProcess: RecommendationsProcess
+
+  def deviceProcess: DeviceProcess
+
+  def collectionProcess: CollectionProcess
+
+  def momentProcess: MomentProcess
+
+  def userProcess: UserProcess
+
+  def userConfigProcess: UserConfigProcess
+
+  def themeProcess: ThemeProcess
+
+  def sharedCollectionsProcess: SharedCollectionsProcess
+
+  def createCloudStorageProcess(client: GoogleApiClient): CloudStorageProcess
+
+  def observerRegister: ObserverRegister
+
+}
+
+class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] def createHttpClient = {
     val okHttpClient = new okHttp.OkHttpClient
