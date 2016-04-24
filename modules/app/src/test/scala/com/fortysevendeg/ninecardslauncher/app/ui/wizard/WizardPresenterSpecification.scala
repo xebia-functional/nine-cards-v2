@@ -2,10 +2,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.{AccountManager, AccountManagerFuture, OperationCanceledException}
 import android.app.Activity
-import android.content.SharedPreferences
+import android.content.{ComponentName, Intent, SharedPreferences}
 import android.content.res.Resources
 import android.os.Bundle
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.Statuses.GoogleApiClientStatuses
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
@@ -16,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, Mome
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
+import org.hamcrest.{Description, TypeSafeMatcher}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -71,6 +73,8 @@ trait WizardPresenterSpecification
 
     val mockActions = mock[WizardUiActions]
 
+    val mockIntent = mock[Intent]
+
     mockContextWrapper.getOriginal returns mockContext
 
     mockContextWrapper.bestAvailable returns mockContext
@@ -113,6 +117,7 @@ trait WizardPresenterSpecification
 
       override def createGoogleDriveClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient = mockGoogleApiClient
 
+      override protected def createIntent[T](activity: Activity, targetClass: Class[T]): Intent = mockIntent
     }
 
   }
@@ -377,6 +382,33 @@ class WizardPresenterSpec
         there was after(1.seconds).one(mockActions).goToUser()
       }
 
+  }
+
+  "Generate Collections" should {
+
+    "call to go to wizard in Actions and startService in the activity" in
+      new WizardPresenterScope {
+
+        mockContext.startService(any) returns mock[ComponentName]
+
+        presenter.generateCollections(None)
+
+        there was after(1.seconds).one(mockActions).goToWizard()
+        there was after(1.seconds).no(mockIntent).putExtra(any, anyString)
+        there was after(1.seconds).one(mockContext).startService(mockIntent)
+    }
+
+    "call to go to wizard in Actions and startService in the activity with the right Intent when pass a key" in
+      new WizardPresenterScope {
+
+        mockContext.startService(any) returns mock[ComponentName]
+
+        presenter.generateCollections(Some(intentKey))
+
+        there was after(1.seconds).one(mockActions).goToWizard()
+        there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.keyDevice, intentKey)
+        there was after(1.seconds).one(mockContext).startService(mockIntent)
+    }
   }
 
 }

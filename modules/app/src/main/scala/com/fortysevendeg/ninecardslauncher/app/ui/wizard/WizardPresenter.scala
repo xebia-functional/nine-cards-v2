@@ -92,13 +92,13 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         actions.goToUser().run
     }
 
-  def generateCollections(maybeKey: Option[String]): Unit = (
-    Ui {
-      val activity = contextWrapper.getOriginal
-      val intent = new Intent(activity, classOf[CreateCollectionService])
-      maybeKey foreach (key => intent.putExtra(CreateCollectionService.keyDevice, key))
-      activity.startService(intent)
-    } ~ actions.goToWizard()).run
+  def generateCollections(maybeKey: Option[String]): Unit = {
+    val activity = contextWrapper.getOriginal
+    val intent = createIntent(activity, classOf[CreateCollectionService])
+    maybeKey foreach (key => intent.putExtra(CreateCollectionService.keyDevice, key))
+    activity.startService(intent)
+    actions.goToWizard().run
+  }
 
   def finishWizard(): Unit = {
     val activity = contextWrapper.getOriginal
@@ -139,6 +139,8 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       connectionError()
     }
   }
+
+  protected def createIntent[T](activity: Activity, targetClass: Class[T]): Intent = new Intent(activity, targetClass)
 
   private[this] def getAccount(username: String): Option[Account] = accounts find (_.name == username)
 

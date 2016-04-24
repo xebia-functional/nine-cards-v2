@@ -34,6 +34,8 @@ trait WizardPresenterData {
 
   val deviceName = nameDevice
 
+  val intentKey = "intent-key"
+
   val cloudStorageDevice = CloudStorageDevice(
     deviceId = deviceId,
     deviceName = deviceName,
