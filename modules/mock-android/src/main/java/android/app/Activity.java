@@ -1,4 +1,8 @@
 package android.app;
+
+import android.view.ActionMode;
+import android.view.SearchEvent;
+
 public class Activity
   extends android.view.ContextThemeWrapper
   implements android.view.LayoutInflater.Factory2, android.view.Window.Callback, android.view.KeyEvent.Callback, android.view.View.OnCreateContextMenuListener, android.content.ComponentCallbacks2
@@ -115,6 +119,7 @@ public final  void dismissDialog(int id) { throw new RuntimeException("Stub!"); 
 @java.lang.Deprecated()
 public final  void removeDialog(int id) { throw new RuntimeException("Stub!"); }
 public  boolean onSearchRequested() { throw new RuntimeException("Stub!"); }
+public boolean onSearchRequested(SearchEvent searchEvent) {throw new RuntimeException("Stub!");}
 public  void startSearch(java.lang.String initialQuery, boolean selectInitialQuery, android.os.Bundle appSearchData, boolean globalSearch) { throw new RuntimeException("Stub!"); }
 public  void triggerSearch(java.lang.String query, android.os.Bundle appSearchData) { throw new RuntimeException("Stub!"); }
 public  void takeKeyEvents(boolean get) { throw new RuntimeException("Stub!"); }
@@ -191,7 +196,13 @@ public  android.view.View onCreateView(android.view.View parent, java.lang.Strin
 public  void dump(java.lang.String prefix, java.io.FileDescriptor fd, java.io.PrintWriter writer, java.lang.String[] args) { throw new RuntimeException("Stub!"); }
 public  android.view.ActionMode startActionMode(android.view.ActionMode.Callback callback) { throw new RuntimeException("Stub!"); }
 public  android.view.ActionMode onWindowStartingActionMode(android.view.ActionMode.Callback callback) { throw new RuntimeException("Stub!"); }
-public  void onActionModeStarted(android.view.ActionMode mode) { throw new RuntimeException("Stub!"); }
+
+    @Override
+    public ActionMode onWindowStartingActionMode(ActionMode.Callback callback, int type) {
+        return null;
+    }
+
+    public  void onActionModeStarted(android.view.ActionMode mode) { throw new RuntimeException("Stub!"); }
 public  void onActionModeFinished(android.view.ActionMode mode) { throw new RuntimeException("Stub!"); }
 public  boolean shouldUpRecreateTask(android.content.Intent targetIntent) { throw new RuntimeException("Stub!"); }
 public  boolean navigateUpTo(android.content.Intent upIntent) { throw new RuntimeException("Stub!"); }

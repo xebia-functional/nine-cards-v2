@@ -68,6 +68,9 @@
     <string name="wizard_step_4">Adjusts the widgets use by time</string> <!-- Pending review language -->
     <string name="wizard_step_5">If you want to know more about 9Cards, visit our YouTube channel</string> <!-- Pending review language -->
 
+    <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
+    <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>
+
     <!-- Collections -->
 
     <string name="createNewCollection">Create new collection</string>

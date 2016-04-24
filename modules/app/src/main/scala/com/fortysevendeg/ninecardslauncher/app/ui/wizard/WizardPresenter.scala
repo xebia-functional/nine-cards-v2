@@ -4,12 +4,14 @@ import android.accounts.{Account, AccountManager, OperationCanceledException}
 import android.app.Activity
 import android.content.{Context, Intent}
 import android.os.{Build, Bundle}
+import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientProvider
+import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -131,8 +133,12 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   override def onConnectionFailed(connectionResult: ConnectionResult): Unit = {
     if (connectionResult.hasResolution) {
-      Try(connectionResult.startResolutionForResult(actions.getActivityForIntent, resolveGooglePlayConnection)) match {
-        case Failure(e) => connectionError()
+      contextWrapper.original.get match {
+        case Some(activity: AppCompatActivity) =>
+          Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
+            case Failure(e) => connectionError()
+            case _ =>
+          }
         case _ =>
       }
     } else {
@@ -187,7 +193,9 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         Ui.nop
       },
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException => actions.showErrorAndroidMarketNotAccepted()
+        case ex: AuthTokenOperationCancelledException =>
+          actions.showErrorAndroidMarketNotAccepted()
+          Ui.nop
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
       onPreTask = () => actions.showLoading())
@@ -203,7 +211,9 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         clientStatuses.apiClient foreach (_.connect())
       },
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException => actions.showErrorGoogleDriveNotAccepted()
+        case ex: AuthTokenOperationCancelledException =>
+          actions.showErrorGoogleDriveNotAccepted()
+          Ui.nop
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
       onPreTask = () => actions.showLoading())
@@ -313,8 +323,6 @@ object Statuses {
 
 trait WizardUiActions {
 
-  def getActivityForIntent: Activity
-
   def initialize(accounts: Seq[Account]): Ui[Any]
 
   def goToUser(): Ui[Any]
@@ -331,9 +339,9 @@ trait WizardUiActions {
 
   def showErrorLoginUser(): Ui[Any]
 
-  def showErrorAndroidMarketNotAccepted(): Ui[Any]
+  def showErrorAndroidMarketNotAccepted(): Unit
 
-  def showErrorGoogleDriveNotAccepted(): Ui[Any]
+  def showErrorGoogleDriveNotAccepted(): Unit
 
   def showDevices(devices: UserCloudDevices): Ui[Any]
 
