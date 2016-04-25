@@ -196,13 +196,10 @@ public  android.view.View onCreateView(android.view.View parent, java.lang.Strin
 public  void dump(java.lang.String prefix, java.io.FileDescriptor fd, java.io.PrintWriter writer, java.lang.String[] args) { throw new RuntimeException("Stub!"); }
 public  android.view.ActionMode startActionMode(android.view.ActionMode.Callback callback) { throw new RuntimeException("Stub!"); }
 public  android.view.ActionMode onWindowStartingActionMode(android.view.ActionMode.Callback callback) { throw new RuntimeException("Stub!"); }
-
-    @Override
-    public ActionMode onWindowStartingActionMode(ActionMode.Callback callback, int type) {
+public ActionMode onWindowStartingActionMode(ActionMode.Callback callback, int type) {
         return null;
     }
-
-    public  void onActionModeStarted(android.view.ActionMode mode) { throw new RuntimeException("Stub!"); }
+public  void onActionModeStarted(android.view.ActionMode mode) { throw new RuntimeException("Stub!"); }
 public  void onActionModeFinished(android.view.ActionMode mode) { throw new RuntimeException("Stub!"); }
 public  boolean shouldUpRecreateTask(android.content.Intent targetIntent) { throw new RuntimeException("Stub!"); }
 public  boolean navigateUpTo(android.content.Intent upIntent) { throw new RuntimeException("Stub!"); }
