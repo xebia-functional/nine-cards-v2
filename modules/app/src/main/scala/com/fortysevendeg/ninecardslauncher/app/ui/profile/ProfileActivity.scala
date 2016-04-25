@@ -96,6 +96,4 @@ class ProfileActivity
     val percentage = Math.abs(offset) / maxScroll
     presenter.onOffsetChanged(percentage)
   }
-
-  override def getActivityForIntent: Activity = self
 }

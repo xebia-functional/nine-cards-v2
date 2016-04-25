@@ -44,8 +44,12 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
     if (connectionResult.hasResolution) {
-      Try(connectionResult.startResolutionForResult(actions.getActivityForIntent, resolveGooglePlayConnection)) match {
-        case Failure(e) => showError()
+      contextWrapper.original.get match {
+        case Some(activity) =>
+          Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
+            case Failure(e) => showError()
+            case _ =>
+          }
         case _ =>
       }
     } else {
@@ -226,7 +230,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   private[this] def logout(): ServiceDef2[Unit, CollectionException with DockAppException with MomentException with UserException] =
     for {
       _ <- di.collectionProcess.cleanCollections()
-      _ <- di.deviceProcess.deleteAllDockApps
+      _ <- di.deviceProcess.deleteAllDockApps()
       _ <- di.momentProcess.deleteAllMoments()
       _ <- di.userProcess.unregister
     } yield ()
@@ -271,10 +275,6 @@ trait ProfileUiActions {
   def showSyncingError(): Ui[Any]
 
   def showMessageAccountSynced(): Ui[Any]
-
-  def getActivityForIntent: Activity
-
-//  def createGoogleDriveClient(account: String): GoogleApiClient
 
   def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_]
 
