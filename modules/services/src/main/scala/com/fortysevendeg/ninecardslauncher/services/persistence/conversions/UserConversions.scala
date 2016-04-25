@@ -16,7 +16,10 @@ trait UserConversions {
       sessionToken = user.data.sessionToken,
       installationId = user.data.installationId,
       deviceToken = user.data.deviceToken,
-      androidToken = user.data.androidToken)
+      androidToken = user.data.androidToken,
+      name = user.data.name,
+      avatar = user.data.avatar,
+      cover = user.data.cover)
 
   def toRepositoryUser(user: User): RepositoryUser =
     RepositoryUser(
@@ -27,7 +30,10 @@ trait UserConversions {
         sessionToken = user.sessionToken,
         installationId = user.installationId,
         deviceToken = user.deviceToken,
-        androidToken = user.androidToken))
+        androidToken = user.androidToken,
+        name = user.name,
+        avatar = user.avatar,
+        cover = user.cover))
 
   def toRepositoryUser(request: UpdateUserRequest): RepositoryUser =
     RepositoryUser(
@@ -38,7 +44,10 @@ trait UserConversions {
         sessionToken = request.sessionToken,
         installationId = request.installationId,
         deviceToken = request.deviceToken,
-        androidToken = request.androidToken))
+        androidToken = request.androidToken,
+        name = request.name,
+        avatar = request.avatar,
+        cover = request.cover))
 
   def toRepositoryUserData(request: AddUserRequest): RepositoryUserData =
     RepositoryUserData(
@@ -47,5 +56,8 @@ trait UserConversions {
       sessionToken = request.sessionToken,
       installationId = request.installationId,
       deviceToken = request.deviceToken,
-      androidToken = request.androidToken)
+      androidToken = request.androidToken,
+      name = request.name,
+      avatar = request.avatar,
+      cover = request.cover)
 }

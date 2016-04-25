@@ -2,18 +2,18 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, NineCardsUri}
+import com.fortysevendeg.ninecardslauncher.repository.repositories.RepositoryUtils._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
-import IterableCursor._
-import RepositoryUtils._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 
 import scala.language.postfixOps
 import scalaz.concurrent.Task
@@ -39,9 +39,6 @@ class CardRepository(
             cardType -> data.cardType,
             intent -> data.intent,
             imagePath -> data.imagePath,
-            starRating -> (data.starRating orNull),
-            micros -> data.micros,
-            numDownloads -> flatOrNull(data.numDownloads),
             notification -> flatOrNull(data.notification))
 
           val id = contentResolverWrapper.insert(
@@ -172,8 +169,5 @@ class CardRepository(
       cardType -> card.data.cardType,
       intent -> card.data.intent,
       imagePath -> card.data.imagePath,
-      starRating -> (card.data.starRating orNull),
-      micros -> card.data.micros,
-      numDownloads -> (card.data.numDownloads orNull),
       notification -> (card.data.notification orNull))
 }

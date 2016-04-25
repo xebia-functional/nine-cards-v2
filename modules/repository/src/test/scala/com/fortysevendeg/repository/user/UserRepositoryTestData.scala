@@ -15,6 +15,9 @@ trait UserRepositoryTestData {
   val testInstallationId= Random.nextString(10)
   val testDeviceToken = Random.nextString(10)
   val testAndroidToken = Random.nextString(10)
+  val testName = Random.nextString(10)
+  val testAvatar = Random.nextString(10)
+  val testCover = Random.nextString(10)
 
   val testUserIdOption = Option(testUserId)
   val testEmailOption = Option(testEmail)
@@ -22,6 +25,9 @@ trait UserRepositoryTestData {
   val testInstallationIdOption = Option(testInstallationId)
   val testDeviceTokenOption = Option(testDeviceToken)
   val testAndroidTokenOption = Option(testAndroidToken)
+  val testNameOption = Option(testName)
+  val testAvatarOption = Option(testAvatar)
+  val testCoverOption = Option(testCover)
 
   val userEntitySeq = createUserEntitySeq(5)
   val userEntity = userEntitySeq(0)
@@ -37,7 +43,10 @@ trait UserRepositoryTestData {
         sessionToken = testSessionToken,
         installationId = testInstallationId,
         deviceToken = testDeviceToken,
-        androidToken = testAndroidToken)))
+        androidToken = testAndroidToken,
+        name = testName,
+        avatar = testAvatar,
+        cover = testCover)))
 
   def createUserSeq(num: Int) = List.tabulate(num)(
     i => User(
@@ -48,7 +57,10 @@ trait UserRepositoryTestData {
         sessionToken = testSessionTokenOption,
         installationId = testInstallationIdOption,
         deviceToken = testDeviceTokenOption,
-        androidToken = testAndroidTokenOption)))
+        androidToken = testAndroidTokenOption,
+        name = testNameOption,
+        avatar = testAvatarOption,
+        cover = testCoverOption)))
 
   def createUserValues = Map[String, Any](
     UserEntity.userId -> (testUserIdOption orNull),
@@ -56,7 +68,10 @@ trait UserRepositoryTestData {
     UserEntity.sessionToken -> (testSessionTokenOption orNull),
     UserEntity.installationId -> (testInstallationIdOption orNull),
     UserEntity.deviceToken -> (testDeviceTokenOption orNull),
-    UserEntity.androidToken -> (testAndroidTokenOption orNull))
+    UserEntity.androidToken -> (testAndroidTokenOption orNull),
+    UserEntity.name -> (testNameOption orNull),
+    UserEntity.avatar -> (testAvatarOption orNull),
+    UserEntity.cover -> (testCoverOption orNull))
 
   def createUserData = UserData(
     userId = testUserIdOption,
@@ -64,5 +79,8 @@ trait UserRepositoryTestData {
     sessionToken = testSessionTokenOption,
     installationId = testInstallationIdOption,
     deviceToken = testDeviceTokenOption,
-    androidToken = testAndroidTokenOption)
+    androidToken = testAndroidTokenOption,
+    name = testNameOption,
+    avatar = testAvatarOption,
+    cover = testCoverOption)
 }

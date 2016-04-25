@@ -12,7 +12,6 @@ case class App(
   className: String,
   category: NineCardCategory,
   imagePath: String,
-  colorPrimary: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,

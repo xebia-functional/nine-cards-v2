@@ -23,7 +23,10 @@ trait Conversions {
       sessionToken = login.user.sessionToken,
       installationId = user.installationId,
       deviceToken = user.deviceToken,
-      androidToken = Some(device.secretToken))
+      androidToken = Some(device.secretToken),
+      name = user.name,
+      avatar = user.avatar,
+      cover = user.cover)
 
   def toUpdateRequest(id: Int, user: ServicesUser, response: InstallationResponse) =
     UpdateUserRequest(
@@ -33,7 +36,10 @@ trait Conversions {
       sessionToken = user.sessionToken,
       installationId = response.installation.id,
       deviceToken = response.installation.deviceToken,
-      androidToken = user.androidToken)
+      androidToken = user.androidToken,
+      name = user.name,
+      avatar = user.avatar,
+      cover = user.cover)
 
   def toUser(user: ServicesUser): User =
     User(
@@ -43,6 +49,9 @@ trait Conversions {
       sessionToken = user.sessionToken,
       installationId = user.installationId,
       deviceToken = user.deviceToken,
-      androidToken = user.androidToken)
+      androidToken = user.androidToken,
+      name = user.name,
+      avatar = user.avatar,
+      cover = user.cover)
 
 }

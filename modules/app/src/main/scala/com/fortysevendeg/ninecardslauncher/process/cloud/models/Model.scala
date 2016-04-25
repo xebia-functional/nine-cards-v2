@@ -44,7 +44,8 @@ case class CloudStorageCollectionItem(
 case class CloudStorageMoment(
   timeslot: Seq[CloudStorageMomentTimeSlot],
   wifi: Seq[String],
-  headphones: Boolean)
+  headphones: Boolean,
+  momentType: Option[String])
 
 case class CloudStorageMomentTimeSlot(
   from: String,

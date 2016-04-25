@@ -16,7 +16,6 @@ case class AddAppRequest(
   className: String,
   category: String,
   imagePath: String,
-  colorPrimary: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
@@ -31,7 +30,6 @@ case class UpdateAppRequest(
   className: String,
   category: String,
   imagePath: String,
-  colorPrimary: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
@@ -40,14 +38,11 @@ case class UpdateAppRequest(
 case class AddCardRequest(
   collectionId: Option[Int] = None,
   position: Int,
-  micros: Int = 0,
   term: String,
   packageName: Option[String],
   cardType: String,
   intent: String,
   imagePath: String,
-  starRating: Option[Double] = None,
-  numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
 case class DeleteCardsRequest(where: String)
@@ -63,26 +58,20 @@ case class UpdateCardsRequest(updateCardRequests: Seq[UpdateCardRequest])
 case class UpdateCardRequest(
   id: Int,
   position: Int,
-  micros: Int = 0,
   term: String,
   packageName: Option[String],
   cardType: String,
   intent: String,
   imagePath: String,
-  starRating: Option[Double] = None,
-  numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
 case class CardItem(
   position: Int,
-  micros: Int = 0,
   term: String,
   packageName: Option[String],
   cardType: String,
   intent: String,
   imagePath: String,
-  starRating: Option[Double] = None,
-  numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
 case class AddCollectionRequest(
@@ -92,7 +81,6 @@ case class AddCollectionRequest(
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[String] = None,
-  constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Option[Boolean],
@@ -117,7 +105,6 @@ case class UpdateCollectionRequest(
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[String] = None,
-  constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Option[Boolean],
@@ -129,7 +116,10 @@ case class AddUserRequest(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String])
+  androidToken: Option[String],
+  name: Option[String],
+  avatar: Option[String],
+  cover: Option[String])
 
 case class DeleteUsersRequest(where: String)
 
@@ -144,7 +134,10 @@ case class UpdateUserRequest(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String])
+  androidToken: Option[String],
+  name: Option[String],
+  avatar: Option[String],
+  cover: Option[String])
 
 case class CreateOrUpdateDockAppRequest(
   name: String,
@@ -163,7 +156,8 @@ case class AddMomentRequest(
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
-  headphone: Boolean)
+  headphone: Boolean,
+  momentType: Option[String])
 
 case class DeleteMomentsRequest(where: String)
 
@@ -176,5 +170,6 @@ case class UpdateMomentRequest(
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
-  headphone: Boolean)
+  headphone: Boolean,
+  momentType: Option[String])
 

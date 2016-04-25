@@ -5,7 +5,6 @@ case class Application(
   packageName: String,
   className: String,
   resourceIcon: Int,
-  colorPrimary: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,

@@ -125,7 +125,10 @@ trait UserMockCursor
     (sessionToken, 3, userSeq map (_.data.sessionToken orNull), StringDataType),
     (installationId, 4, userSeq map (_.data.installationId orNull), StringDataType),
     (deviceToken, 5, userSeq map (_.data.deviceToken orNull), StringDataType),
-    (androidToken, 6, userSeq map (_.data.androidToken orNull), StringDataType))
+    (androidToken, 6, userSeq map (_.data.androidToken orNull), StringDataType),
+    (name, 7, userSeq map (_.data.name orNull), StringDataType),
+    (avatar, 8, userSeq map (_.data.avatar orNull), StringDataType),
+    (cover, 9, userSeq map (_.data.cover orNull), StringDataType))
 
   prepareCursor[User](userSeq.size, cursorData)
 }
@@ -141,7 +144,10 @@ trait EmptyUserMockCursor
     (sessionToken, 3, Seq.empty, StringDataType),
     (installationId, 4, Seq.empty, StringDataType),
     (deviceToken, 5, Seq.empty, StringDataType),
-    (androidToken, 6, Seq.empty, StringDataType))
+    (androidToken, 6, Seq.empty, StringDataType),
+    (name, 7, Seq.empty, StringDataType),
+    (avatar, 8, Seq.empty, StringDataType),
+    (cover, 9, Seq.empty, StringDataType))
 
   prepareCursor[User](0, cursorData)
 }

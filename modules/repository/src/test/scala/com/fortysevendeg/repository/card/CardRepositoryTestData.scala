@@ -18,12 +18,9 @@ trait CardRepositoryTestData {
   val testIntent = Random.nextString(5)
   val testImagePath = Random.nextString(5)
   val testStarRating = Random.nextDouble()
-  val testMicros = Random.nextInt(5)
   val testNumDownloads = Random.nextString(10)
   val testNotification = Random.nextString(10)
   val testPackageNameOption = Option(testPackageName)
-  val testStarRatingOption = Option(testStarRating)
-  val testNumDownloadsOption = Option(testNumDownloads)
   val testNotificationOption = Option(testNotification)
 
   val cardEntitySeq = createCardEntitySeq(5)
@@ -42,9 +39,6 @@ trait CardRepositoryTestData {
         `type` = testType,
         intent = testIntent,
         imagePath = testImagePath,
-        starRating = testStarRating,
-        micros = testMicros,
-        numDownloads = testNumDownloads,
         notification = testNotification)))
 
   def createCardSeq(num: Int) = List.tabulate(num)(
@@ -57,9 +51,6 @@ trait CardRepositoryTestData {
         cardType = testType,
         intent = testIntent,
         imagePath = testImagePath,
-        starRating = testStarRatingOption,
-        micros = testMicros,
-        numDownloads = testNumDownloadsOption,
         notification = testNotificationOption)))
 
   def createInsertCardValues = Map[String, Any](
@@ -70,9 +61,6 @@ trait CardRepositoryTestData {
     CardEntity.cardType -> testType,
     CardEntity.intent -> testIntent,
     CardEntity.imagePath -> testImagePath,
-    CardEntity.starRating -> (testStarRatingOption getOrElse 0.0d),
-    CardEntity.micros -> testMicros,
-    CardEntity.numDownloads -> (testNumDownloadsOption orNull),
     CardEntity.notification -> (testNotificationOption orNull))
 
   def createUpdateCardValues = Map[String, Any](
@@ -82,9 +70,6 @@ trait CardRepositoryTestData {
     CardEntity.cardType -> testType,
     CardEntity.intent -> testIntent,
     CardEntity.imagePath -> testImagePath,
-    CardEntity.starRating -> (testStarRatingOption getOrElse 0.0d),
-    CardEntity.micros -> testMicros,
-    CardEntity.numDownloads -> (testNumDownloadsOption orNull),
     CardEntity.notification -> (testNotificationOption orNull))
 
   def createCardData = CardData(
@@ -94,8 +79,5 @@ trait CardRepositoryTestData {
     cardType = testType,
     intent = testIntent,
     imagePath = testImagePath,
-    starRating = testStarRatingOption,
-    micros = testMicros,
-    numDownloads = testNumDownloadsOption,
     notification = testNotificationOption)
 }

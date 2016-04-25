@@ -13,6 +13,7 @@ trait MomentRepositoryTestData {
   val testTimeslot = Random.nextString(10)
   val testWifi= Random.nextString(10)
   val testHeadphone = Random.nextBoolean()
+  val testMomentType= Random.nextString(10)
   val testCollectionIdOption = Option(testCollectionId)
 
   val momentEntitySeq = createMomentEntitySeq(5)
@@ -27,7 +28,8 @@ trait MomentRepositoryTestData {
         collectionId = testCollectionId,
         timeslot = testTimeslot,
         wifi = testWifi,
-        headphone = testHeadphone)))
+        headphone = testHeadphone,
+        momentType = testMomentType)))
 
   def createMomentSeq(num: Int) = List.tabulate(num)(
     i => Moment(
@@ -36,29 +38,34 @@ trait MomentRepositoryTestData {
         collectionId = testCollectionIdOption,
         timeslot = testTimeslot,
         wifi = testWifi,
-        headphone = testHeadphone)))
+        headphone = testHeadphone,
+        momentType = Option(testMomentType))))
 
   def createMomentValues = Map[String, Any](
     MomentEntity.collectionId -> (testCollectionIdOption orNull),
     MomentEntity.timeslot -> testTimeslot,
     MomentEntity.wifi -> testWifi,
-    MomentEntity.headphone -> testHeadphone)
+    MomentEntity.headphone -> testHeadphone,
+    MomentEntity.momentType -> testMomentType)
 
   def createMomentData = MomentData(
     collectionId = testCollectionIdOption,
     timeslot = testTimeslot,
     wifi = testWifi,
-    headphone = testHeadphone)
+    headphone = testHeadphone,
+    momentType = Option(testMomentType))
 
   def createMomentValuesCollection = Map[String, Any](
     MomentEntity.collectionId -> (None orNull),
     MomentEntity.timeslot -> testTimeslot,
     MomentEntity.wifi -> testWifi,
-    MomentEntity.headphone -> testHeadphone)
+    MomentEntity.headphone -> testHeadphone,
+    MomentEntity.momentType -> testMomentType)
 
   def createMomentDataCollection = MomentData(
     collectionId = None,
     timeslot = testTimeslot,
     wifi = testWifi,
-    headphone = testHeadphone)
+    headphone = testHeadphone,
+    momentType = Option(testMomentType))
 }

@@ -163,8 +163,6 @@ object Settings {
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,
     DefaultMavenRepository,
-    "JCenter Bintray" at "http://jcenter.bintray.com",
-    "47 Degrees Bintray Repo" at "http://dl.bintray.com/47deg/maven",
     Resolver.typesafeRepo("releases"),
     Resolver.typesafeRepo("snapshots"),
     Resolver.typesafeIvyRepo("snapshots"),

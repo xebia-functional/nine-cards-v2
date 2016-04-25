@@ -32,7 +32,6 @@ trait PersistenceServicesData {
   val appId: Int =  Random.nextInt(10)
   val className: String = Random.nextString(5)
   val resourceIcon: Int = Random.nextInt(10)
-  val colorPrimary: String = Random.nextString(5)
   val dateInstalled: Long = Random.nextLong()
   val dateUpdate: Long = Random.nextLong()
   val version: String = Random.nextString(5)
@@ -41,8 +40,6 @@ trait PersistenceServicesData {
   val packageName: String = Random.nextString(5)
   val nonExistentPackageName: String = "nonExistentPackageName"
   val category: String = Random.nextString(5)
-  val starRating: Double = Random.nextDouble()
-  val numDownloads: String = Random.nextString(5)
   val ratingsCount: Int = Random.nextInt(10)
   val commentCount: Int = Random.nextInt(10)
 
@@ -53,7 +50,6 @@ trait PersistenceServicesData {
   val icon: String = Random.nextString(5)
   val themedColorIndex: Int = Random.nextInt(10)
   val appsCategory: String = Random.nextString(5)
-  val constrains: String = Random.nextString(5)
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
   val nonExistentSharedCollectionId: String = Random.nextString(5)
@@ -63,7 +59,6 @@ trait PersistenceServicesData {
   val nonExistentCardId: Int = Random.nextInt(10) + 100
   val position: Int = Random.nextInt(10)
   val nonExistentPosition: Int = Random.nextInt(10) + 100
-  val micros: Int = Random.nextInt(10)
   val term: String = Random.nextString(5)
   val cardType: String = Random.nextString(5)
   val intent: String = Random.nextString(5)
@@ -78,6 +73,9 @@ trait PersistenceServicesData {
   val installationId: String = Random.nextString(5)
   val deviceToken: String = Random.nextString(5)
   val androidToken: String = Random.nextString(5)
+  val nameUser: String = Random.nextString(5)
+  val avatar: String = Random.nextString(5)
+  val cover: String = Random.nextString(5)
 
   val dockAppId: Int = Random.nextInt(10)
   val nonExistentDockAppId: Int = Random.nextInt(10) + 100
@@ -96,6 +94,8 @@ trait PersistenceServicesData {
 
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
+  val momentType1: String = "Home"
+
 
   def createSeqApp(
     num: Int = 5,
@@ -105,7 +105,6 @@ trait PersistenceServicesData {
     className: String = className,
     category: String = category,
     imagePath: String = imagePath,
-    colorPrimary: String = colorPrimary,
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
@@ -117,7 +116,6 @@ trait PersistenceServicesData {
       className = className,
       category = category,
       imagePath = imagePath,
-      colorPrimary = colorPrimary,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
@@ -135,7 +133,6 @@ trait PersistenceServicesData {
     className: String = className,
     category: String = category,
     imagePath: String = imagePath,
-    colorPrimary: String = colorPrimary,
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
@@ -145,7 +142,6 @@ trait PersistenceServicesData {
     className = className,
     category = category,
     imagePath = imagePath,
-    colorPrimary = colorPrimary,
     dateInstalled = dateInstalled,
     dateUpdate = dateUpdate,
     version = version,
@@ -160,7 +156,6 @@ trait PersistenceServicesData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -174,7 +169,6 @@ trait PersistenceServicesData {
         icon = icon,
         themedColorIndex = themedColorIndex,
         appsCategory = Option(appsCategory),
-        constrains = Option(constrains),
         originalSharedCollectionId = Option(originalSharedCollectionId),
         sharedCollectionId = Option(sharedCollectionId),
         sharedCollectionSubscribed = sharedCollectionSubscribed,
@@ -193,7 +187,6 @@ trait PersistenceServicesData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): RepositoryCollectionData =
@@ -204,7 +197,6 @@ trait PersistenceServicesData {
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = Option(appsCategory),
-      constrains = Option(constrains),
       originalSharedCollectionId = Option(originalSharedCollectionId),
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed))
@@ -213,52 +205,40 @@ trait PersistenceServicesData {
     num: Int = 5,
     collectionId: Int = collectionId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): Seq[AddCardRequest] = List.tabulate(num)(
     item => AddCardRequest(
       collectionId = Option(collectionId),
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification)))
 
   def createSeqCard(
     num: Int = 5,
     id: Int = cardId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): Seq[Card] = List.tabulate(num)(
     item => Card(
       id = id + item,
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification)))
 
   def createSeqRepoCard(
@@ -269,25 +249,19 @@ trait PersistenceServicesData {
 
   def createRepoCardData(
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): RepositoryCardData =
     RepositoryCardData(
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification))
 
   def createSeqUser(
@@ -298,7 +272,10 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): Seq[User] = List.tabulate(num)(
+    androidToken: String = androidToken,
+    name: String = nameUser,
+    avatar: String = avatar,
+    cover: String = cover): Seq[User] = List.tabulate(num)(
     item =>
       User(
         id = id + item,
@@ -307,7 +284,10 @@ trait PersistenceServicesData {
         sessionToken = Option(sessionToken),
         installationId = Option(installationId),
         deviceToken = Option(deviceToken),
-        androidToken = Option(androidToken)))
+        androidToken = Option(androidToken),
+        name = Option(name),
+        avatar = Option(avatar),
+        cover = Option(cover)))
 
   def createSeqRepoUser(
     num: Int = 5,
@@ -321,14 +301,20 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): RepositoryUserData =
+    androidToken: String = androidToken,
+    name: String = nameUser,
+    avatar: String = avatar,
+    cover: String = cover): RepositoryUserData =
     RepositoryUserData(
       userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken))
+      androidToken = Option(androidToken),
+      name = Option(name),
+      avatar = Option(avatar),
+      cover = Option(cover))
 
   def createSeqDockApp(
     num: Int = 5,
@@ -372,14 +358,16 @@ trait PersistenceServicesData {
     collectionId: Option[Int] = collectionIdOption,
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
-    headphone: Boolean = headphone): Seq[Moment] = List.tabulate(num)(
+    headphone: Boolean = headphone,
+    momentType: Option[String] = Option(momentType1)): Seq[Moment] = List.tabulate(num)(
     item =>
       Moment(
         id = id + item,
         collectionId = collectionId,
         timeslot = timeslot,
         wifi = wifi,
-        headphone = headphone))
+        headphone = headphone,
+        momentType = momentType))
 
   def createSeqRepoMoment(
     num: Int = 5,
@@ -391,12 +379,14 @@ trait PersistenceServicesData {
     collectionId: Option[Int] = collectionIdOption,
     timeslot: String = timeslotJson,
     wifiString: String = wifiString,
-    headphone: Boolean = headphone): RepositoryMomentData =
+    headphone: Boolean = headphone,
+    momentType: Option[String] = Option(momentType1)): RepositoryMomentData =
     RepositoryMomentData(
       collectionId = collectionId,
       timeslot = timeslot,
       wifi = wifiString,
-      headphone = headphone)
+      headphone = headphone,
+      momentType = momentType)
 
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp(0)
@@ -442,7 +432,6 @@ trait PersistenceServicesData {
     className: String = className,
     category: String = category,
     imagePath: String = imagePath,
-    colorPrimary: String = colorPrimary,
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
@@ -453,7 +442,6 @@ trait PersistenceServicesData {
       className = className,
       category = category,
       imagePath = imagePath,
-      colorPrimary = colorPrimary,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
@@ -466,7 +454,6 @@ trait PersistenceServicesData {
     className: String = className,
     category: String = category,
     imagePath: String = imagePath,
-    colorPrimary: String = colorPrimary,
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
@@ -478,7 +465,6 @@ trait PersistenceServicesData {
       className = className,
       category = category,
       imagePath = imagePath,
-      colorPrimary = colorPrimary,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
@@ -487,26 +473,20 @@ trait PersistenceServicesData {
   def createAddCardRequest(
     collectionId: Int = collectionId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): AddCardRequest =
     AddCardRequest(
       collectionId = Option(collectionId),
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification))
 
   def createDeleteCardRequest(card: Card): DeleteCardRequest = DeleteCardRequest(card = card)
@@ -525,26 +505,20 @@ trait PersistenceServicesData {
   def createUpdateCardRequest(
     id: Int = cardId,
     position: Int = position,
-    micros: Int = micros,
     term: String = term,
     packageName: String = packageName,
     cardType: String = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
-    starRating: Double = starRating,
-    numDownloads: String = numDownloads,
     notification: String = notification): UpdateCardRequest =
     UpdateCardRequest(
       id = id,
       position = position,
-      micros = micros,
       term = term,
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
       imagePath = imagePath,
-      starRating = Option(starRating),
-      numDownloads = Option(numDownloads),
       notification = Option(notification))
 
   def createAddCollectionRequest(
@@ -554,7 +528,6 @@ trait PersistenceServicesData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -566,7 +539,6 @@ trait PersistenceServicesData {
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = Option(appsCategory),
-      constrains = Option(constrains),
       originalSharedCollectionId = Option(originalSharedCollectionId),
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
@@ -592,7 +564,6 @@ trait PersistenceServicesData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
-    constrains: String = constrains,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -605,7 +576,6 @@ trait PersistenceServicesData {
       icon = icon,
       themedColorIndex = themedColorIndex,
       appsCategory = Option(appsCategory),
-      constrains = Option(constrains),
       originalSharedCollectionId = Option(originalSharedCollectionId),
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
@@ -617,14 +587,20 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): AddUserRequest =
+    androidToken: String = androidToken,
+    name: String = nameUser,
+    avatar: String = avatar,
+    cover: String = cover): AddUserRequest =
     AddUserRequest(
       userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken))
+      androidToken = Option(androidToken),
+      name = Option(name),
+      avatar = Option(avatar),
+      cover = Option(cover))
 
   def createDeleteUserRequest(user: User): DeleteUserRequest =
     DeleteUserRequest(user = user)
@@ -639,7 +615,10 @@ trait PersistenceServicesData {
     sessionToken: String = sessionToken,
     installationId: String = installationId,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken): UpdateUserRequest =
+    androidToken: String = androidToken,
+    name: String = nameUser,
+    avatar: String = avatar,
+    cover: String = cover): UpdateUserRequest =
     UpdateUserRequest(
       id = id,
       userId = Option(userId),
@@ -647,7 +626,10 @@ trait PersistenceServicesData {
       sessionToken = Option(sessionToken),
       installationId = Option(installationId),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken))
+      androidToken = Option(androidToken),
+      name = Option(name),
+      avatar = Option(avatar),
+      cover = Option(cover))
 
   def createCreateOrUpdateDockAppRequest(
     name: String = name,
@@ -694,12 +676,14 @@ trait PersistenceServicesData {
     collectionId: Option[Int] = collectionIdOption,
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
-    headphone: Boolean = headphone): AddMomentRequest =
+    headphone: Boolean = headphone,
+    momentType: Option[String] = Option(momentType1)): AddMomentRequest =
     AddMomentRequest(
       collectionId = collectionId,
       timeslot = timeslot,
       wifi = wifi,
-      headphone = headphone)
+      headphone = headphone,
+      momentType = momentType)
 
   def createDeleteMomentRequest(moment: Moment): DeleteMomentRequest =
     DeleteMomentRequest(moment = moment)
@@ -712,13 +696,15 @@ trait PersistenceServicesData {
     collectionId: Option[Int] = collectionIdOption,
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
-    headphone: Boolean = headphone): UpdateMomentRequest =
+    headphone: Boolean = headphone,
+    momentType: Option[String] = Option(momentType1)): UpdateMomentRequest =
     UpdateMomentRequest(
       id = id,
       collectionId = collectionId,
       timeslot = timeslot,
       wifi = wifi,
-      headphone = headphone)
+      headphone = headphone,
+      momentType = momentType)
 
   val dataCounters = 1 to 10 map createDataCounter
 

@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.user.impl
 
-import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.services.api.models.{AndroidDevice, GoogleDevice, Installation, User}
 import com.fortysevendeg.ninecardslauncher.services.persistence.FindUserByIdRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
@@ -50,8 +49,10 @@ trait UserProcessData
     sessionToken = None,
     installationId = None,
     deviceToken = None,
-    androidToken = None
-  )
+    androidToken = None,
+    name = None,
+    avatar = None,
+    cover = None)
 
   val installationStatusCode = 102
 
