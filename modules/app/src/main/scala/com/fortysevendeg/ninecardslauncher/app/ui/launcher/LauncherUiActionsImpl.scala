@@ -20,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import ViewOps._
+import UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import macroid._
 
@@ -58,11 +59,7 @@ trait LauncherUiActionsImpl
 
   override def goToPreviousScreenReordering(): Ui[Any] = {
     val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
-    if (canMoveToPreviousScreen) {
-      goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1))
-    } else {
-      Ui.nop
-    }
+    (goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1))).ifUi(canMoveToPreviousScreen)
   }
 
   override def goToNextScreenReordering(): Ui[Any] = {

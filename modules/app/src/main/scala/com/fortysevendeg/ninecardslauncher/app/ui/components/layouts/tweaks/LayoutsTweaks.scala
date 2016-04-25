@@ -80,7 +80,7 @@ object LauncherWorkSpacesTweaks {
     val collections = (workspaces.data flatMap (_.collections.filterNot(_.id == collectionId))).zipWithIndex map {
       case (col, index) => col.copy(position = index)
     }
-    val maybeWorkspaceCollection = workspaces.data find (_.collections map (_.id) contains collectionId)
+    val maybeWorkspaceCollection = workspaces.data find (_.collections.exists(_.id == collectionId))
     val maybePage = maybeWorkspaceCollection map workspaces.data.indexOf
     workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
     val page = maybePage map { page =>

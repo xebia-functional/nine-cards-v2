@@ -25,6 +25,8 @@ import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 
+import Statuses._
+
 import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -74,9 +76,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  def draggingTo(position: Int): Unit = {
-    statuses = statuses.reordering(position)
-  }
+  def draggingTo(position: Int): Unit = statuses = statuses.reordering(position)
 
   def draggingToNextScreen(position: Int): Unit = {
     actions.goToNextScreenReordering().run
@@ -345,35 +345,37 @@ trait LauncherUiActions {
 
 }
 
-case class LauncherPresenterStatuses(
-  mode: LauncherMode = NormalMode,
-  collectionReorderMode: Option[Collection] = None,
-  startPositionReorderMode: Int = 0,
-  currentPositionReorderMode: Int = 0) {
+object Statuses {
+  case class LauncherPresenterStatuses(
+    mode: LauncherMode = NormalMode,
+    collectionReorderMode: Option[Collection] = None,
+    startPositionReorderMode: Int = 0,
+    currentPositionReorderMode: Int = 0) {
 
-  def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
-    copy(
-      startPositionReorderMode = position,
-      collectionReorderMode = Some(collection),
-      currentPositionReorderMode = position,
-      mode = ReorderMode)
+    def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
+      copy(
+        startPositionReorderMode = position,
+        collectionReorderMode = Some(collection),
+        currentPositionReorderMode = position,
+        mode = ReorderMode)
 
-  def reordering(position: Int): LauncherPresenterStatuses =
-    copy(currentPositionReorderMode = position)
+    def reordering(position: Int): LauncherPresenterStatuses =
+      copy(currentPositionReorderMode = position)
 
-  def endReorder(): LauncherPresenterStatuses =
-    copy(
-      startPositionReorderMode = 0,
-      collectionReorderMode = None,
-      currentPositionReorderMode = 0,
-      mode = NormalMode)
+    def endReorder(): LauncherPresenterStatuses =
+      copy(
+        startPositionReorderMode = 0,
+        collectionReorderMode = None,
+        currentPositionReorderMode = 0,
+        mode = NormalMode)
 
-  def isReordering(): Boolean = mode == ReorderMode
+    def isReordering(): Boolean = mode == ReorderMode
 
+  }
+
+  sealed trait LauncherMode
+
+  case object NormalMode extends LauncherMode
+
+  case object ReorderMode extends LauncherMode
 }
-
-sealed trait LauncherMode
-
-case object NormalMode extends LauncherMode
-
-case object ReorderMode extends LauncherMode

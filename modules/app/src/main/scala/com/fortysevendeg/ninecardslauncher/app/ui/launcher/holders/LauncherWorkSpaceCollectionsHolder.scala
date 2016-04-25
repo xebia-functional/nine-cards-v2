@@ -93,27 +93,20 @@ class LauncherWorkSpaceCollectionsHolder(
   def prepareItemsScreenInReorder(position: Int): Ui[Any] = {
     val startReorder = presenter.statuses.startPositionReorderMode
     val screenOfCollection = (toPositionCollection(0) <= startReorder) && (toPositionCollection(numSpaces) > startReorder)
-    if (screenOfCollection) {
-      Ui.sequence(views map { view =>
-        if (view.positionInGrid == startReorder) {
-          view.convertToDraggingItem() ~ (view <~ vInvisible)
-        } else if (view.collection.isEmpty) {
-          view <~ vInvisible
-        } else {
-          view <~ vVisible
-        }
-      }: _*) ~ reorder(startReorder, position, animation = false)
+    def isConvertToDragging(pos: Int) = if (screenOfCollection) {
+      pos == startReorder
     } else {
-      Ui.sequence(views map { view =>
-        if (view.positionInGrid == toPositionCollection(position)) {
-          view.convertToDraggingItem() ~ (view <~ vInvisible)
-        } else if (view.collection.isEmpty) {
-          view <~ vInvisible
-        } else {
-          view <~ vVisible
-        }
-      }: _*)
+      pos == toPositionCollection(position)
     }
+    Ui.sequence(views map { view =>
+      if (isConvertToDragging(view.positionInGrid)) {
+        view.convertToDraggingItem() ~ (view <~ vInvisible)
+      } else if (view.collection.isEmpty) {
+        view <~ vInvisible
+      } else {
+        view <~ vVisible
+      }
+    }: _*) ~ reorder(startReorder, position, animation = false)
   }
 
   private[this] def resetAllPositions(): Ui[Any] = Ui.sequence(views map { view =>
@@ -178,17 +171,17 @@ class LauncherWorkSpaceCollectionsHolder(
       val updatePositions = from to to map { pos =>
         getView(pos) map (view => Ui(view.positionInGrid = pos - 1)) getOrElse Ui.nop
       }
-      Ui.sequence(transforms ++ updatePositions:_*)
+      Ui.sequence(transforms ++ updatePositions: _*)
     } else if (currentPosition > toPosition) {
       val from = toPosition
       val to = currentPosition
       val transforms = from until to map { pos =>
-        move(pos, pos  + 1, animation)
+        move(pos, pos + 1, animation)
       }
       val updatePositions = from until to map { pos =>
         getView(pos) map (view => Ui(view.positionInGrid = pos + 1)) getOrElse Ui.nop
       }
-      Ui.sequence(transforms ++ updatePositions:_*)
+      Ui.sequence(transforms ++ updatePositions: _*)
     } else {
       Ui.nop
     }

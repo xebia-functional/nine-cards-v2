@@ -200,7 +200,6 @@ class CollectionRepository(
     icon -> collection.data.icon,
     themedColorIndex -> collection.data.themedColorIndex,
     appsCategory -> (collection.data.appsCategory orNull),
-    constrains -> (collection.data.constrains orNull),
     originalSharedCollectionId -> (collection.data.originalSharedCollectionId orNull),
     sharedCollectionId -> (collection.data.sharedCollectionId orNull),
     sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed orNull))
