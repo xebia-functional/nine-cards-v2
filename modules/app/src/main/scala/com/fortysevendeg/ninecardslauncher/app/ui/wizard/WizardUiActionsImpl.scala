@@ -10,13 +10,11 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.StepData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
-import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDevice
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -31,8 +29,6 @@ trait WizardUiActionsImpl
   implicit val presenter: WizardPresenter
 
   val newConfigurationKey = "new_configuration"
-
-  val tagDialog = "dialog"
 
   lazy val rootLayout = Option(findView(TR.wizard_root))
 
@@ -135,27 +131,6 @@ trait WizardUiActionsImpl
   override def showErrorSelectUser(): Ui[Any] = showMessage(R.string.errorSelectUser)
 
   override def showErrorAcceptTerms(): Ui[Any] = showMessage(R.string.messageAcceptTerms)
-
-  override def showErrorAndroidMarketNotAccepted(): Unit =
-    showErrorDialog(R.string.errorAndroidMarketPermissionNotAccepted)
-
-  override def showErrorGoogleDriveNotAccepted(): Unit =
-    showErrorDialog(R.string.errorGooglePermissionNotAccepted)
-
-  private[this] def showErrorDialog(message: Int): Unit =
-    activityContextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) =>
-        val ft = activity.getSupportFragmentManager.beginTransaction()
-        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-        ft.addToBackStack(javaNull)
-        val dialog = new AlertDialogFragment(
-          message = message,
-          positiveAction = () => goToUser().run,
-          negativeAction = () => goToUser().run)
-        dialog.show(ft, tagDialog)
-        ft.commit()
-      case _ =>
-    }
 
   override def showDevices(devices: UserCloudDevices): Ui[Any] =
     addDevicesToRadioGroup(devices.devices) ~

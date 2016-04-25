@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.{ComponentName, Intent, SharedPreferences}
 import android.content.res.Resources
 import android.os.Bundle
+import android.support.v4.app.{DialogFragment, Fragment, FragmentManager, FragmentTransaction}
+import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
@@ -18,13 +20,13 @@ import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, Mome
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
-import org.hamcrest.{Description, TypeSafeMatcher}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import rapture.core.{Answer, Errata}
 
 import scala.concurrent.duration._
+import scala.ref.WeakReference
 import scalaz.concurrent.Task
 
 trait WizardPresenterSpecification
@@ -68,7 +70,11 @@ trait WizardPresenterSpecification
 
     val mockBundle = mock[Bundle]
 
-    val mockContext = mock[Activity]
+    val mockContextActivity = mock[AppCompatActivity]
+
+    val mockFragmentManager = mock[FragmentManager]
+
+    val mockFragmentTransaction = mock[FragmentTransaction]
 
     val mockResources = mock[Resources]
 
@@ -76,9 +82,15 @@ trait WizardPresenterSpecification
 
     val mockIntent = mock[Intent]
 
-    mockContextWrapper.getOriginal returns mockContext
+    mockContextWrapper.getOriginal returns mockContextActivity
 
-    mockContextWrapper.bestAvailable returns mockContext
+    mockContextWrapper.original returns new WeakReference[Activity](mockContextActivity)
+
+    mockContextWrapper.bestAvailable returns mockContextActivity
+
+    mockContextActivity.getSupportFragmentManager returns mockFragmentManager
+
+    mockFragmentManager.beginTransaction() returns mockFragmentTransaction
 
     mockInjector.createCloudStorageProcess(any) returns mockCloudStorageProcess
 
@@ -92,7 +104,7 @@ trait WizardPresenterSpecification
 
     mockEditor.putString(any, any) returns mockEditor
 
-    mockContext.getResources returns mockResources
+    mockContextActivity.getResources returns mockResources
 
     mockActions.initialize(any) returns Ui[Any]()
     mockActions.showLoading() returns Ui[Any]()
@@ -176,8 +188,9 @@ class WizardPresenterSpec
         presenter.connectAccount(accountName, termsAccept = true)
 
         there was after(1.seconds).two(mockActions).showLoading()
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull)
+        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, token)
         there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
         there was after(1.seconds).one(mockAccountManager).invalidateAuthToken(presenter.accountType, token)
       }
@@ -198,9 +211,10 @@ class WizardPresenterSpec
         presenter.connectAccount(accountName, termsAccept = true)
 
         there was after(1.seconds).two(mockActions).showLoading()
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull)
+        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, token)
+        there was after(1.seconds).no(mockEditor).putString(presenter.googleKeyToken, javaNull)
         there was after(1.seconds).no(mockAccountManager).invalidateAuthToken(any, any)
       }
 
@@ -219,29 +233,37 @@ class WizardPresenterSpec
     "call to show error Android Market not accepted in Actions when there is a Operation Cancelled error requesting Market token" in
       new WizardPresenterScope {
 
+        mockFragmentTransaction.add(any[Fragment], anyString) returns mockFragmentTransaction
+
+        mockFragmentTransaction.addToBackStack(any) returns mockFragmentTransaction
+
         val exception = mock[OperationCanceledException]
 
-        mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull) returns mockAccountManagerFuture
+        mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
 
         mockAccountManagerFuture.getResult throws exception
 
         presenter.connectAccount(accountName, termsAccept = true)
 
         there was after(1.seconds).one(mockActions).showLoading()
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1.seconds).one(mockActions).showErrorAndroidMarketNotAccepted()
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
+        there was after(1.seconds).one(mockFragmentTransaction).add(any[DialogFragment], anyString)
       }
 
-    "call to show error Google Drive not accepted in Actions when there is a Operation Cancelled error requesting Drive token" in
+    "show a dialog when there is a Operation Cancelled error requesting Drive token" in
       new WizardPresenterScope {
+
+        mockFragmentTransaction.add(any[Fragment], anyString) returns mockFragmentTransaction
+
+        mockFragmentTransaction.addToBackStack(any) returns mockFragmentTransaction
 
         val exception = mock[OperationCanceledException]
 
         val mockAccountManagerFutureEx = mock[AccountManagerFuture[Bundle]]
 
-        mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull) returns mockAccountManagerFuture
+        mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
 
-        mockAccountManager.getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull) returns mockAccountManagerFutureEx
+        mockAccountManager.getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFutureEx
 
         mockAccountManagerFuture.getResult returns mockBundle
 
@@ -254,9 +276,9 @@ class WizardPresenterSpec
         presenter.connectAccount(accountName, termsAccept = true)
 
         there was after(1.seconds).two(mockActions).showLoading()
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1.seconds).one(mockActions).showErrorGoogleDriveNotAccepted()
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull)
+        there was after(1.seconds).one(mockFragmentTransaction).add(any[DialogFragment], anyString)
       }
 
     "call to show error connecting Google in Actions when there an unexpected error requesting Market token" in
@@ -264,14 +286,14 @@ class WizardPresenterSpec
 
         val exception = mock[RuntimeException]
 
-        mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull) returns mockAccountManagerFuture
+        mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
 
         mockAccountManagerFuture.getResult throws exception
 
         presenter.connectAccount(accountName, termsAccept = true)
 
         there was after(1.seconds).one(mockActions).showLoading()
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
         there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
       }
 
@@ -282,9 +304,9 @@ class WizardPresenterSpec
 
         val mockAccountManagerFutureEx = mock[AccountManagerFuture[Bundle]]
 
-        mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull) returns mockAccountManagerFuture
+        mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
 
-        mockAccountManager.getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull) returns mockAccountManagerFutureEx
+        mockAccountManager.getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFutureEx
 
         mockAccountManagerFuture.getResult returns mockBundle
 
@@ -297,8 +319,8 @@ class WizardPresenterSpec
         presenter.connectAccount(accountName, termsAccept = true)
 
         there was after(1.seconds).two(mockActions).showLoading()
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull)
         there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
       }
 
@@ -367,8 +389,8 @@ class WizardPresenterSpec
         presenter.saveCurrentDevice()
 
         there was after(1.seconds).two(mockActions).showLoading()
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContext, javaNull, javaNull)
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContext, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
+        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull)
         there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
         there was after(1.seconds).one(mockAccountManager).invalidateAuthToken(presenter.accountType, token)
 
@@ -390,25 +412,25 @@ class WizardPresenterSpec
     "call to go to wizard in Actions and startService in the activity" in
       new WizardPresenterScope {
 
-        mockContext.startService(any) returns mock[ComponentName]
+        mockContextActivity.startService(any) returns mock[ComponentName]
 
         presenter.generateCollections(None)
 
         there was after(1.seconds).one(mockActions).goToWizard()
         there was after(1.seconds).no(mockIntent).putExtra(any, anyString)
-        there was after(1.seconds).one(mockContext).startService(mockIntent)
+        there was after(1.seconds).one(mockContextActivity).startService(mockIntent)
     }
 
     "call to go to wizard in Actions and startService in the activity with the right Intent when pass a key" in
       new WizardPresenterScope {
 
-        mockContext.startService(any) returns mock[ComponentName]
+        mockContextActivity.startService(any) returns mock[ComponentName]
 
         presenter.generateCollections(Some(intentKey))
 
         there was after(1.seconds).one(mockActions).goToWizard()
         there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.keyDevice, intentKey)
-        there was after(1.seconds).one(mockContext).startService(mockIntent)
+        there was after(1.seconds).one(mockContextActivity).startService(mockIntent)
     }
   }
 
@@ -419,8 +441,8 @@ class WizardPresenterSpec
 
         presenter.finishWizard()
 
-        there was after(1.seconds).one(mockContext).setResult(Activity.RESULT_OK)
-        there was after(1.seconds).one(mockContext).finish()
+        there was after(1.seconds).one(mockContextActivity).setResult(Activity.RESULT_OK)
+        there was after(1.seconds).one(mockContextActivity).finish()
     }
 
   }

@@ -8,9 +8,9 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientProvider
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
@@ -38,9 +38,9 @@ import scalaz.{-\/, \/, \/-}
 
 class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
-  with GoogleApiClientProvider
-  with ImplicitsCloudStorageProcessExceptions
-  with ImplicitsAuthTokenException {
+    with GoogleApiClientProvider
+    with ImplicitsCloudStorageProcessExceptions
+    with ImplicitsAuthTokenException {
 
   import Statuses._
 
@@ -49,6 +49,8 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
   val googleKeyPreferences = "__google_auth__"
 
   val googleKeyToken = "__google_token__"
+
+  val tagDialog = "dialog-not-accepted"
 
   lazy val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq
 
@@ -94,19 +96,23 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         actions.goToUser().run
     }
 
-  def generateCollections(maybeKey: Option[String]): Unit = {
-    val activity = contextWrapper.getOriginal
-    val intent = createIntent(activity, classOf[CreateCollectionService])
-    maybeKey foreach (key => intent.putExtra(CreateCollectionService.keyDevice, key))
-    activity.startService(intent)
-    actions.goToWizard().run
-  }
+  def generateCollections(maybeKey: Option[String]): Unit =
+    contextWrapper.original.get match {
+      case Some(activity) =>
+        val intent = createIntent(activity, classOf[CreateCollectionService])
+        maybeKey foreach (key => intent.putExtra(CreateCollectionService.keyDevice, key))
+        activity.startService(intent)
+        actions.goToWizard().run
+      case _ =>
+    }
 
-  def finishWizard(): Unit = {
-    val activity = contextWrapper.getOriginal
-    activity.setResult(Activity.RESULT_OK)
-    activity.finish()
-  }
+  def finishWizard(): Unit =
+    contextWrapper.original.get match {
+      case Some(activity) =>
+        activity.setResult(Activity.RESULT_OK)
+        activity.finish()
+      case _ =>
+    }
 
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean =
     (requestCode, resultCode) match {
@@ -160,8 +166,10 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
   }
 
   private[this] def invalidateToken(): Unit = {
-    getToken foreach (accountManager.invalidateAuthToken(accountType, _))
-    setToken(javaNull)
+    getToken foreach { token =>
+      accountManager.invalidateAuthToken(accountType, token)
+      setToken(javaNull)
+    }
   }
 
   private[this] def loadCloudDevices(
@@ -189,12 +197,15 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     val scopes = "androidmarket"
     Task.fork(requestUserPermissions(account, scopes, client).run).resolveAsyncUi(
       onResult = (permissions: UserPermissions) => {
+        setToken(permissions.token)
         requestGooglePermission(account, client)
         Ui.nop
       },
       onException = (ex: Throwable) => ex match {
         case ex: AuthTokenOperationCancelledException =>
-          actions.showErrorAndroidMarketNotAccepted()
+          showErrorDialog(
+            message = R.string.errorAndroidMarketPermissionNotAccepted,
+            action = () => requestAndroidMarketPermission(account, client))
           Ui.nop
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
@@ -212,12 +223,29 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       },
       onException = (ex: Throwable) => ex match {
         case ex: AuthTokenOperationCancelledException =>
-          actions.showErrorGoogleDriveNotAccepted()
+          showErrorDialog(
+            message = R.string.errorGooglePermissionNotAccepted,
+            action = () => requestGooglePermission(account, client))
           Ui.nop
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
       onPreTask = () => actions.showLoading())
   }
+
+  private[this] def showErrorDialog(message: Int, action: () => Unit): Unit =
+    contextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        val fm = activity.getSupportFragmentManager
+        val ft = fm.beginTransaction()
+        Option(fm.findFragmentByTag(tagDialog)) foreach ft.remove
+        val dialog = new AlertDialogFragment(
+          message = message,
+          positiveAction = action,
+          negativeAction = () => actions.goToUser().run)
+        ft.add(dialog, tagDialog).addToBackStack(javaNull)
+        ft.commitAllowingStateLoss()
+      case _ =>
+    }
 
   private[this] def loadDevices(
     maybeClient: Option[GoogleApiClient],
@@ -338,10 +366,6 @@ trait WizardUiActions {
   def showErrorAcceptTerms(): Ui[Any]
 
   def showErrorLoginUser(): Ui[Any]
-
-  def showErrorAndroidMarketNotAccepted(): Unit
-
-  def showErrorGoogleDriveNotAccepted(): Unit
 
   def showDevices(devices: UserCloudDevices): Ui[Any]
 
