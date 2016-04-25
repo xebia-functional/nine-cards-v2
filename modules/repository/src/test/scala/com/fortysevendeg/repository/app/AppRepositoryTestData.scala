@@ -1,9 +1,7 @@
 package com.fortysevendeg.repository.app
 
-import java.util.Date
-
-import com.fortysevendeg.ninecardslauncher.repository.model.{DataCounter, AppData, App}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntityData, AppEntity}
+import com.fortysevendeg.ninecardslauncher.repository.model.{App, AppData, DataCounter}
+import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, AppEntityData}
 import org.joda.time.DateTime
 
 import scala.util.Random
@@ -19,7 +17,6 @@ trait AppRepositoryTestData {
   val testCategory = Random.nextString(5)
   val testNonExistingCategory = Random.nextString(5)
   val testImagePath = Random.nextString(5)
-  val testColorPrimary = Random.nextString(5)
   val testDateInstalled = Random.nextLong()
   val testDateUpdate = Random.nextLong()
   val testVersion = Random.nextString(5)
@@ -39,7 +36,6 @@ trait AppRepositoryTestData {
         className = testClassName,
         category = testCategory,
         imagePath = testImagePath,
-        colorPrimary = testColorPrimary,
         dateInstalled = testDateInstalled,
         dateUpdate = testDateUpdate,
         version = testVersion,
@@ -54,7 +50,6 @@ trait AppRepositoryTestData {
         className = testClassName,
         category = testCategory,
         imagePath = testImagePath,
-        colorPrimary = testColorPrimary,
         dateInstalled = testDateInstalled,
         dateUpdate = testDateUpdate,
         version = testVersion,
@@ -66,7 +61,6 @@ trait AppRepositoryTestData {
     AppEntity.className -> testClassName,
     AppEntity.category -> testCategory,
     AppEntity.imagePath -> testImagePath,
-    AppEntity.colorPrimary -> testColorPrimary,
     AppEntity.dateInstalled -> testDateInstalled,
     AppEntity.dateUpdate -> testDateUpdate,
     AppEntity.version -> testVersion,
@@ -78,7 +72,6 @@ trait AppRepositoryTestData {
     className = testClassName,
     category = testCategory,
     imagePath = testImagePath,
-    colorPrimary = testColorPrimary,
     dateInstalled = testDateInstalled,
     dateUpdate = testDateUpdate,
     version = testVersion,

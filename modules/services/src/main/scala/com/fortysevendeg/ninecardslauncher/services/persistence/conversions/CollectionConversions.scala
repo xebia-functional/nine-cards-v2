@@ -17,7 +17,6 @@ trait CollectionConversions extends CardConversions {
       icon = collection.data.icon,
       themedColorIndex = collection.data.themedColorIndex,
       appsCategory = collection.data.appsCategory,
-      constrains = collection.data.constrains,
       originalSharedCollectionId = collection.data.originalSharedCollectionId,
       sharedCollectionId = collection.data.sharedCollectionId,
       sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed getOrElse false
@@ -32,7 +31,6 @@ trait CollectionConversions extends CardConversions {
       icon = collection.data.icon,
       themedColorIndex = collection.data.themedColorIndex,
       appsCategory = collection.data.appsCategory,
-      constrains = collection.data.constrains,
       originalSharedCollectionId = collection.data.originalSharedCollectionId,
       sharedCollectionId = collection.data.sharedCollectionId,
       sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed getOrElse false,
@@ -49,7 +47,6 @@ trait CollectionConversions extends CardConversions {
         icon = collection.icon,
         themedColorIndex = collection.themedColorIndex,
         appsCategory = collection.appsCategory,
-        constrains = collection.constrains,
         originalSharedCollectionId = collection.originalSharedCollectionId,
         sharedCollectionId = collection.sharedCollectionId,
         sharedCollectionSubscribed = Option(collection.sharedCollectionSubscribed)
@@ -66,7 +63,6 @@ trait CollectionConversions extends CardConversions {
         icon = request.icon,
         themedColorIndex = request.themedColorIndex,
         appsCategory = request.appsCategory,
-        constrains = request.constrains,
         originalSharedCollectionId = request.originalSharedCollectionId,
         sharedCollectionId = request.sharedCollectionId,
         sharedCollectionSubscribed = request.sharedCollectionSubscribed
@@ -81,7 +77,6 @@ trait CollectionConversions extends CardConversions {
       icon = request.icon,
       themedColorIndex = request.themedColorIndex,
       appsCategory = request.appsCategory,
-      constrains = request.constrains,
       originalSharedCollectionId = request.originalSharedCollectionId,
       sharedCollectionId = request.sharedCollectionId,
       sharedCollectionSubscribed = request.sharedCollectionSubscribed

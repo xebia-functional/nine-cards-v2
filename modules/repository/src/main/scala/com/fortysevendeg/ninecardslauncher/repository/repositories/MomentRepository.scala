@@ -33,7 +33,8 @@ class MomentRepository(
             collectionId -> (data.collectionId orNull),
             timeslot -> data.timeslot,
             wifi -> data.wifi,
-            headphone -> data.headphone)
+            headphone -> data.headphone,
+            momentType -> (data.momentType orNull))
 
           val id = contentResolverWrapper.insert(
             uri = momentUri,
@@ -123,7 +124,8 @@ class MomentRepository(
             collectionId -> (item.data.collectionId orNull),
             timeslot -> item.data.timeslot,
             wifi -> item.data.wifi,
-            headphone -> item.data.headphone)
+            headphone -> item.data.headphone,
+            momentType -> (item.data.momentType orNull))
 
           contentResolverWrapper.updateById(
             uri = momentUri,

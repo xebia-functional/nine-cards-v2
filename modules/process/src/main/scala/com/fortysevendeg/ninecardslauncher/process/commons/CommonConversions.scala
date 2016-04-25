@@ -14,7 +14,6 @@ trait CommonConversions extends NineCardIntentConversions {
     icon = servicesCollection.icon,
     themedColorIndex = servicesCollection.themedColorIndex,
     appsCategory = servicesCollection.appsCategory map (NineCardCategory(_)),
-    constrains = servicesCollection.constrains,
     originalSharedCollectionId = servicesCollection.originalSharedCollectionId,
     sharedCollectionId = servicesCollection.sharedCollectionId,
     sharedCollectionSubscribed = servicesCollection.sharedCollectionSubscribed,
@@ -23,14 +22,11 @@ trait CommonConversions extends NineCardIntentConversions {
   def toCard(servicesCard: ServicesCard) = Card(
     id = servicesCard.id,
     position = servicesCard.position,
-    micros = servicesCard.micros,
     term = servicesCard.term,
     packageName = servicesCard.packageName,
     cardType = CardType(servicesCard.cardType),
     intent = jsonToNineCardIntent(servicesCard.intent),
     imagePath = servicesCard.imagePath,
-    starRating = servicesCard.starRating,
-    numDownloads = servicesCard.numDownloads,
     notification = servicesCard.notification)
 
 }

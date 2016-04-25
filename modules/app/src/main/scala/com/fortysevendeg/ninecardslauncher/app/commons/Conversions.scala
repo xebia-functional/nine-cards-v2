@@ -180,7 +180,8 @@ trait NineCardIntentConversions {
       collectionId = None,
       timeslot = cloudStorageMoment.timeslot map toTimeSlot,
       wifi = cloudStorageMoment.wifi,
-      headphone = cloudStorageMoment.headphones)
+      headphone = cloudStorageMoment.headphones,
+      momentType = cloudStorageMoment.momentType)
 
   def toTimeSlot(cloudStorageMomentTimeSlot: CloudStorageMomentTimeSlot) =
     MomentTimeSlot(

@@ -65,7 +65,8 @@ object Conversions {
     CloudStorageMoment(
       timeslot = moment.timeslot map toCloudStorageMomentTimeSlot,
       wifi = moment.wifi,
-      headphones = moment.headphone)
+      headphones = moment.headphone,
+      momentType = moment.momentType)
 
   def toCloudStorageMomentTimeSlot(timeSlot: MomentTimeSlot) =
     CloudStorageMomentTimeSlot(

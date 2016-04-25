@@ -82,7 +82,6 @@ object Settings {
   lazy val basicSettings = Seq(
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
-    externalResolvers ++= commonResolvers,
     libraryDependencies ++= Seq(scalaz, scalazConcurrent)
   )
 
@@ -164,10 +163,10 @@ object Settings {
   lazy val commonResolvers = Seq(
     Resolver.mavenLocal,
     DefaultMavenRepository,
-    Resolver.sonatypeRepo("releases"),
     Resolver.typesafeRepo("releases"),
     Resolver.typesafeRepo("snapshots"),
     Resolver.typesafeIvyRepo("snapshots"),
+    Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots"),
     Resolver.defaultLocal,
     "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",

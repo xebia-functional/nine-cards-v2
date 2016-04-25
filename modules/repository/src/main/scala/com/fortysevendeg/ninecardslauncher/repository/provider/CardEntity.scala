@@ -14,9 +14,6 @@ case class CardEntityData(
   `type`: String,
   intent: String,
   imagePath: String,
-  starRating: Double,
-  micros: Int,
-  numDownloads: String,
   notification: String)
 
 object CardEntity {
@@ -28,9 +25,6 @@ object CardEntity {
   val cardType = "type"
   val intent = "intent"
   val imagePath = "imagePath"
-  val starRating = "starRating"
-  val micros = "micros"
-  val numDownloads = "numDownloads"
   val notification = "notification"
 
   val allFields = Seq[String](
@@ -42,9 +36,6 @@ object CardEntity {
     cardType,
     intent,
     imagePath,
-    starRating,
-    micros,
-    numDownloads,
     notification)
 
   def cardEntityFromCursor(cursor: Cursor): CardEntity =
@@ -58,9 +49,6 @@ object CardEntity {
         `type` = cursor.getString(cursor.getColumnIndex(cardType)),
         intent = cursor.getString(cursor.getColumnIndex(intent)),
         imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
-        starRating = cursor.getDouble(cursor.getColumnIndex(starRating)),
-        micros = cursor.getInt(cursor.getColumnIndex(micros)),
-        numDownloads = cursor.getString(cursor.getColumnIndex(numDownloads)),
         notification = cursor.getString(cursor.getColumnIndex(notification))))
 
   def cardFromCursor(cursor: Cursor): Card = toCard(cardEntityFromCursor(cursor))
@@ -75,8 +63,5 @@ object CardEntity {
        |${CardEntity.cardType} TEXT not null,
        |${CardEntity.intent} TEXT,
        |${CardEntity.imagePath} TEXT,
-       |${CardEntity.starRating} DOUBLE,
-       |${CardEntity.micros} INTEGER,
-       |${CardEntity.notification} TEXT,
-       |${CardEntity.numDownloads} TEXT )""".stripMargin
+       |${CardEntity.notification} TEXT)""".stripMargin
 }

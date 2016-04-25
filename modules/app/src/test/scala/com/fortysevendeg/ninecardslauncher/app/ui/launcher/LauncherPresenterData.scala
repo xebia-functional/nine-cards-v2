@@ -36,7 +36,6 @@ trait LauncherPresenterData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory),
-    constrains = Option(constrains),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
@@ -67,6 +66,9 @@ trait LauncherPresenterData {
     userId = Option(userId),
     installationId = None,
     deviceToken = None,
-    androidToken = None)
+    androidToken = None,
+    name = None,
+    avatar = None,
+    cover = None)
 
 }

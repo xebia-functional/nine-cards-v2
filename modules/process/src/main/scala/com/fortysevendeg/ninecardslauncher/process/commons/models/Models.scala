@@ -10,7 +10,6 @@ case class Collection(
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[NineCardCategory] = None,
-  constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Boolean,
@@ -19,14 +18,11 @@ case class Collection(
 case class Card(
   id: Int,
   position: Int,
-  micros: Int = 0,
   term: String,
   packageName: Option[String],
   cardType: CardType,
   intent: NineCardIntent,
   imagePath: String,
-  starRating: Option[Double] = None,
-  numDownloads: Option[String] = None,
   notification: Option[String] = None) extends Serializable
 
 case class PrivateCollection(
@@ -48,7 +44,8 @@ case class Moment(
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
-  headphone: Boolean)
+  headphone: Boolean,
+  momentType: Option[String])
 
 case class MomentTimeSlot(
   from: String,

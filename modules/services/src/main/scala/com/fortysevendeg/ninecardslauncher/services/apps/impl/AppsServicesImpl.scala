@@ -86,7 +86,6 @@ class AppsServicesImpl
       packageName = packageName,
       className = className,
       resourceIcon = resolveInfo.activityInfo.icon,
-      colorPrimary = "", // TODO Implement in ticket 9C-272
       dateInstalled = packageInfo.firstInstallTime,
       dateUpdate = packageInfo.lastUpdateTime,
       version = packageInfo.versionCode.toString,

@@ -27,7 +27,7 @@ class NineCardsSqlHelper(context: Context)
       case 2 =>
         db.execSQL(s"ALTER TABLE ${CardEntity.table} ADD COLUMN ${CardEntity.notification} TEXT")
       case 3 =>
-        db.execSQL(s"ALTER TABLE ${CardEntity.table} ADD COLUMN ${CardEntity.micros} INTEGER")
+        db.execSQL(s"ALTER TABLE ${CardEntity.table} ADD COLUMN micros INTEGER")
       case 4 =>
         db.execSQL(s"ALTER TABLE ${CollectionEntity.table} ADD COLUMN ${CollectionEntity.sharedCollectionId} TEXT")
         db.execSQL(s"ALTER TABLE ${CollectionEntity.table} ADD COLUMN ${CollectionEntity.originalSharedCollectionId} TEXT")
@@ -39,6 +39,11 @@ class NineCardsSqlHelper(context: Context)
       case 9 =>
         db.execSQL("DROP TABLE GeoInfo")
         db.execSQL(MomentEntity.createTableSQL)
+      case 10 =>
+        db.execSQL(s"ALTER TABLE ${MomentEntity.table} ADD COLUMN ${MomentEntity.momentType} TEXT")
+        db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.name} TEXT")
+        db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.avatar} TEXT")
+        db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.cover} TEXT")
     }
 
     new Handler().post(() => execVersionsDB(oldVersion, newVersion))
@@ -48,5 +53,5 @@ class NineCardsSqlHelper(context: Context)
 object NineCardsSqlHelper {
   val id = "_id"
   val databaseName = "nineCards"
-  val databaseVersion = 9
+  val databaseVersion = 10
 }

@@ -16,13 +16,11 @@ trait CollectionRepositoryTestData {
   val testIcon = Random.nextString(5)
   val testThemedColorIndex = Random.nextInt(10)
   val testAppsCategory = Random.nextString(5)
-  val testConstrains = Random.nextString(5)
   val testOriginalSharedCollectionId = Random.nextString(5)
   val testSharedCollectionId = Random.nextString(5)
   val testNonExistingSharedCollectionId = Random.nextString(5)
   val testSharedCollectionSubscribed = Random.nextInt(10) < 5
   val testAppsCategoryOption = Option(testAppsCategory)
-  val testConstrainsOption = Option(testConstrains)
   val testOriginalSharedCollectionIdOption = Option(testOriginalSharedCollectionId)
   val testSharedCollectionIdOption = Option(testSharedCollectionId)
   val testSharedCollectionSubscribedOption = Option(testSharedCollectionSubscribed)
@@ -42,7 +40,6 @@ trait CollectionRepositoryTestData {
         icon = testIcon,
         themedColorIndex = testThemedColorIndex,
         appsCategory = testAppsCategory,
-        constrains = testConstrains,
         originalSharedCollectionId = testOriginalSharedCollectionId,
         sharedCollectionId = testSharedCollectionId,
         sharedCollectionSubscribed = testSharedCollectionSubscribed)))
@@ -57,7 +54,6 @@ trait CollectionRepositoryTestData {
         icon = testIcon,
         themedColorIndex = testThemedColorIndex,
         appsCategory = testAppsCategoryOption,
-        constrains = testConstrainsOption,
         originalSharedCollectionId = testOriginalSharedCollectionIdOption,
         sharedCollectionId = testSharedCollectionIdOption,
         sharedCollectionSubscribed = testSharedCollectionSubscribedOption)))
@@ -69,7 +65,6 @@ trait CollectionRepositoryTestData {
     CollectionEntity.icon -> testIcon,
     CollectionEntity.themedColorIndex -> testThemedColorIndex,
     CollectionEntity.appsCategory -> (testAppsCategoryOption orNull),
-    CollectionEntity.constrains -> (testConstrainsOption orNull),
     CollectionEntity.originalSharedCollectionId -> (testOriginalSharedCollectionIdOption orNull),
     CollectionEntity.sharedCollectionId -> (testSharedCollectionIdOption orNull),
     CollectionEntity.sharedCollectionSubscribed -> (testSharedCollectionSubscribedOption getOrElse false))
@@ -81,7 +76,6 @@ trait CollectionRepositoryTestData {
     icon = testIcon,
     themedColorIndex = testThemedColorIndex,
     appsCategory = testAppsCategoryOption,
-    constrains = testConstrainsOption,
     originalSharedCollectionId = testOriginalSharedCollectionIdOption,
     sharedCollectionId = testSharedCollectionIdOption,
     sharedCollectionSubscribed = testSharedCollectionSubscribedOption)

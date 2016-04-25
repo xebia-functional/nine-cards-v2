@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
@@ -11,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.repository.model.{App, AppData, DataC
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import org.joda.time.DateTime
 
@@ -42,7 +42,6 @@ class AppRepository(
             className -> data.className,
             category -> data.category,
             imagePath -> data.imagePath,
-            colorPrimary -> data.colorPrimary,
             dateInstalled -> data.dateInstalled,
             dateUpdate -> data.dateUpdate,
             version -> data.version,
@@ -210,7 +209,6 @@ class AppRepository(
             className -> app.data.className,
             category -> app.data.category,
             imagePath -> app.data.imagePath,
-            colorPrimary -> app.data.colorPrimary,
             dateInstalled -> app.data.dateInstalled,
             dateUpdate -> app.data.dateUpdate,
             version -> app.data.version,

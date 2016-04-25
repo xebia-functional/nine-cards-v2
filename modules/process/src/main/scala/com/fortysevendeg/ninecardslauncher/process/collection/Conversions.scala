@@ -23,7 +23,6 @@ trait Conversions extends CommonConversions {
     icon = addCollectionRequest.icon,
     themedColorIndex = addCollectionRequest.themedColorIndex,
     appsCategory = addCollectionRequest.appsCategory map(_.name),
-    constrains = addCollectionRequest.constrains,
     originalSharedCollectionId = addCollectionRequest.originalSharedCollectionId,
     sharedCollectionId = addCollectionRequest.sharedCollectionId,
     sharedCollectionSubscribed = addCollectionRequest.sharedCollectionSubscribed,
@@ -41,7 +40,6 @@ trait Conversions extends CommonConversions {
     icon = collection.icon,
     themedColorIndex = collection.themedColorIndex,
     appsCategory = collection.appsCategory map(_.name),
-    constrains = collection.constrains,
     originalSharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = Option(collection.sharedCollectionSubscribed),
@@ -55,7 +53,6 @@ trait Conversions extends CommonConversions {
     icon = editCollectionRequest.icon,
     themedColorIndex = editCollectionRequest.themedColorIndex,
     appsCategory = editCollectionRequest.appsCategory,
-    constrains = collection.constrains,
     originalSharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
@@ -69,14 +66,11 @@ trait Conversions extends CommonConversions {
   def toServicesCard(card: Card) = ServicesCard(
     id = card.id,
     position = card.position,
-    micros = card.micros,
     term = card.term,
     packageName = card.packageName,
     cardType = card.cardType.name,
     intent = nineCardIntentToJson(card.intent),
     imagePath = card.imagePath,
-    starRating = card.starRating,
-    numDownloads = card.numDownloads,
     notification = card.notification)
 
   def toAddCardRequestSeq(items: Seq[UnformedApp]): Seq[ServicesAddCardRequest] =
@@ -111,14 +105,11 @@ trait Conversions extends CommonConversions {
   def toServicesUpdateCardRequest(card: Card) = ServicesUpdateCardRequest(
     id = card.id,
     position = card.position,
-    micros = card.micros,
     term = card.term,
     packageName = card.packageName,
     cardType = card.cardType.name,
     intent = nineCardIntentToJson(card.intent),
     imagePath = card.imagePath,
-    starRating = card.starRating,
-    numDownloads = card.numDownloads,
     notification = card.notification)
 
   def toInstalledApp(cards: Seq[ServicesCard], app: Application)(implicit contextSupport: ContextSupport): Seq[ServicesCard] = {
@@ -134,27 +125,21 @@ trait Conversions extends CommonConversions {
   def toNewPositionCard(card: Card, newPosition: Int) = Card(
     id = card.id,
     position = card.position,
-    micros = card.micros,
     term = card.term,
     packageName = card.packageName,
     cardType = card.cardType,
     intent = card.intent,
     imagePath = card.imagePath,
-    starRating = card.starRating,
-    numDownloads = card.numDownloads,
     notification = card.notification)
 
   def toUpdatedCard(card: Card, name: String) = Card(
     id = card.id,
     position = card.position,
-    micros = card.micros,
     term = name,
     packageName = card.packageName,
     cardType = card.cardType,
     intent = card.intent,
     imagePath = card.imagePath,
-    starRating = card.starRating,
-    numDownloads = card.numDownloads,
     notification = card.notification)
 
   def toAddCardRequestByContacts(items: Seq[UnformedContact]): Seq[ServicesAddCardRequest] =

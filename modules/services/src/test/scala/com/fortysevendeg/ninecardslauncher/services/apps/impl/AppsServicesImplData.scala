@@ -12,7 +12,6 @@ trait AppsServicesImplData {
   val packageName: String = Random.nextString(5)
   val className: String = Random.nextString(5)
   val resourceIcon: Int = Random.nextInt(10)
-  val colorPrimary: String = ""
   val dateInstalled: Long = Random.nextLong()
   val dateUpdate: Long = Random.nextLong()
   val version: String = Random.nextInt(10).toString
@@ -36,7 +35,6 @@ trait AppsServicesImplData {
     packageName: String = packageName,
     className: String = className,
     resourceIcon: Int = resourceIcon,
-    colorPrimary: String = colorPrimary,
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
@@ -46,7 +44,6 @@ trait AppsServicesImplData {
       packageName = packageName,
       className = className,
       resourceIcon = resourceIcon,
-      colorPrimary = colorPrimary,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
