@@ -36,6 +36,8 @@ trait WizardPresenterData {
 
   val intentKey = "intent-key"
 
+  val momentType = Option("Home")
+
   val cloudStorageDevice = CloudStorageDevice(
     deviceId = deviceId,
     deviceName = deviceName,
@@ -54,12 +56,14 @@ trait WizardPresenterData {
   val cloudStorageMomentCollection = CloudStorageMoment(
     timeslot = Seq(CloudStorageMomentTimeSlot(from = "from-1", to = "to-1", days = 0 to 4)),
     wifi = Seq("wifi-1"),
-    headphones = true)
+    headphones = true,
+    momentType = momentType)
 
   val cloudStorageMoment = CloudStorageMoment(
     timeslot = Seq(CloudStorageMomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
     wifi = Seq("wifi-2"),
-    headphones = false)
+    headphones = false,
+    momentType = momentType)
 
   val cloudStorageCollection = CloudStorageCollection(
     name = "Collection 1",
@@ -76,14 +80,11 @@ trait WizardPresenterData {
     Card(
       id = 1,
       position = 0,
-      micros = 0,
       term = "App 1",
       packageName = Some("package.name"),
       cardType = AppCardType,
       intent = NineCardIntent(NineCardIntentExtras()),
       imagePath = "imagePath",
-      starRating = Some(3.5),
-      numDownloads = Some("1000000"),
       notification = Some("notification")
     )
   )
@@ -96,7 +97,6 @@ trait WizardPresenterData {
     icon = "icon",
     themedColorIndex = 0,
     appsCategory = Some(Social),
-    constrains = Some("constrain"),
     originalSharedCollectionId = Some("originalSharedCollectionId"),
     sharedCollectionId = Some("sharedCollectionId"),
     sharedCollectionSubscribed = false,
@@ -106,13 +106,15 @@ trait WizardPresenterData {
     collectionId = Some(1),
     timeslot = Seq(MomentTimeSlot(from = "from-1", to = "to-1", days = 0 to 4)),
     wifi = Seq("wifi-1"),
-    headphone = true)
+    headphone = true,
+    momentType = momentType)
 
   val moment = Moment(
     collectionId = None,
     timeslot = Seq(MomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
     wifi = Seq("wifi-2"),
-    headphone = false)
+    headphone = false,
+    momentType = momentType)
 
   val moments = Seq(momentCollection, moment)
 
