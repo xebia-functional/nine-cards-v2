@@ -10,7 +10,8 @@ case class MomentEntityData(
   collectionId: Int,
   timeslot: String,
   wifi: String,
-  headphone: Boolean)
+  headphone: Boolean,
+  momentType : String)
 
 object MomentEntity {
   val table = "Moment"
@@ -18,13 +19,15 @@ object MomentEntity {
   val timeslot = "timeslot"
   val wifi = "wifi"
   val headphone = "headphone"
+  val momentType = "momentType"
 
   val allFields = Seq[String](
     NineCardsSqlHelper.id,
     collectionId,
     timeslot,
     wifi,
-    headphone)
+    headphone,
+    momentType)
 
   def momentEntityFromCursor(cursor: Cursor): MomentEntity =
     MomentEntity(
@@ -33,7 +36,9 @@ object MomentEntity {
         collectionId = cursor.getInt(cursor.getColumnIndex(collectionId)),
         timeslot = cursor.getString(cursor.getColumnIndex(timeslot)),
         wifi = cursor.getString(cursor.getColumnIndex(wifi)),
-        headphone = cursor.getInt(cursor.getColumnIndex(headphone)) > 0))
+        headphone = cursor.getInt(cursor.getColumnIndex(headphone)) > 0,
+        momentType = cursor.getString(cursor.getColumnIndex(momentType))))
+
 
   def momentFromCursor(cursor: Cursor): Moment = toMoment(momentEntityFromCursor(cursor))
 
@@ -43,5 +48,6 @@ object MomentEntity {
         |${MomentEntity.collectionId} INTEGER,
         |${MomentEntity.timeslot} TEXT not null,
         |${MomentEntity.wifi} TEXT not null,
-        |${MomentEntity.headphone} INTEGER not null)""".stripMargin
+        |${MomentEntity.headphone} INTEGER not null,
+        |${MomentEntity.momentType} TEXT)""".stripMargin
 }

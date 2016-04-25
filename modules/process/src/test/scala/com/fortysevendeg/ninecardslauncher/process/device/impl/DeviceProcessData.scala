@@ -37,7 +37,6 @@ trait DeviceProcessData
   val category1 = Game
   val imagePath1 = "imagePath1"
   val resourceIcon1 = 1
-  val colorPrimary1 = "colorPrimary"
   val dateInstalled1 = 1L
   val dateUpdate1 = 1L
   val version1 = "22"
@@ -50,7 +49,6 @@ trait DeviceProcessData
   val category2 = BooksAndReference
   val imagePath2 = "imagePath1"
   val resourceIcon2 = 2
-  val colorPrimary2 = "colorPrimary"
   val dateInstalled2 = 1L
   val dateUpdate2 = 1L
   val version2 = "22"
@@ -63,7 +61,6 @@ trait DeviceProcessData
   val category3 = Business
   val imagePath3 = "imagePath1"
   val resourceIcon3 = 3
-  val colorPrimary3 = "colorPrimary"
   val dateInstalled3 = 1L
   val dateUpdate3 = 1L
   val version3 = "22"
@@ -76,7 +73,6 @@ trait DeviceProcessData
   val category4 = Comics
   val imagePath4 = "imagePath1"
   val resourceIcon4 = 4
-  val colorPrimary4 = "colorPrimary"
   val dateInstalled4 = 1L
   val dateUpdate4 = 1L
   val version4 = "22"
@@ -166,7 +162,6 @@ trait DeviceProcessData
     packageName = packageName4,
     className = className4,
     resourceIcon = resourceIcon4,
-    colorPrimary = colorPrimary4,
     dateInstalled = dateInstalled4,
     dateUpdate = dateUpdate4,
     version = version4,
@@ -178,7 +173,6 @@ trait DeviceProcessData
       packageName = packageName1,
       className = className1,
       resourceIcon = resourceIcon1,
-      colorPrimary = colorPrimary1,
       dateInstalled = dateInstalled1,
       dateUpdate = dateUpdate1,
       version = version1,
@@ -188,7 +182,6 @@ trait DeviceProcessData
       packageName = packageName2,
       className = className2,
       resourceIcon = resourceIcon2,
-      colorPrimary = colorPrimary2,
       dateInstalled = dateInstalled2,
       dateUpdate = dateUpdate2,
       version = version2,
@@ -198,7 +191,6 @@ trait DeviceProcessData
       packageName = packageName3,
       className = className3,
       resourceIcon = resourceIcon3,
-      colorPrimary = colorPrimary3,
       dateInstalled = dateInstalled3,
       dateUpdate = dateUpdate3,
       version = version3,
@@ -212,7 +204,6 @@ trait DeviceProcessData
       className = className1,
       category = category1,
       imagePath = imagePath1,
-      colorPrimary = colorPrimary1,
       dateInstalled = dateInstalled1,
       dateUpdate = dateUpdate1,
       version = version1,
@@ -223,7 +214,6 @@ trait DeviceProcessData
       className = className2,
       category = category2,
       imagePath = imagePath2,
-      colorPrimary = colorPrimary2,
       dateInstalled = dateInstalled2,
       dateUpdate = dateUpdate2,
       version = version2,
@@ -234,7 +224,6 @@ trait DeviceProcessData
       className = className3,
       category = category3,
       imagePath = imagePath3,
-      colorPrimary = colorPrimary3,
       dateInstalled = dateInstalled3,
       dateUpdate = dateUpdate3,
       version = version3,
@@ -249,7 +238,6 @@ trait DeviceProcessData
       className = className1,
       category = category1.name,
       imagePath = imagePath1,
-      colorPrimary = colorPrimary1,
       dateInstalled = dateInstalled1,
       dateUpdate = dateUpdate1,
       version = version1,
@@ -261,7 +249,6 @@ trait DeviceProcessData
       className = className2,
       category = category2.name,
       imagePath = imagePath2,
-      colorPrimary = colorPrimary2,
       dateInstalled = dateInstalled2,
       dateUpdate = dateUpdate2,
       version = version2,
@@ -273,7 +260,6 @@ trait DeviceProcessData
       className = className3,
       category = category3.name,
       imagePath = imagePath3,
-      colorPrimary = colorPrimary3,
       dateInstalled = dateInstalled3,
       dateUpdate = dateUpdate3,
       version = version3,

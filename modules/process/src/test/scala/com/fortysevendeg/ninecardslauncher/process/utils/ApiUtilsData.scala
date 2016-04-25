@@ -17,8 +17,10 @@ trait ApiUtilsData {
     sessionToken = Some(token),
     installationId = None,
     deviceToken = None,
-    androidToken = None
-  )
+    androidToken = None,
+    name = None,
+    avatar = None,
+    cover = None)
 
   val userSessionTokenNone = User(
     id = userDBId,
@@ -27,7 +29,9 @@ trait ApiUtilsData {
     sessionToken = None,
     installationId = None,
     deviceToken = None,
-    androidToken = None
-  )
+    androidToken = None,
+    name = None,
+    avatar = None,
+    cover = None)
 
 }

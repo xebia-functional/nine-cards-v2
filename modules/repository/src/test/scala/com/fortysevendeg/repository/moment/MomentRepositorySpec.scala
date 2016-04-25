@@ -166,7 +166,8 @@ trait MomentMockCursor
     (collectionId, 1, momentSeq map (_.data.collectionId getOrElse(javaNull)), IntDataType),
     (timeslot, 2, momentSeq map (_.data.timeslot), StringDataType),
     (wifi, 4, momentSeq map (_.data.wifi), StringDataType),
-    (headphone, 5, momentSeq map (item => if (item.data.headphone) 1 else 0), IntDataType))
+    (headphone, 5, momentSeq map (item => if (item.data.headphone) 1 else 0), IntDataType),
+    (momentType, 6, momentSeq map (_.data.momentType getOrElse(javaNull)), StringDataType))
 
   prepareCursor[Moment](momentSeq.size, cursorData)
 }
@@ -180,7 +181,8 @@ trait EmptyMomentMockCursor
     (collectionId, 1, Seq.empty, IntDataType),
     (timeslot, 2, Seq.empty, StringDataType),
     (wifi, 4, Seq.empty, StringDataType),
-    (headphone, 5, Seq.empty, IntDataType))
+    (headphone, 5, Seq.empty, IntDataType),
+    (momentType, 6, Seq.empty, StringDataType))
 
   prepareCursor[Moment](0, cursorData)
 }

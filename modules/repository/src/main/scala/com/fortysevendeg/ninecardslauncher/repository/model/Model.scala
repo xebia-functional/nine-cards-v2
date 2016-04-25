@@ -10,7 +10,6 @@ case class AppData(
   className: String,
   category: String,
   imagePath: String,
-  colorPrimary: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
@@ -27,7 +26,6 @@ case class CollectionData(
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[String] = None,
-  constrains: Option[String] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Option[Boolean])
@@ -38,14 +36,11 @@ case class Card(
 
 case class CardData(
   position: Int,
-  micros: Int = 0,
   term: String,
   packageName: Option[String],
   cardType: String,
   intent: String,
   imagePath: String,
-  starRating: Option[Double] = None,
-  numDownloads: Option[String] = None,
   notification: Option[String] = None)
 
 case class DockApp(
@@ -67,7 +62,8 @@ case class MomentData(
   collectionId: Option[Int],
   timeslot: String,
   wifi: String,
-  headphone: Boolean)
+  headphone: Boolean,
+  momentType: Option[String])
 
 case class User(
   id: Int,
@@ -79,7 +75,10 @@ case class UserData(
   sessionToken: Option[String],
   installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String])
+  androidToken: Option[String],
+  name: Option[String],
+  avatar: Option[String],
+  cover: Option[String])
 
 case class DataCounter(term: String, count: Int)
 
