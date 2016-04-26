@@ -239,7 +239,7 @@ trait DrawerUiActions
   def addApps(
     apps: IterableApps,
     clickListener: (App) => Unit,
-    longClickListener: (App) => Unit,
+    longClickListener: (View, App) => Unit,
     getAppOrder: GetAppOrder = GetByName,
     counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
     val appsAdapter = new AppsAdapter(
@@ -288,11 +288,12 @@ trait DrawerUiActions
   def addContacts(
     contacts: IterableContacts,
     clickListener: (Contact) => Unit,
+    longClickListener: (View, Contact) => Unit,
     counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
     val contactAdapter = new ContactsAdapter(
       contacts = contacts,
       clickListener = clickListener,
-      longClickListener = None)
+      longClickListener = Some(longClickListener))
     swipeAdapter(
       contactAdapter,
       contactAdapter.getLayoutManager,

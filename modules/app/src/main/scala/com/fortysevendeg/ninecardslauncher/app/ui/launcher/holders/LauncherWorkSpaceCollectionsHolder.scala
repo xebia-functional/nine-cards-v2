@@ -21,13 +21,14 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.DragObject
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.CollectionItemTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{DragLauncherType, ReorderCollection}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, DragLauncherType, ReorderCollection, UnknownLauncherType}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{CollectionItemStyle, CollectionsGroupStyle, LauncherPresenter}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
@@ -109,6 +110,23 @@ class LauncherWorkSpaceCollectionsHolder(
     }: _*) ~ reorder(startReorder, position, animation = false)
   }
 
+  def dragAddItemController(action: Int, x: Float, y: Float) = {
+    action match {
+      case ACTION_DRAG_LOCATION =>
+        val lastCurrentPosition = presenter.statuses.currentDraggingPosition
+        val space = calculatePosition(x, y)
+        val currentPosition = toPositionCollection(space)
+        if (lastCurrentPosition != currentPosition) {
+          presenter.draggingAddItemTo(currentPosition)
+        }
+      case ACTION_DROP =>
+        presenter.endAddItemToCollection()
+      case ACTION_DRAG_ENDED =>
+        presenter.endAddItem()
+      case _ =>
+    }
+  }
+
   private[this] def resetAllPositions(): Ui[Any] = Ui.sequence(views map { view =>
     view <~ backToPosition() <~ (view.collection map (_ => vVisible) getOrElse vInvisible)
   }: _*)
@@ -116,23 +134,23 @@ class LauncherWorkSpaceCollectionsHolder(
   private[this] def vDragListener(): Tweak[View] = Tweak[View] { view =>
     view.setOnDragListener(new OnDragListener {
       override def onDrag(v: View, event: DragEvent): Boolean = {
-        (event.getAction, DragLauncherType(event.getLocalState), presenter.statuses.isReordering(), isRunningReorderAnimation) match {
-          case (ACTION_DRAG_LOCATION, ReorderCollection, true, false) =>
-            val lastCurrentPosition = presenter.statuses.currentPositionReorderMode
-            val x = event.getX
-            val y = event.getY
+        val x = event.getX
+        val y = event.getY
+        (event.getAction, event.getLocalState, presenter.statuses.isReordering(), isRunningReorderAnimation) match {
+          case (ACTION_DRAG_LOCATION, DragObject(_, ReorderCollection), true, false) =>
+            val lastCurrentPosition = presenter.statuses.currentDraggingPosition
             val canMoveToLeft = positionScreen > 0
             val canMoveToRight = positionScreen < countCollectionScreens - 1
             (calculateEdge(x), canMoveToLeft, canMoveToRight) match {
               case (LeftEdge, true, _) =>
                 delayedTask(() => {
                   resetAllPositions().run
-                  presenter.draggingToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
+                  presenter.draggingReorderToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
                 })
               case (RightEdge, _, true) =>
                 delayedTask(() => {
                   resetAllPositions().run
-                  presenter.draggingToNextScreen(toPositionCollection(0) + numSpaces)
+                  presenter.draggingReorderToNextScreen(toPositionCollection(0) + numSpaces)
                 })
               case (NoEdge, _ , _) =>
                 clearTask()
@@ -141,18 +159,18 @@ class LauncherWorkSpaceCollectionsHolder(
                 val currentPosition = toPositionCollection(space)
                 if (existCollectionInSpace && lastCurrentPosition != currentPosition) {
                   reorder(lastCurrentPosition, currentPosition).run
-                  presenter.draggingTo(currentPosition)
+                  presenter.draggingReorderTo(currentPosition)
                 }
               case _ =>
             }
-          case (ACTION_DROP | ACTION_DRAG_ENDED, ReorderCollection, true, false) =>
+          case (ACTION_DROP | ACTION_DRAG_ENDED, DragObject(_, ReorderCollection), true, false) =>
             resetPlaces.run
-            presenter.drop()
-          case (ACTION_DROP | ACTION_DRAG_ENDED, ReorderCollection, true, true) =>
+            presenter.dropReorder()
+          case (ACTION_DROP | ACTION_DRAG_ENDED, DragObject(_, ReorderCollection), true, true) =>
             // we are waiting that the animation is finished in order to reset views
             delayedTask(() => {
               resetPlaces.run
-              presenter.drop()
+              presenter.dropReorder()
             }, resGetInteger(R.integer.anim_duration_normal))
           case _ =>
         }
@@ -205,13 +223,13 @@ class LauncherWorkSpaceCollectionsHolder(
 
   private[this] def resetPlaces: Ui[Any] = {
     val start = toPositionGrid(presenter.statuses.startPositionReorderMode)
-    val current = toPositionGrid(presenter.statuses.currentPositionReorderMode)
+    val current = toPositionGrid(presenter.statuses.currentDraggingPosition)
     val collectionsReordered = (views map (_.collection)).reorder(start, current).zipWithIndex map {
       case (collection, index) =>
         val positionCollection = toPositionCollection(index)
         // if it's the collection that the user is dragging, we put the collection stored.
         // when the user is reordering in other screen the collection isn't the same on the view
-        if (positionCollection == presenter.statuses.currentPositionReorderMode) {
+        if (positionCollection == presenter.statuses.currentDraggingPosition) {
           presenter.statuses.collectionReorderMode
         } else {
           collection map (_.copy(position = positionCollection))
@@ -273,7 +291,7 @@ class LauncherWorkSpaceCollectionsHolder(
 
 case class CollectionItem(
   presenter: LauncherPresenter)(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(contextWrapper.application)
+  extends FrameLayout(contextWrapper.bestAvailable)
   with CollectionItemStyle {
 
   var positionInGrid = 0
@@ -306,9 +324,9 @@ case class CollectionItem(
         Ui(presenter.goToCollection(icon, this.collection))
       } <~
       On.longClick {
-        presenter.startDrag(this.collection, positionInGrid)
+        presenter.startReorder(this.collection, positionInGrid)
         (this.collection map { _ =>
-          (this <~ vInvisible) ~ convertToDraggingItem() ~ (layout <~ startDrag())
+          (this <~ vInvisible) ~ convertToDraggingItem() ~ (layout <~ startDragStyle(collection.id.toString, collection.name))
         } getOrElse Ui.nop).run
         Ui(true)
       }) ~

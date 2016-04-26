@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -114,7 +115,17 @@ object LauncherWorkSpacesTweaks {
 
   def lwsPrepareItemsScreenInReorder(position: Int) = Tweak[W] (_.prepareItemsScreenInReorder(position).run)
 
+  def lwsDragDispatcher(action: Int, x: Float, y: Float) = Tweak[W] { workspace =>
+    workspace.frontView match {
+      case Some(holder: LauncherWorkSpaceCollectionsHolder) =>
+        holder.dragAddItemController(action, x, y)
+      case _ =>
+    }
+  }
+
   def lwsCountCollections() = Excerpt[W, Int] (_.getCountCollections)
+
+  def lwsGetCollections() = Excerpt[W, Seq[Collection]] (_.getCollections)
 
   def lwsCountCollectionScreens() = Excerpt[W, Int] (_.getCountCollectionScreens)
 

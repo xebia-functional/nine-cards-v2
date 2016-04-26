@@ -68,6 +68,8 @@ trait CollectionsUiActions
 
   lazy val loading = Option(findView(TR.launcher_loading))
 
+  lazy val root = Option(findView(TR.launcher_root))
+
   lazy val content = Option(findView(TR.launcher_content))
 
   lazy val workspaces = Option(findView(TR.launcher_work_spaces))
@@ -144,7 +146,8 @@ trait CollectionsUiActions
       }) ~
       (collectionRemoveAction <~ removeActionStyle)
 
-  def showMessage(message: Int): Ui[_] = drawerLayout <~ vSnackbarShort(message)
+  def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[_] =
+    workspaces <~ vSnackbarShort(activityContextWrapper.application.getString(message, args:_*))
 
   def showCollectionsLoading: Ui[_] = loading <~ vVisible
 
@@ -226,6 +229,8 @@ trait CollectionsUiActions
       presenter.execute(app.intent)
     }
   }
+
+  def getCollections: Seq[Collection] = (workspaces ~> lwsGetCollections()).get getOrElse Seq.empty
 
   def getCountCollections: Int = (workspaces ~> lwsCountCollections).get getOrElse 0
 

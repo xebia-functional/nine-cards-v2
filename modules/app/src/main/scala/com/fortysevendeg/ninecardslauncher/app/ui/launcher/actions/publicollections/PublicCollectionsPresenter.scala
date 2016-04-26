@@ -67,8 +67,8 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
   private[this] def getCards(appsInstalled: Seq[App], packages: Seq[SharedCollectionPackage]) =
     packages map { pck =>
       appsInstalled find (_.packageName == pck.packageName) map { app =>
-        toAddCollectionRequest(app)
-      } getOrElse toAddCollectionRequest(pck)
+        toAddCardRequest(app)
+      } getOrElse toAddCardRequest(pck)
     }
 
 }

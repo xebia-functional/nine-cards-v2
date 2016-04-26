@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.models
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, PrivateCard, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, NoInstalledAppCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, ContactCardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
@@ -72,13 +72,22 @@ trait Conversions
       themedColorIndex = privateCollection.themedColorIndex,
       appsCategory = privateCollection.appsCategory)
 
-  def toAddCollectionRequest(privateCard: PrivateCard): AddCardRequest =
+  def toAddCardRequest(privateCard: PrivateCard): AddCardRequest =
     AddCardRequest(
       term = privateCard.term,
       packageName = privateCard.packageName,
       cardType = privateCard.cardType,
       intent = privateCard.intent,
       imagePath = privateCard.imagePath)
+
+  def toAddCardRequest(contact: Contact): AddCardRequest =
+    AddCardRequest(
+      term = contact.name,
+      packageName = None,
+      cardType = ContactCardType,
+      intent = contactToNineCardIntent(contact.lookupKey),
+      imagePath = contact.photoUri
+    )
 
   def toAddCollectionRequest(collection: SharedCollection): AddCollectionRequest =
     AddCollectionRequest(
@@ -89,7 +98,7 @@ trait Conversions
       appsCategory = Option(collection.category),
       originalSharedCollectionId = Option(collection.sharedCollectionId))
 
-  def toAddCollectionRequest(app: SharedCollectionPackage): AddCardRequest =
+  def toAddCardRequest(app: SharedCollectionPackage): AddCardRequest =
     AddCardRequest(
       term = app.title,
       packageName = Option(app.packageName),
@@ -97,7 +106,7 @@ trait Conversions
       intent = toNineCardIntent(app),
       imagePath = "")
 
-  def toAddCollectionRequest(app: App): AddCardRequest =
+  def toAddCardRequest(app: App): AddCardRequest =
     AddCardRequest(
       term = app.name,
       packageName = Option(app.packageName),

@@ -1,19 +1,35 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.types
 
-sealed trait DragLauncherType
+import DragLauncherNames._
 
-case object ReorderCollection extends DragLauncherType
+sealed trait DragLauncherType {
+  val name: String
+}
 
-case object AddItemToCollection extends DragLauncherType
+case object ReorderCollection extends DragLauncherType {
+  override val name: String = reorder
+}
 
-case object UnknownLauncherType extends DragLauncherType
+case object AddItemToCollection extends DragLauncherType {
+  override val name: String = addItem
+}
+
+case object UnknownLauncherType extends DragLauncherType {
+  override val name: String = unknown
+}
 
 object DragLauncherType {
 
-  def apply(data: AnyRef): DragLauncherType = data match {
-    case ReorderCollection => ReorderCollection
-    case AddItemToCollection => AddItemToCollection
-    case _ => UnknownLauncherType
+  def apply(name: String): DragLauncherType = name match {
+    case `reorder` => ReorderCollection
+    case `addItem` => AddItemToCollection
+    case `unknown` => UnknownLauncherType
   }
 
+}
+
+object DragLauncherNames {
+  val reorder = "reorder"
+  val addItem = "add-item"
+  val unknown = "unknown"
 }

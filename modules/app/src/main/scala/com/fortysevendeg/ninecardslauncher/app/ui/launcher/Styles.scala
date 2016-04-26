@@ -10,8 +10,8 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.DragObject
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
-import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
@@ -50,10 +50,10 @@ trait CollectionItemStyle {
       tvShadowLayer(radius, displacement, displacement, resGetColor(R.color.shadow_default))
   }
 
-  def startDrag(): Tweak[View] = Tweak[View] { view =>
-    val dragData = ClipData.newPlainText("", "")
+  def startDragStyle(label: String, description: String): Tweak[View] = Tweak[View] { view =>
+    val dragData = ClipData.newPlainText(label, description)
     val shadow = new View.DragShadowBuilder(view)
-    view.startDrag(dragData, shadow, ReorderCollection, 0)
+    view.startDrag(dragData, shadow, DragObject(shadow, ReorderCollection), 0)
   }
 
 }

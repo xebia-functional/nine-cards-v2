@@ -1,27 +1,32 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
+import android.content.ClipData
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
-import android.view.WindowManager
+import android.view.DragEvent._
+import android.view.View.OnDragListener
+import android.view.{DragEvent, View, WindowManager}
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import ViewOps._
-import UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,11 +50,14 @@ trait LauncherUiActionsImpl
     Ui(initAllSystemBarsTint) ~
       prepareBars ~
       initCollectionsUi ~
-      initDrawerUi
+      initDrawerUi ~
+      (root <~ dragListener())
 
   override def addCollection(collection: Collection): Ui[Any] = uiActionCollection(Add, collection)
 
   override def removeCollection(collection: Collection): Ui[Any] = uiActionCollection(Remove, collection)
+
+  override def showAddItemMessage(nameCollection: String): Ui[Any] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
 
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
 
@@ -89,7 +97,10 @@ trait LauncherUiActionsImpl
     addApps(
       apps = apps,
       clickListener = (app: App) => presenter.openApp(app),
-      longClickListener = (app: App) => presenter.openSettings(app),
+      longClickListener = (view: View, app: App) => {
+        presenter.startAddItemToCollection(app)
+        (view <~ startDrag()).run
+      },
       getAppOrder = getAppOrder,
       counters = counters)
 
@@ -99,6 +110,10 @@ trait LauncherUiActionsImpl
     addContacts(
       contacts = contacts,
       clickListener = (contact: Contact) => presenter.openContact(contact),
+      longClickListener = (view: View, contact: Contact) => {
+        presenter.startAddItemToCollection(contact)
+        (view <~ startDrag()).run
+      },
       counters = counters)
 
   override def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any] =
@@ -137,6 +152,19 @@ trait LauncherUiActionsImpl
       (searchPanel <~ fadeIn()) ~
       (collectionActionsPanel <~~ fadeOut())
 
+  override def startAddItem: Ui[Any] =
+    revealOutDrawer ~
+      (appDrawerPanel <~ fadeOut()) ~
+      (paginationPanel <~ fadeOut()) ~
+      (searchPanel <~ fadeOut()) ~
+      (collectionActionsPanel <~ fadeIn())
+
+  override def endAddItem: Ui[Any] =
+    (appDrawerPanel <~ fadeIn()) ~
+      (paginationPanel <~ fadeIn()) ~
+      (searchPanel <~ fadeIn()) ~
+      (collectionActionsPanel <~~ fadeOut())
+
   private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
 
   private[this] def fadeOut() = applyAnimation(alpha = Some(0)) + vInvisible
@@ -145,10 +173,19 @@ trait LauncherUiActionsImpl
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
 
+  override def getCollection(position: Int): Option[Collection] = getCollections.lift(position)
+
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections
 
   def turnOffFragmentContent: Ui[_] =
     fragmentContent <~ vClickable(false)
+
+  def reloadPager(currentPage: Int) = Transformer {
+    case imageView: ImageView if imageView.isPosition(currentPage) =>
+      imageView <~ vActivated(true) <~~ pagerAppear
+    case imageView: ImageView =>
+      imageView <~ vActivated(false)
+  }
 
   private[this] def prepareBars =
     KitKat.ifSupportedThen {
@@ -169,11 +206,36 @@ trait LauncherUiActionsImpl
         } getOrElse Ui.nop)
     } getOrElse Ui.nop
 
-  def reloadPager(currentPage: Int) = Transformer {
-    case imageView: ImageView if imageView.isPosition(currentPage) =>
-      imageView <~ vActivated(true) <~~ pagerAppear
-    case imageView: ImageView =>
-      imageView <~ vActivated(false)
+  private[this] def dragListener(): Tweak[View] = Tweak[View] { view =>
+    view.setOnDragListener(new OnDragListener {
+      override def onDrag(v: View, event: DragEvent): Boolean = {
+        event.getLocalState match {
+          case DragObject(_, AddItemToCollection) =>
+            // Project location to views
+            val x = event.getX
+            val y = event.getY
+            val topBar = resGetDimensionPixelSize(R.dimen.height_search_box) +
+              (resGetDimensionPixelSize(R.dimen.padding_default) * 2)
+            val bottomBar = resGetDimensionPixelSize(R.dimen.size_icon_app_drawer)
+            if (y < topBar) {
+              // Project to actions buttons
+            } else if (y > view.getHeight - bottomBar){
+              // Project to dock apps
+            } else {
+              // Project to workspace
+              (workspaces <~ lwsDragDispatcher(event.getAction, x, y - topBar)).run
+            }
+          case _ =>
+        }
+        true
+      }
+    })
+  }
+
+  private[this] def startDrag(): Tweak[View] = Tweak[View] { view =>
+    val dragData = ClipData.newPlainText("", "")
+    val shadow = new View.DragShadowBuilder(view)
+    view.startDrag(dragData, shadow, DragObject(shadow, AddItemToCollection), 0)
   }
 
 }
