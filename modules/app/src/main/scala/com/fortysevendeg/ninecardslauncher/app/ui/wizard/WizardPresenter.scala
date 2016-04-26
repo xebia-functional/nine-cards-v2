@@ -196,16 +196,17 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     invalidateToken()
     val scopes = "androidmarket"
     Task.fork(requestUserPermissions(account, scopes, client).run).resolveAsyncUi(
-      onResult = (permissions: UserPermissions) => Ui {
+      onResult = (permissions: UserPermissions) => {
         setToken(permissions.token)
         requestGooglePermission(account, client)
+        Ui.nop
       },
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException => Ui {
+        case ex: AuthTokenOperationCancelledException =>
           showErrorDialog(
             message = R.string.errorAndroidMarketPermissionNotAccepted,
             action = () => requestAndroidMarketPermission(account, client))
-        }
+          Ui.nop
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
       onPreTask = () => actions.showLoading())
@@ -221,11 +222,11 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         clientStatuses.apiClient foreach (_.connect())
       },
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException => Ui {
+        case ex: AuthTokenOperationCancelledException =>
           showErrorDialog(
             message = R.string.errorGooglePermissionNotAccepted,
             action = () => requestGooglePermission(account, client))
-        }
+          Ui.nop
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
       onPreTask = () => actions.showLoading())
