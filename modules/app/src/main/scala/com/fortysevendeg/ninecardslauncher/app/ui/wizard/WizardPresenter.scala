@@ -38,9 +38,9 @@ import scalaz.{-\/, \/, \/-}
 
 class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
-    with GoogleApiClientProvider
-    with ImplicitsCloudStorageProcessExceptions
-    with ImplicitsAuthTokenException {
+  with GoogleApiClientProvider
+  with ImplicitsCloudStorageProcessExceptions
+  with ImplicitsAuthTokenException {
 
   import Statuses._
 
@@ -196,17 +196,16 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     invalidateToken()
     val scopes = "androidmarket"
     Task.fork(requestUserPermissions(account, scopes, client).run).resolveAsyncUi(
-      onResult = (permissions: UserPermissions) => {
+      onResult = (permissions: UserPermissions) => Ui {
         setToken(permissions.token)
         requestGooglePermission(account, client)
-        Ui.nop
       },
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException =>
+        case ex: AuthTokenOperationCancelledException => Ui {
           showErrorDialog(
             message = R.string.errorAndroidMarketPermissionNotAccepted,
             action = () => requestAndroidMarketPermission(account, client))
-          Ui.nop
+        }
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
       onPreTask = () => actions.showLoading())
@@ -222,11 +221,11 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         clientStatuses.apiClient foreach (_.connect())
       },
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException =>
+        case ex: AuthTokenOperationCancelledException => Ui {
           showErrorDialog(
             message = R.string.errorGooglePermissionNotAccepted,
             action = () => requestGooglePermission(account, client))
-          Ui.nop
+        }
         case ex: Throwable => actions.showErrorConnectingGoogle()
       },
       onPreTask = () => actions.showLoading())
