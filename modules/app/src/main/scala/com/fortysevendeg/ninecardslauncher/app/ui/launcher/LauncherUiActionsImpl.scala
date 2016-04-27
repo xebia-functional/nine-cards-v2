@@ -65,6 +65,16 @@ trait LauncherUiActionsImpl
 
   override def showLoading(): Ui[Any] = showCollectionsLoading
 
+  override def goToPreviousScreen(): Ui[Any]= {
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
+    goToPreviousWorkspace().ifUi(canMoveToPreviousScreen)
+  }
+
+  override def goToNextScreen(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
+    goToNextWorkspace().ifUi(canMoveToNextScreen)
+  }
+
   override def goToPreviousScreenReordering(): Ui[Any] = {
     val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
     (goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1))).ifUi(canMoveToPreviousScreen)
@@ -72,11 +82,7 @@ trait LauncherUiActionsImpl
 
   override def goToNextScreenReordering(): Ui[Any] = {
     val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
-    if (canMoveToNextScreen) {
-      goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0))
-    } else {
-      Ui.nop
-    }
+    (goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0))).ifUi(canMoveToNextScreen)
   }
 
   override def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any] =

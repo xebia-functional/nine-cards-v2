@@ -82,8 +82,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.startAddItem.run
   }
 
-  def draggingAddItemTo(position: Int): Unit = {
-    statuses = statuses.updateCurrentPosition(position)
+  def draggingAddItemTo(position: Int): Unit = statuses = statuses.updateCurrentPosition(position)
+
+  def draggingAddItemToPreviousScreen(position: Int): Unit = {
+    actions.goToPreviousScreen().run
+    statuses.updateCurrentPosition(position)
+  }
+
+  def draggingAddItemToNextScreen(position: Int): Unit = {
+    actions.goToNextScreen().run
+    statuses.updateCurrentPosition(position)
   }
 
   def endAddItemToCollection(): Unit = {
@@ -350,6 +358,10 @@ trait LauncherUiActions {
   def showMinimumOneCollectionMessage(): Ui[Any]
 
   def showLoading(): Ui[Any]
+
+  def goToPreviousScreen(): Ui[Any]
+
+  def goToNextScreen(): Ui[Any]
 
   def goToPreviousScreenReordering(): Ui[Any]
 

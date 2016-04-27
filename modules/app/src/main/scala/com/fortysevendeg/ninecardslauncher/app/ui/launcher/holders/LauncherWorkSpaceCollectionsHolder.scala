@@ -28,7 +28,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.CollectionItemTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, DragLauncherType, ReorderCollection, UnknownLauncherType}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{CollectionItemStyle, CollectionsGroupStyle, LauncherPresenter}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
@@ -114,10 +114,25 @@ class LauncherWorkSpaceCollectionsHolder(
     action match {
       case ACTION_DRAG_LOCATION =>
         val lastCurrentPosition = presenter.statuses.currentDraggingPosition
-        val space = calculatePosition(x, y)
-        val currentPosition = toPositionCollection(space)
-        if (lastCurrentPosition != currentPosition) {
-          presenter.draggingAddItemTo(currentPosition)
+        val canMoveToLeft = positionScreen > 0
+        val canMoveToRight = positionScreen < countCollectionScreens - 1
+        (calculateEdge(x), canMoveToLeft, canMoveToRight) match {
+          case (LeftEdge, true, _) =>
+            delayedTask(() => {
+              presenter.draggingAddItemToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
+            })
+          case (RightEdge, _, true) =>
+            delayedTask(() => {
+              presenter.draggingAddItemToNextScreen(toPositionCollection(0) + numSpaces)
+            })
+          case (NoEdge, _ , _) =>
+            clearTask()
+            val space = calculatePosition(x, y)
+            val currentPosition = toPositionCollection(space)
+            if (lastCurrentPosition != currentPosition) {
+              presenter.draggingAddItemTo(currentPosition)
+            }
+          case _ =>
         }
       case ACTION_DROP =>
         presenter.endAddItemToCollection()
