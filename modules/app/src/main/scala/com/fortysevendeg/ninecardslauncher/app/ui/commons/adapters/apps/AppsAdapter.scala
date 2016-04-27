@@ -73,7 +73,7 @@ case class AppsIterableHolder(
         } <~
         (longClickListener map { listener =>
           FuncOn.longClick { view: View =>
-            listener(view, app)
+            icon foreach (listener(_, app))
             Ui(true)
           }
         } getOrElse Tweak.blank))

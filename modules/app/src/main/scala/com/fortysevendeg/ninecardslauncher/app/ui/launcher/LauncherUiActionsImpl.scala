@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
@@ -240,7 +241,7 @@ trait LauncherUiActionsImpl
 
   private[this] def startDrag(): Tweak[View] = Tweak[View] { view =>
     val dragData = ClipData.newPlainText("", "")
-    val shadow = new View.DragShadowBuilder(view)
+    val shadow = new AppDrawerIconShadowBuilder(view)
     view.startDrag(dragData, shadow, DragObject(shadow, AddItemToCollection), 0)
   }
 
