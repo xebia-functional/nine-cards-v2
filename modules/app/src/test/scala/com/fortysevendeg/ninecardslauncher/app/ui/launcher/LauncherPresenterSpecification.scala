@@ -53,7 +53,7 @@ trait LauncherPresenterSpecification
     mockActions.showContactUsError() returns Ui[Any]()
     mockActions.showMinimumOneCollectionMessage() returns Ui[Any]()
     mockActions.addCollection(collection) returns Ui[Any]()
-    mockActions.loadUserProfile(user)
+    mockActions.loadUserProfile(user) returns Ui[Any]()
     mockActions.canRemoveCollections returns canRemoveCollections
 
     val mockStatuses = mock[LauncherPresenterStatuses]
