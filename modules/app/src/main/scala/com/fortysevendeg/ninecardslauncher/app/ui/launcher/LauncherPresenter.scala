@@ -68,7 +68,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def logout(): Unit = actions.logout.run
 
   def startDrag(maybeCollection: Option[Collection], position: Int): Unit = {
-    android.util.Log.d("9cards", s"startDrag: $position == $maybeCollection")
     maybeCollection map { collection =>
       statuses = statuses.startReorder(collection, position)
       actions.startReorder.run
@@ -77,10 +76,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  def draggingTo(position: Int): Unit = {
-    android.util.Log.d("9cards", s"draggingTo - $position")
-    statuses = statuses.reordering(position)
-  }
+  def draggingTo(position: Int): Unit = statuses = statuses.reordering(position)
 
   def draggingToNextScreen(position: Int): Unit = {
     actions.goToNextScreenReordering().run
@@ -96,7 +92,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.endReorder.run
     val from = statuses.startPositionReorderMode
     val to = statuses.currentPositionReorderMode
-    android.util.Log.d("9cards", s"from: $from = to: $to")
     if (from != to) {
       Task.fork(di.collectionProcess.reorderCollection(from, to).run).resolveAsyncUi(
         onResult = (_) => actions.reloadCollectionsAfterReorder(from, to),
