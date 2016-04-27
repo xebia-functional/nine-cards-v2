@@ -43,6 +43,10 @@ class LauncherWorkSpaceCollectionsHolder(
   extends LauncherWorkSpaceHolder
   with CollectionsGroupStyle {
 
+  val selectedScale = 1.1f
+
+  val defaultScale = 1f
+
   val handler = new Handler()
 
   var task: Option[Runnable] = None
@@ -130,13 +134,16 @@ class LauncherWorkSpaceCollectionsHolder(
             val space = calculatePosition(x, y)
             val currentPosition = toPositionCollection(space)
             if (lastCurrentPosition != currentPosition) {
+              select(currentPosition).run
               presenter.draggingAddItemTo(currentPosition)
             }
           case _ =>
         }
       case ACTION_DROP =>
+        unselectAll().run
         presenter.endAddItemToCollection()
       case ACTION_DRAG_ENDED =>
+        unselectAll().run
         presenter.endAddItem()
       case _ =>
     }
@@ -193,6 +200,16 @@ class LauncherWorkSpaceCollectionsHolder(
       }
     })
   }
+
+  private[this] def select(position: Int): Ui[Any] = Ui.sequence(views map { view =>
+    val scale = if (view.positionInGrid == position) selectedScale else defaultScale
+    view <~ applyAnimation(
+      scaleX = Some(scale),
+      scaleY = Some(scale)
+    )
+  }: _*)
+
+  private[this] def unselectAll(): Ui[Any] = select(Int.MaxValue)
 
   private[this] def reorder(currentPosition: Int, toPosition: Int, animation: Boolean = true): Ui[Any] =
     if (currentPosition < toPosition) {
