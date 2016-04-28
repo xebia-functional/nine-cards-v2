@@ -69,13 +69,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def logout(): Unit = actions.logout.run
 
-  def startAddItemToCollection(app: App): Unit = {
-    statuses = statuses.startAddItem(toAddCardRequest(app))
-    actions.startAddItem.run
-  }
+  def startAddItemToCollection(app: App): Unit = startAddItemToCollection(toAddCardRequest(app))
 
-  def startAddItemToCollection(contact: Contact): Unit = {
-    statuses = statuses.startAddItem(toAddCardRequest(contact))
+  def startAddItemToCollection(contact: Contact): Unit = startAddItemToCollection(toAddCardRequest(contact))
+
+  private[this] def startAddItemToCollection(addCardRequest: AddCardRequest): Unit = {
+    statuses = statuses.startAddItem(addCardRequest)
     actions.startAddItem.run
   }
 
