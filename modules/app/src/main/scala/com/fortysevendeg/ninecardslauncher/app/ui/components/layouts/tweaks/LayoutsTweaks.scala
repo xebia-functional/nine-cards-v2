@@ -31,7 +31,7 @@ object LauncherWorkSpacesTweaks {
 
   // We create a new page every 9 collections
   @tailrec
-  private def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
+  private[this] def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
     def updatePositions(data: Seq[LauncherData]) = data.zipWithIndex map {
       case (d, index) => d.copy(positionByType = index)
     }
@@ -63,14 +63,11 @@ object LauncherWorkSpacesTweaks {
       val lastWorkspaceHasSpace = data.collections.size < numSpaces
       if (lastWorkspaceHasSpace) {
         workspaces.data = workspaces.data map { d =>
-          if (d == data) {
-            d.copy(collections = d.collections :+ collection)
-          } else {
-            d
-          }
+          if (d == data) d.copy(collections = d.collections :+ collection) else d
         }
       } else {
-        workspaces.data = workspaces.data :+ LauncherData(CollectionsWorkSpace, Seq(collection))
+        val newPosition = workspaces.data.count(_.workSpaceType == CollectionsWorkSpace)
+        workspaces.data = workspaces.data :+ LauncherData(CollectionsWorkSpace, Seq(collection), newPosition)
       }
       workspaces.selectPosition(workspaces.data.size - 1)
     }
