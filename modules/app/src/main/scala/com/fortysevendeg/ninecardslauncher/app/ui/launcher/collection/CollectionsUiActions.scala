@@ -19,7 +19,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
@@ -30,12 +29,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherTags, LauncherUiActionsImpl}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import macroid.FullDsl._
 import macroid._
 
@@ -70,19 +70,11 @@ trait CollectionsUiActions
 
   lazy val root = Option(findView(TR.launcher_root))
 
+  lazy val dockAppsPanel = Option(findView(TR.launcher_dock_apps_panel))
+
   lazy val content = Option(findView(TR.launcher_content))
 
   lazy val workspaces = Option(findView(TR.launcher_work_spaces))
-
-  lazy val appDrawerPanel = Option(findView(TR.launcher_drawer_panel))
-
-  lazy val appDrawer1 = Option(findView(TR.launcher_page_1))
-
-  lazy val appDrawer2 = Option(findView(TR.launcher_page_2))
-
-  lazy val appDrawer3 = Option(findView(TR.launcher_page_3))
-
-  lazy val appDrawer4 = Option(findView(TR.launcher_page_4))
 
   lazy val paginationPanel = Option(findView(TR.launcher_pagination_panel))
 
@@ -103,8 +95,6 @@ trait CollectionsUiActions
   lazy val menuCollectionRoot = Option(findView(TR.menu_collection_root))
 
   lazy val menuCollectionContent = Option(findView(TR.menu_collection_content))
-
-  var dockApps: Seq[DockApp] = Seq.empty
 
   def initCollectionsUi: Ui[_] =
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
@@ -132,18 +122,6 @@ trait CollectionsUiActions
       )) ~
       (googleIcon <~ googleButtonStyle <~ On.click(Ui(presenter.launchSearch))) ~
       (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch))) ~
-      (appDrawer1 <~ drawerItemStyle <~ vSetPosition(0) <~ FuncOn.click { view: View =>
-        clickAppDrawerItem(view)
-      }) ~
-      (appDrawer2 <~ drawerItemStyle <~ vSetPosition(1) <~ FuncOn.click { view: View =>
-        clickAppDrawerItem(view)
-      }) ~
-      (appDrawer3 <~ drawerItemStyle <~ vSetPosition(2) <~ FuncOn.click { view: View =>
-        clickAppDrawerItem(view)
-      }) ~
-      (appDrawer4 <~ drawerItemStyle <~ vSetPosition(3) <~ FuncOn.click { view: View =>
-        clickAppDrawerItem(view)
-      }) ~
       (collectionRemoveAction <~ removeActionStyle)
 
   def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[_] =
@@ -154,15 +132,14 @@ trait CollectionsUiActions
   def createCollections(
     collections: Seq[Collection],
     apps: Seq[DockApp]): Ui[_] = {
-    dockApps = apps
     (loading <~ vGone) ~
+      (dockAppsPanel <~ daplInit(apps)) ~
       (workspaces <~
         lwsData(collections, selectedPageDefault) <~
         awsAddPageChangedObserver(currentPage => {
           (paginationPanel <~ reloadPager(currentPage)).run
         }
         )) ~
-      (appDrawerPanel <~ fillAppDrawer) ~
       createPager(selectedPageDefault)
   }
 
@@ -224,12 +201,6 @@ trait CollectionsUiActions
     }
   }
 
-  protected def clickAppDrawerItem(view: View): Ui[_] = Ui {
-    view.getPosition flatMap dockApps.lift foreach { app =>
-      presenter.execute(app.intent)
-    }
-  }
-
   def getCollections: Seq[Collection] = (workspaces ~> lwsGetCollections()).get getOrElse Seq.empty
 
   def getCountCollections: Int = (workspaces ~> lwsCountCollections).get getOrElse 0
@@ -250,7 +221,7 @@ trait CollectionsUiActions
 
   private[this] def startOpenCollectionMenu(): Ui[_] =
     (menuCollectionRoot <~ vVisible <~ vClearClick) ~
-      (appDrawerPanel <~ fade(out = true)) ~
+      (dockAppsPanel <~ fade(out = true)) ~
       (paginationPanel <~ fade(out = true)) ~
       (searchPanel <~ fade(out = true))
 
@@ -267,7 +238,7 @@ trait CollectionsUiActions
     if (opened) {
       menuCollectionRoot <~ On.click(closeCollectionMenu())
     } else {
-      (appDrawerPanel <~ fade()) ~
+      (dockAppsPanel <~ fade()) ~
         (paginationPanel <~ fade()) ~
         (searchPanel <~ fade()) ~
         (menuCollectionRoot <~ vGone)
@@ -293,14 +264,6 @@ trait CollectionsUiActions
       }
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
-
-  private[this] def fillAppDrawer = Transformer {
-    case i: ImageView if i.isType(LauncherTags.app) =>
-      i.getPosition map { position =>
-        val dockApp = dockApps(position)
-        i <~ ivUri(dockApp.imagePath)
-      } getOrElse Ui.nop
-  }
 
   def pagination(position: Int) =
     (w[ImageView] <~ paginationItemStyle <~ vSetPosition(position)).get

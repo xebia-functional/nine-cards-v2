@@ -58,7 +58,3 @@ trait CollectionItemStyle {
   }
 
 }
-
-object LauncherTags {
-  val app = "app"
-}

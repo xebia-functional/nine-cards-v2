@@ -26,7 +26,6 @@ import macroid._
 
 trait PrivateCollectionsComposer
   extends Styles
-  with LauncherExecutor
   with NineCardIntentConversions {
 
   self: TypedFindView with BaseActionFragment =>

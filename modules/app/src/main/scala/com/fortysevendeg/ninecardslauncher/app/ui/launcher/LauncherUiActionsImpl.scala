@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ClipData
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
-import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import android.widget.ImageView
@@ -17,12 +16,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.AddItemToCollection
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
@@ -148,28 +148,22 @@ trait LauncherUiActionsImpl
   override def closeTabs: Ui[Any] = closeDrawerTabs
 
   override def startReorder: Ui[Any] =
-    (appDrawerPanel <~ fadeOut()) ~
-      (paginationPanel <~ fadeOut()) ~
+    (dockAppsPanel <~ fadeOut()) ~
       (searchPanel <~ fadeOut()) ~
       (collectionActionsPanel <~ fadeIn())
 
   override def endReorder: Ui[Any] =
-    (appDrawerPanel <~ fadeIn()) ~
-      (paginationPanel <~ fadeIn()) ~
+    (dockAppsPanel <~ fadeIn()) ~
       (searchPanel <~ fadeIn()) ~
       (collectionActionsPanel <~~ fadeOut())
 
   override def startAddItem: Ui[Any] =
     revealOutDrawer ~
-      (appDrawerPanel <~ fadeOut()) ~
-      (paginationPanel <~ fadeOut()) ~
-      (searchPanel <~ fadeOut()) ~
+    (searchPanel <~ fadeOut()) ~
       (collectionActionsPanel <~ fadeIn())
 
   override def endAddItem: Ui[Any] =
-    (appDrawerPanel <~ fadeIn()) ~
-      (paginationPanel <~ fadeIn()) ~
-      (searchPanel <~ fadeIn()) ~
+    (searchPanel <~ fadeIn()) ~
       (collectionActionsPanel <~~ fadeOut())
 
   private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
@@ -216,18 +210,17 @@ trait LauncherUiActionsImpl
   private[this] def dragListener(): Tweak[View] = Tweak[View] { view =>
     view.setOnDragListener(new OnDragListener {
       override def onDrag(v: View, event: DragEvent): Boolean = {
-        event.getLocalState match {
-          case DragObject(_, AddItemToCollection) =>
+        (event.getLocalState, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
+          case (DragObject(_, AddItemToCollection), Some(topBar), Some(bottomBar)) =>
+            val height = KitKat.ifSupportedThen (view.getHeight - getStatusBarHeight) getOrElse view.getHeight
             // Project location to views
             val x = event.getX
             val y = event.getY
-            val topBar = resGetDimensionPixelSize(R.dimen.height_search_box) +
-              (resGetDimensionPixelSize(R.dimen.padding_default) * 2)
-            val bottomBar = resGetDimensionPixelSize(R.dimen.size_icon_app_drawer)
             if (y < topBar) {
               // Project to actions buttons
-            } else if (y > view.getHeight - bottomBar){
+            } else if (y > height - bottomBar){
               // Project to dock apps
+              (dockAppsPanel <~ daplDragDispatcher(event.getAction, x, y - (height - bottomBar))).run
             } else {
               // Project to workspace
               (workspaces <~ lwsDragDispatcher(event.getAction, x, y - topBar)).run

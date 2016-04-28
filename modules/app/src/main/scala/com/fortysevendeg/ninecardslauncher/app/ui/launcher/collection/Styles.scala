@@ -15,8 +15,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceIt
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherPresenter, LauncherTags}
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
@@ -42,10 +42,6 @@ trait Styles {
     Lollipop ifSupportedThen {
       vCircleOutlineProvider()
     } getOrElse Tweak.blank
-
-  def drawerItemStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    tivPressedColor(theme.get(AppDrawerPressedColor)) +
-      vSetType(LauncherTags.app)
 
   def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)

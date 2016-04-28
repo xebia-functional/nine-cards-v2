@@ -35,7 +35,9 @@
                 style="@style/LauncherPaginationPanel"
                 android:id="@+id/launcher_pagination_panel"/>
 
-            <include layout="@layout/app_drawer_panel"/>
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.DockAppsPanelLayout
+                android:id="@+id/launcher_dock_apps_panel"
+                style="@style/LauncherDrawerPanel" />
 
         </LinearLayout>
 
