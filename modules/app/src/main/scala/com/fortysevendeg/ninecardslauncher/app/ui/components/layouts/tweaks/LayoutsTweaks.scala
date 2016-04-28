@@ -114,8 +114,8 @@ object LauncherWorkSpacesTweaks {
 
   def lwsPrepareItemsScreenInReorder(position: Int) = Tweak[W] (_.prepareItemsScreenInReorder(position).run)
 
-  def lwsDragDispatcher(action: Int, x: Float, y: Float) = Tweak[W] { workspace =>
-    workspace.frontView match {
+  def lwsDragDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
+    _.frontView match {
       case Some(holder: LauncherWorkSpaceCollectionsHolder) =>
         holder.dragAddItemController(action, x, y)
       case _ =>

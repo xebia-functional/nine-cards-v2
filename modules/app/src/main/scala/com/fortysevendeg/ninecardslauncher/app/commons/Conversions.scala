@@ -86,8 +86,7 @@ trait Conversions
       packageName = None,
       cardType = ContactCardType,
       intent = contactToNineCardIntent(contact.lookupKey),
-      imagePath = contact.photoUri
-    )
+      imagePath = contact.photoUri)
 
   def toAddCollectionRequest(collection: SharedCollection): AddCollectionRequest =
     AddCollectionRequest(
