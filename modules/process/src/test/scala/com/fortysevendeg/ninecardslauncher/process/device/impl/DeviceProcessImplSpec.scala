@@ -8,6 +8,7 @@ import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
@@ -1338,6 +1339,29 @@ class DeviceProcessImplSpec
             resultApps shouldEqual ((): Unit)
         }
       }
+  }
+
+  "Create Or Update Dock App" should {
+
+    "returns a empty answer for a valid request" in
+      new DeviceProcessScope with DockAppsScope {
+        val result = deviceProcess.createOrUpdateDockApp(name1, AppDockType, intent, imagePath1, 0).run.run
+        result must beLike {
+          case Answer(resultDockApp) =>
+            resultDockApp shouldEqual ((): Unit)
+        }
+      }
+
+    "returns DockAppException when PersistenceService fails" in
+      new DeviceProcessScope with DockAppsErrorScope {
+        val result = deviceProcess.createOrUpdateDockApp(name1, AppDockType, intent, imagePath1, 0).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          }
+        }
+      }
+
   }
 
   "Get Dock Apps" should {

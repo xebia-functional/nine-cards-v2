@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableIma
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, ContactDockType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{AppDrawerPressedColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -112,7 +113,11 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       vSetPosition(position) +
       vSetType(appTag) +
       (dockApps.lift(position) map { app =>
-        ivUri(app.imagePath) +
+        (app.dockType match {
+          case AppDockType => ivUri(app.imagePath)
+          case ContactDockType => ivUriContact(app.imagePath, app.name, circular = true)
+          case _ => Tweak.blank
+        }) +
           On.click (Ui(presenter.execute(app.intent)))
       } getOrElse Tweak.blank)
 
