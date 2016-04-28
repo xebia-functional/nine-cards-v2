@@ -58,6 +58,8 @@ trait LauncherUiActionsImpl
 
   override def removeCollection(collection: Collection): Ui[Any] = uiActionCollection(Remove, collection)
 
+  override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
+
   override def showAddItemMessage(nameCollection: String): Ui[Any] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
 
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)

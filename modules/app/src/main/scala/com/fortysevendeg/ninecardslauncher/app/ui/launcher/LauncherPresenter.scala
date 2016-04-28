@@ -26,6 +26,7 @@ import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 import Statuses._
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 
 import scalaz.concurrent.Task
 
@@ -68,10 +69,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def logout(): Unit = actions.logout.run
 
-  def removeThisMethod(): Ui[Any] = {
-    actions.startAddItem
-  }
-
   def startAddItemToCollection(app: App): Unit = {
     statuses = statuses.startAddItem(toAddCardRequest(app))
     actions.startAddItem.run
@@ -100,6 +97,28 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         Task.fork(di.collectionProcess.addCards(collection.id, Seq(request)).run).resolveAsyncUi(
           onResult = (_) => actions.showAddItemMessage(collection.name),
           onException = (_) => actions.showContactUsError())
+      case _ =>
+        actions.showContactUsError().run
+    }
+    statuses = statuses.reset()
+    actions.endAddItem.run
+  }
+
+  def endAddItemToDockApp(position: Int): Unit = {
+    statuses.cardAddItemMode match {
+      case Some(card: AddCardRequest) =>
+        card.cardType match {
+          case AppCardType =>
+            Task.fork(createOrUpdateDockApp(card, AppDockType, position).run).resolveAsyncUi(
+              onResult = (_) => actions.reloadDockApps(DockApp(card.term, AppDockType, card.intent, card.imagePath, position)),
+              onException = (_) => actions.showContactUsError())
+          case ContactCardType =>
+            Task.fork(createOrUpdateDockApp(card, ContactDockType, position).run).resolveAsyncUi(
+              onResult = (_) => actions.reloadDockApps(DockApp(card.term, ContactDockType, card.intent, card.imagePath, position)),
+              onException = (_) => actions.showContactUsError())
+          case _ =>
+            actions.showContactUsError()
+        }
       case _ =>
         actions.showContactUsError().run
     }
@@ -272,6 +291,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
+  private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
+    di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
+
   protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
     di.collectionProcess.deleteCollection(id)
 
@@ -350,6 +372,8 @@ trait LauncherUiActions {
   def addCollection(collection: Collection): Ui[Any]
 
   def removeCollection(collection: Collection): Ui[Any]
+
+  def reloadDockApps(dockApp: DockApp): Ui[Any]
 
   def showAddItemMessage(nameCollection: String): Ui[Any]
 

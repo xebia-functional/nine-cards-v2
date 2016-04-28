@@ -3,6 +3,8 @@ package com.fortysevendeg.ninecardslauncher.process.device
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.commons.types.DockType
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 
 trait DeviceProcess {
@@ -173,6 +175,17 @@ trait DeviceProcess {
     * @throws DockAppException if exist some problem to get the app or storing it
     */
   def generateDockApps(size: Int)(implicit context: ContextSupport): ServiceDef2[Unit, DockAppException]
+
+  /**
+    * Create or update a dock app
+    * @param name name of dock app
+    * @param dockType dock type
+    * @param intent action
+    * @param imagePath image
+    * @param position new position
+    * @throws DockAppException if exist some problem to get the app or storing it
+    */
+  def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): ServiceDef2[Unit, DockAppException]
 
   /**
     * Get the docks apps available for user
