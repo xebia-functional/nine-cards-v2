@@ -67,6 +67,10 @@ trait CollectionPersistenceServicesImpl {
       updated <- collectionRepository.updateCollection(toRepositoryCollection(request))
     } yield updated).resolve[PersistenceServiceException]
 
+  def updateCollections(request: UpdateCollectionsRequest) =
+    (for {
+      updated <- collectionRepository.updateCollections(request.updateCollectionsRequests map toRepositoryCollection)
+    } yield updated).resolve[PersistenceServiceException]
 
   private[this] def addCards(cards: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException] = {
     val addedCards = cards map {

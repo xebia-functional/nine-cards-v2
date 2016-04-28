@@ -75,8 +75,10 @@ trait CollectionsProcessImpl {
   def reorderCollection(position: Int, newPosition: Int) =
     (for {
       Some(collection) <- persistenceServices.fetchCollectionByPosition(toFetchCollectionByPositionRequest(position))
+      if position != newPosition
       collectionList <- getCollections
-      updatedCollections = collectionList.reorder(position, newPosition).zipWithIndex map {
+      (from, to) = if (position > newPosition) (newPosition, position) else (position, newPosition)
+      updatedCollections = collectionList.reorderRange(position, newPosition).zip(from to to) map {
         case (c, index) => c.copy(position = index)
       }
       _ <- updateCollectionList(updatedCollections)
@@ -110,9 +112,9 @@ trait CollectionsProcessImpl {
       _ <- persistenceServices.updateCollection(toServicesUpdateCollectionRequest(collection))
     } yield ()).resolve[CollectionException]
 
-  private[this] def updateCollectionList(collectionList: Seq[Collection]) = Service {
-    val tasks = collectionList map (collection => updateCollection(collection).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CollectionException](c.collect { case Answer(r) => r}))
-  }
+  private[this] def updateCollectionList(collectionList: Seq[Collection]) =
+    (for {
+      _ <- persistenceServices.updateCollections(toServicesUpdateCollectionsRequest(collectionList))
+    } yield ()).resolve[CollectionException]
 
 }

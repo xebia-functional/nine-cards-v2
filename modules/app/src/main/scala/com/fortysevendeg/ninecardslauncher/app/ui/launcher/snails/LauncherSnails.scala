@@ -24,7 +24,7 @@ object LauncherSnails {
       override def onAnimationEnd(animation: Animator) = {
         super.onAnimationEnd(animation)
         view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-        animPromise.success()
+        animPromise.trySuccess()
       }
     }).start()
     animPromise.future

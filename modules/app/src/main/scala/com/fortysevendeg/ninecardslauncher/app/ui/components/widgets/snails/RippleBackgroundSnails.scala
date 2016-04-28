@@ -25,7 +25,7 @@ object RippleBackgroundSnails {
         view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
         view.rippleView.setVisibility(INVISIBLE)
         view.setBackgroundColor(color)
-        animPromise.success()
+        animPromise.trySuccess()
       }
 
       if (forceFade) fadeIn(view, color)(end())

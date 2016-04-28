@@ -20,6 +20,10 @@
 
     <color name="background_box_content">#ffffff</color>
 
+    <!-- Launcher -->
+
+    <color name="text_launcher_action">#ffffff</color>
+
     <!-- Texts -->
 
     <color name="text_default_title">#db000000</color>

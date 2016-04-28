@@ -9,6 +9,7 @@ import android.view.{MenuItem, View}
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
@@ -30,11 +31,17 @@ object LauncherWorkSpacesTweaks {
 
   // We create a new page every 9 collections
   @tailrec
-  private def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
+  private[this] def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
+    def updatePositions(data: Seq[LauncherData]) = data.zipWithIndex map {
+      case (d, index) => d.copy(positionByType = index)
+    }
     collections match {
-      case Nil if newLauncherData.collections.nonEmpty => acc :+ newLauncherData
-      case Nil => acc
-      case h :: t if newLauncherData.collections.length == numSpaces => getCollectionsItems(t, acc :+ newLauncherData, LauncherData(CollectionsWorkSpace, Seq(h)))
+      case Nil if newLauncherData.collections.nonEmpty =>
+        updatePositions(acc :+ newLauncherData)
+      case Nil =>
+        updatePositions(acc)
+      case h :: t if newLauncherData.collections.length == numSpaces =>
+        getCollectionsItems(t, acc :+ newLauncherData, LauncherData(CollectionsWorkSpace, Seq(h)))
       case h :: t =>
         val g: Seq[Collection] = newLauncherData.collections :+ h
         val n = LauncherData(CollectionsWorkSpace, g)
@@ -44,58 +51,80 @@ object LauncherWorkSpacesTweaks {
 
   def lwsPresenter(presenter: LauncherPresenter) = Tweak[W] (_.presenter = Some(presenter))
 
-  def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] {
-    workspaces =>
-      workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
-      workspaces.init(pageSelected)
+  def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] { workspaces =>
+    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    workspaces.init(pageSelected)
   }
 
   def lwsClean = Tweak[W] (_.clean())
 
-  def lwsAddCollection(collection: Collection) = Tweak[W] {
-    workspaces =>
-      workspaces.data.lastOption foreach { data =>
-        val lastWorkspaceHasSpace = data.collections.size < numSpaces
-        if (lastWorkspaceHasSpace) {
-          workspaces.data = workspaces.data map { d =>
-            if (d == data) {
-              d.copy(collections = d.collections :+ collection)
-            } else {
-              d
-            }
-          }
-        } else {
-          workspaces.data = workspaces.data :+ LauncherData(CollectionsWorkSpace, Seq(collection))
+  def lwsAddCollection(collection: Collection) = Tweak[W] { workspaces =>
+    workspaces.data.lastOption foreach { data =>
+      val lastWorkspaceHasSpace = data.collections.size < numSpaces
+      if (lastWorkspaceHasSpace) {
+        workspaces.data = workspaces.data map { d =>
+          if (d == data) d.copy(collections = d.collections :+ collection) else d
         }
-        workspaces.selectPosition(workspaces.data.size - 1)
-        workspaces.reset()
+      } else {
+        val newPosition = workspaces.data.count(_.workSpaceType == CollectionsWorkSpace)
+        workspaces.data = workspaces.data :+ LauncherData(CollectionsWorkSpace, Seq(collection), newPosition)
       }
+      workspaces.selectPosition(workspaces.data.size - 1)
+    }
   }
 
-  def lwsRemoveCollection(collection: Collection) = Tweak[W] {
-    workspaces =>
-      // We remove a collection in sequence and fix positions
-      val collections = (workspaces.data flatMap (_.collections.filterNot(_ == collection))).zipWithIndex map {
-        case (col, index) => col.copy(position = index)
-      }
-      val maybeWorkspaceCollection = workspaces.data find (_.collections contains collection)
-      val maybePage = maybeWorkspaceCollection map workspaces.data.indexOf
-      workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
-      val page = maybePage map { page =>
-        if (workspaces.data.isDefinedAt(page)) page else workspaces.data.length - 1
-      } getOrElse defaultPage
-      workspaces.selectPosition(page)
-      workspaces.reset()
-
-
+  def lwsRemoveCollection(collectionId: Int) = Tweak[W] { workspaces =>
+    // We remove a collection in sequence and fix positions
+    val collections = (workspaces.data flatMap (_.collections.filterNot(_.id == collectionId))).zipWithIndex map {
+      case (col, index) => col.copy(position = index)
+    }
+    val maybeWorkspaceCollection = workspaces.data find (_.collections.exists(_.id == collectionId))
+    val maybePage = maybeWorkspaceCollection map workspaces.data.indexOf
+    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    val page = maybePage map { page =>
+      if (workspaces.data.isDefinedAt(page)) page else workspaces.data.length - 1
+    } getOrElse defaultPage
+    workspaces.selectPosition(page)
   }
+
+  def lwsReloadReorderedCollections(from: Int, to: Int) = Tweak[W] { workspaces =>
+    val cols = workspaces.data flatMap (_.collections)
+    val collections = cols.reorder(from, to).zipWithIndex map {
+      case (collection, index) => collection.copy(position = index)
+    }
+    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    val page = workspaces.data.lift(workspaces.currentPage()) map (_ => workspaces.currentPage()) getOrElse defaultPage
+    workspaces.selectPosition(page)
+  }
+
+  def lwsReloadCollections() = Tweak[W] { workspaces =>
+    val collections = workspaces.data flatMap (_.collections)
+    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    val page = workspaces.data.lift(workspaces.currentPage()) map (_ => workspaces.currentPage()) getOrElse defaultPage
+    workspaces.selectPosition(page)
+  }
+
   def lwsListener(listener: LauncherWorkSpacesListener) = Tweak[W] (_.workSpacesListener = listener)
 
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
 
-  def lwsCloseMenu = Tweak[W] { view =>
-    view.closeMenu().run
-  }
+  def lwsCloseMenu = Tweak[W] (_.closeMenu().run)
+
+  def lwsPrepareItemsScreenInReorder(position: Int) = Tweak[W] (_.prepareItemsScreenInReorder(position).run)
+
+  def lwsCountCollections() = Excerpt[W, Int] (_.getCountCollections)
+
+  def lwsCountCollectionScreens() = Excerpt[W, Int] (_.getCountCollectionScreens)
+
+  def lwsEmptyCollections() = Excerpt[W, Boolean] (_.isEmptyCollections)
+
+  def lwsCanMoveToNextScreen() = Excerpt[W, Boolean] (_.nextScreen.isDefined)
+
+  def lwsNextScreen() = Excerpt[W, Option[Int]] (_.nextScreen)
+
+  def lwsPreviousScreen() = Excerpt[W, Option[Int]] (_.previousScreen)
+
+  def lwsCanMoveToPreviousScreen() = Excerpt[W, Boolean] (_.previousScreen.isDefined)
 
 }
 
@@ -106,6 +135,10 @@ object AnimatedWorkSpacesTweaks {
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
   def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
+
+  def awsCurrentWorkSpace() = Excerpt[W, Int] (_.statuses.currentItem)
+
+  def awsCountWorkSpace() = Excerpt[W, Int] (_.getWorksSpacesCount)
 
 }
 

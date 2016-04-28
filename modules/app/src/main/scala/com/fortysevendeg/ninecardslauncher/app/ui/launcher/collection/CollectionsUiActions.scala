@@ -86,6 +86,10 @@ trait CollectionsUiActions
 
   lazy val searchPanel = Option(findView(TR.launcher_search_panel))
 
+  lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
+
+  lazy val collectionRemoveAction = Option(findView(TR.launcher_collections_action_remove))
+
   lazy val burgerIcon = Option(findView(TR.launcher_burger_icon))
 
   lazy val googleIcon = Option(findView(TR.launcher_google_icon))
@@ -137,7 +141,8 @@ trait CollectionsUiActions
       }) ~
       (appDrawer4 <~ drawerItemStyle <~ vSetPosition(3) <~ FuncOn.click { view: View =>
         clickAppDrawerItem(view)
-      })
+      }) ~
+      (collectionRemoveAction <~ removeActionStyle)
 
   def showMessage(message: Int): Ui[_] = drawerLayout <~ vSnackbarShort(message)
 
@@ -158,6 +163,10 @@ trait CollectionsUiActions
       createPager(selectedPageDefault)
   }
 
+  def reloadReorderedCollections(from: Int, to: Int): Ui[Any] = workspaces <~ lwsReloadReorderedCollections(from, to)
+
+  def reloadCollections(): Ui[Any] = workspaces <~ lwsReloadCollections()
+
   def userProfileMenu(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
     (menuName <~ tvText(name)) ~
       (menuEmail <~ tvText(email)) ~
@@ -174,7 +183,7 @@ trait CollectionsUiActions
   def uiActionCollection(action: UiAction, collection: Collection): Ui[_] =
     action match {
       case Add => (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
-      case Remove => (workspaces <~ lwsRemoveCollection(collection)) ~ reloadPagerAndActiveLast
+      case Remove => (workspaces <~ lwsRemoveCollection(collection.id)) ~ reloadPagerAndActiveLast
     }
 
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
@@ -187,9 +196,17 @@ trait CollectionsUiActions
 
   def isCollectionMenuVisible: Boolean = workspaces exists (_.workSpacesStatuses.openedMenu)
 
-  def goToWorkspace(page: Int): Ui[_] =
-    (workspaces <~ lwsSelect(page)) ~
-      (paginationPanel <~ reloadPager(page))
+  def goToWorkspace(page: Int): Ui[_] = (workspaces <~ lwsSelect(page)) ~ (paginationPanel <~ reloadPager(page))
+
+  def goToNextWorkspace(): Ui[_] =
+    (workspaces ~> lwsNextScreen()).get.flatten map { next =>
+      goToWorkspace(next)
+    } getOrElse Ui.nop
+
+  def goToPreviousWorkspace(): Ui[_] =
+    (workspaces ~> lwsPreviousScreen()).get.flatten map { previous =>
+      goToWorkspace(previous)
+    } getOrElse Ui.nop
 
   protected def goToMenuOption(itemId: Int): Ui[_] = {
     (itemId, activityContextWrapper.original.get) match {
@@ -210,9 +227,9 @@ trait CollectionsUiActions
     }
   }
 
-  def getCountCollections: Int = workspaces map (_.getCountCollections) getOrElse 0
+  def getCountCollections: Int = (workspaces ~> lwsCountCollections).get getOrElse 0
 
-  protected def isEmptyCollections = workspaces exists (_.isEmptyCollections)
+  protected def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get getOrElse false
 
   protected def getItemsForFabMenu = Seq(
     (w[WorkSpaceItemMenu] <~ workspaceButtonCreateCollectionStyle <~ FuncOn.click { view: View =>
