@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
@@ -86,6 +87,8 @@ class PersistenceServicesImpl(
   override def findCollectionById(request: FindCollectionByIdRequest) = super.findCollectionById(request)
 
   override def updateCollection(request: UpdateCollectionRequest) = super.updateCollection(request)
+
+  override def updateCollections(request: UpdateCollectionsRequest) = super.updateCollections(request)
 
   override def addUser(request: AddUserRequest) = super.addUser(request)
 

@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CollectionEntity, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.{allFields, position, _}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.repositories.RepositoryUtils._
@@ -139,21 +139,29 @@ class CollectionRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            position -> collection.data.position,
-            name -> collection.data.name,
-            collectionType -> collection.data.collectionType,
-            icon -> collection.data.icon,
-            themedColorIndex -> collection.data.themedColorIndex,
-            appsCategory -> (collection.data.appsCategory orNull),
-            originalSharedCollectionId -> (collection.data.originalSharedCollectionId orNull),
-            sharedCollectionId -> (collection.data.sharedCollectionId orNull),
-            sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed orNull))
+          val values = createMapValues(collection)
 
           contentResolverWrapper.updateById(
             uri = collectionUri,
             id = collection.id,
             values = values,
+            notificationUri = Some(collectionNotificationUri))
+        }
+      }
+    }
+
+  def updateCollections(collections: Seq[Collection]): ServiceDef2[Seq[Int], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          val values = collections map { collection =>
+            (collection.id, createMapValues(collection))
+          }
+
+          contentResolverWrapper.updateByIds(
+            authority = NineCardsUri.authorityPart,
+            uri = collectionUri,
+            idAndValues = values,
             notificationUri = Some(collectionNotificationUri))
         }
       }
@@ -184,4 +192,16 @@ class CollectionRepository(
       where = selection,
       whereParams = selectionArgs,
       orderBy = sortOrder)(getListFromCursor(collectionEntityFromCursor)) map toCollection
+
+  private[this] def createMapValues(collection: Collection) = Map[String, Any](
+    position -> collection.data.position,
+    name -> collection.data.name,
+    collectionType -> collection.data.collectionType,
+    icon -> collection.data.icon,
+    themedColorIndex -> collection.data.themedColorIndex,
+    appsCategory -> (collection.data.appsCategory orNull),
+    originalSharedCollectionId -> (collection.data.originalSharedCollectionId orNull),
+    sharedCollectionId -> (collection.data.sharedCollectionId orNull),
+    sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed orNull))
+
 }

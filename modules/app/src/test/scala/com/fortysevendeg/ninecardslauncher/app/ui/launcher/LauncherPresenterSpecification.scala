@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.LauncherPresenterStatuses
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
@@ -52,10 +53,13 @@ trait LauncherPresenterSpecification
     mockActions.showContactUsError() returns Ui[Any]()
     mockActions.showMinimumOneCollectionMessage() returns Ui[Any]()
     mockActions.addCollection(collection) returns Ui[Any]()
-    mockActions.loadUserProfile(user)
+    mockActions.loadUserProfile(user) returns Ui[Any]()
     mockActions.canRemoveCollections returns canRemoveCollections
 
+    val mockStatuses = mock[LauncherPresenterStatuses]
+
     val presenter = new LauncherPresenter(mockActions) {
+      statuses = mockStatuses
       override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
         Service(Task(Answer(())))
       override protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
@@ -64,6 +68,7 @@ trait LauncherPresenterSpecification
     }
 
     val presenterFailed = new LauncherPresenter(mockActions) {
+      statuses = mockStatuses
       override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
         Service(Task(Errata(collectionException)))
       override protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
@@ -92,24 +97,24 @@ class LauncherPresenterSpec
 
     "show dialog returning a successful data and it can remove collections" in
       new WizardPresenterScope {
-        presenter.removeCollection(Some(collection))
+        mockStatuses.collectionReorderMode returns Some(collection)
+        presenter.removeCollectionInReorderMode()
         there was after(1 seconds).no(mockActions).showMinimumOneCollectionMessage()
         there was after(1 seconds).no(mockActions).showContactUsError()
       }
 
     "show message returning a successful data and it can't remove collections" in
       new WizardPresenterScope {
-
         override val canRemoveCollections: Boolean = false
-
-        presenter.removeCollection(Some(collection))
+        mockStatuses.collectionReorderMode returns Some(collection)
+        presenter.removeCollectionInReorderMode()
         there was after(1 seconds).one(mockActions).showMinimumOneCollectionMessage()
-
       }
 
     "show contact error if the parameter don't have a collection" in
       new WizardPresenterScope {
-        presenter.removeCollection(None)
+        mockStatuses.collectionReorderMode returns None
+        presenter.removeCollectionInReorderMode()
         there was after(1 seconds).one(mockActions).showContactUsError()
       }
 

@@ -28,7 +28,7 @@ object CommonsTweak {
     }
   }
 
-  def vSetPosition(position: Int) = vTag(R.id.position, position)
+  def vSetPosition(position: Int): Tweak[View] = vTag(R.id.position, position)
 
   def vSetType(t: String) = vTag(R.id.view_type, t)
 

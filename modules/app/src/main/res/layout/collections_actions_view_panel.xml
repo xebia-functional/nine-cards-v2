@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LauncherCollectionActionsPanel"
+    android:id="@+id/launcher_collections_actions_panel">
+
+    <Button
+        style="@style/LauncherRemoveAction"
+        android:id="@+id/launcher_collections_action_remove"/>
+
+</LinearLayout>

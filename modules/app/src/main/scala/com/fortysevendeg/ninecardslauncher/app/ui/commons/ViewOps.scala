@@ -11,12 +11,19 @@ object ViewOps {
 
   val useLayerHardwareId = R.id.use_layer_hardware
 
+  val runningAnimation = R.id.running_animation
+
   val fieldsMap = R.id.fields_map
 
   implicit class ViewExtras(view: View) {
 
     def isPosition(item: Int): Boolean =
-      Option(view.getTag(positionId)).isDefined && Int.unbox(view.getTag(positionId)).equals(item)
+      Option(view.getTag(positionId)) exists (tag => Int.unbox(tag).equals(item))
+
+    def isRunningAnimation: Boolean =
+      Option(view.getTag(runningAnimation)) exists Boolean.unbox
+
+    def setRunningAnimation(running: Boolean): Unit = view.setTag(runningAnimation, running)
 
     def getFieldsMap: Map[String, Any] = Option(view.getTag(fieldsMap)) map (_.asInstanceOf[Map[String, Any]]) getOrElse Map.empty
 

@@ -25,6 +25,8 @@ import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 
+import Statuses._
+
 import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -34,6 +36,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   with AnalyticDispatcher { self =>
 
   val tagDialog = "dialog"
+
+  var statuses = LauncherPresenterStatuses()
 
   override def getApplicationContext: Context = contextWrapper.application
 
@@ -62,6 +66,39 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.showPlusProfile(coverPhotoUrl).run
 
   def logout(): Unit = actions.logout.run
+
+  def startDrag(maybeCollection: Option[Collection], position: Int): Unit = {
+    maybeCollection map { collection =>
+      statuses = statuses.startReorder(collection, position)
+      actions.startReorder.run
+    } getOrElse {
+      actions.showContactUsError().run
+    }
+  }
+
+  def draggingTo(position: Int): Unit = statuses = statuses.reordering(position)
+
+  def draggingToNextScreen(position: Int): Unit = {
+    actions.goToNextScreenReordering().run
+    statuses = statuses.reordering(position)
+  }
+
+  def draggingToPreviousScreen(position: Int): Unit = {
+    actions.goToPreviousScreenReordering().run
+    statuses = statuses.reordering(position)
+  }
+
+  def drop(): Unit = {
+    actions.endReorder.run
+    val from = statuses.startPositionReorderMode
+    val to = statuses.currentPositionReorderMode
+    if (from != to) {
+      Task.fork(di.collectionProcess.reorderCollection(from, to).run).resolveAsyncUi(
+        onResult = (_) => actions.reloadCollectionsAfterReorder(from, to),
+        onException = (_) => actions.reloadCollectionsFailed() ~ actions.showContactUsError())
+    }
+    statuses = statuses.endReorder()
+  }
 
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
@@ -96,8 +133,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def addCollection(collection: Collection): Unit = actions.addCollection(collection).run
 
-  def removeCollection(maybeCollection: Option[Collection]): Unit =
-    (maybeCollection map { collection =>
+  def removeCollectionInReorderMode(): Unit =
+    (statuses.collectionReorderMode map { collection =>
       if (actions.canRemoveCollections) {
         Ui(showDialogForRemoveCollection(collection))
       } else {
@@ -259,6 +296,10 @@ trait LauncherUiActions {
 
   def closeTabs: Ui[Any]
 
+  def startReorder: Ui[Any]
+
+  def endReorder: Ui[Any]
+
   def showUserProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
 
   def showPlusProfile(coverPhotoUrl: String): Ui[Any]
@@ -273,7 +314,15 @@ trait LauncherUiActions {
 
   def showLoading(): Ui[Any]
 
+  def goToPreviousScreenReordering(): Ui[Any]
+
+  def goToNextScreenReordering(): Ui[Any]
+
   def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any]
+
+  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
+
+  def reloadCollectionsFailed(): Ui[Any]
 
   def loadUserProfile(user: User): Ui[Any]
 
@@ -294,4 +343,39 @@ trait LauncherUiActions {
 
   def isTabsOpened: Boolean
 
+}
+
+object Statuses {
+  case class LauncherPresenterStatuses(
+    mode: LauncherMode = NormalMode,
+    collectionReorderMode: Option[Collection] = None,
+    startPositionReorderMode: Int = 0,
+    currentPositionReorderMode: Int = 0) {
+
+    def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
+      copy(
+        startPositionReorderMode = position,
+        collectionReorderMode = Some(collection),
+        currentPositionReorderMode = position,
+        mode = ReorderMode)
+
+    def reordering(position: Int): LauncherPresenterStatuses =
+      copy(currentPositionReorderMode = position)
+
+    def endReorder(): LauncherPresenterStatuses =
+      copy(
+        startPositionReorderMode = 0,
+        collectionReorderMode = None,
+        currentPositionReorderMode = 0,
+        mode = NormalMode)
+
+    def isReordering(): Boolean = mode == ReorderMode
+
+  }
+
+  sealed trait LauncherMode
+
+  case object NormalMode extends LauncherMode
+
+  case object ReorderMode extends LauncherMode
 }

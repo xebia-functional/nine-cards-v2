@@ -38,9 +38,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   lazy val sizeCalculateMovement = getHeight
 
   def getCountCollections: Int = data map {
-    case item@LauncherData(CollectionsWorkSpace, _) => item.collections.length
+    case item@LauncherData(CollectionsWorkSpace, _, _) => item.collections.length
     case _ => 0
   } sum
+
+  def getCountCollectionScreens: Int = data count(_.workSpaceType == CollectionsWorkSpace)
 
   def isEmptyCollections: Boolean = getCountCollections == 0
 
@@ -51,6 +53,22 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def isCollectionWorkSpace: Boolean = !isMomentWorkSpace
 
   def isCollectionWorkSpace(page: Int): Boolean = !isMomentWorkSpace(page)
+
+  def nextScreen: Option[Int] = {
+    val current = statuses.currentItem
+    if (current + 1 < getWorksSpacesCount) Some(current + 1) else None
+  }
+
+  def previousScreen: Option[Int] = {
+    val current = statuses.currentItem
+    if (current > 0) Some(current - 1) else None
+  }
+
+  def prepareItemsScreenInReorder(position: Int): Ui[Any] = frontView match {
+    case Some(collectionWorkspace: LauncherWorkSpaceCollectionsHolder) =>
+      collectionWorkspace.prepareItemsScreenInReorder(position)
+    case _ => Ui.nop
+  }
 
   override def getItemViewTypeCount: Int = 2
 
@@ -64,7 +82,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
     view match {
-      case Some(v: LauncherWorkSpaceCollectionsHolder) => v.populate(data.collections)
+      case Some(v: LauncherWorkSpaceCollectionsHolder) =>
+        v.populate(data.collections, data.positionByType, getCountCollectionScreens)
       case _ => Ui.nop
     }
 
@@ -250,7 +269,7 @@ case class LauncherWorkSpacesListener(
 class LauncherWorkSpaceHolder(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(contextWrapper.application)
 
-case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collection] = Seq.empty)
+case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collection] = Seq.empty, positionByType: Int = 0)
 
 sealed trait WorkSpaceType {
   val value: Int

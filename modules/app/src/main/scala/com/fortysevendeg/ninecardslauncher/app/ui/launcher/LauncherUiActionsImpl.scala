@@ -8,6 +8,8 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
@@ -18,6 +20,8 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import ViewOps._
+import UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -53,8 +57,26 @@ trait LauncherUiActionsImpl
 
   override def showLoading(): Ui[Any] = showCollectionsLoading
 
+  override def goToPreviousScreenReordering(): Ui[Any] = {
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
+    (goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1))).ifUi(canMoveToPreviousScreen)
+  }
+
+  override def goToNextScreenReordering(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
+    if (canMoveToNextScreen) {
+      goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0))
+    } else {
+      Ui.nop
+    }
+  }
+
   override def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any] =
     createCollections(collections, apps)
+
+  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any] = reloadReorderedCollections(from, to)
+
+  def reloadCollectionsFailed(): Ui[Any] = reloadCollections()
 
   override def showUserProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any] = userProfileMenu(name, email, avatarUrl)
 
@@ -102,6 +124,22 @@ trait LauncherUiActionsImpl
   override def logout: Ui[Any] = cleanWorkspaces() ~ Ui(presenter.goToWizard())
 
   override def closeTabs: Ui[Any] = closeDrawerTabs
+
+  override def startReorder: Ui[Any] =
+    (appDrawerPanel <~ fadeOut()) ~
+      (paginationPanel <~ fadeOut()) ~
+      (searchPanel <~ fadeOut()) ~
+      (collectionActionsPanel <~ fadeIn())
+
+  override def endReorder: Ui[Any] =
+    (appDrawerPanel <~ fadeIn()) ~
+      (paginationPanel <~ fadeIn()) ~
+      (searchPanel <~ fadeIn()) ~
+      (collectionActionsPanel <~~ fadeOut())
+
+  private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
+
+  private[this] def fadeOut() = applyAnimation(alpha = Some(0)) + vInvisible
 
   override def isTabsOpened: Boolean = isDrawerTabsOpened
 
