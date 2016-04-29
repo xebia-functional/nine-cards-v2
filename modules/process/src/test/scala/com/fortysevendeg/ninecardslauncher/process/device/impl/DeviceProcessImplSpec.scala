@@ -683,7 +683,7 @@ class DeviceProcessImplSpec
 
     "get term counters for contacts by name" in
       new DeviceProcessScope {
-        val result = deviceProcess.getCounterForIterableContacts()(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForContacts()(contextSupport).run.run
         result must beLike {
           case Answer(counters) =>
             counters map (_.term) shouldEqual (contactsCounters map (_.term))
@@ -693,7 +693,7 @@ class DeviceProcessImplSpec
 
     "get term counters for contacts by favorite" in
       new DeviceProcessScope {
-        val result = deviceProcess.getCounterForIterableContacts(FavoriteContacts)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForContacts(FavoriteContacts)(contextSupport).run.run
         result must beLike {
           case Answer(counters) => counters shouldEqual Seq.empty
         }
@@ -701,7 +701,7 @@ class DeviceProcessImplSpec
 
     "get term counters for apps by contacts with phone number" in
       new DeviceProcessScope {
-        val result = deviceProcess.getCounterForIterableContacts(ContactsWithPhoneNumber)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForContacts(ContactsWithPhoneNumber)(contextSupport).run.run
         result must beLike {
           case Answer(counters) => counters shouldEqual Seq.empty
         }

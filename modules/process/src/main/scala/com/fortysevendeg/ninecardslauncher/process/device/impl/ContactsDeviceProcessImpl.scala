@@ -37,7 +37,7 @@ trait ContactsDeviceProcessImpl {
       }
     } yield toContactSeq(contacts)).resolve[ContactException]
 
-  def getCounterForIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
+  def getTermCountersForContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
     (for {
       counters <- filter match {
         case AllContacts => contactsServices.getAlphabeticalCounterContacts
