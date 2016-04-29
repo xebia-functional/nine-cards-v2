@@ -142,6 +142,8 @@ class LauncherWorkSpaceCollectionsHolder(
       case ACTION_DROP =>
         unselectAll().run
         presenter.endAddItemToCollection()
+      case ACTION_DRAG_EXITED =>
+        unselectAll().run
       case ACTION_DRAG_ENDED =>
         unselectAll().run
         presenter.endAddItem()

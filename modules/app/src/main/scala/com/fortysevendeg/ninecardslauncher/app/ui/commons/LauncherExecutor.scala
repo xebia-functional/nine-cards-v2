@@ -132,6 +132,16 @@ trait LauncherExecutor {
       }
     }
 
+  def launchUninstall(packageName: String)(implicit activityContext: ActivityContextWrapper) = {
+    for {
+      activity <- activityContext.original.get
+    } yield {
+      val packageURI = Uri.parse(s"package:$packageName")
+      val uninstallIntent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE, packageURI)
+      activity.startActivity(uninstallIntent)
+    }
+  }
+
   def launchDial(phoneNumber: Option[String] = None)(implicit activityContext: ActivityContextWrapper) = {
     val intent = new Intent(Intent.ACTION_DIAL)
     phoneNumber foreach (number => intent.setData(Uri.parse(s"tel:$number")))

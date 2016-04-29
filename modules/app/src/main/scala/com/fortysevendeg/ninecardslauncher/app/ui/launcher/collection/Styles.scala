@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Work
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
@@ -82,7 +82,14 @@ trait Styles {
               case _ =>
             }
             true
-          case _=> false
+          case DragObject(_, AddItemToCollection) =>
+            event.getAction match {
+              case ACTION_DRAG_ENDED =>
+                presenter.removeInAddItem()
+              case _ =>
+            }
+            true
+          case _ => false
         }
       }
     })

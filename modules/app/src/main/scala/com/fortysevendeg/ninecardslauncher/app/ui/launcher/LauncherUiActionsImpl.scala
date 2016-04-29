@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ClipData
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
+import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import android.widget.ImageView
@@ -14,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
@@ -211,21 +213,36 @@ trait LauncherUiActionsImpl
 
   private[this] def dragListener(): Tweak[View] = Tweak[View] { view =>
     view.setOnDragListener(new OnDragListener {
+      val dragAreaKey = "drag-area"
       override def onDrag(v: View, event: DragEvent): Boolean = {
-        (event.getLocalState, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
-          case (DragObject(_, AddItemToCollection), Some(topBar), Some(bottomBar)) =>
+        val dragArea = v.getField[DragArea](dragAreaKey) getOrElse NoDragArea
+        (event.getLocalState, event.getAction, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
+          case (DragObject(_, AddItemToCollection), ACTION_DRAG_ENDED, _ , _) =>
+            (v <~ vAddField(dragAreaKey, NoDragArea)).run
+            presenter.endAddItem()
+          case (DragObject(_, AddItemToCollection), _, Some(topBar), Some(bottomBar)) =>
             val height = KitKat.ifSupportedThen (view.getHeight - getStatusBarHeight) getOrElse view.getHeight
+            val top = KitKat.ifSupportedThen (topBar + getStatusBarHeight) getOrElse topBar
             // Project location to views
             val x = event.getX
             val y = event.getY
-            if (y < topBar) {
-              // Project to actions buttons
-            } else if (y > height - bottomBar){
-              // Project to dock apps
-              (dockAppsPanel <~ daplDragDispatcher(event.getAction, x, y - (height - bottomBar))).run
+            val currentDragArea = if (y < top) ActionsDragArea else if (y > height - bottomBar) DockAppsDragArea else WorkspacesDragArea
+
+            val (action, area) = if (dragArea != currentDragArea) {
+              (v <~ vAddField(dragAreaKey, currentDragArea)).run
+              (ACTION_DRAG_EXITED, dragArea)
             } else {
-              // Project to workspace
-              (workspaces <~ lwsDragDispatcher(event.getAction, x, y - topBar)).run
+              (event.getAction, currentDragArea)
+            }
+
+            area match {
+              case WorkspacesDragArea =>
+                // Project to workspace
+                (workspaces <~ lwsDragDispatcher(action, x, y - top)).run
+              case DockAppsDragArea =>
+                // Project to dock apps
+                (dockAppsPanel <~ daplDragDispatcher(action, x, y - (height - bottomBar))).run
+              case _ =>
             }
           case _ =>
         }
@@ -241,3 +258,13 @@ trait LauncherUiActionsImpl
   }
 
 }
+
+sealed trait DragArea
+
+case object ActionsDragArea extends DragArea
+
+case object WorkspacesDragArea extends DragArea
+
+case object DockAppsDragArea extends DragArea
+
+case object NoDragArea extends DragArea

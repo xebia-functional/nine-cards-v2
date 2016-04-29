@@ -3,10 +3,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.widget.ImageView
+import android.view.{View, ViewGroup}
+import android.widget.FrameLayout.LayoutParams
+import android.widget.{FrameLayout, ImageView}
+import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -125,7 +128,17 @@ trait CollectionsUiActions
       (collectionRemoveAction <~ removeActionStyle)
 
   def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[_] =
-    workspaces <~ vSnackbarShort(activityContextWrapper.application.getString(message, args:_*))
+    workspaces <~ Tweak[View] { view =>
+      val snackbar = Snackbar.make(view, activityContextWrapper.application.getString(message, args:_*), Snackbar.LENGTH_SHORT)
+      snackbar.getView.getLayoutParams match {
+        case params : FrameLayout.LayoutParams =>
+          val bottom = KitKat.ifSupportedThen (getNavigationBarHeight) getOrElse 0
+          params.setMargins(0, 0, 0, bottom)
+          snackbar.getView.setLayoutParams(params)
+        case _ =>
+      }
+      snackbar.show()
+    }
 
   def showCollectionsLoading: Ui[_] = loading <~ vVisible
 

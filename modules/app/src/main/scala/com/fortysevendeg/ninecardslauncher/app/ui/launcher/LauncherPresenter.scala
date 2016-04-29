@@ -130,6 +130,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.endAddItem.run
   }
 
+  def removeInAddItem(): Unit = {
+    statuses.cardAddItemMode match {
+      case Some(card: AddCardRequest) if card.cardType == AppCardType =>
+        card.packageName foreach launchUninstall
+      case _ =>
+    }
+    statuses = statuses.reset()
+    actions.endAddItem.run
+  }
+
   def startReorder(maybeCollection: Option[Collection], position: Int): Unit = {
     maybeCollection map { collection =>
       statuses = statuses.startReorder(collection, position)

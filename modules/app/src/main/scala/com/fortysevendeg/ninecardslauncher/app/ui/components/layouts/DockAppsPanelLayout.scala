@@ -29,8 +29,6 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
-  val appTag = "app"
-
   val unselectedPosition = -1
 
   val selectedScale = 1.1f
@@ -45,23 +43,15 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   var draggingTo: Option[Int] = None
 
-  lazy val appDrawer1 = Option(findView(TR.launcher_page_1))
-
-  lazy val appDrawer2 = Option(findView(TR.launcher_page_2))
-
-  lazy val appDrawer3 = Option(findView(TR.launcher_page_3))
-
-  lazy val appDrawer4 = Option(findView(TR.launcher_page_4))
-
   LayoutInflater.from(context).inflate(R.layout.app_drawer_panel, this)
 
   def init(apps: Seq[DockApp])
     (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
     dockApps = apps
-    (appDrawer1 <~ populate(0)) ~
-      (appDrawer2 <~ populate(1)) ~
-      (appDrawer3 <~ populate(2)) ~
-      (appDrawer4 <~ populate(3))
+    (Option(findView(TR.launcher_page_1)) <~ populate(0)) ~
+      (Option(findView(TR.launcher_page_2)) <~ populate(1)) ~
+      (Option(findView(TR.launcher_page_3)) <~ populate(2)) ~
+      (Option(findView(TR.launcher_page_4)) <~ populate(3))
   }
 
   def reload(dockApp: DockApp)
@@ -84,6 +74,8 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         } getOrElse {
           presenter.endAddItem()
         }
+        (this <~ select(unselectedPosition)).run
+      case ACTION_DRAG_EXITED =>
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_ENDED =>
         presenter.endAddItem()
@@ -111,7 +103,6 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Tweak[TintableImageView] =
     tivPressedColor(theme.get(AppDrawerPressedColor)) +
       vSetPosition(position) +
-      vSetType(appTag) +
       (dockApps.lift(position) map { app =>
         (app.dockType match {
           case AppDockType => ivUri(app.imagePath)
