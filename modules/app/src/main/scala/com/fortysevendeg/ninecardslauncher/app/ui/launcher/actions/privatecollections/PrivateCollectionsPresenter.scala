@@ -58,7 +58,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   ServiceDef2[Collection, CollectionException with CardException] =
     for {
       collection <- di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection))
-      cards <- di.collectionProcess.addCards(collection.id, privateCollection.cards map toAddCollectionRequest)
+      cards <- di.collectionProcess.addCards(collection.id, privateCollection.cards map toAddCardRequest)
     } yield collection.copy(cards = cards)
 
 

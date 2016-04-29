@@ -88,7 +88,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def getWorksSpacesCount = data.length
 
-  def init(position: Int = 0) = {
+  def init(position: Int = 0): Unit = {
     if (data.isEmpty) {
       throw new InstantiationException("data can't be empty")
     }

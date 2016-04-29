@@ -2,7 +2,10 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.commons.types.DockType
 import com.fortysevendeg.ninecardslauncher.process.device._
+import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.calls.CallsServices
@@ -88,6 +91,9 @@ class DeviceProcessImpl(
   override def getLastCalls(implicit context: ContextSupport) = super.getLastCalls
 
   override def generateDockApps(size: Int)(implicit context: ContextSupport) = super.generateDockApps(size)
+
+  override def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int) =
+    super.createOrUpdateDockApp(name, dockType, intent, imagePath, position)
 
   override def getDockApps = super.getDockApps
 

@@ -15,8 +15,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialog
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
@@ -24,13 +25,14 @@ import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
-
 import Statuses._
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 
 import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
+  with Conversions
   with NineCardIntentConversions
   with LauncherExecutor
   with AnalyticDispatcher { self =>
@@ -67,7 +69,78 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def logout(): Unit = actions.logout.run
 
-  def startDrag(maybeCollection: Option[Collection], position: Int): Unit = {
+  def startAddItemToCollection(app: App): Unit = startAddItemToCollection(toAddCardRequest(app))
+
+  def startAddItemToCollection(contact: Contact): Unit = startAddItemToCollection(toAddCardRequest(contact))
+
+  private[this] def startAddItemToCollection(addCardRequest: AddCardRequest): Unit = {
+    statuses = statuses.startAddItem(addCardRequest)
+    actions.startAddItem.run
+  }
+
+  def draggingAddItemTo(position: Int): Unit = statuses = statuses.updateCurrentPosition(position)
+
+  def draggingAddItemToPreviousScreen(position: Int): Unit = {
+    actions.goToPreviousScreen().run
+    statuses.updateCurrentPosition(position)
+  }
+
+  def draggingAddItemToNextScreen(position: Int): Unit = {
+    actions.goToNextScreen().run
+    statuses.updateCurrentPosition(position)
+  }
+
+  def endAddItemToCollection(): Unit = {
+    (actions.getCollection(statuses.currentDraggingPosition), statuses.cardAddItemMode) match {
+      case (Some(collection: Collection), Some(request: AddCardRequest)) =>
+        Task.fork(di.collectionProcess.addCards(collection.id, Seq(request)).run).resolveAsyncUi(
+          onResult = (_) => actions.showAddItemMessage(collection.name),
+          onException = (_) => actions.showContactUsError())
+      case _ =>
+        actions.showContactUsError().run
+    }
+    statuses = statuses.reset()
+    actions.endAddItem.run
+  }
+
+  def endAddItemToDockApp(position: Int): Unit = {
+    statuses.cardAddItemMode match {
+      case Some(card: AddCardRequest) =>
+        card.cardType match {
+          case AppCardType =>
+            Task.fork(createOrUpdateDockApp(card, AppDockType, position).run).resolveAsyncUi(
+              onResult = (_) => actions.reloadDockApps(DockApp(card.term, AppDockType, card.intent, card.imagePath, position)),
+              onException = (_) => actions.showContactUsError())
+          case ContactCardType =>
+            Task.fork(createOrUpdateDockApp(card, ContactDockType, position).run).resolveAsyncUi(
+              onResult = (_) => actions.reloadDockApps(DockApp(card.term, ContactDockType, card.intent, card.imagePath, position)),
+              onException = (_) => actions.showContactUsError())
+          case _ =>
+            actions.showContactUsError()
+        }
+      case _ =>
+        actions.showContactUsError().run
+    }
+    statuses = statuses.reset()
+    actions.endAddItem.run
+  }
+
+  def endAddItem(): Unit = {
+    statuses = statuses.reset()
+    actions.endAddItem.run
+  }
+
+  def removeInAddItem(): Unit = {
+    statuses.cardAddItemMode match {
+      case Some(card: AddCardRequest) if card.cardType == AppCardType =>
+        card.packageName foreach launchUninstall
+      case _ =>
+    }
+    statuses = statuses.reset()
+    actions.endAddItem.run
+  }
+
+  def startReorder(maybeCollection: Option[Collection], position: Int): Unit = {
     maybeCollection map { collection =>
       statuses = statuses.startReorder(collection, position)
       actions.startReorder.run
@@ -76,28 +149,28 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  def draggingTo(position: Int): Unit = statuses = statuses.reordering(position)
+  def draggingReorderTo(position: Int): Unit = statuses = statuses.updateCurrentPosition(position)
 
-  def draggingToNextScreen(position: Int): Unit = {
+  def draggingReorderToNextScreen(position: Int): Unit = {
     actions.goToNextScreenReordering().run
-    statuses = statuses.reordering(position)
+    statuses = statuses.updateCurrentPosition(position)
   }
 
-  def draggingToPreviousScreen(position: Int): Unit = {
+  def draggingReorderToPreviousScreen(position: Int): Unit = {
     actions.goToPreviousScreenReordering().run
-    statuses = statuses.reordering(position)
+    statuses = statuses.updateCurrentPosition(position)
   }
 
-  def drop(): Unit = {
+  def dropReorder(): Unit = {
     actions.endReorder.run
     val from = statuses.startPositionReorderMode
-    val to = statuses.currentPositionReorderMode
+    val to = statuses.currentDraggingPosition
     if (from != to) {
       Task.fork(di.collectionProcess.reorderCollection(from, to).run).resolveAsyncUi(
         onResult = (_) => actions.reloadCollectionsAfterReorder(from, to),
         onException = (_) => actions.reloadCollectionsFailed() ~ actions.showContactUsError())
     }
-    statuses = statuses.endReorder()
+    statuses = statuses.reset()
   }
 
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
@@ -111,12 +184,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         label = Some(ProvideLabel(app.packageName)),
         value = Some(OpenAppFromAppDrawerValue))
     execute(toNineCardIntent(app))
-  }
-
-  def openSettings(app: App) = if (actions.isTabsOpened) {
-    actions.closeTabs.run
-  } else {
-    launchSettings(app.packageName)
   }
 
   def openContact(contact: Contact) = if (actions.isTabsOpened) {
@@ -233,6 +300,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
+  private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
+    di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
+
   protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
     di.collectionProcess.deleteCollection(id)
 
@@ -300,6 +370,10 @@ trait LauncherUiActions {
 
   def endReorder: Ui[Any]
 
+  def startAddItem: Ui[Any]
+
+  def endAddItem: Ui[Any]
+
   def showUserProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
 
   def showPlusProfile(coverPhotoUrl: String): Ui[Any]
@@ -308,11 +382,19 @@ trait LauncherUiActions {
 
   def removeCollection(collection: Collection): Ui[Any]
 
+  def reloadDockApps(dockApp: DockApp): Ui[Any]
+
+  def showAddItemMessage(nameCollection: String): Ui[Any]
+
   def showContactUsError(): Ui[Any]
 
   def showMinimumOneCollectionMessage(): Ui[Any]
 
   def showLoading(): Ui[Any]
+
+  def goToPreviousScreen(): Ui[Any]
+
+  def goToNextScreen(): Ui[Any]
 
   def goToPreviousScreenReordering(): Ui[Any]
 
@@ -341,6 +423,8 @@ trait LauncherUiActions {
 
   def canRemoveCollections: Boolean
 
+  def getCollection(position: Int): Option[Collection]
+
   def isTabsOpened: Boolean
 
 }
@@ -348,25 +432,30 @@ trait LauncherUiActions {
 object Statuses {
   case class LauncherPresenterStatuses(
     mode: LauncherMode = NormalMode,
+    cardAddItemMode: Option[AddCardRequest] = None,
     collectionReorderMode: Option[Collection] = None,
     startPositionReorderMode: Int = 0,
-    currentPositionReorderMode: Int = 0) {
+    currentDraggingPosition: Int = 0) {
+
+    def startAddItem(card: AddCardRequest): LauncherPresenterStatuses =
+      copy(mode = AddItemMode, cardAddItemMode = Some(card))
 
     def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
       copy(
         startPositionReorderMode = position,
         collectionReorderMode = Some(collection),
-        currentPositionReorderMode = position,
+        currentDraggingPosition = position,
         mode = ReorderMode)
 
-    def reordering(position: Int): LauncherPresenterStatuses =
-      copy(currentPositionReorderMode = position)
+    def updateCurrentPosition(position: Int): LauncherPresenterStatuses =
+      copy(currentDraggingPosition = position)
 
-    def endReorder(): LauncherPresenterStatuses =
+    def reset(): LauncherPresenterStatuses =
       copy(
         startPositionReorderMode = 0,
+        cardAddItemMode = None,
         collectionReorderMode = None,
-        currentPositionReorderMode = 0,
+        currentDraggingPosition = 0,
         mode = NormalMode)
 
     def isReordering(): Boolean = mode == ReorderMode
@@ -376,6 +465,8 @@ object Statuses {
   sealed trait LauncherMode
 
   case object NormalMode extends LauncherMode
+
+  case object AddItemMode extends LauncherMode
 
   case object ReorderMode extends LauncherMode
 }

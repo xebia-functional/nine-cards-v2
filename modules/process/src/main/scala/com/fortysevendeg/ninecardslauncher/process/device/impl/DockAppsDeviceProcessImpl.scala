@@ -3,7 +3,8 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, DockType}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
@@ -25,6 +26,11 @@ trait DockAppsDeviceProcessImpl {
       defaultApps <- getAppsImages(allDefaultApps map (_.packageName))
       images = defaultApps.flatten map (app => (app.packageName, app.imagePath))
       _ <- saveDockApps(matchAppsWithImages(allDefaultApps, images).take(size))
+    } yield ()).resolve[DockAppException]
+
+  def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int) =
+    (for {
+      _ <- persistenceServices.createOrUpdateDockApp(toCreateOrUpdateDockAppRequest(name, dockType, intent, imagePath, position))
     } yield ()).resolve[DockAppException]
 
   def getDockApps =

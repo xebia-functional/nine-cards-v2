@@ -2,7 +2,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
-import android.view.View
+import android.view.{DragEvent, View}
+import android.view.View.OnDragListener
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._

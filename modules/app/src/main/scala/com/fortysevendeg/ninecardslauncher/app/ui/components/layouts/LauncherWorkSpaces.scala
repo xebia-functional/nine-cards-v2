@@ -8,9 +8,9 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceMomentsHolder, LauncherWorkSpaceCollectionsHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import macroid._
 
@@ -41,6 +41,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case item@LauncherData(CollectionsWorkSpace, _, _) => item.collections.length
     case _ => 0
   } sum
+
+  def getCollections: Seq[Collection] = data flatMap (a => a.collections)
 
   def getCountCollectionScreens: Int = data count(_.workSpaceType == CollectionsWorkSpace)
 

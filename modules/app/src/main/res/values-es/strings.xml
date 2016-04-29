@@ -13,6 +13,8 @@
     <string name="sendTo">Enviar a</string>
     <string name="buttonErrorReload">Recargar</string>
 
+    <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a la collectión %1$s</string>
+
     <!-- Menu -->
     <string name="collectionsTitle">Colecciones</string>
     <string name="momentsTitle">Momentos</string>
