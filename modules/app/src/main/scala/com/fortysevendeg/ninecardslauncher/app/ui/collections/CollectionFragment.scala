@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
 import macroid.Contexts
 
-class CollectionFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter, nineCardsTheme: NineCardsTheme)
+class CollectionFragment
   extends Fragment
   with Contexts[Fragment]
   with ContextSupportProvider
@@ -27,9 +27,15 @@ class CollectionFragment(implicit collectionsPagerPresenter: CollectionsPagerPre
     maybeCollection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, javaNull)),
     actions = self)
 
-  override val collectionsPresenter: CollectionsPagerPresenter = collectionsPagerPresenter
+  override lazy val collectionsPresenter: CollectionsPagerPresenter = getActivity match {
+    case a: CollectionsDetailsActivity => a.presenter
+    case _ => throw new IllegalArgumentException("CollectionFragment only can be loaded in CollectionsDetailsActivity")
+  }
 
-  override val theme = nineCardsTheme
+  override lazy val theme: NineCardsTheme = getActivity match {
+    case a: CollectionsDetailsActivity => a.theme
+    case _ => throw new IllegalArgumentException("CollectionFragment only can be loaded in CollectionsDetailsActivity")
+  }
 
   override lazy val uiContext: UiContext[Fragment] = FragmentUiContext(self)
 
@@ -48,19 +54,6 @@ class CollectionFragment(implicit collectionsPagerPresenter: CollectionsPagerPre
     presenter.initialize(sType)
     presenter.showData()
     super.onViewCreated(view, savedInstanceState)
-  }
-
-  override def onAttach(activity: Activity): Unit = {
-    super.onAttach(activity)
-    activity match {
-      case scroll: ScrolledListener => scrolledListener = Some(scroll)
-      case _ =>
-    }
-  }
-
-  override def onDetach(): Unit = {
-    super.onDetach()
-    scrolledListener = None
   }
 
 }

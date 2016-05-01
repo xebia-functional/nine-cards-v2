@@ -65,6 +65,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def resetAction(): Unit = actions.resetAction.run
 
+  def destroyAction(): Unit = actions.destroyAction.run
+
   def connectUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit =
     actions.showUserProfile(name, email, avatarUrl).run
 
@@ -369,6 +371,8 @@ trait LauncherUiActions {
   def back: Ui[Any]
 
   def resetAction: Ui[Any]
+
+  def destroyAction: Ui[Any]
 
   def logout: Ui[Any]
 

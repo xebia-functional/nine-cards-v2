@@ -50,7 +50,7 @@ class LauncherActivity
 
   override def onStartFinishAction(): Unit = presenter.resetAction()
 
-  override def onEndFinishAction(): Unit = removeActionFragment
+  override def onEndFinishAction(): Unit = presenter.destroyAction()
 
   override def onBackPressed(): Unit = presenter.back()
 

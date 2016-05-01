@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Handler
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -43,6 +42,10 @@ class CollectionsPagerPresenter(
 
   def destroy(): Unit = actions.destroy().run
 
+  def resetAction(): Unit = actions.resetAction.run
+
+  def destroyAction(): Unit = actions.destroyAction.run
+
   def reloadCards(reloadFragment: Boolean): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.getCollectionById(collection.id).run).resolveAsync(
       onResult = (c) => c map (newCollection => if (newCollection.cards != collection.cards) {
@@ -67,6 +70,29 @@ class CollectionsPagerPresenter(
     Task.fork(createShortcut(collectionId, name, shortcutIntent, bitmap).run).resolveAsyncUi(
       onResult = actions.addCards
     )
+  }
+
+  def scrollY(scroll: Int, dy: Int): Unit = actions.translationScrollY(scroll).run
+
+  def openReorderMode(current: ScrollType): Unit = actions.openReorderModeUi(current).run
+
+  def closeReorderMode(): Unit = actions.closeReorderModeUi.run
+
+  def scrollType(sType: ScrollType): Unit = actions.notifyScroll(sType).run
+
+  def emptyCollection(): Unit = actions.getCurrentCollection foreach { collection =>
+    actions.showMenuButton(autoHide = false, collection).run
+  }
+
+  def firstItemInCollection(): Unit = actions.hideMenuButton.run
+
+  def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
+    actions.pullCloseScrollY(scroll, scrollType, close).run
+
+  def close(): Unit = actions.exitTransition.run
+
+  def startScroll(): Unit = actions.getCurrentCollection foreach { collection =>
+    actions.showMenuButton(autoHide = true, collection).run
   }
 
   private[this] def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]):
@@ -96,6 +122,10 @@ trait CollectionsUiActions {
 
   def destroy(): Ui[Any]
 
+  def resetAction: Ui[Any]
+
+  def destroyAction: Ui[Any]
+
   def showContactUsError: Ui[Any]
 
   def showCollections(collections: Seq[Collection], position: Int): Ui[Any]
@@ -107,4 +137,20 @@ trait CollectionsUiActions {
   def removeCards(card: Card): Ui[Any]
 
   def getCurrentCollection: Option[Collection]
+
+  def translationScrollY(scroll: Int): Ui[_]
+
+  def openReorderModeUi(current: ScrollType): Ui[_]
+
+  def closeReorderModeUi: Ui[_]
+
+  def notifyScroll(sType: ScrollType): Ui[_]
+
+  def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_]
+
+  def exitTransition: Ui[Any]
+
+  def showMenuButton(autoHide: Boolean = true, collection: Collection): Ui[Any]
+
+  def hideMenuButton: Ui[Any]
 }

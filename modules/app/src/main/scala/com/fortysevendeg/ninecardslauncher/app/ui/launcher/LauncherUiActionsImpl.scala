@@ -164,6 +164,8 @@ trait LauncherUiActionsImpl
 
   override def resetAction: Ui[Any] = turnOffFragmentContent
 
+  override def destroyAction: Ui[Any] = Ui(removeActionFragment)
+
   override def logout: Ui[Any] = cleanWorkspaces() ~ Ui(presenter.goToWizard())
 
   override def closeTabs: Ui[Any] = closeDrawerTabs

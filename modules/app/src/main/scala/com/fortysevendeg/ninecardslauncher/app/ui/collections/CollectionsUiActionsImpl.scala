@@ -81,9 +81,9 @@ trait CollectionsUiActionsImpl
 
   lazy val icon = Option(findView(TR.collections_icon))
 
-  def updateBarsInFabMenuShow: Ui[_] = updateStatusToBlack
+  def updateBarsInFabMenuShow(): Ui[_] = updateStatusToBlack
 
-  def updateBarsInFabMenuHide: Ui[_] =
+  def updateBarsInFabMenuHide(): Ui[_] =
     getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   override def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): Ui[Any] =
@@ -173,7 +173,7 @@ trait CollectionsUiActionsImpl
     adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
   }
 
-  def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_] = {
+  override def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_] = {
     val displacement = scroll * resistanceDisplacement
     val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_action)
     val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
@@ -191,7 +191,7 @@ trait CollectionsUiActionsImpl
       }
   }
 
-  def translationScrollY(scroll: Int): Ui[_] = {
+  override def translationScrollY(scroll: Int): Ui[_] = {
     val move = math.min(scroll, spaceMove)
     val ratio: Float = move.toFloat / spaceMove.toFloat
     val isTop = ratio >= 1
@@ -202,7 +202,7 @@ trait CollectionsUiActionsImpl
       (if (isTop) elevationsUp else elevationsDefault)
   }
 
-  def openReorderModeUi(current: ScrollType): Ui[_] =
+  override def openReorderModeUi(current: ScrollType): Ui[_] =
     (tabs <~~
       applyAnimation(y = Some(-spaceMove), alpha = Some(0f)) <~
       vInvisible) ~
@@ -214,18 +214,39 @@ trait CollectionsUiActionsImpl
       elevationsUp ~
       (iconContent <~ vAlpha(0))
 
-  def closeReorderModeUi: Ui[_] =
+  override def closeReorderModeUi: Ui[_] =
     tabs <~
       vVisible <~~
       applyAnimation(alpha = Some(1f))
 
-  def notifyScroll(sType: ScrollType): Ui[_] = (for {
+  override def notifyScroll(sType: ScrollType): Ui[_] = (for {
     vp <- viewPager
     adapter <- getAdapter
   } yield {
       adapter.setScrollType(sType)
       adapter.notifyChanged(vp.getCurrentItem)
     }) getOrElse Ui.nop
+
+  override def exitTransition: Ui[Any] = {
+    val activity = activityContextWrapper.getOriginal
+    ((toolbar <~ exitViews()) ~
+      (tabs <~ exitViews()) ~
+      (iconContent <~ exitViews()) ~
+      (root <~ vBackgroundColorResource(android.R.color.transparent))) ~
+      (viewPager <~~ exitViews(up = false)) ~~
+      Ui(activity.finish())
+  }
+
+  override def showMenuButton(autoHide: Boolean = true, collection: Collection): Ui[Any] = {
+    val color = getIndexColor(collection.themedColorIndex)
+    showFabButton(color, autoHide)
+  }
+
+  override def hideMenuButton: Ui[Any] = hideFabButton
+
+  override def resetAction: Ui[Any] = turnOffFragmentContent
+
+  override def destroyAction: Ui[Any] = Ui(removeActionFragment)
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ vSnackbarShort(error)
 
@@ -292,20 +313,10 @@ trait CollectionsUiActionsImpl
     fragment <- adapter.getActiveFragment
   } yield fragment.presenter
 
-  def turnOffFragmentContent: Ui[_] =
+  override def turnOffFragmentContent: Ui[_] =
     (fragmentContent <~
       colorContentDialog(paint = false) <~
       vClickable(false)) ~ updateBarsInFabMenuHide
-
-  def exitTransition: Ui[Any] = {
-    val activity = activityContextWrapper.getOriginal
-    ((toolbar <~ exitViews()) ~
-      (tabs <~ exitViews()) ~
-      (iconContent <~ exitViews()) ~
-      (root <~ vBackgroundColorResource(android.R.color.transparent))) ~
-      (viewPager <~~ exitViews(up = false)) ~~
-      Ui(activity.finish())
-  }
 
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[_] = getAdapter map {
     adapter =>
