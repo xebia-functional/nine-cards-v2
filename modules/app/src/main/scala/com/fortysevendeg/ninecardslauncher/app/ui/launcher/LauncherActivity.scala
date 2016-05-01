@@ -75,6 +75,8 @@ class LauncherActivity
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
     (requestCode, resultCode) match {
+      case (RequestCodes.goToCollectionDetails, _) =>
+        presenter.resetFromCollectionDetail()
       case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) =>
         presenter.logout()
       case _ =>

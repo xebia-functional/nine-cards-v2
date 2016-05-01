@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
 import android.content.ClipData
+import android.graphics.Point
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.DragEvent._
@@ -11,6 +12,7 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
@@ -25,14 +27,16 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiAction
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.AddItemToCollection
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait LauncherUiActionsImpl
   extends LauncherUiActions
@@ -48,6 +52,8 @@ trait LauncherUiActionsImpl
   implicit lazy val theme: NineCardsTheme = presenter.getTheme
 
   implicit val managerContext: FragmentManagerContext[Fragment, FragmentManager]
+
+  lazy val foreground = Option(findView(TR.launcher_foreground))
 
   override def initialize: Ui[Any] =
     Ui(initAllSystemBarsTint) ~
@@ -129,6 +135,17 @@ trait LauncherUiActionsImpl
 
   override def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any] =
     addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact))
+
+  override def rippleToCollection(color: Int, point: Point): Ui[Future[Any]] = {
+    val y = KitKat.ifSupportedThen (point.y - getStatusBarHeight) getOrElse point.y
+    val background = new RippleCollectionDrawable(point.x, y, color)
+    (foreground <~
+      vVisible <~
+      vBackground(background)) ~
+      background.start()
+  }
+
+  def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
 
   override def back: Ui[Any] =
     if (isDrawerTabsOpened) {

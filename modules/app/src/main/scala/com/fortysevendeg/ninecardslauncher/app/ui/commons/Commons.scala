@@ -54,6 +54,8 @@ object RequestCodes {
 
   val goToProfile = 7
 
+  val goToCollectionDetails = 8
+
 }
 
 object ResultCodes {

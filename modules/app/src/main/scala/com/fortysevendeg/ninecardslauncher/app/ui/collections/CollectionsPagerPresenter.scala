@@ -28,21 +28,16 @@ class CollectionsPagerPresenter(
   var collections: Seq[Collection] = Seq.empty
 
   def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): Unit = {
-    (actions.initialize(indexColor, icon) ~ (
-      if (isStateChanged) Ui.nop else actions.startToolbarTransition(position))).run
+    actions.initialize(indexColor, icon, isStateChanged).run
     Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
-      onResult = (collections: Seq[Collection]) =>
-      if (isStateChanged) actions.showCollections(collections, position) else {
-        self.collections = collections
-        Ui.nop
-      },
+      onResult = (collections: Seq[Collection]) => actions.showCollections(collections, position),
       onException = (ex: Throwable) => actions.showContactUsError
     )
   }
 
-  def resume(): Unit = di.observerRegister.registerObserver
+  def resume(): Unit = di.observerRegister.registerObserver()
 
-  def pause(): Unit = di.observerRegister.unregisterObserver
+  def pause(): Unit = di.observerRegister.unregisterObserver()
 
   def back(): Unit = actions.back().run
 
@@ -74,14 +69,6 @@ class CollectionsPagerPresenter(
     )
   }
 
-  def ensureDrawCollection(position: Int): Unit = if (collections.isEmpty) {
-    new Handler().postDelayed(new Runnable {
-      override def run(): Unit = ensureDrawCollection(position)
-    }, delay)
-  } else {
-    actions.showCollections(collections, position).run
-  }
-
   private[this] def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]):
   ServiceDef2[Seq[Card], ShortcutException with CardException] = for {
     path <- saveShortcutIcon(bitmap)
@@ -103,15 +90,13 @@ class CollectionsPagerPresenter(
 
 trait CollectionsUiActions {
 
-  def initialize(indexColor: Int, icon: String): Ui[Any]
+  def initialize(indexColor: Int, icon: String, isStateChanged: Boolean): Ui[Any]
 
   def back(): Ui[Any]
 
   def destroy(): Ui[Any]
 
   def showContactUsError: Ui[Any]
-
-  def startToolbarTransition(position: Int): Ui[Any]
 
   def showCollections(collections: Seq[Collection], position: Int): Ui[Any]
 

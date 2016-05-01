@@ -5,10 +5,6 @@
 
     <style name="AppTheme" parent="AppThemeBase" />
 
-    <style name="AppThemeSolidBase" parent="AppThemeCommons"/>
-
-    <style name="AppThemeSolid" parent="AppThemeBase"/>
-
     <style name="AppThemeWallpaperBase" parent="AppThemeCommons">
         <!-- Show Wallpaper -->
 

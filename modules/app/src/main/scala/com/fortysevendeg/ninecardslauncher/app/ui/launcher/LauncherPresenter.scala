@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
@@ -26,8 +26,12 @@ import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 import Statuses._
+import android.graphics.{Color, Point}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 
+import scala.concurrent.Future
 import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -273,25 +277,29 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       })
   }
 
-  def goToCollection(maybeView: Option[View], maybeCollection: Option[Collection]): Unit = {
+  def goToCollection(maybeCollection: Option[Collection], point: Point): Unit = {
     def createIntent(context: Context, collection: Collection) = {
       val intent = new Intent(context, classOf[CollectionsDetailsActivity])
+      intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
       intent.putExtra(startPosition, collection.position)
       intent.putExtra(indexColorToolbar, collection.themedColorIndex)
       intent.putExtra(iconToolbar, collection.icon)
     }
 
-    (for {
-      view <- maybeView
+    ((for {
       collection <- maybeCollection
       activity <- contextWrapper.original.get
     } yield {
-      val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-        activity,
-        new Pair[View, String](view, getContentTransitionName(collection.position)))
-      activity.startActivity(createIntent(activity, collection), options.toBundle)
-    }) getOrElse actions.showContactUsError().run
+      val color = resGetColor(getIndexColor(collection.themedColorIndex))
+      actions.rippleToCollection(color, point) ~~
+        Ui {
+          activity.startActivityForResult(createIntent(activity, collection), RequestCodes.goToCollectionDetails)
+          activity.overridePendingTransition(0, 0)
+        }
+    }) getOrElse actions.showContactUsError()).run
   }
+
+  def resetFromCollectionDetail(): Unit = actions.resetFromCollection().run
 
   def goToWizard(): Unit = {
     contextWrapper.original.get foreach { activity =>
@@ -418,6 +426,10 @@ trait LauncherUiActions {
     counters: Seq[TermCounter] = Seq.empty): Ui[_]
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
+
+  def rippleToCollection(color: Int, point: Point): Ui[Future[Any]]
+
+  def resetFromCollection(): Ui[Any]
 
   def isEmptyCollectionsInWorkspace: Boolean
 

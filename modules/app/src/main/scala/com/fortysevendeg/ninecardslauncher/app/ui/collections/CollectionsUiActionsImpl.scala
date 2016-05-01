@@ -16,11 +16,11 @@ import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails
 import CollectionsSnails._
+import android.graphics.Point
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.prefs.AnimationsPref
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
@@ -45,8 +45,7 @@ trait CollectionsUiActionsImpl
   extends CollectionsUiActions
   with Styles
   with ActionsBehaviours
-  with FabButtonBehaviour
-  with AnimationsPref {
+  with FabButtonBehaviour {
 
   self: SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] =>
 
@@ -87,13 +86,23 @@ trait CollectionsUiActionsImpl
   def updateBarsInFabMenuHide: Ui[_] =
     getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
-  override def initialize(indexColor: Int, iconCollection: String): Ui[Any] =
-    (tabs <~ tabsStyle <~ vInvisible) ~
+  override def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): Ui[Any] =
+    (tabs <~ tabsStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection))) ~
-      Ui (initSystemStatusBarTint)
+      Ui(initSystemStatusBarTint) ~
+      (if (isStateChanged) {
+        Ui.nop
+      } else {
+        val display = activityContextWrapper.getOriginal.getWindowManager.getDefaultDisplay
+        val size = new Point()
+        display.getSize(size)
+        val height = size.y
+        val times = height / resGetDimension(R.dimen.height_toolbar_collection_details)
+        toolbar <~ vScaleY(times) <~ applyAnimation(scaleY = Some(1))
+      })
 
   override def back(): Ui[Any] = if (isMenuOpened) {
     swapFabMenu()
@@ -105,10 +114,6 @@ trait CollectionsUiActionsImpl
 
   override def destroy(): Ui[Any] = Ui {
     getAdapter foreach(_.clear())
-  }
-
-  override def startToolbarTransition(position: Int): Ui[Any] = Ui {
-    configureEnterTransition(position)
   }
 
   override def showCollections(collections: Seq[Collection], position: Int): Ui[Any] =

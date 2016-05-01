@@ -92,7 +92,6 @@ class CollectionsDetailsActivity
   override def onPause(): Unit = {
     super.onPause()
     presenter.pause()
-    overridePendingTransition(0, 0)
   }
 
   override def onDestroy(): Unit = {
