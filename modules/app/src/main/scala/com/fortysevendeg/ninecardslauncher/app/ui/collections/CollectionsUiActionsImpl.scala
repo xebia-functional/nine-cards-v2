@@ -93,16 +93,7 @@ trait CollectionsUiActionsImpl
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (icon <~ ivSrc(iconCollectionDetail(iconCollection))) ~
       Ui(initSystemStatusBarTint) ~
-      (if (isStateChanged) {
-        Ui.nop
-      } else {
-        val display = activityContextWrapper.getOriginal.getWindowManager.getDefaultDisplay
-        val size = new Point()
-        display.getSize(size)
-        val height = size.y
-        val times = height / resGetDimension(R.dimen.height_toolbar_collection_details)
-        toolbar <~ vScaleY(times) <~ applyAnimation(scaleY = Some(1))
-      })
+      (if (isStateChanged) Ui.nop else toolbar <~ enterToolbar)
 
   override def back(): Ui[Any] = if (isMenuOpened) {
     swapFabMenu()
@@ -229,11 +220,10 @@ trait CollectionsUiActionsImpl
 
   override def exitTransition: Ui[Any] = {
     val activity = activityContextWrapper.getOriginal
-    ((toolbar <~ exitViews()) ~
-      (tabs <~ exitViews()) ~
-      (iconContent <~ exitViews()) ~
-      (root <~ vBackgroundColorResource(android.R.color.transparent))) ~
-      (viewPager <~~ exitViews(up = false)) ~~
+    ((toolbar <~ exitToolbar) ~
+      (tabs <~ exitViews) ~
+      (iconContent <~ exitViews)) ~
+      (viewPager <~~ exitViews) ~~
       Ui(activity.finish())
   }
 

@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.{LayoutInflater, View, ViewGroup}
