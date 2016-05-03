@@ -53,7 +53,6 @@ trait LauncherPresenterSpecification
     mockActions.showContactUsError() returns Ui[Any]()
     mockActions.showMinimumOneCollectionMessage() returns Ui[Any]()
     mockActions.addCollection(collection) returns Ui[Any]()
-//    mockActions.loadUserProfile(user) returns Ui[Any]()
     mockActions.canRemoveCollections returns canRemoveCollections
 
     val mockStatuses = mock[LauncherPresenterStatuses]
@@ -141,7 +140,6 @@ class LauncherPresenterSpec
     "load the list of collections and dock apps returning a successful data" in
       new WizardPresenterScope {
         presenter.loadCollectionsAndDockApps()
-//        there was after(1 seconds).one(mockActions).loadUserProfile(user)
         there was after(1 seconds).one(mockActions).loadCollections(collectionSeq, dockAppSeq)
       }
 
