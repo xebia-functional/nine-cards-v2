@@ -151,7 +151,7 @@ trait WizardUiActionsImpl
     uiShortToast(errorMessage) ~ goToUser()
 
   private[this] def addUsersToRadioGroup(accounts: Seq[Account]): Ui[Any] = {
-    val accountsName = accounts map (_.name) toArray
+    val accountsName = (accounts map (_.name)).toArray
     val sa = new ArrayAdapter[String](activityContextWrapper.getOriginal, android.R.layout.simple_spinner_dropdown_item, accountsName)
     usersSpinner <~ sAdapter(sa)
   }

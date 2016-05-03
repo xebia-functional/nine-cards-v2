@@ -9,12 +9,8 @@ import android.view.{Menu, MenuItem}
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientActivityProvider
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
-
-case class GoogleApiClientStatuses(apiClient: Option[GoogleApiClient] = None)
 
 class ProfileActivity
   extends AppCompatActivity
@@ -23,7 +19,6 @@ class ProfileActivity
   with TypedFindView
   with SystemBarsTint
   with ProfileUiActionsImpl
-  with GoogleApiClientActivityProvider
   with AppBarLayout.OnOffsetChangedListener
   with BroadcastDispatcher { self =>
 
@@ -91,24 +86,14 @@ class ProfileActivity
       super.onOptionsItemSelected(item)
   }
 
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
+    if (!presenter.activityResult(requestCode, resultCode, data)) {
+      super.onActivityResult(requestCode, resultCode, data)
+    }
+
   override def onOffsetChanged(appBarLayout: AppBarLayout, offset: Int): Unit = {
     val maxScroll = appBarLayout.getTotalScrollRange.toFloat
     val percentage = Math.abs(offset) / maxScroll
     presenter.onOffsetChanged(percentage)
   }
-
-  override def onRequestConnectionError(errorCode: Int): Unit = presenter.showError()
-
-  override def onResolveConnectionError(): Unit = presenter.showError()
-
-  override def tryToConnect(): Unit = presenter.connectGoogleApiClient()
-
-  override def onConnected(bundle: Bundle): Unit = {
-    super.onConnected(bundle)
-    presenter.connected()
-  }
-
-  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
-    presenter.activityResult(requestCode, resultCode, data)
-
 }

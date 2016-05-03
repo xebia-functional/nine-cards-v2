@@ -67,6 +67,9 @@
     <string name="wizard_step_4">Ajusta los widgets que más utilices según el momento</string>
     <string name="wizard_step_5">Si quieres saber más sobre 9Cards, visita nuestro canal de YouTube</string>
 
+    <string name="errorAndroidMarketPermissionNotAccepted">Tienes que aceptar el permiso de Android Market para poder usar 9Cards</string>
+    <string name="errorGooglePermissionNotAccepted">Tienes que aceptar el permiso de Google para poder usar 9Cards</string>
+
     <!-- Collections -->
 
     <string name="createNewCollection">Crear nueva colección</string>

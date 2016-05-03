@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.app.receivers
 
 import android.content.Intent._
 import android.content._
-import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportPreferences, BroadcastDispatcher}
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportPreferences}
+import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.AppInstalledActionFilter
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
@@ -23,7 +23,7 @@ class AppBroadcastReceiver
       val replacing = intent.getBooleanExtra(EXTRA_REPLACING, false)
 
       implicit val contextSupport = new ContextSupportReceiverImpl(context)
-      implicit val di = new Injector
+      implicit val di = new InjectorImpl
 
       (action, replacing) match {
         case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).run).resolveAsync(

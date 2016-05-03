@@ -6,7 +6,7 @@ import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -33,7 +33,7 @@ class CreateCollectionService
 
   val maxProgress = 4
 
-  implicit lazy val di = new Injector
+  implicit lazy val di = new InjectorImpl
 
   lazy val builder = new NotificationCompat.Builder(this)
 

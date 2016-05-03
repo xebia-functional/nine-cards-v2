@@ -4,7 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
@@ -32,7 +32,7 @@ class SynchronizeDeviceService
 
   import SyncDeviceState._
 
-  implicit lazy val di = new Injector
+  implicit lazy val di = new InjectorImpl
 
   private var currentState: Option[String] = None
 
