@@ -167,13 +167,14 @@ trait CollectionsUiActions
 
   def reloadCollections(): Ui[Any] = workspaces <~ lwsReloadCollections()
 
-  def userProfileMenu(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
-    (menuName <~ tvText(name)) ~
-      (menuEmail <~ tvText(email)) ~
+  def userProfileMenu(email: Option[String], maybeName: Option[String], avatarUrl: Option[String]): Ui[_] =
+    (menuName <~ tvText(maybeName.getOrElse(""))) ~ // TODO
+      (menuEmail <~ tvText(email.getOrElse(""))) ~ // TODO
       (menuAvatar <~
-        (avatarUrl map ivUri getOrElse {
-          val drawable = new CharDrawable(name.substring(0, 1).toUpperCase)
-          ivSrc(drawable)
+        ((avatarUrl, maybeName) match {
+          case (Some(url), _) => ivUri(url)
+          case (_, Some(name)) => ivSrc(new CharDrawable(name.substring(0, 1).toUpperCase))
+          case _ => Tweak.blank // TODO
         }) <~
         menuAvatarStyle)
 

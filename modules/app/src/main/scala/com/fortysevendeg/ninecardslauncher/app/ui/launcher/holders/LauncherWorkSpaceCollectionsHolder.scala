@@ -116,7 +116,7 @@ class LauncherWorkSpaceCollectionsHolder(
   private[this] def vDragListener(): Tweak[View] = Tweak[View] { view =>
     view.setOnDragListener(new OnDragListener {
       override def onDrag(v: View, event: DragEvent): Boolean = {
-        (event.getAction, DragLauncherType(event.getLocalState), presenter.statuses.isReordering(), isRunningReorderAnimation) match {
+        (event.getAction, DragLauncherType(event.getLocalState), presenter.statuses.isReordering, isRunningReorderAnimation) match {
           case (ACTION_DRAG_LOCATION, ReorderCollection, true, false) =>
             val lastCurrentPosition = presenter.statuses.currentPositionReorderMode
             val x = event.getX

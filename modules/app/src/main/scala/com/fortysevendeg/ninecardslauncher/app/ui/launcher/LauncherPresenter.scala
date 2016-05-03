@@ -59,12 +59,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def resetAction(): Unit = actions.resetAction.run
 
-  def connectUserProfile(name: String, email: String, avatarUrl: Option[String]): Unit =
-    actions.showUserProfile(name, email, avatarUrl).run
-
-  def connectPlusProfile(coverPhotoUrl: String): Unit =
-    actions.showPlusProfile(coverPhotoUrl).run
-
   def logout(): Unit = actions.logout.run
 
   def startDrag(maybeCollection: Option[Collection], position: Int): Unit = {
@@ -156,7 +150,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         case (Nil, _) => Ui(goToWizard())
         case (collections, apps) =>
           Task.fork(getUser.run).resolveAsyncUi(
-            onResult = user => actions.loadUserProfile(user))
+            onResult = user => actions.showUserProfile(
+              email = user.email,
+              name = user.userProfile.name,
+              avatarUrl = user.userProfile.avatar,
+              coverPhotoUrl = user.userProfile.cover))
           actions.loadCollections(collections, apps)
       },
       onException = (ex: Throwable) => Ui(goToWizard()),
@@ -300,9 +298,7 @@ trait LauncherUiActions {
 
   def endReorder: Ui[Any]
 
-  def showUserProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
-
-  def showPlusProfile(coverPhotoUrl: String): Ui[Any]
+  def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any]
 
   def addCollection(collection: Collection): Ui[Any]
 
@@ -323,8 +319,6 @@ trait LauncherUiActions {
   def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
 
   def reloadCollectionsFailed(): Ui[Any]
-
-  def loadUserProfile(user: User): Ui[Any]
 
   def reloadAppsInDrawer(
     apps: IterableApps,
@@ -369,7 +363,7 @@ object Statuses {
         currentPositionReorderMode = 0,
         mode = NormalMode)
 
-    def isReordering(): Boolean = mode == ReorderMode
+    def isReordering: Boolean = mode == ReorderMode
 
   }
 

@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.user
 
-import com.fortysevendeg.ninecardslauncher.process.user.models.{Device, User}
+import com.fortysevendeg.ninecardslauncher.process.user.models.{Device, User, UserProfile}
 import com.fortysevendeg.ninecardslauncher.services.api.models.GoogleDevice
 import com.fortysevendeg.ninecardslauncher.services.api.{InstallationResponse, LoginResponse}
 import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateUserRequest
@@ -50,8 +50,9 @@ trait Conversions {
       installationId = user.installationId,
       deviceToken = user.deviceToken,
       androidToken = user.androidToken,
-      name = user.name,
-      avatar = user.avatar,
-      cover = user.cover)
+      userProfile = toUserProfile(user))
+
+  def toUserProfile(user: ServicesUser): UserProfile =
+    UserProfile(user.name, user.avatar, user.cover)
 
 }
