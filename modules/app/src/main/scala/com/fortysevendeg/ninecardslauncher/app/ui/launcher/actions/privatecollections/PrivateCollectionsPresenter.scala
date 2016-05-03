@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{PrivateCollection, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, PrivateCollection, Collection}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentConversions, MomentException}
 import macroid.{ActivityContextWrapper, Ui}
@@ -39,6 +39,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   ServiceDef2[Seq[PrivateCollection], AppException with CollectionException with MomentException] =
     for {
       collections <- di.collectionProcess.getCollections
+      moments <- di.momentProcess.getMoments
       apps <- di.deviceProcess.getSavedApps(GetByName)
       unformedApps = toSeqUnformedApp(apps)
       newCollections <- di.collectionProcess.generatePrivateCollections(unformedApps)
@@ -50,7 +51,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
           case _ => false
         }
       }
-      val privateMoments = newMomentCollections filterNot (newMomentCollection => (collections map (_.collectionType)) contains newMomentCollection.collectionType)
+      val privateMoments = newMomentCollections filterNot (newMomentCollection => moments map (_.momentType) contains newMomentCollection.moment)
       privateCollections ++ privateMoments
     }
 

@@ -14,16 +14,8 @@ case object ContactsCollectionType extends CollectionType {
   override val name: String = contacts
 }
 
-case object HomeMorningCollectionType extends CollectionType {
-  override val name: String = homeMorning
-}
-
-case object HomeNightCollectionType extends CollectionType {
-  override val name: String = homeNight
-}
-
-case object WorkCollectionType extends CollectionType {
-  override val name: String = work
+case object MomentCollectionType extends CollectionType {
+  override val name: String = moment
 }
 
 case object FreeCollectionType extends CollectionType {
@@ -32,11 +24,7 @@ case object FreeCollectionType extends CollectionType {
 
 object CollectionType {
 
-  val momentsCollectionTypes = Seq(HomeMorningCollectionType, WorkCollectionType, HomeNightCollectionType)
-
-  val generalCollectionTypes = Seq(AppsCollectionType, ContactsCollectionType, FreeCollectionType)
-
-  val collectionTypes = generalCollectionTypes ++ momentsCollectionTypes
+  val collectionTypes = Seq(AppsCollectionType, ContactsCollectionType, MomentCollectionType, FreeCollectionType)
 
   def apply(name: String): CollectionType = collectionTypes find (_.name == name) getOrElse FreeCollectionType
 

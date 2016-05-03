@@ -70,7 +70,7 @@ trait FormedCollectionConversions
       timeslot = moment.timeslot map toMomentTimeSlot,
       wifi = moment.wifi,
       headphone = moment.headphone,
-      momentType = moment.momentType)
+      momentType = moment.momentType map (_.name))
 
   def toMomentTimeSlot(timeSlot: MomentTimeSlot) =
     ServicesMomentTimeSlot(
@@ -102,6 +102,7 @@ trait FormedCollectionConversions
     PrivateCollection(
       name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
       collectionType = AppsCollectionType,
+      moment = None,
       icon = category.getStringResource,
       themedColorIndex = themeIndex,
       appsCategory = Some(category),

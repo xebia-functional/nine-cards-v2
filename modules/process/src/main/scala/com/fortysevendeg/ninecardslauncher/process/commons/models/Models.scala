@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.commons.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, CollectionType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardsMoment, CardType, CollectionType, NineCardCategory}
 
 case class Collection(
   id: Int,
@@ -13,7 +13,8 @@ case class Collection(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Boolean,
-  cards: Seq[Card] = Seq.empty) extends Serializable
+  cards: Seq[Card] = Seq.empty,
+  moment: Option[Moment]) extends Serializable
 
 case class Card(
   id: Int,
@@ -28,6 +29,7 @@ case class Card(
 case class PrivateCollection(
   name: String,
   collectionType: CollectionType,
+  moment: Option[NineCardsMoment],
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[NineCardCategory] = None,
@@ -45,7 +47,7 @@ case class Moment(
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
   headphone: Boolean,
-  momentType: Option[String])
+  momentType: Option[NineCardsMoment])
 
 case class MomentTimeSlot(
   from: String,

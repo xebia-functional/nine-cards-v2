@@ -12,18 +12,6 @@ trait MomentConversions extends CommonConversions {
 
   def toMomentSeq(servicesMomentSeq: Seq[ServicesMoment]) = servicesMomentSeq map toMoment
 
-  def toMoment(servicesMoment: ServicesMoment) = Moment(
-    collectionId = servicesMoment.collectionId,
-    timeslot = servicesMoment.timeslot map toTimeSlot,
-    wifi = servicesMoment.wifi,
-    headphone = servicesMoment.headphone,
-    momentType = servicesMoment.momentType)
-
-  def toTimeSlot(servicesMomentTimeSlot:  ServicesMomentTimeSlot) = MomentTimeSlot(
-    from = servicesMomentTimeSlot.from,
-    to = servicesMomentTimeSlot.to,
-    days = servicesMomentTimeSlot.days)
-
   def toApp(servicesApp: ServicesApp) = App(
       name = servicesApp.name,
       packageName = servicesApp.packageName,
@@ -53,7 +41,7 @@ trait MomentConversions extends CommonConversions {
       timeslot = moment.timeslot map toServicesMomentTimeSlot,
       wifi = moment.wifi,
       headphone = moment.headphone,
-      momentType = moment.momentType)
+      momentType = moment.momentType map (_.name))
 
   def toAddMomentRequest(moment: NineCardsMoment) =
     AddMomentRequest(

@@ -66,7 +66,8 @@ trait Conversions extends CommonConversions {
     originalSharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-    cards = collection.cards)
+    cards = collection.cards,
+    moment = collection.moment)
 
   def toFetchCollectionByPositionRequest(pos: Int) = FetchCollectionByPositionRequest(
     position = pos)

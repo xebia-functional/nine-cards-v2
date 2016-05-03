@@ -4,10 +4,11 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, MomentData, Moment}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection}
+import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection, Moment}
 import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
@@ -35,6 +36,7 @@ trait CollectionPersistenceServicesImpl {
     (for {
       deletedCards <- deleteCards(request.collection.cards)
       deletedCollection <- collectionRepository.deleteCollection(toRepositoryCollection(request.collection))
+      _ <- deleteMoment(request.collection.moment)
     } yield deletedCollection).resolve[PersistenceServiceException]
   }
 
@@ -48,19 +50,22 @@ trait CollectionPersistenceServicesImpl {
     (for {
       collection <- collectionRepository.fetchCollectionBySharedCollectionId(request.sharedCollectionId)
       cards <- fetchCards(collection)
-    } yield collection map (toCollection(_, cards))).resolve[PersistenceServiceException]
+      moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${(collection map (_.id)).orNull}")
+    } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
 
   def fetchCollectionByPosition(request: FetchCollectionByPositionRequest) =
     (for {
       collection <- collectionRepository.fetchCollectionByPosition(request.position)
       cards <- fetchCards(collection)
-    } yield collection map (toCollection(_, cards))).resolve[PersistenceServiceException]
+      moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${(collection map (_.id)).orNull}")
+    } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
 
   def findCollectionById(request: FindCollectionByIdRequest) =
     (for {
       collection <- collectionRepository.findCollectionById(request.id)
       cards <- fetchCards(collection)
-    } yield collection map (toCollection(_, cards))).resolve[PersistenceServiceException]
+      moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${request.id}")
+    } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
 
   def updateCollection(request: UpdateCollectionRequest) =
     (for {
@@ -107,7 +112,8 @@ trait CollectionPersistenceServicesImpl {
       collection =>
         (for {
           cards <- cardRepository.fetchCardsByCollection(collection.id)
-        } yield toCollection(collection, cards)).run
+          moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
+        } yield toCollection(collection, cards, moments.headOption)).run
     }
 
     Service(
@@ -119,6 +125,13 @@ trait CollectionPersistenceServicesImpl {
   private[this] def addMoment(maybeMoment: Option[AddMomentRequest]): ServiceDef2[Unit, RepositoryException] = {
     maybeMoment match {
       case Some(moment) => momentRepository.addMoment(toRepositoryMomentData(moment)) map (_ => ())
+      case None => Service(Task(Result.answer[Unit, RepositoryException]((): Unit)))
+    }
+  }
+
+  private[this] def deleteMoment(maybeMoment: Option[Moment]): ServiceDef2[Unit, RepositoryException] = {
+    maybeMoment match {
+      case Some(moment) => momentRepository.deleteMoment(toRepositoryMoment(moment)) map (_ => ())
       case None => Service(Task(Result.answer[Unit, RepositoryException]((): Unit)))
     }
   }

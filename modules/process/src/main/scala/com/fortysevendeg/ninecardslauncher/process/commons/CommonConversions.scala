@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.commons
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, _}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, _}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 
 trait CommonConversions extends NineCardIntentConversions {
 
@@ -17,7 +17,8 @@ trait CommonConversions extends NineCardIntentConversions {
     originalSharedCollectionId = servicesCollection.originalSharedCollectionId,
     sharedCollectionId = servicesCollection.sharedCollectionId,
     sharedCollectionSubscribed = servicesCollection.sharedCollectionSubscribed,
-    cards = servicesCollection.cards map toCard)
+    cards = servicesCollection.cards map toCard,
+    moment = servicesCollection.moment map toMoment)
 
   def toCard(servicesCard: ServicesCard) = Card(
     id = servicesCard.id,
@@ -28,5 +29,17 @@ trait CommonConversions extends NineCardIntentConversions {
     intent = jsonToNineCardIntent(servicesCard.intent),
     imagePath = servicesCard.imagePath,
     notification = servicesCard.notification)
+
+  def toMoment(servicesMoment: ServicesMoment) = Moment(
+    collectionId = servicesMoment.collectionId,
+    timeslot = servicesMoment.timeslot map toTimeSlot,
+    wifi = servicesMoment.wifi,
+    headphone = servicesMoment.headphone,
+    momentType = servicesMoment.momentType map (NineCardsMoment(_)))
+
+  def toTimeSlot(servicesMomentTimeSlot:  ServicesMomentTimeSlot) = MomentTimeSlot(
+    from = servicesMomentTimeSlot.from,
+    to = servicesMomentTimeSlot.to,
+    days = servicesMomentTimeSlot.days)
 
 }
