@@ -2,16 +2,21 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.Account
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollectionItem, CloudStorageCollection, CloudStorageDevice}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{Social, AppsCollectionType, CollectionType}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, CollectionType, Social}
 
 trait WizardPresenterData {
 
   val accountName = "device@47deg.com"
 
+  val nonExistingAccountName = "non-existing@47deg.com"
+
   val accountType = "com.google"
 
   val account = new Account(accountName, accountType)
+
+  val accounts = Seq(account)
 
   val token = "fake-token"
 
@@ -23,7 +28,15 @@ trait WizardPresenterData {
 
   val deviceId = "XXX-47"
 
+  val androidMarketScopes = "androidmarket"
+
+  val googleScopes = "fakeGoogleScope"
+
   val deviceName = nameDevice
+
+  val intentKey = "intent-key"
+
+  val momentType = Option("Home")
 
   val cloudStorageDevice = CloudStorageDevice(
     deviceId = deviceId,
@@ -38,22 +51,71 @@ trait WizardPresenterData {
     devices = Seq(cloudStorageDevice)
   )
 
-  val items = Seq(
-    CloudStorageCollectionItem("APP", "App 1", "{}"),
-    CloudStorageCollectionItem("APP", "App 2", "{}"),
-    CloudStorageCollectionItem("APP", "App 3", "{}")
-  )
+  val items = Seq(CloudStorageCollectionItem("APP", "App 1", "{\"intentExtras\":{},\"className\":\"\",\"packageName\":\"\",\"categories\":[],\"action\":\"\",\"extras\":{},\"flags\":1,\"type\":\"\",\"dataString\":null}"))
+
+  val cloudStorageMomentCollection = CloudStorageMoment(
+    timeslot = Seq(CloudStorageMomentTimeSlot(from = "from-1", to = "to-1", days = 0 to 4)),
+    wifi = Seq("wifi-1"),
+    headphones = true,
+    momentType = momentType)
+
+  val cloudStorageMoment = CloudStorageMoment(
+    timeslot = Seq(CloudStorageMomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
+    wifi = Seq("wifi-2"),
+    headphones = false,
+    momentType = momentType)
 
   val cloudStorageCollection = CloudStorageCollection(
     name = "Collection 1",
-    originalSharedCollectionId = None,
-    sharedCollectionId = None,
-    sharedCollectionSubscribed = None,
+    originalSharedCollectionId = Some("originalSharedCollectionId"),
+    sharedCollectionId = Some("sharedCollectionId"),
+    sharedCollectionSubscribed = Some(false),
     items = items,
     collectionType = AppsCollectionType,
     icon = "icon",
     category = Some(Social),
-    moment = None
+    moment = Some(cloudStorageMomentCollection))
+
+  val cards = Seq(
+    Card(
+      id = 1,
+      position = 0,
+      term = "App 1",
+      packageName = Some("package.name"),
+      cardType = AppCardType,
+      intent = NineCardIntent(NineCardIntentExtras()),
+      imagePath = "imagePath",
+      notification = Some("notification")
+    )
   )
+
+  val collection = Collection(
+    id = 1,
+    position = 0,
+    name = "Collection 1",
+    collectionType = AppsCollectionType,
+    icon = "icon",
+    themedColorIndex = 0,
+    appsCategory = Some(Social),
+    originalSharedCollectionId = Some("originalSharedCollectionId"),
+    sharedCollectionId = Some("sharedCollectionId"),
+    sharedCollectionSubscribed = false,
+    cards = cards)
+
+  val momentCollection = Moment(
+    collectionId = Some(1),
+    timeslot = Seq(MomentTimeSlot(from = "from-1", to = "to-1", days = 0 to 4)),
+    wifi = Seq("wifi-1"),
+    headphone = true,
+    momentType = momentType)
+
+  val moment = Moment(
+    collectionId = None,
+    timeslot = Seq(MomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
+    wifi = Seq("wifi-2"),
+    headphone = false,
+    momentType = momentType)
+
+  val moments = Seq(momentCollection, moment)
 
 }
