@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType.
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, CollectionType, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
-import com.fortysevendeg.ninecardslauncher.process.user.models.User
+import com.fortysevendeg.ninecardslauncher.process.user.models.{User, UserProfile}
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -67,6 +67,6 @@ trait LauncherPresenterData {
     installationId = None,
     deviceToken = None,
     androidToken = None,
-    userProfile = None)
+    userProfile = UserProfile(name = None, avatar = None, cover = None))
 
 }

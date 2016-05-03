@@ -10,7 +10,7 @@ trait GooglePlusServices {
     *
     * @return the information about the profile
     */
-  def loadUserProfile: ServiceDef2[GooglePlusProfile, GooglePlusProcessException]
+  def loadUserProfile: ServiceDef2[GooglePlusProfile, GooglePlusServicesException]
 
 
 }

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.plus
 
 import scalaz.Scalaz._
 
-case class GooglePlusProcessException(
+case class GooglePlusServicesException(
   message: String,
   cause: Option[Throwable] = None) extends RuntimeException(message) {
 
@@ -12,6 +12,6 @@ case class GooglePlusProcessException(
 
 trait ImplicitsGooglePlusProcessExceptions {
 
-  implicit def googlePlusExceptionConverter = (t: Throwable) => GooglePlusProcessException(t.getMessage, t.some)
+  implicit def googlePlusExceptionConverter = (t: Throwable) => GooglePlusServicesException(t.getMessage, t.some)
 
 }

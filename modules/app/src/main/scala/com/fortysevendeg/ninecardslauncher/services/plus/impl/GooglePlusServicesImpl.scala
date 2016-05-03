@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
-import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusProcessException, GooglePlusServices, ImplicitsGooglePlusProcessExceptions}
+import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServicesException, GooglePlusServices, ImplicitsGooglePlusProcessExceptions}
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.plus.People.LoadPeopleResult
 import com.google.android.gms.plus.Plus
@@ -26,20 +26,20 @@ class GooglePlusServicesImpl(googleApiClient: GoogleApiClient)
     name = fetchName(person)
     avatarUrl = fetchAvatarUrl(person)
     coverUrl = fetchCoverUrl(person)
-  } yield GooglePlusProfile(name, avatarUrl, coverUrl)).resolve[GooglePlusProcessException]
+  } yield GooglePlusProfile(name, avatarUrl, coverUrl)).resolve[GooglePlusServicesException]
 
-  private[this] def loadPeopleApi: ServiceDef2[LoadPeopleResult, GooglePlusProcessException] = Service {
+  private[this] def loadPeopleApi: ServiceDef2[LoadPeopleResult, GooglePlusServicesException] = Service {
     Task {
       Try(Plus.PeopleApi.load(googleApiClient, me).await()) match {
         case Success(r) => Answer(r)
-        case Failure(e) => Errata(GooglePlusProcessException(message = e.getMessage, cause = Some(e)))
+        case Failure(e) => Errata(GooglePlusServicesException(message = e.getMessage, cause = Some(e)))
       }
     }
   }
 
-  private[this] def fetchPerson(loadPeopleResult: LoadPeopleResult): ServiceDef2[Person, GooglePlusProcessException] = Service {
+  private[this] def fetchPerson(loadPeopleResult: LoadPeopleResult): ServiceDef2[Person, GooglePlusServicesException] = Service {
     Task {
-      CatchAll[GooglePlusProcessException] {
+      CatchAll[GooglePlusServicesException] {
         val people = notNullOrThrow(loadPeopleResult, "LoadPeopleResult is null")
         val personBuffer = notNullOrThrow(people.getPersonBuffer, "PersonBuffer on LoadPeopleResult is null")
         if (personBuffer.getCount > 0) {

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
 
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.{Bitmap, Color}
 import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
@@ -17,6 +17,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
@@ -168,18 +169,21 @@ trait CollectionsUiActions
   def reloadCollections(): Ui[Any] = workspaces <~ lwsReloadCollections()
 
   def userProfileMenu(email: Option[String], maybeName: Option[String], avatarUrl: Option[String]): Ui[_] =
-    (menuName <~ tvText(maybeName.getOrElse(""))) ~ // TODO
-      (menuEmail <~ tvText(email.getOrElse(""))) ~ // TODO
+    (menuName <~ tvText(maybeName.getOrElse(""))) ~
+      (menuEmail <~ tvText(email.getOrElse(""))) ~
       (menuAvatar <~
         ((avatarUrl, maybeName) match {
           case (Some(url), _) => ivUri(url)
           case (_, Some(name)) => ivSrc(new CharDrawable(name.substring(0, 1).toUpperCase))
-          case _ => Tweak.blank // TODO
+          case _ => ivBlank
         }) <~
         menuAvatarStyle)
 
-  def plusProfileMenu(coverPhotoUrl: String): Ui[_] =
-    menuCover <~ ivUri(coverPhotoUrl)
+  def plusProfileMenu(coverPhotoUrl: Option[String]): Ui[_] = menuCover <~
+    (coverPhotoUrl match {
+      case Some(url) => ivUri(url)
+      case None => ivBlank
+    })
 
   def uiActionCollection(action: UiAction, collection: Collection): Ui[_] =
     action match {

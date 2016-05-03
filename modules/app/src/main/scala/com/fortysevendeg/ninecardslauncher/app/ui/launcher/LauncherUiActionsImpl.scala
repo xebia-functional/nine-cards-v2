@@ -79,7 +79,7 @@ trait LauncherUiActionsImpl
   def reloadCollectionsFailed(): Ui[Any] = reloadCollections()
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
-    userProfileMenu(email, name, avatarUrl) ~ coverPhotoUrl.map(plusProfileMenu(_)).getOrElse(Ui.nop)
+    userProfileMenu(email, name, avatarUrl) ~ plusProfileMenu(coverPhotoUrl)
 
   override def reloadAppsInDrawer(
     apps: IterableApps,
