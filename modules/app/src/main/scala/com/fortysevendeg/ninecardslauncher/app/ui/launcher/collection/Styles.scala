@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
 
 import android.view.DragEvent._
-import android.view.{DragEvent, View}
 import android.view.View.OnDragListener
+import android.view.{DragEvent, View}
 import android.widget.{ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -10,12 +10,13 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.DragObject
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{DragLauncherType, ReorderCollection}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherPresenter, LauncherTags}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
@@ -41,10 +42,6 @@ trait Styles {
     Lollipop ifSupportedThen {
       vCircleOutlineProvider()
     } getOrElse Tweak.blank
-
-  def drawerItemStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    tivPressedColor(theme.get(AppDrawerPressedColor)) +
-      vSetType(LauncherTags.app)
 
   def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)
@@ -77,15 +74,22 @@ trait Styles {
   def removeActionStyle(implicit presenter: LauncherPresenter): Tweak[View] = Tweak[View] { view =>
     view.setOnDragListener(new OnDragListener {
       override def onDrag(v: View, event: DragEvent): Boolean = {
-        DragLauncherType(event.getLocalState) match {
-          case ReorderCollection =>
+        event.getLocalState match {
+          case DragObject(_, ReorderCollection) =>
             event.getAction match {
               case ACTION_DROP =>
                 presenter.removeCollectionInReorderMode()
               case _ =>
             }
             true
-          case _=> false
+          case DragObject(_, AddItemToCollection) =>
+            event.getAction match {
+              case ACTION_DRAG_ENDED =>
+                presenter.removeInAddItem()
+              case _ =>
+            }
+            true
+          case _ => false
         }
       }
     })

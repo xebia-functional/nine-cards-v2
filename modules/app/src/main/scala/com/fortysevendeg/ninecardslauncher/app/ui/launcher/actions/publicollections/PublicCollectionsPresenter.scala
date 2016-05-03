@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException}
@@ -10,13 +10,14 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication,
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TopSharedCollection, SharedCollectionsExceptions, TypeSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{SharedCollectionsExceptions, TopSharedCollection, TypeSharedCollection}
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
 class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
+  with LauncherExecutor
   with Conversions {
 
   protected var statuses = PublicCollectionStatuses(Communication, TopSharedCollection)
@@ -67,8 +68,8 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
   private[this] def getCards(appsInstalled: Seq[App], packages: Seq[SharedCollectionPackage]) =
     packages map { pck =>
       appsInstalled find (_.packageName == pck.packageName) map { app =>
-        toAddCollectionRequest(app)
-      } getOrElse toAddCollectionRequest(pck)
+        toAddCardRequest(app)
+      } getOrElse toAddCardRequest(pck)
     }
 
 }

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/LauncherDrawerPanel"
-    android:id="@+id/launcher_drawer_panel">
+    style="@style/LauncherDrawerRoot">
 
     <FrameLayout
         style="@style/LauncherDrawerContentItem">

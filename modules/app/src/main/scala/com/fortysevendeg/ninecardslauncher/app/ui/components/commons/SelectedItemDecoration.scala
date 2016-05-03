@@ -42,27 +42,23 @@ class SelectedItemDecoration(implicit contextWrapper: ContextWrapper, theme: Nin
     } yield {
       val showLine = recyclerView.getField[Boolean](SelectedItemDecoration.showLine) getOrElse false
       (0 to recyclerView.getChildCount flatMap (i => Option(recyclerView.getChildAt(i)))) foreach { view =>
-        draw(c, view, pos, count, showLine)
+        val viewPosition = parent.getChildAdapterPosition(view)
+        draw(c, view, viewPosition, pos, count, showLine)
       }
     }
   }
 
-  private[this] def draw(c: Canvas, child: View, pos: Int, count: Int, showLine: Boolean) = {
-    for {
-      position <- child.getPosition
-      params <- Option(child.getLayoutParams)
-    } yield {
-      if (position < pos || position >= (pos + count)) {
-        divider.setBounds(child.getLeft, child.getTop, child.getRight, child.getBottom)
-        divider.draw(c)
-      } else if (showLine) {
-        val left = child.getLeft + (child.getWidth / 2) - (size / 2)
-        val right = left + size
-        val top = child.getTop + child.getHeight - child.getPaddingBottom
-        val bottom = top + stroke
-        line.setBounds(left, top, right, bottom)
-        line.draw(c)
-      }
+  private[this] def draw(c: Canvas, child: View, viewPosition: Int, pos: Int, count: Int, showLine: Boolean) = {
+    if (viewPosition < pos || viewPosition >= (pos + count)) {
+      divider.setBounds(child.getLeft, child.getTop, child.getRight, child.getBottom)
+      divider.draw(c)
+    } else if (showLine) {
+      val left = child.getLeft + (child.getWidth / 2) - (size / 2)
+      val right = left + size
+      val top = child.getTop + child.getHeight - child.getPaddingBottom
+      val bottom = top + stroke
+      line.setBounds(left, top, right, bottom)
+      line.draw(c)
     }
   }
 

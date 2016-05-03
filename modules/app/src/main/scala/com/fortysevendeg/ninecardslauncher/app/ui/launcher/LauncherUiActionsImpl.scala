@@ -1,27 +1,35 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
+import android.content.ClipData
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
-import android.view.WindowManager
+import android.view.DragEvent._
+import android.view.View.OnDragListener
+import android.view.{DragEvent, View, WindowManager}
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.AddItemToCollection
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import ViewOps._
-import UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,17 +53,32 @@ trait LauncherUiActionsImpl
     Ui(initAllSystemBarsTint) ~
       prepareBars ~
       initCollectionsUi ~
-      initDrawerUi
+      initDrawerUi ~
+      (root <~ dragListener())
 
   override def addCollection(collection: Collection): Ui[Any] = uiActionCollection(Add, collection)
 
   override def removeCollection(collection: Collection): Ui[Any] = uiActionCollection(Remove, collection)
+
+  override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
+
+  override def showAddItemMessage(nameCollection: String): Ui[Any] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
 
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
 
   override def showMinimumOneCollectionMessage(): Ui[Any] = showMessage(R.string.minimumOneCollectionMessage)
 
   override def showLoading(): Ui[Any] = showCollectionsLoading
+
+  override def goToPreviousScreen(): Ui[Any]= {
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
+    goToPreviousWorkspace().ifUi(canMoveToPreviousScreen)
+  }
+
+  override def goToNextScreen(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
+    goToNextWorkspace().ifUi(canMoveToNextScreen)
+  }
 
   override def goToPreviousScreenReordering(): Ui[Any] = {
     val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
@@ -64,11 +87,7 @@ trait LauncherUiActionsImpl
 
   override def goToNextScreenReordering(): Ui[Any] = {
     val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
-    if (canMoveToNextScreen) {
-      goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0))
-    } else {
-      Ui.nop
-    }
+    (goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0))).ifUi(canMoveToNextScreen)
   }
 
   override def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any] =
@@ -88,7 +107,10 @@ trait LauncherUiActionsImpl
     addApps(
       apps = apps,
       clickListener = (app: App) => presenter.openApp(app),
-      longClickListener = (app: App) => presenter.openSettings(app),
+      longClickListener = (view: View, app: App) => {
+        presenter.startAddItemToCollection(app)
+        (view <~ startDrag()).run
+      },
       getAppOrder = getAppOrder,
       counters = counters)
 
@@ -98,6 +120,10 @@ trait LauncherUiActionsImpl
     addContacts(
       contacts = contacts,
       clickListener = (contact: Contact) => presenter.openContact(contact),
+      longClickListener = (view: View, contact: Contact) => {
+        presenter.startAddItemToCollection(contact)
+        (view <~ startDrag()).run
+      },
       counters = counters)
 
   override def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any] =
@@ -125,15 +151,22 @@ trait LauncherUiActionsImpl
   override def closeTabs: Ui[Any] = closeDrawerTabs
 
   override def startReorder: Ui[Any] =
-    (appDrawerPanel <~ fadeOut()) ~
-      (paginationPanel <~ fadeOut()) ~
+    (dockAppsPanel <~ fadeOut()) ~
       (searchPanel <~ fadeOut()) ~
       (collectionActionsPanel <~ fadeIn())
 
   override def endReorder: Ui[Any] =
-    (appDrawerPanel <~ fadeIn()) ~
-      (paginationPanel <~ fadeIn()) ~
+    (dockAppsPanel <~ fadeIn()) ~
       (searchPanel <~ fadeIn()) ~
+      (collectionActionsPanel <~~ fadeOut())
+
+  override def startAddItem: Ui[Any] =
+    revealOutDrawer ~
+    (searchPanel <~ fadeOut()) ~
+      (collectionActionsPanel <~ fadeIn())
+
+  override def endAddItem: Ui[Any] =
+    (searchPanel <~ fadeIn()) ~
       (collectionActionsPanel <~~ fadeOut())
 
   private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
@@ -144,10 +177,19 @@ trait LauncherUiActionsImpl
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
 
+  override def getCollection(position: Int): Option[Collection] = getCollections.lift(position)
+
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections
 
   def turnOffFragmentContent: Ui[_] =
     fragmentContent <~ vClickable(false)
+
+  def reloadPager(currentPage: Int) = Transformer {
+    case imageView: ImageView if imageView.isPosition(currentPage) =>
+      imageView <~ vActivated(true) <~~ pagerAppear
+    case imageView: ImageView =>
+      imageView <~ vActivated(false)
+  }
 
   private[this] def prepareBars =
     KitKat.ifSupportedThen {
@@ -168,11 +210,60 @@ trait LauncherUiActionsImpl
         } getOrElse Ui.nop)
     } getOrElse Ui.nop
 
-  def reloadPager(currentPage: Int) = Transformer {
-    case imageView: ImageView if imageView.isPosition(currentPage) =>
-      imageView <~ vActivated(true) <~~ pagerAppear
-    case imageView: ImageView =>
-      imageView <~ vActivated(false)
+  private[this] def dragListener(): Tweak[View] = Tweak[View] { view =>
+    view.setOnDragListener(new OnDragListener {
+      val dragAreaKey = "drag-area"
+      override def onDrag(v: View, event: DragEvent): Boolean = {
+        val dragArea = v.getField[DragArea](dragAreaKey) getOrElse NoDragArea
+        (event.getLocalState, event.getAction, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
+          case (DragObject(_, AddItemToCollection), ACTION_DRAG_ENDED, _ , _) =>
+            (v <~ vAddField(dragAreaKey, NoDragArea)).run
+            presenter.endAddItem()
+          case (DragObject(_, AddItemToCollection), _, Some(topBar), Some(bottomBar)) =>
+            val height = KitKat.ifSupportedThen (view.getHeight - getStatusBarHeight) getOrElse view.getHeight
+            val top = KitKat.ifSupportedThen (topBar + getStatusBarHeight) getOrElse topBar
+            // Project location to views
+            val x = event.getX
+            val y = event.getY
+            val currentDragArea = if (y < top) ActionsDragArea else if (y > height - bottomBar) DockAppsDragArea else WorkspacesDragArea
+
+            val (action, area) = if (dragArea != currentDragArea) {
+              (v <~ vAddField(dragAreaKey, currentDragArea)).run
+              (ACTION_DRAG_EXITED, dragArea)
+            } else {
+              (event.getAction, currentDragArea)
+            }
+
+            area match {
+              case WorkspacesDragArea =>
+                // Project to workspace
+                (workspaces <~ lwsDragDispatcher(action, x, y - top)).run
+              case DockAppsDragArea =>
+                // Project to dock apps
+                (dockAppsPanel <~ daplDragDispatcher(action, x, y - (height - bottomBar))).run
+              case _ =>
+            }
+          case _ =>
+        }
+        true
+      }
+    })
+  }
+
+  private[this] def startDrag(): Tweak[View] = Tweak[View] { view =>
+    val dragData = ClipData.newPlainText("", "")
+    val shadow = new AppDrawerIconShadowBuilder(view)
+    view.startDrag(dragData, shadow, DragObject(shadow, AddItemToCollection), 0)
   }
 
 }
+
+sealed trait DragArea
+
+case object ActionsDragArea extends DragArea
+
+case object WorkspacesDragArea extends DragArea
+
+case object DockAppsDragArea extends DragArea
+
+case object NoDragArea extends DragArea

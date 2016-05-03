@@ -30,7 +30,6 @@ import macroid._
 trait PublicCollectionsComposer
   extends Styles
   with PublicCollectionsStyle
-  with LauncherExecutor
   with NineCardIntentConversions {
 
   self: TypedFindView with BaseActionFragment =>
@@ -113,8 +112,7 @@ trait PublicCollectionsComposer
 case class ViewHolderPublicCollectionsLayoutAdapter(
   content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: PublicCollectionsPresenter)
   extends RecyclerView.ViewHolder(content)
-  with TypedFindView
-  with LauncherExecutor {
+  with TypedFindView {
 
   val appsByRow = 5
 
@@ -153,7 +151,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
       (addCollection <~ On.click(Ui(presenter.saveSharedCollection(collection)))) ~
-      (shareCollection <~ On.click(Ui(launchShare(collection.shareLink))))
+      (shareCollection <~ On.click(Ui(presenter.launchShare(collection.shareLink))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)
