@@ -452,7 +452,7 @@ object Statuses {
         currentDraggingPosition = 0,
         mode = NormalMode)
 
-    def isReordering: Boolean = mode == ReorderMode
+    def isReordering(): Boolean = mode == ReorderMode
 
   }
 
