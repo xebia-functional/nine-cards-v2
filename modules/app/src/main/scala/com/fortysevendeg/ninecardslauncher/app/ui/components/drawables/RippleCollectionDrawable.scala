@@ -27,11 +27,14 @@ class RippleCollectionDrawable(
     paint
   }
 
-  private[this] val animator: ValueAnimator = new ValueAnimator
-  animator.setInterpolator(new DecelerateInterpolator())
-  animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-    override def onAnimationUpdate(value: ValueAnimator) = update(value.getAnimatedValue.asInstanceOf[Float])
-  })
+  private[this] val animator: ValueAnimator = {
+    val valueAnimation = new ValueAnimator
+    valueAnimation.setInterpolator(new DecelerateInterpolator())
+    valueAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      override def onAnimationUpdate(value: ValueAnimator) = update(value.getAnimatedValue.asInstanceOf[Float])
+    })
+    valueAnimation
+  }
 
   override def setColorFilter(cf: ColorFilter): Unit = circlePaint.setColorFilter(cf)
 

@@ -21,6 +21,8 @@ class CollectionFragment
   with TypedFindView
   with CollectionUiActionsImpl { self =>
 
+  val badActivityMessage = "CollectionFragment only can be loaded in CollectionsDetailsActivity"
+
   override lazy val presenter = new CollectionPresenter(
     animateCards = getBoolean(Seq(getArguments), keyAnimateCards, default = false),
     maybeCollection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, javaNull)),
@@ -28,12 +30,12 @@ class CollectionFragment
 
   override lazy val collectionsPresenter: CollectionsPagerPresenter = getActivity match {
     case a: CollectionsDetailsActivity => a.presenter
-    case _ => throw new IllegalArgumentException("CollectionFragment only can be loaded in CollectionsDetailsActivity")
+    case _ => throw new IllegalArgumentException(badActivityMessage)
   }
 
   override lazy val theme: NineCardsTheme = getActivity match {
     case a: CollectionsDetailsActivity => a.theme
-    case _ => throw new IllegalArgumentException("CollectionFragment only can be loaded in CollectionsDetailsActivity")
+    case _ => throw new IllegalArgumentException(badActivityMessage)
   }
 
   override lazy val uiContext: UiContext[Fragment] = FragmentUiContext(self)
