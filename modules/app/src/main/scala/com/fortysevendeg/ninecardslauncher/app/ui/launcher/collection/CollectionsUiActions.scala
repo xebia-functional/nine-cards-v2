@@ -161,22 +161,25 @@ trait CollectionsUiActions
 
   def reloadCollections(): Ui[Any] = workspaces <~ lwsReloadCollections()
 
-  def userProfileMenu(email: Option[String], maybeName: Option[String], avatarUrl: Option[String]): Ui[_] =
+  def userProfileMenu(
+    maybeEmail: Option[String],
+    maybeName: Option[String],
+    maybeAvatarUrl: Option[String],
+    maybeCoverUrl: Option[String]): Ui[_] =
     (menuName <~ tvText(maybeName.getOrElse(""))) ~
-      (menuEmail <~ tvText(email.getOrElse(""))) ~
+      (menuEmail <~ tvText(maybeEmail.getOrElse(""))) ~
       (menuAvatar <~
-        ((avatarUrl, maybeName) match {
+        ((maybeAvatarUrl, maybeName) match {
           case (Some(url), _) => ivUri(url)
           case (_, Some(name)) => ivSrc(new CharDrawable(name.substring(0, 1).toUpperCase))
           case _ => ivBlank
         }) <~
-        menuAvatarStyle)
-
-  def plusProfileMenu(coverPhotoUrl: Option[String]): Ui[_] = menuCover <~
-    (coverPhotoUrl match {
-      case Some(url) => ivUri(url)
-      case None => ivBlank
-    })
+        menuAvatarStyle) ~
+      (menuCover <~
+        (maybeCoverUrl match {
+          case Some(url) => ivUri(url)
+          case None => ivBlank
+        }))
 
   def uiActionCollection(action: UiAction, collection: Collection): Ui[_] =
     action match {
