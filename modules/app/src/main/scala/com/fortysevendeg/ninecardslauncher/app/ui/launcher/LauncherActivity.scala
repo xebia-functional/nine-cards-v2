@@ -48,7 +48,7 @@ class LauncherActivity
 
   override def onStartFinishAction(): Unit = presenter.resetAction()
 
-  override def onEndFinishAction(): Unit = removeActionFragment
+  override def onEndFinishAction(): Unit = presenter.destroyAction()
 
   override def onBackPressed(): Unit = presenter.back()
 
@@ -72,6 +72,8 @@ class LauncherActivity
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     (requestCode, resultCode) match {
+      case (RequestCodes.goToCollectionDetails, _) =>
+        presenter.resetFromCollectionDetail()
       case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) =>
         presenter.logout()
       case _ =>

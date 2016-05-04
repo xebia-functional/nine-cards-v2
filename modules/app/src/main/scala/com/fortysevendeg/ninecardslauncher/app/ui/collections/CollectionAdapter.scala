@@ -52,7 +52,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     trackCard(card, RemovedInCollectionAction)
     val position = collection.cards.indexOf(card)
     collection = collection.copy(cards = collection.cards.filterNot(c => card == c))
-    notifyItemRangeRemoved(position, 1)
+    notifyItemRemoved(position)
   }
 
   def updateCards(cards: Seq[Card]) = {

@@ -6,10 +6,8 @@ import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SystemBarsTint, UiExtensions}
@@ -26,7 +24,6 @@ class CollectionsDetailsActivity
   with CollectionsUiActionsImpl
   with TypedFindView
   with UiExtensions
-  with ScrolledListener
   with ActionsScreenListener
   with SystemBarsTint
   with BroadcastDispatcher { self =>
@@ -92,17 +89,11 @@ class CollectionsDetailsActivity
   override def onPause(): Unit = {
     super.onPause()
     presenter.pause()
-    overridePendingTransition(0, 0)
   }
 
   override def onDestroy(): Unit = {
     super.onDestroy()
     unregisterDispatcher
-  }
-
-  override def finishAfterTransition(): Unit = {
-    super.finishAfterTransition()
-    (toolbar <~ vVisible).run
   }
 
   override def onSaveInstanceState(outState: Bundle): Unit = {
@@ -138,35 +129,16 @@ class CollectionsDetailsActivity
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case android.R.id.home =>
-      exitTransition.run
+      presenter.close()
       false
     case _ => super.onOptionsItemSelected(item)
   }
 
   override def onBackPressed(): Unit = presenter.back()
 
-  override def scrollY(scroll: Int, dy: Int): Unit = translationScrollY(scroll).run
+  override def onStartFinishAction(): Unit = presenter.resetAction()
 
-  override def openReorderMode(current: ScrollType): Unit = openReorderModeUi(current).run
-
-  override def closeReorderMode(): Unit = closeReorderModeUi.run
-
-  override def scrollType(sType: ScrollType): Unit = notifyScroll(sType).run
-
-  override def onEmptyCollection(): Unit = loadFabButton(autoHide = false)
-
-  override def onFirstItemInCollection(): Unit = hideFabButton.run
-
-  override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
-    pullCloseScrollY(scroll, scrollType, close).run
-
-  override def close(): Unit = exitTransition.run
-
-  override def startScroll(): Unit = loadFabButton(autoHide = true)
-
-  override def onStartFinishAction(): Unit = turnOffFragmentContent.run
-
-  override def onEndFinishAction(): Unit = removeActionFragment
+  override def onEndFinishAction(): Unit = presenter.destroyAction()
 
   private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
     case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
@@ -181,31 +153,6 @@ class CollectionsDetailsActivity
     case _ => None
   }
 
-  private[this] def loadFabButton(autoHide: Boolean = true): Unit = getCurrentCollection foreach { collection =>
-    val color = getIndexColor(collection.themedColorIndex)
-    showFabButton(color, autoHide).run
-  }
-
-}
-
-trait ScrolledListener {
-  def startScroll(): Unit
-
-  def scrollY(scroll: Int, dy: Int): Unit
-
-  def scrollType(sType: ScrollType): Unit
-
-  def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit
-
-  def openReorderMode(currentScrollType: ScrollType): Unit
-
-  def closeReorderMode(): Unit
-
-  def onEmptyCollection(): Unit
-
-  def onFirstItemInCollection(): Unit
-
-  def close(): Unit
 }
 
 trait ActionsScreenListener {

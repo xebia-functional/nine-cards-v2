@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 
 import android.content.res.ColorStateList
-import android.graphics.Paint
+import android.graphics.{Paint, Point}
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
 import android.os.Handler
@@ -21,7 +21,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.DragObject
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{DragObject, PositionsUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
@@ -354,8 +354,10 @@ case class CollectionItem(
     positionInGrid = collection.position
     val resIcon = iconCollectionWorkspace(collection.icon)
     ((layout <~
-      On.click {
-        Ui(presenter.goToCollection(icon, this.collection))
+      FuncOn.click { view: View =>
+        val pos = PositionsUtils.calculateAnchorViewPosition(view)
+        val point = new Point(pos._1 + (view.getWidth / 2), pos._2 + (view.getHeight / 2))
+        Ui(presenter.goToCollection(this.collection, point))
       } <~
       On.longClick {
         presenter.startReorder(this.collection, positionInGrid)

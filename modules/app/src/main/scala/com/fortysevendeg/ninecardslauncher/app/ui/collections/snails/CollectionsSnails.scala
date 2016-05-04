@@ -1,13 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.snails
 
 import android.animation.{Animator, AnimatorListenerAdapter}
+import android.graphics.Point
 import android.view.View
 import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInterpolator}
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{ContextWrapper, Snail}
+import macroid.{ActivityContextWrapper, ContextWrapper, Snail}
 
 import scala.concurrent.Promise
 
@@ -26,7 +29,7 @@ object CollectionsSnails {
           view.setTranslationX(distance)
           view.setImageResource(resDrawable)
           view.animate.translationX(0).alpha(1).scaleX(1).scaleY(1).setDuration(duration).setListener(new AnimatorListenerAdapter {
-            override def onAnimationEnd(animation: Animator) {
+            override def onAnimationEnd(animation: Animator): Unit = {
               super.onAnimationEnd(animation)
               view.setRotation(0)
               view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
@@ -36,6 +39,24 @@ object CollectionsSnails {
         }
       }).start()
       animPromise.future
+  }
+
+  def enterToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] = {
+    val display = activityContextWrapper.getOriginal.getWindowManager.getDefaultDisplay
+    val size = new Point()
+    display.getSize(size)
+    val height = size.y
+    val times = height / resGetDimension(R.dimen.height_toolbar_collection_details)
+    vScaleY(times) ++ applyAnimation(scaleY = Some(1))
+  }
+
+  def exitToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] = {
+    val display = activityContextWrapper.getOriginal.getWindowManager.getDefaultDisplay
+    val size = new Point()
+    display.getSize(size)
+    val height = size.y
+    val times = height / resGetDimension(R.dimen.height_toolbar_collection_details)
+    applyAnimation(scaleY = Some(times))
   }
 
   def enterViews(implicit context: ContextWrapper): Snail[View] = Snail[View] {
@@ -50,7 +71,7 @@ object CollectionsSnails {
         .setInterpolator(new DecelerateInterpolator())
         .alpha(1f)
         .setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) {
+          override def onAnimationEnd(animation: Animator): Unit = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             animPromise.trySuccess()
@@ -59,7 +80,7 @@ object CollectionsSnails {
       animPromise.future
   }
 
-  def exitViews(up: Boolean = true)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def exitViews(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
@@ -69,10 +90,10 @@ object CollectionsSnails {
         .animate
         .setDuration(resGetInteger(R.integer.anim_duration_normal))
         .setInterpolator(new AccelerateDecelerateInterpolator())
-        .translationY(if (up) -move else move)
+        .translationY(move)
         .alpha(0)
         .setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) {
+          override def onAnimationEnd(animation: Animator): Unit = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             animPromise.trySuccess()

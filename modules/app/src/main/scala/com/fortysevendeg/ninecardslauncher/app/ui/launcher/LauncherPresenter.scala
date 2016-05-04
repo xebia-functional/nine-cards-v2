@@ -1,33 +1,34 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
+import android.app.Activity
 import android.content.{Context, Intent}
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.util.Pair
+import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
-import android.view.View
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
-import Statuses._
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
 
+import scala.concurrent.Future
 import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -60,6 +61,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def back(): Unit = actions.back.run
 
   def resetAction(): Unit = actions.resetAction.run
+
+  def destroyAction(): Unit = actions.destroyAction.run
 
   def logout(): Unit = actions.logout.run
 
@@ -271,25 +274,28 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       })
   }
 
-  def goToCollection(maybeView: Option[View], maybeCollection: Option[Collection]): Unit = {
-    def createIntent(context: Context, collection: Collection) = {
-      val intent = new Intent(context, classOf[CollectionsDetailsActivity])
+  def goToCollection(maybeCollection: Option[Collection], point: Point): Unit = {
+    def launchIntent(activity: Activity, collection: Collection) = {
+      val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
+      intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
       intent.putExtra(startPosition, collection.position)
       intent.putExtra(indexColorToolbar, collection.themedColorIndex)
       intent.putExtra(iconToolbar, collection.icon)
+      val color = resGetColor(getIndexColor(collection.themedColorIndex))
+      actions.rippleToCollection(color, point) ~~
+        Ui {
+          activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
+          activity.overridePendingTransition(0, 0)
+        }
     }
 
-    (for {
-      view <- maybeView
+    ((for {
       collection <- maybeCollection
       activity <- contextWrapper.original.get
-    } yield {
-      val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-        activity,
-        new Pair[View, String](view, getContentTransitionName(collection.position)))
-      activity.startActivity(createIntent(activity, collection), options.toBundle)
-    }) getOrElse actions.showContactUsError().run
+    } yield launchIntent(activity, collection)) getOrElse actions.showContactUsError()).run
   }
+
+  def resetFromCollectionDetail(): Unit = actions.resetFromCollection().run
 
   def goToWizard(): Unit = {
     contextWrapper.original.get foreach { activity =>
@@ -360,6 +366,8 @@ trait LauncherUiActions {
 
   def resetAction: Ui[Any]
 
+  def destroyAction: Ui[Any]
+
   def logout: Ui[Any]
 
   def closeTabs: Ui[Any]
@@ -412,6 +420,10 @@ trait LauncherUiActions {
     counters: Seq[TermCounter] = Seq.empty): Ui[_]
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
+
+  def rippleToCollection(color: Int, point: Point): Ui[Future[Any]]
+
+  def resetFromCollection(): Ui[Any]
 
   def isEmptyCollectionsInWorkspace: Boolean
 
