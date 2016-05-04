@@ -38,7 +38,8 @@ trait Styles {
 
   def tabsStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[SlidingTabLayout] =
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
-      stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor))
+      stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
+      vInvisible
 
   def fabButtonApplicationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     fabButton(R.string.applications, R.drawable.fab_menu_icon_applications, 1)
