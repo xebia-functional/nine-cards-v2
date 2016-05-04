@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.commons.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardsMoment, CardType, CollectionType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, CollectionType, NineCardCategory, NineCardsMoment}
 
 case class Collection(
   id: Int,
@@ -29,11 +29,11 @@ case class Card(
 case class PrivateCollection(
   name: String,
   collectionType: CollectionType,
-  moment: Option[NineCardsMoment],
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[NineCardCategory] = None,
-  cards: Seq[PrivateCard])
+  cards: Seq[PrivateCard],
+  moment: Option[NineCardsMoment])
 
 case class PrivateCard(
   term: String,

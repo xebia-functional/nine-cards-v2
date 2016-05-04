@@ -142,7 +142,7 @@ class MomentProcessImpl(
       appsCategory = None,
       sharedCollectionSubscribed = Option(false),
       cards = toAddCardRequestSeq(items),
-      moment = Option(toAddMomentRequest(moment)))
+      moment = Option(toAddMomentRequest(None, moment)))
   }
 
   @tailrec
@@ -165,11 +165,11 @@ class MomentProcessImpl(
     PrivateCollection(
       name = momentProcessConfig.namesMoments.getOrElse(moment, moment.getStringResource),
       collectionType = MomentCollectionType,
-      moment = Some(moment),
       icon = moment.getIconResource,
       themedColorIndex = themeIndex,
       appsCategory = None,
-      cards = appsByMoment map toPrivateCard
+      cards = appsByMoment map toPrivateCard,
+      moment = Some(moment)
     )
   }
 

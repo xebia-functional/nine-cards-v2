@@ -4,8 +4,8 @@ import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, PrivateCollection, Collection}
+import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentConversions, MomentException}
 import macroid.{ActivityContextWrapper, Ui}
@@ -30,7 +30,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   }
 
   def saveCollection(privateCollection: PrivateCollection): Unit = {
-    Task.fork(addCollection(privateCollection).run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection)).run).resolveAsyncUi(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showContactUsError())
   }
@@ -54,14 +54,6 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       val privateMoments = newMomentCollections filterNot (newMomentCollection => moments map (_.momentType) contains newMomentCollection.moment)
       privateCollections ++ privateMoments
     }
-
-  private[this] def addCollection(privateCollection: PrivateCollection):
-  ServiceDef2[Collection, CollectionException with CardException] =
-    for {
-      collection <- di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection))
-      cards <- di.collectionProcess.addCards(collection.id, privateCollection.cards map toAddCardRequest)
-    } yield collection.copy(cards = cards)
-
 
 }
 
