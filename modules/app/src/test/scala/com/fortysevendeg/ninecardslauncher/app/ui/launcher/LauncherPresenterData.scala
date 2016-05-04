@@ -1,10 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, NineCardIntent}
+import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, CollectionType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import play.api.libs.json.Json
@@ -28,6 +28,37 @@ trait LauncherPresenterData {
   val nonExistentSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
 
+  val cards = Seq(
+    Card(
+      id = 1,
+      position = 0,
+      term = "App 1",
+      packageName = Some("package.name"),
+      cardType = AppCardType,
+      intent = NineCardIntent(NineCardIntentExtras()),
+      imagePath = "imagePath",
+      notification = Some("notification")
+    )
+  )
+
+  val momentType = Option("HOME")
+
+  val momentCollection = Moment(
+    collectionId = Some(1),
+    timeslot = Seq(MomentTimeSlot(from = "from-1", to = "to-1", days = 0 to 4)),
+    wifi = Seq("wifi-1"),
+    headphone = true,
+    momentType = momentType map (NineCardsMoment(_)))
+
+  val moment = Moment(
+    collectionId = None,
+    timeslot = Seq(MomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
+    wifi = Seq("wifi-2"),
+    headphone = false,
+    momentType = momentType map (NineCardsMoment(_)))
+
+  val moments = Seq(momentCollection, moment)
+
   val collection = Collection(
     id = collectionId,
     position = position,
@@ -36,6 +67,8 @@ trait LauncherPresenterData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory),
+    cards = cards,
+    moment = Option(moment),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)

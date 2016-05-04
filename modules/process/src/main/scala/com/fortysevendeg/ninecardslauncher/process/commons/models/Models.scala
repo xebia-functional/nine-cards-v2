@@ -10,11 +10,11 @@ case class Collection(
   icon: String,
   themedColorIndex: Int,
   appsCategory: Option[NineCardCategory] = None,
+  cards: Seq[Card] = Seq.empty,
+  moment: Option[Moment] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
-  sharedCollectionSubscribed: Boolean,
-  cards: Seq[Card] = Seq.empty,
-  moment: Option[Moment]) extends Serializable
+  sharedCollectionSubscribed: Boolean) extends Serializable
 
 case class Card(
   id: Int,
