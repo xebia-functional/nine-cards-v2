@@ -6,6 +6,7 @@ import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View}
 import android.widget.LinearLayout
 import CommonsTweak._
+import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
@@ -24,7 +25,7 @@ import macroid._
 trait FabButtonBehaviour
   extends FabButtonStyle {
 
-  self: TypedFindView =>
+  self: TypedFindView with Contexts[AppCompatActivity] =>
 
   lazy val fabButton = Option(findView(TR.fab_button))
 
@@ -40,11 +41,11 @@ trait FabButtonBehaviour
 
   val timeDelayFabButton = 3000
 
-  def updateBarsInFabMenuShow: Ui[_]
+  def updateBarsInFabMenuShow(): Ui[_]
 
-  def updateBarsInFabMenuHide: Ui[_]
+  def updateBarsInFabMenuHide(): Ui[_]
 
-  def initFabButton(implicit context: ContextWrapper): Ui[_] =
+  def initFabButton: Ui[_] =
     (fabMenuContent <~ On.click(
       swapFabMenu()
     ) <~ vClickable(false)) ~
@@ -56,7 +57,7 @@ trait FabButtonBehaviour
         items foreach (view.addView(_, 0, param))
     }
 
-  def swapFabMenu(doUpdateBars: Boolean = true)(implicit context: ContextWrapper): Ui[Any] = {
+  def swapFabMenu(doUpdateBars: Boolean = true): Ui[Any] = {
     val open = isMenuOpened
     val autoHide = isAutoHide
     val ui = (fabButton <~
@@ -66,20 +67,41 @@ trait FabButtonBehaviour
         animFabButton(open) <~
         colorContentDialog(!open) <~
         vClickable(!open)) ~
-      (if (open && autoHide) postDelayedHideFabButton else removeDelayedHideFabButton)
+      (if (open && autoHide) postDelayedHideFabButton else removeDelayedHideFabButton())
     ui ~ (if (doUpdateBars) updateBars(open) else Ui.nop)
   }
 
-  def colorContentDialog(paint: Boolean)(implicit context: ContextWrapper) =
+  def colorContentDialog(paint: Boolean) =
     vBackgroundColorResource(if (paint) R.color.background_dialog else android.R.color.transparent)
 
-  private[this] def updateBars(opened: Boolean): Ui[_] = if (opened) {
-    updateBarsInFabMenuHide
-  } else {
-    updateBarsInFabMenuShow
+  def isMenuOpened: Boolean = fabButton flatMap (_.getField[Boolean](opened)) getOrElse false
+
+  def showFabButton(color: Int = 0, autoHide: Boolean = true): Ui[_] =
+    if (isFabButtonVisible && autoHide) {
+      resetDelayedHide
+    } else {
+      val colorDefault = resGetColor(color)
+      val colorDark = ColorsUtils.getColorDark(colorDefault)
+      (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton()) ~
+        (fabButton <~ (if (color != 0) fbaColor(colorDefault, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
+        (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)
+    }
+
+  def hideFabButton: Ui[_] =
+    removeDelayedHideFabButton() ~
+      (fabButton <~ hideFabMenu)
+
+  def changeItemsColor(color: Int) = Transformer {
+    case item: FabItemMenu => item <~ fimBackgroundColor(resGetColor(color))
   }
 
-  private[this] def animFabButton(open: Boolean)(implicit context: ContextWrapper) = Transformer {
+  private[this] def updateBars(opened: Boolean): Ui[_] = if (opened) {
+    updateBarsInFabMenuHide()
+  } else {
+    updateBarsInFabMenuShow()
+  }
+
+  private[this] def animFabButton(open: Boolean) = Transformer {
     case i: FabItemMenu if i.isType(fabButtonItem) =>
       if (open) {
         i <~ vGone
@@ -90,51 +112,24 @@ trait FabButtonBehaviour
       }
   }
 
-  def isFabButtonVisible: Boolean = fabButton exists (_.getVisibility == View.VISIBLE)
-
-  def isMenuOpened: Boolean = fabButton flatMap (_.getField[Boolean](opened)) getOrElse false
+  private[this] def isFabButtonVisible: Boolean = fabButton exists (_.getVisibility == View.VISIBLE)
 
   private[this] def isAutoHide: Boolean = fabButton flatMap (_.getField[Boolean](autoHideKey)) getOrElse false
 
-  def showFabButton(color: Int = 0, autoHide: Boolean = true)(implicit context: ContextWrapper): Ui[_] =
-    if (isFabButtonVisible && autoHide) {
-      resetDelayedHide
-    } else {
-      val colorDefault = resGetColor(color)
-      val colorDark = ColorsUtils.getColorDark(colorDefault)
-      (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton) ~
-        (fabButton <~ (if (color != 0) fbaColor(colorDefault, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
-        (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)
-    }
+  private[this] def resetDelayedHide =
+    removeDelayedHideFabButton() ~ postDelayedHideFabButton
 
-  def hideFabButton(implicit context: ContextWrapper): Ui[_] =
-    removeDelayedHideFabButton ~
-      (fabButton <~ hideFabMenu)
-
-  def changeItemsColor(color: Int)(implicit context: ContextWrapper) = Transformer {
-    case item: FabItemMenu => item <~ fimBackgroundColor(resGetColor(color))
-  }
-
-  private[this] def resetDelayedHide(implicit context: ContextWrapper) =
-    removeDelayedHideFabButton ~ postDelayedHideFabButton
-
-  private[this] def postDelayedHideFabButton(implicit context: ContextWrapper) = Ui {
+  private[this] def postDelayedHideFabButton = Ui {
     val runnable = new RunnableWrapper()
     handler.postDelayed(runnable, timeDelayFabButton)
     runnableHideFabButton = Option(runnable)
   }
 
-  private[this] def removeDelayedHideFabButton(implicit context: ContextWrapper) = Ui {
+  private[this] def removeDelayedHideFabButton() = Ui {
     runnableHideFabButton foreach handler.removeCallbacks
   }
 
-  protected def tagEquals(view: View, id: Int, value: String) =
-    Option(view.getTag(id)).isDefined && view.getTag(id).equals(value)
-
-  protected def tagValue(view: View, id: Int) =
-    Option(view.getTag(id)) map (_.toString) getOrElse ""
-
-  class RunnableWrapper(implicit context: ContextWrapper) extends Runnable {
+  class RunnableWrapper extends Runnable {
     override def run(): Unit = (fabButton <~ hideFabMenu).run
   }
 

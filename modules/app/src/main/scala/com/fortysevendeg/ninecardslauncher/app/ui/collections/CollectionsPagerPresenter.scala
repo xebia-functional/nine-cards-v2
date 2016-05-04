@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Handler
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -28,25 +27,24 @@ class CollectionsPagerPresenter(
   var collections: Seq[Collection] = Seq.empty
 
   def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): Unit = {
-    (actions.initialize(indexColor, icon) ~ (
-      if (isStateChanged) Ui.nop else actions.startToolbarTransition(position))).run
+    actions.initialize(indexColor, icon, isStateChanged).run
     Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
-      onResult = (collections: Seq[Collection]) =>
-      if (isStateChanged) actions.showCollections(collections, position) else {
-        self.collections = collections
-        Ui.nop
-      },
+      onResult = (collections: Seq[Collection]) => actions.showCollections(collections, position),
       onException = (ex: Throwable) => actions.showContactUsError
     )
   }
 
-  def resume(): Unit = di.observerRegister.registerObserver
+  def resume(): Unit = di.observerRegister.registerObserver()
 
-  def pause(): Unit = di.observerRegister.unregisterObserver
+  def pause(): Unit = di.observerRegister.unregisterObserver()
 
   def back(): Unit = actions.back().run
 
   def destroy(): Unit = actions.destroy().run
+
+  def resetAction(): Unit = actions.resetAction.run
+
+  def destroyAction(): Unit = actions.destroyAction.run
 
   def reloadCards(reloadFragment: Boolean): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.getCollectionById(collection.id).run).resolveAsync(
@@ -74,12 +72,27 @@ class CollectionsPagerPresenter(
     )
   }
 
-  def ensureDrawCollection(position: Int): Unit = if (collections.isEmpty) {
-    new Handler().postDelayed(new Runnable {
-      override def run(): Unit = ensureDrawCollection(position)
-    }, delay)
-  } else {
-    actions.showCollections(collections, position).run
+  def scrollY(scroll: Int, dy: Int): Unit = actions.translationScrollY(scroll).run
+
+  def openReorderMode(current: ScrollType): Unit = actions.openReorderModeUi(current).run
+
+  def closeReorderMode(): Unit = actions.closeReorderModeUi.run
+
+  def scrollType(sType: ScrollType): Unit = actions.notifyScroll(sType).run
+
+  def emptyCollection(): Unit = actions.getCurrentCollection foreach { collection =>
+    actions.showMenuButton(autoHide = false, collection).run
+  }
+
+  def firstItemInCollection(): Unit = actions.hideMenuButton.run
+
+  def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
+    actions.pullCloseScrollY(scroll, scrollType, close).run
+
+  def close(): Unit = actions.exitTransition.run
+
+  def startScroll(): Unit = actions.getCurrentCollection foreach { collection =>
+    actions.showMenuButton(autoHide = true, collection).run
   }
 
   private[this] def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]):
@@ -103,15 +116,17 @@ class CollectionsPagerPresenter(
 
 trait CollectionsUiActions {
 
-  def initialize(indexColor: Int, icon: String): Ui[Any]
+  def initialize(indexColor: Int, icon: String, isStateChanged: Boolean): Ui[Any]
 
   def back(): Ui[Any]
 
   def destroy(): Ui[Any]
 
-  def showContactUsError: Ui[Any]
+  def resetAction: Ui[Any]
 
-  def startToolbarTransition(position: Int): Ui[Any]
+  def destroyAction: Ui[Any]
+
+  def showContactUsError: Ui[Any]
 
   def showCollections(collections: Seq[Collection], position: Int): Ui[Any]
 
@@ -122,4 +137,20 @@ trait CollectionsUiActions {
   def removeCards(card: Card): Ui[Any]
 
   def getCurrentCollection: Option[Collection]
+
+  def translationScrollY(scroll: Int): Ui[_]
+
+  def openReorderModeUi(current: ScrollType): Ui[_]
+
+  def closeReorderModeUi: Ui[_]
+
+  def notifyScroll(sType: ScrollType): Ui[_]
+
+  def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_]
+
+  def exitTransition: Ui[Any]
+
+  def showMenuButton(autoHide: Boolean = true, collection: Collection): Ui[Any]
+
+  def hideMenuButton: Ui[Any]
 }

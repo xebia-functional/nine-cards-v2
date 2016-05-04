@@ -47,6 +47,10 @@
 
         <include layout="@layout/action_content_layout"/>
 
+        <FrameLayout
+            style="@style/LauncherForeground"
+            android:id="@+id/launcher_foreground" />
+
     </FrameLayout>
 
     <android.support.design.widget.NavigationView
