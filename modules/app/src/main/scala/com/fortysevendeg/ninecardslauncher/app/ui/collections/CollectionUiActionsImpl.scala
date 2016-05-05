@@ -181,14 +181,11 @@ trait CollectionUiActionsImpl
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     (pullToCloseView <~ pdvEnable(true)) ~
-      (recyclerView <~ nrvRegisterScroll(true)) ~
       (recyclerView <~
-        nrvResetScroll(spaceMove) <~
-        (if (statuses.canScroll) {
-          vPadding(padding, spaceMove, padding, padding) +
-            vScrollBy(0, -Int.MaxValue) +
-            vScrollBy(0, spaceMove)
-        } else Tweak.blank)).ifUi(statuses.canScroll)
+        vPadding(padding, spaceMove, padding, padding) <~
+        vScrollBy(0, -Int.MaxValue) <~
+        vScrollBy(0, spaceMove)).ifUi(statuses.canScroll) ~
+      (recyclerView <~ nrvRegisterScroll(true) <~ nrvResetScroll(spaceMove))
   }
 
   def resetScroll: Ui[_] =
