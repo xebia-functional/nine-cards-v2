@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.commons
 
-import android.graphics.{BitmapFactory, Rect, RectF, Paint, Canvas}
+import android.graphics.{BitmapFactory, Canvas, Paint, Rect, RectF}
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -10,6 +10,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
+
+import scala.util.Try
 
 class ReorderItemTouchHelperCallback(
   color: Int,
@@ -35,7 +37,7 @@ class ReorderItemTouchHelperCallback(
   override def isLongPressDragEnabled: Boolean = true
 
   override def clearView(recyclerView: RecyclerView, viewHolder: ViewHolder): Unit = {
-    recyclerView.invalidateItemDecorations()
+    Try(recyclerView.invalidateItemDecorations())
     statuses = statuses.copy(action = NoAction)
     super.clearView(recyclerView, viewHolder)
   }

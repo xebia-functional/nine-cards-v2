@@ -16,7 +16,7 @@ import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails
 import CollectionsSnails._
-import android.graphics.Point
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
@@ -193,22 +193,21 @@ trait CollectionsUiActionsImpl
       (if (isTop) elevationsUp else elevationsDefault)
   }
 
-  override def openReorderModeUi(current: ScrollType): Ui[_] =
-    (tabs <~~
-      applyAnimation(y = Some(-spaceMove), alpha = Some(0f)) <~
-      vInvisible) ~
-      (toolbar <~~
-        applyAnimation(onUpdate = (ratio) => current match {
-          case ScrollDown => toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = false))
-          case _ => Ui.nop
-        })) ~
-      elevationsUp ~
-      (iconContent <~ vAlpha(0))
-
-  override def closeReorderModeUi: Ui[_] =
-    tabs <~
-      vVisible <~~
-      applyAnimation(alpha = Some(1f))
+  override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[_] =
+    hideFabButton ~
+      (if (canScroll) {
+        (toolbar <~~
+          applyAnimation(onUpdate = (ratio) => current match {
+            case ScrollDown =>
+              (tabs <~ vTranslationY(-ratio * spaceMove)) ~
+                (toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = false)))
+            case _ => Ui.nop
+          })) ~
+          elevationsUp ~
+          (iconContent <~ vAlpha(0))
+      } else {
+        Ui.nop
+      })
 
   override def notifyScroll(sType: ScrollType): Ui[_] = (for {
     vp <- viewPager
@@ -237,6 +236,8 @@ trait CollectionsUiActionsImpl
   override def resetAction: Ui[Any] = turnOffFragmentContent
 
   override def destroyAction: Ui[Any] = Ui(removeActionFragment)
+
+  private[this] def canScrollCurrentCollection: Boolean = getCurrentCollection exists (_.cards.length > numSpaces)
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ vSnackbarShort(error)
 
