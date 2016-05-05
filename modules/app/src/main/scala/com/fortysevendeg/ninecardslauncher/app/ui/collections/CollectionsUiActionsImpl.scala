@@ -16,6 +16,7 @@ import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails
 import CollectionsSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
@@ -195,19 +196,15 @@ trait CollectionsUiActionsImpl
 
   override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[_] =
     hideFabButton ~
-      (if (canScroll) {
-        (toolbar <~~
-          applyAnimation(onUpdate = (ratio) => current match {
-            case ScrollDown =>
-              (tabs <~ vTranslationY(-ratio * spaceMove)) ~
-                (toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = false)))
-            case _ => Ui.nop
-          })) ~
-          elevationsUp ~
-          (iconContent <~ vAlpha(0))
-      } else {
-        Ui.nop
-      })
+      ((toolbar <~~
+        applyAnimation(onUpdate = (ratio) => current match {
+          case ScrollDown =>
+            (tabs <~ vTranslationY(-ratio * spaceMove)) ~
+              (toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = false)))
+          case _ => Ui.nop
+        })) ~
+        elevationsUp ~
+        (iconContent <~ vAlpha(0))).ifUi(canScroll)
 
   override def notifyScroll(sType: ScrollType): Ui[_] = (for {
     vp <- viewPager
@@ -236,8 +233,6 @@ trait CollectionsUiActionsImpl
   override def resetAction: Ui[Any] = turnOffFragmentContent
 
   override def destroyAction: Ui[Any] = Ui(removeActionFragment)
-
-  private[this] def canScrollCurrentCollection: Boolean = getCurrentCollection exists (_.cards.length > numSpaces)
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ vSnackbarShort(error)
 

@@ -7,6 +7,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -166,32 +167,24 @@ trait CollectionUiActionsImpl
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     collectionsPresenter.openReorderMode(statuses.scrollType, statuses.canScroll)
     (pullToCloseView <~ pdvEnable(false)) ~
-      (if (statuses.canScroll) {
-        Ui(collectionsPresenter.scrollType(ScrollUp)) ~
-          (recyclerView <~
-            vPadding(padding, padding, padding, padding) <~
-            nrvRegisterScroll(false))
-      } else {
-        Ui.nop
-      })
+      (Ui(collectionsPresenter.scrollType(ScrollUp)) ~
+      (recyclerView <~
+        vPadding(padding, padding, padding, padding) <~
+        nrvRegisterScroll(false))).ifUi(statuses.canScroll)
   }
 
   private[this] def closeReorderMode: Ui[_] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     (pullToCloseView <~ pdvEnable(true)) ~
-      (if (statuses.canScroll) {
-        recyclerView <~
-          nrvResetScroll(spaceMove) <~
-          (if (statuses.canScroll) {
-            vPadding(padding, spaceMove, padding, padding) +
-              vScrollBy(0, -Int.MaxValue) +
-              vScrollBy(0, spaceMove)
-          } else Tweak.blank) <~
-          nrvRegisterScroll(true)
-      } else {
-        Ui.nop
-      })
+      (recyclerView <~
+        nrvResetScroll(spaceMove) <~
+        (if (statuses.canScroll) {
+          vPadding(padding, spaceMove, padding, padding) +
+            vScrollBy(0, -Int.MaxValue) +
+            vScrollBy(0, spaceMove)
+        } else Tweak.blank) <~
+        nrvRegisterScroll(true)).ifUi(statuses.canScroll)
   }
 
   def resetScroll: Ui[_] =

@@ -8,6 +8,7 @@ import android.support.v7.widget.helper.ItemTouchHelper._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.TryOps._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
@@ -37,7 +38,7 @@ class ReorderItemTouchHelperCallback(
   override def isLongPressDragEnabled: Boolean = true
 
   override def clearView(recyclerView: RecyclerView, viewHolder: ViewHolder): Unit = {
-    Try(recyclerView.invalidateItemDecorations())
+    Try(recyclerView.invalidateItemDecorations()).logInfo()
     statuses = statuses.copy(action = NoAction)
     super.clearView(recyclerView, viewHolder)
   }
