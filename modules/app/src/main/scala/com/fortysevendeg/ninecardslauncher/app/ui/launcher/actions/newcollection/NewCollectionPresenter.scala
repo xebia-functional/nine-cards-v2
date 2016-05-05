@@ -25,7 +25,9 @@ class NewCollectionPresenter (actions: NewCollectionActions)(implicit contextWra
         collectionType = FreeCollectionType,
         icon = category.getIconResource,
         themedColorIndex = index,
-        appsCategory = None
+        appsCategory = None,
+        cards = Seq.empty,
+        moment = None
       )
       Task.fork(di.collectionProcess.addCollection(request).run).resolveAsyncUi(
         onResult = (c) => actions.addCollection(c) ~ actions.close(),

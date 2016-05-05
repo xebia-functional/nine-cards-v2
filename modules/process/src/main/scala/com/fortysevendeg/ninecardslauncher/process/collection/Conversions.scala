@@ -7,14 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{
-  AddCardRequest => ServicesAddCardRequest,
-  AddCollectionRequest => ServicesAddCollectionRequest,
-  UpdateCardRequest => ServicesUpdateCardRequest,
-  UpdateCardsRequest => ServicesUpdateCardsRequest,
-  UpdateCollectionRequest => ServicesUpdateCollectionRequest,
-  UpdateCollectionsRequest => ServicesUpdateCollectionsRequest,
-_ }
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, UpdateCollectionsRequest => ServicesUpdateCollectionsRequest, _}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
 trait Conversions extends CommonConversions {
@@ -23,7 +16,7 @@ trait Conversions extends CommonConversions {
 
   def toCollectionSeq(servicesCollectionSeq: Seq[ServicesCollection]) = servicesCollectionSeq map toCollection
 
-  def toAddCollectionRequest(addCollectionRequest: AddCollectionRequest, position: Int) = ServicesAddCollectionRequest(
+  def toAddCollectionRequest(addCollectionRequest: AddCollectionRequest, position: Int): ServicesAddCollectionRequest = ServicesAddCollectionRequest(
     position = position,
     name = addCollectionRequest.name,
     collectionType = addCollectionRequest.collectionType.name,
@@ -33,13 +26,15 @@ trait Conversions extends CommonConversions {
     originalSharedCollectionId = addCollectionRequest.originalSharedCollectionId,
     sharedCollectionId = addCollectionRequest.sharedCollectionId,
     sharedCollectionSubscribed = addCollectionRequest.sharedCollectionSubscribed,
-    cards = Seq(),
-    moment = None)
+    cards = addCollectionRequest.cards.zipWithIndex.map {
+      case (card, index) => toAddCardRequest(card, index)
+    },
+    moment = addCollectionRequest.moment map (moment => toAddMomentRequest(None, moment)))
 
-  def toFindCollectionByIdRequest(collectionId: Int) = FindCollectionByIdRequest(
+  def toFindCollectionByIdRequest(collectionId: Int): FindCollectionByIdRequest = FindCollectionByIdRequest(
     id = collectionId)
 
-  def toServicesUpdateCollectionRequest(collection: Collection) = ServicesUpdateCollectionRequest(
+  def toServicesUpdateCollectionRequest(collection: Collection): ServicesUpdateCollectionRequest = ServicesUpdateCollectionRequest(
     id = collection.id,
     position = collection.position,
     name = collection.name,
@@ -52,10 +47,10 @@ trait Conversions extends CommonConversions {
     sharedCollectionSubscribed = Option(collection.sharedCollectionSubscribed),
     cards = collection.cards map toServicesCard)
 
-  def toServicesUpdateCollectionsRequest(collections: Seq[Collection]) =
+  def toServicesUpdateCollectionsRequest(collections: Seq[Collection]): ServicesUpdateCollectionsRequest =
     ServicesUpdateCollectionsRequest(collections map toServicesUpdateCollectionRequest)
 
-  def toUpdatedCollection(collection: Collection, editCollectionRequest: EditCollectionRequest) =  Collection(
+  def toUpdatedCollection(collection: Collection, editCollectionRequest: EditCollectionRequest): Collection =  Collection(
     id = collection.id,
     position = collection.position,
     name = editCollectionRequest.name,
@@ -66,14 +61,15 @@ trait Conversions extends CommonConversions {
     originalSharedCollectionId = collection.originalSharedCollectionId,
     sharedCollectionId = collection.sharedCollectionId,
     sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-    cards = collection.cards)
+    cards = collection.cards,
+    moment = collection.moment)
 
-  def toFetchCollectionByPositionRequest(pos: Int) = FetchCollectionByPositionRequest(
+  def toFetchCollectionByPositionRequest(pos: Int): FetchCollectionByPositionRequest = FetchCollectionByPositionRequest(
     position = pos)
 
-  def toCardSeq(servicesCardSeq: Seq[ServicesCard]) = servicesCardSeq map toCard
+  def toCardSeq(servicesCardSeq: Seq[ServicesCard]): Seq[Card] = servicesCardSeq map toCard
 
-  def toServicesCard(card: Card) = ServicesCard(
+  def toServicesCard(card: Card): ServicesCard = ServicesCard(
     id = card.id,
     position = card.position,
     term = card.term,
@@ -86,7 +82,7 @@ trait Conversions extends CommonConversions {
   def toAddCardRequestSeq(items: Seq[UnformedApp]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestFromUnformedItems(zipped._1, zipped._2))
 
-  def toAddCardRequestFromUnformedItems(item: UnformedApp, position: Int) = ServicesAddCardRequest(
+  def toAddCardRequestFromUnformedItems(item: UnformedApp, position: Int): ServicesAddCardRequest = ServicesAddCardRequest(
     position = position,
     term = item.name,
     packageName = Option(item.packageName),
@@ -94,10 +90,19 @@ trait Conversions extends CommonConversions {
     intent = nineCardIntentToJson(toNineCardIntent(item)),
     imagePath = item.imagePath)
 
-  def toFetchCardsByCollectionRequest(collectionRequestId: Int) = FetchCardsByCollectionRequest(
+  def toFetchCardsByCollectionRequest(collectionRequestId: Int): FetchCardsByCollectionRequest = FetchCardsByCollectionRequest(
     collectionId = collectionRequestId)
 
-  def toAddCardRequest(collectionId: Int, addCardRequest: AddCardRequest, position: Int) = ServicesAddCardRequest (
+  def toAddCardRequest(addCardRequest: AddCardRequest, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
+    collectionId = None,
+    position = position,
+    term = addCardRequest.term,
+    packageName = addCardRequest.packageName,
+    cardType = addCardRequest.cardType.name,
+    intent = nineCardIntentToJson(addCardRequest.intent),
+    imagePath = addCardRequest.imagePath)
+
+  def toAddCardRequest(collectionId: Int, addCardRequest: AddCardRequest, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
     collectionId = Option(collectionId),
     position = position,
     term = addCardRequest.term,
@@ -106,13 +111,13 @@ trait Conversions extends CommonConversions {
     intent = nineCardIntentToJson(addCardRequest.intent),
     imagePath = addCardRequest.imagePath)
 
-  def toFindCardByIdRequest(cardId: Int) = FindCardByIdRequest(
+  def toFindCardByIdRequest(cardId: Int): FindCardByIdRequest = FindCardByIdRequest(
     id = cardId)
 
-  def toServicesUpdateCardsRequest(cards: Seq[Card]) =
+  def toServicesUpdateCardsRequest(cards: Seq[Card]): ServicesUpdateCardsRequest =
     ServicesUpdateCardsRequest(cards map toServicesUpdateCardRequest)
 
-  def toServicesUpdateCardRequest(card: Card) = ServicesUpdateCardRequest(
+  def toServicesUpdateCardRequest(card: Card): ServicesUpdateCardRequest = ServicesUpdateCardRequest(
     id = card.id,
     position = card.position,
     term = card.term,
@@ -132,7 +137,7 @@ trait Conversions extends CommonConversions {
     ))
   }
 
-  def toNewPositionCard(card: Card, newPosition: Int) = Card(
+  def toNewPositionCard(card: Card, newPosition: Int): Card = Card(
     id = card.id,
     position = card.position,
     term = card.term,
@@ -142,7 +147,7 @@ trait Conversions extends CommonConversions {
     imagePath = card.imagePath,
     notification = card.notification)
 
-  def toUpdatedCard(card: Card, name: String) = Card(
+  def toUpdatedCard(card: Card, name: String): Card = Card(
     id = card.id,
     position = card.position,
     term = name,
@@ -155,7 +160,7 @@ trait Conversions extends CommonConversions {
   def toAddCardRequestByContacts(items: Seq[UnformedContact]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestByContact(zipped._1, zipped._2))
 
-  def toAddCardRequestByContact(item: UnformedContact, position: Int) = {
+  def toAddCardRequestByContact(item: UnformedContact, position: Int): ServicesAddCardRequest = {
     val (intent: NineCardIntent, cardType: String) = toNineCardIntent(item)
     ServicesAddCardRequest(
       position = position,
@@ -166,7 +171,7 @@ trait Conversions extends CommonConversions {
       imagePath = item.photoUri)
   }
 
-  def toPrivateCard(unformedApp: UnformedApp) =
+  def toPrivateCard(unformedApp: UnformedApp): PrivateCard =
     PrivateCard(
       term = unformedApp.name,
       packageName = Some(unformedApp.packageName),

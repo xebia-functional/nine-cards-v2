@@ -94,8 +94,13 @@ trait PersistenceServicesData {
 
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
-  val momentType1: String = "Home"
+  val momentType1: String = "HOME"
 
+  val seqMoment: Seq[Moment] = createSeqMoment()
+  val servicesMoment: Moment = seqMoment(0)
+  val repoMomentData: RepositoryMomentData = createRepoMomentData()
+  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
+  val repoMoment: RepositoryMoment = seqRepoMoment(0)
 
   def createSeqApp(
     num: Int = 5,
@@ -156,10 +161,11 @@ trait PersistenceServicesData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
+    cards: Seq[Card] = seqCard,
+    moment: Option[Moment] = Some(servicesMoment),
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    cards: Seq[Card] = seqCard): Seq[Collection] = List.tabulate(num)(
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): Seq[Collection] = List.tabulate(num)(
     item =>
       Collection(
         id = id + item,
@@ -169,10 +175,11 @@ trait PersistenceServicesData {
         icon = icon,
         themedColorIndex = themedColorIndex,
         appsCategory = Option(appsCategory),
+        cards = cards,
+        moment = moment,
         originalSharedCollectionId = Option(originalSharedCollectionId),
         sharedCollectionId = Option(sharedCollectionId),
-        sharedCollectionSubscribed = sharedCollectionSubscribed,
-        cards = cards))
+        sharedCollectionSubscribed = sharedCollectionSubscribed))
 
   def createSeqRepoCollection(
     num: Int = 5,
@@ -418,11 +425,6 @@ trait PersistenceServicesData {
   val seqRepoDockApp: Seq[RepositoryDockApp] = createSeqRepoDockApp(data = repoDockAppData)
   val repoDockApp: RepositoryDockApp = seqRepoDockApp(0)
 
-  val seqMoment: Seq[Moment] = createSeqMoment()
-  val moment: Moment = seqMoment(0)
-  val repoMomentData: RepositoryMomentData = createRepoMomentData()
-  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
-  val repoMoment: RepositoryMoment = seqRepoMoment(0)
 
   val where: String = ""
 

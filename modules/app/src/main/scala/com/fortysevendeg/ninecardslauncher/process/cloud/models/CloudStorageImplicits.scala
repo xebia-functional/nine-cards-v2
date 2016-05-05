@@ -1,11 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.json.{CollectionTypeImplicits, NineCardCategoryImplicits}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.json.{NineCardsMomentImplicits, CollectionTypeImplicits, NineCardCategoryImplicits}
 
 object CloudStorageImplicits {
 
   import play.api.libs.json._
   import NineCardCategoryImplicits._
+  import NineCardsMomentImplicits._
   import CollectionTypeImplicits._
 
   implicit val cloudStorageMomentTimeSlotReads = Json.reads[CloudStorageMomentTimeSlot]
