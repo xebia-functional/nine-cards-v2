@@ -74,9 +74,7 @@ class CollectionsPagerPresenter(
 
   def scrollY(scroll: Int, dy: Int): Unit = actions.translationScrollY(scroll).run
 
-  def openReorderMode(current: ScrollType): Unit = actions.openReorderModeUi(current).run
-
-  def closeReorderMode(): Unit = actions.closeReorderModeUi.run
+  def openReorderMode(current: ScrollType, canScroll: Boolean): Unit = actions.openReorderModeUi(current, canScroll).run
 
   def scrollType(sType: ScrollType): Unit = actions.notifyScroll(sType).run
 
@@ -140,9 +138,7 @@ trait CollectionsUiActions {
 
   def translationScrollY(scroll: Int): Ui[_]
 
-  def openReorderModeUi(current: ScrollType): Ui[_]
-
-  def closeReorderModeUi: Ui[_]
+  def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[_]
 
   def notifyScroll(sType: ScrollType): Ui[_]
 

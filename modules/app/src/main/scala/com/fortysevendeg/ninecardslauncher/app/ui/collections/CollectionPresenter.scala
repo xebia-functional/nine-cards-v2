@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
+import android.support.v7.widget.RecyclerView.ViewHolder
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
@@ -21,6 +22,8 @@ case class CollectionPresenter(
         actions.initialize(animateCards, collection)
       } getOrElse actions.showEmptyCollection())).run
   }
+
+  def startReorderCards(holder: ViewHolder): Unit = if (!actions.isPulling()) actions.startReorder(holder).run
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int) = {
     Task.fork(di.collectionProcess.reorderCard(collectionId, cardId, position).run).resolveAsyncUi(
@@ -44,9 +47,11 @@ case class CollectionPresenter(
 
 trait CollectionUiActions {
 
+  def initialize(animateCards: Boolean, collection: Collection): Ui[Any]
+
   def updateStatus(canScroll: Boolean, sType: ScrollType): Ui[Any]
 
-  def initialize(animateCards: Boolean, collection: Collection): Ui[Any]
+  def startReorder(holder: ViewHolder): Ui[Any]
 
   def reloadCards(): Ui[Any]
 
@@ -61,5 +66,7 @@ trait CollectionUiActions {
   def reloadCards(cards: Seq[Card]): Ui[Any]
 
   def showData(emptyCollection: Boolean): Ui[Any]
+
+  def isPulling(): Boolean
 
 }
