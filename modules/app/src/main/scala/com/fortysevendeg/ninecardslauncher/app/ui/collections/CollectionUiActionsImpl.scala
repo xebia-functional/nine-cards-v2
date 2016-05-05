@@ -171,24 +171,24 @@ trait CollectionUiActionsImpl
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     collectionsPresenter.openReorderMode(statuses.scrollType, statuses.canScroll)
     (pullToCloseView <~ pdvEnable(false)) ~
+      (recyclerView <~ nrvRegisterScroll(false)) ~
       (Ui(collectionsPresenter.scrollType(ScrollUp)) ~
       (recyclerView <~
-        vPadding(padding, padding, padding, padding) <~
-        nrvRegisterScroll(false))).ifUi(statuses.canScroll)
+        vPadding(padding, padding, padding, padding))).ifUi(statuses.canScroll)
   }
 
   private[this] def closeReorderMode: Ui[_] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
     (pullToCloseView <~ pdvEnable(true)) ~
+      (recyclerView <~ nrvRegisterScroll(true)) ~
       (recyclerView <~
         nrvResetScroll(spaceMove) <~
         (if (statuses.canScroll) {
           vPadding(padding, spaceMove, padding, padding) +
             vScrollBy(0, -Int.MaxValue) +
             vScrollBy(0, spaceMove)
-        } else Tweak.blank) <~
-        nrvRegisterScroll(true)).ifUi(statuses.canScroll)
+        } else Tweak.blank)).ifUi(statuses.canScroll)
   }
 
   def resetScroll: Ui[_] =
