@@ -4,6 +4,7 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.view.{DragEvent, View}
 import android.view.View.OnDragListener
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -46,5 +47,13 @@ object CommonsTweak {
   def vLayerHardware(activate: Boolean) = Transformer {
     case v: View if v.hasLayerHardware => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
   }
+
+}
+
+object ExtraTweaks {
+
+  // TODO - Move to macroid extras
+
+  def ivBlank: Tweak[ImageView] = Tweak[ImageView](_.setImageBitmap(javaNull))
 
 }

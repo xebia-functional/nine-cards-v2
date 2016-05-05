@@ -1091,7 +1091,7 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns a AppException  if persistence service fails" in
+    "returns a AppException if persistence service fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
         val result = deviceProcess.saveInstalledApps(contextSupport).run.run
         result must beLike {
@@ -1101,13 +1101,12 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns a AppException if api service fails" in
+    "returns an empty Answer if api service fails" in
       new DeviceProcessScope with ErrorApiServicesProcessScope {
         val result = deviceProcess.saveInstalledApps(contextSupport).run.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
-          }
+          case Answer(resultApps) =>
+            resultApps shouldEqual ((): Unit)
         }
       }
 

@@ -38,6 +38,16 @@ object NineCardExtensions {
       ResultT(innerResult)
     }
 
+    def resolveTo(result: A) = {
+      val task: Task[Result[A, B]] = r.run
+      val innerResult: Task[Result[A, B]] = task.map {
+        case Errata(_) => Answer(result)
+        case Unforeseen(e) => Answer(result)
+        case answer@Answer(_) => answer
+      }
+      ResultT(innerResult)
+    }
+
   }
 
 

@@ -30,8 +30,6 @@ class LauncherActivity
 
   private[this] var hasFocus = false
 
-  var userProfileStatuses = UserProfileStatuses()
-
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     setContentView(R.layout.launcher_activity)
@@ -73,7 +71,6 @@ class LauncherActivity
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
-    userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
     (requestCode, resultCode) match {
       case (RequestCodes.goToCollectionDetails, _) =>
         presenter.resetFromCollectionDetail()
@@ -81,17 +78,6 @@ class LauncherActivity
         presenter.logout()
       case _ =>
     }
-  }
-
-  override def loadUserProfile(user: User): Ui[Any] = Ui {
-    val userProfile = user.email map { email =>
-      new UserProfileProvider(
-        account = email,
-        onConnectedUserProfile = presenter.connectUserProfile,
-        onConnectedPlusProfile = presenter.connectPlusProfile)
-    }
-    userProfileStatuses = userProfileStatuses.copy(userProfile = userProfile)
-    userProfileStatuses.userProfile foreach (_.connect())
   }
 
 }
