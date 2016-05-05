@@ -4,7 +4,7 @@ import android.accounts.Account
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, CollectionType, Social}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 
 trait WizardPresenterData {
 
@@ -36,7 +36,7 @@ trait WizardPresenterData {
 
   val intentKey = "intent-key"
 
-  val momentType = Option("Home")
+  val momentType = Option("HOME")
 
   val cloudStorageDevice = CloudStorageDevice(
     deviceId = deviceId,
@@ -57,13 +57,13 @@ trait WizardPresenterData {
     timeslot = Seq(CloudStorageMomentTimeSlot(from = "from-1", to = "to-1", days = 0 to 4)),
     wifi = Seq("wifi-1"),
     headphones = true,
-    momentType = momentType)
+    momentType = momentType map (NineCardsMoment(_)))
 
   val cloudStorageMoment = CloudStorageMoment(
     timeslot = Seq(CloudStorageMomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
     wifi = Seq("wifi-2"),
     headphones = false,
-    momentType = momentType)
+    momentType = momentType map (NineCardsMoment(_)))
 
   val cloudStorageCollection = CloudStorageCollection(
     name = "Collection 1",
@@ -89,6 +89,22 @@ trait WizardPresenterData {
     )
   )
 
+  val momentCollection = Moment(
+    collectionId = Some(1),
+    timeslot = Seq(MomentTimeSlot(from = "from-1", to = "to-1", days = 0 to 4)),
+    wifi = Seq("wifi-1"),
+    headphone = true,
+    momentType = momentType map (NineCardsMoment(_)))
+
+  val moment = Moment(
+    collectionId = None,
+    timeslot = Seq(MomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
+    wifi = Seq("wifi-2"),
+    headphone = false,
+    momentType = momentType map (NineCardsMoment(_)))
+
+  val moments = Seq(momentCollection, moment)
+
   val collection = Collection(
     id = 1,
     position = 0,
@@ -97,25 +113,10 @@ trait WizardPresenterData {
     icon = "icon",
     themedColorIndex = 0,
     appsCategory = Some(Social),
+    cards = cards,
+    moment = Option(moment),
     originalSharedCollectionId = Some("originalSharedCollectionId"),
     sharedCollectionId = Some("sharedCollectionId"),
-    sharedCollectionSubscribed = false,
-    cards = cards)
-
-  val momentCollection = Moment(
-    collectionId = Some(1),
-    timeslot = Seq(MomentTimeSlot(from = "from-1", to = "to-1", days = 0 to 4)),
-    wifi = Seq("wifi-1"),
-    headphone = true,
-    momentType = momentType)
-
-  val moment = Moment(
-    collectionId = None,
-    timeslot = Seq(MomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
-    wifi = Seq("wifi-2"),
-    headphone = false,
-    momentType = momentType)
-
-  val moments = Seq(momentCollection, moment)
+    sharedCollectionSubscribed = false)
 
 }

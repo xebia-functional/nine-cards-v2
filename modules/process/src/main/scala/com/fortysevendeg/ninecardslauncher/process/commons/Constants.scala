@@ -60,11 +60,7 @@ object NineCardCategories {
 object CollectionTypes {
   val apps = "APPS"
   val contacts = "CONTACTS"
-  val moment = "MOMENTS"
-  val homeMorning = "HOME_MORNING"
-  val homeNight = "HOME_NIGHT"
-  val work = "WORK"
-  val transit = "TRANSIT"
+  val moment = "MOMENT"
   val free = "FREE"
 }
 

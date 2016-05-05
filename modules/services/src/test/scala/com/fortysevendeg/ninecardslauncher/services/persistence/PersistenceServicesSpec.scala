@@ -2,8 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.model.MomentData
-import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, AppEntity}
+import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, CardEntity, MomentEntity}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -162,6 +161,20 @@ trait PersistenceServicesSpecification
 
     mockMomentRepository.fetchMoments() returns Service(Task(Result.answer(seqRepoMoment)))
 
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(seqRepoMoment)))
+
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 1}") returns Service(Task(Result.answer(seqRepoMoment)))
+
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 2}") returns Service(Task(Result.answer(seqRepoMoment)))
+
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 3}") returns Service(Task(Result.answer(seqRepoMoment)))
+
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 4}") returns Service(Task(Result.answer(seqRepoMoment)))
+
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $nonExistentCollectionId") returns Service(Task(Result.answer(Seq.empty)))
+
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${None.orNull}") returns Service(Task(Result.answer(Seq.empty)))
+
     mockMomentRepository.findMomentById(momentId) returns Service(Task(Result.answer(Option(repoMoment))))
 
     mockMomentRepository.findMomentById(nonExistentMomentId) returns Service(Task(Result.answer(None)))
@@ -274,6 +287,12 @@ trait PersistenceServicesSpecification
     mockMomentRepository.deleteMoment(repoMoment) returns Service(Task(Result.errata(exception)))
 
     mockMomentRepository.fetchMoments() returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $collectionId") returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $nonExistentCollectionId") returns Service(Task(Result.errata(exception)))
+
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${None.orNull}") returns Service(Task(Result.errata(exception)))
 
     mockMomentRepository.findMomentById(momentId) returns Service(Task(Result.errata(exception)))
 
@@ -1545,7 +1564,7 @@ class PersistenceServicesSpec
   "deleteMoment" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteMoment(createDeleteMomentRequest(moment = moment)).run.run
+      val result = persistenceServices.deleteMoment(createDeleteMomentRequest(moment = servicesMoment)).run.run
 
       result must beLike {
         case Answer(deleted) =>
@@ -1554,7 +1573,7 @@ class PersistenceServicesSpec
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteMoment(createDeleteMomentRequest(moment = moment)).run.run
+      val result = persistenceServices.deleteMoment(createDeleteMomentRequest(moment = servicesMoment)).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {

@@ -7,13 +7,13 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{MomentTimeSlot, Moment, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory, _}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{MomentTimeSlot => ServicesMomentTimeSlot}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddMomentRequest, AddCardRequest, AddCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
 
@@ -36,7 +36,7 @@ trait FormedCollectionConversions
   def toAddCollectionRequestByFormedCollection(formedCollections: Seq[FormedCollection])(implicit context: ContextSupport): Seq[AddCollectionRequest] =
     formedCollections.zipWithIndex.map(zipped => toAddCollectionRequestByFormedCollection(zipped._1, zipped._2))
 
-  def toAddCollectionRequestByFormedCollection(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport) = AddCollectionRequest(
+  def toAddCollectionRequestByFormedCollection(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport): AddCollectionRequest = AddCollectionRequest(
     position = position,
     name = formedCollection.name,
     collectionType = formedCollection.collectionType.name,
@@ -63,20 +63,6 @@ trait FormedCollectionConversions
       imagePath = item.uriImage getOrElse "" // UI will create the default image
     )
   }
-
-  def toAddMomentRequest(moment: Moment): AddMomentRequest =
-    AddMomentRequest(
-      collectionId = moment.collectionId,
-      timeslot = moment.timeslot map toMomentTimeSlot,
-      wifi = moment.wifi,
-      headphone = moment.headphone,
-      momentType = moment.momentType)
-
-  def toMomentTimeSlot(timeSlot: MomentTimeSlot) =
-    ServicesMomentTimeSlot(
-      from = timeSlot.from,
-      to = timeSlot.to,
-      days = timeSlot.days)
 
   def createPrivateCollections(
     apps: Seq[UnformedApp],
@@ -105,7 +91,8 @@ trait FormedCollectionConversions
       icon = category.getStringResource,
       themedColorIndex = themeIndex,
       appsCategory = Some(category),
-      cards = appsByCategory map toPrivateCard
+      cards = appsByCategory map toPrivateCard,
+      moment = None
     )
   }
 
@@ -113,7 +100,7 @@ trait FormedCollectionConversions
     apps: Seq[UnformedApp],
     contacts: Seq[UnformedContact],
     categories: Seq[NineCardCategory],
-    minApps: Int) = {
+    minApps: Int): Seq[AddCollectionRequest] = {
     val collections = generateAddCollections(apps, categories, Seq.empty)
     if (contacts.length > minApps) collections :+ toAddCollectionRequestByContact(contacts.take(numSpaces), collections.length)
     else collections

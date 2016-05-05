@@ -43,7 +43,7 @@ trait CloudStorageProcessImplData {
 
   val numTimeSlot = 2
 
-  val momentType = Option("Home")
+  val momentType = Option("HOME")
 
   val cloudStorageDevice =
     CloudStorageDevice(
@@ -78,7 +78,7 @@ trait CloudStorageProcessImplData {
       timeslot = generateTimeSlots(num: Int),
       wifi = Seq(s"Wifi_Network $num", s"Mobile $num "),
       headphones = false,
-      momentType = momentType)
+      momentType = momentType map (NineCardsMoment(_)))
   }
 
   def generateTimeSlots(num: Int): Seq[CloudStorageMomentTimeSlot] = 1 to num map { i =>
@@ -130,7 +130,7 @@ trait CloudStorageProcessImplData {
        | "timeslot": [${generateTimeSlotJson(numItems).mkString(",")}],
        | "wifi": ["Wifi_Network $num", "Mobile $num "],
        | "headphones": false,
-       | "momentType": "Home"
+       | "momentType": "HOME"
        |}
     """.stripMargin
   }

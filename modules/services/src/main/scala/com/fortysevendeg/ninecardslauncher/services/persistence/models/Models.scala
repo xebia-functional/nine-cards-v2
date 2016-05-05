@@ -23,7 +23,8 @@ case class Collection(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Boolean,
-  cards: Seq[Card] = Seq.empty)
+  cards: Seq[Card] = Seq.empty,
+  moment: Option[Moment])
 
 case class Card(
   id: Int,

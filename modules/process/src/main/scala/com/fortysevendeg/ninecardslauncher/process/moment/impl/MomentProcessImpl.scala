@@ -6,7 +6,6 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
@@ -49,7 +48,7 @@ class MomentProcessImpl(
   override def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport) = Service {
     Task {
       CatchAll[MomentException] {
-        generatePrivateMomentsCollections(apps, momentsCollectionTypes, Seq.empty, position)
+        generatePrivateMomentsCollections(apps, moments, Seq.empty, position)
       }
     }
   }
@@ -133,30 +132,25 @@ class MomentProcessImpl(
     } yield toCollection(collection)).resolve[MomentException]
 
   private[this] def generateAddCollection(items: Seq[App], moment: NineCardsMoment, position: Int): AddCollectionRequest = {
-    val collectionType = moment match{
-      case HomeMorningMoment => HomeMorningCollectionType
-      case WorkMoment => WorkCollectionType
-      case HomeNightMoment => HomeNightCollectionType
-    }
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
       name = momentProcessConfig.namesMoments.getOrElse(moment, moment.getStringResource),
-      collectionType = collectionType.name,
+      collectionType = MomentCollectionType.name,
       icon = moment.getIconResource,
       themedColorIndex = themeIndex,
       appsCategory = None,
       sharedCollectionSubscribed = Option(false),
       cards = toAddCardRequestSeq(items),
-      moment = Option(toAddMomentRequest(moment)))
+      moment = Option(toAddMomentRequest(None, moment)))
   }
 
   @tailrec
   private[this] def generatePrivateMomentsCollections(
     items: Seq[App],
-    collectionTypes: Seq[CollectionType],
+    moments: Seq[NineCardsMoment],
     acc: Seq[PrivateCollection],
-    position: Int): Seq[PrivateCollection] = collectionTypes match {
+    position: Int): Seq[PrivateCollection] = moments match {
     case Nil => acc
     case h :: t =>
       val insert = generatePrivateMomentsCollection(items, h, acc.length + position + 1)
@@ -164,22 +158,18 @@ class MomentProcessImpl(
       generatePrivateMomentsCollections(items, t, a, position)
   }
 
-  private[this] def generatePrivateMomentsCollection(items: Seq[App], collectionType: CollectionType, position: Int): PrivateCollection = {
-    val moment = collectionType match {
-      case HomeMorningCollectionType => HomeMorningMoment
-      case WorkCollectionType => WorkMoment
-      case HomeNightCollectionType => HomeNightMoment
-    }
+  private[this] def generatePrivateMomentsCollection(items: Seq[App], moment: NineCardsMoment, position: Int): PrivateCollection = {
     val appsByMoment = filterAppsByMoment(items, moment)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
 
     PrivateCollection(
       name = momentProcessConfig.namesMoments.getOrElse(moment, moment.getStringResource),
-      collectionType = collectionType,
+      collectionType = MomentCollectionType,
       icon = moment.getIconResource,
       themedColorIndex = themeIndex,
       appsCategory = None,
-      cards = appsByMoment map toPrivateCard
+      cards = appsByMoment map toPrivateCard,
+      moment = Some(moment)
     )
   }
 

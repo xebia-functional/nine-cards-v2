@@ -1,10 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException}
+import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
@@ -58,12 +58,11 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
     di.sharedCollectionsProcess.getSharedCollectionsByCategory(category, typeSharedCollection)
 
   private[this] def addCollection(sharedCollection: SharedCollection):
-  ServiceDef2[Collection, CollectionException with CardException with AppException] =
+  ServiceDef2[Collection, CollectionException with AppException] =
     for {
-      collection <- di.collectionProcess.addCollection(toAddCollectionRequest(sharedCollection))
       appsInstalled <- di.deviceProcess.getSavedApps(GetByName)
-      cards <- di.collectionProcess.addCards(collection.id, getCards(appsInstalled, sharedCollection.resolvedPackages))
-    } yield collection.copy(cards = cards)
+      collection <- di.collectionProcess.addCollection(toAddCollectionRequest(sharedCollection, getCards(appsInstalled, sharedCollection.resolvedPackages)))
+    } yield collection
 
   private[this] def getCards(appsInstalled: Seq[App], packages: Seq[SharedCollectionPackage]) =
     packages map { pck =>

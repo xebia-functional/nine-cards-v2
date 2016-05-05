@@ -163,7 +163,7 @@ class MomentProcessImplSpec
 
   "createMoments" should {
 
-    "return the three moments created" in
+    "return the MomentCollectionType of the three collections associated with the moments created" in
       new MomentProcessScope with ValidCreateMomentPersistenceServicesResponses {
         val result = momentProcess.createMoments(contextSupport).run.run
         result must beLike {

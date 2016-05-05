@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, CollectionType, ContactsCategory, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
@@ -89,6 +89,8 @@ trait CollectionProcessImplData {
     collectionType = collectionType.name,
     icon = icon,
     themedColorIndex = themedColorIndex,
+    cards = Seq.empty,
+    moment = None,
     appsCategory = Option(appsCategory.name),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
@@ -104,7 +106,7 @@ trait CollectionProcessImplData {
     timeslot = Seq(momentTimeSlot),
     wifi = Seq.empty,
     headphone = false,
-    momentType = Option(momentType))
+    momentType = Option(HomeMorningMoment))
 
   def createSeqCollection(
     num: Int = 5,
@@ -155,6 +157,8 @@ trait CollectionProcessImplData {
         icon = icon,
         themedColorIndex = themedColorIndex,
         appsCategory = Option(appsCategory.name),
+        cards = Seq.empty,
+        moment = None,
         originalSharedCollectionId = Option(originalSharedCollectionId),
         sharedCollectionId = Option(sharedCollectionId),
         sharedCollectionSubscribed = sharedCollectionSubscribed))
@@ -258,6 +262,8 @@ trait CollectionProcessImplData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory.name),
+    cards = Seq.empty,
+    moment = None,
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
@@ -298,7 +304,9 @@ trait CollectionProcessImplData {
     collectionType = collectionType,
     icon = icon,
     themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory))
+    appsCategory = Option(appsCategory),
+    cards = Seq.empty,
+    moment = None)
 
   val servicesCollectionAdded = ServicesCollection(
     id = seqServicesCollection.size,
@@ -308,6 +316,8 @@ trait CollectionProcessImplData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategoryName),
+    cards = Seq.empty,
+    moment = None,
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)

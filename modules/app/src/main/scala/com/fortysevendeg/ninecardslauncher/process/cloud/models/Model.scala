@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.models
 
 import java.util.Date
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, CollectionType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardsMoment, NineCardCategory, CollectionType}
 
 trait CloudStorageResource {
   def resourceId: String
@@ -45,7 +45,7 @@ case class CloudStorageMoment(
   timeslot: Seq[CloudStorageMomentTimeSlot],
   wifi: Seq[String],
   headphones: Boolean,
-  momentType: Option[String])
+  momentType: Option[NineCardsMoment])
 
 case class CloudStorageMomentTimeSlot(
   from: String,

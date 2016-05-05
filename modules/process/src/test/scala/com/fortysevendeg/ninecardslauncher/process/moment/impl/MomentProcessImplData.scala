@@ -54,7 +54,7 @@ trait MomentProcessImplData {
   val homeAppPackageName = "com.google.android.apps.plus"
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"
-  val momentType1 = "Home"
+  val momentType1 = "HOME"
 
   val ssid: String = Random.nextString(5)
 
@@ -91,28 +91,30 @@ trait MomentProcessImplData {
      id: Int = collectionId,
      position: Int = position,
      name: String = name,
-     collectionType: Seq[CollectionType] = momentsCollectionTypes,
+     collectionType: CollectionType = MomentCollectionType,
      icon: String = icon,
      themedColorIndex: Int = themedColorIndex,
      appsCategory: NineCardCategory = appsCategory,
+     cards: Seq[Card] = seqCard,
+     moment: Option[Moment] = Option(processMoment),
      originalSharedCollectionId: String = originalSharedCollectionId,
      sharedCollectionId: String = sharedCollectionId,
-     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-     cards: Seq[Card] = seqCard) =
+     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
     (0 until num) map (
       item =>
         Collection(
           id = id + item,
           position = position,
           name = name,
-          collectionType = collectionType(item),
+          collectionType = collectionType,
           icon = icon,
           themedColorIndex = themedColorIndex,
           appsCategory = None,
+          cards = cards,
+          moment = moment,
           originalSharedCollectionId = Option(originalSharedCollectionId),
           sharedCollectionId = Option(sharedCollectionId),
-          sharedCollectionSubscribed = sharedCollectionSubscribed,
-          cards = cards))
+          sharedCollectionSubscribed = sharedCollectionSubscribed))
 
   def createSeqServicesCollection(
     num: Int = 5,
@@ -123,6 +125,8 @@ trait MomentProcessImplData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: NineCardCategory = appsCategory,
+    cards: Seq[ServicesCard] = seqServicesCard,
+    moment: Option[ServicesMoment] = Option(servicesMoment),
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
@@ -135,6 +139,8 @@ trait MomentProcessImplData {
         icon = icon,
         themedColorIndex = themedColorIndex,
         appsCategory = Option(appsCategory.name),
+        cards = cards,
+        moment = moment,
         originalSharedCollectionId = Option(originalSharedCollectionId),
         sharedCollectionId = Option(sharedCollectionId),
         sharedCollectionSubscribed = sharedCollectionSubscribed))
@@ -246,7 +252,7 @@ trait MomentProcessImplData {
         timeslot = timeslot,
         wifi = wifi,
         headphone = headphone,
-        momentType = momentType))
+        momentType = Option(NineCardsMoment(momentType1))))
 
   def createSeqMomentTimeSlot(
     from: String = from,
@@ -280,6 +286,7 @@ trait MomentProcessImplData {
       imagePath = imagePath)
 
   val seqCard = createSeqCard()
+  val seqServicesCard = createSeqServicesCard()
 
   val seqCollection = createSeqCollection()
   val collection = seqCollection.headOption
@@ -292,7 +299,7 @@ trait MomentProcessImplData {
   val seqServicesMoments = createSeqServicesMoment()
   val servicesMoment = seqServicesMoments(0)
   val seqMoments = createSeqMoment()
-  val moment = seqMoments(0)
+  val processMoment = seqMoments(0)
 
   val now = DateTime.now()
 
@@ -335,7 +342,7 @@ trait MomentProcessImplData {
       timeslot = homeMorningTimeSlot,
       wifi = homeWifi,
       headphone = false,
-      momentType = Option(momentType1))
+      momentType = Option(NineCardsMoment(momentType1)))
 
   val workCollectionId = Option(2)
   val workWifi = Seq("workWifi")
@@ -370,7 +377,7 @@ trait MomentProcessImplData {
       timeslot = workTimeSlot,
       wifi = workWifi,
       headphone = false,
-      momentType = Option(momentType1))
+      momentType = Option(NineCardsMoment(momentType1)))
 
   val homeNightCollectionId = Option(3)
   val homeNightFrom1 = "19:00"
@@ -416,7 +423,7 @@ trait MomentProcessImplData {
       timeslot = homeNightTimeSlot,
       wifi = homeWifi,
       headphone = false,
-      momentType = Option(momentType1))
+      momentType = Option(NineCardsMoment(momentType1)))
 
   val dayNoWifiCollectionId = Option(4)
   val dayNoWifiWifi = Seq.empty
@@ -453,8 +460,9 @@ trait MomentProcessImplData {
       timeslot = dayNoWifiTimeSlot,
       wifi = dayNoWifiWifi,
       headphone = false,
-      momentType = Option(momentType1))
+      momentType = Option(NineCardsMoment(momentType1)))
 
   val servicesMomentSeq = Seq(homeMorningServicesMoment, workServicesMoment, homeNightServicesMoment, dayNoWifiServicesMoment)
+
 
 }
