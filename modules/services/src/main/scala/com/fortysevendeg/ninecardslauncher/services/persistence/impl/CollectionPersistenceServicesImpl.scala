@@ -4,11 +4,12 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection, Moment}
+import rapture.core.scalazInterop.ResultT
 import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
@@ -50,21 +51,21 @@ trait CollectionPersistenceServicesImpl {
     (for {
       collection <- collectionRepository.fetchCollectionBySharedCollectionId(request.sharedCollectionId)
       cards <- fetchCards(collection)
-      moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${(collection map (_.id)).orNull}")
+      moments <- getMomentsByCollection(collection)
     } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
 
   def fetchCollectionByPosition(request: FetchCollectionByPositionRequest) =
     (for {
       collection <- collectionRepository.fetchCollectionByPosition(request.position)
       cards <- fetchCards(collection)
-      moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${(collection map (_.id)).orNull}")
+      moments <- getMomentsByCollection(collection)
     } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
 
   def findCollectionById(request: FindCollectionByIdRequest) =
     (for {
       collection <- collectionRepository.findCollectionById(request.id)
       cards <- fetchCards(collection)
-      moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${request.id}")
+      moments <- getMomentsByCollection(collection)
     } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
 
   def updateCollection(request: UpdateCollectionRequest) =
@@ -135,4 +136,12 @@ trait CollectionPersistenceServicesImpl {
       case None => Service(Task(Result.answer[Unit, RepositoryException]((): Unit)))
     }
   }
+
+  private[this] def getMomentsByCollection(maybeCollection: Option[RepositoryCollection]): ServiceDef2[Seq[RepositoryMoment], RepositoryException] = {
+    maybeCollection match {
+      case Some(collection) => momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
+      case None => Service(Task(Result.answer[Seq[RepositoryMoment], RepositoryException](Seq.empty)))
+    }
+  }
+
 }
