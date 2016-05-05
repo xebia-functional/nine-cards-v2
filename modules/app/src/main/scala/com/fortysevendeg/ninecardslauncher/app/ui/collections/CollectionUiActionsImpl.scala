@@ -1,6 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v4.app.Fragment
+import android.support.v7.widget.RecyclerView.ViewHolder
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -53,6 +55,8 @@ trait CollectionUiActionsImpl
     statuses = statuses.copy(scrollType = sType, canScroll = canScroll)
   }
 
+  override def startReorder(holder: ViewHolder): Ui[Any] = Ui(statuses.touchHelper foreach(_.startDrag(holder)))
+
   override def initialize(
     animateCards: Boolean,
     collection: Collection): Ui[_] = {
@@ -60,12 +64,12 @@ trait CollectionUiActionsImpl
       color = resGetColor(getIndexColor(collection.themedColorIndex)),
       onChanged = {
         case (ActionStateReordering, _, position) =>
-          if (!isPulling) {
+          if (!isPulling()) {
             statuses = statuses.copy(startPositionReorder = position)
             openReorderMode.run
           }
         case (ActionStateIdle, action, position) =>
-          if (!isPulling) {
+          if (!isPulling()) {
             action match {
               case ActionRemove =>
                 for {
@@ -88,6 +92,10 @@ trait CollectionUiActionsImpl
             closeReorderMode.run
           }
       })
+    val itemTouchHelper = new ItemTouchHelper(itemTouchCallback)
+    recyclerView foreach itemTouchHelper.attachToRecyclerView
+
+    statuses = statuses.copy(touchHelper= Some(itemTouchHelper))
 
     (recyclerView <~
       vGlobalLayoutListener(view => {
@@ -96,7 +104,6 @@ trait CollectionUiActionsImpl
         loadCollection(collection, padding, spaceMove, animateCards) ~
           uiHandler(startScroll(padding, spaceMove))
       }) <~
-      rvItemTouchHelperCallback(itemTouchCallback) <~
       (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)) ~
       (pullToCloseView <~
         pcvListener(PullToCloseListener(
@@ -121,15 +128,12 @@ trait CollectionUiActionsImpl
       (recyclerView <~ vGone)
   }
 
-  override def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): Ui[Any] =
-    if (animateCards) {
+  override def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): Ui[Any] = {
       val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-      recyclerView <~
+      (recyclerView <~
         rvAdapter(createAdapter(collection)) <~
         nrvScheduleLayoutAnimation <~
-        getScrollListener(spaceMove)
-    } else {
-      Ui.nop
+        getScrollListener(spaceMove)).ifUi(animateCards)
     }
 
   override def addCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
@@ -157,7 +161,7 @@ trait CollectionUiActionsImpl
   override def showData(emptyCollection: Boolean): Ui[_] =
     if (emptyCollection) showEmptyCollection() else showCollection()
 
-  private[this] def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get getOrElse false
+  override def isPulling(): Boolean = (pullToCloseView ~> pdvIsPulling()).get getOrElse false
 
   private[this] def showCollection(): Ui[_] =
     (recyclerView <~ vVisible) ~
@@ -247,7 +251,7 @@ trait CollectionUiActionsImpl
     nrvCollectionScrollListener(
       scrolled = (scrollY: Int, dx: Int, dy: Int) => {
         val sy = scrollY + dy
-        if (statuses.activeFragment && statuses.canScroll && !isPulling) {
+        if (statuses.activeFragment && statuses.canScroll && !isPulling()) {
           collectionsPresenter.scrollY(sy, dy)
         }
         sy
@@ -257,7 +261,7 @@ trait CollectionUiActionsImpl
         if (statuses.activeFragment &&
           newState == RecyclerView.SCROLL_STATE_IDLE &&
           statuses.canScroll &&
-          !isPulling) {
+          !isPulling()) {
           val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
           if (scrollY < spaceMove && moveTo != scrollY) recyclerView.smoothScrollBy(0, moveTo - scrollY)
           collectionsPresenter.scrollType(sType)
@@ -299,6 +303,7 @@ object ScrollType {
 }
 
 case class CollectionStatuses(
+  touchHelper: Option[ItemTouchHelper] = None,
   scrollType: ScrollType = ScrollNo,
   canScroll: Boolean = false,
   activeFragment: Boolean = false,

@@ -20,7 +20,7 @@ import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui, _}
 
 case class CollectionAdapter(var collection: Collection, heightCard: Int)
-  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
+  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme, collectionPresenter: CollectionPresenter)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with AnalyticDispatcher
   with ReorderItemTouchListener
@@ -93,7 +93,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
 case class ViewHolderCollectionAdapter(
   content: CardView,
   heightCard: Int,
-  onClick: (Int) => Ui[_])(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+  onClick: (Int) => Ui[_])(implicit context: ActivityContextWrapper, theme: NineCardsTheme, collectionPresenter: CollectionPresenter)
   extends RecyclerView.ViewHolder(content)
   with CollectionAdapterStyles
   with TypedFindView {
@@ -108,6 +108,11 @@ case class ViewHolderCollectionAdapter(
 
   ((content <~ rootStyle(heightCard) <~ On.click {
     onClick(getAdapterPosition)
+  } <~ On.longClick {
+    Ui {
+      collectionPresenter.startReorderCards(this)
+      true
+    }
   }) ~ (iconContent <~ iconContentStyle(heightCard))).run
 
   def bind(card: Card)(implicit uiContext: UiContext[_]): Ui[_] =

@@ -35,7 +35,7 @@ class ReorderItemTouchHelperCallback(
   val buttonsPaint = new Paint()
   buttonsPaint.setColor(color)
 
-  override def isLongPressDragEnabled: Boolean = true
+  override def isLongPressDragEnabled: Boolean = false
 
   override def clearView(recyclerView: RecyclerView, viewHolder: ViewHolder): Unit = {
     Try(recyclerView.invalidateItemDecorations()).logInfo()
