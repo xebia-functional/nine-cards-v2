@@ -5,7 +5,7 @@ import android.os.Bundle
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientProvider
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
@@ -14,8 +14,8 @@ import macroid.Contexts
 
 import scalaz.concurrent.Task
 
-trait GoogleApiClientService
-  extends GoogleApiClientProvider {
+trait GoogleDriveApiClientService
+  extends GoogleDriveApiClientProvider {
 
   self: Service with Contexts[Service] =>
 
@@ -27,7 +27,9 @@ trait GoogleApiClientService
 
   def error(message: String, maybeException: Option[Throwable] = None): Unit
 
-  override def onConnected(bundle: Bundle): Unit =
+  override def onDriveConnectionSuspended(connectionSuspendedCause: ConnectionSuspendedCause): Unit = {}
+
+  override def onDriveConnected(bundle: Bundle): Unit =
     statuses match {
       case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
         connected(client)
@@ -37,7 +39,7 @@ trait GoogleApiClientService
         error(resGetString(R.string.errorConnectingGoogle))
     }
 
-  override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
+  override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
     error(resGetString(R.string.errorConnectingGoogle))
 
   def synchronizeDevice(implicit di: Injector, contextSupport: ContextSupport): Unit = {

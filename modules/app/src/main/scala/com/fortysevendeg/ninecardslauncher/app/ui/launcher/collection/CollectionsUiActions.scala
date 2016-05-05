@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
 
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.{Bitmap, Color}
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
@@ -20,6 +20,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
@@ -160,18 +161,25 @@ trait CollectionsUiActions
 
   def reloadCollections(): Ui[Any] = workspaces <~ lwsReloadCollections()
 
-  def userProfileMenu(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
-    (menuName <~ tvText(name)) ~
-      (menuEmail <~ tvText(email)) ~
+  def userProfileMenu(
+    maybeEmail: Option[String],
+    maybeName: Option[String],
+    maybeAvatarUrl: Option[String],
+    maybeCoverUrl: Option[String]): Ui[_] =
+    (menuName <~ tvText(maybeName.getOrElse(""))) ~
+      (menuEmail <~ tvText(maybeEmail.getOrElse(""))) ~
       (menuAvatar <~
-        (avatarUrl map ivUri getOrElse {
-          val drawable = new CharDrawable(name.substring(0, 1).toUpperCase)
-          ivSrc(drawable)
+        ((maybeAvatarUrl, maybeName) match {
+          case (Some(url), _) => ivUri(url)
+          case (_, Some(name)) => ivSrc(new CharDrawable(name.substring(0, 1).toUpperCase))
+          case _ => ivBlank
         }) <~
-        menuAvatarStyle)
-
-  def plusProfileMenu(coverPhotoUrl: String): Ui[_] =
-    menuCover <~ ivUri(coverPhotoUrl)
+        menuAvatarStyle) ~
+      (menuCover <~
+        (maybeCoverUrl match {
+          case Some(url) => ivUri(url)
+          case None => ivBlank
+        }))
 
   def uiActionCollection(action: UiAction, collection: Collection): Ui[_] =
     action match {

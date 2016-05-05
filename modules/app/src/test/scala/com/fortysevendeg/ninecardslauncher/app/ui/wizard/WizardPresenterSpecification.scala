@@ -10,7 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.Statuses.GoogleApiClientStatuses
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.Statuses.WizardPresenterStatuses
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -330,7 +330,7 @@ class WizardPresenterSpec
 
     "call to show dive in Actions and create or update actual cloud storage device with the right params in CloudStorageProcess" in
       new WizardPresenterScope {
-        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+        presenter.clientStatuses = WizardPresenterStatuses(driveApiClient = Some(mockGoogleApiClient))
 
         mockCollectionProcess.getCollections returns Service(Task(Answer(Seq(collection))))
         mockMomentProcess.getMoments returns Service(Task(Answer(moments)))
@@ -346,7 +346,7 @@ class WizardPresenterSpec
 
     "call to show dive in Actions but not to CloudStorageProcess if the collection process returns an error" in
       new WizardPresenterScope {
-        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+        presenter.clientStatuses = WizardPresenterStatuses(driveApiClient = Some(mockGoogleApiClient))
 
         mockCollectionProcess.getCollections returns Service(Task(Errata(CollectionExceptionImpl(""))))
         mockMomentProcess.getMoments returns Service(Task(Answer(moments)))
@@ -360,7 +360,7 @@ class WizardPresenterSpec
 
     "call to show dive in Actions but not to CloudStorageProcess if the moment process returns an error" in
       new WizardPresenterScope {
-        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+        presenter.clientStatuses = WizardPresenterStatuses(driveApiClient = Some(mockGoogleApiClient))
 
         mockCollectionProcess.getCollections returns Service(Task(Answer(Seq(collection))))
         mockMomentProcess.getMoments returns Service(Task(Errata(MomentException(""))))
@@ -374,7 +374,7 @@ class WizardPresenterSpec
 
     "call to connectAccount if the Google Api Client is not set but had set an account" in
       new WizardPresenterScope {
-        presenter.clientStatuses = GoogleApiClientStatuses(username = Some(accountName))
+        presenter.clientStatuses = WizardPresenterStatuses(username = Some(accountName))
 
         mockAccountManager.getAuthToken(any, any, any, any[Activity], any, any) returns mockAccountManagerFuture
 
@@ -398,7 +398,7 @@ class WizardPresenterSpec
 
     "call to go to user in Actions if neither the Google Api Client or the account is set" in
       new WizardPresenterScope {
-        presenter.clientStatuses = GoogleApiClientStatuses()
+        presenter.clientStatuses = WizardPresenterStatuses()
 
         presenter.saveCurrentDevice()
 
@@ -451,7 +451,7 @@ class WizardPresenterSpec
 
     "return true and call to connect in Google Api Client when pass `resolveGooglePlayConnection` and RESULT_OK" in
       new WizardPresenterScope {
-        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+        presenter.clientStatuses = WizardPresenterStatuses(driveApiClient = Some(mockGoogleApiClient))
 
         val result = presenter.activityResult(RequestCodes.resolveGooglePlayConnection, Activity.RESULT_OK, javaNull)
 
@@ -482,7 +482,7 @@ class WizardPresenterSpec
 
     "call to disconnect in the Google Api client" in
       new WizardPresenterScope {
-        presenter.clientStatuses = GoogleApiClientStatuses(apiClient = Some(mockGoogleApiClient))
+        presenter.clientStatuses = WizardPresenterStatuses(driveApiClient = Some(mockGoogleApiClient))
 
         presenter.stop()
 

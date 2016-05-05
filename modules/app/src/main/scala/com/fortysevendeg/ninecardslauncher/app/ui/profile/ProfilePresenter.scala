@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Presenter, ResultCodes, UserProfileProvider, UserProfileStatuses}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Presenter, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.GoogleApiClientProvider
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.RemoveAccountDeviceDialogFragment
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
@@ -30,7 +30,7 @@ import scalaz.concurrent.Task
 
 class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
-  with GoogleApiClientProvider {
+  with GoogleDriveApiClientProvider {
 
   import Statuses._
 
@@ -38,11 +38,17 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   var clientStatuses = GoogleApiClientStatuses()
 
-  var userProfileStatuses = UserProfileStatuses()
-
   var syncEnabled: Boolean = false
 
-  override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
+  override def onDriveConnectionSuspended(connectionSuspendedCause: ConnectionSuspendedCause): Unit = {}
+
+  override def onDriveConnected(bundle: Bundle): Unit = clientStatuses match {
+    case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
+      loadUserAccounts(client)
+    case _ => actions.showConnectingGoogleError(() => tryToConnect()).run
+  }
+
+  override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
     if (connectionResult.hasResolution) {
       contextWrapper.original.get match {
         case Some(activity) =>
@@ -56,25 +62,14 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       showError()
     }
 
-  override def onConnected(bundle: Bundle): Unit = clientStatuses match {
-    case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
-      loadUserAccounts(client)
-    case _ => actions.showConnectingGoogleError(() => tryToConnect()).run
-  }
-
   def initialize(): Unit = {
-    Task.fork(loadUserEmail().run).resolveAsyncUi(
-      onResult = email => Ui {
-        val userProfile = email map { email =>
-          new UserProfileProvider(
-            account = email,
-            onConnectedUserProfile = (name: String, email: String, avatarUrl: Option[String]) => {
-              actions.userProfile(name, email, avatarUrl).run
-            },
-            onConnectedPlusProfile = (_) => {})
+    Task.fork(di.userProcess.getUser.run).resolveAsync(
+      onResult = user => {
+        (user.userProfile.name, user.email) match {
+          case (Some(name), Some(email)) =>
+            actions.userProfile(name, email, user.userProfile.avatar).run
+          case _ =>
         }
-        userProfileStatuses = userProfileStatuses.copy(userProfile = userProfile)
-        userProfileStatuses.userProfile foreach (_.connect())
       })
     actions.initialize().run
   }
@@ -146,9 +141,6 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         true
       case (`resolveGooglePlayConnection`, _) =>
         showError()
-        true
-      case (`resolveConnectedUser`, _) =>
-        userProfileStatuses.userProfile foreach (_.connectUserProfile(requestCode, resultCode, data))
         true
       case _ => false
     }

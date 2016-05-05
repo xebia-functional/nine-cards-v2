@@ -28,7 +28,7 @@ class UserProcessImpl(
   val emptyUserRequest = AddUserRequest(None, None, None, None, None, None, None, None, None)
 
   override def signIn(email: String, deviceName: String, token: String, permissions: Seq[String])(implicit context: ContextSupport) = {
-    context.getActiveUserId map { id =>
+    withActiveUser { id =>
       (for {
         androidId <- persistenceServices.getAndroidId
         device = Device(
@@ -41,8 +41,6 @@ class UserProcessImpl(
         _ <- persistenceServices.updateUser(toUpdateRequest(id, email, userDB, loginResponse, device))
         _ <- syncInstallation(id, None, loginResponse.user.id, None)
       } yield SignInResponse(loginResponse.statusCode)).resolve[UserException]
-    } getOrElse {
-      Service(Task(Result.errata[SignInResponse, UserException](UserException(noActiveUserErrorMessage))))
     }
   }
 
@@ -60,23 +58,24 @@ class UserProcessImpl(
     }
 
   override def unregister(implicit context: ContextSupport) =
-    context.getActiveUserId map { id =>
+    withActiveUser { id =>
       val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None)
       (for {
         _ <- syncInstallation(id, None, None, None)
         _ <- persistenceServices.updateUser(update)
       } yield ()).resolve[UserException]
-    } getOrElse {
-      Service(Task(Result.answer[Unit, UserException](())))
     }
 
   override def getUser(implicit context: ContextSupport) =
-    context.getActiveUserId map { id =>
+    withActiveUser { id =>
       (for {
         Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
       } yield toUser(user)).resolve[UserException]
-    } getOrElse {
-      Service(Task(Result.errata[User, UserException](UserException(noActiveUserErrorMessage))))
+    }
+
+  private[this] def withActiveUser[T](f: Int => ServiceDef2[T, UserException])(implicit context: ContextSupport) =
+    context.getActiveUserId map f getOrElse {
+      Service(Task(Result.errata[T, UserException](UserException(noActiveUserErrorMessage))))
     }
 
   private[this] def getFirstOrAddUser(implicit context: ContextSupport): ServiceDef2[ServicesUser, UserException] =

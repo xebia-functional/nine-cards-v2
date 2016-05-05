@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
-import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleApiClientService
+import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
@@ -27,7 +27,7 @@ class CreateCollectionService
   with Contexts[Service]
   with ContextSupportProvider
   with CreateCollectionsTasks
-  with GoogleApiClientService
+  with GoogleDriveApiClientService
   with ImplicitsDeviceException
   with BroadcastDispatcher { self =>
 

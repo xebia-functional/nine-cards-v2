@@ -1,18 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
+import com.fortysevendeg.ninecardslauncher.api.model.GooglePlayPackage
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{TermCounter, IterableApps}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{IterableApps, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
+import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, GooglePlayPackagesResponse, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServiceException
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{DataCounter, App}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByName, AddAppRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, DataCounter}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, ImplicitsPersistenceServiceExceptions, OrderByName, PersistenceServiceException}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -61,6 +63,7 @@ trait AppsDeviceProcessImpl {
       requestConfig <- apiUtils.getRequestConfig
       installedApps <- appsServices.getInstalledApplications
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
+        .resolveTo(GooglePlayPackagesResponse(200, Seq.empty))
       appPaths <- createBitmapsFromAppPackage(toAppPackageSeq(installedApps))
       apps = installedApps map { app =>
         val path = appPaths.find { path =>
