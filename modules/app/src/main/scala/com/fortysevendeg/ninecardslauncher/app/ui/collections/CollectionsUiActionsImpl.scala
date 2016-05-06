@@ -23,7 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommenda
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
@@ -159,6 +159,8 @@ trait CollectionsUiActionsImpl
   }
 
   override def showContactUsError: Ui[Any] = showError()
+
+  override def showMessageNotImplemented: Ui[Any]= showError(R.string.todo)
 
   override def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
     adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
@@ -365,7 +367,7 @@ trait CollectionsUiActionsImpl
       val valueAnimator = ValueAnimator.ofInt(0, 100)
       valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
         override def onAnimationUpdate(value: ValueAnimator): Unit = {
-          val color = interpolateColors(value.getAnimatedFraction, getColor(from), getColor(to))
+          val color = (getColor(from), getColor(to)).interpolateColors(value.getAnimatedFraction)
           updateToolbarColor(color).run
         }
       })
@@ -388,7 +390,7 @@ trait CollectionsUiActionsImpl
             current <- getCollection(position)
             next <- getCollection(position + 1)
           } yield {
-            val color = interpolateColors(positionOffset, getColor(current), getColor(next))
+            val color = (getColor(current), getColor(next)).interpolateColors(positionOffset)
             updateToolbarColor(color).run
           }
       }

@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.{ItemDecoration, State}
 import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerView
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailTextCardColor, NineCardsTheme, SearchBackgroundColor}
@@ -29,7 +29,7 @@ class SelectedItemDecoration(implicit contextWrapper: ContextWrapper, theme: Nin
 
   val divider = {
     val d = new ShapeDrawable(new RectShape)
-    d.getPaint.setColor(ColorsUtils.setAlpha(theme.get(SearchBackgroundColor), .6f))
+    d.getPaint.setColor(theme.get(SearchBackgroundColor).alpha(.6f))
     d
   }
 
