@@ -50,29 +50,47 @@ class ReorderItemTouchHelperCallback(
 
   val radius = resGetDimensionPixelSize(R.dimen.radius_default)
 
-  val shadowPaint = new Paint()
-  shadowPaint.setColor(accentColor.alpha(.2f))
+  val shadowPaint = {
+    val paint = new Paint()
+    paint.setColor(accentColor.alpha(.2f))
+    paint
+  }
 
-  val barPaint = new Paint()
-  barPaint.setColor(backgroundColor)
+  val barPaint = {
+    val paint = new Paint()
+    paint.setColor(backgroundColor)
+    paint
+  }
 
   val bitmapPaint = new Paint()
 
-  val textPaint = new Paint()
-  textPaint.setAntiAlias(true)
-  textPaint.setTextSize(resGetDimension(R.dimen.text_default))
+  val textPaint = {
+    val paint = new Paint()
+    paint.setAntiAlias(true)
+    paint.setTextSize(resGetDimension(R.dimen.text_default))
+    paint
+  }
 
-  val strokePaint = new Paint()
-  strokePaint.setStrokeWidth(resGetDimension(R.dimen.divider_default))
-  strokePaint.setColor(defaultColor.alpha(.4f))
+  val strokePaint = {
+    val paint = new Paint()
+    paint.setStrokeWidth(resGetDimension(R.dimen.divider_default))
+    paint.setColor(defaultColor.alpha(.4f))
+    paint
+  }
 
-  val tagBackgroundPaint = new Paint()
-  tagBackgroundPaint.setColor(defaultColor)
+  val tagBackgroundPaint = {
+    val paint = new Paint()
+    paint.setColor(defaultColor)
+    paint
+  }
 
-  val tagTextPaint = new Paint()
-  tagTextPaint.setColor(backgroundColor)
-  tagTextPaint.setAntiAlias(true)
-  tagTextPaint.setTextSize(resGetDimension(R.dimen.text_default))
+  val tagTextPaint = {
+    val paint = new Paint()
+    paint.setColor(backgroundColor)
+    paint.setAntiAlias(true)
+    paint.setTextSize(resGetDimension(R.dimen.text_default))
+    paint
+  }
 
   override def isLongPressDragEnabled: Boolean = false
 
