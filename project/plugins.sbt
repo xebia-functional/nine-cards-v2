@@ -12,5 +12,4 @@ libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-s3" % "1.10.44",
   "org.apache.httpcomponents" % "httpclient" % "4.5.1",
   "org.apache.httpcomponents" % "httpmime" % "4.5.1",
-  "io.fabric.tools" % "gradle" % "1.21.4"
-)
+  "io.fabric.tools" % "gradle" % "1.21.4")
