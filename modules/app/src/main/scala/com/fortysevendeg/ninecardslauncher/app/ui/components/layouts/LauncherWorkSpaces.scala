@@ -77,9 +77,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   override def getItemViewType(data: LauncherData, position: Int): Int = data.workSpaceType.value
 
   override def createView(viewType: Int): LauncherWorkSpaceHolder = WorkSpaceType(viewType) match {
-    case MomentWorkSpace => new LauncherWorkSpaceMomentsHolder
+    case MomentWorkSpace => new LauncherWorkSpaceMomentsHolder(context)
     case CollectionsWorkSpace =>
-      presenter map (p => new LauncherWorkSpaceCollectionsHolder(p, statuses.dimen)) getOrElse(throw new RuntimeException("Missing LauncherPresenter"))
+      presenter map (p => new LauncherWorkSpaceCollectionsHolder(context, p, statuses.dimen)) getOrElse(throw new RuntimeException("Missing LauncherPresenter"))
   }
 
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
@@ -268,8 +268,8 @@ case class LauncherWorkSpacesListener(
   onUpdateOpenMenu: (Float) => Ui[_] = (f) => Ui.nop,
   onEndOpenMenu: (Boolean) => Ui[_] = (b) => Ui.nop)
 
-class LauncherWorkSpaceHolder(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(contextWrapper.application)
+class LauncherWorkSpaceHolder(context: Context)
+  extends FrameLayout(context)
 
 case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collection] = Seq.empty, positionByType: Int = 0)
 

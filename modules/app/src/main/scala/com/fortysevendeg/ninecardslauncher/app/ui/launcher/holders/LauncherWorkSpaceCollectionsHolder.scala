@@ -1,15 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 
 import android.content.res.ColorStateList
-import android.graphics.{Paint, Point}
+import android.content.{ClipData, Context}
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
+import android.graphics.{Paint, Point}
 import android.os.Handler
 import android.view.DragEvent._
 import android.view.View.OnDragListener
-import android.view.ViewGroup.LayoutParams
-import android.view.ViewGroup.LayoutParams._
-import android.view.{DragEvent, View}
+import android.view.{DragEvent, LayoutInflater, View}
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
@@ -21,27 +20,26 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{DragObject, PositionsUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{DragObject, PositionsUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.CollectionItemTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.CollectionShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{CollectionItemStyle, CollectionsGroupStyle, LauncherPresenter}
-import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher2.TypedResource._
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class LauncherWorkSpaceCollectionsHolder(
-  presenter: LauncherPresenter,
-  parentDimen: Dimen)(implicit contextWrapper: ContextWrapper)
-  extends LauncherWorkSpaceHolder
-  with CollectionsGroupStyle {
+class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPresenter, parentDimen: Dimen)
+  extends LauncherWorkSpaceHolder(context)
+  with Contexts[View] {
 
   val selectedScale = 1.1f
 
@@ -63,9 +61,9 @@ class LauncherWorkSpaceCollectionsHolder(
 
   var grid: Option[GridLayout] = slot[GridLayout]
 
-  val views: Seq[CollectionItem] = 0 until numSpaces map (_ => new CollectionItem(presenter))
+  val views: Seq[CollectionItem] = 0 until numSpaces map (_ => new CollectionItem(context))
 
-  addView((l[GridLayout]() <~ wire(grid) <~ collectionGridStyle).get)
+  addView((l[GridLayout]() <~ wire(grid) <~ vMatchParent).get)
 
   (grid <~
     glAddViews(
@@ -129,7 +127,7 @@ class LauncherWorkSpaceCollectionsHolder(
             delayedTask(() => {
               presenter.draggingAddItemToNextScreen(toPositionCollection(0) + numSpaces)
             })
-          case (NoEdge, _ , _) =>
+          case (NoEdge, _, _) =>
             clearTask()
             val space = calculatePosition(x, y)
             val currentPosition = toPositionCollection(space)
@@ -176,10 +174,10 @@ class LauncherWorkSpaceCollectionsHolder(
                   resetAllPositions().run
                   presenter.draggingReorderToNextScreen(toPositionCollection(0) + numSpaces)
                 })
-              case (NoEdge, _ , _) =>
+              case (NoEdge, _, _) =>
                 clearTask()
                 val space = calculatePosition(x, y)
-                val existCollectionInSpace = (views.lift(space) flatMap(_.collection)).isDefined
+                val existCollectionInSpace = (views.lift(space) flatMap (_.collection)).isDefined
                 val currentPosition = toPositionCollection(space)
                 if (existCollectionInSpace && lastCurrentPosition != currentPosition) {
                   reorder(lastCurrentPosition, currentPosition).run
@@ -271,12 +269,12 @@ class LauncherWorkSpaceCollectionsHolder(
     }
     Ui.sequence(views.zip(collectionsReordered) map {
       case (view, Some(collection)) =>
-        view  <~
+        view <~
           vClearAnimation <~
           backToPosition() <~
           ciPopulate(collection)
       case _ => Ui.nop
-    }:_*)
+    }: _*)
   }
 
   private[this] def place(pos: Int): (Int, Int) = {
@@ -315,113 +313,113 @@ class LauncherWorkSpaceCollectionsHolder(
     handler.postDelayed(runnable, duration)
   }
 
-  private[this] def clearTask(): Unit =  if (task.isDefined) {
+  private[this] def clearTask(): Unit = if (task.isDefined) {
     task foreach handler.removeCallbacks
     task = None
   }
 
   private[this] def backToPosition() = vTranslationX(0) + vTranslationY(0)
-}
 
-case class CollectionItem(
-  presenter: LauncherPresenter)(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(contextWrapper.bestAvailable)
-  with CollectionItemStyle {
+  private[this] def ciPopulate(collection: Collection) = vVisible + Tweak[CollectionItem](_.populate(collection))
 
-  var positionInGrid = 0
+  private[this] def ciOff() = vInvisible + Tweak[CollectionItem](_.collection = None)
 
-  var collection: Option[Collection] = None
+  class CollectionItem(context: Context)
+    extends FrameLayout(context)
+    with TypedFindView { self =>
 
-  val params = new LayoutParams(MATCH_PARENT, MATCH_PARENT)
+    LayoutInflater.from(getContext).inflate(TR.layout.collection_item, self, true)
 
-  var layout = slot[LinearLayout]
+    var positionInGrid = 0
 
-  var icon = slot[ImageView]
+    var collection: Option[Collection] = None
 
-  var name = slot[TextView]
+    val displacement = resGetDimensionPixelSize(R.dimen.shadow_displacement_default)
 
-  addView(
-    (l[LinearLayout](
-      w[ImageView] <~ wire(icon) <~ iconStyle,
-      w[TextView] <~ wire(name) <~ nameStyle
-    ) <~
-      wire(layout) <~
-      collectionItemStyle <~
-      vUseLayerHardware).get)
+    val radius = resGetDimensionPixelSize(R.dimen.shadow_radius_default)
 
-  def populate(collection: Collection): Unit = {
-    this.collection = Some(collection)
-    positionInGrid = collection.position
-    val resIcon = iconCollectionWorkspace(collection.icon)
-    ((layout <~
-      FuncOn.click { view: View =>
-        val pos = PositionsUtils.calculateAnchorViewPosition(view)
-        val point = new Point(pos._1 + (view.getWidth / 2), pos._2 + (view.getHeight / 2))
-        Ui(presenter.goToCollection(this.collection, point))
-      } <~
-      On.longClick {
-        presenter.startReorder(this.collection, positionInGrid)
-        (this.collection map { _ =>
-          (this <~ vInvisible) ~ convertToDraggingItem() ~ (layout <~ startDragStyle(collection.id.toString, collection.name))
-        } getOrElse Ui.nop).run
-        Ui(true)
-      }) ~
-      (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
-      (name <~ tvText(collection.name))).run
-  }
+    lazy val layout = Option(findView(TR.launcher_collection_item_layout))
 
-  def convertToDraggingItem(): Ui[Any] = Ui(positionInGrid = positionDraggingItem)
+    lazy val icon = Option(findView(TR.launcher_collection_item_icon))
 
-  private[this] def createBackground(indexColor: Int): Drawable = {
-    val color = resGetColor(getIndexColor(indexColor))
+    lazy val name = Option(findView(TR.launcher_collection_item_name))
 
-    Lollipop ifSupportedThen {
-      new RippleDrawable(
-        new ColorStateList(Array(Array()), Array(getColorDark(color, 0.2f))),
-        getDrawable(color),
-        javaNull)
-    } getOrElse {
-      val states = new StateListDrawable()
-      states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(getColorDark(color)))
-      states.addState(Array.emptyIntArray, getDrawable(color))
-      states
+    ((layout <~ vUseLayerHardware) ~
+      (name <~ tvShadowLayer(radius, displacement, displacement, resGetColor(R.color.shadow_default)))).run
+
+    def populate(collection: Collection): Unit = {
+      this.collection = Some(collection)
+      positionInGrid = collection.position
+      val resIcon = iconCollectionWorkspace(collection.icon)
+      ((layout <~
+        FuncOn.click { view: View =>
+          val pos = PositionsUtils.calculateAnchorViewPosition(view)
+          val point = new Point(pos._1 + (view.getWidth / 2), pos._2 + (view.getHeight / 2))
+          Ui(presenter.goToCollection(this.collection, point))
+        } <~
+        On.longClick {
+          presenter.startReorder(this.collection, positionInGrid)
+          (this.collection map { _ =>
+            (this <~ vInvisible) ~ convertToDraggingItem() ~ (layout <~ startDragStyle(collection.id.toString, collection.name))
+          } getOrElse Ui.nop).run
+          Ui(true)
+        }) ~
+        (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
+        (name <~ tvText(collection.name))).run
     }
-  }
 
-  private[this] def getDrawable(color: Int): Drawable = {
-    val drawableColor = createShapeDrawable(color)
-    Lollipop ifSupportedThen {
+    def convertToDraggingItem(): Ui[Any] = Ui(positionInGrid = positionDraggingItem)
+
+    private[this] def createBackground(indexColor: Int): Drawable = {
+      val color = resGetColor(getIndexColor(indexColor))
+
+      Lollipop ifSupportedThen {
+        new RippleDrawable(
+          new ColorStateList(Array(Array()), Array(getColorDark(color, 0.2f))),
+          getDrawable(color),
+          javaNull)
+      } getOrElse {
+        val states = new StateListDrawable()
+        states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(getColorDark(color)))
+        states.addState(Array.emptyIntArray, getDrawable(color))
+        states
+      }
+    }
+
+    private[this] def getDrawable(color: Int): Drawable = {
+      val drawableColor = createShapeDrawable(color)
+      Lollipop ifSupportedThen {
+        drawableColor
+      } getOrElse {
+        val padding = resGetDimensionPixelSize(R.dimen.elevation_default)
+        val drawableShadow = createShapeDrawable(resGetColor(R.color.shadow_default))
+        val layer = new LayerDrawable(Array(drawableShadow, drawableColor))
+        layer.setLayerInset(0, padding, padding, padding, 0)
+        layer.setLayerInset(1, padding, 0, padding, padding)
+        layer
+      }
+    }
+
+    private[this] def createShapeDrawable(color: Int) = {
+      val drawableColor = new ShapeDrawable(new OvalShape())
+      drawableColor.getPaint.setColor(color)
+      drawableColor.getPaint.setStyle(Paint.Style.FILL)
+      drawableColor.getPaint.setAntiAlias(true)
       drawableColor
-    } getOrElse {
-      val padding = resGetDimensionPixelSize(R.dimen.elevation_default)
-      val drawableShadow = createShapeDrawable(resGetColor(R.color.shadow_default))
-      val layer = new LayerDrawable(Array(drawableShadow, drawableColor))
-      layer.setLayerInset(0, padding, padding, padding, 0)
-      layer.setLayerInset(1, padding, 0, padding, padding)
-      layer
     }
-  }
 
-  private[this] def createShapeDrawable(color: Int) = {
-    val drawableColor = new ShapeDrawable(new OvalShape())
-    drawableColor.getPaint.setColor(color)
-    drawableColor.getPaint.setStyle(Paint.Style.FILL)
-    drawableColor.getPaint.setAntiAlias(true)
-    drawableColor
+    def startDragStyle(label: String, description: String): Tweak[View] = Tweak[View] { view =>
+      val dragData = ClipData.newPlainText(label, description)
+      val shadow = new CollectionShadowBuilder(view)
+      view.startDrag(dragData, shadow, DragObject(shadow, ReorderCollection), 0)
+    }
+
   }
 
 }
 
 object LauncherWorkSpaceCollectionsHolder {
   val positionDraggingItem = Int.MaxValue
-}
-
-object CollectionItemTweaks {
-  type W = CollectionItem
-
-  def ciPopulate(collection: Collection) = vVisible + Tweak[W](_.populate(collection))
-
-  def ciOff() = vInvisible + Tweak[W](_.collection = None)
 }
 
 sealed trait Edge

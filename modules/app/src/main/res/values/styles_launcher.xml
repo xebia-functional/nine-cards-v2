@@ -169,6 +169,39 @@
         <item name="android:orientation">horizontal</item>
     </style>
 
+    <!-- Collection Item -->
+
+    <style name="LauncherCollectionItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="LauncherCollectionItemLayout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="LauncherCollectionItemIconParent">
+        <item name="android:layout_width">@dimen/size_group_collection</item>
+        <item name="android:layout_height">@dimen/size_group_collection</item>
+    </style>
+
+    <style name="LauncherCollectionItemIcon" parent="LauncherCollectionItemIconParent" />
+
+    <style name="LauncherCollectionItemName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:textColor">@color/collection_group_name</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:lines">2</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
     <!-- FAB Menu -->
 
     <style name="LauncherFabMenuContent">
