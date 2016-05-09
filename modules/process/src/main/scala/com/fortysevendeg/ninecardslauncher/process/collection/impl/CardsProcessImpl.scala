@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, C
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
-import com.fortysevendeg.ninecardslauncher.services._
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -36,18 +36,18 @@ trait CardsProcessImpl {
   def reorderCard(collectionId: Int, cardId: Int, newPosition: Int) = {
 
     def reorderList(cardList: Seq[Card], oldPosition: Int): Seq[Card] = {
-      val (from, to) = if (oldPosition > newPosition) (newPosition, oldPosition) else (oldPosition, newPosition)
+      val (init, end) = if (oldPosition > newPosition) (newPosition, oldPosition) else (oldPosition, newPosition)
       cardList
         .reorderRange(oldPosition, newPosition)
-        .zip(from to to)
+        .zip(init to end)
         .map( { case (card, index) => card.copy(position = index) })
     }
 
-    def reorderAux(card: persistence.models.Card) =
+    def reorderAux(card: ServicesCard) =
       if (card.position != newPosition)
         for {
           cardList <- getCardsByCollectionId(collectionId)
-          _ <- updateCardList( reorderList(cardList,card.position))
+          _ <- updateCardList(reorderList(cardList,card.position))
         } yield ()
       else Service.success[Unit,CardException](Unit)
 
