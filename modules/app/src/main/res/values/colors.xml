@@ -65,6 +65,7 @@
 
     <!-- WorkSpace -->
     <color name="collection_workspace_button_item_title">#ffffff</color>
+    <color name="collection_workspace_feedback_drop">#77ffffff</color>
 
     <!-- Groups of collections -->
     <color name="collection_group_name">#ffffff</color>

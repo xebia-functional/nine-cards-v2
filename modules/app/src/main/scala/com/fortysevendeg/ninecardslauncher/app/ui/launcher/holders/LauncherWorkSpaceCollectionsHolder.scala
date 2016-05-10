@@ -24,6 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{DragObject, PositionsUtils}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DropCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.CollectionShadowBuilder
@@ -202,11 +203,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
   }
 
   private[this] def select(position: Int): Ui[Any] = Ui.sequence(views map { view =>
-    val scale = if (view.positionInGrid == position) selectedScale else defaultScale
-    view <~ applyAnimation(
-      scaleX = Some(scale),
-      scaleY = Some(scale)
-    )
+    view <~ (if (view.positionInGrid == position) ciDroppingOn() else ciDroppingOff())
   }: _*)
 
   private[this] def unselectAll(): Ui[Any] = select(Int.MaxValue)
@@ -324,6 +321,10 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
 
   private[this] def ciOff() = vInvisible + Tweak[CollectionItem](_.collection = None)
 
+  private[this] def ciDroppingOn() = Tweak[CollectionItem](_.droppingOn().run)
+
+  private[this] def ciDroppingOff() = Tweak[CollectionItem](_.droppingOff().run)
+
   class CollectionItem(context: Context)
     extends FrameLayout(context)
     with TypedFindView { self =>
@@ -340,9 +341,13 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
 
     lazy val layout = Option(findView(TR.launcher_collection_item_layout))
 
+    lazy val iconRoot = Option(findView(TR.launcher_collection_item_icon_root))
+
     lazy val icon = Option(findView(TR.launcher_collection_item_icon))
 
     lazy val name = Option(findView(TR.launcher_collection_item_name))
+
+    val dropBackgroundIcon = new DropCollectionDrawable
 
     ((layout <~ vUseLayerHardware) ~
       (name <~ tvShadowLayer(radius, displacement, displacement, resGetColor(R.color.shadow_default)))).run
@@ -369,6 +374,16 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
     }
 
     def convertToDraggingItem(): Ui[Any] = Ui(positionInGrid = positionDraggingItem)
+
+    def droppingOn(): Ui[Any] =
+      (iconRoot <~ vBackground(dropBackgroundIcon)) ~
+        dropBackgroundIcon.start() ~
+        (name <~ vInvisible)
+
+    def droppingOff(): Ui[Any] =
+      dropBackgroundIcon.end() ~~
+        (iconRoot <~ vBlankBackground) ~
+        (name <~ vVisible)
 
     private[this] def createBackground(indexColor: Int): Drawable = {
       val color = resGetColor(getIndexColor(indexColor))
