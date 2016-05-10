@@ -112,51 +112,6 @@ object AppUtils {
   def getRandomIndexColor: Int = getIndexColor(Random.nextInt(numSpaces))
 }
 
-object ColorsUtils {
-
-  def colorizeDrawable(drawable: Drawable, color: Int) = {
-    val colorizeDrawable = DrawableCompat.wrap(drawable).mutate()
-    DrawableCompat.setTint(DrawableCompat.wrap(colorizeDrawable).mutate(), color)
-    colorizeDrawable
-  }
-
-  def getColorLight(color: Int, ratio: Float = 0.1f) = {
-    val colorHsv = Array(0f, 0f, 0f)
-    Color.colorToHSV(color, colorHsv)
-    colorHsv.update(2, math.min(colorHsv(2) + ratio, 1))
-    Color.HSVToColor(colorHsv)
-  }
-
-  def getColorDark(color: Int, ratio: Float = 0.1f) = {
-    val colorHsv = Array(0f, 0f, 0f)
-    Color.colorToHSV(color, colorHsv)
-    colorHsv.update(2, math.max(colorHsv(2) - ratio, 0))
-    Color.HSVToColor(colorHsv)
-  }
-
-  def setAlpha(color: Int, alpha: Float): Int = Color.argb((255 * alpha).toInt, Color.red(color), Color.green(color), Color.blue(color))
-
-  def interpolateColors(fraction: Float, startValue: Int, endValue: Int): Int = {
-    val startInt: Int = startValue
-    val startA: Int = (startInt >> 24) & 0xff
-    val startR: Int = (startInt >> 16) & 0xff
-    val startG: Int = (startInt >> 8) & 0xff
-    val startB: Int = startInt & 0xff
-    val endInt: Int = endValue
-    val endA: Int = (endInt >> 24) & 0xff
-    val endR: Int = (endInt >> 16) & 0xff
-    val endG: Int = (endInt >> 8) & 0xff
-    val endB: Int = endInt & 0xff
-    ((startA + (fraction * (endA - startA)).toInt) << 24) |
-      ((startR + (fraction * (endR - startR)).toInt) << 16) |
-      (startG + (fraction * (endG - startG)).toInt) << 8 |
-      (startB + (fraction * (endB - startB)).toInt)
-  }
-
-  def colorToString(color: Int): String = s"#${0xFFFFFF & color}"
-
-}
-
 object AnimationsUtils {
 
   def calculateDurationByVelocity(velocity: Float, defaultVelocity: Int): Int = {

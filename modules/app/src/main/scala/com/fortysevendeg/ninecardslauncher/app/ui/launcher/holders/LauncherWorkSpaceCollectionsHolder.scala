@@ -17,7 +17,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
@@ -388,18 +388,18 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
     private[this] def createBackground(indexColor: Int): Drawable = {
       val color = resGetColor(getIndexColor(indexColor))
 
-      Lollipop ifSupportedThen {
-        new RippleDrawable(
-          new ColorStateList(Array(Array()), Array(getColorDark(color, 0.2f))),
-          getDrawable(color),
-          javaNull)
-      } getOrElse {
-        val states = new StateListDrawable()
-        states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(getColorDark(color)))
-        states.addState(Array.emptyIntArray, getDrawable(color))
-        states
-      }
+    Lollipop ifSupportedThen {
+      new RippleDrawable(
+        new ColorStateList(Array(Array()), Array(color.dark(0.2f))),
+        getDrawable(color),
+        javaNull)
+    } getOrElse {
+      val states = new StateListDrawable()
+      states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(color.dark()))
+      states.addState(Array.emptyIntArray, getDrawable(color))
+      states
     }
+  }
 
     private[this] def getDrawable(color: Int): Drawable = {
       val drawableColor = createShapeDrawable(color)

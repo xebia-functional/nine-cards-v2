@@ -54,6 +54,8 @@ class CollectionsPagerPresenter(
     )
   }
 
+  def showMessageNotImplemented(): Unit = actions.showMessageNotImplemented.run
+
   def addCards(cards: Seq[AddCardRequest]): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.addCards(collection.id, cards).run).resolveAsyncUi(
       onResult = actions.addCards
@@ -125,6 +127,8 @@ trait CollectionsUiActions {
   def destroyAction: Ui[Any]
 
   def showContactUsError: Ui[Any]
+
+  def showMessageNotImplemented: Ui[Any]
 
   def showCollections(collections: Seq[Collection], position: Int): Ui[Any]
 

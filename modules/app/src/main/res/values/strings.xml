@@ -7,6 +7,7 @@
     <!-- General -->
     <string name="edit">Edit</string>
     <string name="remove">Remove</string>
+    <string name="moveTo">Move to</string>
     <string name="make_public">Make Public</string>
     <string name="share">Share</string>
     <string name="filter">Filter</string>

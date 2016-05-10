@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
@@ -106,7 +106,7 @@ class PullToTabsView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
     val defaultColor = theme.get(SearchIconsColor)
 
-    val backgroundColor = getColorDark(theme.get(SearchBackgroundColor), 0.05f)
+    val backgroundColor = theme.get(SearchBackgroundColor).dark(0.05f)
 
     ((this <~ vBackgroundColor(backgroundColor)) ~
       (icon <~ ivSrc(item.drawable)) ~

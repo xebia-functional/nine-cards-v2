@@ -25,11 +25,15 @@ case class CollectionPresenter(
 
   def startReorderCards(holder: ViewHolder): Unit = if (!actions.isPulling()) actions.startReorder(holder).run
 
-  def reorderCard(collectionId: Int, cardId: Int, position: Int) = {
+  def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit = {
     Task.fork(di.collectionProcess.reorderCard(collectionId, cardId, position).run).resolveAsyncUi(
       onResult = (_) => actions.reloadCards()
     )
   }
+
+  def moveToCard(): Unit = actions.showMessageNotImplemented().run // TODO change that
+
+  def editCard(): Unit = actions.showMessageNotImplemented().run // TODO change that
 
   def addCards(cards: Seq[Card]): Unit = actions.addCards(cards).run
 
@@ -56,6 +60,8 @@ trait CollectionUiActions {
   def reloadCards(): Ui[Any]
 
   def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): Ui[Any]
+
+  def showMessageNotImplemented(): Ui[Any]
 
   def showEmptyCollection(): Ui[Any]
 
