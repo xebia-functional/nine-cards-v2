@@ -4,6 +4,7 @@
     <!-- General -->
     <string name="edit">Editar</string>
     <string name="remove">Eliminar</string>
+    <string name="moveTo">Mover a</string>
     <string name="make_public">Hacer Pública</string>
     <string name="share">Compartir</string>
     <string name="filter">Filtrar</string>

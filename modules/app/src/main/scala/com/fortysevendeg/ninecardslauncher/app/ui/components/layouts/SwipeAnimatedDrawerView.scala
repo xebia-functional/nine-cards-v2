@@ -6,7 +6,7 @@ import android.view.{View, LayoutInflater}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.BackgroundDrawerAnimationDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.SwipeAnimatedDrawerViewSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -38,7 +38,7 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
   def initAnimation(contentView: ContentView, widthContainer: Int)
     (implicit theme: NineCardsTheme): Ui[_] = {
     val colorBackground = theme.get(SearchBackgroundColor)
-    val colorForeground = getColorDark(colorBackground, 0.05f)
+    val colorForeground = colorBackground.dark(0.05f)
     background.setColors(colorForeground, colorBackground)
 
     val sizeIcon = icon map (ic => ic.getWidth + ic.getPaddingLeft + ic.getPaddingRight) getOrElse 0
