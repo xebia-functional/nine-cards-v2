@@ -72,7 +72,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   private[this] def startAddItemToCollection(addCardRequest: AddCardRequest): Unit = {
     statuses = statuses.startAddItem(addCardRequest)
-    actions.startAddItem.run
+    actions.startAddItem(addCardRequest.cardType).run
   }
 
   def draggingAddItemTo(position: Int): Unit = statuses = statuses.updateCurrentPosition(position)
@@ -127,10 +127,20 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.endAddItem.run
   }
 
-  def removeInAddItem(): Unit = {
+  def uninstallInAddItem(): Unit = {
     statuses.cardAddItemMode match {
       case Some(card: AddCardRequest) if card.cardType == AppCardType =>
         card.packageName foreach launchUninstall
+      case _ =>
+    }
+    statuses = statuses.reset()
+    actions.endAddItem.run
+  }
+
+  def settingsInAddItem(): Unit = {
+    statuses.cardAddItemMode match {
+      case Some(card: AddCardRequest) if card.cardType == AppCardType =>
+        card.packageName foreach launchSettings
       case _ =>
     }
     statuses = statuses.reset()
@@ -204,6 +214,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       } else {
         actions.showMinimumOneCollectionMessage()
       }
+    } getOrElse actions.showContactUsError()).run
+
+  def editCollectionInReorderMode(): Unit =
+    (statuses.collectionReorderMode map { collection =>
+      actions.showNoImplementedYetMessage()
     } getOrElse actions.showContactUsError()).run
 
   def removeCollection(collection: Collection): Unit = {
@@ -376,7 +391,7 @@ trait LauncherUiActions {
 
   def endReorder: Ui[Any]
 
-  def startAddItem: Ui[Any]
+  def startAddItem(cardType: CardType): Ui[Any]
 
   def endAddItem: Ui[Any]
 
@@ -393,6 +408,8 @@ trait LauncherUiActions {
   def showContactUsError(): Ui[Any]
 
   def showMinimumOneCollectionMessage(): Ui[Any]
+
+  def showNoImplementedYetMessage(): Ui[Any]
 
   def showLoading(): Ui[Any]
 

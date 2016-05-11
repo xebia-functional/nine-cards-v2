@@ -71,28 +71,4 @@ trait Styles {
       wimTitle(resGetString(title)) +
       wimSrc(icon)
 
-  def removeActionStyle(implicit presenter: LauncherPresenter): Tweak[View] = Tweak[View] { view =>
-    view.setOnDragListener(new OnDragListener {
-      override def onDrag(v: View, event: DragEvent): Boolean = {
-        event.getLocalState match {
-          case DragObject(_, ReorderCollection) =>
-            event.getAction match {
-              case ACTION_DROP =>
-                presenter.removeCollectionInReorderMode()
-              case _ =>
-            }
-            true
-          case DragObject(_, AddItemToCollection) =>
-            event.getAction match {
-              case ACTION_DRAG_ENDED =>
-                presenter.removeInAddItem()
-              case _ =>
-            }
-            true
-          case _ => false
-        }
-      }
-    })
-  }
-
 }

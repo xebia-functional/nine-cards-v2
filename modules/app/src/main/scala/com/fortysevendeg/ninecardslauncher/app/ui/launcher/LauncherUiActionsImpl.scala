@@ -12,7 +12,7 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
@@ -28,7 +28,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.AddItemToCollection
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -73,6 +75,8 @@ trait LauncherUiActionsImpl
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
 
   override def showMinimumOneCollectionMessage(): Ui[Any] = showMessage(R.string.minimumOneCollectionMessage)
+
+  override def showNoImplementedYetMessage(): Ui[Any] = showMessage(R.string.todo)
 
   override def showLoading(): Ui[Any] = showCollectionsLoading
 
@@ -172,17 +176,31 @@ trait LauncherUiActionsImpl
   override def startReorder: Ui[Any] =
     (dockAppsPanel <~ fadeOut()) ~
       (searchPanel <~ fadeOut()) ~
-      (collectionActionsPanel <~ fadeIn())
+      (collectionActionsPanel <~
+        caplLoad(Seq(
+          CollectionActionItem(resGetString(R.string.edit), R.drawable.icon_launcher_action_edit, CollectionActionEdit),
+          CollectionActionItem(resGetString(R.string.remove), R.drawable.icon_launcher_action_remove, CollectionActionRemove)
+        )) <~
+        fadeIn())
 
   override def endReorder: Ui[Any] =
     (dockAppsPanel <~ fadeIn()) ~
       (searchPanel <~ fadeIn()) ~
       (collectionActionsPanel <~~ fadeOut())
 
-  override def startAddItem: Ui[Any] =
+  override def startAddItem(cardType: CardType): Ui[Any] =
     revealOutDrawer ~
     (searchPanel <~ fadeOut()) ~
-      (collectionActionsPanel <~ fadeIn())
+      (cardType match {
+        case AppCardType =>
+          collectionActionsPanel <~
+            caplLoad(Seq(
+              CollectionActionItem(resGetString(R.string.appInfo), R.drawable.icon_launcher_action_info_app, CollectionActionAppInfo),
+              CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall)
+            )) <~
+            fadeIn()
+        case _ => Ui.nop
+      })
 
   override def endAddItem: Ui[Any] =
     (searchPanel <~ fadeIn()) ~
@@ -260,6 +278,9 @@ trait LauncherUiActionsImpl
               case DockAppsDragArea =>
                 // Project to dock apps
                 (dockAppsPanel <~ daplDragDispatcher(action, x, y - (height - bottomBar))).run
+              case ActionsDragArea =>
+                // Project to Collection actions
+                (collectionActionsPanel <~ caplDragDispatcher(action, x, y)).run
               case _ =>
             }
           case _ =>

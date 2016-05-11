@@ -74,8 +74,10 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         } getOrElse {
           presenter.endAddItem()
         }
+        draggingTo = None
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_EXITED =>
+        draggingTo = None
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_ENDED =>
         presenter.endAddItem()

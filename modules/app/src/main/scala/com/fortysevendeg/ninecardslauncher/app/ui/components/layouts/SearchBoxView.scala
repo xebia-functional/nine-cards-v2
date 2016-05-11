@@ -56,6 +56,16 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def clean: Ui[_] = editText <~ (if (isEmpty) Tweak.blank else tvText("")) <~ etHideKeyboard
 
+  def enableSearch: Ui[_] = editText <~ Tweak[EditText] { view =>
+    view.setEnabled(true)
+    view.setFocusable(true)
+  }
+
+  def disableSearch: Ui[_] = editText <~ Tweak[EditText] { view =>
+    view.setEnabled(false)
+    view.setFocusable(false)
+  }
+
   def addTextChangedListener(onChangeText: (String) => Unit): Unit =
     (editText <~
       etAddTextChangedListener(

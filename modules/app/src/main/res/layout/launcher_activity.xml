@@ -21,7 +21,9 @@
             <FrameLayout
                 style="@style/LauncherTopBox">
 
-                <include layout="@layout/collections_actions_view_panel"/>
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.CollectionActionsPanelLayout
+                    style="@style/LauncherCollectionActionsPanel"
+                    android:id="@+id/launcher_collections_actions_panel" />
 
                 <include layout="@layout/search_view_panel"/>
 

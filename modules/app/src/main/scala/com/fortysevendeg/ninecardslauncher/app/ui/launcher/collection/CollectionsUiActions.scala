@@ -87,8 +87,6 @@ trait CollectionsUiActions
 
   lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
 
-  lazy val collectionRemoveAction = Option(findView(TR.launcher_collections_action_remove))
-
   lazy val burgerIcon = Option(findView(TR.launcher_burger_icon))
 
   lazy val googleIcon = Option(findView(TR.launcher_google_icon))
@@ -126,8 +124,7 @@ trait CollectionsUiActions
         drawerLayout <~ dlOpenDrawer
       )) ~
       (googleIcon <~ googleButtonStyle <~ On.click(Ui(presenter.launchSearch))) ~
-      (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch))) ~
-      (collectionRemoveAction <~ removeActionStyle)
+      (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch)))
 
   def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[_] =
     workspaces <~ Tweak[View] { view =>

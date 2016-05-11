@@ -160,6 +160,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
         val x = event.getX
         val y = event.getY
         (event.getAction, event.getLocalState, presenter.statuses.isReordering(), isRunningReorderAnimation) match {
+          case (ACTION_DRAG_STARTED, DragObject(_, ReorderCollection), _, _) => true
           case (ACTION_DRAG_LOCATION, DragObject(_, ReorderCollection), true, false) =>
             val lastCurrentPosition = presenter.statuses.currentDraggingPosition
             val canMoveToLeft = positionScreen > 0
@@ -186,18 +187,20 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
                 }
               case _ =>
             }
+            true
           case (ACTION_DROP | ACTION_DRAG_ENDED, DragObject(_, ReorderCollection), true, false) =>
             resetPlaces.run
             presenter.dropReorder()
+            true
           case (ACTION_DROP | ACTION_DRAG_ENDED, DragObject(_, ReorderCollection), true, true) =>
             // we are waiting that the animation is finished in order to reset views
             delayedTask(() => {
               resetPlaces.run
               presenter.dropReorder()
             }, resGetInteger(R.integer.anim_duration_normal))
-          case _ =>
+            true
+          case _ => false
         }
-        true
       }
     })
   }
@@ -388,18 +391,18 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
     private[this] def createBackground(indexColor: Int): Drawable = {
       val color = resGetColor(getIndexColor(indexColor))
 
-    Lollipop ifSupportedThen {
-      new RippleDrawable(
-        new ColorStateList(Array(Array()), Array(color.dark(0.2f))),
-        getDrawable(color),
-        javaNull)
-    } getOrElse {
-      val states = new StateListDrawable()
-      states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(color.dark()))
-      states.addState(Array.emptyIntArray, getDrawable(color))
-      states
+      Lollipop ifSupportedThen {
+        new RippleDrawable(
+          new ColorStateList(Array(Array()), Array(color.dark(0.2f))),
+          getDrawable(color),
+          javaNull)
+      } getOrElse {
+        val states = new StateListDrawable()
+        states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(color.dark()))
+        states.addState(Array.emptyIntArray, getDrawable(color))
+        states
+      }
     }
-  }
 
     private[this] def getDrawable(color: Int): Drawable = {
       val drawableColor = createShapeDrawable(color)

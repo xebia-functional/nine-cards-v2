@@ -208,19 +208,24 @@ object StepsWorkspacesTweaks {
 
 }
 
-object SearchBoxesAnimatedViewTweak {
+object SearchBoxesViewTweaks {
+  type W = SearchBoxView
 
   def sbvUpdateContentView(contentView: ContentView)(implicit theme: NineCardsTheme) =
-    Tweak[SearchBoxView] (view => view.updateContentView(contentView).run)
+    Tweak[W] (_.updateContentView(contentView).run)
 
-  def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[SearchBoxView] (_.listener = Some(listener))
+  def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[W] (_.listener = Some(listener))
 
   def sbvUpdateHeaderIcon(resourceId: Int)(implicit theme: NineCardsTheme) =
-    Tweak[SearchBoxView](view => view.updateHeaderIcon(resourceId).run)
+    Tweak[W](_.updateHeaderIcon(resourceId).run)
 
-  def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[SearchBoxView] (_.addTextChangedListener(onChangeText))
+  def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[W] (_.addTextChangedListener(onChangeText))
 
-  def sbvClean = Tweak[SearchBoxView] (view => view.clean.run)
+  def sbvClean = Tweak[W] (_.clean.run)
+
+  def sbvEnableSearch = Tweak[W] (_.enableSearch.run)
+
+  def sbvDisableSearch = Tweak[W] (_.disableSearch.run)
 }
 
 object TabsViewTweaks {
@@ -379,5 +384,16 @@ object DockAppsPanelLayoutTweaks {
 
   def daplReload(dockApp: DockApp)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.reload(dockApp).run)
+
+}
+
+object CollectionActionsPanelLayoutTweaks {
+  type W = CollectionActionsPanelLayout
+
+  def caplLoad(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.load(actions).run)
+
+  def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.dragAddItemController(action, x, y))
 
 }
