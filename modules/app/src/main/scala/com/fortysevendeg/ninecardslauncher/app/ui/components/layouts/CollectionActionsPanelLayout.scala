@@ -47,8 +47,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
     }: _*)
   }
 
-  def dragAddItemController(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Unit = {
-    android.util.Log.d("9cards", s"action: $action ($x, $y)")
+  def dragAddItemController(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Unit =
     action match {
       case ACTION_DRAG_LOCATION =>
         val newPosition = Some(calculatePosition(x))
@@ -77,7 +76,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
         (this <~ select(unselectedPosition)).run
       case _ =>
     }
-  }
+
 
   private[this] def calculatePosition(x: Float): Int = x.toInt / (getWidth / actions.length)
 
