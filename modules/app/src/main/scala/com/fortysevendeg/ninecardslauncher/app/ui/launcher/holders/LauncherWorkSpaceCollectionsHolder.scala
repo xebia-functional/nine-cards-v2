@@ -24,7 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{DragObject, PositionsUtils}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DropCollectionDrawable
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DropBackgroundDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.CollectionShadowBuilder
@@ -350,7 +350,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
 
     lazy val name = Option(findView(TR.launcher_collection_item_name))
 
-    val dropBackgroundIcon = new DropCollectionDrawable
+    val dropBackgroundIcon = new DropBackgroundDrawable
 
     ((layout <~ vUseLayerHardware) ~
       (name <~ tvShadowLayer(radius, displacement, displacement, resGetColor(R.color.shadow_default)))).run

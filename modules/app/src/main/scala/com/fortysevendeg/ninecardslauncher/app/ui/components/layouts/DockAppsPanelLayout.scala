@@ -35,6 +35,10 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val defaultScale = 1f
 
+  val selectedAlpha =.4f
+
+  val defaultAlpha = 1f
+
   val numberOfItems = 5
 
   val appDrawerPosition = 2
@@ -118,13 +122,13 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     case view: TintableImageView if view.getPosition.contains(position) =>
       view <~ applyAnimation(
         scaleX = Some(selectedScale),
-        scaleY = Some(selectedScale)
-      )
+        scaleY = Some(selectedScale),
+        alpha = Some(selectedAlpha))
     case view: TintableImageView =>
       view <~ applyAnimation(
         scaleX = Some(defaultScale),
-        scaleY = Some(defaultScale)
-      )
+        scaleY = Some(defaultScale),
+        alpha = Some(defaultAlpha))
   }
 
 }

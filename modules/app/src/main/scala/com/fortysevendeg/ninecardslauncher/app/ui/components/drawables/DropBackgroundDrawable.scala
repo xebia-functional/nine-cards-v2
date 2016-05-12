@@ -11,7 +11,7 @@ import macroid._
 
 import scala.concurrent.{Future, Promise}
 
-class DropCollectionDrawable(implicit contextWrapper: ContextWrapper)
+class DropBackgroundDrawable(implicit contextWrapper: ContextWrapper)
   extends Drawable {
 
   var percentage: Float = 0
@@ -49,7 +49,10 @@ class DropCollectionDrawable(implicit contextWrapper: ContextWrapper)
 
   def start(): Ui[Future[Any]] = animation(0f, 1f)
 
-  def end(): Ui[Future[Any]] = animation(1f, 0f)
+  def end(): Ui[Future[Any]] = {
+    if (animator.isRunning) animator.cancel()
+    animation(percentage, 0f)
+  }
 
   private[this] def animation(from: Float, to: Float): Ui[Future[Any]] = Ui {
     val promise = Promise[Unit]()
