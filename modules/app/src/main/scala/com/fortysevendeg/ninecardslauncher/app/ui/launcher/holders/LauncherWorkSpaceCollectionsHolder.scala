@@ -389,26 +389,17 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
         (name <~ vVisible)
 
     private[this] def createBackground(indexColor: Int): Drawable = {
-      val color = resGetColor(getIndexColor(indexColor))
 
-      Lollipop ifSupportedThen {
-        new RippleDrawable(
-          new ColorStateList(Array(Array()), Array(color.dark(0.2f))),
-          getDrawable(color),
-          javaNull)
-      } getOrElse {
-        val states = new StateListDrawable()
-        states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(color.dark()))
-        states.addState(Array.emptyIntArray, getDrawable(color))
-        states
-      }
-    }
-
-    private[this] def getDrawable(color: Int): Drawable = {
-      val drawableColor = createShapeDrawable(color)
-      Lollipop ifSupportedThen {
+      def createShapeDrawable(color: Int) = {
+        val drawableColor = new ShapeDrawable(new OvalShape())
+        drawableColor.getPaint.setColor(color)
+        drawableColor.getPaint.setStyle(Paint.Style.FILL)
+        drawableColor.getPaint.setAntiAlias(true)
         drawableColor
-      } getOrElse {
+      }
+
+      def getDrawable(color: Int): Drawable = {
+        val drawableColor = createShapeDrawable(color)
         val padding = resGetDimensionPixelSize(R.dimen.elevation_default)
         val drawableShadow = createShapeDrawable(resGetColor(R.color.shadow_default))
         val layer = new LayerDrawable(Array(drawableShadow, drawableColor))
@@ -416,14 +407,20 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
         layer.setLayerInset(1, padding, 0, padding, padding)
         layer
       }
-    }
 
-    private[this] def createShapeDrawable(color: Int) = {
-      val drawableColor = new ShapeDrawable(new OvalShape())
-      drawableColor.getPaint.setColor(color)
-      drawableColor.getPaint.setStyle(Paint.Style.FILL)
-      drawableColor.getPaint.setAntiAlias(true)
-      drawableColor
+      val color = resGetColor(getIndexColor(indexColor))
+
+      Lollipop ifSupportedThen {
+        new RippleDrawable(
+          new ColorStateList(Array(Array()), Array(color.dark(0.2f))),
+          createShapeDrawable(color),
+          javaNull)
+      } getOrElse {
+        val states = new StateListDrawable()
+        states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(color.dark()))
+        states.addState(Array.emptyIntArray, getDrawable(color))
+        states
+      }
     }
 
     def startDragStyle(label: String, description: String): Tweak[View] = Tweak[View] { view =>

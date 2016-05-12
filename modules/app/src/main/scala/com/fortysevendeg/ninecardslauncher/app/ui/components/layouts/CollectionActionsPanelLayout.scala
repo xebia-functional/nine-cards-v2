@@ -41,13 +41,35 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
 
   def load(actions: Seq[CollectionActionItem])
     (implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Ui[Any] = {
+
+    def populate(action: CollectionActionItem, position: Int): Tweak[TintableButton] =
+      tvText(action.name) +
+        tvCompoundDrawablesWithIntrinsicBoundsResources(left = action.resource) +
+        vSetPosition(position) +
+        dragListenerStyle(action.collectionActionType) +
+        tbPressedColor(theme.get(PrimaryColor)) +
+        tbResetColor
+
+    def buttonByIndex(index: Int): Option[TintableButton] = index match {
+      case 0 => Option(findView(TR.launcher_collections_action_1))
+      case 1 => Option(findView(TR.launcher_collections_action_2))
+      case _ => None
+    }
+
     this.actions = actions
     Ui.sequence(actions.zipWithIndex map {
       case (action, index) => buttonByIndex(index) <~ populate(action, index)
     }: _*)
   }
 
-  def dragAddItemController(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Unit =
+  def dragAddItemController(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Unit = {
+
+    def performAction(action: CollectionActionItem) = action.collectionActionType match {
+      case CollectionActionAppInfo => presenter.settingsInAddItem()
+      case CollectionActionUninstall => presenter.uninstallInAddItem()
+      case _ =>
+    }
+
     action match {
       case ACTION_DRAG_LOCATION =>
         val newPosition = Some(calculatePosition(x))
@@ -56,14 +78,9 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
           (this <~ (draggingTo map select getOrElse select(unselectedPosition))).run
         }
       case ACTION_DROP =>
-        draggingTo flatMap actions.lift map { action =>
-          action.collectionActionType match {
-            case CollectionActionAppInfo => presenter.settingsInAddItem()
-            case CollectionActionUninstall => presenter.uninstallInAddItem()
-            case _ =>
-          }
-        } getOrElse {
-          presenter.endAddItem()
+        draggingTo flatMap actions.lift match {
+          case Some(action: CollectionActionItem) => performAction(action)
+          case _ => presenter.endAddItem()
         }
         draggingTo = None
         (this <~ select(unselectedPosition)).run
@@ -76,28 +93,13 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
         (this <~ select(unselectedPosition)).run
       case _ =>
     }
-
+  }
 
   private[this] def calculatePosition(x: Float): Int = x.toInt / (getWidth / actions.length)
-
-  private[this] def populate(action: CollectionActionItem, position: Int)
-    (implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Tweak[TintableButton] =
-    tvText(action.name) +
-      tvCompoundDrawablesWithIntrinsicBoundsResources(left = action.resource) +
-      vSetPosition(position) +
-      dragListenerStyle(action.collectionActionType) +
-      tbPressedColor(theme.get(PrimaryColor)) +
-      tbResetColor
 
   private[this] def select(position: Int)(implicit contextWrapper: ActivityContextWrapper) = Transformer {
     case view: TintableButton if view.getPosition.contains(position) => Ui(view.setPressedColor())
     case view: TintableButton => Ui(view.setDefaultColor())
-  }
-
-  private[this] def buttonByIndex(index: Int): Option[TintableButton] = index match {
-    case 0 => Option(findView(TR.launcher_collections_action_1))
-    case 1 => Option(findView(TR.launcher_collections_action_2))
-    case _ => None
   }
 
   private[this] def dragListenerStyle(collectionActionType: CollectionActionType)(implicit presenter: LauncherPresenter): Tweak[View] = Tweak[View] { view =>

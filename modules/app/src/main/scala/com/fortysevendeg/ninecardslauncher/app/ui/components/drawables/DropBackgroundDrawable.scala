@@ -14,9 +14,9 @@ import scala.concurrent.{Future, Promise}
 class DropBackgroundDrawable(implicit contextWrapper: ContextWrapper)
   extends Drawable {
 
-  var percentage: Float = 0
+  private[this] var percentage: Float = 0
 
-  val duration = resGetInteger(R.integer.anim_duration_normal)
+  private[this] val duration = resGetInteger(R.integer.anim_duration_normal)
 
   lazy val circlePaint = {
     val paint = new Paint

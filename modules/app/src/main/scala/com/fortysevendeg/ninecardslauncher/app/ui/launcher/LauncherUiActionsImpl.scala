@@ -57,6 +57,14 @@ trait LauncherUiActionsImpl
 
   lazy val foreground = Option(findView(TR.launcher_foreground))
 
+  lazy val actionForCollections = Seq(
+    CollectionActionItem(resGetString(R.string.edit), R.drawable.icon_launcher_action_edit, CollectionActionEdit),
+    CollectionActionItem(resGetString(R.string.remove), R.drawable.icon_launcher_action_remove, CollectionActionRemove))
+
+  lazy val actionForApps = Seq(
+    CollectionActionItem(resGetString(R.string.appInfo), R.drawable.icon_launcher_action_info_app, CollectionActionAppInfo),
+    CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall))
+
   override def initialize: Ui[Any] =
     Ui(initAllSystemBarsTint) ~
       prepareBars ~
@@ -162,12 +170,7 @@ trait LauncherUiActionsImpl
   override def startReorder: Ui[Any] =
     (dockAppsPanel <~ fadeOut()) ~
       (searchPanel <~ fadeOut()) ~
-      (collectionActionsPanel <~
-        caplLoad(Seq(
-          CollectionActionItem(resGetString(R.string.edit), R.drawable.icon_launcher_action_edit, CollectionActionEdit),
-          CollectionActionItem(resGetString(R.string.remove), R.drawable.icon_launcher_action_remove, CollectionActionRemove)
-        )) <~
-        fadeIn()) ~
+      (collectionActionsPanel <~ caplLoad(actionForCollections) <~ fadeIn()) ~
       reloadEdges()
 
   override def endReorder: Ui[Any] =
@@ -195,13 +198,7 @@ trait LauncherUiActionsImpl
     revealOutDrawer ~
       (searchPanel <~ fadeOut()) ~
       (cardType match {
-        case AppCardType =>
-          collectionActionsPanel <~
-            caplLoad(Seq(
-              CollectionActionItem(resGetString(R.string.appInfo), R.drawable.icon_launcher_action_info_app, CollectionActionAppInfo),
-              CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall)
-            )) <~
-            fadeIn()
+        case AppCardType => collectionActionsPanel <~ caplLoad(actionForApps) <~ fadeIn()
         case _ => Ui.nop
       }) ~
       reloadEdges() ~

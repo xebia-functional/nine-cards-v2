@@ -216,9 +216,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     } getOrElse actions.showContactUsError()).run
 
   def editCollectionInReorderMode(): Unit =
-    (statuses.collectionReorderMode map { collection =>
-      actions.showNoImplementedYetMessage()
-    } getOrElse actions.showContactUsError()).run
+    (statuses.collectionReorderMode match {
+      case Some(_) => actions.showNoImplementedYetMessage()
+      case None => actions.showContactUsError()
+    }).run
 
   def removeCollection(collection: Collection): Unit = {
     Task.fork(deleteCollection(collection.id).run).resolveAsyncUi(
