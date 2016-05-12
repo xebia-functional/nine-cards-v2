@@ -17,10 +17,10 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ColorsUtils, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
@@ -70,7 +70,7 @@ trait CollectionAdapterStyles {
 
   val alphaDefault = .1f
 
-  val colorAllNotInstalled = ColorsUtils.setAlpha(Color.BLACK, .2f)
+  val colorAllNotInstalled = Color.BLACK.alpha(.2f)
 
   def rootStyle(heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     Tweak[CardView] { view =>
@@ -85,10 +85,10 @@ trait CollectionAdapterStyles {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),
         javaNull,
-        new ColorDrawable(setAlpha(Color.BLACK, alphaDefault)))
+        new ColorDrawable(Color.BLACK.alpha(alphaDefault)))
     } getOrElse {
       val states = new StateListDrawable()
-      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(setAlpha(color, alphaDefault)))
+      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(color.alpha(alphaDefault)))
       states.addState(Array.emptyIntArray, new ColorDrawable(Color.TRANSPARENT))
       states
     }

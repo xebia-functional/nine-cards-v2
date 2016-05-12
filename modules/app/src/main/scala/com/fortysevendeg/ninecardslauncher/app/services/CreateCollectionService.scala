@@ -6,7 +6,7 @@ import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
+import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._

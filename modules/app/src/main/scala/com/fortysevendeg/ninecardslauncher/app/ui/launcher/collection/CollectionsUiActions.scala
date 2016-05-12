@@ -18,6 +18,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -248,7 +249,7 @@ trait CollectionsUiActions
 
   private[this] def updateOpenCollectionMenu(percent: Float): Ui[_] = {
     val backgroundPercent = maxBackgroundPercent * percent
-    val colorBackground = ColorsUtils.setAlpha(Color.BLACK, backgroundPercent)
+    val colorBackground = Color.BLACK.alpha(backgroundPercent)
     val height = (menuCollectionContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
     val translate = height - (height * percent)
     (menuCollectionRoot <~ vBackgroundColor(colorBackground)) ~

@@ -61,7 +61,7 @@ trait CollectionUiActionsImpl
     animateCards: Boolean,
     collection: Collection): Ui[_] = {
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
-      color = resGetColor(getIndexColor(collection.themedColorIndex)),
+      accentColor = resGetColor(getIndexColor(collection.themedColorIndex)),
       onChanged = {
         case (ActionStateReordering, _, position) =>
           if (!isPulling()) {
@@ -82,6 +82,24 @@ trait CollectionUiActionsImpl
                 }
                 // Update the scroll removing one element
                 updateScroll(-1)
+              case ActionEdit =>
+                for {
+                  adapter <- getAdapter
+                  collection = adapter.collection
+                  card <- collection.cards.lift(position)
+                } yield {
+                  presenter.reorderCard(collection.id, card.id, position)
+                  presenter.editCard()
+                }
+              case ActionMove =>
+                for {
+                  adapter <- getAdapter
+                  collection = adapter.collection
+                  card <- collection.cards.lift(position)
+                } yield {
+                  presenter.reorderCard(collection.id, card.id, position)
+                  presenter.moveToCard()
+                }
               case NoAction =>
                 for {
                   adapter <- getAdapter
@@ -119,6 +137,8 @@ trait CollectionUiActionsImpl
   override def reloadCards(): Ui[Any] = Ui {
     collectionsPresenter.reloadCards(false)
   }
+
+  override def showMessageNotImplemented(): Ui[Any] = Ui(collectionsPresenter.showMessageNotImplemented())
 
   override def showEmptyCollection(): Ui[Any] = {
     val color = theme.get(SearchGoogleColor)
