@@ -24,6 +24,9 @@ package object services {
       ResultT[Task, A, B](f)
     }
 
+    def success[A, B <: Exception: ClassTag](a: A) : ServiceDef2[A,B] =
+      ResultT[Task, A, B](Task.now(Result.answer(a)))
+
   }
 
 }
