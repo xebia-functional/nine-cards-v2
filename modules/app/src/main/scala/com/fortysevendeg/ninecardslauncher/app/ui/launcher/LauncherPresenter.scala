@@ -78,12 +78,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def draggingAddItemTo(position: Int): Unit = statuses = statuses.updateCurrentPosition(position)
 
   def draggingAddItemToPreviousScreen(position: Int): Unit = {
-    actions.goToPreviousScreen().run
+    actions.goToPreviousScreenAddingItem().run
     statuses.updateCurrentPosition(position)
   }
 
   def draggingAddItemToNextScreen(position: Int): Unit = {
-    actions.goToNextScreen().run
+    actions.goToNextScreenAddingItem().run
     statuses.updateCurrentPosition(position)
   }
 
@@ -94,7 +94,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           onResult = (_) => actions.showAddItemMessage(collection.name),
           onException = (_) => actions.showContactUsError())
       case _ =>
-        actions.showContactUsError().run
     }
     statuses = statuses.reset()
     actions.endAddItem.run
@@ -391,9 +390,21 @@ trait LauncherUiActions {
 
   def endReorder: Ui[Any]
 
+  def goToPreviousScreenReordering(): Ui[Any]
+
+  def goToNextScreenReordering(): Ui[Any]
+
+  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
+
+  def reloadCollectionsFailed(): Ui[Any]
+
   def startAddItem(cardType: CardType): Ui[Any]
 
   def endAddItem: Ui[Any]
+
+  def goToPreviousScreenAddingItem(): Ui[Any]
+
+  def goToNextScreenAddingItem(): Ui[Any]
 
   def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any]
 
@@ -417,15 +428,7 @@ trait LauncherUiActions {
 
   def goToNextScreen(): Ui[Any]
 
-  def goToPreviousScreenReordering(): Ui[Any]
-
-  def goToNextScreenReordering(): Ui[Any]
-
   def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any]
-
-  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
-
-  def reloadCollectionsFailed(): Ui[Any]
 
   def reloadAppsInDrawer(
     apps: IterableApps,

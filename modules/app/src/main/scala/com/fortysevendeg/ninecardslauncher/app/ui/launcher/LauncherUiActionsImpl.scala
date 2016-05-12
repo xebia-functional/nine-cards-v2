@@ -90,22 +90,8 @@ trait LauncherUiActionsImpl
     goToNextWorkspace().ifUi(canMoveToNextScreen)
   }
 
-  override def goToPreviousScreenReordering(): Ui[Any] = {
-    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
-    (goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1))).ifUi(canMoveToPreviousScreen)
-  }
-
-  override def goToNextScreenReordering(): Ui[Any] = {
-    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
-    (goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0))).ifUi(canMoveToNextScreen)
-  }
-
   override def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any] =
     createCollections(collections, apps)
-
-  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any] = reloadReorderedCollections(from, to)
-
-  def reloadCollectionsFailed(): Ui[Any] = reloadCollections()
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
     userProfileMenu(email, name, avatarUrl, coverPhotoUrl)
@@ -181,16 +167,33 @@ trait LauncherUiActionsImpl
           CollectionActionItem(resGetString(R.string.edit), R.drawable.icon_launcher_action_edit, CollectionActionEdit),
           CollectionActionItem(resGetString(R.string.remove), R.drawable.icon_launcher_action_remove, CollectionActionRemove)
         )) <~
-        fadeIn())
+        fadeIn()) ~
+      reloadEdges()
 
   override def endReorder: Ui[Any] =
     (dockAppsPanel <~ fadeIn()) ~
       (searchPanel <~ fadeIn()) ~
-      (collectionActionsPanel <~~ fadeOut())
+      (collectionActionsPanel <~~ fadeOut()) ~
+      hideEdges()
 
-  override def startAddItem(cardType: CardType): Ui[Any] =
+  override def goToNextScreenReordering(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreenOnlyCollections()).get getOrElse false
+    (goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0)) ~ reloadEdges()).ifUi(canMoveToNextScreen)
+  }
+
+  override def goToPreviousScreenReordering(): Ui[Any] = {
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreenOnlyCollections()).get getOrElse false
+    (goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1)) ~ reloadEdges()).ifUi(canMoveToPreviousScreen)
+  }
+
+  override def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any] = reloadReorderedCollections(from, to)
+
+  override def reloadCollectionsFailed(): Ui[Any] = reloadCollections()
+
+  override def startAddItem(cardType: CardType): Ui[Any] = {
+    val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
     revealOutDrawer ~
-    (searchPanel <~ fadeOut()) ~
+      (searchPanel <~ fadeOut()) ~
       (cardType match {
         case AppCardType =>
           collectionActionsPanel <~
@@ -200,11 +203,25 @@ trait LauncherUiActionsImpl
             )) <~
             fadeIn()
         case _ => Ui.nop
-      })
+      }) ~
+      reloadEdges() ~
+      (if (isCollectionWorkspace) Ui.nop else goToWorkspace(pageCollections))
+  }
 
   override def endAddItem: Ui[Any] =
     (searchPanel <~ fadeIn()) ~
-      (collectionActionsPanel <~~ fadeOut())
+      (collectionActionsPanel <~~ fadeOut()) ~
+      hideEdges()
+
+  override def goToPreviousScreenAddingItem(): Ui[Any] = {
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
+    (goToPreviousWorkspace() ~ reloadEdges()).ifUi(canMoveToPreviousScreen)
+  }
+
+  override def goToNextScreenAddingItem(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
+    (goToNextWorkspace() ~ reloadEdges()).ifUi(canMoveToNextScreen)
+  }
 
   private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
 
@@ -227,6 +244,18 @@ trait LauncherUiActionsImpl
     case imageView: ImageView =>
       imageView <~ vActivated(false)
   }
+
+  private[this] def reloadEdges(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreenOnlyCollections()).get getOrElse false
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreenOnlyCollections()).get getOrElse false
+    (workspacesEdgeLeft <~ (if (canMoveToPreviousScreen) vVisible else vGone)) ~
+      (workspacesEdgeRight <~ (if (canMoveToNextScreen) vVisible else vGone))
+  }
+
+  private[this] def hideEdges(): Ui[Any] =
+    (workspacesEdgeLeft <~ vGone) ~
+      (workspacesEdgeRight <~ vGone)
+
 
   private[this] def prepareBars =
     KitKat.ifSupportedThen {

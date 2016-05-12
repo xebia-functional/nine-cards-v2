@@ -138,6 +138,22 @@ object LauncherWorkSpacesTweaks {
 
   def lwsCanMoveToPreviousScreen() = Excerpt[W, Boolean] (_.previousScreen.isDefined)
 
+  def lwsIsCollectionWorkspace(page: Int) = Excerpt[W, Boolean] (_.isCollectionWorkSpace(page))
+
+  def lwsIsCollectionWorkspace = Excerpt[W, Boolean] (_.isCollectionWorkSpace)
+
+  def lwsCanMoveToPreviousScreenOnlyCollections() = Excerpt[W, Boolean] { view =>
+    (for {
+      previousScreen <- view.previousScreen
+    } yield view.isCollectionWorkSpace(previousScreen)) getOrElse false
+  }
+
+  def lwsCanMoveToNextScreenOnlyCollections() = Excerpt[W, Boolean] { view =>
+    (for {
+      nextScreen <- view.nextScreen
+    } yield view.isCollectionWorkSpace(nextScreen)) getOrElse false
+  }
+
 }
 
 object AnimatedWorkSpacesTweaks {

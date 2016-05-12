@@ -110,10 +110,29 @@
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="LauncherWorkSpaces">
+    <style name="LauncherWorkSpacesLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="LauncherWorkSpaces">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="LauncherWorkSpacesEdgeLeft">
+        <item name="android:layout_width">@dimen/size_edge_workspace</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="LauncherWorkSpacesEdgeRight">
+        <item name="android:layout_width">@dimen/size_edge_workspace</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="LauncherBurgerButton">
