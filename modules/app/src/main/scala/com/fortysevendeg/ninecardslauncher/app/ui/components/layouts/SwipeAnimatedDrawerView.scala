@@ -2,12 +2,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.{View, LayoutInflater}
+import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.BackgroundDrawerAnimationDrawable
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerAnimationBackgroundDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.SwipeAnimatedDrawerViewSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{AppsView, ContactView, ContentView}
@@ -33,13 +33,11 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
 
   LayoutInflater.from(context).inflate(R.layout.swipe_animation_drawer_layout, self)
 
-  val background = new BackgroundDrawerAnimationDrawable()
-
   def initAnimation(contentView: ContentView, widthContainer: Int)
     (implicit theme: NineCardsTheme): Ui[_] = {
     val colorBackground = theme.get(SearchBackgroundColor)
     val colorForeground = colorBackground.dark(0.05f)
-    background.setColors(colorForeground, colorBackground)
+    val background = new DrawerAnimationBackgroundDrawable(colorForeground, colorBackground)
 
     val sizeIcon = icon map (ic => ic.getWidth + ic.getPaddingLeft + ic.getPaddingRight) getOrElse 0
     val (translationContent, translationIcon, resIcon) = contentView match {
@@ -71,9 +69,15 @@ class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: 
       case ContactView => (-widthContainer - displacement, widthContainer - sizeIcon + iconX)
     }
     val x = translationIcon + (sizeIcon / 2)
+    val backgroundUi = root map {
+      _.getBackground match {
+        case drawable: DrawerAnimationBackgroundDrawable => Ui(drawable.setData(percentage * percentage, x.toInt))
+        case _ => Ui.nop
+      }
+    } getOrElse Ui.nop
     (self <~ vTranslationX(translationContent)) ~
       (icon <~ vTranslationX(translationIcon)) ~
-      Ui(background.setData(percentage * percentage, x.toInt))
+      backgroundUi
   }
 
   def endAnimation(duration: Int): Ui[_] =

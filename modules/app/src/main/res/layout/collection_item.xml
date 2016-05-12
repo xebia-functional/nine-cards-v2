@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LauncherCollectionItemRoot">
+
+    <FrameLayout
+        android:id="@+id/launcher_collection_item_layout"
+        style="@style/LauncherCollectionItemLayout">
+
+        <FrameLayout
+            android:id="@+id/launcher_collection_item_icon_root"
+            style="@style/LauncherCollectionItemIconRoot">
+
+            <ImageView
+                android:id="@+id/launcher_collection_item_icon"
+                style="@style/LauncherCollectionItemIcon"/>
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/launcher_collection_item_name"
+            style="@style/LauncherCollectionItemName"/>
+
+    </FrameLayout>
+
+</FrameLayout>

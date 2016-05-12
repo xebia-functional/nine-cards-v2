@@ -76,8 +76,12 @@
 
     <!-- Groups of collections -->
     <dimen name="size_group_collection">72dp</dimen>
+    <dimen name="size_drag_group_collection">86dp</dimen>
+    <dimen name="margin_top_name_group_collection">80dp</dimen>
     <dimen name="margin_pager_collection">2dp</dimen>
     <integer name="anim_duration_pager_appear">175</integer>
+
+    <dimen name="size_edge_workspace">6dp</dimen>
 
     <dimen name="margin_bottom_fab_menu_content_collections">60dp</dimen>
 

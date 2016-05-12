@@ -26,7 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkSpaceItemMenu}
@@ -81,13 +81,15 @@ trait CollectionsUiActions
 
   lazy val workspaces = Option(findView(TR.launcher_work_spaces))
 
+  lazy val workspacesEdgeLeft = Option(findView(TR.launcher_work_spaces_edge_left))
+
+  lazy val workspacesEdgeRight = Option(findView(TR.launcher_work_spaces_edge_right))
+
   lazy val paginationPanel = Option(findView(TR.launcher_pagination_panel))
 
   lazy val searchPanel = Option(findView(TR.launcher_search_panel))
 
   lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
-
-  lazy val collectionRemoveAction = Option(findView(TR.launcher_collections_action_remove))
 
   lazy val burgerIcon = Option(findView(TR.launcher_burger_icon))
 
@@ -107,6 +109,8 @@ trait CollectionsUiActions
         (goToMenuOption(itemId) ~ closeMenu()).run
         true
       })) ~
+      (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
+      (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~
       (workspaces <~
         lwsPresenter(presenter) <~
@@ -126,8 +130,7 @@ trait CollectionsUiActions
         drawerLayout <~ dlOpenDrawer
       )) ~
       (googleIcon <~ googleButtonStyle <~ On.click(Ui(presenter.launchSearch))) ~
-      (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch))) ~
-      (collectionRemoveAction <~ removeActionStyle)
+      (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch)))
 
   def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[_] =
     workspaces <~ Tweak[View] { view =>
