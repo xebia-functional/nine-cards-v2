@@ -50,6 +50,8 @@ class CollectionsDetailsActivity
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
 
+    overridePendingTransition(0, 0)
+
     val position = getInt(
       Seq(bundle, getIntent.getExtras),
       startPosition,
@@ -79,6 +81,7 @@ class CollectionsDetailsActivity
     presenter.initialize(indexColor, icon, position, isStateChanged)
 
     registerDispatchers
+
   }
 
   override def onResume(): Unit = {

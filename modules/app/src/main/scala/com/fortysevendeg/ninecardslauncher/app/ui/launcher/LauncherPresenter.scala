@@ -292,7 +292,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def goToCollection(maybeCollection: Option[Collection], point: Point): Unit = {
     def launchIntent(activity: Activity, collection: Collection) = {
       val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
-      intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
       intent.putExtra(startPosition, collection.position)
       intent.putExtra(indexColorToolbar, collection.themedColorIndex)
       intent.putExtra(iconToolbar, collection.icon)
@@ -300,7 +299,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       actions.rippleToCollection(color, point) ~~
         Ui {
           activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
-          activity.overridePendingTransition(0, 0)
         }
     }
 
