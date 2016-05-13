@@ -16,6 +16,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -77,7 +78,8 @@ trait CollectionAdapterStyles {
       view.getLayoutParams.height = heightCard
     } +
       cvCardBackgroundColor(theme.get(CollectionDetailCardBackgroundColor)) +
-      flForeground(createBackground)
+      flForeground(createBackground) +
+      vDisableHapticFeedback
 
   private[this] def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
     val color = theme.get(CollectionDetailCardBackgroundPressedColor)

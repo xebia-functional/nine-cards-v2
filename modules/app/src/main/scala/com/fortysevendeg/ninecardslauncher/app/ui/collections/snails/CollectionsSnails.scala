@@ -46,7 +46,7 @@ object CollectionsSnails {
     val size = new Point()
     display.getSize(size)
     val height = size.y
-    val times = height / resGetDimension(R.dimen.height_toolbar_collection_details)
+    val times = height.toFloat / resGetDimension(R.dimen.height_toolbar_collection_details)
     vScaleY(times) ++ applyAnimation(scaleY = Some(1))
   }
 
@@ -55,7 +55,7 @@ object CollectionsSnails {
     val size = new Point()
     display.getSize(size)
     val height = size.y
-    val times = height / resGetDimension(R.dimen.height_toolbar_collection_details)
+    val times = (height.toFloat / resGetDimension(R.dimen.height_toolbar_collection_details)) * 2
     applyAnimation(scaleY = Some(times))
   }
 

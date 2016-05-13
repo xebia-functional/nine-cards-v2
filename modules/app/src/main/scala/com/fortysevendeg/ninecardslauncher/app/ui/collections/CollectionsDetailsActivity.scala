@@ -79,6 +79,8 @@ class CollectionsDetailsActivity
     presenter.initialize(indexColor, icon, position, isStateChanged)
 
     registerDispatchers
+
+    overridePendingTransition(0, 0)
   }
 
   override def onResume(): Unit = {

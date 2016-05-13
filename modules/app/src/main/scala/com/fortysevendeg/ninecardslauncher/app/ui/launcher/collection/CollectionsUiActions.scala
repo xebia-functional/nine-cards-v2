@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
 
 import android.content.Intent
-import android.graphics.{Bitmap, Color}
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.{View, ViewGroup}
-import android.widget.FrameLayout.LayoutParams
+import android.view.View
 import android.widget.{FrameLayout, ImageView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
@@ -18,8 +17,8 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
@@ -28,19 +27,19 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkSpaceItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import macroid.FullDsl._
 import macroid._
 
@@ -122,7 +121,7 @@ trait CollectionsUiActions
           )
         ) <~
         awsListener(AnimatedWorkSpacesListener(
-          onLongClick = () => (drawerLayout <~ dlOpenDrawer).run)
+          onLongClick = () => (uiVibrate() ~ (drawerLayout <~ dlOpenDrawer)).run)
         )) ~
       (searchPanel <~ searchContentStyle) ~
       (menuCollectionContent <~ vgAddViews(getItemsForFabMenu)) ~
