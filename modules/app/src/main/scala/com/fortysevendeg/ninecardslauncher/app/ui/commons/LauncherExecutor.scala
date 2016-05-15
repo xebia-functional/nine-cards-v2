@@ -183,7 +183,7 @@ trait LauncherExecutor {
       val intent = new Intent(Intent.ACTION_MAIN)
       intent.addCategory(Intent.CATEGORY_LAUNCHER)
       intent.setComponent(new ComponentName(packageName, className))
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
       intent
     }
 
@@ -208,7 +208,7 @@ trait LauncherExecutor {
   private[this] def googlePlayIntent(packageName: String)(implicit activityContext: ActivityContextWrapper) = {
     val intent = new Intent(Intent.ACTION_VIEW,
       Uri.parse(activityContext.application.getString(R.string.google_play_url, packageName)))
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     intent
   }
 

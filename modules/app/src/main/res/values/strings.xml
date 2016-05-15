@@ -374,6 +374,9 @@
     <string name="others">Others</string>
 
     <!-- Preferences About -->
+    <string name="appInfoTitle">9Cards App Info</string>
+    <string name="appInfoSummary">9Cards App Info Summary</string>
+
     <string name="aboutTitle">About</string>
     <string name="aboutSummary">About Summary</string>
 

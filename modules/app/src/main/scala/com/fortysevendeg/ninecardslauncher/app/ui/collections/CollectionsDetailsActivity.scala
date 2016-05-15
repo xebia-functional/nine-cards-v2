@@ -38,6 +38,8 @@ class CollectionsDetailsActivity
 
   val defaultStateChanged = false
 
+  var firstTime = true
+
   override lazy val presenter = new CollectionsPagerPresenter(self)
 
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
@@ -49,8 +51,6 @@ class CollectionsDetailsActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
-
-    overridePendingTransition(0, 0)
 
     val position = getInt(
       Seq(bundle, getIntent.getExtras),
@@ -85,11 +85,18 @@ class CollectionsDetailsActivity
   }
 
   override def onResume(): Unit = {
+    if (firstTime) {
+      overridePendingTransition(0, 0)
+      firstTime = false
+    } else {
+      overridePendingTransition(R.anim.abc_grow_fade_in_from_bottom, R.anim.abc_shrink_fade_out_from_bottom)
+    }
     super.onResume()
     presenter.resume()
   }
 
   override def onPause(): Unit = {
+    overridePendingTransition(R.anim.abc_grow_fade_in_from_bottom, R.anim.abc_shrink_fade_out_from_bottom)
     super.onPause()
     presenter.pause()
   }

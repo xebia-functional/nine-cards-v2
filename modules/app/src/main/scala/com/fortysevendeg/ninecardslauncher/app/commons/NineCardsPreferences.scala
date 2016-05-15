@@ -6,10 +6,6 @@ sealed trait NineCardsPreferences {
   val name: String
 }
 
-case object DefaultLauncherPreferences extends NineCardsPreferences {
-  override val name: String = defaultLauncherKey
-}
-
 case object ThemesPreferences extends NineCardsPreferences {
   override val name: String = themesKey
 }
@@ -28,6 +24,10 @@ case object AnimationsPreferences extends NineCardsPreferences {
 
 case object NewAppPreferences extends NineCardsPreferences {
   override val name: String = newAppKey
+}
+
+case object AppInfoPreferences extends NineCardsPreferences {
+  override val name: String = appInfoKey
 }
 
 case object AboutPreferences extends NineCardsPreferences {
@@ -57,6 +57,7 @@ object PreferencesKeys {
   val newAppKey = "newAppKey"
   val aboutKey = "aboutKey"
   val helpKey = "helpKey"
+  val appInfoKey = "appInfoKey"
 }
 
 

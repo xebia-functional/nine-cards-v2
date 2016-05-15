@@ -368,6 +368,9 @@
     <string name="aboutTitle">Sobre</string>
     <string name="aboutSummary">Resumen de Sobre</string>
 
+    <string name="appInfoTitle">Información de la App de 9Cards</string>
+    <string name="appInfoSummary">Resumen 9Cards</string>
+
     <string name="rateGooglePlay">Puntúa en Google Play</string>
 
     <string name="knowTeam">Conoce al Equipo</string>
