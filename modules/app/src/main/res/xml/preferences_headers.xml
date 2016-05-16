@@ -2,10 +2,6 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceScreen
-            android:title="@string/defaultLauncher"
-            android:key="defaultLauncherKey" />
-
     <PreferenceCategory android:title="@string/personalizationPreferences">
 
         <PreferenceScreen
@@ -36,6 +32,11 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/others">
+
+        <PreferenceScreen
+            android:title="@string/appInfoTitle"
+            android:key="appInfoKey"
+            android:summary="@string/appInfoSummary" />
 
         <PreferenceScreen
                 android:title="@string/aboutTitle"
