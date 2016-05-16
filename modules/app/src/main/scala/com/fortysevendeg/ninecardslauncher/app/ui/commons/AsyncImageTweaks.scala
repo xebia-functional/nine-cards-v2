@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import java.io.{File, InputStream}
 
 import android.content.{ContentResolver, UriMatcher}
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.ContactsContract
@@ -42,17 +43,14 @@ object AsyncImageTweaks {
   def ivApp(app: App)(implicit context: UiContext[_], contextWrapper: ContextWrapper): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
-        makeRequestForApp(
-          request = glide
-            .using(new AppIconLoader, classOf[App])
-            .from(classOf[App])
-            .as(classOf[Drawable])
-            .decoder(new ApplicationIconDecoder(app.packageName))
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .load(app),
-          imageView = imageView,
-          char = app.name.substring(0, 1)
-        )
+        glide
+          .using(new AppIconLoader, classOf[String])
+          .from(classOf[String])
+          .as(classOf[Bitmap])
+          .decoder(new ApplicationIconDecoder(app.packageName))
+          .diskCacheStrategy(DiskCacheStrategy.NONE)
+          .load(app.packageName)
+          .into(imageView)
       }
     }
   )
@@ -133,23 +131,6 @@ object AsyncImageTweaks {
           (view <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
-      })
-  }
-
-  private[this] def makeRequestForApp(
-    request: GenericRequestBuilder[App, App, Drawable, Drawable],
-    imageView: ImageView,
-    char: String,
-    circular: Boolean = true,
-    fade: Boolean = true)(implicit context: ContextWrapper) = {
-    request
-      .into(new ViewTarget[ImageView, Drawable](imageView) {
-        override def onLoadStarted(placeholder: Drawable): Unit =
-          view.setImageDrawable(javaNull)
-        override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          (view <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fade) fadeIn(200) else Snail.blank)).run
-        override def onResourceReady(resource: Drawable, glideAnimation: GlideAnimation[_ >: Drawable]): Unit =
-          (view <~ ivSrc(resource) <~ (if (fade) fadeIn(200) else Snail.blank)).run
       })
   }
 

@@ -3,20 +3,19 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons.glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.model.ModelLoader
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
 
 class AppIconLoader
-  extends ModelLoader[App, App] {
+  extends ModelLoader[String, String] {
 
-  override def getResourceFetcher(model: App, width: Int, height: Int): DataFetcher[App] =
-    new DataFetcher[App]() {
+  override def getResourceFetcher(model: String, width: Int, height: Int): DataFetcher[String] =
+    new DataFetcher[String]() {
       override def cleanup(): Unit = {}
 
-      override def loadData(priority: Priority): App = model
+      override def loadData(priority: Priority): String = model
 
       override def cancel(): Unit = {}
 
-      override def getId: String = model.packageName
+      override def getId: String = model
     }
 
 }
