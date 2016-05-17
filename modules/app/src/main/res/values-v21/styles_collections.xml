@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--<style name="CollectionsToolbar" parent="CollectionsToolbarParent">-->
-        <!--<item name="android:elevation">@dimen/elevation_toolbar</item>-->
-    <!--</style>-->
-
-    <!--<style name="CollectionsIconContent" parent="CollectionsIconContentParent">-->
-        <!--<item name="android:elevation">@dimen/elevation_toolbar</item>-->
-    <!--</style>-->
-
-    <!--<style name="CollectionsPager" parent="CollectionsPagerParent">-->
-        <!--<item name="android:elevation">@dimen/elevation_toolbar</item>-->
-    <!--</style>-->
-
-    <!--<style name="CollectionsTabs" parent="CollectionsTabsParent">-->
-        <!--<item name="android:elevation">@dimen/elevation_toolbar</item>-->
-    <!--</style>-->
-
     <style name="CollectionsFabMenuContent" parent="CollectionsFabMenuContentParent">
         <item name="android:elevation">@dimen/elevation_fab_button</item>
+    </style>
+
+    <style name="LauncherCollectionItemIcon" parent="LauncherCollectionItemIconParent">
+        <item name="android:elevation">@dimen/elevation_default</item>
     </style>
 
 </resources>

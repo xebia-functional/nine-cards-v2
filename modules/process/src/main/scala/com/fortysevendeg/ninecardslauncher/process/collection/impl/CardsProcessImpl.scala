@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, C
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
-import com.fortysevendeg.ninecardslauncher.services._
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
 import rapture.core.Answer
 
 import scalaz.concurrent.Task
@@ -33,12 +33,29 @@ trait CardsProcessImpl {
       _ <- updateCardList(moveCardList(cardList, card.position))
     } yield ()).resolve[CardException]
 
-  def reorderCard(collectionId: Int, cardId: Int, newPosition: Int) =
+  def reorderCard(collectionId: Int, cardId: Int, newPosition: Int) = {
+
+    def reorderList(cardList: Seq[Card], oldPosition: Int): Seq[Card] = {
+      val (init, end) = if (oldPosition > newPosition) (newPosition, oldPosition) else (oldPosition, newPosition)
+      cardList
+        .reorderRange(oldPosition, newPosition)
+        .zip(init to end)
+        .map( { case (card, index) => card.copy(position = index) })
+    }
+
+    def reorderAux(card: ServicesCard) =
+      if (card.position != newPosition)
+        for {
+          cardList <- getCardsByCollectionId(collectionId)
+          _ <- updateCardList(reorderList(cardList,card.position))
+        } yield ()
+      else Service.success[Unit,CardException](Unit)
+
     (for {
       Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
-      if card.position != newPosition
-      _ <- reorderServiceCard(collectionId, card, newPosition)
+      _ <- reorderAux(card)
     } yield ()).resolve[CardException]
+  }
 
   def editCard(collectionId: Int, cardId: Int, name: String) =
     (for {
@@ -65,16 +82,6 @@ trait CardsProcessImpl {
     cardList map { card =>
       if (card.position > position) toNewPositionCard(card, position - 1) else card
     }
-
-  private[this] def reorderServiceCard(collectionId: Int, card: persistence.models.Card, newPosition: Int) =
-    (for {
-      cardList <- getCardsByCollectionId(collectionId)
-      (from, to) = if (card.position > newPosition) (newPosition, card.position) else (card.position, newPosition)
-      updatedCards = cardList.reorderRange(card.position, newPosition).zip(from to to) map {
-        case (c, index) => c.copy(position = index)
-      }
-      _ <- updateCardList(updatedCards)
-    } yield ()).resolve[CardException]
 
   private[this] def updateCard(card: Card) =
     (for {

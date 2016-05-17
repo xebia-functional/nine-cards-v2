@@ -890,6 +890,15 @@ class CollectionProcessImplSpec
         }
       }
 
+    "returns an empty answer for a valid request, even if new position is the same" in
+      new CollectionProcessScope with ValidReorderCardPersistenceServicesResponses {
+        val result = collectionProcess.reorderCard(collectionId, cardId, position).run.run
+        result must beLike {
+          case Answer(resultCollection) =>
+            resultCollection shouldEqual ((): Unit)
+        }
+    }
+
     "returns a CardException if the service throws a exception finding the card by Id" in
       new CollectionProcessScope with ErrorReorderFindCardPersistenceServicesResponses {
         val result = collectionProcess.reorderCard(collectionId, cardId, newPosition).run.run

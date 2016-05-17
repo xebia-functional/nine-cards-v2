@@ -13,13 +13,26 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object TintableImageViewTweaks {
   type W = TintableImageView
 
-  def tivDefaultColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W] {
-    view =>
-      view.defaultColor = color
-      view.setTint(color)
+  def tivDefaultColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { view =>
+    view.defaultColor = color
+    view.setTint(color)
   }
 
   def tivPressedColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.pressedColor = color)
+
+}
+
+object TintableButtonTweaks {
+  type W = TintableButton
+
+  def tbDefaultColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { view =>
+    view.defaultColor = color
+    view.setTint(color)
+  }
+
+  def tbPressedColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.pressedColor = color)
+
+  def tbResetColor()(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.setDefaultColor())
 
 }
 

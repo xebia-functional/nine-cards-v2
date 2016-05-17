@@ -21,15 +21,30 @@
             <FrameLayout
                 style="@style/LauncherTopBox">
 
-                <include layout="@layout/collections_actions_view_panel"/>
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.CollectionActionsPanelLayout
+                    style="@style/LauncherCollectionActionsPanel"
+                    android:id="@+id/launcher_collections_actions_panel" />
 
                 <include layout="@layout/search_view_panel"/>
 
             </FrameLayout>
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherWorkSpaces
-                style="@style/LauncherWorkSpaces"
-                android:id="@+id/launcher_work_spaces"/>
+            <FrameLayout
+                style="@style/LauncherWorkSpacesLayout">
+
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherWorkSpaces
+                    style="@style/LauncherWorkSpaces"
+                    android:id="@+id/launcher_work_spaces"/>
+
+                <ImageView
+                    style="@style/LauncherWorkSpacesEdgeLeft"
+                    android:id="@+id/launcher_work_spaces_edge_left"/>
+
+                <ImageView
+                    style="@style/LauncherWorkSpacesEdgeRight"
+                    android:id="@+id/launcher_work_spaces_edge_right"/>
+
+            </FrameLayout>
 
             <LinearLayout
                 style="@style/LauncherPaginationPanel"

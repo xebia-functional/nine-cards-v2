@@ -13,7 +13,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
@@ -50,7 +50,7 @@ case class IconDialogFragment(categorySelected: NineCardCategory)(implicit conte
 
     val name = resGetString(category.getStringResource).getOrElse(category.getStringResource)
 
-    val colorizeDrawable = ColorsUtils.colorizeDrawable(resGetDrawable(iconCollectionDetail(category.name)), Color.GRAY)
+    val colorizeDrawable = resGetDrawable(iconCollectionDetail(category.name)).colorize(Color.GRAY)
 
     val drawable = new PathMorphDrawable(
       defaultIcon = IconTypes.CHECK,

@@ -12,7 +12,7 @@ import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
@@ -28,7 +28,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.AddItemToCollection
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -55,6 +57,14 @@ trait LauncherUiActionsImpl
 
   lazy val foreground = Option(findView(TR.launcher_foreground))
 
+  lazy val actionForCollections = Seq(
+    CollectionActionItem(resGetString(R.string.edit), R.drawable.icon_launcher_action_edit, CollectionActionEdit),
+    CollectionActionItem(resGetString(R.string.remove), R.drawable.icon_launcher_action_remove, CollectionActionRemove))
+
+  lazy val actionForApps = Seq(
+    CollectionActionItem(resGetString(R.string.appInfo), R.drawable.icon_launcher_action_info_app, CollectionActionAppInfo),
+    CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall))
+
   override def initialize: Ui[Any] =
     Ui(initAllSystemBarsTint) ~
       prepareBars ~
@@ -74,6 +84,8 @@ trait LauncherUiActionsImpl
 
   override def showMinimumOneCollectionMessage(): Ui[Any] = showMessage(R.string.minimumOneCollectionMessage)
 
+  override def showNoImplementedYetMessage(): Ui[Any] = showMessage(R.string.todo)
+
   override def showLoading(): Ui[Any] = showCollectionsLoading
 
   override def goToPreviousScreen(): Ui[Any]= {
@@ -86,22 +98,8 @@ trait LauncherUiActionsImpl
     goToNextWorkspace().ifUi(canMoveToNextScreen)
   }
 
-  override def goToPreviousScreenReordering(): Ui[Any] = {
-    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
-    (goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1))).ifUi(canMoveToPreviousScreen)
-  }
-
-  override def goToNextScreenReordering(): Ui[Any] = {
-    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
-    (goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0))).ifUi(canMoveToNextScreen)
-  }
-
   override def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any] =
     createCollections(collections, apps)
-
-  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any] = reloadReorderedCollections(from, to)
-
-  def reloadCollectionsFailed(): Ui[Any] = reloadCollections()
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
     userProfileMenu(email, name, avatarUrl, coverPhotoUrl)
@@ -172,21 +170,55 @@ trait LauncherUiActionsImpl
   override def startReorder: Ui[Any] =
     (dockAppsPanel <~ fadeOut()) ~
       (searchPanel <~ fadeOut()) ~
-      (collectionActionsPanel <~ fadeIn())
+      (collectionActionsPanel <~ caplLoad(actionForCollections) <~ fadeIn()) ~
+      reloadEdges()
 
   override def endReorder: Ui[Any] =
     (dockAppsPanel <~ fadeIn()) ~
       (searchPanel <~ fadeIn()) ~
-      (collectionActionsPanel <~~ fadeOut())
+      (collectionActionsPanel <~~ fadeOut()) ~
+      hideEdges()
 
-  override def startAddItem: Ui[Any] =
+  override def goToNextScreenReordering(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreenOnlyCollections()).get getOrElse false
+    (goToNextWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(0)) ~ reloadEdges()).ifUi(canMoveToNextScreen)
+  }
+
+  override def goToPreviousScreenReordering(): Ui[Any] = {
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreenOnlyCollections()).get getOrElse false
+    (goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1)) ~ reloadEdges()).ifUi(canMoveToPreviousScreen)
+  }
+
+  override def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any] = reloadReorderedCollections(from, to)
+
+  override def reloadCollectionsFailed(): Ui[Any] = reloadCollections()
+
+  override def startAddItem(cardType: CardType): Ui[Any] = {
+    val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
     revealOutDrawer ~
-    (searchPanel <~ fadeOut()) ~
-      (collectionActionsPanel <~ fadeIn())
+      (searchPanel <~ fadeOut()) ~
+      (cardType match {
+        case AppCardType => collectionActionsPanel <~ caplLoad(actionForApps) <~ fadeIn()
+        case _ => Ui.nop
+      }) ~
+      reloadEdges() ~
+      (if (isCollectionWorkspace) Ui.nop else goToWorkspace(pageCollections))
+  }
 
   override def endAddItem: Ui[Any] =
     (searchPanel <~ fadeIn()) ~
-      (collectionActionsPanel <~~ fadeOut())
+      (collectionActionsPanel <~~ fadeOut()) ~
+      hideEdges()
+
+  override def goToPreviousScreenAddingItem(): Ui[Any] = {
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
+    (goToPreviousWorkspace() ~ reloadEdges()).ifUi(canMoveToPreviousScreen)
+  }
+
+  override def goToNextScreenAddingItem(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
+    (goToNextWorkspace() ~ reloadEdges()).ifUi(canMoveToNextScreen)
+  }
 
   private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
 
@@ -209,6 +241,18 @@ trait LauncherUiActionsImpl
     case imageView: ImageView =>
       imageView <~ vActivated(false)
   }
+
+  private[this] def reloadEdges(): Ui[Any] = {
+    val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreenOnlyCollections()).get getOrElse false
+    val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreenOnlyCollections()).get getOrElse false
+    (workspacesEdgeLeft <~ (if (canMoveToPreviousScreen) vVisible else vGone)) ~
+      (workspacesEdgeRight <~ (if (canMoveToNextScreen) vVisible else vGone))
+  }
+
+  private[this] def hideEdges(): Ui[Any] =
+    (workspacesEdgeLeft <~ vGone) ~
+      (workspacesEdgeRight <~ vGone)
+
 
   private[this] def prepareBars =
     KitKat.ifSupportedThen {
@@ -260,6 +304,9 @@ trait LauncherUiActionsImpl
               case DockAppsDragArea =>
                 // Project to dock apps
                 (dockAppsPanel <~ daplDragDispatcher(action, x, y - (height - bottomBar))).run
+              case ActionsDragArea =>
+                // Project to Collection actions
+                (collectionActionsPanel <~ caplDragDispatcher(action, x, y)).run
               case _ =>
             }
           case _ =>

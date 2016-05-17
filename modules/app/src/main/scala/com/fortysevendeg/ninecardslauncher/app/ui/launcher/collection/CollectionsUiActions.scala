@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
 
 import android.content.Intent
-import android.graphics.{Bitmap, Color}
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.{View, ViewGroup}
-import android.widget.FrameLayout.LayoutParams
+import android.view.View
 import android.widget.{FrameLayout, ImageView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
@@ -19,27 +18,28 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkSpaceItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import macroid.FullDsl._
 import macroid._
 
@@ -80,13 +80,15 @@ trait CollectionsUiActions
 
   lazy val workspaces = Option(findView(TR.launcher_work_spaces))
 
+  lazy val workspacesEdgeLeft = Option(findView(TR.launcher_work_spaces_edge_left))
+
+  lazy val workspacesEdgeRight = Option(findView(TR.launcher_work_spaces_edge_right))
+
   lazy val paginationPanel = Option(findView(TR.launcher_pagination_panel))
 
   lazy val searchPanel = Option(findView(TR.launcher_search_panel))
 
   lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
-
-  lazy val collectionRemoveAction = Option(findView(TR.launcher_collections_action_remove))
 
   lazy val burgerIcon = Option(findView(TR.launcher_burger_icon))
 
@@ -106,6 +108,8 @@ trait CollectionsUiActions
         (goToMenuOption(itemId) ~ closeMenu()).run
         true
       })) ~
+      (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
+      (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~
       (workspaces <~
         lwsPresenter(presenter) <~
@@ -117,7 +121,7 @@ trait CollectionsUiActions
           )
         ) <~
         awsListener(AnimatedWorkSpacesListener(
-          onLongClick = () => (drawerLayout <~ dlOpenDrawer).run)
+          onLongClick = () => (uiVibrate() ~ (drawerLayout <~ dlOpenDrawer)).run)
         )) ~
       (searchPanel <~ searchContentStyle) ~
       (menuCollectionContent <~ vgAddViews(getItemsForFabMenu)) ~
@@ -125,8 +129,7 @@ trait CollectionsUiActions
         drawerLayout <~ dlOpenDrawer
       )) ~
       (googleIcon <~ googleButtonStyle <~ On.click(Ui(presenter.launchSearch))) ~
-      (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch))) ~
-      (collectionRemoveAction <~ removeActionStyle)
+      (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch)))
 
   def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[_] =
     workspaces <~ Tweak[View] { view =>
@@ -248,7 +251,7 @@ trait CollectionsUiActions
 
   private[this] def updateOpenCollectionMenu(percent: Float): Ui[_] = {
     val backgroundPercent = maxBackgroundPercent * percent
-    val colorBackground = ColorsUtils.setAlpha(Color.BLACK, backgroundPercent)
+    val colorBackground = Color.BLACK.alpha(backgroundPercent)
     val height = (menuCollectionContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
     val translate = height - (height * percent)
     (menuCollectionRoot <~ vBackgroundColor(colorBackground)) ~

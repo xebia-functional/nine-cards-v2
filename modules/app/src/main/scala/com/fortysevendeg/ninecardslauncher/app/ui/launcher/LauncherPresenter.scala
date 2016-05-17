@@ -72,18 +72,18 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   private[this] def startAddItemToCollection(addCardRequest: AddCardRequest): Unit = {
     statuses = statuses.startAddItem(addCardRequest)
-    actions.startAddItem.run
+    actions.startAddItem(addCardRequest.cardType).run
   }
 
   def draggingAddItemTo(position: Int): Unit = statuses = statuses.updateCurrentPosition(position)
 
   def draggingAddItemToPreviousScreen(position: Int): Unit = {
-    actions.goToPreviousScreen().run
+    actions.goToPreviousScreenAddingItem().run
     statuses.updateCurrentPosition(position)
   }
 
   def draggingAddItemToNextScreen(position: Int): Unit = {
-    actions.goToNextScreen().run
+    actions.goToNextScreenAddingItem().run
     statuses.updateCurrentPosition(position)
   }
 
@@ -94,7 +94,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           onResult = (_) => actions.showAddItemMessage(collection.name),
           onException = (_) => actions.showContactUsError())
       case _ =>
-        actions.showContactUsError().run
     }
     statuses = statuses.reset()
     actions.endAddItem.run
@@ -127,10 +126,20 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.endAddItem.run
   }
 
-  def removeInAddItem(): Unit = {
+  def uninstallInAddItem(): Unit = {
     statuses.cardAddItemMode match {
       case Some(card: AddCardRequest) if card.cardType == AppCardType =>
         card.packageName foreach launchUninstall
+      case _ =>
+    }
+    statuses = statuses.reset()
+    actions.endAddItem.run
+  }
+
+  def settingsInAddItem(): Unit = {
+    statuses.cardAddItemMode match {
+      case Some(card: AddCardRequest) if card.cardType == AppCardType =>
+        card.packageName foreach launchSettings
       case _ =>
     }
     statuses = statuses.reset()
@@ -206,6 +215,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       }
     } getOrElse actions.showContactUsError()).run
 
+  def editCollectionInReorderMode(): Unit =
+    (statuses.collectionReorderMode match {
+      case Some(_) => actions.showNoImplementedYetMessage()
+      case None => actions.showContactUsError()
+    }).run
+
   def removeCollection(collection: Collection): Unit = {
     Task.fork(deleteCollection(collection.id).run).resolveAsyncUi(
       onResult = (_) => actions.removeCollection(collection),
@@ -277,7 +292,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def goToCollection(maybeCollection: Option[Collection], point: Point): Unit = {
     def launchIntent(activity: Activity, collection: Collection) = {
       val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
-      intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
       intent.putExtra(startPosition, collection.position)
       intent.putExtra(indexColorToolbar, collection.themedColorIndex)
       intent.putExtra(iconToolbar, collection.icon)
@@ -285,7 +299,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       actions.rippleToCollection(color, point) ~~
         Ui {
           activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
-          activity.overridePendingTransition(0, 0)
         }
     }
 
@@ -376,9 +389,21 @@ trait LauncherUiActions {
 
   def endReorder: Ui[Any]
 
-  def startAddItem: Ui[Any]
+  def goToPreviousScreenReordering(): Ui[Any]
+
+  def goToNextScreenReordering(): Ui[Any]
+
+  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
+
+  def reloadCollectionsFailed(): Ui[Any]
+
+  def startAddItem(cardType: CardType): Ui[Any]
 
   def endAddItem: Ui[Any]
+
+  def goToPreviousScreenAddingItem(): Ui[Any]
+
+  def goToNextScreenAddingItem(): Ui[Any]
 
   def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any]
 
@@ -394,21 +419,15 @@ trait LauncherUiActions {
 
   def showMinimumOneCollectionMessage(): Ui[Any]
 
+  def showNoImplementedYetMessage(): Ui[Any]
+
   def showLoading(): Ui[Any]
 
   def goToPreviousScreen(): Ui[Any]
 
   def goToNextScreen(): Ui[Any]
 
-  def goToPreviousScreenReordering(): Ui[Any]
-
-  def goToNextScreenReordering(): Ui[Any]
-
   def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any]
-
-  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
-
-  def reloadCollectionsFailed(): Ui[Any]
 
   def reloadAppsInDrawer(
     apps: IterableApps,

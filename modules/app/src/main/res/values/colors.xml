@@ -65,6 +65,7 @@
 
     <!-- WorkSpace -->
     <color name="collection_workspace_button_item_title">#ffffff</color>
+    <color name="collection_workspace_feedback_drop">#77ffffff</color>
 
     <!-- Groups of collections -->
     <color name="collection_group_name">#ffffff</color>
@@ -100,6 +101,9 @@
     <color name="text_tab_color_default">#77ffffff</color>
     <color name="text_tab_color_selected">#ffffff</color>
     <color name="text_empty_collection">#ffffff</color>
+
+    <color name="actions_bar_background">#ffffff</color>
+    <color name="actions_bar_default">#727272</color>
 
     <!-- Windows actions -->
     <color name="background_actions">#EEEEEE</color>

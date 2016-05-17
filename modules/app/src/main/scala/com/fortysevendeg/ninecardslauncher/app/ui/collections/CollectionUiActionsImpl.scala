@@ -9,6 +9,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -55,13 +56,15 @@ trait CollectionUiActionsImpl
     statuses = statuses.copy(scrollType = sType, canScroll = canScroll)
   }
 
-  override def startReorder(holder: ViewHolder): Ui[Any] = Ui(statuses.touchHelper foreach(_.startDrag(holder)))
+  override def startReorder(holder: ViewHolder): Ui[Any] = statuses.touchHelper map { th =>
+    uiVibrate() ~ Ui(th.startDrag(holder))
+  } getOrElse Ui.nop
 
   override def initialize(
     animateCards: Boolean,
     collection: Collection): Ui[_] = {
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
-      color = resGetColor(getIndexColor(collection.themedColorIndex)),
+      accentColor = resGetColor(getIndexColor(collection.themedColorIndex)),
       onChanged = {
         case (ActionStateReordering, _, position) =>
           if (!isPulling()) {
@@ -82,6 +85,24 @@ trait CollectionUiActionsImpl
                 }
                 // Update the scroll removing one element
                 updateScroll(-1)
+              case ActionEdit =>
+                for {
+                  adapter <- getAdapter
+                  collection = adapter.collection
+                  card <- collection.cards.lift(position)
+                } yield {
+                  presenter.reorderCard(collection.id, card.id, position)
+                  presenter.editCard()
+                }
+              case ActionMove =>
+                for {
+                  adapter <- getAdapter
+                  collection = adapter.collection
+                  card <- collection.cards.lift(position)
+                } yield {
+                  presenter.reorderCard(collection.id, card.id, position)
+                  presenter.moveToCard()
+                }
               case NoAction =>
                 for {
                   adapter <- getAdapter
@@ -119,6 +140,8 @@ trait CollectionUiActionsImpl
   override def reloadCards(): Ui[Any] = Ui {
     collectionsPresenter.reloadCards(false)
   }
+
+  override def showMessageNotImplemented(): Ui[Any] = Ui(collectionsPresenter.showMessageNotImplemented())
 
   override def showEmptyCollection(): Ui[Any] = {
     val color = theme.get(SearchGoogleColor)

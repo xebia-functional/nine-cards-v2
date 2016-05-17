@@ -1,16 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 
+import android.content.Context
 import android.graphics.Color
-import android.view.Gravity
+import android.view.{Gravity, View}
 import android.widget.TextView
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherWorkSpaceHolder
-import macroid.ContextWrapper
+import macroid.Contexts
 import macroid.FullDsl._
 
-class LauncherWorkSpaceMomentsHolder(implicit contextWrapper: ContextWrapper)
-  extends LauncherWorkSpaceHolder {
+class LauncherWorkSpaceMomentsHolder(context: Context)
+  extends LauncherWorkSpaceHolder(context)
+  with Contexts[View] {
 
   var text = slot[TextView]
 

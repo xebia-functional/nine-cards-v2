@@ -1,10 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
+import android.content.Context
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
+import android.os.Vibrator
 import android.view.{DragEvent, View}
 import android.view.View.OnDragListener
-import android.widget.ImageView
+import android.widget.{ImageView, TextView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -55,5 +57,14 @@ object ExtraTweaks {
   // TODO - Move to macroid extras
 
   def ivBlank: Tweak[ImageView] = Tweak[ImageView](_.setImageBitmap(javaNull))
+
+  def vDisableHapticFeedback: Tweak[View] = Tweak[View](_.setHapticFeedbackEnabled(false))
+
+  def uiVibrate(milis: Long = 200)(implicit contextWrapper: ContextWrapper): Ui[Any] = Ui {
+    contextWrapper.application.getSystemService(Context.VIBRATOR_SERVICE) match {
+      case vibrator: Vibrator => vibrator.vibrate(milis)
+      case _ =>
+    }
+  }
 
 }

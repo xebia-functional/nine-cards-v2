@@ -11,6 +11,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
@@ -81,7 +82,7 @@ trait FabButtonBehaviour
       resetDelayedHide
     } else {
       val colorDefault = resGetColor(color)
-      val colorDark = ColorsUtils.getColorDark(colorDefault)
+      val colorDark = colorDefault.dark()
       (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton()) ~
         (fabButton <~ (if (color != 0) fbaColor(colorDefault, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
         (if (color != 0) fabMenu <~ changeItemsColor(color) else Ui.nop)

@@ -4,6 +4,9 @@
     <!-- General -->
     <string name="edit">Editar</string>
     <string name="remove">Eliminar</string>
+    <string name="moveTo">Mover a</string>
+    <string name="appInfo">Información</string>
+    <string name="uninstall">Desinstalar</string>
     <string name="make_public">Hacer Pública</string>
     <string name="share">Compartir</string>
     <string name="filter">Filtrar</string>
@@ -364,6 +367,9 @@
     <!-- Preferences About -->
     <string name="aboutTitle">Sobre</string>
     <string name="aboutSummary">Resumen de Sobre</string>
+
+    <string name="appInfoTitle">Información de la App de 9Cards</string>
+    <string name="appInfoSummary">Resumen 9Cards</string>
 
     <string name="rateGooglePlay">Puntúa en Google Play</string>
 

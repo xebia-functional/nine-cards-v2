@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import android.view.View
 import android.view.animation.{DecelerateInterpolator, AccelerateInterpolator, AccelerateDecelerateInterpolator}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{Ui, Snail, ContextWrapper}
@@ -145,14 +145,14 @@ object SnailsCommons {
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
-      val colorFrom = ColorsUtils.setAlpha(color, 0f)
-      val colorTo = ColorsUtils.setAlpha(color, 1f)
+      val colorFrom = color.alpha(0f)
+      val colorTo = color.alpha(1f)
 
       val valueAnimator = ValueAnimator.ofInt(0, 100)
       valueAnimator.setDuration(duration)
       valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
         override def onAnimationUpdate(value: ValueAnimator) = {
-          val color = interpolateColors(value.getAnimatedFraction, colorFrom, colorTo)
+          val color = (colorFrom, colorTo).interpolateColors(value.getAnimatedFraction)
           view.setBackgroundColor(color)
         }
       })

@@ -6,7 +6,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorsUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
@@ -19,7 +19,7 @@ trait Styles {
     val iconFabButton = new PathMorphDrawable(
       defaultIcon = IconTypes.CHECK,
       defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default))
-    val darkColor = ColorsUtils.getColorDark(color)
+    val darkColor = color.dark()
     ivSrc(iconFabButton) +
       fbaColor(color, darkColor)
   }
