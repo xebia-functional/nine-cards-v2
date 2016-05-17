@@ -17,6 +17,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide._
+import com.bumptech.glide.load.resource.bitmap.{BitmapEncoder, StreamBitmapDecoder}
+import com.bumptech.glide.load.resource.file.FileToStreamDecoder
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
@@ -48,7 +50,8 @@ object AsyncImageTweaks {
           .from(classOf[String])
           .as(classOf[Bitmap])
           .decoder(new ApplicationIconDecoder(app.packageName))
-          .diskCacheStrategy(DiskCacheStrategy.NONE)
+          .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
+          .encoder(new BitmapEncoder())
           .load(app.packageName)
           .into(imageView)
       }
