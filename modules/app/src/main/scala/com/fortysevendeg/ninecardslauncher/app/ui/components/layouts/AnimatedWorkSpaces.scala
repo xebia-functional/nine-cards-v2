@@ -8,6 +8,7 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.view._
 import android.widget.FrameLayout
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -32,13 +33,17 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
+  val positionViewKey = "position-view"
+
   var listener = new AnimatedWorkSpacesListener
 
   var data: Seq[Data] = Seq.empty
 
+  var views: Seq[Holder] = Seq.empty
+
   var statuses = AnimatedWorkSpacesStatuses(
-    horizontalGallery = getHorizontalGallery,
-    infinite = getInfinite)
+    horizontalGallery = true,
+    infinite = false)
 
   var onPageChangedObservers: Seq[PageChangedObserver] = Seq.empty
 
@@ -61,22 +66,13 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   val params = new LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
-  var previousParentView: Option[FrameLayout] = Some(new FrameLayout(context))
-  var nextParentView: Option[FrameLayout] = Some(new FrameLayout(context))
-  var frontParentView: Option[FrameLayout] = Some(new FrameLayout(context))
+  var parentViewOne = slot[FrameLayout]
 
-  var previousView = slot[Holder]
-  var previewViewType = 0
-  var nextView = slot[Holder]
-  var nextViewType = 0
-  var frontView = slot[Holder]
-  var frontViewType = 0
+  var parentViewTwo = slot[FrameLayout]
+
+  var parentViewThree = slot[FrameLayout]
 
   override def onLongClick: () => Unit = listener.onLongClick
-
-  def getHorizontalGallery: Boolean = true
-
-  def getInfinite: Boolean = false
 
   def createView(viewType: Int): Holder
 
@@ -88,6 +84,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def getWorksSpacesCount = data.length
 
+  def getCurrentView: Option[Holder] = views.lift(statuses.currentItem)
+
   def init(position: Int = 0): Unit = {
     if (data.isEmpty) {
       throw new InstantiationException("data can't be empty")
@@ -96,35 +94,31 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
     removeAllViews()
 
-    val (lastItem, nextItem) = if (data.length > 1) (data.length - 1, 1) else (0, 0)
-    previewViewType = getItemViewType(data.last, lastItem)
-    val previous = createView(previewViewType)
-    nextViewType = getItemViewType(data(nextItem), nextItem)
-    val next = createView(nextViewType)
-    frontViewType = getItemViewType(data(0), 0)
-    val front = createView(frontViewType)
-    previousView = Some(previous)
-    nextView = Some(next)
-    frontView = Some(front)
+    views = data.zipWithIndex map {
+      case (d, index) =>
+        val view = createView(getItemViewType(d, index))
+        populateView(Some(view), data(index), getItemViewType(data(index), index), index).run
+        view
+    }
 
-    val ui = (for {
-      p <- previousParentView
-      n <- nextParentView
-      f <- frontParentView
-    } yield {
-      p.addView(previous, params)
-      n.addView(next, params)
-      f.addView(front, params)
-      self <~ vgAddViews(Seq(p, n, f), params)
-    }) getOrElse (throw new InstantiationException("parent views can't be added"))
-    (ui ~ reset()).run
+    ((self <~ vgAddViews(Seq(
+      (w[FrameLayout] <~
+        wire(parentViewOne) <~
+        vAddField(positionViewKey, PreviousView)).get,
+      (w[FrameLayout] <~
+        wire(parentViewTwo) <~
+        vAddField(positionViewKey, NextView)).get,
+      (w[FrameLayout] <~
+        wire(parentViewThree) <~
+        vAddField(positionViewKey, FrontView)).get), params)) ~ reset()).run
+
   }
 
   def clean(): Unit = {
     data = Seq.empty
-    previousParentView foreach(_.removeAllViews())
-    nextParentView foreach(_.removeAllViews())
-    frontParentView foreach(_.removeAllViews())
+    parentViewOne foreach(_.removeAllViews())
+    parentViewTwo foreach(_.removeAllViews())
+    parentViewThree foreach(_.removeAllViews())
     removeAllViews()
   }
 
@@ -176,26 +170,21 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     moveItemsAnimator.cancel()
     statuses = statuses.updateDisplacement(getSizeWidget, delta)
 
-    val uiVisibility = statuses.displacement match {
-      case d if d > 0 => (previousParentView <~ vVisible) ~ (nextParentView <~ vGone)
-      case _ => (previousParentView <~ vGone) ~ (nextParentView <~ vVisible)
-    }
-
-    uiVisibility ~ applyTranslation(frontParentView, statuses.displacement) ~ transformPanelCanvas()
+    applyTranslation(getFrontView, statuses.displacement) ~ transformPanelCanvas()
   }
 
   def selectPosition(position: Int): Unit = {
     statuses = statuses.copy(currentItem = position)
-    reset().run
+    (reset() ~ reset()).run // TODO Change that
   }
 
   private[this] def applyTranslation(view: Option[ViewGroup], translate: Float): Ui[_] =
     view <~ (if (statuses.horizontalGallery) vTranslationX(translate) else vTranslationY(translate))
 
-  private[this] def transformPanelCanvas(): Ui[_] = {
+  private[this] def   transformPanelCanvas(): Ui[_] = {
     val percent = statuses.percent(getSizeWidget)
     val fromLeft = statuses.isFromLeft
-    applyTransformer(if (fromLeft) previousParentView else nextParentView, percent, fromLeft)
+    applyTransformer(if (fromLeft) getPreviousView else getNextView, percent, fromLeft)
   }
 
   private[this] def applyTransformer(view: Option[ViewGroup], percent: Float, fromLeft: Boolean): Ui[_] = {
@@ -209,128 +198,59 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   private[this] def animateViews(dest: Int, duration: Int): Ui[_] = {
     statuses = statuses.copy(swap = dest != 0)
     if (statuses.swap) notifyPageChangedObservers()
-    (self <~
-      vInvalidate <~~
-      moveItemsAnimator.move(statuses.displacement, dest, duration)) ~~
+    (self <~ vInvalidate) ~
+      (getFrontView <~~ moveItemsAnimator.move(statuses.displacement, dest, duration, attachTarget = true)) ~~
       resetAnimationEnd
   }
 
-  private[this] def next(): Unit = for {
-    frontParent <- frontParentView
-    nextParent <- nextParentView
-    previousParent <- previousParentView
-    front <- frontView
-    next <- nextView
-    previous <- previousView
-  } yield {
-    frontParentView = Some(nextParent)
-    nextParentView = Some(previousParent)
-    previousParentView = Some(frontParent)
-    frontView = Some(next)
-    nextView = Some(previous)
-    previousView = Some(front)
-    val auxFront = frontViewType
-    frontViewType = nextViewType
-    nextViewType = previewViewType
-    previewViewType = auxFront
+  private[this] def next(): Ui[_] = {
     statuses = statuses.copy(currentItem = goToItem())
+    this <~ reloadNextPositionView
   }
 
-  private[this] def previous(): Unit = for {
-    frontParent <- frontParentView
-    nextParent <- nextParentView
-    previousParent <- previousParentView
-    front <- frontView
-    next <- nextView
-    previous <- previousView
-  } yield {
-    frontParentView = Some(previousParent)
-    nextParentView = Some(frontParent)
-    previousParentView = Some(nextParent)
-    frontView = Some(previous)
-    nextView = Some(front)
-    previousView = Some(next)
-    val auxFront = frontViewType
-    frontViewType = previewViewType
-    previewViewType = nextViewType
-    nextViewType = auxFront
+  private[this] def previous(): Ui[_] = {
     statuses = statuses.copy(currentItem = goToItem())
+    this <~ reloadPreviousPositionView
   }
 
-  private[this] def swapViews(): Ui[_] = {
-    if (statuses.isFromLeft) previous() else next()
-    reset()
-  }
+  private[this] def swapViews(): Ui[_] =
+    (if (statuses.isFromLeft) previous() else next()) ~
+      reset()
 
   private[this] def resetAnimationEnd(): Ui[_] =
     (if (statuses.swap) swapViews() else Ui.nop) ~
       (self <~ vLayerHardware(activate = false))
 
   def reset(): Ui[_] = {
-    // TODO Shouldn't create views directly from here
-    val frontUi = generateFrontUi
-    val leftUi = generateLeftUi
-    val rightUi = generateRightUi
+    val currentItem = statuses.currentItem
+
+    val positionLeft = if (currentItem - 1 < 0) data.length - 1 else currentItem - 1
+
+    val positionRight = if (currentItem + 1 > data.length - 1) 0 else currentItem + 1
+
     statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
 
     moveItemsAnimator.cancel()
 
-    (frontParentView <~ moveItemsAnimator.move(0, 0, attachTarget = true)) ~
-      frontUi ~ leftUi ~ rightUi ~
-      applyTranslation(frontParentView, statuses.displacement) ~
-      applyTranslation(nextParentView, getSizeWidget) ~
-      applyTranslation(previousParentView, -getSizeWidget) ~
-      (previousParentView <~ vGone) ~
-      (nextParentView <~ vGone <~ vBringToFront) ~
-      (frontParentView <~ vClearAnimation <~ vVisible <~ vBringToFront)
+    val front = getFrontView
 
-  }
+    val next = getNextView
 
-  private[this] def generateFrontUi: Ui[_] = {
-    val currentItem = statuses.currentItem
-    val auxFrontViewType = getItemViewType(data(currentItem), currentItem)
+    val prev = getPreviousView
 
-    auxFrontViewType match {
-      case aux if aux != frontViewType =>
-        frontViewType = auxFrontViewType
-        val newView = createView(frontViewType)
-        frontView = Some(newView)
-        (frontParentView <~ vgRemoveAllViews <~ vgAddView(newView, params)) ~
-          populateView(frontView, data(currentItem), frontViewType, currentItem)
-      case _ => populateView(frontView, data(currentItem), frontViewType, currentItem)
-    }
-  }
+    (front <~
+      vgRemoveAllViews <~
+      vgAddView(views(currentItem), params)) ~
+      (prev <~
+        vgRemoveAllViews <~
+        vgAddView(views(positionLeft), params)) ~
+      (next <~
+        vgRemoveAllViews <~
+        vgAddView(views(positionRight), params)) ~
+      applyTranslation(front, 0) ~
+      applyTranslation(next, getSizeWidget) ~
+      applyTranslation(prev, -getSizeWidget)
 
-  private[this] def generateLeftUi: Ui[_] = {
-    val currentItem = statuses.currentItem
-    val positionLeft: Int = if (currentItem - 1 < 0) data.length - 1 else currentItem - 1
-    val auxPreviewViewType = getItemViewType(data(positionLeft), positionLeft)
-    (auxPreviewViewType, canGoToPrevious) match {
-      case (aux, can) if aux != previewViewType && can =>
-        previewViewType = auxPreviewViewType
-        val newView = createView(previewViewType)
-        previousView = Some(newView)
-        (previousParentView <~ vgRemoveAllViews <~ vgAddView(newView, params)) ~
-          populateView(previousView, data(positionLeft), previewViewType, positionLeft)
-      case (aux, can) if can => populateView(previousView, data(positionLeft), previewViewType, positionLeft)
-      case _ => Ui.nop
-    }
-  }
-
-  private[this] def generateRightUi: Ui[_] = {
-    val currentItem = statuses.currentItem
-    val positionRight: Int = if (currentItem + 1 > data.length - 1) 0 else currentItem + 1
-    val auxNextViewType = getItemViewType(data(positionRight), positionRight)
-    (auxNextViewType, canGoToNext) match {
-      case (aux, can) if aux != nextViewType && can =>
-        nextViewType = auxNextViewType
-        val newView = createView(nextViewType)
-        nextView = Some(newView)
-        (nextParentView <~ vgRemoveAllViews <~ vgAddView(newView, params)) ~
-          populateView(nextView, data(positionRight), nextViewType, positionRight)
-      case (aux, can) if can => populateView(nextView, data(positionRight), nextViewType, positionRight)
-      case _ => Ui.nop
-    }
   }
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
@@ -369,7 +289,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
         val deltaY = statuses.deltaY(y)
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         if (overScroll(deltaX, deltaY)) {
-          applyTranslation(frontParentView, 0).run
+          applyTranslation(getFrontView, 0).run
         } else {
           performScroll(if (statuses.horizontalGallery) deltaX else deltaY).run
         }
@@ -395,7 +315,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (action, x, y)
   }
 
-  private[this] def overScroll(deltaX: Float, deltaY: Float): Boolean = frontParentView exists { view =>
+  private[this] def overScroll(deltaX: Float, deltaY: Float): Boolean = getFrontView exists { view =>
     val xView = view.getX
     val yView = view.getY
     (statuses.infinite, statuses.horizontalGallery, xView, yView, deltaX, deltaY) match {
@@ -451,6 +371,41 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       statuses = statuses.copy(velocityTracker = None)
   }
 
+  private[this] def reloadPreviousPositionView = Transformer {
+    case fl: FrameLayout if fl.getField[PositionView](positionViewKey).contains(PreviousView) =>
+      fl <~ vAddField(positionViewKey, FrontView)
+    case fl: FrameLayout if fl.getField[PositionView](positionViewKey).contains(NextView) =>
+      fl <~ vAddField(positionViewKey, PreviousView)
+    case fl: FrameLayout if fl.getField[PositionView](positionViewKey).contains(FrontView) =>
+      fl <~ vAddField(positionViewKey, NextView)
+  }
+
+  private[this] def reloadNextPositionView = Transformer {
+    case fl: FrameLayout if fl.getField[PositionView](positionViewKey).contains(PreviousView) =>
+      fl <~ vAddField(positionViewKey, NextView)
+    case fl: FrameLayout if fl.getField[PositionView](positionViewKey).contains(NextView) =>
+      fl <~ vAddField(positionViewKey, FrontView)
+    case fl: FrameLayout if fl.getField[PositionView](positionViewKey).contains(FrontView) =>
+      fl <~ vAddField(positionViewKey, PreviousView)
+  }
+
+  private[this] def getPreviousView: Option[FrameLayout] = getView(PreviousView)
+
+  private[this] def getNextView: Option[FrameLayout] = getView(NextView)
+
+  private[this] def getFrontView: Option[FrameLayout] = getView(FrontView)
+
+  private[this] def getView(positionView: PositionView): Option[FrameLayout] = {
+    (parentViewThree flatMap (_.getField[PositionView](positionViewKey)),
+      parentViewOne flatMap (_.getField[PositionView](positionViewKey)),
+      parentViewTwo flatMap (_.getField[PositionView](positionViewKey))) match {
+      case (Some(`positionView`), _, _) => parentViewThree
+      case (_, Some(`positionView`), _) => parentViewOne
+      case (_, _, Some(`positionView`)) => parentViewTwo
+      case _ => None
+    }
+  }
+
 }
 
 case class AnimatedWorkSpacesStatuses(
@@ -487,5 +442,13 @@ case class AnimatedWorkSpacesListener(
   onLongClick: () => Unit = () => ())
 
 case class Dimen(width: Int = 0, height: Int = 0)
+
+sealed trait PositionView
+
+case object PreviousView extends PositionView
+
+case object NextView extends PositionView
+
+case object FrontView extends PositionView
 
 
