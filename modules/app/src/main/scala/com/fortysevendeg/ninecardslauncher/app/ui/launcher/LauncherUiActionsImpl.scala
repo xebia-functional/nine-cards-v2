@@ -72,9 +72,9 @@ trait LauncherUiActionsImpl
       initDrawerUi ~
       (root <~ dragListener())
 
-  override def addCollection(collection: Collection): Ui[Any] = uiActionCollection(Add, collection)
+  override def reloadPagerInAddCollection(): Ui[Any] = reloadPagerAndActiveLast
 
-  override def removeCollection(collection: Collection): Ui[Any] = uiActionCollection(Remove, collection)
+  override def reloadWorkspaces(page: Int, data: Seq[LauncherData]): Ui[Any] = workspaces <~ lwsData(data, page)
 
   override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
 
@@ -98,8 +98,8 @@ trait LauncherUiActionsImpl
     goToNextWorkspace().ifUi(canMoveToNextScreen)
   }
 
-  override def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any] =
-    createCollections(collections, apps)
+  override def loadCollections(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] =
+    createCollections(data, apps)
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
     userProfileMenu(email, name, avatarUrl, coverPhotoUrl)
@@ -189,10 +189,6 @@ trait LauncherUiActionsImpl
     (goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1)) ~ reloadEdges()).ifUi(canMoveToPreviousScreen)
   }
 
-  override def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any] = reloadReorderedCollections(from, to)
-
-  override def reloadCollections(): Ui[Any] = workspaces <~ lwsReloadCollections()
-
   override def startAddItem(cardType: CardType): Ui[Any] = {
     val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
     revealOutDrawer ~
@@ -225,6 +221,10 @@ trait LauncherUiActionsImpl
   private[this] def fadeOut() = applyAnimation(alpha = Some(0)) + vInvisible
 
   override def isTabsOpened: Boolean = isDrawerTabsOpened
+
+  override def getData: Seq[LauncherData] = workspaces.map(_.data) getOrElse Seq.empty
+
+  override def getCurrentPage: Option[Int] = workspaces.map(_.currentPage())
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
 

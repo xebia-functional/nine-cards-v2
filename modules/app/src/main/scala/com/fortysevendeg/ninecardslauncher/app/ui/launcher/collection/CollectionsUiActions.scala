@@ -29,7 +29,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDraw
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkSpaceItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherData, LauncherWorkSpacesListener, WorkSpaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
@@ -147,20 +147,18 @@ trait CollectionsUiActions
   def showCollectionsLoading: Ui[_] = loading <~ vVisible
 
   def createCollections(
-    collections: Seq[Collection],
+    data: Seq[LauncherData],
     apps: Seq[DockApp]): Ui[_] = {
     (loading <~ vGone) ~
       (dockAppsPanel <~ daplInit(apps)) ~
       (workspaces <~
-        lwsData(collections, selectedPageDefault) <~
+        lwsData(data, selectedPageDefault) <~
         awsAddPageChangedObserver(currentPage => {
           (paginationPanel <~ reloadPager(currentPage)).run
         }
         )) ~
       createPager(selectedPageDefault)
   }
-
-  def reloadReorderedCollections(from: Int, to: Int): Ui[Any] = workspaces <~ lwsReloadReorderedCollections(from, to)
 
   def userProfileMenu(
     maybeEmail: Option[String],
@@ -181,12 +179,6 @@ trait CollectionsUiActions
           case Some(url) => ivUri(url)
           case None => ivBlank
         }))
-
-  def uiActionCollection(action: UiAction, collection: Collection): Ui[_] =
-    action match {
-      case Add => (workspaces <~ lwsAddCollection(collection)) ~ reloadPagerAndActiveLast
-      case Remove => (workspaces <~ lwsRemoveCollection(collection.id)) ~ reloadPagerAndActiveLast
-    }
 
   def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
 
@@ -276,7 +268,7 @@ trait CollectionsUiActions
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
-  private[this] def reloadPagerAndActiveLast =
+  def reloadPagerAndActiveLast =
     workspaces map { ws =>
       val count = ws.getWorksSpacesCount
       val pagerViews = 0 until count map { position =>
