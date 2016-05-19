@@ -121,7 +121,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.endAddItem.run
   }
 
-  def endAddItem(): Unit = {
+  def endAddItem(): Unit = if (statuses.mode == AddItemMode) {
     statuses = statuses.reset()
     actions.endAddItem.run
   }
@@ -167,17 +167,34 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     statuses = statuses.updateCurrentPosition(position)
   }
 
-  def dropReorder(): Unit = {
+  def dropReorder(): Unit = if (statuses.mode == ReorderMode) {
     actions.endReorder.run
     val from = statuses.startPositionReorderMode
     val to = statuses.currentDraggingPosition
     if (from != to) {
       Task.fork(di.collectionProcess.reorderCollection(from, to).run).resolveAsyncUi(
         onResult = (_) => actions.reloadCollectionsAfterReorder(from, to),
-        onException = (_) => actions.reloadCollectionsFailed() ~ actions.showContactUsError())
+        onException = (_) => actions.reloadCollections() ~ actions.showContactUsError())
+    } else {
+      actions.reloadCollections().run
     }
     statuses = statuses.reset()
   }
+
+  def removeCollectionInReorderMode(): Unit =
+    (statuses.collectionReorderMode map { collection =>
+      if (actions.canRemoveCollections) {
+        Ui(showDialogForRemoveCollection(collection))
+      } else {
+        actions.showMinimumOneCollectionMessage()
+      }
+    } getOrElse actions.showContactUsError()).run
+
+  def editCollectionInReorderMode(): Unit =
+    (statuses.collectionReorderMode match {
+      case Some(_) => actions.showNoImplementedYetMessage()
+      case None => actions.showContactUsError()
+    }).run
 
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
@@ -205,21 +222,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def addCollection(collection: Collection): Unit = actions.addCollection(collection).run
-
-  def removeCollectionInReorderMode(): Unit =
-    (statuses.collectionReorderMode map { collection =>
-      if (actions.canRemoveCollections) {
-        Ui(showDialogForRemoveCollection(collection))
-      } else {
-        actions.showMinimumOneCollectionMessage()
-      }
-    } getOrElse actions.showContactUsError()).run
-
-  def editCollectionInReorderMode(): Unit =
-    (statuses.collectionReorderMode match {
-      case Some(_) => actions.showNoImplementedYetMessage()
-      case None => actions.showContactUsError()
-    }).run
 
   def removeCollection(collection: Collection): Unit = {
     Task.fork(deleteCollection(collection.id).run).resolveAsyncUi(
@@ -395,7 +397,7 @@ trait LauncherUiActions {
 
   def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
 
-  def reloadCollectionsFailed(): Ui[Any]
+  def reloadCollections(): Ui[Any]
 
   def startAddItem(cardType: CardType): Ui[Any]
 

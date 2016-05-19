@@ -114,10 +114,18 @@ object LauncherWorkSpacesTweaks {
 
   def lwsPrepareItemsScreenInReorder(position: Int) = Tweak[W] (_.prepareItemsScreenInReorder(position).run)
 
-  def lwsDragDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
+  def lwsDragAddItemDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
     _.getCurrentView match {
       case Some(holder: LauncherWorkSpaceCollectionsHolder) =>
         holder.dragAddItemController(action, x, y)
+      case _ =>
+    }
+  }
+
+  def lwsDragReorderCollectionDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
+    _.getCurrentView match {
+      case Some(holder: LauncherWorkSpaceCollectionsHolder) =>
+        holder.dragReorderCollectionController(action, x, y)
       case _ =>
     }
   }
@@ -410,6 +418,6 @@ object CollectionActionsPanelLayoutTweaks {
     Tweak[W] (_.load(actions).run)
 
   def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
-    Tweak[W] (_.dragAddItemController(action, x, y))
+    Tweak[W] (_.dragController(action, x, y))
 
 }

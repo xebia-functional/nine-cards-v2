@@ -25,7 +25,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.Collection
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.AddItemToCollection
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
@@ -191,7 +191,7 @@ trait LauncherUiActionsImpl
 
   override def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any] = reloadReorderedCollections(from, to)
 
-  override def reloadCollectionsFailed(): Ui[Any] = reloadCollections()
+  override def reloadCollections(): Ui[Any] = workspaces <~ lwsReloadCollections()
 
   override def startAddItem(cardType: CardType): Ui[Any] = {
     val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
@@ -278,11 +278,14 @@ trait LauncherUiActionsImpl
       val dragAreaKey = "drag-area"
       override def onDrag(v: View, event: DragEvent): Boolean = {
         val dragArea = v.getField[DragArea](dragAreaKey) getOrElse NoDragArea
-        (event.getLocalState, event.getAction, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
-          case (DragObject(_, AddItemToCollection), ACTION_DRAG_ENDED, _ , _) =>
+        (event.getAction, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
+          case (ACTION_DRAG_ENDED, _ , _) =>
             (v <~ vAddField(dragAreaKey, NoDragArea)).run
-            presenter.endAddItem()
-          case (DragObject(_, AddItemToCollection), _, Some(topBar), Some(bottomBar)) =>
+            event.getLocalState match {
+              case DragObject(_, AddItemToCollection) => presenter.endAddItem()
+              case DragObject(_, ReorderCollection) => presenter.dropReorder()
+            }
+          case (_, Some(topBar), Some(bottomBar)) =>
             val height = KitKat.ifSupportedThen (view.getHeight - getStatusBarHeight) getOrElse view.getHeight
             val top = KitKat.ifSupportedThen (topBar + getStatusBarHeight) getOrElse topBar
             // Project location to views
@@ -297,14 +300,20 @@ trait LauncherUiActionsImpl
               (event.getAction, currentDragArea)
             }
 
-            area match {
-              case WorkspacesDragArea =>
+            (area, event.getLocalState, action) match {
+              case (WorkspacesDragArea, DragObject(_, AddItemToCollection), _) =>
                 // Project to workspace
-                (workspaces <~ lwsDragDispatcher(action, x, y - top)).run
-              case DockAppsDragArea =>
+                (workspaces <~ lwsDragAddItemDispatcher(action, x, y - top)).run
+              case (DockAppsDragArea, DragObject(_, AddItemToCollection), _) =>
                 // Project to dock apps
                 (dockAppsPanel <~ daplDragDispatcher(action, x, y - (height - bottomBar))).run
-              case ActionsDragArea =>
+              case (WorkspacesDragArea, DragObject(_, ReorderCollection), _) =>
+                // Project to workspace
+                (workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top)).run
+              case (DockAppsDragArea, DragObject(_, ReorderCollection), ACTION_DROP) =>
+                // Project to workspace
+                (workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top)).run
+              case (ActionsDragArea, DragObject(_, AddItemToCollection | ReorderCollection), _) =>
                 // Project to Collection actions
                 (collectionActionsPanel <~ caplDragDispatcher(action, x, y)).run
               case _ =>

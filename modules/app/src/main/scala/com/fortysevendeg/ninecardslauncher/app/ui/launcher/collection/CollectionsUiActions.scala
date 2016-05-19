@@ -162,8 +162,6 @@ trait CollectionsUiActions
 
   def reloadReorderedCollections(from: Int, to: Int): Ui[Any] = workspaces <~ lwsReloadReorderedCollections(from, to)
 
-  def reloadCollections(): Ui[Any] = workspaces <~ lwsReloadCollections()
-
   def userProfileMenu(
     maybeEmail: Option[String],
     maybeName: Option[String],

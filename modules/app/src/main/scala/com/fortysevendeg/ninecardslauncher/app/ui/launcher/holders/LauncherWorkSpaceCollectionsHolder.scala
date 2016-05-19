@@ -7,8 +7,7 @@ import android.graphics.drawable.shapes.OvalShape
 import android.graphics.{Paint, Point}
 import android.os.Handler
 import android.view.DragEvent._
-import android.view.View.OnDragListener
-import android.view.{DragEvent, LayoutInflater, View}
+import android.view.{LayoutInflater, View}
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
@@ -72,8 +71,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
       columns = numInLine,
       rows = numInLine,
       width = widthSpace,
-      height = heightSpace) <~
-    vDragListener()).run
+      height = heightSpace)).run
 
   def populate(collections: Seq[Collection], positionScreen: Int, countCollectionScreens: Int): Ui[_] = {
     this.positionScreen = positionScreen
@@ -113,7 +111,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
     }: _*) ~ reorder(startReorder, position, animation = false)
   }
 
-  def dragAddItemController(action: Int, x: Float, y: Float) = {
+  def dragAddItemController(action: Int, x: Float, y: Float): Unit = {
     action match {
       case ACTION_DRAG_LOCATION =>
         val lastCurrentPosition = presenter.statuses.currentDraggingPosition
@@ -152,61 +150,50 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
     }
   }
 
+  def dragReorderCollectionController(action: Int, x: Float, y: Float): Unit = {
+    (action, presenter.statuses.isReordering(), isRunningReorderAnimation) match {
+      case (ACTION_DRAG_LOCATION, true, false) =>
+        val lastCurrentPosition = presenter.statuses.currentDraggingPosition
+        val canMoveToLeft = positionScreen > 0
+        val canMoveToRight = positionScreen < countCollectionScreens - 1
+        (calculateEdge(x), canMoveToLeft, canMoveToRight) match {
+          case (LeftEdge, true, _) =>
+            delayedTask(() => {
+              resetAllPositions().run
+              presenter.draggingReorderToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
+            })
+          case (RightEdge, _, true) =>
+            delayedTask(() => {
+              resetAllPositions().run
+              presenter.draggingReorderToNextScreen(toPositionCollection(0) + numSpaces)
+            })
+          case (NoEdge, _, _) =>
+            clearTask()
+            val space = calculatePosition(x, y)
+            val existCollectionInSpace = (views.lift(space) flatMap (_.collection)).isDefined
+            val currentPosition = toPositionCollection(space)
+            if (existCollectionInSpace && lastCurrentPosition != currentPosition) {
+              reorder(lastCurrentPosition, currentPosition).run
+              presenter.draggingReorderTo(currentPosition)
+            }
+          case _ =>
+        }
+      case (ACTION_DROP | ACTION_DRAG_ENDED, true, false) =>
+        resetPlaces.run
+        presenter.dropReorder()
+      case (ACTION_DROP | ACTION_DRAG_ENDED, true, true) =>
+        // we are waiting that the animation is finished in order to reset views
+        delayedTask(() => {
+          resetPlaces.run
+          presenter.dropReorder()
+        }, resGetInteger(R.integer.anim_duration_normal))
+      case _ =>
+    }
+  }
+
   private[this] def resetAllPositions(): Ui[Any] = Ui.sequence(views map { view =>
     view <~ backToPosition() <~ (view.collection map (_ => vVisible) getOrElse vInvisible)
   }: _*)
-
-  private[this] def vDragListener(): Tweak[View] = Tweak[View] { view =>
-    view.setOnDragListener(new OnDragListener {
-      override def onDrag(v: View, event: DragEvent): Boolean = {
-        val x = event.getX
-        val y = event.getY
-        (event.getAction, event.getLocalState, presenter.statuses.isReordering(), isRunningReorderAnimation) match {
-          case (ACTION_DRAG_STARTED, DragObject(_, ReorderCollection), _, _) => true
-          case (ACTION_DRAG_LOCATION, DragObject(_, ReorderCollection), true, false) =>
-            val lastCurrentPosition = presenter.statuses.currentDraggingPosition
-            val canMoveToLeft = positionScreen > 0
-            val canMoveToRight = positionScreen < countCollectionScreens - 1
-            (calculateEdge(x), canMoveToLeft, canMoveToRight) match {
-              case (LeftEdge, true, _) =>
-                delayedTask(() => {
-                  resetAllPositions().run
-                  presenter.draggingReorderToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
-                })
-              case (RightEdge, _, true) =>
-                delayedTask(() => {
-                  resetAllPositions().run
-                  presenter.draggingReorderToNextScreen(toPositionCollection(0) + numSpaces)
-                })
-              case (NoEdge, _, _) =>
-                clearTask()
-                val space = calculatePosition(x, y)
-                val existCollectionInSpace = (views.lift(space) flatMap (_.collection)).isDefined
-                val currentPosition = toPositionCollection(space)
-                if (existCollectionInSpace && lastCurrentPosition != currentPosition) {
-                  android.util.Log.d("9cards", s"last: $lastCurrentPosition -- currentPosition: $currentPosition")
-                  reorder(lastCurrentPosition, currentPosition).run
-                  presenter.draggingReorderTo(currentPosition)
-                }
-              case _ =>
-            }
-            true
-          case (ACTION_DROP | ACTION_DRAG_ENDED, DragObject(_, ReorderCollection), true, false) =>
-            resetPlaces.run
-            presenter.dropReorder()
-            true
-          case (ACTION_DROP | ACTION_DRAG_ENDED, DragObject(_, ReorderCollection), true, true) =>
-            // we are waiting that the animation is finished in order to reset views
-            delayedTask(() => {
-              resetPlaces.run
-              presenter.dropReorder()
-            }, resGetInteger(R.integer.anim_duration_normal))
-            true
-          case _ => false
-        }
-      }
-    })
-  }
 
   private[this] def select(position: Int): Ui[Any] = Ui.sequence(views map { view =>
     view <~ (if (view.positionInGrid == position) ciDroppingOn() else ciDroppingOff())
