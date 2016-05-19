@@ -28,7 +28,6 @@ object LauncherWorkSpacesTweaks {
   def lwsPresenter(presenter: LauncherPresenter) = Tweak[W] (_.presenter = Some(presenter))
 
   def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] { workspaces =>
-    android.util.Log.d("9cards", s"$pageSelected -- ${data.last.toString}")
     workspaces.data = data
     workspaces.init(pageSelected)
   }
