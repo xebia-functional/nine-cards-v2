@@ -71,7 +71,7 @@ object LauncherWorkSpacesTweaks {
         val newPosition = workspaces.data.count(_.workSpaceType == CollectionsWorkSpace)
         workspaces.data = workspaces.data :+ LauncherData(CollectionsWorkSpace, Seq(collection), newPosition)
       }
-      workspaces.selectPosition(workspaces.data.size - 1)
+      workspaces.init(workspaces.data.size - 1)
     }
   }
 
@@ -86,7 +86,7 @@ object LauncherWorkSpacesTweaks {
     val page = maybePage map { page =>
       if (workspaces.data.isDefinedAt(page)) page else workspaces.data.length - 1
     } getOrElse defaultPage
-    workspaces.selectPosition(page)
+    workspaces.init(page)
   }
 
   def lwsReloadReorderedCollections(from: Int, to: Int) = Tweak[W] { workspaces =>
@@ -96,14 +96,14 @@ object LauncherWorkSpacesTweaks {
     }
     workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
     val page = workspaces.data.lift(workspaces.currentPage()) map (_ => workspaces.currentPage()) getOrElse defaultPage
-    workspaces.selectPosition(page)
+    workspaces.init(page)
   }
 
   def lwsReloadCollections() = Tweak[W] { workspaces =>
     val collections = workspaces.data flatMap (_.collections)
     workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
     val page = workspaces.data.lift(workspaces.currentPage()) map (_ => workspaces.currentPage()) getOrElse defaultPage
-    workspaces.selectPosition(page)
+    workspaces.init(page)
   }
 
   def lwsListener(listener: LauncherWorkSpacesListener) = Tweak[W] (_.workSpacesListener = listener)

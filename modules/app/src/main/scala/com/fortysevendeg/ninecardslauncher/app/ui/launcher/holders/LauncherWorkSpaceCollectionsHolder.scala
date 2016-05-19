@@ -121,10 +121,12 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
         val canMoveToRight = positionScreen < countCollectionScreens - 1
         (calculateEdge(x), canMoveToLeft, canMoveToRight) match {
           case (LeftEdge, true, _) =>
+            unselectAll().run
             delayedTask(() => {
               presenter.draggingAddItemToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
             })
           case (RightEdge, _, true) =>
+            unselectAll().run
             delayedTask(() => {
               presenter.draggingAddItemToNextScreen(toPositionCollection(0) + numSpaces)
             })
@@ -182,6 +184,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
                 val existCollectionInSpace = (views.lift(space) flatMap (_.collection)).isDefined
                 val currentPosition = toPositionCollection(space)
                 if (existCollectionInSpace && lastCurrentPosition != currentPosition) {
+                  android.util.Log.d("9cards", s"last: $lastCurrentPosition -- currentPosition: $currentPosition")
                   reorder(lastCurrentPosition, currentPosition).run
                   presenter.draggingReorderTo(currentPosition)
                 }
