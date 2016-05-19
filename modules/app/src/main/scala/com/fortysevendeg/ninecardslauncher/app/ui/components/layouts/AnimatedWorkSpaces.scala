@@ -8,12 +8,12 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.view._
 import android.widget.FrameLayout
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.FullDsl._
@@ -203,53 +203,40 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       resetAnimationEnd
   }
 
-  private[this] def next(): Ui[_] = {
+  private[this] def swapViews(): Ui[_] = {
     statuses = statuses.copy(currentItem = goToItem())
-    this <~ reloadNextPositionView
+    (this <~ (if (statuses.isFromLeft) reloadPreviousPositionView else reloadNextPositionView)) ~
+      (if (statuses.isFromLeft) recreate(PreviousView) else recreate(NextView)) ~
+      Ui {
+        statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
+      }
   }
-
-  private[this] def previous(): Ui[_] = {
-    statuses = statuses.copy(currentItem = goToItem())
-    this <~ reloadPreviousPositionView
-  }
-
-  private[this] def swapViews(): Ui[_] =
-    (if (statuses.isFromLeft) previous() else next()) ~
-      reset()
 
   private[this] def resetAnimationEnd(): Ui[_] =
     (if (statuses.swap) swapViews() else Ui.nop) ~
       (self <~ vLayerHardware(activate = false))
 
   def reset(): Ui[_] = {
+    statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
+    moveItemsAnimator.cancel()
+    recreate(FrontView) ~ recreate(PreviousView) ~ recreate(NextView)
+  }
+
+  private[this] def recreate(positionView: PositionView): Ui[Any] = {
     val currentItem = statuses.currentItem
 
-    val positionLeft = if (currentItem - 1 < 0) data.length - 1 else currentItem - 1
+    val (position, displacement) = positionView match {
+      case PreviousView =>  (if (currentItem - 1 < 0) data.length - 1 else currentItem - 1, -getSizeWidget)
+      case NextView => (if (currentItem + 1 > data.length - 1) 0 else currentItem + 1, getSizeWidget)
+      case FrontView => (currentItem, 0)
+    }
 
-    val positionRight = if (currentItem + 1 > data.length - 1) 0 else currentItem + 1
+    val view = getView(positionView)
 
-    statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
-
-    moveItemsAnimator.cancel()
-
-    val front = getFrontView
-
-    val next = getNextView
-
-    val prev = getPreviousView
-
-    (front <~
+    (view <~
       vgRemoveAllViews <~
-      vgAddView(views(currentItem), params)) ~
-      (prev <~
-        vgRemoveAllViews <~
-        vgAddView(views(positionLeft), params)) ~
-      (next <~
-        vgRemoveAllViews <~
-        vgAddView(views(positionRight), params)) ~
-      applyTranslation(front, 0) ~
-      applyTranslation(next, getSizeWidget) ~
-      applyTranslation(prev, -getSizeWidget)
+      vgAddView(views(position), params)) ~
+      applyTranslation(view, displacement)
 
   }
 
