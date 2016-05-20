@@ -101,10 +101,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
     statuses = statuses.copy(currentItem = position)
 
-    ((parentViewOne <~ vgRemoveAllViews) ~
-      (parentViewTwo <~ vgRemoveAllViews) ~
-      (parentViewThree <~ vgRemoveAllViews)).run
-
     views = newData.zipWithIndex map {
       case (itemData, index) =>
         val sameData = data.lift(index) contains itemData
@@ -123,16 +119,19 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
     data = newData
 
-    reset().run
+    ((parentViewOne <~ vgRemoveAllViews) ~
+      (parentViewTwo <~ vgRemoveAllViews) ~
+      (parentViewThree <~ vgRemoveAllViews) ~
+      reset()).run
 
   }
 
   def clean(): Unit = {
     data = Seq.empty
+    views = Seq.empty
     ((parentViewOne <~ vgRemoveAllViews) ~
       (parentViewTwo <~ vgRemoveAllViews) ~
-      (parentViewThree <~ vgRemoveAllViews) ~
-      (this <~ vgRemoveAllViews)).run
+      (parentViewThree <~ vgRemoveAllViews)).run
   }
 
   def goToItem(): Int = (statuses.displacement, statuses.currentItem) match {
