@@ -52,7 +52,6 @@ trait LauncherPresenterSpecification
     mockActions.showLoading() returns Ui[Any]()
     mockActions.showContactUsError() returns Ui[Any]()
     mockActions.showMinimumOneCollectionMessage() returns Ui[Any]()
-    mockActions.addCollection(collection) returns Ui[Any]()
     mockActions.canRemoveCollections returns canRemoveCollections
 
     val mockStatuses = mock[LauncherPresenterStatuses]
@@ -81,16 +80,6 @@ trait LauncherPresenterSpecification
 
 class LauncherPresenterSpec
   extends LauncherPresenterSpecification {
-
-  "Add Collection" should {
-
-    "return a successful connecting account" in
-      new WizardPresenterScope {
-        presenter.addCollection(collection)
-        there was after(1 seconds).one(mockActions).addCollection(collection)
-      }
-
-  }
 
   "Select collection to remove" should {
 
@@ -121,12 +110,6 @@ class LauncherPresenterSpec
 
   "Remove Collection" should {
 
-    "remove collection returning a successful data" in
-      new WizardPresenterScope {
-        presenter.removeCollection(collection)
-        there was after(1 seconds).one(mockActions).removeCollection(collection)
-      }
-
     "show error returning a failed" in
       new WizardPresenterScope {
         presenterFailed.removeCollection(collection)
@@ -136,12 +119,6 @@ class LauncherPresenterSpec
   }
 
   "Load Collections and DockApps" should {
-
-    "load the list of collections and dock apps returning a successful data" in
-      new WizardPresenterScope {
-        presenter.loadCollectionsAndDockApps()
-        there was after(1 seconds).one(mockActions).loadLauncherInfo(collectionSeq, dockAppSeq)
-      }
 
     "go to wizard returning a empty list" in
       new WizardPresenterScope {

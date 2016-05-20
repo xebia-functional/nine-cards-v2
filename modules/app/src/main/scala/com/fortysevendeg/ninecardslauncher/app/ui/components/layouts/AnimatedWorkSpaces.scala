@@ -108,17 +108,13 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     views = newData.zipWithIndex map {
       case (itemData, index) =>
         val sameData = data.lift(index) contains itemData
-        android.util.Log.d("9cards", s"${data.lift(index)} \n $itemData")
         (sameData, views.lift(index)) match {
           case (true, Some(oldView: Holder)) =>
-            android.util.Log.d("9cards", s"$index is same data")
             oldView
           case (false, Some(oldView: Holder)) =>
-            android.util.Log.d("9cards", s"$index is not same data")
             populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
             oldView
           case _ =>
-            android.util.Log.d("9cards", s"$index creating new view")
             val view = createView(getItemViewType(itemData, index))
             populateView(Some(view), itemData, getItemViewType(itemData, index), index).run
             view

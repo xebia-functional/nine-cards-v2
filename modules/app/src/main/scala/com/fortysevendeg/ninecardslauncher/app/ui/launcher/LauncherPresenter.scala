@@ -6,11 +6,11 @@ import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -28,10 +29,8 @@ import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import macroid.{ActivityContextWrapper, Ui}
 
-import scala.annotation.tailrec
 import scala.concurrent.Future
 import scalaz.concurrent.Task
 
@@ -264,7 +263,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               name = user.userProfile.name,
               avatarUrl = user.userProfile.avatar,
               coverPhotoUrl = user.userProfile.cover))
-          val data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+          val data = LauncherData(MomentWorkSpace) +: createLauncherDataCollections(collections)
           actions.loadLauncherInfo(data, apps)
       },
       onException = (ex: Throwable) => Ui(goToWizard()),
@@ -405,7 +404,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     val maybeWorkspaceCollection = currentData find (_.collections.exists(_.id == collectionId))
     val maybePage = maybeWorkspaceCollection map currentData.indexOf
 
-    val newData = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    val newData = LauncherData(MomentWorkSpace) +: createLauncherDataCollections(collections)
 
     val page = maybePage map { page =>
       if (newData.isDefinedAt(page)) page else newData.length - 1
@@ -420,7 +419,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     val collections = cols.reorder(from, to).zipWithIndex map {
       case (collection, index) => collection.copy(position = index)
     }
-    val newData = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    val newData = LauncherData(MomentWorkSpace) +: createLauncherDataCollections(collections)
 
     val page = (for {
       currentPage <- actions.getCurrentPage
@@ -433,7 +432,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   private[this] def reloadCollectionsInCurrentData: (Int, Seq[LauncherData]) = {
     val currentData = actions.getData
     val collections = currentData flatMap (_.collections)
-    val newData = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+    val newData = LauncherData(MomentWorkSpace) +: createLauncherDataCollections(collections)
     val page = (for {
       currentPage <- actions.getCurrentPage
       _ <- currentData.lift(currentPage)
@@ -456,23 +455,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  // We create a new page every 9 collections
-  @tailrec
-  private[this] def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
-    def updatePositions(data: Seq[LauncherData]) = data.zipWithIndex map {
-      case (d, index) => d.copy(positionByType = index)
-    }
-    collections match {
-      case Nil if newLauncherData.collections.nonEmpty =>
-        updatePositions(acc :+ newLauncherData)
-      case Nil =>
-        updatePositions(acc)
-      case h :: t if newLauncherData.collections.length == numSpaces =>
-        getCollectionsItems(t, acc :+ newLauncherData, LauncherData(CollectionsWorkSpace, Seq(h)))
-      case h :: t =>
-        val g: Seq[Collection] = newLauncherData.collections :+ h
-        val n = LauncherData(CollectionsWorkSpace, g)
-        getCollectionsItems(t, acc, n)
+  def createLauncherDataCollections(collections: Seq[Collection]): Seq[LauncherData] = {
+    collections.grouped(numSpaces).toList.zipWithIndex map {
+      case (data, index) => LauncherData(CollectionsWorkSpace, data, index)
     }
   }
 
