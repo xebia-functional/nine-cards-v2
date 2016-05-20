@@ -39,7 +39,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   var data: Seq[Data] = Seq.empty
 
-  var views: Seq[Holder] = Seq.empty
+  private[this] var views: Seq[Holder] = Seq.empty
 
   var statuses = AnimatedWorkSpacesStatuses(
     horizontalGallery = true,
@@ -72,6 +72,17 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   var parentViewThree = slot[FrameLayout]
 
+  (self <~ vgAddViews(Seq(
+    (w[FrameLayout] <~
+      wire(parentViewOne) <~
+      vAddField(positionViewKey, PreviousView)).get,
+    (w[FrameLayout] <~
+      wire(parentViewTwo) <~
+      vAddField(positionViewKey, NextView)).get,
+    (w[FrameLayout] <~
+      wire(parentViewThree) <~
+      vAddField(positionViewKey, FrontView)).get), params)).run
+
   override def onLongClick: () => Unit = listener.onLongClick
 
   def createView(viewType: Int): Holder
@@ -86,40 +97,46 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def getCurrentView: Option[Holder] = views.lift(statuses.currentItem)
 
-  def init(position: Int = 0): Unit = {
-    if (data.isEmpty) {
-      throw new InstantiationException("data can't be empty")
-    }
+  def init(newData: Seq[Data], position: Int = 0): Unit = {
+
     statuses = statuses.copy(currentItem = position)
 
-    removeAllViews()
+    ((parentViewOne <~ vgRemoveAllViews) ~
+      (parentViewTwo <~ vgRemoveAllViews) ~
+      (parentViewThree <~ vgRemoveAllViews)).run
 
-    views = data.zipWithIndex map {
-      case (d, index) =>
-        val view = createView(getItemViewType(d, index))
-        populateView(Some(view), data(index), getItemViewType(data(index), index), index).run
-        view
+    views = newData.zipWithIndex map {
+      case (itemData, index) =>
+        val sameData = data.lift(index) contains itemData
+        android.util.Log.d("9cards", s"${data.lift(index)} \n $itemData")
+        (sameData, views.lift(index)) match {
+          case (true, Some(oldView: Holder)) =>
+            android.util.Log.d("9cards", s"$index is same data")
+            oldView
+          case (false, Some(oldView: Holder)) =>
+            android.util.Log.d("9cards", s"$index is not same data")
+            populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
+            oldView
+          case _ =>
+            android.util.Log.d("9cards", s"$index creating new view")
+            val view = createView(getItemViewType(itemData, index))
+            populateView(Some(view), itemData, getItemViewType(itemData, index), index).run
+            view
+        }
     }
 
-    ((self <~ vgAddViews(Seq(
-      (w[FrameLayout] <~
-        wire(parentViewOne) <~
-        vAddField(positionViewKey, PreviousView)).get,
-      (w[FrameLayout] <~
-        wire(parentViewTwo) <~
-        vAddField(positionViewKey, NextView)).get,
-      (w[FrameLayout] <~
-        wire(parentViewThree) <~
-        vAddField(positionViewKey, FrontView)).get), params)) ~ reset()).run
+    data = newData
+
+    reset().run
 
   }
 
   def clean(): Unit = {
     data = Seq.empty
-    parentViewOne foreach(_.removeAllViews())
-    parentViewTwo foreach(_.removeAllViews())
-    parentViewThree foreach(_.removeAllViews())
-    removeAllViews()
+    ((parentViewOne <~ vgRemoveAllViews) ~
+      (parentViewTwo <~ vgRemoveAllViews) ~
+      (parentViewThree <~ vgRemoveAllViews) ~
+      (this <~ vgRemoveAllViews)).run
   }
 
   def goToItem(): Int = (statuses.displacement, statuses.currentItem) match {
@@ -376,11 +393,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       fl <~ vAddField(positionViewKey, PreviousView)
   }
 
-  private[this] def getPreviousView: Option[FrameLayout] = getView(PreviousView)
+  protected def getPreviousView: Option[FrameLayout] = getView(PreviousView)
 
-  private[this] def getNextView: Option[FrameLayout] = getView(NextView)
+  protected def getNextView: Option[FrameLayout] = getView(NextView)
 
-  private[this] def getFrontView: Option[FrameLayout] = getView(FrontView)
+  protected def getFrontView: Option[FrameLayout] = getView(FrontView)
 
   private[this] def getView(positionView: PositionView): Option[FrameLayout] = {
     (parentViewThree flatMap (_.getField[PositionView](positionViewKey)),

@@ -237,7 +237,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def addCollection(collection: Collection): Unit = {
     addCollectionToCurrentData(collection) match {
       case Some((page: Int, data: Seq[LauncherData])) =>
-        (actions.reloadWorkspaces(page, data) ~ actions.reloadPagerInAddCollection()).run
+        (actions.reloadWorkspaces(page, data) ~ actions.reloadPagerActivePosition(page)).run
       case _ =>
     }
   }
@@ -246,7 +246,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     Task.fork(deleteCollection(collection.id).run).resolveAsyncUi(
       onResult = (_) => {
         val (page, data) = removeCollectionToCurrentData(collection.id)
-        actions.reloadWorkspaces(page, data)
+        actions.reloadWorkspaces(page, data) ~ actions.reloadPagerActivePosition(page)
       },
       onException = (_) => actions.showContactUsError()
     )
@@ -265,7 +265,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               avatarUrl = user.userProfile.avatar,
               coverPhotoUrl = user.userProfile.cover))
           val data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
-          actions.loadCollections(data, apps)
+          actions.loadLauncherInfo(data, apps)
       },
       onException = (ex: Throwable) => Ui(goToWizard()),
       onPreTask = () => actions.showLoading()
@@ -405,11 +405,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     val maybeWorkspaceCollection = currentData find (_.collections.exists(_.id == collectionId))
     val maybePage = maybeWorkspaceCollection map currentData.indexOf
 
-    val page = maybePage map { page =>
-      if (currentData.isDefinedAt(page)) page else currentData.length - 1
-    } getOrElse defaultPage
-
     val newData = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
+
+    val page = maybePage map { page =>
+      if (newData.isDefinedAt(page)) page else newData.length - 1
+    } getOrElse defaultPage
 
     (page, newData)
   }
@@ -510,7 +510,7 @@ trait LauncherUiActions {
 
   def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any]
 
-  def reloadPagerInAddCollection(): Ui[Any]
+  def reloadPagerActivePosition(position: Int): Ui[Any]
 
   def reloadWorkspaces(page: Int, data: Seq[LauncherData]): Ui[Any]
 
@@ -530,7 +530,7 @@ trait LauncherUiActions {
 
   def goToNextScreen(): Ui[Any]
 
-  def loadCollections(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
+  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
 
   def reloadAppsInDrawer(
     apps: IterableApps,

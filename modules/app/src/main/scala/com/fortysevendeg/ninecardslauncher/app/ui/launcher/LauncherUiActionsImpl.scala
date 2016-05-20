@@ -72,7 +72,7 @@ trait LauncherUiActionsImpl
       initDrawerUi ~
       (root <~ dragListener())
 
-  override def reloadPagerInAddCollection(): Ui[Any] = reloadPagerAndActiveLast
+  override def reloadPagerActivePosition(position: Int): Ui[Any] = reloadPagerAndActive(position)
 
   override def reloadWorkspaces(page: Int, data: Seq[LauncherData]): Ui[Any] = workspaces <~ lwsData(data, page)
 
@@ -98,7 +98,7 @@ trait LauncherUiActionsImpl
     goToNextWorkspace().ifUi(canMoveToNextScreen)
   }
 
-  override def loadCollections(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] =
+  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] =
     createCollections(data, apps)
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =

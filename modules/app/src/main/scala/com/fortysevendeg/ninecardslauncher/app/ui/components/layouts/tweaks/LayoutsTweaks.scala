@@ -27,10 +27,7 @@ object LauncherWorkSpacesTweaks {
 
   def lwsPresenter(presenter: LauncherPresenter) = Tweak[W] (_.presenter = Some(presenter))
 
-  def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] { workspaces =>
-    workspaces.data = data
-    workspaces.init(pageSelected)
-  }
+  def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] (_.init(data, pageSelected))
 
   def lwsClean = Tweak[W] (_.clean())
 
@@ -153,10 +150,7 @@ object WorkSpaceItemMenuTweaks {
 object StepsWorkspacesTweaks {
   type W = StepsWorkspaces
 
-  def swData(data: Seq[StepData]) = Tweak[W] { view =>
-    view.data = data
-    view.init()
-  }
+  def swData(data: Seq[StepData]) = Tweak[W] (_.init(data))
 
 }
 

@@ -192,7 +192,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     val transform = workSpacesStatuses.displacement < 0 && updatePercent > .5f
     if (transform) {
       workSpacesListener.onUpdateOpenMenu(percent * 2) ~
-        (parentViewThree <~ vScaleX(updatePercent) <~ vScaleY(updatePercent) <~ vAlpha(updatePercent))
+        (getFrontView <~ vScaleX(updatePercent) <~ vScaleY(updatePercent) <~ vAlpha(updatePercent))
     } else {
       Ui.nop
     }

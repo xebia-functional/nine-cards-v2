@@ -268,12 +268,11 @@ trait CollectionsUiActions
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
-  def reloadPagerAndActiveLast =
+  def reloadPagerAndActive(activePosition: Int) =
     workspaces map { ws =>
-      val count = ws.getWorksSpacesCount
-      val pagerViews = 0 until count map { position =>
+      val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
         val view = pagination(position)
-        view.setActivated(count - 1 == position)
+        view.setActivated(activePosition == position)
         view
       }
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)

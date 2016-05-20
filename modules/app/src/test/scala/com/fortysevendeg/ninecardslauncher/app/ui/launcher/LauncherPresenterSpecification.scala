@@ -140,7 +140,7 @@ class LauncherPresenterSpec
     "load the list of collections and dock apps returning a successful data" in
       new WizardPresenterScope {
         presenter.loadCollectionsAndDockApps()
-        there was after(1 seconds).one(mockActions).loadCollections(collectionSeq, dockAppSeq)
+        there was after(1 seconds).one(mockActions).loadLauncherInfo(collectionSeq, dockAppSeq)
       }
 
     "go to wizard returning a empty list" in
@@ -149,13 +149,13 @@ class LauncherPresenterSpec
         override val collectionSeq: Seq[Collection] = Seq.empty
 
         presenter.loadCollectionsAndDockApps()
-        there was after(1 seconds).no(mockActions).loadCollections(any, any)
+        there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)
       }
 
     "go to wizard returning a failed loading collections" in
       new WizardPresenterScope {
         presenterFailed.loadCollectionsAndDockApps()
-        there was after(1 seconds).no(mockActions).loadCollections(any, any)
+        there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)
       }
 
   }
