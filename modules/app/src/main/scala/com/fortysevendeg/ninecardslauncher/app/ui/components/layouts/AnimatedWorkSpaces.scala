@@ -193,7 +193,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   private[this] def applyTranslation(view: Option[ViewGroup], translate: Float): Ui[_] =
     view <~ (if (statuses.horizontalGallery) vTranslationX(translate) else vTranslationY(translate))
 
-  private[this] def   transformPanelCanvas(): Ui[_] = {
+  private[this] def transformPanelCanvas(): Ui[_] = {
     val percent = statuses.percent(getSizeWidget)
     val fromLeft = statuses.isFromLeft
     applyTransformer(if (fromLeft) getPreviousView else getNextView, percent, fromLeft)
