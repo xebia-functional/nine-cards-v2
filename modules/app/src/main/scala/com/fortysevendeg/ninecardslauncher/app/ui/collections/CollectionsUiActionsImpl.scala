@@ -16,6 +16,7 @@ import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails
 import CollectionsSnails._
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
@@ -237,17 +238,19 @@ trait CollectionsUiActionsImpl
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ vSnackbarShort(error)
 
-  private[this] def elevationsDefault: Ui[_] =
+  private[this] def elevationsDefault: Ui[_] = Lollipop.ifSupportedThen {
     (viewPager <~ vElevation(elevation)) ~
       (tabs <~ vElevation(elevation)) ~
       (toolbar <~ vElevation(elevation)) ~
       (iconContent <~ vElevation(elevation))
+  } getOrElse Ui.nop
 
-  private[this] def elevationsUp: Ui[_] =
+  private[this] def elevationsUp: Ui[_] = Lollipop.ifSupportedThen {
     (viewPager <~ vElevation(elevation)) ~
       (tabs <~ vElevation(elevationUp)) ~
       (toolbar <~ vElevation(elevationUp)) ~
       (iconContent <~ vElevation(elevationUp))
+  } getOrElse Ui.nop
 
   private[this] def calculateReduce(ratio: Float, spaceMove: Int, reversed: Boolean) = {
     val newRatio = if (reversed) 1f - ratio else ratio

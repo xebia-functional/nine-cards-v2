@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.{Context, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
@@ -319,11 +320,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       intent.putExtra(startPosition, collection.position)
       intent.putExtra(indexColorToolbar, collection.themedColorIndex)
       intent.putExtra(iconToolbar, collection.icon)
-      val color = resGetColor(getIndexColor(collection.themedColorIndex))
-      actions.rippleToCollection(color, point) ~~
-        Ui {
-          activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
-        }
+      Lollipop.ifSupportedThen {
+        val color = resGetColor(getIndexColor(collection.themedColorIndex))
+        actions.rippleToCollection(color, point) ~~
+          Ui {
+            activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
+          }
+      } getOrElse {
+        Ui(activity.startActivity(intent))
+      }
     }
 
     ((for {

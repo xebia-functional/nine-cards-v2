@@ -6,6 +6,7 @@ import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
@@ -85,7 +86,7 @@ class CollectionsDetailsActivity
   }
 
   override def onResume(): Unit = {
-    if (firstTime) {
+    if (firstTime && Lollipop.ifSupportedThen().isDefined) {
       overridePendingTransition(0, 0)
       firstTime = false
     } else {
