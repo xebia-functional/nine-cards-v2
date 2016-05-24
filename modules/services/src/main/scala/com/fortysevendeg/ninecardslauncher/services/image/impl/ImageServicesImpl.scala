@@ -38,7 +38,7 @@ class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageSe
         ResultT(Task(Result.answer(toAppPackagePath(request, file.getAbsolutePath))))
       case false =>
         for {
-          bitmap <- imageServicesTasks.getBitmapByAppOrName(request.packageName, request.icon, request.name)
+          bitmap <- imageServicesTasks.getBitmapByAppOrName(request.packageName, request.name)
           _ <- imageServicesTasks.saveBitmap(file, bitmap)
         } yield toAppPackagePath(request, file.getAbsolutePath)
     }

@@ -7,8 +7,7 @@ trait ResourceUtilsData {
   val appPackage = AppPackage(
     "com.fortysevendeg.ninecardslauncher.test",
     "ClassNameExample",
-    "Sample Name",
-    0)
+    "Sample Name")
 
   val fileFolder = "/file/example"
 

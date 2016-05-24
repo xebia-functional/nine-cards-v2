@@ -83,8 +83,7 @@ trait ImageServicesImplSpecification
       Result.answer(mock[Bitmap])
 
     mockTasks.getBitmapByApp(
-      appPackage.packageName,
-      appPackage.icon)(contextSupport) returns
+      appPackage.packageName)(contextSupport) returns
       defaultBitmapTask
 
     mockTasks.getBitmapFromURL(
@@ -93,7 +92,6 @@ trait ImageServicesImplSpecification
 
     mockTasks.getBitmapByAppOrName(
       appPackage.packageName,
-      appPackage.icon,
       appPackage.name)(contextSupport, imageServiceConfig) returns
       defaultBitmapTask
 
@@ -132,7 +130,6 @@ trait ImageServicesImplSpecification
 
     mockTasks.getBitmapByAppOrName(
       appPackage.packageName,
-      appPackage.icon,
       appPackage.name)(contextSupport, imageServiceConfig) returns
       serviceBitmapException
 

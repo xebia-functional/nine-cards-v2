@@ -38,7 +38,6 @@ trait CollectionProcessImplData {
   val path1 = "/example/path1"
   val category1 = "category1"
   val imagePath1 = "imagePath1"
-  val resourceIcon1 = 1
   val dateInstalled1 = 1L
   val dateUpdate1 = 1L
   val version1 = "22"
@@ -72,7 +71,6 @@ trait CollectionProcessImplData {
     name = name1,
     packageName = packageName1,
     className = className1,
-    resourceIcon = resourceIcon1,
     dateInstalled = dateInstalled1,
     dateUpdate = dateUpdate1,
     version = version1,
