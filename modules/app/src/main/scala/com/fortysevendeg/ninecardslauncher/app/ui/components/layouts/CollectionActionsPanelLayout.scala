@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableButton
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableButtonTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, DragLauncherType, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -18,7 +19,7 @@ import macroid._
 
 class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   extends LinearLayout(context, attrs, defStyle)
-  with TypedFindView {
+    with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -37,7 +38,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
   var draggingTo: Option[Int] = None
 
   def load(actions: Seq[CollectionActionItem])
-    (implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Ui[Any] = {
+          (implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Ui[Any] = {
 
     def populate(action: CollectionActionItem, position: Int): Tweak[TintableButton] =
       tvText(action.name) +
@@ -78,7 +79,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
       case ACTION_DROP =>
         draggingTo flatMap actions.lift match {
           case Some(action: CollectionActionItem) => performAction(action)
-          case _ => presenter.endAddItem()
+          case _ =>
         }
         draggingTo = None
         (this <~ select(unselectedPosition)).run
@@ -86,7 +87,6 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
         draggingTo = None
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_ENDED =>
-        presenter.endAddItem()
         draggingTo = None
         (this <~ select(unselectedPosition)).run
       case _ =>

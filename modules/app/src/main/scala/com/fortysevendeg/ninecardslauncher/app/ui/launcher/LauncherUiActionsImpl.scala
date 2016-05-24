@@ -279,12 +279,6 @@ trait LauncherUiActionsImpl
       override def onDrag(v: View, event: DragEvent): Boolean = {
         val dragArea = v.getField[DragArea](dragAreaKey) getOrElse NoDragArea
         (event.getAction, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
-          case (ACTION_DRAG_ENDED, _ , _) =>
-            (v <~ vAddField(dragAreaKey, NoDragArea)).run
-            event.getLocalState match {
-              case DragObject(_, AddItemToCollection) => presenter.endAddItem()
-              case DragObject(_, ReorderCollection) => presenter.dropReorder()
-            }
           case (_, Some(topBar), Some(bottomBar)) =>
             val height = KitKat.ifSupportedThen (view.getHeight - getStatusBarHeight) getOrElse view.getHeight
             val top = KitKat.ifSupportedThen (topBar + getStatusBarHeight) getOrElse topBar
@@ -313,7 +307,11 @@ trait LauncherUiActionsImpl
               case (DockAppsDragArea, DragObject(_, ReorderCollection), ACTION_DROP) =>
                 // Project to workspace
                 (workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top)).run
-              case (ActionsDragArea, DragObject(_, AddItemToCollection | ReorderCollection), _) =>
+              case (ActionsDragArea, DragObject(_, ReorderCollection), ACTION_DROP) =>
+                // Project to Collection actions
+                ((collectionActionsPanel <~ caplDragDispatcher(action, x, y)) ~
+                  (workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top))).run
+              case (ActionsDragArea, _, _) =>
                 // Project to Collection actions
                 (collectionActionsPanel <~ caplDragDispatcher(action, x, y)).run
               case _ =>
