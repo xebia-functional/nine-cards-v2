@@ -168,6 +168,8 @@ object SearchBoxesViewTweaks {
 
   def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[W] (_.addTextChangedListener(onChangeText))
 
+  def sbvShowKeyboard = Tweak[W] (_.showKeyboard.run)
+
   def sbvClean = Tweak[W] (_.clean.run)
 
   def sbvEnableSearch = Tweak[W] (_.enableSearch.run)
