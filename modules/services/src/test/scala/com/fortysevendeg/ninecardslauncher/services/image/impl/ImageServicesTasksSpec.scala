@@ -300,21 +300,15 @@ class ImageServicesTasksSpec
         }
       }
 
-    "return a Bitmap when the file is created by density" in
-      new ImageServicesTasksScope with BitmapAppDensityImageServicesTasksScope {
-        val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
-        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
-      }
-
     "return a Bitmap when the file is created by packageName" in
       new ImageServicesTasksScope with BitmapAppPackageNameImageServicesTasksScope {
-        val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
+        val result = mockImageServicesTask.getBitmapByApp(packageName)(contextSupport).run.run
         result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
       }
 
     "return a BitmapTransformationException when no resources can be found" in
       new ImageServicesTasksScope with ErrorBitmapAppImageServicesTasksScope {
-        val result = mockImageServicesTask.getBitmapByApp(packageName, icon)(contextSupport).run.run
+        val result = mockImageServicesTask.getBitmapByApp(packageName)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[BitmapTransformationExceptionImpl]
@@ -356,24 +350,17 @@ class ImageServicesTasksSpec
         }
       }
 
-    "return a Bitmap when a valid app is provided" in
-      new ImageServicesTasksScope with BitmapAppImageServicesTasksScope {
-        val result = mockImageServicesTask.getBitmapByAppOrName(
-          packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
-        result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
-      }
-
     "return a Bitmap when an invalid app and a valid name are provided" in
       new ImageServicesTasksScope with BitmapNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByAppOrName(
-          packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
+          packageName, name)(contextSupport, mockImageServicesConfig).run.run
         result must beLike {case Answer(resultBitmap) => resultBitmap shouldEqual mockBitmap}
       }
 
     "return a BitmapTransformationException when an invalid app and name are provided" in
       new ImageServicesTasksScope with ErrorBitmapAppNameImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapByAppOrName(
-          packageName, icon, name)(contextSupport, mockImageServicesConfig).run.run
+          packageName, name)(contextSupport, mockImageServicesConfig).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[BitmapTransformationExceptionImpl]

@@ -104,13 +104,10 @@ trait DrawerUiActions
         }
       })) ~
       (tabs <~ tvClose) ~
-      (appDrawerMain <~ appDrawerMainStyle <~ On.click {
-        (if (getItemsCount == 0) {
-          loadAppsAlphabetical
-        } else {
-          Ui.nop
-        }) ~ revealInDrawer ~~ (searchPanel <~ vGone)
-      }) ~
+      (appDrawerMain <~
+        appDrawerMainStyle <~
+        On.click (openDrawer(showKeyboard = false)) <~
+        On.longClick (openDrawer(showKeyboard = true) ~ Ui(true))) ~
       (recycler <~
         recyclerStyle <~
         drvListener(DrawerRecyclerViewListener(
@@ -147,6 +144,13 @@ trait DrawerUiActions
       loadAppsAlphabetical ~
       createDrawerPagers
   }
+
+  private[this] def openDrawer(showKeyboard: Boolean) =
+    (if (getItemsCount == 0) {
+      loadAppsAlphabetical
+    } else {
+      Ui.nop
+    }) ~ revealInDrawer(showKeyboard) ~~ (searchPanel <~ vGone)
 
   protected def openTabs: Ui[_] =
     (tabs <~ tvOpen <~ showTabs) ~
@@ -225,10 +229,15 @@ trait DrawerUiActions
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
-  def revealInDrawer: Ui[Future[_]] =
+  def revealInDrawer(showKeyboard: Boolean): Ui[Future[_]] =
     (paginationDrawerPanel <~ reloadPager(0)) ~
-      (searchBoxView <~ sbvEnableSearch) ~
-      (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
+      (appDrawerMain mapUiF { source =>
+        (drawerContent <~~
+          revealInAppDrawer(source)) ~~
+          (searchBoxView <~
+            sbvEnableSearch <~
+            (if (showKeyboard) sbvShowKeyboard else Tweak.blank))
+      })
 
   def revealOutDrawer: Ui[_] = {
     val searchIsEmpty = searchBoxView exists (_.isEmpty)

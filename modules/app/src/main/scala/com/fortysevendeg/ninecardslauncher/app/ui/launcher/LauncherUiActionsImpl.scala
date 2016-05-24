@@ -25,7 +25,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.Collection
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.AddItemToCollection
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
@@ -72,9 +72,9 @@ trait LauncherUiActionsImpl
       initDrawerUi ~
       (root <~ dragListener())
 
-  override def addCollection(collection: Collection): Ui[Any] = uiActionCollection(Add, collection)
+  override def reloadPagerActivePosition(position: Int): Ui[Any] = reloadPagerAndActive(position)
 
-  override def removeCollection(collection: Collection): Ui[Any] = uiActionCollection(Remove, collection)
+  override def reloadWorkspaces(page: Int, data: Seq[LauncherData]): Ui[Any] = workspaces <~ lwsData(data, page)
 
   override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
 
@@ -98,8 +98,8 @@ trait LauncherUiActionsImpl
     goToNextWorkspace().ifUi(canMoveToNextScreen)
   }
 
-  override def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any] =
-    createCollections(collections, apps)
+  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] =
+    createCollections(data, apps)
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
     userProfileMenu(email, name, avatarUrl, coverPhotoUrl)
@@ -189,10 +189,6 @@ trait LauncherUiActionsImpl
     (goToPreviousWorkspace() ~ (workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1)) ~ reloadEdges()).ifUi(canMoveToPreviousScreen)
   }
 
-  override def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any] = reloadReorderedCollections(from, to)
-
-  override def reloadCollectionsFailed(): Ui[Any] = reloadCollections()
-
   override def startAddItem(cardType: CardType): Ui[Any] = {
     val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
     revealOutDrawer ~
@@ -225,6 +221,10 @@ trait LauncherUiActionsImpl
   private[this] def fadeOut() = applyAnimation(alpha = Some(0)) + vInvisible
 
   override def isTabsOpened: Boolean = isDrawerTabsOpened
+
+  override def getData: Seq[LauncherData] = workspaces.map(_.data) getOrElse Seq.empty
+
+  override def getCurrentPage: Option[Int] = workspaces.map(_.currentPage())
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
 
@@ -278,11 +278,8 @@ trait LauncherUiActionsImpl
       val dragAreaKey = "drag-area"
       override def onDrag(v: View, event: DragEvent): Boolean = {
         val dragArea = v.getField[DragArea](dragAreaKey) getOrElse NoDragArea
-        (event.getLocalState, event.getAction, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
-          case (DragObject(_, AddItemToCollection), ACTION_DRAG_ENDED, _ , _) =>
-            (v <~ vAddField(dragAreaKey, NoDragArea)).run
-            presenter.endAddItem()
-          case (DragObject(_, AddItemToCollection), _, Some(topBar), Some(bottomBar)) =>
+        (event.getAction, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
+          case (_, Some(topBar), Some(bottomBar)) =>
             val height = KitKat.ifSupportedThen (view.getHeight - getStatusBarHeight) getOrElse view.getHeight
             val top = KitKat.ifSupportedThen (topBar + getStatusBarHeight) getOrElse topBar
             // Project location to views
@@ -297,14 +294,24 @@ trait LauncherUiActionsImpl
               (event.getAction, currentDragArea)
             }
 
-            area match {
-              case WorkspacesDragArea =>
+            (area, event.getLocalState, action) match {
+              case (WorkspacesDragArea, DragObject(_, AddItemToCollection), _) =>
                 // Project to workspace
-                (workspaces <~ lwsDragDispatcher(action, x, y - top)).run
-              case DockAppsDragArea =>
+                (workspaces <~ lwsDragAddItemDispatcher(action, x, y - top)).run
+              case (DockAppsDragArea, DragObject(_, AddItemToCollection), _) =>
                 // Project to dock apps
                 (dockAppsPanel <~ daplDragDispatcher(action, x, y - (height - bottomBar))).run
-              case ActionsDragArea =>
+              case (WorkspacesDragArea, DragObject(_, ReorderCollection), _) =>
+                // Project to workspace
+                (workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top)).run
+              case (DockAppsDragArea, DragObject(_, ReorderCollection), ACTION_DROP) =>
+                // Project to workspace
+                (workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top)).run
+              case (ActionsDragArea, DragObject(_, ReorderCollection), ACTION_DROP) =>
+                // Project to Collection actions
+                ((collectionActionsPanel <~ caplDragDispatcher(action, x, y)) ~
+                  (workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top))).run
+              case (ActionsDragArea, _, _) =>
                 // Project to Collection actions
                 (collectionActionsPanel <~ caplDragDispatcher(action, x, y)).run
               case _ =>

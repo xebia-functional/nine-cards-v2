@@ -4,19 +4,23 @@ import android.app.Activity
 import android.content.{Context, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{CollectionsWorkSpace, LauncherData, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -39,6 +43,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   with AnalyticDispatcher { self =>
 
   val tagDialog = "dialog"
+
+  val defaultPage = 1
 
   var statuses = LauncherPresenterStatuses()
 
@@ -121,7 +127,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.endAddItem.run
   }
 
-  def endAddItem(): Unit = {
+  def endAddItem(): Unit = if (statuses.mode == AddItemMode) {
     statuses = statuses.reset()
     actions.endAddItem.run
   }
@@ -167,17 +173,41 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     statuses = statuses.updateCurrentPosition(position)
   }
 
-  def dropReorder(): Unit = {
+  def dropReorder(): Unit = if (statuses.mode == ReorderMode) {
     actions.endReorder.run
     val from = statuses.startPositionReorderMode
     val to = statuses.currentDraggingPosition
     if (from != to) {
       Task.fork(di.collectionProcess.reorderCollection(from, to).run).resolveAsyncUi(
-        onResult = (_) => actions.reloadCollectionsAfterReorder(from, to),
-        onException = (_) => actions.reloadCollectionsFailed() ~ actions.showContactUsError())
+        onResult = (_) => {
+          val (page, data) = reorderCollectionsInCurrentData(from, to)
+          actions.reloadWorkspaces(page, data)
+        },
+        onException = (_) => {
+          val (page, data) = reloadCollectionsInCurrentData
+          actions.reloadWorkspaces(page, data) ~ actions.showContactUsError()
+        })
+    } else {
+      val (page, data) = reloadCollectionsInCurrentData
+      actions.reloadWorkspaces(page, data).run
     }
     statuses = statuses.reset()
   }
+
+  def removeCollectionInReorderMode(): Unit =
+    (statuses.collectionReorderMode map { collection =>
+      if (actions.canRemoveCollections) {
+        Ui(showDialogForRemoveCollection(collection))
+      } else {
+        actions.showMinimumOneCollectionMessage()
+      }
+    } getOrElse actions.showContactUsError()).run
+
+  def editCollectionInReorderMode(): Unit =
+    (statuses.collectionReorderMode match {
+      case Some(_) => actions.showNoImplementedYetMessage()
+      case None => actions.showContactUsError()
+    }).run
 
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
@@ -204,26 +234,20 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     execute(phoneToNineCardIntent(contact.number))
   }
 
-  def addCollection(collection: Collection): Unit = actions.addCollection(collection).run
-
-  def removeCollectionInReorderMode(): Unit =
-    (statuses.collectionReorderMode map { collection =>
-      if (actions.canRemoveCollections) {
-        Ui(showDialogForRemoveCollection(collection))
-      } else {
-        actions.showMinimumOneCollectionMessage()
-      }
-    } getOrElse actions.showContactUsError()).run
-
-  def editCollectionInReorderMode(): Unit =
-    (statuses.collectionReorderMode match {
-      case Some(_) => actions.showNoImplementedYetMessage()
-      case None => actions.showContactUsError()
-    }).run
+  def addCollection(collection: Collection): Unit = {
+    addCollectionToCurrentData(collection) match {
+      case Some((page: Int, data: Seq[LauncherData])) =>
+        (actions.reloadWorkspaces(page, data) ~ actions.reloadPagerActivePosition(page)).run
+      case _ =>
+    }
+  }
 
   def removeCollection(collection: Collection): Unit = {
     Task.fork(deleteCollection(collection.id).run).resolveAsyncUi(
-      onResult = (_) => actions.removeCollection(collection),
+      onResult = (_) => {
+        val (page, data) = removeCollectionToCurrentData(collection.id)
+        actions.reloadWorkspaces(page, data) ~ actions.reloadPagerActivePosition(page)
+      },
       onException = (_) => actions.showContactUsError()
     )
   }
@@ -240,7 +264,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               name = user.userProfile.name,
               avatarUrl = user.userProfile.avatar,
               coverPhotoUrl = user.userProfile.cover))
-          actions.loadCollections(collections, apps)
+          val data = LauncherData(MomentWorkSpace) +: createLauncherDataCollections(collections)
+          actions.loadLauncherInfo(data, apps)
       },
       onException = (ex: Throwable) => Ui(goToWizard()),
       onPreTask = () => actions.showLoading()
@@ -295,11 +320,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       intent.putExtra(startPosition, collection.position)
       intent.putExtra(indexColorToolbar, collection.themedColorIndex)
       intent.putExtra(iconToolbar, collection.icon)
-      val color = resGetColor(getIndexColor(collection.themedColorIndex))
-      actions.rippleToCollection(color, point) ~~
-        Ui {
-          activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
-        }
+      Lollipop.ifSupportedThen {
+        val color = resGetColor(getIndexColor(collection.themedColorIndex))
+        actions.rippleToCollection(color, point) ~~
+          Ui {
+            activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
+          }
+      } getOrElse {
+        Ui(activity.startActivity(intent))
+      }
     }
 
     ((for {
@@ -369,6 +398,74 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
+  private[this] def removeCollectionToCurrentData(collectionId: Int): (Int, Seq[LauncherData]) = {
+    val currentData = actions.getData
+
+    // We remove a collection in sequence and fix positions
+    val collections = (currentData flatMap (_.collections.filterNot(_.id == collectionId))).zipWithIndex map {
+      case (col, index) => col.copy(position = index)
+    }
+
+    val maybeWorkspaceCollection = currentData find (_.collections.exists(_.id == collectionId))
+    val maybePage = maybeWorkspaceCollection map currentData.indexOf
+
+    val newData = LauncherData(MomentWorkSpace) +: createLauncherDataCollections(collections)
+
+    val page = maybePage map { page =>
+      if (newData.isDefinedAt(page)) page else newData.length - 1
+    } getOrElse defaultPage
+
+    (page, newData)
+  }
+
+  private[this] def reorderCollectionsInCurrentData(from: Int, to: Int): (Int, Seq[LauncherData]) = {
+    val currentData = actions.getData
+    val cols = currentData flatMap (_.collections)
+    val collections = cols.reorder(from, to).zipWithIndex map {
+      case (collection, index) => collection.copy(position = index)
+    }
+    val newData = LauncherData(MomentWorkSpace) +: createLauncherDataCollections(collections)
+
+    val page = (for {
+      currentPage <- actions.getCurrentPage
+      _ <- currentData.lift(currentPage)
+    } yield currentPage) getOrElse defaultPage
+
+    (page, newData)
+  }
+
+  private[this] def reloadCollectionsInCurrentData: (Int, Seq[LauncherData]) = {
+    val currentData = actions.getData
+    val collections = currentData flatMap (_.collections)
+    val newData = LauncherData(MomentWorkSpace) +: createLauncherDataCollections(collections)
+    val page = (for {
+      currentPage <- actions.getCurrentPage
+      _ <- currentData.lift(currentPage)
+    } yield currentPage) getOrElse defaultPage
+    (page, newData)
+  }
+
+  private[this] def addCollectionToCurrentData(collection: Collection): Option[(Int, Seq[LauncherData])] = {
+    val currentData = actions.getData
+    currentData.lastOption map { data =>
+      val lastWorkspaceHasSpace = data.collections.size < numSpaces
+      val newData = if (lastWorkspaceHasSpace) {
+        currentData.dropRight(1) :+ data.copy(collections = data.collections :+ collection)
+      } else {
+        val newPosition = currentData.count(_.workSpaceType == CollectionsWorkSpace)
+        currentData :+ LauncherData(CollectionsWorkSpace, Seq(collection), newPosition)
+      }
+      val page = newData.size - 1
+      (page, newData)
+    }
+  }
+
+  def createLauncherDataCollections(collections: Seq[Collection]): Seq[LauncherData] = {
+    collections.grouped(numSpaces).toList.zipWithIndex map {
+      case (data, index) => LauncherData(CollectionsWorkSpace, data, index)
+    }
+  }
+
 }
 
 trait LauncherUiActions {
@@ -393,10 +490,6 @@ trait LauncherUiActions {
 
   def goToNextScreenReordering(): Ui[Any]
 
-  def reloadCollectionsAfterReorder(from: Int, to: Int): Ui[Any]
-
-  def reloadCollectionsFailed(): Ui[Any]
-
   def startAddItem(cardType: CardType): Ui[Any]
 
   def endAddItem: Ui[Any]
@@ -407,9 +500,9 @@ trait LauncherUiActions {
 
   def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any]
 
-  def addCollection(collection: Collection): Ui[Any]
+  def reloadPagerActivePosition(position: Int): Ui[Any]
 
-  def removeCollection(collection: Collection): Ui[Any]
+  def reloadWorkspaces(page: Int, data: Seq[LauncherData]): Ui[Any]
 
   def reloadDockApps(dockApp: DockApp): Ui[Any]
 
@@ -427,7 +520,7 @@ trait LauncherUiActions {
 
   def goToNextScreen(): Ui[Any]
 
-  def loadCollections(collections: Seq[Collection], apps: Seq[DockApp]): Ui[Any]
+  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
 
   def reloadAppsInDrawer(
     apps: IterableApps,
@@ -451,6 +544,10 @@ trait LauncherUiActions {
   def getCollection(position: Int): Option[Collection]
 
   def isTabsOpened: Boolean
+
+  def getData: Seq[LauncherData]
+
+  def getCurrentPage: Option[Int]
 
 }
 

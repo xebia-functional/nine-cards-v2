@@ -36,7 +36,6 @@ trait DeviceProcessData
   val path1 = "/example/path1"
   val category1 = Game
   val imagePath1 = "imagePath1"
-  val resourceIcon1 = 1
   val dateInstalled1 = 1L
   val dateUpdate1 = 1L
   val version1 = "22"
@@ -48,7 +47,6 @@ trait DeviceProcessData
   val path2 = "/example/path2"
   val category2 = BooksAndReference
   val imagePath2 = "imagePath1"
-  val resourceIcon2 = 2
   val dateInstalled2 = 1L
   val dateUpdate2 = 1L
   val version2 = "22"
@@ -60,7 +58,6 @@ trait DeviceProcessData
   val path3 = "/example/path3"
   val category3 = Business
   val imagePath3 = "imagePath1"
-  val resourceIcon3 = 3
   val dateInstalled3 = 1L
   val dateUpdate3 = 1L
   val version3 = "22"
@@ -72,7 +69,6 @@ trait DeviceProcessData
   val path4 = "/example/path4"
   val category4 = Comics
   val imagePath4 = "imagePath1"
-  val resourceIcon4 = 4
   val dateInstalled4 = 1L
   val dateUpdate4 = 1L
   val version4 = "22"
@@ -161,7 +157,6 @@ trait DeviceProcessData
     name = name4,
     packageName = packageName4,
     className = className4,
-    resourceIcon = resourceIcon4,
     dateInstalled = dateInstalled4,
     dateUpdate = dateUpdate4,
     version = version4,
@@ -172,7 +167,6 @@ trait DeviceProcessData
       name = name1,
       packageName = packageName1,
       className = className1,
-      resourceIcon = resourceIcon1,
       dateInstalled = dateInstalled1,
       dateUpdate = dateUpdate1,
       version = version1,
@@ -181,7 +175,6 @@ trait DeviceProcessData
       name = name2,
       packageName = packageName2,
       className = className2,
-      resourceIcon = resourceIcon2,
       dateInstalled = dateInstalled2,
       dateUpdate = dateUpdate2,
       version = version2,
@@ -190,7 +183,6 @@ trait DeviceProcessData
       name = name3,
       packageName = packageName3,
       className = className3,
-      resourceIcon = resourceIcon3,
       dateInstalled = dateInstalled3,
       dateUpdate = dateUpdate3,
       version = version3,

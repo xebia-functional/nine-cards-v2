@@ -31,7 +31,6 @@ trait AppsServicesImplSpecification
       val mockActivityInfo = mock[ActivityInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
       sampleResolveInfo.activityInfo = mockActivityInfo
-      sampleResolveInfo.activityInfo.icon = sampleApp.resourceIcon
       mockActivityInfo.name = sampleApp.className
       mockActivityInfo.applicationInfo = mockApplicationInfo
       mockApplicationInfo.packageName = sampleApp.packageName

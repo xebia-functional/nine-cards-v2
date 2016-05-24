@@ -4,9 +4,9 @@ import android.content.Context
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.os.Vibrator
-import android.view.{DragEvent, View}
-import android.view.View.OnDragListener
-import android.widget.{ImageView, TextView}
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.{EditText, ImageView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -63,6 +63,14 @@ object ExtraTweaks {
   def uiVibrate(milis: Long = 200)(implicit contextWrapper: ContextWrapper): Ui[Any] = Ui {
     contextWrapper.application.getSystemService(Context.VIBRATOR_SERVICE) match {
       case vibrator: Vibrator => vibrator.vibrate(milis)
+      case _ =>
+    }
+  }
+
+  def etShowKeyboard(implicit contextWrapper: ContextWrapper) = Tweak[EditText] { editText =>
+    editText.requestFocus()
+    Option(contextWrapper.bestAvailable.getSystemService(Context.INPUT_METHOD_SERVICE)) foreach {
+      case imm: InputMethodManager => imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
       case _ =>
     }
   }
