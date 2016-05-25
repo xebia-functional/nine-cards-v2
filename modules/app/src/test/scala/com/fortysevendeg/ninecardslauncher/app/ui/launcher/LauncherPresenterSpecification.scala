@@ -60,7 +60,7 @@ trait LauncherPresenterSpecification
       statuses = mockStatuses
       override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
         Service(Task(Answer(())))
-      override protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
+      override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
         Service(Task(Answer((collectionSeq, dockAppSeq))))
       override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Answer(user)))
     }
@@ -69,7 +69,7 @@ trait LauncherPresenterSpecification
       statuses = mockStatuses
       override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
         Service(Task(Errata(collectionException)))
-      override protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
+      override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
         Service(Task(Errata(launcherAppsException)))
       override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Errata(userException)))
     }

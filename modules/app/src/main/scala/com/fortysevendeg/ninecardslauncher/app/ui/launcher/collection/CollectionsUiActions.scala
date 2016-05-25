@@ -146,7 +146,7 @@ trait CollectionsUiActions
 
   def showCollectionsLoading: Ui[_] = loading <~ vVisible
 
-  def createCollections(
+  def showLauncherInfo(
     data: Seq[LauncherData],
     apps: Seq[DockApp]): Ui[_] = {
     (loading <~ vGone) ~
@@ -268,7 +268,7 @@ trait CollectionsUiActions
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
-  def reloadPagerAndActive(activePosition: Int) =
+  private[this] def reloadPagerAndActive(activePosition: Int): Ui[Any] =
     workspaces map { ws =>
       val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
         val view = pagination(position)
@@ -277,6 +277,8 @@ trait CollectionsUiActions
       }
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
+
+  def reloadWorkspacePager: Ui[Any] = (workspaces ~> lwsCurrentPage()).get map reloadPagerAndActive getOrElse Ui.nop
 
   def pagination(position: Int) =
     (w[ImageView] <~ paginationItemStyle <~ vSetPosition(position)).get

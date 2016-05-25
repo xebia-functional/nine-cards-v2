@@ -16,7 +16,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.DragLauncherType
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -28,7 +27,18 @@ object LauncherWorkSpacesTweaks {
 
   def lwsPresenter(presenter: LauncherPresenter) = Tweak[W] (_.presenter = Some(presenter))
 
-  def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] (_.init(data, pageSelected))
+  def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] { view =>
+    view.init(data, pageSelected)
+  }
+
+  def lwsDataCollections(data: Seq[LauncherData], pageCollectionSelected: Option[Int]) = Tweak[W] { view =>
+    view.data.headOption match {
+      case Some(moment) =>
+        val page = pageCollectionSelected map (_ + 1) getOrElse view.currentPage()
+        view.init(moment +: data, page)
+      case _ =>
+    }
+  }
 
   def lwsClean = Tweak[W] (_.clean())
 
@@ -55,6 +65,8 @@ object LauncherWorkSpacesTweaks {
       case _ =>
     }
   }
+
+  def lwsCurrentPage() = Excerpt[W, Int] (_.currentPage())
 
   def lwsCountCollections() = Excerpt[W, Int] (_.getCountCollections)
 

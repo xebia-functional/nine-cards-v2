@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.Translation
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,7 +38,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   lazy val sizeCalculateMovement = getHeight
 
   def getCountCollections: Int = data map {
-    case item@LauncherData(CollectionsWorkSpace, _, _) => item.collections.length
+    case item@LauncherData(CollectionsWorkSpace, _, _, _) => item.collections.length
     case _ => 0
   } sum
 
@@ -86,6 +86,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     view match {
       case Some(v: LauncherWorkSpaceCollectionsHolder) =>
         v.populate(data.collections, data.positionByType, getCountCollectionScreens)
+      case Some(v: LauncherWorkSpaceMomentsHolder) =>
+        data.moment map v.populate getOrElse Ui.nop
       case _ => Ui.nop
     }
 
@@ -271,7 +273,11 @@ case class LauncherWorkSpacesListener(
 class LauncherWorkSpaceHolder(context: Context)
   extends FrameLayout(context)
 
-case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collection] = Seq.empty, positionByType: Int = 0)
+case class LauncherData(
+  workSpaceType: WorkSpaceType,
+  moment: Option[Moment] = None,
+  collections: Seq[Collection] = Seq.empty,
+  positionByType: Int = 0)
 
 sealed trait WorkSpaceType {
   val value: Int

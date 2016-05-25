@@ -111,6 +111,7 @@ object Settings {
     aar(androidRecyclerview),
     aar(androidCardView),
     aar(androidDesign),
+    aar(androidFlexbox),
     aar(playServicesBase),
     aar(playServicesAnalytics),
     aar(playServicesDrive),
@@ -169,6 +170,7 @@ object Settings {
     Resolver.sonatypeRepo("releases"),
     Resolver.sonatypeRepo("snapshots"),
     Resolver.defaultLocal,
+    Resolver.jcenterRepo,
     "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
     "crashlytics" at "https://maven.fabric.io/public"
   )

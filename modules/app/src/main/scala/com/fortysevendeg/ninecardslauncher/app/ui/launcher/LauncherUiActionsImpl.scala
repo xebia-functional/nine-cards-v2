@@ -29,7 +29,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToColle
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
@@ -72,9 +72,8 @@ trait LauncherUiActionsImpl
       initDrawerUi ~
       (root <~ dragListener())
 
-  override def reloadPagerActivePosition(position: Int): Ui[Any] = reloadPagerAndActive(position)
-
-  override def reloadWorkspaces(page: Int, data: Seq[LauncherData]): Ui[Any] = workspaces <~ lwsData(data, page)
+  override def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): Ui[Any] =
+    (workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager
 
   override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
 
@@ -99,7 +98,7 @@ trait LauncherUiActionsImpl
   }
 
   override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] =
-    createCollections(data, apps)
+    showLauncherInfo(data, apps)
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
     userProfileMenu(email, name, avatarUrl, coverPhotoUrl)
