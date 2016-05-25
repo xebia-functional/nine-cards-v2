@@ -253,7 +253,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  private[this] def loadLauncherInfo(): Unit = {
+  def loadLauncherInfo(): Unit = {
     Task.fork(getLauncherInfo.run).resolveAsyncUi(
       onResult = {
         // Check if there are collections in DB, if there aren't we go to wizard
