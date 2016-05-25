@@ -1,13 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import java.io.{FileOutputStream, InputStream, File}
+import java.io.{File, FileOutputStream, InputStream}
 import java.net.URL
 
-import android.content.res.Resources
 import android.graphics._
-import android.graphics.drawable.{Drawable, BitmapDrawable}
-import android.os.Build
-import android.util.{DisplayMetrics, TypedValue}
+import android.graphics.drawable.{BitmapDrawable, Drawable}
+import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -15,7 +13,6 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.{Answer, Result}
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
 
 import scalaz.concurrent.Task
 
@@ -42,18 +39,11 @@ trait ImageServicesTasks
     }
   }
 
-  def getBitmapByApp(packageName: String, icon: Int)(implicit context: ContextSupport): ServiceDef2[Bitmap, BitmapTransformationException] = Service {
+  def getBitmapByApp(packageName: String)(implicit context: ContextSupport): ServiceDef2[Bitmap, BitmapTransformationException] = Service {
     Task {
       val packageManager = context.getPackageManager
       Option(packageManager.getResourcesForApplication(packageName)) match {
-        case Some(resources) =>
-          val density = betterDensityForResource(resources, icon)
-          tryIconByDensity(resources, icon, density) match {
-            case Answer(a) =>
-              Result.answer(a)
-            case _ =>
-              tryIconByPackageName(packageName)
-          }
+        case Some(resources) => tryIconByPackageName(packageName)
         case _ => Result.errata(BitmapTransformationExceptionImpl("Resource not found from packageName"))
       }
     }
@@ -81,9 +71,9 @@ trait ImageServicesTasks
     }
   }
 
-  def getBitmapByAppOrName(packageName: String, icon: Int, name: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig):
+  def getBitmapByAppOrName(packageName: String, name: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig):
   ServiceDef2[Bitmap, BitmapTransformationException] = Service {
-    manageBitmapTask(name)(getBitmapByApp(packageName, icon).run)
+    manageBitmapTask(name)(getBitmapByApp(packageName).run)
   }
 
   def getBitmapFromURLOrName(url: String, name: String)(implicit context: ContextSupport, imageServicesConfig: ImageServicesConfig):
@@ -122,9 +112,6 @@ trait ImageServicesTasks
       List(DisplayMetrics.DENSITY_XXHIGH, DisplayMetrics.DENSITY_XHIGH, DisplayMetrics.DENSITY_HIGH)
   }
 
-  private[this] def betterDensityForResource(resources: Resources, id: Int)(implicit context: ContextSupport): Int =
-    densities.find(density => Result(resources.getValueForDensity(id, density, new TypedValue, true)).isAnswer) getOrElse noDensity
-
   private[this] def defaultSize(implicit context: ContextSupport): Int = {
     val width: Int = getDisplayMetricsWidthPixels / 3
     val height: Int = getDisplayMetricsHeightPixels / 3
@@ -148,13 +135,6 @@ trait ImageServicesTasks
     paint.setTextSize(determineMaxTextSize((defaultSize / 3) * 2))
     paint
   }
-
-  private[this] def tryIconByDensity(resources: Resources, icon: Int, density: Int): Result[Bitmap, BitmapTransformationException] =
-    CatchAll[BitmapTransformationException] {
-      val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) resources.getDrawableForDensity(icon, density, javaNull)
-      else resources.getDrawableForDensity(icon, density)
-      getIconByDensity(d)
-    }
 
   private[this] def tryIconByPackageName(packageName: String)(implicit context: ContextSupport): Result[Bitmap, BitmapTransformationException] =
     CatchAll[BitmapTransformationException] {

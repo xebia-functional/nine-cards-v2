@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.services.apps.impl
 import android.content.Intent
 import android.content.pm.{PackageManager, ResolveInfo}
 import android.provider.MediaStore
-import android.util.Log
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
@@ -85,7 +84,6 @@ class AppsServicesImpl
       name = resolveInfo.loadLabel(packageManager).toString,
       packageName = packageName,
       className = className,
-      resourceIcon = resolveInfo.activityInfo.icon,
       dateInstalled = packageInfo.firstInstallTime,
       dateUpdate = packageInfo.lastUpdateTime,
       version = packageInfo.versionCode.toString,

@@ -91,14 +91,16 @@ trait WizardUiActionsImpl
           }
         }) ~
       (workspaces <~
-        swData(steps) <~
-        awsAddPageChangedObserver(currentPage => {
-          val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
-          ((wizardRootLayout <~ rbvColor(backgroundColor)) ~
-            (stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
-            (paginationPanel <~ reloadPagers(currentPage))).run
-        }
-        )) ~
+        vGlobalLayoutListener(_ => {
+          workspaces <~
+            swData(steps) <~
+            awsAddPageChangedObserver(currentPage => {
+              val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
+              ((wizardRootLayout <~ rbvColor(backgroundColor)) ~
+                (stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
+                (paginationPanel <~ reloadPagers(currentPage))).run
+            })
+        })) ~
       (stepsAction <~
         diveInActionStyle <~
         On.click(Ui(presenter.finishWizard()))) ~
@@ -107,22 +109,22 @@ trait WizardUiActionsImpl
   }
 
   override def goToUser(): Ui[Any] =
-    (loadingRootLayout <~ vGone) ~
+    (loadingRootLayout <~ vInvisible) ~
       (userRootLayout <~ vVisible) ~
-      (wizardRootLayout <~ vGone) ~
-      (deviceRootLayout <~ vGone)
+      (wizardRootLayout <~ vInvisible) ~
+      (deviceRootLayout <~ vInvisible)
 
   override def goToWizard(): Ui[Any] =
-    (loadingRootLayout <~ vGone) ~
-      (userRootLayout <~ vGone) ~
+    (loadingRootLayout <~ vInvisible) ~
+      (userRootLayout <~ vInvisible) ~
       (wizardRootLayout <~ vVisible <~ rbvColor(resGetColor(R.color.wizard_background_step_0), forceFade = true)) ~
-      (deviceRootLayout <~ vGone)
+      (deviceRootLayout <~ vInvisible)
 
   override def showLoading(): Ui[Any] =
     (loadingRootLayout <~ vVisible) ~
-      (userRootLayout <~ vGone) ~
-      (wizardRootLayout <~ vGone) ~
-      (deviceRootLayout <~ vGone)
+      (userRootLayout <~ vInvisible) ~
+      (wizardRootLayout <~ vInvisible) ~
+      (deviceRootLayout <~ vInvisible)
 
   override def showErrorLoginUser(): Ui[Any] = backToUser(R.string.errorLoginUser)
 

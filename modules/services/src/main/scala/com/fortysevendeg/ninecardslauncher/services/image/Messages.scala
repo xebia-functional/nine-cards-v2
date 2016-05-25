@@ -5,8 +5,7 @@ import android.graphics.Bitmap
 case class AppPackage(
   packageName: String,
   className: String,
-  name: String,
-  icon: Int)
+  name: String)
 
 case class AppPackagePath(
   packageName: String,

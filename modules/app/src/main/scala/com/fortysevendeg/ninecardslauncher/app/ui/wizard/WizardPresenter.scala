@@ -25,6 +25,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, M
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
+import NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -219,7 +221,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     for {
       response <- di.userProcess.signIn(username, Build.MODEL, userPermissions.token, userPermissions.oauthScopes)
       cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
-      userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudStorageResources)
+      userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudStorageResources).resolveTo(UserCloudDevices(username, Seq.empty))
     } yield userCloudDevices
 
   }

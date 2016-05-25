@@ -66,7 +66,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     if (current > 0) Some(current - 1) else None
   }
 
-  def prepareItemsScreenInReorder(position: Int): Ui[Any] = frontView match {
+  def prepareItemsScreenInReorder(position: Int): Ui[Any] = getCurrentView match {
     case Some(collectionWorkspace: LauncherWorkSpaceCollectionsHolder) =>
       collectionWorkspace.prepareItemsScreenInReorder(position)
     case _ => Ui.nop
@@ -192,7 +192,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     val transform = workSpacesStatuses.displacement < 0 && updatePercent > .5f
     if (transform) {
       workSpacesListener.onUpdateOpenMenu(percent * 2) ~
-        (frontParentView <~ vScaleX(updatePercent) <~ vScaleY(updatePercent) <~ vAlpha(updatePercent))
+        (getFrontView <~ vScaleX(updatePercent) <~ vScaleY(updatePercent) <~ vAlpha(updatePercent))
     } else {
       Ui.nop
     }
