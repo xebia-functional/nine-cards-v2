@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
@@ -273,30 +274,4 @@ case class LauncherWorkSpacesListener(
 class LauncherWorkSpaceHolder(context: Context)
   extends FrameLayout(context)
 
-case class LauncherData(
-  workSpaceType: WorkSpaceType,
-  moment: Option[Moment] = None,
-  collections: Seq[Collection] = Seq.empty,
-  positionByType: Int = 0)
-
-sealed trait WorkSpaceType {
-  val value: Int
-
-  def isMomentWorkSpace: Boolean = this == MomentWorkSpace
-}
-
-case object MomentWorkSpace extends WorkSpaceType {
-  override val value: Int = 0
-}
-
-case object CollectionsWorkSpace extends WorkSpaceType {
-  override val value: Int = 1
-}
-
-object WorkSpaceType {
-  def apply(value: Int): WorkSpaceType = value match {
-    case MomentWorkSpace.value => MomentWorkSpace
-    case _ => CollectionsWorkSpace
-  }
-}
 
