@@ -64,24 +64,22 @@ case class CollectionPresenter(
       for {
         collection <- actions.getCurrentCollection()
         packageName <- card.packageName
-      } yield {
-        val maybeCategory = collection.appsCategory map (c => Option(AppCategory(c))) getOrElse {
+        category <- collection.appsCategory map (c => Option(AppCategory(c))) getOrElse {
           collection.moment flatMap (_.momentType) map MomentCategory
         }
-        maybeCategory foreach { category =>
-          self !>>
-            TrackEvent(
-              screen = CollectionDetailScreen,
-              category = category,
-              action = action,
-              label = Some(ProvideLabel(packageName)),
-              value = Some(action match {
-                case OpenCardAction => OpenAppFromCollectionValue
-                case AddedToCollectionAction => AddedToCollectionValue
-                case RemovedInCollectionAction => RemovedInCollectionValue
-                case _ => NoValue
-              }))
-        }
+      } yield {
+        self !>>
+          TrackEvent(
+            screen = CollectionDetailScreen,
+            category = category,
+            action = action,
+            label = Some(ProvideLabel(packageName)),
+            value = Some(action match {
+              case OpenCardAction => OpenAppFromCollectionValue
+              case AddedToCollectionAction => AddedToCollectionValue
+              case RemovedInCollectionAction => RemovedInCollectionValue
+              case _ => NoValue
+            }))
       }
     case _ =>
   }
