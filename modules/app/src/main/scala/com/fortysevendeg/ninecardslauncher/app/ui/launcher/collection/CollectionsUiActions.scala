@@ -113,7 +113,7 @@ trait CollectionsUiActions
       (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~
       (workspaces <~
-        lwsPresenter(presenter) <~
+        lwsInitialize(presenter, theme) <~
         lwsListener(
           LauncherWorkSpacesListener(
             onStartOpenMenu = startOpenCollectionMenu,

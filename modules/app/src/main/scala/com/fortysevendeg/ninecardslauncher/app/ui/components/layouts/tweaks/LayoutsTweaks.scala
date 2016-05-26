@@ -1,13 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks
 
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener
 import android.view.{MenuItem, View}
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
@@ -26,7 +23,10 @@ import macroid._
 object LauncherWorkSpacesTweaks {
   type W = LauncherWorkSpaces
 
-  def lwsPresenter(presenter: LauncherPresenter) = Tweak[W] (_.presenter = Some(presenter))
+  def lwsInitialize(presenter: LauncherPresenter, theme: NineCardsTheme) = Tweak[W] { view =>
+    view.presenter = Some(presenter)
+    view.theme = Some(theme)
+  }
 
   def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] { view =>
     view.init(data, pageSelected)
@@ -120,44 +120,23 @@ object AnimatedWorkSpacesTweaks {
 object FabItemMenuTweaks {
   type W = FabItemMenu
 
-  def fimBackgroundColor(color: Int) = Tweak[W](_.icon foreach {
-    ic =>
-      Lollipop ifSupportedThen {
-        ic.setBackgroundColor(color)
-      } getOrElse {
-        val d = new ShapeDrawable(new OvalShape)
-        d.getPaint.setColor(color)
-        ic.setBackground(d)
-      }
-  })
+  def fimBackgroundColor(color: Int) = Tweak[W](_.changeBackground(color).run)
 
-  def fimSrc(res: Int) = Tweak[W](_.icon foreach (_.setImageResource(res)))
-
-  def fimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
-
-  def fimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
+  def fimPopulate(backgroundColor: Int, resourceId: Int, text: Int) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 
 }
 
 object WorkSpaceItemMenuTweaks {
   type W = WorkSpaceItemMenu
 
-  def wimBackgroundColor(color: Int) = Tweak[W](_.icon foreach {
-    ic =>
-      Lollipop ifSupportedThen {
-        ic.setBackgroundColor(color)
-      } getOrElse {
-        val d = new ShapeDrawable(new OvalShape)
-        d.getPaint.setColor(color)
-        ic.setBackground(d)
-      }
-  })
+  def wimPopulate(backgroundColor: Int, resourceId: Int, text: Int) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 
-  def wimSrc(resourceId: Int) = Tweak[W](_.icon foreach (_.setImageResource(resourceId)))
+}
 
-  def wimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
+object WorkSpaceMomentMenuTweaks {
+  type W = WorkSpaceMomentMenu
 
-  def wimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
+  def wmmPopulate(backgroundColor: Int, resourceId: Int, text: Option[String]) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 
 }
 

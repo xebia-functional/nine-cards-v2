@@ -23,7 +23,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, NineCardIntent}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
@@ -210,12 +210,23 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case None => actions.showContactUsError()
     }).run
 
+  def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
+    self !>>
+      TrackEvent(
+        screen = LauncherScreen,
+        category = moment map MomentCategory getOrElse FreeCategory,
+        action = OpenAction,
+        label = card.packageName map ProvideLabel,
+        value = Some(OpenMomentFromWorkspaceValue))
+    execute(card.intent)
+  }
+
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
     self !>>
       TrackEvent(
-        screen = CollectionDetailScreen,
+        screen = LauncherScreen,
         category = AppCategory(app.category),
         action = OpenAction,
         label = Some(ProvideLabel(app.packageName)),
@@ -265,11 +276,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               name = user.userProfile.name,
               avatarUrl = user.userProfile.avatar,
               coverPhotoUrl = user.userProfile.cover))
+          android.util.Log.d("9cards", s"$moment")
           val collectionMoment = for {
             m <- moment
             collectionId <- m.collectionId
             collection <- collections.find(_.id == collectionId)
           } yield collection
+          android.util.Log.d("9cards", s"collectionMoment: $collectionMoment")
           val launcherMoment = LauncherMoment(moment flatMap (_.momentType), collectionMoment)
           val data = LauncherData(MomentWorkSpace, Some(launcherMoment)) +: createLauncherDataCollections(collections)
           actions.loadLauncherInfo(data, apps)

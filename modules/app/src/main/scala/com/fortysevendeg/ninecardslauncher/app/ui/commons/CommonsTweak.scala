@@ -17,11 +17,11 @@ import macroid._
 
 object CommonsTweak {
 
-  def vBackgroundBoxWorkspace(color: Int, horizontalPadding: Int = 0)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
+  def vBackgroundBoxWorkspace(color: Int, horizontalPadding: Int = 0, verticalPadding: Int = 0)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
     val radius = resGetDimensionPixelSize(R.dimen.radius_default)
     Lollipop.ifSupportedThen {
       vBackgroundColor(color) +
-        vClipBackground(radius, horizontalPadding = horizontalPadding) +
+        vClipBackground(radius, horizontalPadding = horizontalPadding, verticalPadding = verticalPadding) +
         vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
     } getOrElse {
       val s = 0 until 8 map (_ => radius.toFloat)

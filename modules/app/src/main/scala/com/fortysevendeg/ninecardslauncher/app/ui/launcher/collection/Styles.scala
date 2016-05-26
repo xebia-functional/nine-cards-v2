@@ -67,8 +67,6 @@ trait Styles {
 
   private[this] def workspaceButton(title: Int, icon: Int, color: Int)(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
     vWrapContent +
-      wimBackgroundColor(resGetColor(color)) +
-      wimTitle(resGetString(title)) +
-      wimSrc(icon)
+      wimPopulate(resGetColor(color), icon, title)
 
 }

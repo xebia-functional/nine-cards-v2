@@ -13,6 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,6 +26,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   var presenter: Option[LauncherPresenter] = None
+
+  var theme: Option[NineCardsTheme] = None
 
   var workSpacesStatuses = LauncherWorkSpacesStatuses()
 
@@ -78,7 +81,13 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   override def getItemViewType(data: LauncherData, position: Int): Int = data.workSpaceType.value
 
   override def createView(viewType: Int): LauncherWorkSpaceHolder = WorkSpaceType(viewType) match {
-    case MomentWorkSpace => new LauncherWorkSpaceMomentsHolder(context)
+    case MomentWorkSpace =>
+      (for {
+        p <- presenter
+        t <- theme
+      } yield {
+        new LauncherWorkSpaceMomentsHolder(context, p, t, statuses.dimen)
+      }) getOrElse(throw new RuntimeException("Missing LauncherPresenter or Theme"))
     case CollectionsWorkSpace =>
       presenter map (p => new LauncherWorkSpaceCollectionsHolder(context, p, statuses.dimen)) getOrElse(throw new RuntimeException("Missing LauncherPresenter"))
   }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/WorkSpaceMomentMenu">
+
+    <ImageView
+        android:id="@+id/workspace_moment_icon"
+        style="@style/WorkSpaceMomentMenuIcon"/>
+
+    <TextView
+        android:id="@+id/workspace_moment_title"
+        style="@style/WorkSpaceMomentMenuTitle"/>
+
+</LinearLayout>

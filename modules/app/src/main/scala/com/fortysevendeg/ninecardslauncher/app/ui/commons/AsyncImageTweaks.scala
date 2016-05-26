@@ -79,6 +79,7 @@ object AsyncImageTweaks {
         case c: ApplicationUiContext => Glide.`with`(c.value)
         case c: ActivityUiContext => Glide.`with`(c.value)
         case c: FragmentUiContext => Glide.`with`(c.value)
+        case c: GenericUiContext => Glide.`with`(c.value)
       }
     }.toOption
 
