@@ -186,6 +186,8 @@ trait CollectionUiActionsImpl
 
   override def isPulling(): Boolean = (pullToCloseView ~> pdvIsPulling()).get getOrElse false
 
+  override def getCurrentCollection(): Option[Collection] = getAdapter map (_.collection)
+
   private[this] def showCollection(): Ui[_] =
     (recyclerView <~ vVisible) ~
       (emptyCollectionLayout <~ vGone)

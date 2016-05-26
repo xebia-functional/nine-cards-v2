@@ -68,6 +68,9 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       val color = resGetColor(getIndexColor(collection.themedColorIndex))
       (iconMoment <~
         wmmPopulate(color, resIcon, None) <~
+        On.click {
+          Ui(presenter.goToChangeMoment())
+        } <~
         vVisible) ~
         (message <~ vGone) ~
         (appsBox <~

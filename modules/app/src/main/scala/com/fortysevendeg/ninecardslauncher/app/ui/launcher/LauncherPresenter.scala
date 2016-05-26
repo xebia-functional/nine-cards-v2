@@ -264,6 +264,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
+  def goToChangeMoment(): Unit = actions.showNoImplementedYetMessage().run
+
   def loadLauncherInfo(): Unit = {
     Task.fork(getLauncherInfo.run).resolveAsyncUi(
       onResult = {
@@ -276,13 +278,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               name = user.userProfile.name,
               avatarUrl = user.userProfile.avatar,
               coverPhotoUrl = user.userProfile.cover))
-          android.util.Log.d("9cards", s"$moment")
           val collectionMoment = for {
             m <- moment
             collectionId <- m.collectionId
             collection <- collections.find(_.id == collectionId)
           } yield collection
-          android.util.Log.d("9cards", s"collectionMoment: $collectionMoment")
           val launcherMoment = LauncherMoment(moment flatMap (_.momentType), collectionMoment)
           val data = LauncherData(MomentWorkSpace, Some(launcherMoment)) +: createLauncherDataCollections(collections)
           actions.loadLauncherInfo(data, apps)
