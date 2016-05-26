@@ -21,6 +21,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, NineCardIntent}
@@ -32,6 +33,7 @@ import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
+import rapture.core.Result
 
 import scala.concurrent.Future
 import scalaz.concurrent.Task
@@ -60,6 +62,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     di.observerRegister.registerObserver()
     if (actions.isEmptyCollectionsInWorkspace) {
       loadLauncherInfo()
+    } else {
+      checkMoment()
     }
   }
 
@@ -292,6 +296,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
+  def checkMoment(): Unit = {
+    Task.fork(getCheckMoment.run).resolveAsyncUi(
+      onResult = (launcherMoment) => {
+        launcherMoment map { _ =>
+          val data = LauncherData(MomentWorkSpace, launcherMoment)
+          actions.reloadMoment(data)
+        } getOrElse Ui.nop
+      })
+  }
+
   def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     Task.fork(getLoadApps(getAppOrder).run).resolveAsyncUi(
@@ -380,6 +394,26 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       dockApps <- di.deviceProcess.getDockApps
       moment <- di.momentProcess.getBestAvailableMoment
     } yield (collections, dockApps, moment)
+
+  protected def getCheckMoment: ServiceDef2[Option[LauncherMoment], CollectionException with MomentException] = {
+
+    def getCollection(moment: Option[Moment]): ServiceDef2[Option[Collection], CollectionException] = {
+      val emptyService = Service(Task(Result.answer[Option[Collection], CollectionException](None)))
+      val momentType = moment flatMap (_.momentType)
+      val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
+      val collectionId = moment flatMap (_.collectionId)
+      if (momentType == currentMomentType) {
+        emptyService
+      } else {
+        collectionId map di.collectionProcess.getCollectionById getOrElse emptyService
+      }
+    }
+
+    for {
+      moment <- di.momentProcess.getBestAvailableMoment
+      collection <- getCollection(moment)
+    } yield collection map (_ => LauncherMoment(moment flatMap(_.momentType), collection))
+  }
 
   protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
     for {
@@ -528,6 +562,8 @@ trait LauncherUiActions {
   def goToNextScreen(): Ui[Any]
 
   def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
+
+  def reloadMoment(moment: LauncherData): Ui[Any]
 
   def reloadAppsInDrawer(
     apps: IterableApps,
