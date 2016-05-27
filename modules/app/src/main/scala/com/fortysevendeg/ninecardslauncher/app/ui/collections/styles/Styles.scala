@@ -56,9 +56,7 @@ trait Styles {
 
   private[this] def fabButton(title: Int, icon: Int, position: Int)(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     vWrapContent +
-      fimBackgroundColor(resGetColor(R.color.collection_detail_fab_button_item)) +
-      fimTitle(resGetString(title)) +
-      fimSrc(icon) +
+      fimPopulate(resGetColor(R.color.collection_detail_fab_button_item), icon, title) +
       vGone +
       vSetType(fabButtonItem) +
       vSetPosition(position)
@@ -111,7 +109,7 @@ trait CollectionAdapterStyles {
 
   def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) =
     card.cardType match {
-      case PhoneCardType | SmsCardType | EmailCardType | ContactCardType =>
+      case cardType if cardType.isContact =>
         ivUriContact(card.imagePath, card.term) +
           vBackground(javaNull) +
           expandLayout +

@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionExceptionImpl, CollectionProcess}
-import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcess}
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl, MomentProcess}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
@@ -363,7 +363,7 @@ class WizardPresenterSpec
         presenter.clientStatuses = WizardPresenterStatuses(driveApiClient = Some(mockGoogleApiClient))
 
         mockCollectionProcess.getCollections returns Service(Task(Answer(Seq(collection))))
-        mockMomentProcess.getMoments returns Service(Task(Errata(MomentException(""))))
+        mockMomentProcess.getMoments returns Service(Task(Errata(MomentExceptionImpl(""))))
         mockCloudStorageProcess.createOrUpdateActualCloudStorageDevice(any, any)(any) returns Service(Task(Answer(Unit)))
 
         presenter.saveCurrentDevice()

@@ -2,8 +2,13 @@ package com.fortysevendeg.ninecardslauncher.process.commons.types
 
 import com.fortysevendeg.ninecardslauncher.process.commons.CardTypes._
 
-sealed trait CardType{
+sealed trait CardType {
   val name: String
+  def isContact: Boolean =
+    this == PhoneCardType ||
+      this == EmailCardType ||
+      this == ContactCardType ||
+      this == SmsCardType
 }
 
 case object AppCardType extends CardType {

@@ -1,19 +1,25 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView.ViewHolder
+import com.fortysevendeg.ninecardslauncher.app.analytics.{NoValue, RemovedInCollectionAction, RemovedInCollectionValue, _}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import macroid.{ActivityContextWrapper, Ui}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 
 import scalaz.concurrent.Task
 
 case class CollectionPresenter(
   animateCards: Boolean,
   maybeCollection: Option[Collection],
-  actions: CollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Presenter {
+  actions: CollectionUiActions)(implicit contextWrapper: ActivityContextWrapper)
+  extends Presenter
+  with AnalyticDispatcher { self =>
+
+  override def getApplicationContext: Context = contextWrapper.application
 
   def initialize(sType: ScrollType): Unit = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
@@ -35,9 +41,15 @@ case class CollectionPresenter(
 
   def editCard(): Unit = actions.showMessageNotImplemented().run // TODO change that
 
-  def addCards(cards: Seq[Card]): Unit = actions.addCards(cards).run
+  def addCards(cards: Seq[Card]): Unit = {
+    cards foreach (card => trackCard(card, AddedToCollectionAction))
+    actions.addCards(cards).run
+  }
 
-  def removeCard(card: Card): Unit = actions.removeCard(card).run
+  def removeCard(card: Card): Unit = {
+    trackCard(card, RemovedInCollectionAction)
+    actions.removeCard(card).run
+  }
 
   def reloadCards(cards: Seq[Card]): Unit = actions.reloadCards(cards).run
 
@@ -46,6 +58,31 @@ case class CollectionPresenter(
   }
 
   def showData(): Unit = maybeCollection foreach (c => actions.showData(c.cards.isEmpty).run)
+
+  private[this] def trackCard(card: Card, action: Action): Unit = card.cardType match {
+    case AppCardType =>
+      for {
+        collection <- actions.getCurrentCollection()
+        packageName <- card.packageName
+        category <- collection.appsCategory map (c => Option(AppCategory(c))) getOrElse {
+          collection.moment flatMap (_.momentType) map MomentCategory
+        }
+      } yield {
+        self !>>
+          TrackEvent(
+            screen = CollectionDetailScreen,
+            category = category,
+            action = action,
+            label = Some(ProvideLabel(packageName)),
+            value = Some(action match {
+              case OpenCardAction => OpenAppFromCollectionValue
+              case AddedToCollectionAction => AddedToCollectionValue
+              case RemovedInCollectionAction => RemovedInCollectionValue
+              case _ => NoValue
+            }))
+      }
+    case _ =>
+  }
 
 }
 
@@ -74,5 +111,7 @@ trait CollectionUiActions {
   def showData(emptyCollection: Boolean): Ui[Any]
 
   def isPulling(): Boolean
+
+  def getCurrentCollection(): Option[Collection]
 
 }

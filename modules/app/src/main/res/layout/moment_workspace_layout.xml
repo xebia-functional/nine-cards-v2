@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/LauncherMomentRoot">
+
+    <ImageView
+            android:id="@+id/launcher_moment_background"
+            style="@style/LauncherMomentBackground" />
+
+    <TextView
+            android:id="@+id/launcher_moment_message"
+            style="@style/LauncherMomentMessage"/>
+
+    <LinearLayout
+            style="@style/LauncherMomentContent">
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceMomentMenu
+                android:id="@+id/launcher_moment_icon"
+                style="@style/LauncherMomentIcon" />
+
+        <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/launcher_moment_apps_layout"
+                style="@style/LauncherMomentAppsLayout"/>
+
+    </LinearLayout>
+
+</FrameLayout>

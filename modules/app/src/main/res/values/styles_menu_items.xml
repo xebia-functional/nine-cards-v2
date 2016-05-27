@@ -30,6 +30,33 @@
         <item name="android:scaleType">centerInside</item>
     </style>
 
+    <!-- WorkSpace Moment Menu -->
+
+    <style name="WorkSpaceMomentMenu">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="WorkSpaceMomentMenuTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:lines">2</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/collection_workspace_button_item_title</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:padding">@dimen/padding_small</item>
+    </style>
+
+    <style name="WorkSpaceMomentMenuIcon">
+        <item name="android:layout_width">@dimen/size_workspace_moment_menu</item>
+        <item name="android:layout_height">@dimen/size_workspace_moment_menu</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
     <!-- Fab Menu Item -->
 
     <style name="FabMenu">

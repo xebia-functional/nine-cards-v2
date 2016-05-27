@@ -70,13 +70,24 @@ class MomentProcessImpl(
 
     val now = getNowDateTime
 
+    def prioritizedByTime(): Boolean = {
+      val sum1 = (moment1.timeslot map { slot =>
+        val (fromSlot, toSlot) = toDateTime(now, slot)
+        toSlot.getMillis - fromSlot.getMillis
+      }).sum
+      val sum2 = (moment2.timeslot map { slot =>
+        val (fromSlot, toSlot) = toDateTime(now, slot)
+        toSlot.getMillis - fromSlot.getMillis
+      }).sum
+      sum1 < sum2
+    }
+
     (isHappening(moment1, now), isHappening(moment2, now), wifi) match {
       case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.contains(w) => true
       case (h1, h2, Some(w)) if h1 == h2 && moment2.wifi.contains(w) => false
       case (true, false, _) => true
       case (false, true, _) => false
-      case (true, true, _) => true
-      case (false, false, _) => false
+      case (h1, h2, _) if h1 == h2 => prioritizedByTime()
       case _ => false
     }
   }
