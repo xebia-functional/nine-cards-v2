@@ -109,7 +109,7 @@ trait CollectionAdapterStyles {
 
   def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) =
     card.cardType match {
-      case PhoneCardType | SmsCardType | EmailCardType | ContactCardType =>
+      case cardType if cardType.isContact =>
         ivUriContact(card.imagePath, card.term) +
           vBackground(javaNull) +
           expandLayout +

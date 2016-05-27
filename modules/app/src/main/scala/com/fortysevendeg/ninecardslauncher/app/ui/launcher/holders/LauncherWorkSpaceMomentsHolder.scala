@@ -88,7 +88,10 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       lp[FlexboxLayout](sizeApp, sizeApp) <~
       tivPressedColor(theme.get(AppDrawerPressedColor)) <~
       vPaddings(paddingLeftRight = paddingDefault, 0) <~
-      ivUri(card.imagePath) <~
+      (card.cardType match {
+        case cardType if cardType.isContact => ivUriContact(card.imagePath, card.term, circular = true)
+        case _ => ivCardUri(card.imagePath, card.term, circular = true)
+      }) <~
       On.click {
         Ui(presenter.openMomentIntent(card, moment))
       }).get

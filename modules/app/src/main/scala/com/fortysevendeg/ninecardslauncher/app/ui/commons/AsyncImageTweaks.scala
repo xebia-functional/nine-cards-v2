@@ -38,7 +38,7 @@ object AsyncImageTweaks {
     }
   )
 
-  def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
         loadCardUri(
@@ -50,7 +50,7 @@ object AsyncImageTweaks {
       }
     })
 
-  def ivUriContact(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivUriContact(uri: String, name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
         makeRequest(
@@ -62,7 +62,7 @@ object AsyncImageTweaks {
       }
     })
 
-  def ivUriContactInfo(uri: String, header: Boolean = true)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivUriContactInfo(uri: String, header: Boolean = true)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
         makeContactRequest(
@@ -88,7 +88,7 @@ object AsyncImageTweaks {
     request: DrawableTypeRequest[_],
     uri: String,
     char: String,
-    circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) = {
+    circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]) = {
     if (new File(uri).exists()) {
       makeRequest(
         request = request,
@@ -105,7 +105,7 @@ object AsyncImageTweaks {
     imageView: ImageView,
     char: String,
     circular: Boolean = false,
-    fadeInFailed: Boolean = true)(implicit context: ActivityContextWrapper) = {
+    fadeInFailed: Boolean = true)(implicit context: ContextWrapper) = {
     request
       .crossFade()
       .into(new ViewTarget[ImageView, GlideDrawable](imageView) {
@@ -122,7 +122,7 @@ object AsyncImageTweaks {
     request: DrawableTypeRequest[_],
     imageView: ImageView,
     header: Boolean,
-    fadeInFailed: Boolean = true)(implicit context: ActivityContextWrapper) = {
+    fadeInFailed: Boolean = true)(implicit context: ContextWrapper) = {
     request
       .crossFade()
       .into(new ViewTarget[ImageView, GlideDrawable](imageView) {
