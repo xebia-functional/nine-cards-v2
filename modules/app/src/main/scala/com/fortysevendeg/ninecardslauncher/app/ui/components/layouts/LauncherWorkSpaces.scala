@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{Collections
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid._
 
@@ -80,17 +80,17 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def getItemViewType(data: LauncherData, position: Int): Int = data.workSpaceType.value
 
-  override def createView(viewType: Int): LauncherWorkSpaceHolder = WorkSpaceType(viewType) match {
-    case MomentWorkSpace =>
-      (for {
-        p <- presenter
-        t <- theme
-      } yield {
+  override def createView(viewType: Int): LauncherWorkSpaceHolder =
+    (WorkSpaceType(viewType), presenter, theme) match {
+      case (_, None, _) =>
+        throw new RuntimeException("Missing LauncherPresenter")
+      case (MomentWorkSpace, _, None) =>
+        throw new RuntimeException("Missing Theme")
+      case (MomentWorkSpace, Some(p), Some(t)) =>
         new LauncherWorkSpaceMomentsHolder(context, p, t, statuses.dimen)
-      }) getOrElse(throw new RuntimeException("Missing LauncherPresenter or Theme"))
-    case CollectionsWorkSpace =>
-      presenter map (p => new LauncherWorkSpaceCollectionsHolder(context, p, statuses.dimen)) getOrElse(throw new RuntimeException("Missing LauncherPresenter"))
-  }
+      case (CollectionsWorkSpace, Some(p), _) =>
+        new LauncherWorkSpaceCollectionsHolder(context, p, statuses.dimen)
+    }
 
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
     view match {
