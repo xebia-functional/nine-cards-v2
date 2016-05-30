@@ -8,11 +8,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, UpdateCollectionsRequest => ServicesUpdateCollectionsRequest, _}
-import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
 trait Conversions extends CommonConversions {
-
-  val resourceUtils = new ResourceUtils
 
   def toCollectionSeq(servicesCollectionSeq: Seq[ServicesCollection]) = servicesCollectionSeq map toCollection
 
@@ -132,7 +129,6 @@ trait Conversions extends CommonConversions {
     cards map (_.copy(
       term = app.name,
       cardType = AppCardType.name,
-      imagePath = resourceUtils.getPathPackage(app.packageName, app.className),
       intent = nineCardIntentToJson(intent)
     ))
   }

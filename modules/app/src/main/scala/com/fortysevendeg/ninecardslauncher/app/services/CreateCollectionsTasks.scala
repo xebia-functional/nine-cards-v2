@@ -38,7 +38,7 @@ trait CreateCollectionsTasks
 
   def loadConfiguration(
    client: GoogleApiClient,
-   deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CreateBitmapException with CloudStorageProcessException with CollectionException with DockAppException with MomentException] = {
+   deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CloudStorageProcessException with CollectionException with DockAppException with MomentException] = {
    val cloudStorageProcess = di.createCloudStorageProcess(client)
    for {
      _ <- di.deviceProcess.resetSavedItems()
@@ -48,7 +48,6 @@ trait CreateCollectionsTasks
      _ = setProcess(GettingAppsProcess)
      cloudStorageDevice <- cloudStorageProcess.getCloudStorageDeviceByAndroidId(deviceId)
      _ = setProcess(LoadingConfigProcess)
-     bitmaps <- di.deviceProcess.createBitmapsFromPackages(getAppsNotInstalled(apps, cloudStorageDevice.collections))
      _ = setProcess(CreatingCollectionsProcess)
      collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(cloudStorageDevice.collections))
      momentSeq = cloudStorageDevice.moments map (_ map toMoment) getOrElse Seq.empty
