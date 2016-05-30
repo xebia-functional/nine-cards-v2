@@ -6,16 +6,16 @@ import android.graphics.drawable.shapes.OvalShape
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.{FrameLayout, ImageView}
-import com.fortysevendeg.macroid.extras.DeviceVersion.{Lollipop, _}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
-class WorkSpaceItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
+class WorkSpaceMomentMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)
   with Contexts[View]
   with TypedFindView {
@@ -24,16 +24,16 @@ class WorkSpaceItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  LayoutInflater.from(context).inflate(R.layout.workspace_item_menu, this)
+  LayoutInflater.from(context).inflate(R.layout.workspace_moment_menu, this)
 
-  private[this] val title = Option(findView(TR.workspace_title))
+  private[this] val title = Option(findView(TR.workspace_moment_title))
 
-  private[this] val icon = Option(findView(TR.workspace_icon))
+  private[this] val icon = Option(findView(TR.workspace_moment_icon))
 
   (icon <~ fabStyle).run
 
-  def populate(backgroundColor: Int, res: Int, text: Int): Ui[Any] =
-    (title <~ tvText(text)) ~
+  def populate(backgroundColor: Int, res: Int, text: Option[String]): Ui[Any] =
+    (title <~ (text map (t => tvText(t) + vVisible) getOrElse vGone)) ~
       (icon <~
         ivSrc(res) <~
         (Lollipop ifSupportedThen {

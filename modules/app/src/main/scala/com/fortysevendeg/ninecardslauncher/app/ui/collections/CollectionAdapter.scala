@@ -1,12 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.content.Context
 import android.support.v7.widget.{CardView, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.CollectionAdapterStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
@@ -22,7 +20,6 @@ import macroid.{ActivityContextWrapper, Ui, _}
 case class CollectionAdapter(var collection: Collection, heightCard: Int)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme, collectionPresenter: CollectionPresenter)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
-  with AnalyticDispatcher
   with ReorderItemTouchListener
   with LauncherExecutor { self =>
 
@@ -42,14 +39,12 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     viewHolder.bind(collection.cards(position)).run
 
   def addCards(cards: Seq[Card]) = {
-    cards foreach (card => trackCard(card, AddedToCollectionAction))
     collection = collection.copy(cards = collection.cards ++ cards)
     val count = cards.length
     notifyItemRangeInserted(collection.cards.length - count, count)
   }
 
   def removeCard(card: Card) = {
-    trackCard(card, RemovedInCollectionAction)
     val position = collection.cards.indexOf(card)
     collection = collection.copy(cards = collection.cards.filterNot(c => card == c))
     notifyItemRemoved(position)
@@ -59,30 +54,6 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     collection = collection.copy(cards = cards)
     notifyItemRangeChanged(0, cards.length)
   }
-
-  private[this] def trackCard(card: Card, action: Action) = card.cardType match {
-    case AppCardType =>
-      for {
-        category <- collection.appsCategory
-        packageName <- card.packageName
-      } yield {
-        self !>>
-          TrackEvent(
-            screen = CollectionDetailScreen,
-            category = AppCategory(category),
-            action = action,
-            label = Some(ProvideLabel(packageName)),
-            value = Some(action match {
-              case OpenCardAction => OpenAppFromCollectionValue
-              case AddedToCollectionAction => AddedToCollectionValue
-              case RemovedInCollectionAction => RemovedInCollectionValue
-              case _ => NoValue
-            }))
-      }
-    case _ =>
-  }
-
-  override def getApplicationContext: Context = activityContext.bestAvailable
 
   override def onItemMove(from: Int, to: Int): Unit = {
     collection = collection.copy(cards = collection.cards.reorder(from, to))

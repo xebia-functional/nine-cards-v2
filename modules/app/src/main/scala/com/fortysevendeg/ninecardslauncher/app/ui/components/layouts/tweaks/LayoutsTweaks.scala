@@ -1,22 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks
 
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener
 import android.view.{MenuItem, View}
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.DragLauncherType
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -26,9 +23,28 @@ import macroid._
 object LauncherWorkSpacesTweaks {
   type W = LauncherWorkSpaces
 
-  def lwsPresenter(presenter: LauncherPresenter) = Tweak[W] (_.presenter = Some(presenter))
+  def lwsInitialize(presenter: LauncherPresenter, theme: NineCardsTheme) = Tweak[W] { view =>
+    view.presenter = Some(presenter)
+    view.theme = Some(theme)
+  }
 
-  def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] (_.init(data, pageSelected))
+  def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] { view =>
+    view.init(data, pageSelected)
+  }
+
+  def lwsDataCollections(data: Seq[LauncherData], pageCollectionSelected: Option[Int]) = Tweak[W] { view =>
+    view.data.headOption match {
+      case Some(moment) =>
+        val page = pageCollectionSelected map (_ + 1) getOrElse view.currentPage()
+        view.init(moment +: data, page)
+      case _ =>
+    }
+  }
+
+  def lwsDataMoment(moment: LauncherData) = Tweak[W] { view =>
+    val data = view.data.filter(_.workSpaceType == CollectionsWorkSpace)
+    view.init(moment +: data, view.currentPage())
+  }
 
   def lwsClean = Tweak[W] (_.clean())
 
@@ -55,6 +71,8 @@ object LauncherWorkSpacesTweaks {
       case _ =>
     }
   }
+
+  def lwsCurrentPage() = Excerpt[W, Int] (_.currentPage())
 
   def lwsCountCollections() = Excerpt[W, Int] (_.getCountCollections)
 
@@ -107,44 +125,23 @@ object AnimatedWorkSpacesTweaks {
 object FabItemMenuTweaks {
   type W = FabItemMenu
 
-  def fimBackgroundColor(color: Int) = Tweak[W](_.icon foreach {
-    ic =>
-      Lollipop ifSupportedThen {
-        ic.setBackgroundColor(color)
-      } getOrElse {
-        val d = new ShapeDrawable(new OvalShape)
-        d.getPaint.setColor(color)
-        ic.setBackground(d)
-      }
-  })
+  def fimBackgroundColor(color: Int) = Tweak[W](_.changeBackground(color).run)
 
-  def fimSrc(res: Int) = Tweak[W](_.icon foreach (_.setImageResource(res)))
-
-  def fimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
-
-  def fimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
+  def fimPopulate(backgroundColor: Int, resourceId: Int, text: Int) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 
 }
 
 object WorkSpaceItemMenuTweaks {
   type W = WorkSpaceItemMenu
 
-  def wimBackgroundColor(color: Int) = Tweak[W](_.icon foreach {
-    ic =>
-      Lollipop ifSupportedThen {
-        ic.setBackgroundColor(color)
-      } getOrElse {
-        val d = new ShapeDrawable(new OvalShape)
-        d.getPaint.setColor(color)
-        ic.setBackground(d)
-      }
-  })
+  def wimPopulate(backgroundColor: Int, resourceId: Int, text: Int) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 
-  def wimSrc(resourceId: Int) = Tweak[W](_.icon foreach (_.setImageResource(resourceId)))
+}
 
-  def wimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
+object WorkSpaceMomentMenuTweaks {
+  type W = WorkSpaceMomentMenu
 
-  def wimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
+  def wmmPopulate(backgroundColor: Int, resourceId: Int, text: Option[String]) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 
 }
 

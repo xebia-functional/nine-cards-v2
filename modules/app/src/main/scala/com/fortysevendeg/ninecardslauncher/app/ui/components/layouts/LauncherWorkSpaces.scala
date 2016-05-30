@@ -8,10 +8,12 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -24,6 +26,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   var presenter: Option[LauncherPresenter] = None
+
+  var theme: Option[NineCardsTheme] = None
 
   var workSpacesStatuses = LauncherWorkSpacesStatuses()
 
@@ -38,7 +42,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   lazy val sizeCalculateMovement = getHeight
 
   def getCountCollections: Int = data map {
-    case item@LauncherData(CollectionsWorkSpace, _, _) => item.collections.length
+    case item@LauncherData(CollectionsWorkSpace, _, _, _) => item.collections.length
     case _ => 0
   } sum
 
@@ -76,16 +80,24 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def getItemViewType(data: LauncherData, position: Int): Int = data.workSpaceType.value
 
-  override def createView(viewType: Int): LauncherWorkSpaceHolder = WorkSpaceType(viewType) match {
-    case MomentWorkSpace => new LauncherWorkSpaceMomentsHolder(context)
-    case CollectionsWorkSpace =>
-      presenter map (p => new LauncherWorkSpaceCollectionsHolder(context, p, statuses.dimen)) getOrElse(throw new RuntimeException("Missing LauncherPresenter"))
-  }
+  override def createView(viewType: Int): LauncherWorkSpaceHolder =
+    (WorkSpaceType(viewType), presenter, theme) match {
+      case (_, None, _) =>
+        throw new RuntimeException("Missing LauncherPresenter")
+      case (MomentWorkSpace, _, None) =>
+        throw new RuntimeException("Missing Theme")
+      case (MomentWorkSpace, Some(p), Some(t)) =>
+        new LauncherWorkSpaceMomentsHolder(context, p, t, statuses.dimen)
+      case (CollectionsWorkSpace, Some(p), _) =>
+        new LauncherWorkSpaceCollectionsHolder(context, p, statuses.dimen)
+    }
 
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
     view match {
       case Some(v: LauncherWorkSpaceCollectionsHolder) =>
         v.populate(data.collections, data.positionByType, getCountCollectionScreens)
+      case Some(v: LauncherWorkSpaceMomentsHolder) =>
+        data.moment map v.populate getOrElse Ui.nop
       case _ => Ui.nop
     }
 
@@ -271,26 +283,4 @@ case class LauncherWorkSpacesListener(
 class LauncherWorkSpaceHolder(context: Context)
   extends FrameLayout(context)
 
-case class LauncherData(workSpaceType: WorkSpaceType, collections: Seq[Collection] = Seq.empty, positionByType: Int = 0)
-
-sealed trait WorkSpaceType {
-  val value: Int
-
-  def isMomentWorkSpace: Boolean = this == MomentWorkSpace
-}
-
-case object MomentWorkSpace extends WorkSpaceType {
-  override val value: Int = 0
-}
-
-case object CollectionsWorkSpace extends WorkSpaceType {
-  override val value: Int = 1
-}
-
-object WorkSpaceType {
-  def apply(value: Int): WorkSpaceType = value match {
-    case MomentWorkSpace.value => MomentWorkSpace
-    case _ => CollectionsWorkSpace
-  }
-}
 

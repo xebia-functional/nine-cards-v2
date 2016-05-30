@@ -29,7 +29,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDraw
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherData, LauncherWorkSpacesListener, WorkSpaceItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkSpaceItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
@@ -112,7 +113,7 @@ trait CollectionsUiActions
       (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~
       (workspaces <~
-        lwsPresenter(presenter) <~
+        lwsInitialize(presenter, theme) <~
         lwsListener(
           LauncherWorkSpacesListener(
             onStartOpenMenu = startOpenCollectionMenu,
@@ -146,7 +147,7 @@ trait CollectionsUiActions
 
   def showCollectionsLoading: Ui[_] = loading <~ vVisible
 
-  def createCollections(
+  def showLauncherInfo(
     data: Seq[LauncherData],
     apps: Seq[DockApp]): Ui[_] = {
     (loading <~ vGone) ~
@@ -268,7 +269,7 @@ trait CollectionsUiActions
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
-  def reloadPagerAndActive(activePosition: Int) =
+  private[this] def reloadPagerAndActive(activePosition: Int): Ui[Any] =
     workspaces map { ws =>
       val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
         val view = pagination(position)
@@ -277,6 +278,8 @@ trait CollectionsUiActions
       }
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
+
+  def reloadWorkspacePager: Ui[Any] = (workspaces ~> lwsCurrentPage()).get map reloadPagerAndActive getOrElse Ui.nop
 
   def pagination(position: Int) =
     (w[ImageView] <~ paginationItemStyle <~ vSetPosition(position)).get

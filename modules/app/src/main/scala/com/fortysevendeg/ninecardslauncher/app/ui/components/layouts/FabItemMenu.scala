@@ -1,41 +1,56 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
 import android.util.AttributeSet
-import android.view.LayoutInflater
+import android.view.{LayoutInflater, View}
 import android.widget.{FrameLayout, ImageView, TextView}
 import com.fortysevendeg.macroid.extras.DeviceVersion._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
-class FabItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)(implicit contextWrapper: ContextWrapper)
+class FabItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)
-  with FabItemMenuStyles {
+  with Contexts[View]
+  with TypedFindView {
 
-  def this(context: Context)(implicit contextWrapper: ContextWrapper) = this(context, javaNull, 0)
+  def this(context: Context) = this(context, javaNull, 0)
 
-  def this(context: Context, attr: AttributeSet)(implicit contextWrapper: ContextWrapper) = this(context, attr, 0)
+  def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  val content = LayoutInflater.from(context).inflate(R.layout.fab_item, javaNull)
+  LayoutInflater.from(context).inflate(R.layout.fab_item, this)
 
-  val title = Option(content.findViewById(R.id.fab_title).asInstanceOf[TextView])
+  val title = Option(findView(TR.fab_title))
 
-  val icon = Option(content.findViewById(R.id.fab_icon).asInstanceOf[ImageView])
-
-  addView(content)
+  val icon = Option(findView(TR.fab_icon))
 
   (icon <~ fabStyle).run
 
-}
+  def populate(backgroundColor: Int, res: Int, text: Int): Ui[Any] =
+    (title <~ tvText(text)) ~
+      (icon <~ ivSrc(res)) ~
+      changeBackground(backgroundColor)
 
-trait FabItemMenuStyles {
+  def changeBackground(backgroundColor: Int): Ui[Any] =
+    icon <~
+      (Lollipop ifSupportedThen {
+        vBackgroundColor(backgroundColor)
+      } getOrElse {
+        val drawable = new ShapeDrawable(new OvalShape)
+        drawable.getPaint.setColor(backgroundColor)
+        vBackground(drawable)
+      })
 
-  def fabStyle(implicit context: ContextWrapper): Tweak[ImageView] = Lollipop ifSupportedThen {
+  private[this] def fabStyle: Tweak[ImageView] = Lollipop ifSupportedThen {
     vElevation(resGetDimension(R.dimen.elevation_fab_button)) + vCircleOutlineProvider()
   } getOrElse Tweak.blank
 
 }
+
 

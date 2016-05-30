@@ -53,3 +53,7 @@ case object AddedToCollectionValue extends Value {
 case object RemovedInCollectionValue extends Value {
   override def value: Long = -3
 }
+
+case object OpenMomentFromWorkspaceValue extends Value {
+  override def value: Long = 3
+}

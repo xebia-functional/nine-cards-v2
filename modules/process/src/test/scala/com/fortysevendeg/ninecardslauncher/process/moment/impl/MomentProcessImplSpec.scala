@@ -336,7 +336,7 @@ class MomentProcessImplSpec
         val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Answer(resultMoment) =>
-            resultMoment shouldEqual Some(dayNoWifiMoment)
+            resultMoment shouldEqual Some(homeMorningMoment)
         }
       }
 
@@ -349,7 +349,7 @@ class MomentProcessImplSpec
         val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Answer(resultMoment) =>
-            resultMoment shouldEqual Some(dayNoWifiMoment)
+            resultMoment shouldEqual Some(workMoment)
         }
       }
 
@@ -362,7 +362,7 @@ class MomentProcessImplSpec
         val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Answer(resultMoment) =>
-            resultMoment shouldEqual Some(dayNoWifiMoment)
+            resultMoment shouldEqual Some(homeMorningMoment)
         }
       }
 
@@ -379,7 +379,7 @@ class MomentProcessImplSpec
         }
       }
 
-    "returns the best available moment in the morning on a weekend with the work's wifi availablee" in
+    "returns the best available moment in the morning on a weekend with the work's wifi available" in
       new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
 
         override val wifi = workWifi.headOption
@@ -388,7 +388,7 @@ class MomentProcessImplSpec
         val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Answer(resultMoment) =>
-            resultMoment shouldEqual Some(dayNoWifiMoment)
+            resultMoment shouldEqual Some(homeMorningMoment)
         }
       }
 

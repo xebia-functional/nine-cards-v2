@@ -5,6 +5,7 @@ object Versions {
   val androidPlatformV = "android-23"
   val androidV = "23.2.1"
   val androidProvidedV = "4.1.1.4"
+  val flexboxV = "0.1.3"
   val multiDexV = "1.0.0"
   val macroidExtrasV = "0.3"
   val macroidV = "2.0.0-M5"
