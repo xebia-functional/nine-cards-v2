@@ -115,7 +115,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
         (w[ImageView] <~
           lp[ViewGroup](size, size) <~
           (if (index < appsByRow - 1) llLayoutMargin(0, 0, padding, 0) else Tweak.blank) <~
-          ivUri(card.imagePath)).get
+          ivSrcByPackageName(card.packageName, card.term)).get
     }
   }
 }

@@ -11,7 +11,6 @@ import android.provider.ContactsContract.Contacts
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import com.bumptech.glide.load.data.DataFetcher
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.stream.StreamModelLoader
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
@@ -23,7 +22,6 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
@@ -42,18 +40,36 @@ object AsyncImageTweaks {
     }
   }
 
-  def ivApp(app: App)(implicit context: UiContext[_], contextWrapper: ContextWrapper): Tweak[W] = Tweak[W](
+  def ivSrcByPackageName(maybePackageName: Option[String], term: String)(implicit context: UiContext[_], contextWrapper: ContextWrapper): Tweak[W] = Tweak[W](
     imageView => {
+      (glide(), maybePackageName) match {
+        case (Some(glide), Some(packageName)) =>
+          glide
+            .using(new AppIconLoader, classOf[String])
+            .from(classOf[String])
+            .as(classOf[Bitmap])
+            .decoder(new ApplicationIconDecoder(packageName))
+            .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
+            .encoder(new BitmapEncoder())
+            .load(packageName)
+            .into(imageView)
+        case _ =>
+          (imageView <~ ivSrc(new CharDrawable(term.charAt(0).toString, circle = true))).run
+      }
       glide() foreach { glide =>
+        maybePackageName map { packageName =>
         glide
           .using(new AppIconLoader, classOf[String])
           .from(classOf[String])
           .as(classOf[Bitmap])
-          .decoder(new ApplicationIconDecoder(app.packageName))
+          .decoder(new ApplicationIconDecoder(packageName))
           .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
           .encoder(new BitmapEncoder())
-          .load(app.packageName)
+          .load(packageName)
           .into(imageView)
+        } getOrElse {
+
+        }
       }
     }
   )

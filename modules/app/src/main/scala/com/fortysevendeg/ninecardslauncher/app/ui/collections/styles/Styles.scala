@@ -114,6 +114,7 @@ trait CollectionAdapterStyles {
           vBackground(javaNull) +
           expandLayout +
           ivScaleType(ScaleType.CENTER_CROP)
+      case AppCardType => ivSrcByPackageName(card.packageName, card.term)
       case NoInstalledAppCardType =>
         val shape = new ShapeDrawable(new OvalShape)
         shape.getPaint.setColor(colorAllNotInstalled)
