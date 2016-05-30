@@ -56,21 +56,6 @@ object AsyncImageTweaks {
         case _ =>
           (imageView <~ ivSrc(new CharDrawable(term.charAt(0).toString, circle = true))).run
       }
-      glide() foreach { glide =>
-        maybePackageName map { packageName =>
-        glide
-          .using(new AppIconLoader, classOf[String])
-          .from(classOf[String])
-          .as(classOf[Bitmap])
-          .decoder(new ApplicationIconDecoder(packageName))
-          .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
-          .encoder(new BitmapEncoder())
-          .load(packageName)
-          .into(imageView)
-        } getOrElse {
-
-        }
-      }
     }
   )
 
