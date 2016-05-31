@@ -153,10 +153,12 @@ trait CollectionsUiActions
     (loading <~ vGone) ~
       (dockAppsPanel <~ daplInit(apps)) ~
       (workspaces <~
-        lwsData(data, selectedPageDefault) <~
-        awsAddPageChangedObserver(currentPage => {
-          (paginationPanel <~ reloadPager(currentPage)).run
-        }
+        vGlobalLayoutListener(_ =>
+          workspaces <~
+            lwsData(data, selectedPageDefault) <~
+            awsAddPageChangedObserver(currentPage => {
+              (paginationPanel <~ reloadPager(currentPage)).run
+            })
         )) ~
       createPager(selectedPageDefault)
   }

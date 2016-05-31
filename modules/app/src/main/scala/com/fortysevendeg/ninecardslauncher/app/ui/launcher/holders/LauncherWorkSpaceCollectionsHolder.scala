@@ -39,7 +39,10 @@ import macroid._
 
 class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPresenter, parentDimen: Dimen)
   extends LauncherWorkSpaceHolder(context)
-  with Contexts[View] {
+  with Contexts[View]
+  with TypedFindView {
+
+  LayoutInflater.from(context).inflate(R.layout.collections_workspace_layout, this)
 
   val selectedScale = 1.1f
 
@@ -59,11 +62,9 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
 
   var countCollectionScreens = 0
 
-  var grid: Option[GridLayout] = slot[GridLayout]
+  val grid = Option(findView(TR.launcher_collections_grid))
 
   val views: Seq[CollectionItem] = 0 until numSpaces map (_ => new CollectionItem(context))
-
-  addView((l[GridLayout]() <~ wire(grid) <~ vMatchParent).get)
 
   (grid <~
     glAddViews(

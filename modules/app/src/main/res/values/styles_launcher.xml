@@ -278,7 +278,7 @@
         <item name="android:orientation">horizontal</item>
     </style>
 
-    <!-- Moments -->
+    <!-- Moments Workspace -->
 
     <style name="LauncherMomentRoot">
         <item name="android:layout_width">match_parent</item>
@@ -326,6 +326,18 @@
         <item name="android:textColor">@color/text_launcher_action</item>
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <!-- Collections Workspace -->
+
+    <style name="LauncherCollectionsRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="LauncherCollectionsGrid">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
 </resources>
