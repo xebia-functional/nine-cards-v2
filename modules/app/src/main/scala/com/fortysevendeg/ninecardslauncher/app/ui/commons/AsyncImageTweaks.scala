@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import java.io.{File, InputStream}
 
 import android.content.{ContentResolver, UriMatcher}
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.ContactsContract
@@ -14,8 +15,11 @@ import com.bumptech.glide.load.model.stream.StreamModelLoader
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.ViewTarget
-import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority, RequestManager}
+import com.bumptech.glide._
+import com.bumptech.glide.load.resource.bitmap.{BitmapEncoder, StreamBitmapDecoder}
+import com.bumptech.glide.load.resource.file.FileToStreamDecoder
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -27,13 +31,30 @@ import scala.util.Try
 object AsyncImageTweaks {
   type W = ImageView
 
-  def ivUri(uri: String)(implicit context: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivUri(uri: String)(implicit context: UiContext[_]): Tweak[W] = Tweak[W] { imageView =>
+    glide() foreach { glide =>
+      glide
+        .load(uri)
+        .crossFade()
+        .into(imageView)
+    }
+  }
+
+  def ivSrcByPackageName(maybePackageName: Option[String], term: String)(implicit context: UiContext[_], contextWrapper: ContextWrapper): Tweak[W] = Tweak[W](
     imageView => {
-      glide() foreach { glide =>
-        glide
-          .load(uri)
-          .crossFade()
-          .into(imageView)
+      (glide(), maybePackageName) match {
+        case (Some(glide), Some(packageName)) =>
+          glide
+            .using(new AppIconLoader, classOf[String])
+            .from(classOf[String])
+            .as(classOf[Bitmap])
+            .decoder(new ApplicationIconDecoder(packageName))
+            .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
+            .encoder(new BitmapEncoder())
+            .load(packageName)
+            .into(imageView)
+        case _ =>
+          (imageView <~ ivSrc(new CharDrawable(term.charAt(0).toString, circle = true))).run
       }
     }
   )
@@ -110,9 +131,9 @@ object AsyncImageTweaks {
       .crossFade()
       .into(new ViewTarget[ImageView, GlideDrawable](imageView) {
         override def onLoadStarted(placeholder: Drawable): Unit =
-          imageView.setImageDrawable(javaNull)
+          view.setImageDrawable(javaNull)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          (imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
+          (view <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
       })

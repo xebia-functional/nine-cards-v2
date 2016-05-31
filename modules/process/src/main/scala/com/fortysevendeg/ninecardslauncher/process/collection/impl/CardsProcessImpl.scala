@@ -69,8 +69,8 @@ trait CardsProcessImpl {
       app <- appsServices.getApplication(packageName)
       cardList <- persistenceServices.fetchCards
       cardsNoInstalled = cardList filter (card => CardType(card.cardType) == NoInstalledAppCardType && card.packageName.contains(packageName))
-      card = toCardSeq(toInstalledApp(cardsNoInstalled, app))
-      _ <- updateCardList(toCardSeq(toInstalledApp(cardsNoInstalled, app)))
+      cards = toCardSeq(toInstalledApp(cardsNoInstalled, app))
+      _ <- updateCardList(cards)
     } yield ()).resolve[CardException]
 
   private[this] def addCardList(collectionId: Int, cardList: Seq[AddCardRequest], position: Int) = Service {

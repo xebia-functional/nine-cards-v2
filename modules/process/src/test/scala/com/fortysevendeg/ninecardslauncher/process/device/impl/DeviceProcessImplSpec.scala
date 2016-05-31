@@ -176,14 +176,6 @@ trait DeviceProcessSpecification
 
     val mockImageServices = mock[ImageServices]
 
-    mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
-      Service(Task(Result.answer(appPathResponses.head))),
-      Service(Task(Result.answer(appPathResponses(1)))),
-      Service(Task(Result.answer(appPathResponses(2)))))
-
-    mockImageServices.saveAppIcon(any[AppWebsite])(any) returns
-      Service(Task(Result.answer(appWebsitePath)))
-
     val mockWidgetsServices = mock[WidgetsServices]
 
     mockWidgetsServices.getWidgets(any) returns
@@ -348,57 +340,6 @@ trait DeviceProcessSpecification
 
     mockPersistenceServices.updateApp(any) returns Service {
       Task(Errata(persistenceServiceException))
-    }
-
-  }
-
-  trait ErrorImageServicesProcessScope {
-    self: DeviceProcessScope =>
-
-    case class CustomException(message: String, cause: Option[Throwable] = None)
-      extends RuntimeException(message)
-      with FileException
-      with BitmapTransformationException
-
-    mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
-      Service(Task(Result.answer(appPathResponses.head))),
-      Service(Task(Errata(CustomException("")))),
-      Service(Task(Result.answer(appPathResponses(2)))))
-
-  }
-
-  trait NoCachedDataScope {
-    self: DeviceProcessScope =>
-
-    mockAppsServices.getInstalledApplications(contextSupport) returns
-      Service(Task(Result.answer(applications :+ applicationNoCached)))
-
-    mockImageServices.saveAppIcon(any[AppPackage])(any) returns(
-      Service(Task(Result.answer(appPathResponses.head))),
-      Service(Task(Result.answer(appPathResponses(1)))),
-      Service(Task(Result.answer(appPathResponses(2)))),
-      Service(Task(Result.answer(appPackagePathNoCached))))
-
-    mockApiServices.googlePlaySimplePackages(any)(any) returns Service {
-      Task(
-        Result.answer(
-          GooglePlaySimplePackagesResponse(
-            statusCodeOk,
-            GooglePlaySimplePackages(
-              Seq.empty,
-              Seq(googlePlaySimplePackageNoCached))
-          )
-        )
-      )
-    }
-
-  }
-
-  trait CreateImagesDataScope {
-    self: DeviceProcessScope =>
-
-    mockApiServices.googlePlayPackages(any)(any) returns Service {
-      Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq(googlePlayPackage))))
     }
 
   }
@@ -599,27 +540,6 @@ class DeviceProcessImplSpec
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
           }
-        }
-      }
-
-  }
-
-  "Create bitmaps for no packages installed" should {
-
-    "when seq is empty" in
-      new DeviceProcessScope {
-        val result = deviceProcess.createBitmapsFromPackages(Seq.empty)(contextSupport).run.run
-        result must beLike {
-          case Answer(r) => r shouldEqual (())
-        }
-      }
-
-
-    "when seq has packages" in
-      new DeviceProcessScope with CreateImagesDataScope {
-        val result = deviceProcess.createBitmapsFromPackages(Seq(packageNameForCreateImage))(contextSupport).run.run
-        result must beLike {
-          case Answer(r) => r shouldEqual (())
         }
       }
 
@@ -1110,15 +1030,6 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns an empty Answer if image service fails" in
-      new DeviceProcessScope with ErrorImageServicesProcessScope {
-        val result = deviceProcess.saveInstalledApps(contextSupport).run.run
-        result must beLike {
-          case Answer(resultApps) =>
-            resultApps shouldEqual ((): Unit)
-        }
-      }
-
     "returns an empty Answer if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.saveInstalledApps(contextSupport).run.run
@@ -1153,15 +1064,6 @@ class DeviceProcessImplSpec
 
     "returns an empty Answer if api service fails" in
       new DeviceProcessScope with ErrorApiServicesProcessScope {
-        val result = deviceProcess.saveApp(packageName1)(contextSupport).run.run
-        result must beLike {
-          case Answer(resultApps) =>
-            resultApps shouldEqual ((): Unit)
-        }
-      }
-
-    "returns an empty Answer if image service fails" in
-      new DeviceProcessScope with ErrorImageServicesProcessScope {
         val result = deviceProcess.saveApp(packageName1)(contextSupport).run.run
         result must beLike {
           case Answer(resultApps) =>
@@ -1217,15 +1119,6 @@ class DeviceProcessImplSpec
 
     "returns an empty Answer if api service fails" in
       new DeviceProcessScope with ErrorApiServicesProcessScope {
-        val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
-        result must beLike {
-          case Answer(resultApps) =>
-            resultApps shouldEqual ((): Unit)
-        }
-      }
-
-    "returns an empty Answer if image service fails" in
-      new DeviceProcessScope with ErrorImageServicesProcessScope {
         val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
         result must beLike {
           case Answer(resultApps) =>
@@ -1389,7 +1282,7 @@ class DeviceProcessImplSpec
 
     "returns a empty answer for a valid request" in
       new DeviceProcessScope with DockAppsScope {
-        val result = deviceProcess.deleteAllDockApps.run.run
+        val result = deviceProcess.deleteAllDockApps().run.run
         result must beLike {
           case Answer(resultDockApp) =>
             resultDockApp shouldEqual ((): Unit)
@@ -1398,7 +1291,7 @@ class DeviceProcessImplSpec
 
     "returns DockAppException when PersistenceService fails" in
       new DeviceProcessScope with DockAppsErrorScope {
-        val result = deviceProcess.deleteAllDockApps.run.run
+        val result = deviceProcess.deleteAllDockApps().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]

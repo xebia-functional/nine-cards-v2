@@ -65,7 +65,7 @@ case class AppsIterableHolder(
   lazy val name = Option(findView(TR.simple_item_name))
 
   def bind(app: App): Ui[_] =
-    (icon <~ ivCardUri(app.imagePath, app.name)) ~
+    (icon <~ ivSrcByPackageName(Some(app.packageName), app.name)) ~
       (name <~ tvText(app.name)) ~
       (content <~
         On.click {

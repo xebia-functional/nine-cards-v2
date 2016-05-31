@@ -19,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Tint
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{AppDrawerPressedColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
@@ -90,6 +90,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       vPaddings(paddingLeftRight = paddingDefault, 0) <~
       (card.cardType match {
         case cardType if cardType.isContact => ivUriContact(card.imagePath, card.term, circular = true)
+        case AppCardType => ivSrcByPackageName(card.packageName, card.term)
         case _ => ivCardUri(card.imagePath, card.term, circular = true)
       }) <~
       On.click {

@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.services.image._
 
 trait ImageServicesImplData {

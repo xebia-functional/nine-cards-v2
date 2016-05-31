@@ -111,7 +111,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       vSetPosition(position) +
       (dockApps.lift(position) map { app =>
         (app.dockType match {
-          case AppDockType => ivUri(app.imagePath)
+          case AppDockType => ivSrcByPackageName(app.intent.extractPackageName(), app.name)
           case ContactDockType => ivUriContact(app.imagePath, app.name, circular = true)
           case _ => Tweak.blank
         }) +

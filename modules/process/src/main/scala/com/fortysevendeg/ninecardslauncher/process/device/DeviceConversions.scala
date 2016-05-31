@@ -42,26 +42,26 @@ trait DeviceConversions extends NineCardIntentConversions {
       version = app.version,
       installedFromGooglePlay = app.installedFromGooglePlay)
 
-  def toAddAppRequest(item: Application, category: NineCardCategory, imagePath: String): AddAppRequest =
+  def toAddAppRequest(item: Application, category: NineCardCategory): AddAppRequest =
       AddAppRequest(
         name = item.name,
         packageName = item.packageName,
         className = item.className,
         category = category.name,
-        imagePath = imagePath,
+        imagePath = "",
         dateInstalled = item.dateInstalled,
         dateUpdate = item.dateUpdate,
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
 
-  def toUpdateAppRequest(id: Int, item: Application, category: NineCardCategory, imagePath: String): UpdateAppRequest =
+  def toUpdateAppRequest(id: Int, item: Application, category: NineCardCategory): UpdateAppRequest =
       UpdateAppRequest(
         id = id,
         name = item.name,
         packageName = item.packageName,
         className = item.className,
         category = category.name,
-        imagePath = imagePath,
+        imagePath = "",
         dateInstalled = item.dateInstalled,
         dateUpdate = item.dateUpdate,
         version = item.version,

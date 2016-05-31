@@ -58,12 +58,6 @@ trait DeviceProcess {
   def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport): ServiceDef2[IterableApps, AppException]
 
   /**
-   * Create the bitmaps from a sequence of packages
-   * @throws CreateBitmapException if exist some problem creating the bitmaps
-   */
-  def createBitmapsFromPackages(packages: Seq[String])(implicit context: ContextSupport): ServiceDef2[Unit, CreateBitmapException]
-
-  /**
    * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut] contains
    *         information about shortcut with the Intents and Drawables for UI actions

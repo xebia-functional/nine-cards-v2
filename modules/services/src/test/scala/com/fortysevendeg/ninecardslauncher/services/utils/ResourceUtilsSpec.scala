@@ -39,12 +39,6 @@ class ResourceUtilsSpec
         result shouldEqual resultFilePath
       }
 
-    "return a package path when a valid packageName and a valid className are provided" in
-      new ResourceUtilsScope {
-        val result = resourceUtils.getPathPackage(packageName, className)(mockContextSupport)
-        result shouldEqual resultFilePath
-      }
-
   }
 
 }

@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import java.io.File
-
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
@@ -14,14 +12,12 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{MomentTimeSlot => ServicesMomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
-import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import rapture.core.Answer
 
 import scala.annotation.tailrec
 import scalaz.{-\/, \/-}
 
 trait FormedCollectionDependencies {
-  val resourceUtils: ResourceUtils
   val contactsServices: ContactsServices
   val collectionProcessConfig: CollectionProcessConfig
 }
@@ -197,15 +193,6 @@ trait FormedCollectionConversions
         val nineCardIntentAdapted = jsonToNineCardIntent(itemAdapted.intent)
 
         val path = CardType(itemAdapted.itemType) match {
-          case AppCardType =>
-            for {
-              packageName <- nineCardIntentAdapted.extractPackageName()
-              className <- nineCardIntentAdapted.extractClassName()
-            } yield {
-              val pathWithClassName = resourceUtils.getPathPackage(packageName, className)
-              // If the path using ClassName don't exist, we use a path using only packagename
-              if (new File(pathWithClassName).exists) pathWithClassName else resourceUtils.getPath(packageName)
-            }
           case PhoneCardType | SmsCardType =>
             fetchPhotoUri(nineCardIntentAdapted.extractPhone(), contactsServices.fetchContactByPhoneNumber)
           case EmailCardType =>
