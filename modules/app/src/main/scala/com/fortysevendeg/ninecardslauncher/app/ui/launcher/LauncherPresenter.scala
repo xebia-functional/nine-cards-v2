@@ -268,7 +268,24 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  def goToChangeMoment(): Unit = actions.showNoImplementedYetMessage().run
+  def goToChangeMoment(): Unit = {
+    Task.fork(di.momentProcess.getMoments.run).resolveAsyncUi(
+      onResult = (moments: Seq[Moment]) => {
+        val currentMomentType = actions.getData.headOption flatMap(_.moment) flatMap(_.momentType)
+        val newMomentType = if (currentMomentType.contains(HomeMorningMoment)) {
+          WorkMoment
+        } else if (currentMomentType.contains(WorkMoment)) {
+          HomeNightMoment
+        } else {
+          HomeMorningMoment
+        }
+        val newMoment = actions.getCollectionsWithMoment(moments).find(_._1 == newMomentType)
+        newMoment map { moment =>
+          val data = LauncherData(MomentWorkSpace, Some(LauncherMoment(Some(moment._1),moment._2)))
+          actions.reloadMoment(data)
+        } getOrElse Ui.nop
+      })
+  }
 
   def loadLauncherInfo(): Unit = {
     Task.fork(getLauncherInfo.run).resolveAsyncUi(
@@ -583,6 +600,8 @@ trait LauncherUiActions {
   def isEmptyCollectionsInWorkspace: Boolean
 
   def canRemoveCollections: Boolean
+
+  def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])]
 
   def getCollection(position: Int): Option[Collection]
 

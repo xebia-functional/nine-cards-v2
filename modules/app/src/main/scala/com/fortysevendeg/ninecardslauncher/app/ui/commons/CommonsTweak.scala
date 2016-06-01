@@ -1,8 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Context
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
 import android.os.Vibrator
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -11,6 +9,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerBackgroundDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
@@ -24,10 +23,7 @@ object CommonsTweak {
         vClipBackground(radius, horizontalPadding = horizontalPadding, verticalPadding = verticalPadding) +
         vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
     } getOrElse {
-      val s = 0 until 8 map (_ => radius.toFloat)
-      val drawable = new ShapeDrawable(new RoundRectShape(s.toArray, javaNull, javaNull))
-      drawable.getPaint.setColor(color)
-      // TODO We should include horizontal padding
+      val drawable = new DrawerBackgroundDrawable(color, horizontalPadding, verticalPadding, radius)
       vBackground(drawable)
     }
   }

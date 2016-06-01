@@ -30,8 +30,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconSha
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -229,6 +229,12 @@ trait LauncherUiActionsImpl
   override def getCurrentPage: Option[Int] = workspaces.map(_.currentPage())
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
+
+  override def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])] =
+    moments map {
+      case Moment(Some(collectionId: Int), _, _, _, Some(m: NineCardsMoment)) =>
+        (m, getCollections.find(_.id == collectionId))
+    }
 
   override def getCollection(position: Int): Option[Collection] = getCollections.lift(position)
 
