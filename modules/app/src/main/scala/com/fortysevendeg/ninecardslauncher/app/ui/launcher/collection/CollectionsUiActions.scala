@@ -154,13 +154,13 @@ trait CollectionsUiActions
       (dockAppsPanel <~ daplInit(apps)) ~
       (workspaces <~
         vGlobalLayoutListener(_ =>
-          workspaces <~
+          (workspaces <~
             lwsData(data, selectedPageDefault) <~
             awsAddPageChangedObserver(currentPage => {
               (paginationPanel <~ reloadPager(currentPage)).run
-            })
-        )) ~
-      createPager(selectedPageDefault)
+            })) ~
+            createPager(selectedPageDefault)
+        ))
   }
 
   def userProfileMenu(

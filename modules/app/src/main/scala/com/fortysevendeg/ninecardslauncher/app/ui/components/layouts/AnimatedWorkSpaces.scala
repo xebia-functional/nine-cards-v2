@@ -231,7 +231,11 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   def reset(): Ui[_] = {
     statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
     moveItemsAnimator.cancel()
-    recreate(FrontView) ~ recreate(PreviousView) ~ recreate(NextView)
+    val loadPrevious = data.length > 2 || statuses.currentItem == 1
+    val loadNext = data.length > 2 || statuses.currentItem == 0
+    recreate(FrontView) ~
+      (if (loadPrevious) recreate(PreviousView) else Ui.nop) ~
+      (if (loadNext) recreate(NextView) else Ui.nop)
   }
 
   private[this] def recreate(positionView: PositionView): Ui[Any] = {
