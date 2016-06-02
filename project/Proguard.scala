@@ -8,6 +8,7 @@ object Proguard {
     "-keepattributes InnerClasses",
     "-dontwarn scala.collection.**",
     "-dontobfuscate",
+    "-keep class org.ocpsoft.prettytime.i18n.**",
     "-keep class android.support.v7.widget.SearchView { <init>(...); }",
     "-keep class android.support.v7.internal.widget.* { <init>(...); }",
     "-keep class scala.Dynamic",
