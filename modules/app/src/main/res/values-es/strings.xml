@@ -252,8 +252,13 @@
     <!-- Preferences Personalization -->
     <string name="personalizationPreferences">Personalización</string>
 
-    <string name="themesTitle">Temas</string>
-    <string name="themesSummary">Resumen de Temas</string>
+    <!-- Theme Preferences -->
+
+    <string name="themesPrefTitle">Temas</string>
+    <string name="themesPrefSummary">Resumen de Temas</string>
+
+    <string name="selectThemeTitle">Seleccionar Tema</string>
+    <string name="selectThemeSummary">Resumen de Seleccionar Tema</string>
 
     <string name="themesDark">Oscuro</string>
     <string name="themesLight">Claro</string>
@@ -266,8 +271,24 @@
     <string name="colouredGoogleLogo">Coloreado</string>
     <string name="themeColourGoogleLogo">Color del Tema</string>
 
-    <string name="appDrawerTitle">Cajón de Aplicaciones</string>
-    <string name="appDrawerSummary">Resumen de Cajón de Aplicaciones</string>
+    <!-- Moment Preferences -->
+
+    <string name="momentsPrefTitle">Momentos</string>
+    <string name="momentsPrefSummary">Resumen Momentos</string>
+
+    <string name="numberOfAppsInHorizontalTitle">Número de aplicaciones en horizontal</string>
+    <string name="numberOfAppsInHorizontalSummary">Resumen de Número de aplicaciones</string>
+
+    <string name="numberOfRowsTitle">Número de filas</string>
+    <string name="numberOfRowsSummary">Resumen de Número de filas</string>
+
+    <string name="showBackgroundTitle">Mostrar fondo en aplicaciones</string>
+    <string name="showBackgroundSummary">Resumen de Mostrar fondo en aplicaciones</string>
+
+    <!-- AppDrawer Preferences -->
+
+    <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>
+    <string name="appDrawerPrefSummary">Resumen de Cajón de Aplicaciones</string>
 
     <string name="defaultWindowTitle">Apertura de Ventana por defecto</string>
     <string name="defaultWindowSummary">Resumen de Apertura de Ventana por defecto</string>
@@ -288,8 +309,10 @@
     <string name="windowIconsClassic">Clásico</string>
     <string name="windowIconsNineCards">9Cards</string>
 
-    <string name="sizesTitle">Tamaños</string>
-    <string name="sizesSummary">Resumen de Tamaños</string>
+    <!-- Sizes Preferences -->
+
+    <string name="sizesPrefTitle">Tamaños</string>
+    <string name="sizesPrefSummary">Resumen de Tamaños</string>
 
     <string name="fontsTitle">Fuentes</string>
     <string name="fontsSummary">Resumen de Fuentes</string>
@@ -312,8 +335,10 @@
     <string name="cardPaddingsMedium">Mediano</string>
     <string name="cardPaddingsBigger">Grande</string>
 
-    <string name="animationsTitle">Animaciones</string>
-    <string name="animationsSummary">Resumen de Animaciones</string>
+    <!-- Animations Preferences -->
+
+    <string name="animationsPrefTitle">Animaciones</string>
+    <string name="animationsPrefSummary">Resumen de Animaciones</string>
 
     <string name="speedTitle">Velocidad</string>
     <string name="speedSummary">Resumen de Velocidad</string>
@@ -359,8 +384,10 @@
 
     <string name="collectionDetailAddCardsMessage">Añade nuevas tarjetas a esta colección</string>
 
-    <string name="newAppTitle">Nueva aplicación</string>
-    <string name="newAppSummary">Resumen de Nueva Aplicación</string>
+    <!-- New App Preferences -->
+
+    <string name="newAppPrefTitle">Nueva aplicación</string>
+    <string name="newAppPrefSummary">Resumen de Nueva Aplicación</string>
     <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->

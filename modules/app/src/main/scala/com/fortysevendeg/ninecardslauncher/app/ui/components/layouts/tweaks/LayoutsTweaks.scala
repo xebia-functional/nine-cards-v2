@@ -46,6 +46,10 @@ object LauncherWorkSpacesTweaks {
     view.init(moment +: data, view.currentPage())
   }
 
+  def lwsDataForceReloadMoment() = Tweak[W] { view =>
+    view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
+  }
+
   def lwsClean = Tweak[W] (_.clean())
 
   def lwsListener(listener: LauncherWorkSpacesListener) = Tweak[W] (_.workSpacesListener = listener)

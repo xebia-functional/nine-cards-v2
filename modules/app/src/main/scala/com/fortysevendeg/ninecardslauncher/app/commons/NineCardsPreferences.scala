@@ -1,6 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.commons
 
 import PreferencesKeys._
+import PreferencesStates._
+import android.content.Context
+import android.preference.PreferenceManager
+import macroid.ContextWrapper
 
 sealed trait NineCardsPreferences {
   val name: String
@@ -8,6 +12,10 @@ sealed trait NineCardsPreferences {
 
 case object ThemesPreferences extends NineCardsPreferences {
   override val name: String = themesKey
+}
+
+case object MomentsPreferences extends NineCardsPreferences {
+  override val name: String = momentKey
 }
 
 case object AppDrawerPreferences extends NineCardsPreferences {
@@ -38,19 +46,63 @@ case object HelpPreferences extends NineCardsPreferences {
   override val name: String = helpKey
 }
 
-object NineCardsPreferences {
+sealed trait NineCardsPreferenceValue[T]
+  extends NineCardsPreferences {
+  val name: String
+  val default: T
+}
 
-  val preferences = Seq(ThemesPreferences, AppDrawerPreferences, SizesPreferences, AnimationsPreferences, NewAppPreferences, AboutPreferences, HelpPreferences)
+case object NumberOfAppsInHorizontalMoment
+  extends NineCardsPreferenceValue[Int] {
+  override val name: String = numberOfAppsInHorizontalMoment
+  override val default: Int = 5
+}
 
-  def apply(name: String): NineCardsPreferences = preferences find (_.name == name) getOrElse
-    (throw new IllegalArgumentException(s"$name not found"))
+case object NumberOfRowsMoment
+  extends NineCardsPreferenceValue[Int] {
+  override val name: String = numberOfRowsMoment
+  override val default: Int = 1
+}
+
+case object ShowBackgroundMoment
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = showBackgroundMoment
+  override val default: Boolean = false
+}
+
+class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
+
+  def getInt(pref: NineCardsPreferenceValue[Int]): Int =
+    PreferenceManager.getDefaultSharedPreferences(contextWrapper.application).getString(pref.name, pref.default.toString).toInt
+
+  def getString(pref: NineCardsPreferenceValue[String]): String =
+    PreferenceManager.getDefaultSharedPreferences(contextWrapper.application).getString(pref.name, pref.default)
+
+  def getBoolean(pref: NineCardsPreferenceValue[Boolean]): Boolean =
+    PreferenceManager.getDefaultSharedPreferences(contextWrapper.application).getBoolean(pref.name, pref.default)
 
 }
 
-// This values should be the same that the keys used in preferences_headers.xml
+class NineCardsPreferencesStatus(implicit contextWrapper: ContextWrapper) {
+
+  private[this] val defaultState = false
+
+  private[this] val preferences = contextWrapper.application.getSharedPreferences(namePreferencesState, Context.MODE_PRIVATE)
+
+  def setMoments(state: Boolean): Unit = {
+    val editor = preferences.edit()
+    editor.putBoolean(momentsState, state)
+    editor.apply()
+  }
+
+  def momentsWasChanged: Boolean = preferences.getBoolean(momentsState, defaultState)
+}
+
+// This values should be the same that the keys used in XML Preferences
 object PreferencesKeys {
   val defaultLauncherKey = "defaultLauncherKey"
   val themesKey = "themesKey"
+  val momentKey = "momentKey"
   val appDrawerKey = "appDrawerKey"
   val sizesKey = "sizesKey"
   val animationsKey = "animationsKey"
@@ -58,6 +110,18 @@ object PreferencesKeys {
   val aboutKey = "aboutKey"
   val helpKey = "helpKey"
   val appInfoKey = "appInfoKey"
+
+  val numberOfAppsInHorizontalMoment = "numberOfAppsInHorizontalMoment"
+  val numberOfRowsMoment = "numberOfRowsMoment"
+  val showBackgroundMoment = "showBackgroundMoment"
+}
+
+object PreferencesStates {
+
+  val namePreferencesState = "NineCardsPreferencesState"
+
+  val momentsState = "NineCardsPreferencesState"
+
 }
 
 

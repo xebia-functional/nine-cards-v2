@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions, NineCardsPreferencesStatus}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -48,6 +48,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   val tagDialog = "dialog"
 
   val defaultPage = 1
+
+  lazy val preferenceStatus = new NineCardsPreferencesStatus
 
   var statuses = LauncherPresenterStatuses()
 
@@ -390,6 +392,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def resetFromCollectionDetail(): Unit = actions.resetFromCollection().run
 
+  def resetWorkspaceAfterPreferenceIfNecessary(): Unit = {
+    if (preferenceStatus.momentsWasChanged) {
+      preferenceStatus.setMoments(false)
+      actions.reloadCurrentMoment().run
+    }
+  }
+
   def goToWizard(): Unit = {
     contextWrapper.original.get foreach { activity =>
       val wizardIntent = new Intent(activity, classOf[WizardActivity])
@@ -579,6 +588,8 @@ trait LauncherUiActions {
   def goToNextScreen(): Ui[Any]
 
   def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
+
+  def reloadCurrentMoment(): Ui[Any]
 
   def reloadMoment(moment: LauncherData): Ui[Any]
 

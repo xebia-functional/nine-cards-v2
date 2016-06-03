@@ -261,8 +261,13 @@
     <!-- Preferences Personalization -->
     <string name="personalizationPreferences">Personalization</string>
 
-    <string name="themesTitle">Themes</string>
-    <string name="themesSummary">Themes Summary</string>
+    <!-- Theme Preferences -->
+
+    <string name="themesPrefTitle">Themes</string>
+    <string name="themesPrefSummary">Themes Summary</string>
+
+    <string name="selectThemeTitle">Select Theme</string>
+    <string name="selectThemeSummary">Select Theme Summary</string>
 
     <string name="themesDark">Dark</string>
     <string name="themesLight">Light</string>
@@ -275,8 +280,24 @@
     <string name="colouredGoogleLogo">Coloured</string>
     <string name="themeColourGoogleLogo">Theme\'s Colour</string>
 
-    <string name="appDrawerTitle">App Drawer</string>
-    <string name="appDrawerSummary">App Drawer Summary</string>
+    <!-- Moment Preferences -->
+
+    <string name="momentsPrefTitle">Moments</string>
+    <string name="momentsPrefSummary">Moments Summary</string>
+
+    <string name="numberOfAppsInHorizontalTitle">Number of apps in horizontal</string>
+    <string name="numberOfAppsInHorizontalSummary">Number of apps in horizontal Summary</string>
+
+    <string name="numberOfRowsTitle">Number of rows</string>
+    <string name="numberOfRowsSummary">Number of rows Summary</string>
+
+    <string name="showBackgroundTitle">Show background</string>
+    <string name="showBackgroundSummary">Show background Summary</string>
+
+    <!-- App Drawer Preferences -->
+
+    <string name="appDrawerPrefTitle">App Drawer</string>
+    <string name="appDrawerPrefSummary">App Drawer Summary</string>
 
     <string name="defaultWindowTitle">Default Window Open</string>
     <string name="defaultWindowSummary">Default Window Summary</string>
@@ -297,8 +318,10 @@
     <string name="windowIconsClassic">Classic</string>
     <string name="windowIconsNineCards">9Cards</string>
 
-    <string name="sizesTitle">Sizes</string>
-    <string name="sizesSummary">Sizes Summary</string>
+    <!-- Sizes Preferences -->
+
+    <string name="sizesPrefTitle">Sizes</string>
+    <string name="sizesPrefSummary">Sizes Summary</string>
 
     <string name="fontsTitle">Fonts</string>
     <string name="fontsSummary">Fonts Summary</string>
@@ -321,8 +344,10 @@
     <string name="cardPaddingsMedium">Medium</string>
     <string name="cardPaddingsBigger">Bigger</string>
 
-    <string name="animationsTitle">Animations</string>
-    <string name="animationsSummary">Animations Summary</string>
+    <!-- Animations Preferences -->
+
+    <string name="animationsPrefTitle">Animations</string>
+    <string name="animationsPrefSummary">Animations Summary</string>
 
     <string name="speedTitle">Speed</string>
     <string name="speedSummary">Speed Summary</string>
@@ -368,8 +393,10 @@
 
     <string name="collectionDetailAddCardsMessage">Add new cards to this collection</string>
 
-    <string name="newAppTitle">New App</string>
-    <string name="newAppSummary">New App Summary</string>
+    <!-- New App Preferences -->
+
+    <string name="newAppPrefTitle">New App</string>
+    <string name="newAppPrefSummary">New App Summary</string>
     <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->

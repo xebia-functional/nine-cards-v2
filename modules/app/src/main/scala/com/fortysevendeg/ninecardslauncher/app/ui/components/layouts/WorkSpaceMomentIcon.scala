@@ -3,8 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
-import android.widget.{FrameLayout, ImageView}
-import com.fortysevendeg.macroid.extras.DeviceVersion._
+import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -20,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
 class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends FrameLayout(context, attr, defStyleAttr)
+  extends LinearLayout(context, attr, defStyleAttr)
   with Contexts[View]
   with TypedFindView {
 
@@ -34,7 +33,11 @@ class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: In
 
   val displacement = resGetDimensionPixelSize(R.dimen.shadow_displacement_default)
 
+  val padding = resGetDimensionPixelSize(R.dimen.padding_small)
+
   val radius = resGetDimensionPixelSize(R.dimen.shadow_radius_default)
+
+  private[this] val content = Option(findView(TR.workspace_moment_icon_content))
 
   private[this] val title = Option(findView(TR.workspace_moment_title))
 
@@ -45,6 +48,7 @@ class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: In
   def populateCollection(collection: Collection): Ui[Any] = {
     val resIcon = iconCollectionDetail(collection.icon)
     (title <~ tvText(collection.name)) ~
+      (content <~ vPaddings(padding)) ~
       (icon <~
         vBackgroundCollection(collection.themedColorIndex) <~
         ivSrc(resIcon))
@@ -58,10 +62,6 @@ class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: In
           case AppCardType => ivSrcByPackageName(card.packageName, card.term)
           case _ => ivCardUri(card.imagePath, card.term, circular = true)
         }))
-
-  private[this] def fabStyle: Tweak[ImageView] = Lollipop ifSupportedThen {
-    vElevation(resGetDimension(R.dimen.elevation_fab_button)) + vCircleOutlineProvider()
-  } getOrElse Tweak.blank
 
 }
 

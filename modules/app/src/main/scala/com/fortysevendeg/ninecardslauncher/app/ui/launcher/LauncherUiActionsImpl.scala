@@ -101,6 +101,8 @@ trait LauncherUiActionsImpl
   override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] =
     showLauncherInfo(data, apps)
 
+  override def reloadCurrentMoment(): Ui[Any] = workspaces <~ lwsDataForceReloadMoment()
+
   override def reloadMoment(moment: LauncherData): Ui[Any] = workspaces <~ lwsDataMoment(moment)
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =

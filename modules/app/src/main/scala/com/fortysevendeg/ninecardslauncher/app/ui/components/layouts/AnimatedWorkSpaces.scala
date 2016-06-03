@@ -97,17 +97,20 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def getCurrentView: Option[Holder] = views.lift(statuses.currentItem)
 
-  def init(newData: Seq[Data], position: Int = 0): Unit = {
+  def init(newData: Seq[Data], position: Int = 0, forcePopulatePosition: Option[Int] = None): Unit = {
 
     statuses = statuses.copy(currentItem = position)
 
     views = newData.zipWithIndex map {
       case (itemData, index) =>
         val sameData = data.lift(index) contains itemData
-        (sameData, views.lift(index)) match {
-          case (true, Some(oldView: Holder)) =>
+        (sameData, views.lift(index), forcePopulatePosition) match {
+          case (true, Some(oldView: Holder), Some(forceIndex)) if index == forceIndex =>
+            populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
             oldView
-          case (false, Some(oldView: Holder)) =>
+          case (true, Some(oldView: Holder), _) =>
+            oldView
+          case (false, Some(oldView: Holder), _) =>
             populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
             oldView
           case _ =>

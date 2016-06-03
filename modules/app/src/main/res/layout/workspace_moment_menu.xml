@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/WorkSpaceMomentIcon">
+              style="@style/WorkSpaceMomentIcon">
 
-    <ImageView
-        android:id="@+id/workspace_moment_icon"
-        style="@style/WorkSpaceMomentIconDrawable"/>
+    <FrameLayout
+            android:id="@+id/workspace_moment_icon_content"
+            style="@style/WorkSpaceMomentIconDrawableContent">
+
+        <ImageView
+                android:id="@+id/workspace_moment_icon"
+                style="@style/WorkSpaceMomentIconDrawable"/>
+
+    </FrameLayout>
 
     <TextView
-        android:id="@+id/workspace_moment_title"
-        style="@style/WorkSpaceMomentIconTitle"/>
+            android:id="@+id/workspace_moment_title"
+            style="@style/WorkSpaceMomentIconTitle"/>
 
 </LinearLayout>

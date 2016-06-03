@@ -9,6 +9,7 @@ import android.view.{LayoutInflater, View}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, NumberOfAppsInHorizontalMoment, NumberOfRowsMoment, ShowBackgroundMoment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceMomentMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, WorkSpaceMomentIcon}
@@ -30,7 +31,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
 
   LayoutInflater.from(context).inflate(R.layout.moment_workspace_layout, this)
 
-  val numApps = 5
+  val preferenceValues = new NineCardsPreferencesValue
 
   val content = Option(findView(TR.launcher_moment_content))
 
@@ -44,8 +45,6 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
 
-  val sizeApp = (parentDimen.width - (paddingDefault * 4)) / numApps
-
   val drawable = {
     val s = 0 until 8 map (_ => radius.toFloat)
     val d = new ShapeDrawable(new RoundRectShape(s.toArray, javaNull, javaNull))
@@ -53,23 +52,28 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     d
   }
 
-  (appsBox <~ vBackground(drawable)).run
-
   def populate(moment: LauncherMoment): Ui[Any] = {
     (for {
       collection <- moment.collection
     } yield {
-      (message <~ vGone) ~
+      val numApps = preferenceValues.getInt(NumberOfAppsInHorizontalMoment)
+      val rows = preferenceValues.getInt(NumberOfRowsMoment)
+      val showBackground = preferenceValues.getBoolean(ShowBackgroundMoment)
+      val sizeApp = (parentDimen.width - (paddingDefault * 2)) / numApps
+      val maxApps = (rows * numApps) - 1
+
+      (appsBox <~ (if (showBackground) vBackground(drawable) else vBlankBackground)) ~
+        (message <~ vGone) ~
         (content <~ vVisible) ~
         (appsBox  <~
           vgRemoveAllViews <~
-          vgAddViews(createCollection(collection) +: (collection.cards map (createIconCard(_, moment.momentType)))))
+          vgAddViews(createCollection(collection, sizeApp) +: (collection.cards.take(maxApps) map (createIconCard(_, moment.momentType, sizeApp)))))
     }) getOrElse
       ((message <~ vVisible) ~
         (content <~ vGone))
   }
 
-  private[this] def createCollection(collection: Collection) = {
+  private[this] def createCollection(collection: Collection, sizeApp: Int) = {
     (w[WorkSpaceMomentIcon] <~
       lp[FlexboxLayout](sizeApp, WRAP_CONTENT) <~
       wmmPopulateCollection(collection) <~
@@ -80,7 +84,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       }).get
   }
 
-  private[this] def createIconCard(card: Card, moment: Option[NineCardsMoment]): WorkSpaceMomentIcon =
+  private[this] def createIconCard(card: Card, moment: Option[NineCardsMoment], sizeApp: Int): WorkSpaceMomentIcon =
     (w[WorkSpaceMomentIcon] <~
       lp[FlexboxLayout](sizeApp, WRAP_CONTENT) <~
       wmmPopulateCard(card) <~

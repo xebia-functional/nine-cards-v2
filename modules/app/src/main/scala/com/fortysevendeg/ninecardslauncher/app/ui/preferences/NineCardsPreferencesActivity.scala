@@ -52,6 +52,8 @@ class NineCardsPreferencesActivity
 
       findPreference(ThemesPreferences.name).setOnPreferenceClickListener(preferenceClick(ThemesPreferences.name, new ThemesFragment()))
 
+      findPreference(MomentsPreferences.name).setOnPreferenceClickListener(preferenceClick(MomentsPreferences.name, new MomentsFragment()))
+
       findPreference(AppDrawerPreferences.name).setOnPreferenceClickListener(preferenceClick(AppDrawerPreferences.name, new AppDrawerFragment()))
 
       findPreference(SizesPreferences.name).setOnPreferenceClickListener(preferenceClick(SizesPreferences.name, new SizesFragment()))

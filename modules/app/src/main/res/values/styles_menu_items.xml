@@ -50,9 +50,14 @@
         <item name="android:textSize">@dimen/text_medium</item>
     </style>
 
-    <style name="WorkSpaceMomentIconDrawable">
+    <style name="WorkSpaceMomentIconDrawableContent">
         <item name="android:layout_width">@dimen/size_workspace_moment_icon</item>
         <item name="android:layout_height">@dimen/size_workspace_moment_icon</item>
+    </style>
+
+    <style name="WorkSpaceMomentIconDrawable">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:scaleType">centerInside</item>
     </style>
 
