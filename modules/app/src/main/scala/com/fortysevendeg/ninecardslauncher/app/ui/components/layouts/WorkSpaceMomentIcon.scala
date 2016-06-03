@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
+import android.widget.ImageView.ScaleType
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -50,6 +51,7 @@ class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: In
     (title <~ tvText(collection.name)) ~
       (content <~ vPaddings(padding)) ~
       (icon <~
+        ivScaleType(ScaleType.CENTER_INSIDE) <~
         vBackgroundCollection(collection.themedColorIndex) <~
         ivSrc(resIcon))
   }

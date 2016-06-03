@@ -7,7 +7,7 @@ import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.{FrameLayout, ImageView}
+import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -17,6 +17,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -31,6 +32,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Dock
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkSpaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
@@ -261,30 +264,25 @@ trait CollectionsUiActions
         (menuCollectionRoot <~ vGone)
     }
 
-  private[this] def createPager(activatePosition: Int) =
+  private[this] def createPager(activePosition: Int): Ui[Any] =
     workspaces map { ws =>
+      val maybeColorMoment = for {
+        first <- getData.headOption
+        moment <- first.moment
+        collection <- moment.collection
+      } yield resGetColor(getIndexColor(collection.themedColorIndex))
       val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
-        val view = pagination(position)
-        view.setActivated(activatePosition == position)
-        view
-      }
-      paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
-    } getOrElse Ui.nop
-
-  private[this] def reloadPagerAndActive(activePosition: Int): Ui[Any] =
-    workspaces map { ws =>
-      val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
-        val view = pagination(position)
+        val view = pagination(position, if (position == 0) maybeColorMoment else None)
         view.setActivated(activePosition == position)
         view
       }
       paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
     } getOrElse Ui.nop
 
-  def reloadWorkspacePager: Ui[Any] = (workspaces ~> lwsCurrentPage()).get map reloadPagerAndActive getOrElse Ui.nop
+  def reloadWorkspacePager: Ui[Any] = (workspaces ~> lwsCurrentPage()).get map createPager getOrElse Ui.nop
 
-  def pagination(position: Int) =
-    (w[ImageView] <~ paginationItemStyle <~ vSetPosition(position)).get
+  def pagination(position: Int, maybeColor: Option[Int]) =
+    (w[TintableImageView] <~ paginationItemStyle <~ vSetPosition(position) <~ (maybeColor map tivDefaultColor getOrElse Tweak.blank)).get
 
   private[this] def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], view: View, color: Int, map: Map[String, String] = Map.empty): Ui[_] = {
