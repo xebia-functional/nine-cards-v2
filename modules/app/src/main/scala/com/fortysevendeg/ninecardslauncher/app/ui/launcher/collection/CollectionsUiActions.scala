@@ -215,7 +215,7 @@ trait CollectionsUiActions
       case (R.id.menu_profile, Some(activity)) => uiStartIntentForResult(new Intent(activity, classOf[ProfileActivity]), RequestCodes.goToProfile)
       case (R.id.menu_wallpapers, _) => uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
       case (R.id.menu_android_settings, _) => uiStartIntent(new Intent(android.provider.Settings.ACTION_SETTINGS))
-      case (R.id.menu_9cards_settings, Some(activity)) => uiStartIntentForResult(new Intent(activity, classOf[NineCardsPreferencesActivity]), RequestCodes.goToPreferences)
+      case (R.id.menu_9cards_settings, Some(activity)) => uiStartIntent(new Intent(activity, classOf[NineCardsPreferencesActivity]))
       case (R.id.menu_widgets, _) => showMessage(R.string.todo)
       case _ => Ui.nop
     }

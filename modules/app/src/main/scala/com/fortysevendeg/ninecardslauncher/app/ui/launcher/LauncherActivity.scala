@@ -76,8 +76,6 @@ class LauncherActivity
         presenter.resetFromCollectionDetail()
       case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) =>
         presenter.logout()
-      case (RequestCodes.goToPreferences, _) =>
-        presenter.resetWorkspaceAfterPreferenceIfNecessary()
       case _ =>
     }
   }

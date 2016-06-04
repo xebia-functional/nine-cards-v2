@@ -78,8 +78,8 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       lp[FlexboxLayout](sizeApp, WRAP_CONTENT) <~
       wmmPopulateCollection(collection) <~
       FuncOn.click { view: View =>
-        val pos = PositionsUtils.calculateAnchorViewPosition(view)
-        val point = new Point(pos._1 + (view.getWidth / 2), pos._2 + (view.getHeight / 2))
+        val (x, y) = PositionsUtils.calculateAnchorViewPosition(view)
+        val point = new Point(x + (view.getWidth / 2), y + (view.getHeight / 2))
         Ui(presenter.goToCollection(Some(collection), point))
       }).get
   }

@@ -315,16 +315,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  def checkMoment(): Unit = {
-    Task.fork(getCheckMoment.run).resolveAsyncUi(
-      onResult = (launcherMoment) => {
-        launcherMoment map { _ =>
-          val data = LauncherData(MomentWorkSpace, launcherMoment)
-          actions.reloadMoment(data)
-        } getOrElse Ui.nop
-      })
-  }
-
   def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     Task.fork(getLoadApps(getAppOrder).run).resolveAsyncUi(
@@ -392,13 +382,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def resetFromCollectionDetail(): Unit = actions.resetFromCollection().run
 
-  def resetWorkspaceAfterPreferenceIfNecessary(): Unit = {
-    if (preferenceStatus.momentsWasChanged) {
-      preferenceStatus.setMoments(false)
-      actions.reloadCurrentMoment().run
-    }
-  }
-
   def goToWizard(): Unit = {
     contextWrapper.original.get foreach { activity =>
       val wizardIntent = new Intent(activity, classOf[WizardActivity])
@@ -421,6 +404,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       moment <- di.momentProcess.getBestAvailableMoment
     } yield (collections, dockApps, moment)
 
+  // Check if the best available moment is different to the current moment, if it's different return Some(moment)
+  // in the other case None
   protected def getCheckMoment: ServiceDef2[Option[LauncherMoment], CollectionException with MomentException] = {
 
     def getCollection(moment: Option[Moment]): ServiceDef2[Option[Collection], CollectionException] = {
@@ -439,6 +424,24 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       moment <- di.momentProcess.getBestAvailableMoment
       collection <- getCollection(moment)
     } yield collection map (_ => LauncherMoment(moment flatMap(_.momentType), collection))
+  }
+
+  // Check if there is a new best available moment. If not, we check if the current moment was changed
+  private[this] def checkMoment(): Unit = {
+    Task.fork(getCheckMoment.run).resolveAsyncUi(
+      onResult = (launcherMoment) => {
+        launcherMoment map { _ =>
+          val data = LauncherData(MomentWorkSpace, launcherMoment)
+          actions.reloadMoment(data)
+        } getOrElse {
+          if (preferenceStatus.momentsWasChanged) {
+            preferenceStatus.setMoments(false)
+            actions.reloadCurrentMoment()
+          } else {
+            Ui.nop
+          }
+        }
+      })
   }
 
   protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
