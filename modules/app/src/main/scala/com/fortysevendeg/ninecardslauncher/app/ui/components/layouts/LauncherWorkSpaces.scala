@@ -80,6 +80,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def getItemViewType(data: LauncherData, position: Int): Int = data.workSpaceType.value
 
+  override def createEmptyView(): LauncherWorkSpaceHolder = new LauncherWorkSpaceHolder(context)
+
   override def createView(viewType: Int): LauncherWorkSpaceHolder =
     (WorkSpaceType(viewType), presenter, theme) match {
       case (_, None, _) =>
