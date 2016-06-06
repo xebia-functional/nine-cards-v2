@@ -73,6 +73,10 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
         (content <~ vGone))
   }
 
+  def addWidget(widgetView: View): Ui[Any] = {
+    widgets <~ vgRemoveAllViews <~ vgAddView(widgetView)
+  }
+
   private[this] def createCollection(collection: Collection, sizeApp: Int) = {
     (w[WorkSpaceMomentIcon] <~
       lp[FlexboxLayout](sizeApp, WRAP_CONTENT) <~

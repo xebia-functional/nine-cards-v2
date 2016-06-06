@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.MotionEvent
+import android.view.{MotionEvent, View}
 import android.view.MotionEvent._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -74,6 +74,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case Some(collectionWorkspace: LauncherWorkSpaceCollectionsHolder) =>
       collectionWorkspace.prepareItemsScreenInReorder(position)
     case _ => Ui.nop
+  }
+
+  def addWidget(widgetView: View): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView).run
+    case _ =>
   }
 
   override def getItemViewTypeCount: Int = 2

@@ -148,6 +148,8 @@ trait LauncherUiActionsImpl
 
   def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
 
+  def addWidgetView(widgetView: View): Ui[Any] = workspaces <~ lwsAddWidget(widgetView)
+
   override def back: Ui[Any] =
     if (isDrawerTabsOpened) {
       closeDrawerTabs
