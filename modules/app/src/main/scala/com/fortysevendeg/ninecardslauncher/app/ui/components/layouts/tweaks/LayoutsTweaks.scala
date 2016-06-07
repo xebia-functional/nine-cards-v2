@@ -50,9 +50,7 @@ object LauncherWorkSpacesTweaks {
     view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
-  def lwsAddWidget(widgetView: View) = Tweak[W] { view =>
-    view.addWidget(widgetView)
-  }
+  def lwsAddWidget(widgetView: View) = Tweak[W] (_.addWidget(widgetView))
 
   def lwsClean = Tweak[W] (_.clean())
 

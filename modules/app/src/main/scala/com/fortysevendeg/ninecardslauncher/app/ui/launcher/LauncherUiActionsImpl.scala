@@ -146,9 +146,11 @@ trait LauncherUiActionsImpl
       background.start()
   }
 
-  def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
+  override def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
 
-  def addWidgetView(widgetView: View): Ui[Any] = workspaces <~ lwsAddWidget(widgetView)
+  override def addWidgetView(widgetView: View): Ui[Any] = {
+    workspaces <~ lwsAddWidget(widgetView)
+  }
 
   override def back: Ui[Any] =
     if (isDrawerTabsOpened) {

@@ -217,6 +217,7 @@ trait CollectionsUiActions
       case (R.id.menu_android_settings, _) => uiStartIntent(new Intent(android.provider.Settings.ACTION_SETTINGS))
       case (R.id.menu_9cards_settings, Some(activity)) => uiStartIntent(new Intent(activity, classOf[NineCardsPreferencesActivity]))
       case (R.id.menu_widgets, _) => Ui(presenter.goToWidgets())
+      case (R.id.menu_change_moment, _) => Ui(presenter.goToChangeMoment())
       case _ => Ui.nop
     }
   }

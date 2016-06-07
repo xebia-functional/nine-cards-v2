@@ -51,6 +51,17 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   val defaultPage = 1
 
+  // We are storing the widgets id in preference momentarily. This implementation should be removed when we store the
+  // widget in database
+  lazy val widgetPreferences = contextWrapper.bestAvailable.getSharedPreferences("widget-preferences", Context.MODE_PRIVATE)
+
+  private[this] def getWidgetId(moment: NineCardsMoment): Option[Int] = {
+    val id = widgetPreferences.getInt(moment.name, 0)
+    if (id == 0) None else Some(id)
+  }
+
+  private[this] def setWidgetId(moment: NineCardsMoment, id: Int) = widgetPreferences.edit.putInt(moment.name, id).apply()
+
   lazy val preferenceStatus = new NineCardsPreferencesStatus
 
   lazy val appWidgetManager = AppWidgetManager.getInstance(contextWrapper.application)
@@ -407,13 +418,28 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def deleteWidget(maybeAppWidgetId: Option[Int]): Unit = maybeAppWidgetId foreach appWidgetHost.deleteAppWidgetId
 
+  def getWidgetView(nineCardMoment: NineCardsMoment): Option[View] =
+    getWidgetId(nineCardMoment) map createView
+
   def addWidget(maybeAppWidgetId: Option[Int]): Unit =
-    (maybeAppWidgetId map { appWidgetId =>
-      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-      val hostView = appWidgetHost.createView(contextWrapper.application, appWidgetId, appWidgetInfo)
-      hostView.setAppWidget(appWidgetId, appWidgetInfo)
-      actions.addWidgetView(hostView)
-    } getOrElse actions.showContactUsError()).run
+    ((for {
+      appWidgetId <- maybeAppWidgetId
+      data <- actions.getData.headOption
+      moment <- data.moment
+      nineCardMoment <- moment.momentType
+    } yield {
+      setWidgetId(nineCardMoment, appWidgetId)
+      drawWidget(appWidgetId)
+    }) getOrElse actions.showContactUsError()).run
+
+  private[this] def drawWidget(appWidgetId: Int): Ui[Any] = actions.addWidgetView(createView(appWidgetId))
+
+  private[this] def createView(appWidgetId: Int): View = {
+    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+    val hostView = appWidgetHost.createView(contextWrapper.application, appWidgetId, appWidgetInfo)
+    hostView.setAppWidget(appWidgetId, appWidgetInfo)
+    hostView
+  }
 
   def configureWidgetOrAdd(maybeAppWidgetId: Option[Int]): Unit =
     (for {

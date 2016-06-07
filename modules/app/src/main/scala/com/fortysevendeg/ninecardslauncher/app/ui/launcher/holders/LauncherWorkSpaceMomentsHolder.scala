@@ -67,7 +67,11 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
         (content <~ vVisible) ~
         (appsBox  <~
           vgRemoveAllViews <~
-          vgAddViews(createCollection(collection, sizeApp) +: (collection.cards.take(maxApps) map (createIconCard(_, moment.momentType, sizeApp)))))
+          vgAddViews(createCollection(collection, sizeApp) +: (collection.cards.take(maxApps) map (createIconCard(_, moment.momentType, sizeApp))))) ~
+          ((for {
+            moment <- moment.momentType
+            view <- presenter.getWidgetView(moment)
+          } yield addWidget(view)) getOrElse clearWidgets())
     }) getOrElse
       ((message <~ vVisible) ~
         (content <~ vGone))
@@ -75,6 +79,10 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
 
   def addWidget(widgetView: View): Ui[Any] = {
     widgets <~ vgRemoveAllViews <~ vgAddView(widgetView)
+  }
+
+  def clearWidgets(): Ui[Any] = {
+    widgets <~ vgRemoveAllViews
   }
 
   private[this] def createCollection(collection: Collection, sizeApp: Int) = {
