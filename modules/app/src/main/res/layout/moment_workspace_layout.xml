@@ -4,20 +4,17 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         style="@style/LauncherMomentRoot">
 
-    <ImageView
-            android:id="@+id/launcher_moment_background"
-            style="@style/LauncherMomentBackground" />
-
     <TextView
             android:id="@+id/launcher_moment_message"
             style="@style/LauncherMomentMessage"/>
 
     <LinearLayout
+            android:id="@+id/launcher_moment_content"
             style="@style/LauncherMomentContent">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceMomentMenu
-                android:id="@+id/launcher_moment_icon"
-                style="@style/LauncherMomentIcon" />
+        <LinearLayout
+                android:id="@+id/launcher_moment_widgets"
+                style="@style/LauncherMomentWidgets" />
 
         <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/launcher_moment_apps_layout"

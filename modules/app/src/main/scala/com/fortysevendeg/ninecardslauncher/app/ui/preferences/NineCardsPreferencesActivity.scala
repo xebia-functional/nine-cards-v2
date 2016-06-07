@@ -26,7 +26,7 @@ class NineCardsPreferencesActivity
       ab.setDisplayShowTitleEnabled(true)
       ab.setDisplayUseLogoEnabled(false)
     }
-    getFragmentManager.beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit()
+    getFragmentManager.beginTransaction().replace(android.R.id.content, new NineCardsPreferenceFragment()).commit()
   }
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
@@ -43,7 +43,7 @@ class NineCardsPreferencesActivity
     actionBar foreach(_.setTitle(R.string.nineCardsSettingsTitle))
   }
 
-  class MyPreferenceFragment
+  class NineCardsPreferenceFragment
     extends PreferenceFragment {
 
     override def onCreate(savedInstanceState: Bundle) = {
@@ -51,6 +51,8 @@ class NineCardsPreferencesActivity
       addPreferencesFromResource(R.xml.preferences_headers)
 
       findPreference(ThemesPreferences.name).setOnPreferenceClickListener(preferenceClick(ThemesPreferences.name, new ThemesFragment()))
+
+      findPreference(MomentsPreferences.name).setOnPreferenceClickListener(preferenceClick(MomentsPreferences.name, new MomentsFragment()))
 
       findPreference(AppDrawerPreferences.name).setOnPreferenceClickListener(preferenceClick(AppDrawerPreferences.name, new AppDrawerFragment()))
 

@@ -83,7 +83,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     (actions.handleToolbarVisibility(percentage) ~ actions.handleProfileVisibility(percentage)).run
 
   def accountSynced(): Unit = {
-    // TODO - Reload adapter
+    loadUserAccounts()
     actions.showMessageAccountSynced().run
     syncEnabled = false
   }

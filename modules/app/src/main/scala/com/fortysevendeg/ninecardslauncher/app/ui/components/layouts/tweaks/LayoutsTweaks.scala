@@ -10,11 +10,11 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
@@ -44,6 +44,10 @@ object LauncherWorkSpacesTweaks {
   def lwsDataMoment(moment: LauncherData) = Tweak[W] { view =>
     val data = view.data.filter(_.workSpaceType == CollectionsWorkSpace)
     view.init(moment +: data, view.currentPage())
+  }
+
+  def lwsDataForceReloadMoment() = Tweak[W] { view =>
+    view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
   def lwsClean = Tweak[W] (_.clean())
@@ -139,9 +143,11 @@ object WorkSpaceItemMenuTweaks {
 }
 
 object WorkSpaceMomentMenuTweaks {
-  type W = WorkSpaceMomentMenu
+  type W = WorkSpaceMomentIcon
 
-  def wmmPopulate(backgroundColor: Int, resourceId: Int, text: Option[String]) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
+  def wmmPopulateCollection(collection: Collection) = Tweak[W](_.populateCollection(collection).run)
+
+  def wmmPopulateCard(card: Card) = Tweak[W](_.populateCard(card).run)
 
 }
 

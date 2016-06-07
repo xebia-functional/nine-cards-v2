@@ -8,7 +8,7 @@ class SizesFragment extends PreferenceFragment {
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.sizesTitle)))
+    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.sizesPrefTitle)))
     addPreferencesFromResource(R.xml.preferences_sizes)
   }
 

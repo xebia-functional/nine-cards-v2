@@ -352,8 +352,8 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
       val resIcon = iconCollectionWorkspace(collection.icon)
       ((layout <~
         FuncOn.click { view: View =>
-          val pos = PositionsUtils.calculateAnchorViewPosition(view)
-          val point = new Point(pos._1 + (view.getWidth / 2), pos._2 + (view.getHeight / 2))
+          val (x, y) = PositionsUtils.calculateAnchorViewPosition(view)
+          val point = new Point(x + (view.getWidth / 2), y + (view.getHeight / 2))
           Ui(presenter.goToCollection(this.collection, point))
         } <~
         On.longClick {
@@ -363,7 +363,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
           } getOrElse Ui.nop).run
           Ui(true)
         }) ~
-        (icon <~ ivSrc(resIcon) <~ vBackground(createBackground(collection.themedColorIndex))) ~
+        (icon <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~
         (name <~ tvText(collection.name))).run
     }
 
@@ -378,41 +378,6 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
       dropBackgroundIcon.end() ~~
         (iconRoot <~ vBlankBackground) ~
         (name <~ vVisible)
-
-    private[this] def createBackground(indexColor: Int): Drawable = {
-
-      def createShapeDrawable(color: Int) = {
-        val drawableColor = new ShapeDrawable(new OvalShape())
-        drawableColor.getPaint.setColor(color)
-        drawableColor.getPaint.setStyle(Paint.Style.FILL)
-        drawableColor.getPaint.setAntiAlias(true)
-        drawableColor
-      }
-
-      def getDrawable(color: Int): Drawable = {
-        val drawableColor = createShapeDrawable(color)
-        val padding = resGetDimensionPixelSize(R.dimen.elevation_default)
-        val drawableShadow = createShapeDrawable(resGetColor(R.color.shadow_default))
-        val layer = new LayerDrawable(Array(drawableShadow, drawableColor))
-        layer.setLayerInset(0, padding, padding, padding, 0)
-        layer.setLayerInset(1, padding, 0, padding, padding)
-        layer
-      }
-
-      val color = resGetColor(getIndexColor(indexColor))
-
-      Lollipop ifSupportedThen {
-        new RippleDrawable(
-          new ColorStateList(Array(Array()), Array(color.dark(0.2f))),
-          createShapeDrawable(color),
-          javaNull)
-      } getOrElse {
-        val states = new StateListDrawable()
-        states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(color.dark()))
-        states.addState(Array.emptyIntArray, getDrawable(color))
-        states
-      }
-    }
 
     def startDragStyle(label: String, description: String): Tweak[View] = Tweak[View] { view =>
       val dragData = ClipData.newPlainText(label, description)

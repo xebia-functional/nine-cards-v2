@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
-import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -24,7 +23,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{LauncherData, LauncherMoment}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
@@ -100,6 +100,8 @@ trait LauncherUiActionsImpl
 
   override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] =
     showLauncherInfo(data, apps)
+
+  override def reloadCurrentMoment(): Ui[Any] = workspaces <~ lwsDataForceReloadMoment()
 
   override def reloadMoment(moment: LauncherData): Ui[Any] = workspaces <~ lwsDataMoment(moment)
 
@@ -244,9 +246,9 @@ trait LauncherUiActionsImpl
     fragmentContent <~ vClickable(false)
 
   def reloadPager(currentPage: Int) = Transformer {
-    case imageView: ImageView if imageView.isPosition(currentPage) =>
+    case imageView: TintableImageView if imageView.isPosition(currentPage) =>
       imageView <~ vActivated(true) <~~ pagerAppear
-    case imageView: ImageView =>
+    case imageView: TintableImageView =>
       imageView <~ vActivated(false)
   }
 

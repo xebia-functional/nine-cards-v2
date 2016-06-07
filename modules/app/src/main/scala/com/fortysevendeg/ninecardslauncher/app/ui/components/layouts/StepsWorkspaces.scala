@@ -18,6 +18,8 @@ class StepsWorkspaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
+  override def createEmptyView(): StepWorkSpaceWidgetsHolder = new StepWorkSpaceWidgetsHolder
+
   override def createView(viewType: Int): StepWorkSpaceWidgetsHolder = new StepWorkSpaceWidgetsHolder
 
   override def populateView(view: Option[StepWorkSpaceWidgetsHolder], data: StepData, viewType: Int, position: Int): Ui[_] =

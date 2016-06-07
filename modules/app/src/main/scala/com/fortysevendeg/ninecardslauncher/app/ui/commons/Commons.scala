@@ -56,6 +56,8 @@ object RequestCodes {
 
   val goToCollectionDetails = 8
 
+  val goToPreferences = 9
+
 }
 
 object ResultCodes {

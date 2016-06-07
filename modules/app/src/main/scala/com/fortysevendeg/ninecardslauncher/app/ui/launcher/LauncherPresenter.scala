@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions, NineCardsPreferencesStatus}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -48,6 +48,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   val tagDialog = "dialog"
 
   val defaultPage = 1
+
+  lazy val preferenceStatus = new NineCardsPreferencesStatus
 
   var statuses = LauncherPresenterStatuses()
 
@@ -313,16 +315,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  def checkMoment(): Unit = {
-    Task.fork(getCheckMoment.run).resolveAsyncUi(
-      onResult = (launcherMoment) => {
-        launcherMoment map { _ =>
-          val data = LauncherData(MomentWorkSpace, launcherMoment)
-          actions.reloadMoment(data)
-        } getOrElse Ui.nop
-      })
-  }
-
   def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     Task.fork(getLoadApps(getAppOrder).run).resolveAsyncUi(
@@ -412,6 +404,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       moment <- di.momentProcess.getBestAvailableMoment
     } yield (collections, dockApps, moment)
 
+  // Check if the best available moment is different to the current moment, if it's different return Some(moment)
+  // in the other case None
   protected def getCheckMoment: ServiceDef2[Option[LauncherMoment], CollectionException with MomentException] = {
 
     def getCollection(moment: Option[Moment]): ServiceDef2[Option[Collection], CollectionException] = {
@@ -430,6 +424,24 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       moment <- di.momentProcess.getBestAvailableMoment
       collection <- getCollection(moment)
     } yield collection map (_ => LauncherMoment(moment flatMap(_.momentType), collection))
+  }
+
+  // Check if there is a new best available moment. If not, we check if the current moment was changed
+  private[this] def checkMoment(): Unit = {
+    Task.fork(getCheckMoment.run).resolveAsyncUi(
+      onResult = (launcherMoment) => {
+        launcherMoment map { _ =>
+          val data = LauncherData(MomentWorkSpace, launcherMoment)
+          actions.reloadMoment(data)
+        } getOrElse {
+          if (preferenceStatus.momentsWasChanged) {
+            preferenceStatus.setMoments(false)
+            actions.reloadCurrentMoment()
+          } else {
+            Ui.nop
+          }
+        }
+      })
   }
 
   protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
@@ -579,6 +591,8 @@ trait LauncherUiActions {
   def goToNextScreen(): Ui[Any]
 
   def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
+
+  def reloadCurrentMoment(): Ui[Any]
 
   def reloadMoment(moment: LauncherData): Ui[Any]
 

@@ -8,7 +8,7 @@ class AppDrawerFragment extends PreferenceFragment {
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.appDrawerTitle)))
+    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.appDrawerPrefTitle)))
     addPreferencesFromResource(R.xml.preferences_app_drawer)
   }
 

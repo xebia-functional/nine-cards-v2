@@ -4,7 +4,6 @@ import java.io.{InputStream, OutputStreamWriter}
 
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveRateLimitExceeded, DriveResourceNotAvailable, DriveSigInRequired}
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
@@ -94,7 +93,10 @@ class DriveServicesImpl(client: GoogleApiClient)
         case _ => appFolder.listChildren(client)
       }
       request.withResult { r =>
-        Answer(f(r.getMetadataBuffer.iterator().toSeq))
+        val buffer = r.getMetadataBuffer
+        val response = f(buffer.iterator().toIterable.toList)
+        buffer.release()
+        Answer(response)
       }
     }
   }

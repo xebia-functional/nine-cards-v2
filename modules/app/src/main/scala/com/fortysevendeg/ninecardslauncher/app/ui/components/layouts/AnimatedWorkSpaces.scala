@@ -33,6 +33,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
+  val minimumViews = 3
+
   val positionViewKey = "position-view"
 
   var listener = new AnimatedWorkSpacesListener
@@ -85,6 +87,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   override def onLongClick: () => Unit = listener.onLongClick
 
+  def createEmptyView(): Holder
+
   def createView(viewType: Int): Holder
 
   def populateView(view: Option[Holder], data: Data, viewType: Int, position: Int): Ui[_]
@@ -97,17 +101,23 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def getCurrentView: Option[Holder] = views.lift(statuses.currentItem)
 
-  def init(newData: Seq[Data], position: Int = 0): Unit = {
+  def init(newData: Seq[Data], position: Int = 0, forcePopulatePosition: Option[Int] = None): Unit = {
 
     statuses = statuses.copy(currentItem = position)
 
-    views = newData.zipWithIndex map {
+    // We creates the views for our workspace. We have a minimum of views, if our data don't have this minimum,
+    // we must create the necessary empty views
+
+    views = (newData.zipWithIndex map {
       case (itemData, index) =>
         val sameData = data.lift(index) contains itemData
-        (sameData, views.lift(index)) match {
-          case (true, Some(oldView: Holder)) =>
+        (sameData, views.lift(index), forcePopulatePosition) match {
+          case (true, Some(oldView: Holder), Some(forceIndex)) if index == forceIndex =>
+            populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
             oldView
-          case (false, Some(oldView: Holder)) =>
+          case (true, Some(oldView: Holder), _) =>
+            oldView
+          case (false, Some(oldView: Holder), _) =>
             populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
             oldView
           case _ =>
@@ -115,7 +125,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
             populateView(Some(view), itemData, getItemViewType(itemData, index), index).run
             view
         }
-    }
+    }) ++ (newData.length until minimumViews map (_ => createEmptyView()))
 
     data = newData
 
@@ -231,19 +241,17 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   def reset(): Ui[_] = {
     statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
     moveItemsAnimator.cancel()
-    val loadPrevious = data.length > 2 || statuses.currentItem == 1
-    val loadNext = data.length > 2 || statuses.currentItem == 0
     recreate(FrontView) ~
-      (if (loadPrevious) recreate(PreviousView) else Ui.nop) ~
-      (if (loadNext) recreate(NextView) else Ui.nop)
+      recreate(PreviousView) ~
+      recreate(NextView)
   }
 
   private[this] def recreate(positionView: PositionView): Ui[Any] = {
     val currentItem = statuses.currentItem
 
     val (position, displacement) = positionView match {
-      case PreviousView =>  (if (currentItem - 1 < 0) data.length - 1 else currentItem - 1, -getSizeWidget)
-      case NextView => (if (currentItem + 1 > data.length - 1) 0 else currentItem + 1, getSizeWidget)
+      case PreviousView =>  (if (currentItem - 1 < 0) views.length - 1 else currentItem - 1, -getSizeWidget)
+      case NextView => (if (currentItem + 1 > views.length - 1) 0 else currentItem + 1, getSizeWidget)
       case FrontView => (currentItem, 0)
     }
 
