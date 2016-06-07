@@ -14,7 +14,7 @@ object Versions {
   val picassoV = "2.5.0"
   val playServicesV = "9.0.1"
   val mockitoV = "3.0-M2"
-  val glideV = "3.6.1"
+  val glideV = "3.7.0"
   val sprayClientV = "1.3.1"
   val okHttpV = "2.3.0"
   val prettyTimeV = "3.2.7.Final"

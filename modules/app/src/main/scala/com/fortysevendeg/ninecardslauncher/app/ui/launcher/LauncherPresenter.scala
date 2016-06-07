@@ -53,15 +53,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   lazy val preferenceStatus = new NineCardsPreferencesStatus
 
-  lazy val appWidgetManager = AppWidgetManager.getInstance(contextWrapper.getOriginal)
+  lazy val appWidgetManager = AppWidgetManager.getInstance(contextWrapper.application)
 
-  lazy val appWidgetHost = new AppWidgetHost(contextWrapper.getOriginal, R.id.app_widget_host_id)
+  lazy val appWidgetHost = new AppWidgetHost(contextWrapper.application, R.id.app_widget_host_id)
 
   var statuses = LauncherPresenterStatuses()
 
   override def getApplicationContext: Context = contextWrapper.application
 
   def initialize(): Unit = {
+    appWidgetHost.startListening()
     Task.fork(di.userProcess.register.run).resolveAsync()
     actions.initialize.run
   }
@@ -77,9 +78,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def pause(): Unit = di.observerRegister.unregisterObserver()
 
-  def start(): Unit = appWidgetHost.startListening()
-
-  def stop(): Unit = appWidgetHost.stopListening()
+  def destroy(): Unit = appWidgetHost.stopListening()
 
   def back(): Unit = actions.back.run
 
@@ -403,12 +402,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     val appWidgetId = appWidgetHost.allocateAppWidgetId()
     val pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
     pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-//    pickIntent.putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_INFO, new util.ArrayList)
-//    pickIntent.putParcelableArrayListExtra(AppWidgetManager.EXTRA_CUSTOM_EXTRAS, new util.ArrayList)
-
-//    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, info.componentName)
-//    appWidgetManager.getU.getUser(mPendingAddWidgetInfo).addToIntent(intent, AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_PROFILE)
-
     activity.startActivityForResult(pickIntent, RequestCodes.goToWidgets)
   }
 
@@ -417,7 +410,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def addWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map { appWidgetId =>
       val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-      val hostView = appWidgetHost.createView(contextWrapper.getOriginal, appWidgetId, appWidgetInfo)
+      val hostView = appWidgetHost.createView(contextWrapper.application, appWidgetId, appWidgetInfo)
       hostView.setAppWidget(appWidgetId, appWidgetInfo)
       actions.addWidgetView(hostView)
     } getOrElse actions.showContactUsError()).run
@@ -429,14 +422,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     } yield {
       val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
       if (appWidgetInfo.configure != javaNull) {
-        Lollipop.ifSupportedThen {
-          appWidgetHost.startAppWidgetConfigureActivityForResult(contextWrapper.getOriginal, appWidgetId, 0, RequestCodes.goToConfigureWidgets, javaNull)
-        } getOrElse {
-          val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
-          intent.setComponent(appWidgetInfo.configure)
-          intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-          activity.startActivityForResult(intent, RequestCodes.goToConfigureWidgets)
-        }
+        val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
+        intent.setComponent(appWidgetInfo.configure)
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        activity.startActivityForResult(intent, RequestCodes.goToConfigureWidgets)
       } else {
         addWidget(Some(appWidgetId))
       }

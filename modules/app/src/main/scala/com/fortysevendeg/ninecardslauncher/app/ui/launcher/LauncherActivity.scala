@@ -46,15 +46,7 @@ class LauncherActivity
     presenter.pause()
   }
 
-  override def onStart(): Unit = {
-    super.onStart()
-    presenter.start()
-  }
-
-  override def onStop(): Unit = {
-    super.onStop()
-    presenter.stop()
-  }
+  override def onDestroy(): Unit = presenter.destroy()
 
   override def onStartFinishAction(): Unit = presenter.resetAction()
 
