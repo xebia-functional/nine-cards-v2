@@ -267,7 +267,6 @@ trait LauncherUiActionsImpl
     (workspacesEdgeLeft <~ vGone) ~
       (workspacesEdgeRight <~ vGone)
 
-
   private[this] def prepareBars =
     KitKat.ifSupportedThen {
       val activity = activityContextWrapper.getOriginal

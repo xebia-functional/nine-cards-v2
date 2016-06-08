@@ -10,6 +10,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions, NineCardsPreferencesStatus}
+import com.fortysevendeg.ninecardslauncher.app.ui.CachePreferences
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -51,16 +52,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   val defaultPage = 1
 
-  // We are storing the widgets id in preference momentarily. This implementation should be removed when we store the
-  // widget in database
-  lazy val widgetPreferences = contextWrapper.bestAvailable.getSharedPreferences("widget-preferences", Context.MODE_PRIVATE)
-
-  private[this] def getWidgetId(moment: NineCardsMoment): Option[Int] = {
-    val id = widgetPreferences.getInt(moment.name, 0)
-    if (id == 0) None else Some(id)
-  }
-
-  private[this] def setWidgetId(moment: NineCardsMoment, id: Int) = widgetPreferences.edit.putInt(moment.name, id).apply()
+  lazy val cache = new CachePreferences
 
   lazy val preferenceStatus = new NineCardsPreferencesStatus
 
@@ -82,7 +74,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     di.observerRegister.registerObserver()
     if (actions.isEmptyCollectionsInWorkspace) {
       loadLauncherInfo()
-    } else {
+    } else if (cache.canReloadMomentInResume) {
       checkMoment()
     }
   }
@@ -303,6 +295,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         }
         val newMoment = actions.getCollectionsWithMoment(moments).find(_._1 == newMomentType)
         newMoment map { moment =>
+          cache.updateTimeMomentChangedManually()
           val data = LauncherData(MomentWorkSpace, Some(LauncherMoment(Some(moment._1),moment._2)))
           actions.reloadMoment(data)
         } getOrElse Ui.nop
@@ -419,7 +412,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def deleteWidget(maybeAppWidgetId: Option[Int]): Unit = maybeAppWidgetId foreach appWidgetHost.deleteAppWidgetId
 
   def getWidgetView(nineCardMoment: NineCardsMoment): Option[View] =
-    getWidgetId(nineCardMoment) map createView
+    cache.getWidgetId(nineCardMoment) map createView
 
   def addWidget(maybeAppWidgetId: Option[Int]): Unit =
     ((for {
@@ -428,7 +421,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       moment <- data.moment
       nineCardMoment <- moment.momentType
     } yield {
-      setWidgetId(nineCardMoment, appWidgetId)
+      cache.setWidgetId(nineCardMoment, appWidgetId)
       drawWidget(appWidgetId)
     }) getOrElse actions.showContactUsError()).run
 
