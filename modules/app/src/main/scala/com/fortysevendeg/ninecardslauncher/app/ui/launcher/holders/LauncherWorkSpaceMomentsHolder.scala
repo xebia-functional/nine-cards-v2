@@ -11,10 +11,10 @@ import android.view.{LayoutInflater, MotionEvent, View}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks.{W, _}
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, NumberOfAppsInHorizontalMoment, NumberOfRowsMoment, ShowBackgroundMoment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceMomentMenuTweaks.{W, _}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceMomentMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, WorkSpaceMomentIcon}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
