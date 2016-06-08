@@ -153,8 +153,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   override def setStateIfNeeded(x: Float, y: Float): Unit = {
+    val touchingWidget = presenter.exists(_.statuses.touchingWidget)
     // We check that the user is doing up vertical swipe
-    if (isVerticalMoving(x, y)) {
+    // If the user is touching a widget, we don't do a vertical movement in order to the
+    // scrollable widgets works fine
+    if (isVerticalMoving(x, y) && !touchingWidget) {
       workSpacesListener.onStartOpenMenu().run
       resetLongClick()
       workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
@@ -171,6 +174,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
     action match {
       case ACTION_DOWN =>
+        presenter foreach { p =>
+          p.statuses = p.statuses.copy(touchingWidget = false)
+        }
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
       case ACTION_MOVE =>
         if (!statuses.enabled) {

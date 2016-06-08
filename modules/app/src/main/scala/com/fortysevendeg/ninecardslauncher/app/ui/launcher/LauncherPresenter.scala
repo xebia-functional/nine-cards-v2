@@ -699,6 +699,7 @@ trait LauncherUiActions {
 
 object Statuses {
   case class LauncherPresenterStatuses(
+    touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
     mode: LauncherMode = NormalMode,
     cardAddItemMode: Option[AddCardRequest] = None,
     collectionReorderMode: Option[Collection] = None,
