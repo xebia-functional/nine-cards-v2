@@ -51,29 +51,39 @@ class CreateCollectionService
   }
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
-    loadDeviceId = Option(intent) flatMap {
-      i => if (i.hasExtra(keyDevice)) Some(i.getStringExtra(keyDevice)) else None
-    }
-
-    setState(stateCreatingCollections)
-
-    val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
-    val title: String = getString(R.string.workingNotificationTitle)
-    builder.
-      setContentTitle(title).
-      setTicker(title).
-      setContentText(getString(R.string.downloadingAppsInfoMessage)).
-      setSmallIcon(R.drawable.icon_notification_working).
-      setProgress(1, maxProgress, true).
-      setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
 
     registerDispatchers
 
-    startForeground(notificationId, builder.build)
+    val hasKey = Option(intent) exists (_.hasExtra(keyDevice))
 
-    synchronizeDevice
+    if (hasKey) {
+      loadDeviceId = Option(intent) flatMap { i =>
+        if (i.hasExtra(keyDevice)) {
+          val key = i.getStringExtra(keyDevice)
+          if (key == newConfiguration) None else Some(key)
+        } else None
+      }
 
-    super.onStartCommand(intent, flags, startId)
+      setState(stateCreatingCollections)
+
+      val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
+      val title: String = getString(R.string.workingNotificationTitle)
+      builder.
+        setContentTitle(title).
+        setTicker(title).
+        setContentText(getString(R.string.downloadingAppsInfoMessage)).
+        setSmallIcon(R.drawable.icon_notification_working).
+        setProgress(1, maxProgress, true).
+        setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
+
+      startForeground(notificationId, builder.build)
+
+      synchronizeDevice
+    } else {
+      closeService()
+    }
+
+    Service.START_NOT_STICKY
   }
 
   private[this] def setState(state: String) = {
@@ -93,6 +103,7 @@ class CreateCollectionService
     case CreatingCollectionsProcess => Option(loadDeviceId map (_ =>
       resGetString(R.string.loadingFromDeviceMessage)) getOrElse resGetString(R.string.loadingForMyDeviceMessage))
   }
+
   override def onDestroy(): Unit = {
     super.onDestroy()
     unregisterDispatcher
@@ -125,6 +136,7 @@ class CreateCollectionService
 
 object CreateCollectionService {
   val keyDevice: String = "__key_device__"
+  val newConfiguration: String = "new-configuration"
   val notificationId: Int = 1101
   val homeMorningKey = "home"
 }

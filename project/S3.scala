@@ -42,7 +42,7 @@ object S3 {
     upload := {
       val log = streams.value.log
       log.info("Uploading APK")
-      val file = target.value / "android" / "output" / "nine-cards-v2-release.apk"
+      val file = target.value / "android" / "output" / "nine-cards-v2-debug.apk"
       Try(client.putObject(bucketName, apkName, file)) match {
         case Success(r) => log.info("APK successfully uploaded")
         case Failure(e) =>

@@ -22,6 +22,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
@@ -67,14 +68,14 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
 
       (appsBox <~ (if (showBackground) vBackground(drawable) else vBlankBackground)) ~
         (message <~ vGone) ~
-        (content <~ vVisible) ~
-        (appsBox  <~
+        (appsBox <~
           vgRemoveAllViews <~
           vgAddViews(createCollection(collection, sizeApp) +: (collection.cards.take(maxApps) map (createIconCard(_, moment.momentType, sizeApp))))) ~
           ((for {
             moment <- moment.momentType
             view <- presenter.getWidgetView(moment)
-          } yield addWidget(view)) getOrElse clearWidgets())
+          } yield addWidget(view)) getOrElse clearWidgets()) ~
+        (content <~ vVisible <~ vAlpha(0f) <~ applyAnimation(alpha = Some(1f)))
     }) getOrElse
       ((message <~ vVisible) ~
         (content <~ vGone))
