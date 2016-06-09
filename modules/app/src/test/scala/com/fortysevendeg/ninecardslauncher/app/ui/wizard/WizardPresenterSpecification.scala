@@ -409,7 +409,7 @@ class WizardPresenterSpec
 
   "Generate Collections" should {
 
-    "call to go to wizard in Actions and startService in the activity" in
+    "call to go to wizard in Actions and startService in the activity with a new configuration" in
       new WizardPresenterScope {
 
         mockContextActivity.startService(any) returns mock[ComponentName]
@@ -417,11 +417,11 @@ class WizardPresenterSpec
         presenter.generateCollections(None)
 
         there was after(1.seconds).one(mockActions).goToWizard()
-        there was after(1.seconds).no(mockIntent).putExtra(any, anyString)
+        there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.keyDevice, CreateCollectionService.newConfiguration)
         there was after(1.seconds).one(mockContextActivity).startService(mockIntent)
     }
 
-    "call to go to wizard in Actions and startService in the activity with the right Intent when pass a key" in
+    "call to go to wizard in Actions and startService in the activity with device id" in
       new WizardPresenterScope {
 
         mockContextActivity.startService(any) returns mock[ComponentName]
