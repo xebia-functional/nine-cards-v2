@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.MotionEvent
+import android.view.{MotionEvent, View}
 import android.view.MotionEvent._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -74,6 +74,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case Some(collectionWorkspace: LauncherWorkSpaceCollectionsHolder) =>
       collectionWorkspace.prepareItemsScreenInReorder(position)
     case _ => Ui.nop
+  }
+
+  def addWidget(widgetView: View): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView).run
+    case _ =>
   }
 
   override def getItemViewTypeCount: Int = 2
@@ -148,8 +153,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   override def setStateIfNeeded(x: Float, y: Float): Unit = {
+    val touchingWidget = presenter.exists(_.statuses.touchingWidget)
     // We check that the user is doing up vertical swipe
-    if (isVerticalMoving(x, y)) {
+    // If the user is touching a widget, we don't do a vertical movement in order to the
+    // scrollable widgets works fine
+    if (isVerticalMoving(x, y) && !touchingWidget) {
       workSpacesListener.onStartOpenMenu().run
       resetLongClick()
       workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
@@ -166,6 +174,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
     action match {
       case ACTION_DOWN =>
+        presenter foreach { p =>
+          p.statuses = p.statuses.copy(touchingWidget = false)
+        }
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
       case ACTION_MOVE =>
         if (!statuses.enabled) {

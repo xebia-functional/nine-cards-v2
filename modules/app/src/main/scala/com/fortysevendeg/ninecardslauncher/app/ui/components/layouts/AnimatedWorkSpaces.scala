@@ -101,6 +101,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def getCurrentView: Option[Holder] = views.lift(statuses.currentItem)
 
+  def getView(position: Int): Option[Holder] = views.lift(position)
+
   def init(newData: Seq[Data], position: Int = 0, forcePopulatePosition: Option[Int] = None): Unit = {
 
     statuses = statuses.copy(currentItem = position)

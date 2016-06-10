@@ -1,13 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
+import android.appwidget.{AppWidgetHost, AppWidgetManager}
 import android.content.{Context, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions, NineCardsPreferencesStatus}
+import com.fortysevendeg.ninecardslauncher.app.ui.CachePreferences
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -24,7 +27,7 @@ import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, NineCardIntent}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
@@ -49,13 +52,20 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   val defaultPage = 1
 
+  lazy val cache = new CachePreferences
+
   lazy val preferenceStatus = new NineCardsPreferencesStatus
+
+  lazy val appWidgetManager = AppWidgetManager.getInstance(contextWrapper.application)
+
+  lazy val appWidgetHost = new AppWidgetHost(contextWrapper.application, R.id.app_widget_host_id)
 
   var statuses = LauncherPresenterStatuses()
 
   override def getApplicationContext: Context = contextWrapper.application
 
   def initialize(): Unit = {
+    appWidgetHost.startListening()
     Task.fork(di.userProcess.register.run).resolveAsync()
     actions.initialize.run
   }
@@ -64,12 +74,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     di.observerRegister.registerObserver()
     if (actions.isEmptyCollectionsInWorkspace) {
       loadLauncherInfo()
-    } else {
+    } else if (cache.canReloadMomentInResume) {
       checkMoment()
     }
   }
 
   def pause(): Unit = di.observerRegister.unregisterObserver()
+
+  def destroy(): Unit = appWidgetHost.stopListening()
 
   def back(): Unit = actions.back.run
 
@@ -283,6 +295,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         }
         val newMoment = actions.getCollectionsWithMoment(moments).find(_._1 == newMomentType)
         newMoment map { moment =>
+          cache.updateTimeMomentChangedManually()
           val data = LauncherData(MomentWorkSpace, Some(LauncherMoment(Some(moment._1),moment._2)))
           actions.reloadMoment(data)
         } getOrElse Ui.nop
@@ -388,6 +401,54 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       activity.startActivity(wizardIntent)
     }
   }
+
+  def goToWidgets(): Unit = contextWrapper.original.get foreach { activity =>
+    val appWidgetId = appWidgetHost.allocateAppWidgetId()
+    val pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
+    pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+    activity.startActivityForResult(pickIntent, RequestCodes.goToWidgets)
+  }
+
+  def deleteWidget(maybeAppWidgetId: Option[Int]): Unit = maybeAppWidgetId foreach appWidgetHost.deleteAppWidgetId
+
+  def getWidgetView(nineCardMoment: NineCardsMoment): Option[View] =
+    cache.getWidgetId(nineCardMoment) map createView
+
+  def addWidget(maybeAppWidgetId: Option[Int]): Unit =
+    ((for {
+      appWidgetId <- maybeAppWidgetId
+      data <- actions.getData.headOption
+      moment <- data.moment
+      nineCardMoment <- moment.momentType
+    } yield {
+      cache.setWidgetId(nineCardMoment, appWidgetId)
+      drawWidget(appWidgetId)
+    }) getOrElse actions.showContactUsError()).run
+
+  private[this] def drawWidget(appWidgetId: Int): Ui[Any] = actions.addWidgetView(createView(appWidgetId))
+
+  private[this] def createView(appWidgetId: Int): View = {
+    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+    val hostView = appWidgetHost.createView(contextWrapper.application, appWidgetId, appWidgetInfo)
+    hostView.setAppWidget(appWidgetId, appWidgetInfo)
+    hostView
+  }
+
+  def configureWidgetOrAdd(maybeAppWidgetId: Option[Int]): Unit =
+    (for {
+      appWidgetId <- maybeAppWidgetId
+      activity <- contextWrapper.original.get
+    } yield {
+      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+      if (appWidgetInfo.configure != javaNull) {
+        val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
+        intent.setComponent(appWidgetInfo.configure)
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        activity.startActivityForResult(intent, RequestCodes.goToConfigureWidgets)
+      } else {
+        addWidget(Some(appWidgetId))
+      }
+    }) getOrElse actions.showContactUsError().run
 
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
@@ -611,6 +672,8 @@ trait LauncherUiActions {
 
   def resetFromCollection(): Ui[Any]
 
+  def addWidgetView(widgetView: View): Ui[Any]
+
   def isEmptyCollectionsInWorkspace: Boolean
 
   def canRemoveCollections: Boolean
@@ -629,6 +692,7 @@ trait LauncherUiActions {
 
 object Statuses {
   case class LauncherPresenterStatuses(
+    touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
     mode: LauncherMode = NormalMode,
     cardAddItemMode: Option[AddCardRequest] = None,
     collectionReorderMode: Option[Collection] = None,

@@ -15,29 +15,27 @@ class NineCardsApplication
 
   override def onCreate() {
     super.onCreate()
-    // In old version BuildConfig returns a NoClassDefFoundError
-    // Fix this problem in issue #212
     try {
       Fabric.`with`(self, new Crashlytics())
-      if (BuildConfig.DEBUG) {
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-          .detectDiskReads()
-          .detectDiskWrites()
-          .detectAll()
-          .penaltyLog()
+      // Create variables for enabling Stetho and StrictMode in issue #212
+      StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+        .detectDiskReads()
+        .detectDiskWrites()
+        .detectAll()
+        .penaltyLog()
+        .build())
+      StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+        .detectLeakedSqlLiteObjects()
+        .detectLeakedClosableObjects()
+        .detectAll()
+        .penaltyLog()
+        .build())
+      Stetho.initialize(
+        Stetho.newInitializerBuilder(this)
+          .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+          .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
           .build())
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-          .detectLeakedSqlLiteObjects()
-          .detectLeakedClosableObjects()
-          .detectAll()
-          .penaltyLog()
-          .build())
-        Stetho.initialize(
-          Stetho.newInitializerBuilder(this)
-            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-            .build())
-      }
+
     } catch {
       case _: Throwable =>
     }

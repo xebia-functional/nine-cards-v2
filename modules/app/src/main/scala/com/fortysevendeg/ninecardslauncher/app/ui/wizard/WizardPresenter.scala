@@ -103,7 +103,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     contextWrapper.original.get match {
       case Some(activity) =>
         val intent = createIntent(activity, classOf[CreateCollectionService])
-        maybeKey foreach (key => intent.putExtra(CreateCollectionService.keyDevice, key))
+        intent.putExtra(CreateCollectionService.keyDevice, maybeKey.getOrElse(CreateCollectionService.newConfiguration))
         activity.startService(intent)
         actions.goToWizard().run
       case _ =>

@@ -4,8 +4,11 @@ import android.content.Context
 import android.graphics.Point
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
+import android.view.MotionEvent._
+import android.view.View.OnTouchListener
 import android.view.ViewGroup.LayoutParams._
-import android.view.{LayoutInflater, View}
+import android.view.{LayoutInflater, MotionEvent, View}
+import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -19,6 +22,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
@@ -64,16 +68,42 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
 
       (appsBox <~ (if (showBackground) vBackground(drawable) else vBlankBackground)) ~
         (message <~ vGone) ~
-        (content <~ vVisible) ~
-        (appsBox  <~
+        (appsBox <~
           vgRemoveAllViews <~
-          vgAddViews(createCollection(collection, sizeApp) +: (collection.cards.take(maxApps) map (createIconCard(_, moment.momentType, sizeApp)))))
+          vgAddViews(createCollection(collection, sizeApp) +: (collection.cards.take(maxApps) map (createIconCard(_, moment.momentType, sizeApp))))) ~
+          ((for {
+            moment <- moment.momentType
+            view <- presenter.getWidgetView(moment)
+          } yield addWidget(view)) getOrElse clearWidgets()) ~
+        (content <~ vVisible <~ vAlpha(0f) <~ applyAnimation(alpha = Some(1f)))
     }) getOrElse
       ((message <~ vVisible) ~
         (content <~ vGone))
   }
 
-  private[this] def createCollection(collection: Collection, sizeApp: Int) = {
+  def addWidget(widgetView: View): Ui[Any] = {
+    val viewBlockTouch = w[FrameLayout].get
+    viewBlockTouch.setOnTouchListener(new OnTouchListener {
+      override def onTouch(v: View, event: MotionEvent): Boolean = {
+        event.getAction match {
+          case ACTION_DOWN => presenter.statuses = presenter.statuses.copy(touchingWidget = true)
+        }
+        false
+      }
+    })
+    val view = (
+      w[FrameLayout] <~
+        vgAddViews(
+          Seq(widgetView, viewBlockTouch))
+      ).get
+    widgets <~ vgRemoveAllViews <~ vgAddView(view)
+  }
+
+  def clearWidgets(): Ui[Any] = {
+    widgets <~ vgRemoveAllViews
+  }
+
+  private[this] def createCollection(collection: Collection, sizeApp: Int): WorkSpaceMomentIcon = {
     (w[WorkSpaceMomentIcon] <~
       lp[FlexboxLayout](sizeApp, WRAP_CONTENT) <~
       wmmPopulateCollection(collection) <~
