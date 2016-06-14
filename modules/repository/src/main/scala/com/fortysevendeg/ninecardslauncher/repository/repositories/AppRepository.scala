@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toApp
 import com.fortysevendeg.ninecardslauncher.repository.model.{App, AppData, DataCounter}
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
@@ -55,6 +55,32 @@ class AppRepository(
           App(
             id = id,
             data = data)
+        }
+      }
+    }
+
+  def addApps(datas: Seq[AppData]): ServiceDef2[Unit, RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          val values = datas map { data =>
+            Map[String, Any](
+              name -> data.name,
+              packageName -> data.packageName,
+              className -> data.className,
+              category -> data.category,
+              imagePath -> data.imagePath,
+              dateInstalled -> data.dateInstalled,
+              dateUpdate -> data.dateUpdate,
+              version -> data.version,
+              installedFromGooglePlay -> data.installedFromGooglePlay)
+          }
+
+          contentResolverWrapper.inserts(
+            authority = NineCardsUri.authorityPart,
+            uri = appUri,
+            allValues = values,
+            notificationUri = Some(appNotificationUri))
         }
       }
     }

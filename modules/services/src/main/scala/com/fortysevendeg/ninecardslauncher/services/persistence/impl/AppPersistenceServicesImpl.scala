@@ -30,6 +30,11 @@ trait AppPersistenceServicesImpl {
       app <- appRepository.addApp(toRepositoryAppData(request))
     } yield toApp(app)).resolve[PersistenceServiceException]
 
+  def addApps(request: Seq[AddAppRequest]) =
+    (for {
+      _ <- appRepository.addApps(request map toRepositoryAppData)
+    } yield ()).resolve[PersistenceServiceException]
+
   def deleteAllApps() =
     (for {
       deleted <- appRepository.deleteApps()

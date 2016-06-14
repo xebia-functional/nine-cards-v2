@@ -92,6 +92,14 @@ trait PersistenceServices {
   def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]
 
   /**
+    * Adds a sequence of apps to the repository
+    * @param request includes the necessary data to create new apps in the repository
+    * @return Unit
+    * @throws PersistenceServiceException if exist some problem obtaining the app
+    */
+  def addApps(request: Seq[AddAppRequest]): ServiceDef2[Unit, PersistenceServiceException]
+
+  /**
     * Deletes all apps from the repository by the where clause
     * @return an Int if the apps has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the apps

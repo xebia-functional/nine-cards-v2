@@ -132,6 +132,8 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(appsPersistence(1)))),
       Service(Task(Result.answer(appsPersistence(2)))))
 
+    mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns(Service(Task(Result.answer(appsPersistence.head))))
+
     mockPersistenceServices.deleteAppByPackage(any) returns
       Service(Task(Result.answer(items)))
 
@@ -327,6 +329,10 @@ trait DeviceProcessSpecification
     }
 
     mockPersistenceServices.addApp(any[AddAppRequest]) returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+    mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns Service {
       Task(Errata(persistenceServiceException))
     }
 
@@ -1030,12 +1036,13 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns an empty Answer if persistence service fails" in
+    "returns an AppException if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
         val result = deviceProcess.saveInstalledApps(contextSupport).run.run
         result must beLike {
-          case Answer(resultApps) =>
-            resultApps shouldEqual ((): Unit)
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          }
         }
       }
 
@@ -1052,7 +1059,7 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns a AppException if app service fails" in
+    "returns an AppException if app service fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
         val result = deviceProcess.saveApp(packageName1)(contextSupport).run.run
         result must beLike {
