@@ -26,7 +26,7 @@ trait ContentResolverWrapper {
     authority: String,
     uri: Uri,
     allValues: Seq[Map[String, Any]],
-    notificationUri: Option[Uri] = None): Unit
+    notificationUri: Option[Uri] = None): Seq[Int]
 
   def delete(
     uri: Uri,
@@ -108,9 +108,7 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     authority: String,
     uri: Uri,
     allValues: Seq[Map[String, Any]],
-    notificationUri: Option[Uri] = None): Unit = {
-
-    allValues.map { p => android.util.Log.d("9cards", s"data: $p")}
+    notificationUri: Option[Uri] = None): Seq[Int] = {
 
     val operations = allValues map { values =>
       ContentProviderOperation.newInsert(uri)
@@ -119,10 +117,11 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     }
 
     import scala.collection.JavaConverters._
-    contentResolver.applyBatch(authority, new util.ArrayList(operations.asJava))
+    val result = contentResolver.applyBatch(authority, new util.ArrayList(operations.asJava))
 
     notificationUri foreach (contentResolver.notifyChange(_, javaNull))
 
+    result.map(_.uri.getPathSegments.get(1).toInt)
   }
 
   override def update(

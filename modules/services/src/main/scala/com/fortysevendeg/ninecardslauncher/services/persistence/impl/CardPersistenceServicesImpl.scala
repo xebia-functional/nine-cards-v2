@@ -24,6 +24,11 @@ trait CardPersistenceServicesImpl {
         Service(Task(Result.errata[Card, PersistenceServiceException](PersistenceServiceException("CollectionId can't be empty"))))
     }
 
+  def addCards(collectionId: Int, request: Seq[AddCardRequest]) =
+    (for {
+      cards <- cardRepository.addCards(collectionId, request map toRepositoryCardData)
+    } yield cards map toCard).resolve[PersistenceServiceException]
+
   def deleteAllCards() =
     (for {
       deleted <- cardRepository.deleteCards()

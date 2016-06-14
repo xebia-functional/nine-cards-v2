@@ -123,12 +123,20 @@ trait PersistenceServices {
   def updateApp(request: UpdateAppRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
-    * Adds an card to the repository
+    * Adds a card to the repository
     * @param request includes the necessary data to create a new card in the repository
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
     */
   def addCard(request: AddCardRequest): ServiceDef2[Card, PersistenceServiceException]
+
+  /**
+    * Adds a sequence of cards to the repository
+    * @param request includes the necessary data to create new cards in the repository
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
+    * @throws PersistenceServiceException if exist some problem creating the card
+    */
+  def addCards(collectionId: Int, request: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException]
 
   /**
     * Deletes all cards from the repository by the where clause

@@ -51,6 +51,34 @@ class CardRepository(
       }
     }
 
+  def addCards(collectionId: Int, datas: Seq[CardData]): ServiceDef2[Seq[Card], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          val values = datas map { data =>
+            Map[String, Any](
+              position -> data.position,
+              CardEntity.collectionId -> collectionId,
+              term -> data.term,
+              packageName -> flatOrNull(data.packageName),
+              cardType -> data.cardType,
+              intent -> data.intent,
+              imagePath -> data.imagePath,
+              notification -> flatOrNull(data.notification))
+          }
+
+          val ids = contentResolverWrapper.inserts(
+            authority = NineCardsUri.authorityPart,
+            uri = cardUri,
+            allValues = values)
+
+          datas zip ids map {
+            case (data, id) => Card(id = id, data = data)
+          }
+        }
+      }
+    }
+
   def deleteCards(where: String = ""): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {

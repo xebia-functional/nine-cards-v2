@@ -333,7 +333,7 @@ trait CollectionProcessImplSpecification
     self: CollectionProcessScope =>
 
     mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
-    mockPersistenceServices.addCard(any) returns Service(Task(Result.answer(servicesCard)))
+    mockPersistenceServices.addCards(any, any) returns Service(Task(Result.answer(seqServicesCard)))
 
   }
 
@@ -352,7 +352,7 @@ trait CollectionProcessImplSpecification
     self: CollectionProcessScope =>
 
     mockPersistenceServices.fetchCardsByCollection(any) returns Service(Task(Result.answer(seqServicesCard)))
-    mockPersistenceServices.addCard(any) returns Service(Task(Errata(persistenceServiceException)))
+    mockPersistenceServices.addCards(any, any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
 
@@ -802,7 +802,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.addCards(collectionId, seqAddCardRequest).run.run
         result must beLike {
           case Answer(resultCards) =>
-            resultCards shouldEqual seqAddCardResponse
+            resultCards map (_.term) shouldEqual (seqAddCardRequest map (_.term))
         }
       }
 
@@ -816,12 +816,13 @@ class CollectionProcessImplSpec
         }
       }
 
-    "returns an empty answer if the service throws a exception adding the new card" in
+    "returns an CardException if the service throws a exception adding the new cards" in
       new CollectionProcessScope with ErrorAddCardPersistenceServicesResponses {
         val result = collectionProcess.addCards(collectionId, seqAddCardRequest).run.run
         result must beLike {
-          case Answer(resultCollection) =>
-            resultCollection shouldEqual Seq()
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CardException]
+          }
         }
       }
   }
