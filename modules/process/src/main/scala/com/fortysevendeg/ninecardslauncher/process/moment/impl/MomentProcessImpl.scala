@@ -16,7 +16,6 @@ import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
-import rapture.core.Answer
 
 import scala.annotation.tailrec
 import scalaz.concurrent.Task
@@ -35,15 +34,18 @@ class MomentProcessImpl(
   override def createMoments(implicit context: ContextSupport) =
     (for {
       collections <- persistenceServices.fetchCollections //TODO - Issue #394 - Change this service's call for a new one to be created that returns the number of created collections
-      position = collections.length
+      length = collections.length
       servicesApp <- persistenceServices.fetchApps(OrderByName, ascending = true)
-      moments <- createMoments(servicesApp map toApp, position)
-    } yield moments).resolve[MomentException]
+      collections = moments.zipWithIndex map {
+        case (moment, index) => generateAddCollection(servicesApp map toApp, moment, length + index)
+      }
+      moments <- persistenceServices.addCollections(collections)
+    } yield moments map toCollection).resolve[MomentException]
 
-  override def saveMoments(items: Seq[Moment])(implicit context: ContextSupport) = Service {
-      val tasks = items map (item => persistenceServices.addMoment(toAddMomentRequest(item)).run)
-      Task.gatherUnordered(tasks) map (c => CatchAll[MomentException](c.collect { case Answer(m) => toMoment(m)}))
-    }
+  override def saveMoments(items: Seq[Moment])(implicit context: ContextSupport) =
+    (for {
+      moments <- persistenceServices.addMoments(items map toAddMomentRequest)
+    } yield moments map toMoment).resolve[MomentException]
 
   override def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport) = Service {
     Task {
@@ -131,16 +133,6 @@ class MomentProcessImpl(
         case HomeNightMoment => nightApps.contains(app.packageName)
       }
     }.take(numSpaces)
-
-  private[this] def createMoments(apps: Seq[App], position: Int) = Service {
-    val tasks = moments.indices map (item => createMoment(filterAppsByMoment(apps, moments(item)),  moments(item), position + item).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[MomentException](c.collect { case Answer(r) => r}))
-  }
-
-  private[this] def createMoment(apps: Seq[App], moment: NineCardsMoment, position: Int) =
-    (for {
-      collection <- persistenceServices.addCollection(generateAddCollection(apps, moment, position))
-    } yield toCollection(collection)).resolve[MomentException]
 
   private[this] def generateAddCollection(items: Seq[App], moment: NineCardsMoment, position: Int): AddCollectionRequest = {
     val themeIndex = if (position >= numSpaces) position % numSpaces else position

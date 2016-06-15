@@ -21,7 +21,7 @@ trait MomentProcess {
     * @return the List[com.fortysevendeg.ninecardslauncher.process.commons.models.Collection]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def createMoments(implicit context: ContextSupport): ServiceDef2[List[Collection], MomentException]
+  def createMoments(implicit context: ContextSupport): ServiceDef2[Seq[Collection], MomentException]
 
   /**
     * Creates Moments from some already formed and given Moments
@@ -30,7 +30,7 @@ trait MomentProcess {
     * @return the List[com.fortysevendeg.ninecardslauncherprocess.moment.models.Moment]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def saveMoments(items: Seq[Moment])(implicit context: ContextSupport): ServiceDef2[List[Moment], MomentException]
+  def saveMoments(items: Seq[Moment])(implicit context: ContextSupport): ServiceDef2[Seq[Moment], MomentException]
 
   /**
     * Generate Private Moments Collections with the apps installed in the device

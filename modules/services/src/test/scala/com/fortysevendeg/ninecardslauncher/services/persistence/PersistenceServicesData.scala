@@ -1,28 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{
-  AppData => RepositoryAppData,
-  App => RepositoryApp,
-  Collection => RepositoryCollection,
-  DataCounter => RepositoryDataCounter,
-  CollectionData => RepositoryCollectionData,
-  Card => RepositoryCard,
-  CardData => RepositoryCardData,
-  DockApp => RepositoryDockApp,
-  DockAppData => RepositoryDockAppData,
-  User => RepositoryUser,
-  UserData => RepositoryUserData,
-  Moment => RepositoryMoment,
-  MomentData => RepositoryMomentData
-}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, Moment, _}
+import com.fortysevendeg.ninecardslauncher.repository.model.{CardsWithCollectionId, App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
+import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
+import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.services.persistence.reads.MomentImplicits
 import play.api.libs.json.Json
 
 import scala.util.Random
 
-trait PersistenceServicesData {
+trait PersistenceServicesData extends Conversions {
 
   import MomentImplicits._
 
@@ -709,5 +696,9 @@ trait PersistenceServicesData {
       momentType = momentType)
 
   val dataCounters = 1 to 10 map createDataCounter
+
+  val addCollectionRequest = createAddCollectionRequest()
+
+  val seqAddCardWithCollectionIdRequest = Seq(CardsWithCollectionId(collection.id, Seq.empty))
 
 }

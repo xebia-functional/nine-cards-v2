@@ -9,7 +9,6 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection, Moment}
-import rapture.core.scalazInterop.ResultT
 import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
@@ -19,14 +18,32 @@ trait CollectionPersistenceServicesImpl {
   self: Conversions
     with PersistenceDependencies
     with ImplicitsPersistenceServiceExceptions
+    with MomentPersistenceServicesImpl
     with CardPersistenceServicesImpl =>
 
   def addCollection(request: AddCollectionRequest) =
     (for {
       collection <- collectionRepository.addCollection(toRepositoryCollectionData(request))
-      addedCards <- addCards(request.cards map (_.copy(collectionId = Option(collection.id))))
-      _ <- addMoment(request.moment map (_.copy(collectionId = Option(collection.id))))
+      addedCards <- addCards(Seq(AddCardWithCollectionIdRequest(collection.id, request.cards)))
+      _ <- addMoments(Seq(request.moment map (_.copy(collectionId = Option(collection.id)))).flatten)
     } yield toCollection(collection).copy(cards = addedCards)).resolve[PersistenceServiceException]
+
+  def addCollections(requests: Seq[AddCollectionRequest]) = {
+    val collectionsData = requests map toRepositoryCollectionData
+    val cardsData = requests map (_.cards)
+    val momentsData = requests map (_.moment)
+    (for {
+      collections <- collectionRepository.addCollections(collectionsData)
+      cards = collections.zip(cardsData) map {
+        case (collection, cardsRequest) => AddCardWithCollectionIdRequest(collection.id, cardsRequest)
+      }
+      addedCards <- addCards(cards)
+      moments = collections.zip(momentsData) flatMap {
+        case (collection, momentRequest) => momentRequest map (_.copy(collectionId = Option(collection.id)))
+      }
+      _ <- addMoments(moments)
+    } yield collections map toCollection).resolve[PersistenceServiceException]
+  }
 
   def deleteAllCollections() =
     (for {
@@ -78,16 +95,16 @@ trait CollectionPersistenceServicesImpl {
       updated <- collectionRepository.updateCollections(request.updateCollectionsRequests map toRepositoryCollection)
     } yield updated).resolve[PersistenceServiceException]
 
-  private[this] def addCards(cards: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException] = {
-    val addedCards = cards map {
-      addCard(_).run
-    }
-
-    Service(
-      Task.gatherUnordered(addedCards) map (
-        list =>
-          CatchAll[PersistenceServiceException](list.collect { case Answer(card) => card })))
-  }
+//  private[this] def addCards(cards: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException] = {
+//    val addedCards = cards map {
+//      addCard(_).run
+//    }
+//
+//    Service(
+//      Task.gatherUnordered(addedCards) map (
+//        list =>
+//          CatchAll[PersistenceServiceException](list.collect { case Answer(card) => card })))
+//  }
 
   private[this] def deleteCards(cards: Seq[Card]): ServiceDef2[Int, PersistenceServiceException] = {
     val deletedCards = cards map {
@@ -121,13 +138,6 @@ trait CollectionPersistenceServicesImpl {
       Task.gatherUnordered(result) map (
         list =>
           CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => collection })))
-  }
-
-  private[this] def addMoment(maybeMoment: Option[AddMomentRequest]): ServiceDef2[Unit, RepositoryException] = {
-    maybeMoment match {
-      case Some(moment) => momentRepository.addMoment(toRepositoryMomentData(moment)) map (_ => ())
-      case None => Service(Task(Result.answer[Unit, RepositoryException]((): Unit)))
-    }
   }
 
   private[this] def deleteMoment(maybeMoment: Option[Moment]): ServiceDef2[Unit, RepositoryException] = {

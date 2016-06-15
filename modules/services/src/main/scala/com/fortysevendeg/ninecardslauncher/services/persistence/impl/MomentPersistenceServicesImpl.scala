@@ -13,6 +13,11 @@ trait MomentPersistenceServicesImpl {
       moment <- momentRepository.addMoment(toRepositoryMomentData(request))
     } yield toMoment(moment)).resolve[PersistenceServiceException]
 
+  def addMoments(request: Seq[AddMomentRequest]) =
+    (for {
+      moment <- momentRepository.addMoments(request map toRepositoryMomentData)
+    } yield moment map toMoment).resolve[PersistenceServiceException]
+
   def deleteAllMoments() =
     (for {
       deleted <- momentRepository.deleteMoments()

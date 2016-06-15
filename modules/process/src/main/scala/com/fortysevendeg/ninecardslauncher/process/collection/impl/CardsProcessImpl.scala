@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, C
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, DeleteCardRequest => ServicesDeleteCardRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCardRequest => ServicesDeleteCardRequest}
 
 trait CardsProcessImpl {
 
@@ -23,7 +23,7 @@ trait CardsProcessImpl {
       cards = addCardListRequest.zipWithIndex map {
         case (item, index) => toAddCardRequest(collectionId, item, index + size)
       }
-      addedCardList <- persistenceServices.addCards(collectionId, cards)
+      addedCardList <- persistenceServices.addCards(Seq(AddCardWithCollectionIdRequest(collectionId, cards)))
     } yield toCardSeq(addedCardList)).resolve[CardException]
 
   def deleteCard(collectionId: Int, cardId: Int) =

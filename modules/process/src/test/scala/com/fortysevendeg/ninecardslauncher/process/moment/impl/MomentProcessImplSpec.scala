@@ -6,6 +6,7 @@ import android.content.res.Resources
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcessConfig}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByName, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.wifi.{WifiServices, WifiServicesException}
@@ -55,7 +56,7 @@ trait MomentProcessImplSpecification
 
     mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
     mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns Service(Task(Result.answer(seqServicesApps)))
-    mockPersistenceServices.addCollection(any) returns Service(Task(Result.answer(servicesCollection)))
+    mockPersistenceServices.addCollections(any) returns Service(Task(Result.answer(moments map (_ => servicesCollection))))
     mockPersistenceServices.addMoment(any) returns Service(Task(Result.answer(servicesMoment)))
 
   }
@@ -83,7 +84,7 @@ trait MomentProcessImplSpecification
 
     mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollection)))
     mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns Service(Task(Result.answer(seqServicesApps)))
-    mockPersistenceServices.addCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+    mockPersistenceServices.addCollections(any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
 
@@ -91,7 +92,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.addMoment(any) returns Service(Task(Result.answer(servicesMoment)))
+    mockPersistenceServices.addMoments(any) returns Service(Task(Result.answer(moments map (_ => servicesMoment))))
 
   }
 
@@ -99,7 +100,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.addMoment(any) returns Service(Task(Errata(persistenceServiceException)))
+    mockPersistenceServices.addMoments(any) returns Service(Task(Errata(persistenceServiceException)))
 
   }
 
@@ -168,7 +169,7 @@ class MomentProcessImplSpec
         val result = momentProcess.createMoments(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqMoment) =>
-            resultSeqMoment.size shouldEqual 3
+            resultSeqMoment.size shouldEqual moments.size
             resultSeqMoment map (_.name) shouldEqual seqCollection.map(_.name)
         }
       }
@@ -193,12 +194,13 @@ class MomentProcessImplSpec
         }
       }
 
-    "returns an empty list if the service throws a exception adding the collection" in
+    "returns MomentException if the service throws a exception adding the collection" in
       new MomentProcessScope with ErrorCreateMomentAddCollectionPersistenceServicesResponses {
         val result = momentProcess.createMoments(contextSupport).run.run
         result must beLike {
-          case Answer(resultSeqMoment) =>
-            resultSeqMoment shouldEqual Nil
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[MomentException]
+          }
         }
       }
   }
@@ -214,12 +216,13 @@ class MomentProcessImplSpec
         }
       }
 
-    "returns empty moments when persistence services fails" in
+    "returns MomentException when persistence services fails" in
       new MomentProcessScope with ErrorSaveMomentPersistenceServicesResponses {
         val result = momentProcess.saveMoments(seqMoments)(contextSupport).run.run
         result must beLike {
-          case Answer(resultSeqMoment) =>
-            resultSeqMoment.size shouldEqual 0
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[MomentException]
+          }
         }
       }
 
@@ -232,7 +235,7 @@ class MomentProcessImplSpec
         val result = momentProcess.generatePrivateMoments(seqApps, position)(contextSupport).run.run
         result must beLike {
           case Answer(resultSeqMoment) =>
-            resultSeqMoment.size shouldEqual 3
+            resultSeqMoment.size shouldEqual moments.size
             resultSeqMoment map (_.collectionType) shouldEqual seqMomentCollections.map(_.collectionType)
         }
       }

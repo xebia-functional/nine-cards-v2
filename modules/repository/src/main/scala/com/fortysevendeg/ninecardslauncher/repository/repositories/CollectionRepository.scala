@@ -53,6 +53,37 @@ class CollectionRepository(
       }
     }
 
+  def addCollections(datas: Seq[CollectionData]): ServiceDef2[Seq[Collection], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+
+          val values = datas map { data =>
+            Map[String, Any](
+              position -> data.position,
+              name -> data.name,
+              collectionType -> data.collectionType,
+              icon -> data.icon,
+              themedColorIndex -> data.themedColorIndex,
+              appsCategory -> flatOrNull(data.appsCategory),
+              originalSharedCollectionId -> flatOrNull(data.originalSharedCollectionId),
+              sharedCollectionId -> flatOrNull(data.sharedCollectionId),
+              sharedCollectionSubscribed -> (data.sharedCollectionSubscribed orNull))
+          }
+
+          val ids = contentResolverWrapper.inserts(
+            authority = NineCardsUri.authorityPart,
+            uri = collectionUri,
+            allValues = values,
+            notificationUri = Some(collectionNotificationUri))
+
+          datas zip ids map {
+            case (data, id) => Collection(id = id, data = data)
+          }
+        }
+      }
+    }
+
   def deleteCollections(where: String = ""): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {

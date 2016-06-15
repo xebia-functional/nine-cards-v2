@@ -1,10 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{CardsWithCollectionId, Card => RepositoryCard, CardData => RepositoryCardData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
 
 trait CardConversions {
+
+  def toCardsWithCollectionId(request: AddCardWithCollectionIdRequest): CardsWithCollectionId =
+    CardsWithCollectionId(
+      collectionId = request.collectionId,
+      data = request.cards map toRepositoryCardData)
 
   def toCard(card: RepositoryCard): Card = {
     Card(

@@ -75,6 +75,8 @@ trait PersistenceServicesSpecification
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.answer(repoCard)))
 
+    mockCardRepository.addCards(any) returns Service(Task(Result.answer(Seq(repoCard))))
+
     mockCardRepository.deleteCards() returns Service(Task(Result.answer(items)))
 
     mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(items)))
@@ -156,6 +158,8 @@ trait PersistenceServicesSpecification
     mockMomentRepository.addMoment(createRepoMomentData(wifiString = "")) returns Service(Task(Result.answer(createSeqRepoMoment(data = createRepoMomentData(wifiString = ""))(0))))
 
     mockMomentRepository.addMoment(createRepoMomentData(timeslot = "[]")) returns Service(Task(Result.answer(createSeqRepoMoment(data = createRepoMomentData(timeslot = "[]"))(0))))
+
+    mockMomentRepository.addMoments(any) returns Service(Task(Result.answer(Seq(repoMoment))))
 
     mockMomentRepository.deleteMoments() returns Service(Task(Result.answer(items)))
 
@@ -983,7 +987,7 @@ class PersistenceServicesSpec
   "addCollection" should {
 
     "return a Collection value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addCollection(createAddCollectionRequest()).run.run
+      val result = persistenceServices.addCollection(addCollectionRequest).run.run
 
       result must beLike {
         case Answer(collection) =>
@@ -993,7 +997,7 @@ class PersistenceServicesSpec
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addCollection(createAddCollectionRequest()).run.run
+      val result = persistenceServices.addCollection(addCollectionRequest).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {

@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData, CardsWithCollectionId}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, NineCardsUri}
@@ -51,20 +51,22 @@ class CardRepository(
       }
     }
 
-  def addCards(collectionId: Int, datas: Seq[CardData]): ServiceDef2[Seq[Card], RepositoryException] =
+  def addCards(datas: Seq[CardsWithCollectionId]): ServiceDef2[Seq[Card], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = datas map { data =>
-            Map[String, Any](
-              position -> data.position,
-              CardEntity.collectionId -> collectionId,
-              term -> data.term,
-              packageName -> flatOrNull(data.packageName),
-              cardType -> data.cardType,
-              intent -> data.intent,
-              imagePath -> data.imagePath,
-              notification -> flatOrNull(data.notification))
+          val values = datas flatMap { dataWithCollectionId =>
+            dataWithCollectionId.data map { data =>
+              Map[String, Any](
+                position -> data.position,
+                CardEntity.collectionId -> dataWithCollectionId.collectionId,
+                term -> data.term,
+                packageName -> flatOrNull(data.packageName),
+                cardType -> data.cardType,
+                intent -> data.intent,
+                imagePath -> data.imagePath,
+                notification -> flatOrNull(data.notification))
+            }
           }
 
           val ids = contentResolverWrapper.inserts(
@@ -72,7 +74,7 @@ class CardRepository(
             uri = cardUri,
             allValues = values)
 
-          datas zip ids map {
+          (datas flatMap(_.data)) zip ids map {
             case (data, id) => Card(id = id, data = data)
           }
         }

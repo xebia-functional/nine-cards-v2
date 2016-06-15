@@ -136,7 +136,7 @@ trait PersistenceServices {
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
     */
-  def addCards(collectionId: Int, request: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException]
+  def addCards(request: Seq[AddCardWithCollectionIdRequest]): ServiceDef2[Seq[Card], PersistenceServiceException]
 
   /**
     * Deletes all cards from the repository by the where clause
@@ -207,6 +207,14 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem creating the collection
     */
   def addCollection(request: AddCollectionRequest): ServiceDef2[Collection, PersistenceServiceException]
+
+  /**
+    * Adds collections to the repository
+    * @param requests includes the necessary data to create new collections in the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection]
+    * @throws PersistenceServiceException if exist some problem creating the collection
+    */
+  def addCollections(requests: Seq[AddCollectionRequest]): ServiceDef2[Seq[Collection], PersistenceServiceException]
 
   /**
     * Deletes all collections from the repository by the where clause
@@ -374,6 +382,14 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem creating the moment
     */
   def addMoment(request: AddMomentRequest): ServiceDef2[Moment, PersistenceServiceException]
+
+  /**
+    * Adds moments to the repository
+    * @param request includes the necessary data to create new moments in the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
+    * @throws PersistenceServiceException if exist some problem creating the moment
+    */
+  def addMoments(request: Seq[AddMomentRequest]): ServiceDef2[Seq[Moment], PersistenceServiceException]
 
   /**
     * Deletes all moments from the repository by the where clause

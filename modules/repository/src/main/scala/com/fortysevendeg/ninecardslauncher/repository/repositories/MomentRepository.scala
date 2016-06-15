@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toMoment
 import com.fortysevendeg.ninecardslauncher.repository.model.{Moment, MomentData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity._
+import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
@@ -42,6 +43,33 @@ class MomentRepository(
             notificationUri = Some(momentNotificationUri))
 
           Moment(id = id, data = data)
+        }
+      }
+    }
+
+  def addMoments(datas: Seq[MomentData]): ServiceDef2[Seq[Moment], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+
+          val values = datas map { data =>
+            Map[String, Any](
+              collectionId -> (data.collectionId orNull),
+              timeslot -> data.timeslot,
+              wifi -> data.wifi,
+              headphone -> data.headphone,
+              momentType -> (data.momentType orNull))
+          }
+
+          val ids = contentResolverWrapper.inserts(
+            authority = NineCardsUri.authorityPart,
+            uri = momentUri,
+            allValues = values,
+            notificationUri = Some(momentNotificationUri))
+
+          datas zip ids map {
+            case (data, id) => Moment(id = id, data = data)
+          }
         }
       }
     }
