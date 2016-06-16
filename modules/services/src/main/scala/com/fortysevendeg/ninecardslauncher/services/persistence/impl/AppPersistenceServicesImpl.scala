@@ -25,6 +25,11 @@ trait AppPersistenceServicesImpl {
       app <- appRepository.fetchAppByPackage(packageName)
     } yield app map toApp).resolve[PersistenceServiceException]
 
+  def fetchAppByPackages(packageNames: Seq[String]) =
+    (for {
+      app <- appRepository.fetchAppByPackages(packageNames)
+    } yield app map toApp).resolve[PersistenceServiceException]
+
   def addApp(request: AddAppRequest) =
     (for {
       app <- appRepository.addApp(toRepositoryAppData(request))

@@ -195,6 +195,18 @@ class AppRepository(
       }
     }
 
+  def fetchAppByPackages(packageName: Seq[String]): ServiceDef2[Seq[App], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.fetchAll(
+            uri = appUri,
+            projection = allFields,
+            where = s"${AppEntity.packageName} IN (${packageName.mkString("\"", ",", "\"")})")(getListFromCursor(appEntityFromCursor)) map toApp
+        }
+      }
+    }
+
   def fetchAppsByCategory(category: String, orderBy: String = ""): ServiceDef2[Seq[App], RepositoryException] =
     Service {
       Task {

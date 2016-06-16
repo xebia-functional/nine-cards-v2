@@ -10,12 +10,20 @@ trait DockAppPersistenceServicesImpl {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 
-  def createOrUpdateDockApp(request: CreateOrUpdateDockAppRequest) =
+  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]) =
     (for {
-      dockApps <- dockAppRepository.fetchDockApps(where = s"${DockAppEntity.position} = ?", whereParams = Seq(request.position.toString))
-      id <- dockApps.headOption map { app =>
-        updateDockApp(app.id, request)
-      } getOrElse addDockApp(request)
+      dockApps <- dockAppRepository.fetchDockApps(where = s"${DockAppEntity.position} IN (${requests.map(_.position).mkString("\"", ",", "\"")})")
+      items = requests map { request =>
+        dockApps.find(_.data.position == request.position) map { dockApp =>
+          (request, Some(dockApp.id))
+        } getOrElse {
+          (request, None)
+        }
+      }
+      toAdd = items.filter(_._2.isEmpty)
+      toUpdate = items.filter(_._2.isDefined)
+      _ <- dockAppRepository.addDockApps(toAdd.map(req => toRepositoryDockAppData(req._1)))
+      _ <- dockAppRepository.updateDockApps(toUpdate.flatMap(req => req._2 map (id => toRepositoryDockApp(id, req._1))))
     } yield ()).resolve[PersistenceServiceException]
 
   def deleteAllDockApps() =
@@ -42,15 +50,5 @@ trait DockAppPersistenceServicesImpl {
     (for {
       maybeDockApp <- dockAppRepository.findDockAppById(request.id)
     } yield maybeDockApp map toDockApp).resolve[PersistenceServiceException]
-
-  private[this] def addDockApp(request: CreateOrUpdateDockAppRequest) =
-    (for {
-      _ <- dockAppRepository.addDockApp(toRepositoryDockAppData(request))
-    } yield ()).resolve[PersistenceServiceException]
-
-  private[this] def updateDockApp(id: Int, request: CreateOrUpdateDockAppRequest) =
-    (for {
-      _ <- dockAppRepository.updateDockApp(toRepositoryDockApp(id, request))
-    } yield ()).resolve[PersistenceServiceException]
   
 }

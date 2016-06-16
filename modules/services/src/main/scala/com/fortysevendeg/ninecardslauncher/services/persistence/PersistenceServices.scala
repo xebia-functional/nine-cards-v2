@@ -84,6 +84,14 @@ trait PersistenceServices {
   def findAppByPackage(packageName: String): ServiceDef2[Option[App], PersistenceServiceException]
 
   /**
+    * Obtains apps from the repository by the package names
+    * @param packageNames the package names of the apps to get
+    * @return an Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
+    * @throws PersistenceServiceException if exist some problem obtaining the app
+    */
+  def fetchAppByPackages(packageNames: Seq[String]): ServiceDef2[Seq[App], PersistenceServiceException]
+
+  /**
    * Adds an app to the repository
    * @param request includes the necessary data to create a new app in the repository
    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.App
@@ -333,10 +341,10 @@ trait PersistenceServices {
 
   /**
     * Creates or updates dock app to the repository
-    * @param request includes the necessary data to create a new dock app in the repository
+    * @param requests includes the necessary data to create a new dock app in the repository
     * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
-  def createOrUpdateDockApp(request: CreateOrUpdateDockAppRequest): ServiceDef2[Unit, PersistenceServiceException]
+  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): ServiceDef2[Unit, PersistenceServiceException]
 
   /**
     * Deletes all dock apps from the repository by the where clause

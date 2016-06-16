@@ -132,13 +132,17 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(appsPersistence(1)))),
       Service(Task(Result.answer(appsPersistence(2)))))
 
-    mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns(Service(Task(Result.answer(appsPersistence.head))))
+    mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns
+      Service(Task(Result.answer(appsPersistence.head)))
 
     mockPersistenceServices.deleteAppByPackage(any) returns
       Service(Task(Result.answer(items)))
 
     mockPersistenceServices.findAppByPackage(any) returns
       Service(Task(Result.answer(appsPersistence.headOption)))
+
+    mockPersistenceServices.fetchAppByPackages(any) returns
+      Service(Task(Result.answer(appsPersistence)))
 
     mockPersistenceServices.updateApp(any) returns
       Service(Task(Result.answer(items)))

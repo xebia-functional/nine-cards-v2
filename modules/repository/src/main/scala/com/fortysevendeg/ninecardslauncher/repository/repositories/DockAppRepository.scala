@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toDockApp
 import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp, DockAppData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{DockAppEntity, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
@@ -42,6 +42,33 @@ class DockAppRepository(
             notificationUri = Some(dockAppNotificationUri))
 
           DockApp(id = id, data = data)
+        }
+      }
+    }
+
+  def addDockApps(datas: Seq[DockAppData]): ServiceDef2[Seq[DockApp], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+
+          val values = datas map { data =>
+            Map[String, Any](
+              name -> data.name,
+              dockType -> data.dockType,
+              intent -> data.intent,
+              imagePath -> data.imagePath,
+              position -> data.position)
+          }
+
+          val ids = contentResolverWrapper.inserts(
+            authority = NineCardsUri.authorityPart,
+            uri = dockAppUri,
+            allValues = values,
+            notificationUri = Some(dockAppNotificationUri))
+
+          datas zip ids map {
+            case (data, id) => DockApp(id = id, data = data)
+          }
         }
       }
     }
@@ -120,12 +147,7 @@ class DockAppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            name -> item.data.name,
-            dockType -> item.data.dockType,
-            intent -> item.data.intent,
-            imagePath -> item.data.imagePath,
-            position -> item.data.position)
+          val values = createMapValues(item)
 
           contentResolverWrapper.updateById(
             uri = dockAppUri,
@@ -135,4 +157,27 @@ class DockAppRepository(
         }
       }
     }
+
+  def updateDockApps(items: Seq[DockApp]): ServiceDef2[Seq[Int], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          val values = items map { item =>
+            (item.id, createMapValues(item))
+          }
+
+          contentResolverWrapper.updateByIds(
+            authority = NineCardsUri.authorityPart,
+            uri = dockAppUri,
+            idAndValues = values)
+        }
+      }
+    }
+
+  private[this] def createMapValues(item: DockApp) = Map[String, Any](
+    name -> item.data.name,
+    dockType -> item.data.dockType,
+    intent -> item.data.intent,
+    imagePath -> item.data.imagePath,
+    position -> item.data.position)
 }

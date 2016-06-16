@@ -23,14 +23,14 @@ trait DockAppsDeviceProcessImpl {
   def generateDockApps(size: Int)(implicit context: ContextSupport) =
     (for {
       allDefaultApps <- appsServices.getDefaultApps
-      defaultApps <- getAppsImages(allDefaultApps map (_.packageName))
-      images = defaultApps.flatten map (app => (app.packageName, app.imagePath))
+      defaultApps <- persistenceServices.fetchAppByPackages(allDefaultApps map (_.packageName))
+      images = defaultApps map (app => (app.packageName, app.imagePath))
       _ <- saveDockApps(matchAppsWithImages(allDefaultApps, images).take(size))
     } yield ()).resolve[DockAppException]
 
   def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int) =
     (for {
-      _ <- persistenceServices.createOrUpdateDockApp(toCreateOrUpdateDockAppRequest(name, dockType, intent, imagePath, position))
+      _ <- persistenceServices.createOrUpdateDockApp(Seq(toCreateOrUpdateDockAppRequest(name, dockType, intent, imagePath, position)))
     } yield ()).resolve[DockAppException]
 
   def getDockApps =
@@ -43,12 +43,6 @@ trait DockAppsDeviceProcessImpl {
       _ <- persistenceServices.deleteAllDockApps()
     } yield ()).resolve[DockAppException]
 
-  private[this] def getAppsImages(packageNames: Seq[String]) = Service {
-    val tasks = packageNames map (packageName =>
-      persistenceServices.findAppByPackage(packageName).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
-  }
-
   private[this] def matchAppsWithImages(apps: Seq[Application], images: Seq[(String, String)])(implicit context: ContextSupport) : Seq[DockApp] = {
     apps.zipWithIndex.map {
       case (app, index) =>
@@ -59,7 +53,7 @@ trait DockAppsDeviceProcessImpl {
 
   private[this] def saveDockApps(apps: Seq[DockApp]) = Service {
     val tasks = apps map (app =>
-      persistenceServices.createOrUpdateDockApp(toCreateOrUpdateDockAppRequest(app.name, AppDockType, app.intent, app.imagePath, app.position)).run)
+      persistenceServices.createOrUpdateDockApp(Seq(toCreateOrUpdateDockAppRequest(app.name, AppDockType, app.intent, app.imagePath, app.position))).run)
     Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
   }
 
