@@ -36,16 +36,7 @@ class AppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            name -> data.name,
-            packageName -> data.packageName,
-            className -> data.className,
-            category -> data.category,
-            imagePath -> data.imagePath,
-            dateInstalled -> data.dateInstalled,
-            dateUpdate -> data.dateUpdate,
-            version -> data.version,
-            installedFromGooglePlay -> data.installedFromGooglePlay)
+          val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
             uri = appUri,
@@ -63,18 +54,7 @@ class AppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = datas map { data =>
-            Map[String, Any](
-              name -> data.name,
-              packageName -> data.packageName,
-              className -> data.className,
-              category -> data.category,
-              imagePath -> data.imagePath,
-              dateInstalled -> data.dateInstalled,
-              dateUpdate -> data.dateUpdate,
-              version -> data.version,
-              installedFromGooglePlay -> data.installedFromGooglePlay)
-          }
+          val values = datas map createMapValues
 
           contentResolverWrapper.inserts(
             authority = NineCardsUri.authorityPart,
@@ -241,16 +221,7 @@ class AppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            name -> app.data.name,
-            packageName -> app.data.packageName,
-            className -> app.data.className,
-            category -> app.data.category,
-            imagePath -> app.data.imagePath,
-            dateInstalled -> app.data.dateInstalled,
-            dateUpdate -> app.data.dateUpdate,
-            version -> app.data.version,
-            installedFromGooglePlay -> app.data.installedFromGooglePlay)
+          val values = createMapValues(app.data)
 
           contentResolverWrapper.updateById(
             uri = appUri,
@@ -342,6 +313,18 @@ class AppRepository(
     intervals find { interval =>
       installationDate.isAfter(interval.date)
     }
+
+  private[this] def createMapValues(data: AppData) =
+    Map[String, Any](
+      name -> data.name,
+      packageName -> data.packageName,
+      className -> data.className,
+      category -> data.category,
+      imagePath -> data.imagePath,
+      dateInstalled -> data.dateInstalled,
+      dateUpdate -> data.dateUpdate,
+      version -> data.version,
+      installedFromGooglePlay -> data.installedFromGooglePlay)
 
   case class InstallationDateInterval(term: String, date: DateTime)
 
