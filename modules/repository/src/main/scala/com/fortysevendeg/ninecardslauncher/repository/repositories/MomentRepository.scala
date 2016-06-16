@@ -13,6 +13,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import com.fortysevendeg.ninecardslauncher.repository.repositories.RepositoryUtils._
 
 import scala.language.postfixOps
 import scalaz.concurrent.Task
@@ -148,12 +149,7 @@ class MomentRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            collectionId -> (item.data.collectionId orNull),
-            timeslot -> item.data.timeslot,
-            wifi -> item.data.wifi,
-            headphone -> item.data.headphone,
-            momentType -> (item.data.momentType orNull))
+          val values = createMapValues(item.data)
 
           contentResolverWrapper.updateById(
             uri = momentUri,
@@ -163,4 +159,12 @@ class MomentRepository(
         }
       }
     }
+
+  private[this] def createMapValues(data: MomentData) =
+    Map[String, Any](
+      collectionId -> (data.collectionId orNull),
+      timeslot -> data.timeslot,
+      wifi -> data.wifi,
+      headphone -> data.headphone,
+      momentType -> flatOrNull(data.momentType))
 }

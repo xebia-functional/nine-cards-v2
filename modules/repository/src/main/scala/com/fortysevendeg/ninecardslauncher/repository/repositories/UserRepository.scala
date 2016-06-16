@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
+import com.fortysevendeg.ninecardslauncher.repository.repositories.RepositoryUtils._
 
 import scala.language.postfixOps
 import scalaz.concurrent.Task
@@ -29,16 +30,7 @@ class UserRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            userId -> (data.userId orNull),
-            email -> (data.email orNull),
-            sessionToken -> (data.sessionToken orNull),
-            installationId -> (data.installationId orNull),
-            deviceToken -> (data.deviceToken orNull),
-            androidToken -> (data.androidToken orNull),
-            name -> (data.name orNull),
-            avatar -> (data.avatar orNull),
-            cover -> (data.cover orNull))
+          val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
             uri = userUri,
@@ -118,16 +110,7 @@ class UserRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            userId -> (item.data.userId orNull),
-            email -> (item.data.email orNull),
-            sessionToken -> (item.data.sessionToken orNull),
-            installationId -> (item.data.installationId orNull),
-            deviceToken -> (item.data.deviceToken orNull),
-            androidToken -> (item.data.androidToken orNull),
-            name -> (item.data.name orNull),
-            avatar -> (item.data.avatar orNull),
-            cover -> (item.data.cover orNull))
+          val values = createMapValues(item.data)
 
           contentResolverWrapper.updateById(
             uri = userUri,
@@ -137,4 +120,16 @@ class UserRepository(
         }
       }
     }
+
+  private[this] def createMapValues(data: UserData) =
+    Map[String, Any](
+      userId -> flatOrNull(data.userId),
+      email -> flatOrNull(data.email),
+      sessionToken -> flatOrNull(data.sessionToken),
+      installationId -> flatOrNull(data.installationId),
+      deviceToken -> flatOrNull(data.deviceToken),
+      androidToken -> flatOrNull(data.androidToken),
+      name -> flatOrNull(data.name),
+      avatar -> flatOrNull(data.avatar),
+      cover -> flatOrNull(data.cover))
 }

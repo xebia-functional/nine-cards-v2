@@ -31,15 +31,7 @@ class CardRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            position -> data.position,
-            CardEntity.collectionId -> collectionId,
-            term -> data.term,
-            packageName -> flatOrNull(data.packageName),
-            cardType -> data.cardType,
-            intent -> data.intent,
-            imagePath -> data.imagePath,
-            notification -> flatOrNull(data.notification))
+          val values = createMapValues(data) + (CardEntity.collectionId -> collectionId)
 
           val id = contentResolverWrapper.insert(
             uri = cardUri,
@@ -57,15 +49,8 @@ class CardRepository(
         CatchAll[RepositoryException] {
           val values = datas flatMap { dataWithCollectionId =>
             dataWithCollectionId.data map { data =>
-              Map[String, Any](
-                position -> data.position,
-                CardEntity.collectionId -> dataWithCollectionId.collectionId,
-                term -> data.term,
-                packageName -> flatOrNull(data.packageName),
-                cardType -> data.cardType,
-                intent -> data.intent,
-                imagePath -> data.imagePath,
-                notification -> flatOrNull(data.notification))
+              createMapValues(data) +
+                (CardEntity.collectionId -> dataWithCollectionId.collectionId)
             }
           }
 
@@ -163,7 +148,7 @@ class CardRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = createMapValues(card)
+          val values = createMapValues(card.data)
 
           contentResolverWrapper.updateById(
             uri = cardUri,
@@ -179,7 +164,7 @@ class CardRepository(
       Task {
         CatchAll[RepositoryException] {
           val values = cards map { card =>
-            (card.id, createMapValues(card))
+            (card.id, createMapValues(card.data))
           }
 
           contentResolverWrapper.updateByIds(
@@ -191,13 +176,13 @@ class CardRepository(
       }
     }
 
-  private[this] def createMapValues(card: Card) =
+  private[this] def createMapValues(data: CardData) =
     Map[String, Any](
-      position -> card.data.position,
-      term -> card.data.term,
-      packageName -> (card.data.packageName orNull),
-      cardType -> card.data.cardType,
-      intent -> card.data.intent,
-      imagePath -> card.data.imagePath,
-      notification -> (card.data.notification orNull))
+      position -> data.position,
+      term -> data.term,
+      packageName -> flatOrNull(data.packageName),
+      cardType -> data.cardType,
+      intent -> data.intent,
+      imagePath -> data.imagePath,
+      notification -> flatOrNull(data.notification))
 }

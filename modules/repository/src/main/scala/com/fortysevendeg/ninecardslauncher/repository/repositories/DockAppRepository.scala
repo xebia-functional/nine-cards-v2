@@ -29,12 +29,7 @@ class DockAppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            name -> data.name,
-            dockType -> data.dockType,
-            intent -> data.intent,
-            imagePath -> data.imagePath,
-            position -> data.position)
+          val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
             uri = dockAppUri,
@@ -51,14 +46,7 @@ class DockAppRepository(
       Task {
         CatchAll[RepositoryException] {
 
-          val values = datas map { data =>
-            Map[String, Any](
-              name -> data.name,
-              dockType -> data.dockType,
-              intent -> data.intent,
-              imagePath -> data.imagePath,
-              position -> data.position)
-          }
+          val values = datas map createMapValues
 
           val ids = contentResolverWrapper.inserts(
             authority = NineCardsUri.authorityPart,
@@ -147,7 +135,7 @@ class DockAppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = createMapValues(item)
+          val values = createMapValues(item.data)
 
           contentResolverWrapper.updateById(
             uri = dockAppUri,
@@ -163,7 +151,7 @@ class DockAppRepository(
       Task {
         CatchAll[RepositoryException] {
           val values = items map { item =>
-            (item.id, createMapValues(item))
+            (item.id, createMapValues(item.data))
           }
 
           contentResolverWrapper.updateByIds(
@@ -174,10 +162,10 @@ class DockAppRepository(
       }
     }
 
-  private[this] def createMapValues(item: DockApp) = Map[String, Any](
-    name -> item.data.name,
-    dockType -> item.data.dockType,
-    intent -> item.data.intent,
-    imagePath -> item.data.imagePath,
-    position -> item.data.position)
+  private[this] def createMapValues(data: DockAppData) = Map[String, Any](
+    name -> data.name,
+    dockType -> data.dockType,
+    intent -> data.intent,
+    imagePath -> data.imagePath,
+    position -> data.position)
 }
