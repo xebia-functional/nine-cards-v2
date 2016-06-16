@@ -58,7 +58,7 @@ trait AppsDeviceProcessImpl extends KnownCategoriesUtil {
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
         .resolveTo(GooglePlayPackagesResponse(200, Seq.empty))
       apps = installedApps map { app =>
-        val knownCategory = knownCategories.find(_._1 == app.packageName).map(_._2)
+        val knownCategory = findCategory(app.packageName)
         val category = knownCategory getOrElse {
           val categoryName = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
           categoryName map (NineCardCategory(_)) getOrElse Misc

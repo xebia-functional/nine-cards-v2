@@ -4,7 +4,10 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types._
 
 trait KnownCategoriesUtil {
 
-  lazy val knownCategories = Seq(
+  def findCategory(packageName: String): Option[NineCardCategory] =
+    knownCategories.find(_._1 == packageName).map(_._2)
+
+  private[this] lazy val knownCategories = Seq(
     ("com.google.android.youtube", MediaAndVideo),
     ("org.videolan.vlc", MediaAndVideo),
     ("org.videolan.vlc.betav7neon", MediaAndVideo),
