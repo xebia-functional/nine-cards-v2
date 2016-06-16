@@ -20,8 +20,7 @@ trait DockAppPersistenceServicesImpl {
           (request, None)
         }
       }
-      toAdd = items.filter(_._2.isEmpty)
-      toUpdate = items.filter(_._2.isDefined)
+      (toAdd, toUpdate) = items.partition(_._2.isEmpty)
       _ <- dockAppRepository.addDockApps(toAdd.map(req => toRepositoryDockAppData(req._1)))
       _ <- dockAppRepository.updateDockApps(toUpdate.flatMap(req => req._2 map (id => toRepositoryDockApp(id, req._1))))
     } yield ()).resolve[PersistenceServiceException]

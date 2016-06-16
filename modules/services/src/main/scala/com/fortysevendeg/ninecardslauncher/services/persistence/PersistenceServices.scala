@@ -95,7 +95,7 @@ trait PersistenceServices {
    * Adds an app to the repository
    * @param request includes the necessary data to create a new app in the repository
    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-   * @throws PersistenceServiceException if exist some problem obtaining the app
+   * @throws PersistenceServiceException if exist some problem creating the app
    */
   def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]
 
@@ -103,7 +103,7 @@ trait PersistenceServices {
     * Adds a sequence of apps to the repository
     * @param request includes the necessary data to create new apps in the repository
     * @return Unit
-    * @throws PersistenceServiceException if exist some problem obtaining the app
+    * @throws PersistenceServiceException if exist some problem creating apps
     */
   def addApps(request: Seq[AddAppRequest]): ServiceDef2[Unit, PersistenceServiceException]
 
@@ -341,7 +341,7 @@ trait PersistenceServices {
 
   /**
     * Creates or updates dock app to the repository
-    * @param requests includes the necessary data to create a new dock app in the repository
+    * @param requests includes the necessary data to create a sequence of new dock apps in the repository
     * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
   def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): ServiceDef2[Unit, PersistenceServiceException]
@@ -395,7 +395,7 @@ trait PersistenceServices {
     * Adds moments to the repository
     * @param request includes the necessary data to create new moments in the repository
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
-    * @throws PersistenceServiceException if exist some problem creating the moment
+    * @throws PersistenceServiceException if exist some problem creating the moments
     */
   def addMoments(request: Seq[AddMomentRequest]): ServiceDef2[Seq[Moment], PersistenceServiceException]
 

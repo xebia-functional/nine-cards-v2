@@ -31,12 +31,7 @@ class MomentRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            collectionId -> (data.collectionId orNull),
-            timeslot -> data.timeslot,
-            wifi -> data.wifi,
-            headphone -> data.headphone,
-            momentType -> (data.momentType orNull))
+          val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
             uri = momentUri,
@@ -53,14 +48,7 @@ class MomentRepository(
       Task {
         CatchAll[RepositoryException] {
 
-          val values = datas map { data =>
-            Map[String, Any](
-              collectionId -> (data.collectionId orNull),
-              timeslot -> data.timeslot,
-              wifi -> data.wifi,
-              headphone -> data.headphone,
-              momentType -> (data.momentType orNull))
-          }
+          val values = datas map createMapValues
 
           val ids = contentResolverWrapper.inserts(
             authority = NineCardsUri.authorityPart,

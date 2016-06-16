@@ -95,17 +95,6 @@ trait CollectionPersistenceServicesImpl {
       updated <- collectionRepository.updateCollections(request.updateCollectionsRequests map toRepositoryCollection)
     } yield updated).resolve[PersistenceServiceException]
 
-//  private[this] def addCards(cards: Seq[AddCardRequest]): ServiceDef2[Seq[Card], PersistenceServiceException] = {
-//    val addedCards = cards map {
-//      addCard(_).run
-//    }
-//
-//    Service(
-//      Task.gatherUnordered(addedCards) map (
-//        list =>
-//          CatchAll[PersistenceServiceException](list.collect { case Answer(card) => card })))
-//  }
-
   private[this] def deleteCards(cards: Seq[Card]): ServiceDef2[Int, PersistenceServiceException] = {
     val deletedCards = cards map {
       card =>
