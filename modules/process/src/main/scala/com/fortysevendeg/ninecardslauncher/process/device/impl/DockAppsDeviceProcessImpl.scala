@@ -25,7 +25,9 @@ trait DockAppsDeviceProcessImpl {
       allDefaultApps <- appsServices.getDefaultApps
       defaultApps <- persistenceServices.fetchAppByPackages(allDefaultApps map (_.packageName))
       images = defaultApps map (app => (app.packageName, app.imagePath))
-      _ <- saveDockApps(matchAppsWithImages(allDefaultApps, images).take(size))
+      apps = matchAppsWithImages(allDefaultApps, images).take(size)
+      requests = apps map (app => toCreateOrUpdateDockAppRequest(app.name, AppDockType, app.intent, app.imagePath, app.position))
+      _ <- persistenceServices.createOrUpdateDockApp(requests)
     } yield ()).resolve[DockAppException]
 
   def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int) =
@@ -49,12 +51,6 @@ trait DockAppsDeviceProcessImpl {
         val image = images find (i => i._1 == app.packageName) map (_._2)
         toDockApp(app, index, image getOrElse "")
     }
-  }
-
-  private[this] def saveDockApps(apps: Seq[DockApp]) = Service {
-    val tasks = apps map (app =>
-      persistenceServices.createOrUpdateDockApp(Seq(toCreateOrUpdateDockAppRequest(app.name, AppDockType, app.intent, app.imagePath, app.position))).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
   }
 
 }

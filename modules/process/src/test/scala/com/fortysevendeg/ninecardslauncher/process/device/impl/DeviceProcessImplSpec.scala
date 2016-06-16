@@ -1234,12 +1234,13 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns an empty answer when PersistenceService fails saving the apps" in
+    "returns DockAppException when PersistenceService fails saving the apps" in
       new DeviceProcessScope with DockAppsErrorScope {
         val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
         result must beLike {
-          case Answer(resultApps) =>
-            resultApps shouldEqual ((): Unit)
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          }
         }
       }
   }
