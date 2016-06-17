@@ -88,6 +88,10 @@
     <color name="collection_fab_button_item_title_background_default">#ffffff</color>
     <color name="collection_fab_button_item_title_background_pressed">#cccccc</color>
 
+    <color name="collection_fab_button_item_wallpaper">#009688</color>
+    <color name="collection_fab_button_item_widgets">#3F51B5</color>
+    <color name="collection_fab_button_item_settings">#F44336</color>
+
     <color name="collection_fab_button_item_create_new_collection">#009688</color>
     <color name="collection_fab_button_item_my_collections">#3F51B5</color>
     <color name="collection_fab_button_item_public_collection">#F44336</color>

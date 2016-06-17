@@ -104,7 +104,15 @@ trait CollectionsUiActions
 
   lazy val menuCollectionRoot = Option(findView(TR.menu_collection_root))
 
-  lazy val menuCollectionContent = Option(findView(TR.menu_collection_content))
+  lazy val menuWorkspaceContent = Option(findView(TR.menu_workspace_content))
+
+  lazy val menuLauncherContent = Option(findView(TR.menu_launcher_content))
+
+  lazy val menuLauncherWallpaper = Option(findView(TR.menu_launcher_wallpaper))
+
+  lazy val menuLauncherWidgets = Option(findView(TR.menu_launcher_widgets))
+
+  lazy val menuLauncherSettings = Option(findView(TR.menu_launcher_settings))
 
   def initCollectionsUi: Ui[_] =
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
@@ -128,7 +136,16 @@ trait CollectionsUiActions
           onLongClick = () => (uiVibrate() ~ (drawerLayout <~ dlOpenDrawer)).run)
         )) ~
       (searchPanel <~ searchContentStyle) ~
-      (menuCollectionContent <~ vgAddViews(getItemsForFabMenu)) ~
+      (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
+      (menuLauncherWallpaper <~ workspaceButtonWallpaperStyle <~ On.click {
+        uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
+      }) ~
+      (menuLauncherWidgets <~ workspaceButtonWidgetsStyle <~ On.click {
+        Ui(presenter.goToWidgets())
+      }) ~
+      (menuLauncherSettings <~ workspaceButtonSettingsStyle <~ On.click {
+        uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
+      }) ~
       (burgerIcon <~ burgerButtonStyle <~ On.click(
         drawerLayout <~ dlOpenDrawer
       )) ~
@@ -249,10 +266,11 @@ trait CollectionsUiActions
   private[this] def updateOpenCollectionMenu(percent: Float): Ui[_] = {
     val backgroundPercent = maxBackgroundPercent * percent
     val colorBackground = Color.BLACK.alpha(backgroundPercent)
-    val height = (menuCollectionContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
+    val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
     val translate = height - (height * percent)
     (menuCollectionRoot <~ vBackgroundColor(colorBackground)) ~
-      (menuCollectionContent <~ vTranslationY(translate))
+      (menuLauncherContent <~ vTranslationY(translate)) ~
+      (menuWorkspaceContent <~ vAlpha(percent))
   }
 
   private[this] def closeCollectionMenu(opened: Boolean): Ui[_] =
