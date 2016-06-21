@@ -46,7 +46,10 @@ class LauncherActivity
     presenter.pause()
   }
 
-  override def onDestroy(): Unit = presenter.destroy()
+  override def onDestroy(): Unit = {
+    super.onDestroy()
+    presenter.destroy()
+  }
 
   override def onStartFinishAction(): Unit = presenter.resetAction()
 

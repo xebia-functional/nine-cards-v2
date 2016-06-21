@@ -234,6 +234,15 @@ trait CollectionProcessImplData {
     notification = Option(notification))
   val seqServicesCard = Seq(servicesCard) ++ createSeqServicesCard()
 
+  val seqAddCardRequest = seqServicesCard map { c =>
+    AddCardRequest(
+      term = c.term,
+      packageName = c.packageName,
+      cardType = CardType(c.cardType),
+      intent = Json.parse(c.intent).as[NineCardIntent],
+      imagePath = c.imagePath)
+  }
+
   val seqCollection = createSeqCollection()
   val collection = seqCollection.headOption
   val seqServicesCollection = createSeqServicesCollection()
@@ -350,8 +359,6 @@ trait CollectionProcessImplData {
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = sharedCollectionSubscribed)
 
-  val seqAddCardRequest = createSeqAddCardRequest()
-  val addCardRequest = seqAddCardRequest.headOption
   val seqAddCardResponse = createSeqCardResponse()
 
   def createSeqAddCardRequest(num: Int = 3) =

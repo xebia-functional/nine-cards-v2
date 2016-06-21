@@ -2,21 +2,17 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps
+import com.fortysevendeg.ninecardslauncher.process.device.utils.KnownCategoriesUtil
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesResponse
 import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, ImplicitsPersistenceServiceExceptions, OrderByName, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, OrderByName}
 import rapture.core.Answer
 
-import scalaz.concurrent.Task
-
-trait AppsDeviceProcessImpl {
+trait AppsDeviceProcessImpl extends KnownCategoriesUtil {
 
   self: DeviceConversions
     with DeviceProcessDependencies
@@ -62,10 +58,14 @@ trait AppsDeviceProcessImpl {
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
         .resolveTo(GooglePlayPackagesResponse(200, Seq.empty))
       apps = installedApps map { app =>
-        val category = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
-        toAddAppRequest(app, (category map (NineCardCategory(_))).getOrElse(Misc))
+        val knownCategory = findCategory(app.packageName)
+        val category = knownCategory getOrElse {
+          val categoryName = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
+          categoryName map (NineCardCategory(_)) getOrElse Misc
+        }
+        toAddAppRequest(app, category)
       }
-      _ <- addApps(apps)
+      _ <- persistenceServices.addApps(apps)
     } yield ()).resolve[AppException]
 
   def saveApp(packageName: String)(implicit context: ContextSupport) =
@@ -96,11 +96,5 @@ trait AppsDeviceProcessImpl {
         case _ => Misc
       }
     } yield appCategory
-
-  private[this] def addApps(items: Seq[AddAppRequest]):
-  ServiceDef2[Seq[App], PersistenceServiceException] = Service {
-    val tasks = items map (persistenceServices.addApp(_).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(app) => app }))
-  }
 
 }

@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData, CardsWithCollectionId}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, NineCardsUri}
@@ -31,15 +31,7 @@ class CardRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            position -> data.position,
-            CardEntity.collectionId -> collectionId,
-            term -> data.term,
-            packageName -> flatOrNull(data.packageName),
-            cardType -> data.cardType,
-            intent -> data.intent,
-            imagePath -> data.imagePath,
-            notification -> flatOrNull(data.notification))
+          val values = createMapValues(data) + (CardEntity.collectionId -> collectionId)
 
           val id = contentResolverWrapper.insert(
             uri = cardUri,
@@ -47,6 +39,29 @@ class CardRepository(
             notificationUri = Some(cardNotificationUri))
 
           Card(id = id, data = data)
+        }
+      }
+    }
+
+  def addCards(datas: Seq[CardsWithCollectionId]): ServiceDef2[Seq[Card], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          val values = datas flatMap { dataWithCollectionId =>
+            dataWithCollectionId.data map { data =>
+              createMapValues(data) +
+                (CardEntity.collectionId -> dataWithCollectionId.collectionId)
+            }
+          }
+
+          val ids = contentResolverWrapper.inserts(
+            authority = NineCardsUri.authorityPart,
+            uri = cardUri,
+            allValues = values)
+
+          (datas flatMap(_.data)) zip ids map {
+            case (data, id) => Card(id = id, data = data)
+          }
         }
       }
     }
@@ -133,7 +148,7 @@ class CardRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = createMapValues(card)
+          val values = createMapValues(card.data)
 
           contentResolverWrapper.updateById(
             uri = cardUri,
@@ -149,7 +164,7 @@ class CardRepository(
       Task {
         CatchAll[RepositoryException] {
           val values = cards map { card =>
-            (card.id, createMapValues(card))
+            (card.id, createMapValues(card.data))
           }
 
           contentResolverWrapper.updateByIds(
@@ -161,13 +176,13 @@ class CardRepository(
       }
     }
 
-  private[this] def createMapValues(card: Card) =
+  private[this] def createMapValues(data: CardData) =
     Map[String, Any](
-      position -> card.data.position,
-      term -> card.data.term,
-      packageName -> (card.data.packageName orNull),
-      cardType -> card.data.cardType,
-      intent -> card.data.intent,
-      imagePath -> card.data.imagePath,
-      notification -> (card.data.notification orNull))
+      position -> data.position,
+      term -> data.term,
+      packageName -> flatOrNull(data.packageName),
+      cardType -> data.cardType,
+      intent -> data.intent,
+      imagePath -> data.imagePath,
+      notification -> flatOrNull(data.notification))
 }

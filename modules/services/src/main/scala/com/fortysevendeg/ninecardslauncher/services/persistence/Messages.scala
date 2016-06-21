@@ -45,6 +45,10 @@ case class AddCardRequest(
   imagePath: String,
   notification: Option[String] = None)
 
+case class AddCardWithCollectionIdRequest(
+  collectionId: Int,
+  cards: Seq[AddCardRequest])
+
 case class DeleteCardsRequest(where: String)
 
 case class DeleteCardRequest(card: Card)

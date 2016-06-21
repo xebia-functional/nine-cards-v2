@@ -34,6 +34,10 @@ case class Card(
   id: Int,
   data: CardData)
 
+case class CardsWithCollectionId(
+  collectionId: Int,
+  data: Seq[CardData])
+
 case class CardData(
   position: Int,
   term: String,

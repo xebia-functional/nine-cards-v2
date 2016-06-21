@@ -32,16 +32,7 @@ class CollectionRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            position -> data.position,
-            name -> data.name,
-            collectionType -> data.collectionType,
-            icon -> data.icon,
-            themedColorIndex -> data.themedColorIndex,
-            appsCategory -> flatOrNull(data.appsCategory),
-            originalSharedCollectionId -> flatOrNull(data.originalSharedCollectionId),
-            sharedCollectionId -> flatOrNull(data.sharedCollectionId),
-            sharedCollectionSubscribed -> (data.sharedCollectionSubscribed orNull))
+          val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
             uri = collectionUri,
@@ -49,6 +40,26 @@ class CollectionRepository(
             notificationUri = Some(collectionNotificationUri))
 
           Collection(id = id, data = data)
+        }
+      }
+    }
+
+  def addCollections(datas: Seq[CollectionData]): ServiceDef2[Seq[Collection], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+
+          val values = datas map createMapValues
+
+          val ids = contentResolverWrapper.inserts(
+            authority = NineCardsUri.authorityPart,
+            uri = collectionUri,
+            allValues = values,
+            notificationUri = Some(collectionNotificationUri))
+
+          datas zip ids map {
+            case (data, id) => Collection(id = id, data = data)
+          }
         }
       }
     }
@@ -139,7 +150,7 @@ class CollectionRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = createMapValues(collection)
+          val values = createMapValues(collection.data)
 
           contentResolverWrapper.updateById(
             uri = collectionUri,
@@ -155,7 +166,7 @@ class CollectionRepository(
       Task {
         CatchAll[RepositoryException] {
           val values = collections map { collection =>
-            (collection.id, createMapValues(collection))
+            (collection.id, createMapValues(collection.data))
           }
 
           contentResolverWrapper.updateByIds(
@@ -193,15 +204,15 @@ class CollectionRepository(
       whereParams = selectionArgs,
       orderBy = sortOrder)(getListFromCursor(collectionEntityFromCursor)) map toCollection
 
-  private[this] def createMapValues(collection: Collection) = Map[String, Any](
-    position -> collection.data.position,
-    name -> collection.data.name,
-    collectionType -> collection.data.collectionType,
-    icon -> collection.data.icon,
-    themedColorIndex -> collection.data.themedColorIndex,
-    appsCategory -> (collection.data.appsCategory orNull),
-    originalSharedCollectionId -> (collection.data.originalSharedCollectionId orNull),
-    sharedCollectionId -> (collection.data.sharedCollectionId orNull),
-    sharedCollectionSubscribed -> (collection.data.sharedCollectionSubscribed orNull))
+  private[this] def createMapValues(data: CollectionData) = Map[String, Any](
+    position -> data.position,
+    name -> data.name,
+    collectionType -> data.collectionType,
+    icon -> data.icon,
+    themedColorIndex -> data.themedColorIndex,
+    appsCategory -> flatOrNull(data.appsCategory),
+    originalSharedCollectionId -> flatOrNull(data.originalSharedCollectionId),
+    sharedCollectionId -> flatOrNull(data.sharedCollectionId),
+    sharedCollectionSubscribed -> data.sharedCollectionSubscribed.orNull)
 
 }

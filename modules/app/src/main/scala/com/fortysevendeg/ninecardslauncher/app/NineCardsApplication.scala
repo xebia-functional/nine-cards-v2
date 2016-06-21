@@ -16,7 +16,6 @@ class NineCardsApplication
   override def onCreate() {
     super.onCreate()
     try {
-      Fabric.`with`(self, new Crashlytics())
       // Create variables for enabling Stetho and StrictMode in issue #212
       StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
         .detectDiskReads()
@@ -35,7 +34,7 @@ class NineCardsApplication
           .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
           .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
           .build())
-
+      Fabric.`with`(self, new Crashlytics())
     } catch {
       case _: Throwable =>
     }

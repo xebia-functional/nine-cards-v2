@@ -25,10 +25,20 @@ trait AppPersistenceServicesImpl {
       app <- appRepository.fetchAppByPackage(packageName)
     } yield app map toApp).resolve[PersistenceServiceException]
 
+  def fetchAppByPackages(packageNames: Seq[String]) =
+    (for {
+      app <- appRepository.fetchAppByPackages(packageNames)
+    } yield app map toApp).resolve[PersistenceServiceException]
+
   def addApp(request: AddAppRequest) =
     (for {
       app <- appRepository.addApp(toRepositoryAppData(request))
     } yield toApp(app)).resolve[PersistenceServiceException]
+
+  def addApps(request: Seq[AddAppRequest]) =
+    (for {
+      _ <- appRepository.addApps(request map toRepositoryAppData)
+    } yield ()).resolve[PersistenceServiceException]
 
   def deleteAllApps() =
     (for {

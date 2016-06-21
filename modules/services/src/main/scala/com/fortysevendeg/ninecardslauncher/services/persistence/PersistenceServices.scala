@@ -84,12 +84,28 @@ trait PersistenceServices {
   def findAppByPackage(packageName: String): ServiceDef2[Option[App], PersistenceServiceException]
 
   /**
+    * Obtains apps from the repository by the package names
+    * @param packageNames the package names of the apps to get
+    * @return an Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
+    * @throws PersistenceServiceException if exist some problem obtaining the app
+    */
+  def fetchAppByPackages(packageNames: Seq[String]): ServiceDef2[Seq[App], PersistenceServiceException]
+
+  /**
    * Adds an app to the repository
    * @param request includes the necessary data to create a new app in the repository
    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-   * @throws PersistenceServiceException if exist some problem obtaining the app
+   * @throws PersistenceServiceException if exist some problem creating the app
    */
   def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]
+
+  /**
+    * Adds a sequence of apps to the repository
+    * @param request includes the necessary data to create new apps in the repository
+    * @return Unit
+    * @throws PersistenceServiceException if exist some problem creating apps
+    */
+  def addApps(request: Seq[AddAppRequest]): ServiceDef2[Unit, PersistenceServiceException]
 
   /**
     * Deletes all apps from the repository by the where clause
@@ -115,12 +131,20 @@ trait PersistenceServices {
   def updateApp(request: UpdateAppRequest): ServiceDef2[Int, PersistenceServiceException]
 
   /**
-    * Adds an card to the repository
+    * Adds a card to the repository
     * @param request includes the necessary data to create a new card in the repository
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
     */
   def addCard(request: AddCardRequest): ServiceDef2[Card, PersistenceServiceException]
+
+  /**
+    * Adds a sequence of cards to the repository
+    * @param request includes the necessary data to create new cards in the repository
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
+    * @throws PersistenceServiceException if exist some problem creating the card
+    */
+  def addCards(request: Seq[AddCardWithCollectionIdRequest]): ServiceDef2[Seq[Card], PersistenceServiceException]
 
   /**
     * Deletes all cards from the repository by the where clause
@@ -191,6 +215,14 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem creating the collection
     */
   def addCollection(request: AddCollectionRequest): ServiceDef2[Collection, PersistenceServiceException]
+
+  /**
+    * Adds collections to the repository
+    * @param requests includes the necessary data to create new collections in the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection]
+    * @throws PersistenceServiceException if exist some problem creating the collection
+    */
+  def addCollections(requests: Seq[AddCollectionRequest]): ServiceDef2[Seq[Collection], PersistenceServiceException]
 
   /**
     * Deletes all collections from the repository by the where clause
@@ -309,10 +341,10 @@ trait PersistenceServices {
 
   /**
     * Creates or updates dock app to the repository
-    * @param request includes the necessary data to create a new dock app in the repository
+    * @param requests includes the necessary data to create a sequence of new dock apps in the repository
     * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
-  def createOrUpdateDockApp(request: CreateOrUpdateDockAppRequest): ServiceDef2[Unit, PersistenceServiceException]
+  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): ServiceDef2[Unit, PersistenceServiceException]
 
   /**
     * Deletes all dock apps from the repository by the where clause
@@ -358,6 +390,14 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem creating the moment
     */
   def addMoment(request: AddMomentRequest): ServiceDef2[Moment, PersistenceServiceException]
+
+  /**
+    * Adds moments to the repository
+    * @param request includes the necessary data to create new moments in the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
+    * @throws PersistenceServiceException if exist some problem creating the moments
+    */
+  def addMoments(request: Seq[AddMomentRequest]): ServiceDef2[Seq[Moment], PersistenceServiceException]
 
   /**
     * Deletes all moments from the repository by the where clause

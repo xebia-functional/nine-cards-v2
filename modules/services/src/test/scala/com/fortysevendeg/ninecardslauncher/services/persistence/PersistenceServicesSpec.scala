@@ -65,6 +65,8 @@ trait PersistenceServicesSpecification
 
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.answer(repoApp)))
 
+    mockAppRepository.addApps(Seq(repoAppData)) returns Service(Task(Result.answer(())))
+
     mockAppRepository.deleteApps() returns Service(Task(Result.answer(items)))
 
     mockAppRepository.deleteAppByPackage(packageName) returns Service(Task(Result.answer(item)))
@@ -72,6 +74,8 @@ trait PersistenceServicesSpecification
     mockAppRepository.updateApp(repoApp) returns Service(Task(Result.answer(item)))
 
     mockCardRepository.addCard(collectionId, repoCardData) returns Service(Task(Result.answer(repoCard)))
+
+    mockCardRepository.addCards(any) returns Service(Task(Result.answer(Seq(repoCard))))
 
     mockCardRepository.deleteCards() returns Service(Task(Result.answer(items)))
 
@@ -133,13 +137,15 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.answer(repoDockApp)))
 
+    mockDockAppRepository.addDockApps(any) returns Service(Task(Result.answer(Seq(repoDockApp))))
+
     mockDockAppRepository.deleteDockApps() returns Service(Task(Result.answer(items)))
 
     mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
 
     mockDockAppRepository.fetchDockApps() returns Service(Task(Result.answer(seqRepoDockApp)))
 
-    mockDockAppRepository.fetchDockApps(where = s"position = ?", whereParams = Seq(position.toString)) returns Service(Task(Result.answer(seqRepoDockApp)))
+    mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns Service(Task(Result.answer(seqRepoDockApp)))
 
     mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.answer(iterableCursorDockApps)))
 
@@ -149,11 +155,15 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
 
+    mockDockAppRepository.updateDockApps(any) returns Service(Task(Result.answer(Seq(item))))
+
     mockMomentRepository.addMoment(repoMomentData) returns Service(Task(Result.answer(repoMoment)))
 
     mockMomentRepository.addMoment(createRepoMomentData(wifiString = "")) returns Service(Task(Result.answer(createSeqRepoMoment(data = createRepoMomentData(wifiString = ""))(0))))
 
     mockMomentRepository.addMoment(createRepoMomentData(timeslot = "[]")) returns Service(Task(Result.answer(createSeqRepoMoment(data = createRepoMomentData(timeslot = "[]"))(0))))
+
+    mockMomentRepository.addMoments(any) returns Service(Task(Result.answer(Seq(repoMoment))))
 
     mockMomentRepository.deleteMoments() returns Service(Task(Result.answer(items)))
 
@@ -203,6 +213,8 @@ trait PersistenceServicesSpecification
     mockAppRepository.fetchAppByPackage(packageName) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.addApp(repoAppData) returns Service(Task(Result.errata(exception)))
+
+    mockAppRepository.addApps(Seq(repoAppData)) returns Service(Task(Result.errata(exception)))
 
     mockAppRepository.deleteApps() returns Service(Task(Result.errata(exception)))
 
@@ -264,13 +276,15 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.errata(exception)))
 
+    mockDockAppRepository.addDockApps(any) returns Service(Task(Result.errata(exception)))
+
     mockDockAppRepository.deleteDockApps() returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.fetchDockApps() returns Service(Task(Result.errata(exception)))
 
-    mockDockAppRepository.fetchDockApps(where = s"position = ?", whereParams = Seq(position.toString)) returns Service(Task(Result.errata(exception)))
+    mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})")  returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.errata(exception)))
 
@@ -279,6 +293,8 @@ trait PersistenceServicesSpecification
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
+
+    mockDockAppRepository.updateDockApps(any) returns Service(Task(Result.errata(exception)))
 
     mockMomentRepository.addMoment(repoMomentData) returns Service(Task(Result.errata(exception)))
 
@@ -652,6 +668,30 @@ class PersistenceServicesSpec
     }
   }
 
+  "addApps" should {
+
+    "return Unit for a valid request" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.addApps(Seq(createAddAppRequest())).run.run
+
+      result must beLike[Result[Unit, PersistenceServiceException]] {
+        case Answer(a) =>
+          a shouldEqual ((): Unit)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+      val result = persistenceServices.addApps(Seq(createAddAppRequest())).run.run
+
+      result must beLike[Result[Unit, PersistenceServiceException]] {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+  }
+
   "deleteAllApps" should {
 
     "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
@@ -955,7 +995,7 @@ class PersistenceServicesSpec
   "addCollection" should {
 
     "return a Collection value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addCollection(createAddCollectionRequest()).run.run
+      val result = persistenceServices.addCollection(addCollectionRequest).run.run
 
       result must beLike {
         case Answer(collection) =>
@@ -965,7 +1005,7 @@ class PersistenceServicesSpec
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addCollection(createAddCollectionRequest()).run.run
+      val result = persistenceServices.addCollection(addCollectionRequest).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -1339,7 +1379,7 @@ class PersistenceServicesSpec
   "createOrUpdateDockApp" should {
 
     "return a DockApp value for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.createOrUpdateDockApp(createCreateOrUpdateDockAppRequest()).run.run
+      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).run.run
 
       result must beLike {
         case Answer(a) =>
@@ -1348,7 +1388,7 @@ class PersistenceServicesSpec
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.createOrUpdateDockApp(createCreateOrUpdateDockAppRequest()).run.run
+      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
