@@ -84,8 +84,6 @@ object LauncherWorkSpacesTweaks {
 
   def lwsGetCollections() = Excerpt[W, Seq[Collection]] (_.getCollections)
 
-  def lwsCountCollectionScreens() = Excerpt[W, Int] (_.getCountCollectionScreens)
-
   def lwsEmptyCollections() = Excerpt[W, Boolean] (_.isEmptyCollections)
 
   def lwsCanMoveToNextScreen() = Excerpt[W, Boolean] (_.nextScreen.isDefined)

@@ -48,8 +48,6 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def getCollections: Seq[Collection] = data flatMap (a => a.collections)
 
-  def getCountCollectionScreens: Int = data count(_.workSpaceType == CollectionsWorkSpace)
-
   def isEmptyCollections: Boolean = getCountCollections == 0
 
   def isMomentWorkSpace: Boolean = data(statuses.currentItem).workSpaceType.isMomentWorkSpace
@@ -102,7 +100,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
     view match {
       case Some(v: LauncherWorkSpaceCollectionsHolder) =>
-        v.populate(data.collections, data.positionByType, getCountCollectionScreens)
+        v.populate(data.collections, data.positionByType)
       case Some(v: LauncherWorkSpaceMomentsHolder) =>
         data.moment map v.populate getOrElse Ui.nop
       case _ => Ui.nop

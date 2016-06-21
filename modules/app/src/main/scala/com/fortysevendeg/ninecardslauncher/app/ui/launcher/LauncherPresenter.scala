@@ -593,7 +593,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  def createLauncherDataCollections(collections: Seq[Collection]): Seq[LauncherData] = {
+  private[this] def createLauncherDataCollections(collections: Seq[Collection]): Seq[LauncherData] = {
     collections.grouped(numSpaces).toList.zipWithIndex map {
       case (data, index) => LauncherData(CollectionsWorkSpace, collections = data, positionByType = index)
     }
