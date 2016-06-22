@@ -30,7 +30,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDraw
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{LauncherWorkSpacesListener, WorkSpaceItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{LauncherWorkSpacesListener, WorkspaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -56,9 +56,9 @@ trait CollectionsUiActions
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
 
-  val maxBackgroundPercent: Float = 0.4f
+  val maxBackgroundPercent: Float = 0.7f
 
-  val pageWidgets = 0
+  val pageMoments = 0
 
   val pageCollections = 1
 
@@ -134,14 +134,14 @@ trait CollectionsUiActions
         )) ~
       (searchPanel <~ searchContentStyle) ~
       (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
-      (menuLauncherWallpaper <~ workspaceButtonWallpaperStyle <~ On.click {
-        uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
+      (menuLauncherWallpaper <~ launcherButtonWallpaperStyle <~ On.click {
+        closeCollectionMenu() ~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
       }) ~
-      (menuLauncherWidgets <~ workspaceButtonWidgetsStyle <~ On.click {
-        Ui(presenter.goToWidgets())
+      (menuLauncherWidgets <~ launcherButtonWidgetsStyle <~ On.click {
+        closeCollectionMenu() ~ Ui(presenter.goToWidgets())
       }) ~
-      (menuLauncherSettings <~ workspaceButtonSettingsStyle <~ On.click {
-        uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
+      (menuLauncherSettings <~ launcherButtonSettingsStyle <~ On.click {
+        closeCollectionMenu() ~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
       }) ~
       (burgerIcon <~ burgerButtonStyle <~ On.click(
         drawerLayout <~ dlOpenDrawer
@@ -225,12 +225,10 @@ trait CollectionsUiActions
   protected def goToMenuOption(itemId: Int): Ui[_] = {
     (itemId, activityContextWrapper.original.get) match {
       case (R.id.menu_collections, _) => goToWorkspace(pageCollections)
-      case (R.id.menu_moments, _) => goToWorkspace(pageWidgets)
+      case (R.id.menu_moments, _) => goToWorkspace(pageMoments)
       case (R.id.menu_profile, Some(activity)) => uiStartIntentForResult(new Intent(activity, classOf[ProfileActivity]), RequestCodes.goToProfile)
-      case (R.id.menu_wallpapers, _) => uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
-      case (R.id.menu_android_settings, _) => uiStartIntent(new Intent(android.provider.Settings.ACTION_SETTINGS))
-      case (R.id.menu_9cards_settings, Some(activity)) => uiStartIntent(new Intent(activity, classOf[NineCardsPreferencesActivity]))
-      case (R.id.menu_widgets, _) => Ui(presenter.goToWidgets())
+      case (R.id.menu_send_feedback, _) => showNoImplementedYetMessage()
+      case (R.id.menu_help, _) => showNoImplementedYetMessage()
       case (R.id.menu_change_moment, _) => Ui(presenter.goToChangeMoment())
       case _ => Ui.nop
     }
@@ -243,13 +241,13 @@ trait CollectionsUiActions
   protected def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get getOrElse false
 
   protected def getItemsForFabMenu = Seq(
-    (w[WorkSpaceItemMenu] <~ workspaceButtonCreateCollectionStyle <~ FuncOn.click { view: View =>
+    (w[WorkspaceItemMenu] <~ workspaceButtonCreateCollectionStyle <~ FuncOn.click { view: View =>
       showAction(f[NewCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection))
     }).get,
-    (w[WorkSpaceItemMenu] <~ workspaceButtonMyCollectionsStyle <~ FuncOn.click { view: View =>
+    (w[WorkspaceItemMenu] <~ workspaceButtonMyCollectionsStyle <~ FuncOn.click { view: View =>
       showAction(f[PrivateCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_my_collections))
     }).get,
-    (w[WorkSpaceItemMenu] <~ workspaceButtonPublicCollectionStyle <~ FuncOn.click { view: View =>
+    (w[WorkspaceItemMenu] <~ workspaceButtonPublicCollectionStyle <~ FuncOn.click { view: View =>
       showAction(f[PublicCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_public_collection))
     }).get
   )
@@ -257,7 +255,7 @@ trait CollectionsUiActions
   private[this] def startOpenCollectionMenu(): Ui[_] = {
     val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
     (menuCollectionRoot <~ vVisible <~ vClearClick) ~
-      (menuWorkspaceContent <~ vAlpha(0)) ~
+      (menuWorkspaceContent <~ vAlpha(0) <~ vTranslationY(height)) ~
       (menuLauncherContent <~ vTranslationY(height)) ~
       (dockAppsPanel <~ fade(out = true)) ~
       (paginationPanel <~ fade(out = true)) ~
@@ -271,7 +269,7 @@ trait CollectionsUiActions
     val translate = height - (height * percent)
     (menuCollectionRoot <~ vBackgroundColor(colorBackground)) ~
       (menuLauncherContent <~ vTranslationY(translate)) ~
-      (menuWorkspaceContent <~ vAlpha(percent))
+      (menuWorkspaceContent <~ vAlpha(percent) <~ vTranslationY(translate))
   }
 
   private[this] def closeCollectionMenu(opened: Boolean): Ui[_] =

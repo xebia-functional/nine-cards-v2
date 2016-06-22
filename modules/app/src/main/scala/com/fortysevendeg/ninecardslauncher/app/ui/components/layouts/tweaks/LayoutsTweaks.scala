@@ -133,8 +133,15 @@ object FabItemMenuTweaks {
 
 }
 
+object LauncherItemMenuTweaks {
+  type W = LauncherItemMenu
+
+  def limPopulate(backgroundColor: Int, resourceId: Int, text: Int) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
+
+}
+
 object WorkSpaceItemMenuTweaks {
-  type W = WorkSpaceItemMenu
+  type W = WorkspaceItemMenu
 
   def wimPopulate(backgroundColor: Int, resourceId: Int, text: Int) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 

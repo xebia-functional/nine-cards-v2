@@ -13,15 +13,15 @@
             android:id="@+id/menu_launcher_content"
             style="@style/LauncherCollectionMenuContentBottom">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceItemMenu
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherItemMenu
                 android:id="@+id/menu_launcher_wallpaper"
                 style="@style/LauncherCollectionMenuButtonBottom"/>
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceItemMenu
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherItemMenu
                 android:id="@+id/menu_launcher_widgets"
                 style="@style/LauncherCollectionMenuButtonBottom"/>
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceItemMenu
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherItemMenu
                 android:id="@+id/menu_launcher_settings"
                 style="@style/LauncherCollectionMenuButtonBottom"/>
 

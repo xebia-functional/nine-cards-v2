@@ -28,9 +28,9 @@
     <string name="profileTitle">Profile</string>
     <string name="configurationTitle">Configuration</string>
     <string name="wallpaperTitle">Wallpaper</string>
-    <string name="androidSettingsTitle">Android Settings</string>
     <string name="nineCardsSettingsTitle">9Cards Settings</string>
     <string name="widgetsTitle">Widgets</string>
+    <string name="sendFeedbackTitle">Send feedback</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>

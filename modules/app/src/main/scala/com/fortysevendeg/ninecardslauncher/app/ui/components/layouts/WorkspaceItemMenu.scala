@@ -6,16 +6,16 @@ import android.graphics.drawable.shapes.OvalShape
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.{FrameLayout, ImageView}
-import com.fortysevendeg.macroid.extras.DeviceVersion.{Lollipop, _}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
-class WorkSpaceItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
+class WorkspaceItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)
   with Contexts[View]
   with TypedFindView {

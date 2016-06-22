@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- WorkSpace Menu Item -->
+    <!-- Launcher Menu Item -->
 
-    <style name="WorkSpaceMenuItem">
-        <item name="android:layout_width">@dimen/max_width_workspace_menu_item</item>
+    <style name="LauncherMenuItem">
+        <item name="android:layout_width">@dimen/max_width_launcher_menu_item</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:orientation">vertical</item>
         <item name="android:padding">@dimen/padding_default</item>
     </style>
 
-    <style name="WorkSpaceMenuItemTitle">
+    <style name="LauncherMenuItemTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:lines">2</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textColor">@color/collection_workspace_button_item_title</item>
@@ -23,7 +22,34 @@
         <item name="android:gravity">center_horizontal</item>
     </style>
 
-    <style name="WorkSpaceMenuItemIcon">
+    <style name="LauncherMenuItemIcon">
+        <item name="android:layout_width">@dimen/size_launcher_menu_item</item>
+        <item name="android:layout_height">@dimen/size_launcher_menu_item</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <!-- Workspace Menu Item -->
+
+    <style name="WorkspaceMenuItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="WorkspaceMenuItemTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/collection_workspace_button_item_title</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:padding">@dimen/padding_small</item>
+    </style>
+
+    <style name="WorkspaceMenuItemIcon">
         <item name="android:layout_width">@dimen/size_workspace_menu_item</item>
         <item name="android:layout_height">@dimen/size_workspace_menu_item</item>
         <item name="android:layout_margin">@dimen/padding_default</item>
