@@ -42,6 +42,8 @@
 
     <string name="messageAcceptTerms">You should accept terms and conditions</string>
 
+    <string name="messageEmpty">There isn\'t data in this moment</string>
+
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g></string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
 

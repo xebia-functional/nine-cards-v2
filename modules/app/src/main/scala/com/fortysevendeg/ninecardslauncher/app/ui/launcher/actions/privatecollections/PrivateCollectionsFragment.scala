@@ -37,6 +37,8 @@ class PrivateCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def showLoading(): Ui[Any] = showLoadingView
 
+  override def showEmptyMessage(): Ui[Any] = showError(R.string.messageEmpty, presenter.loadPrivateCollections())
+
   override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError)
 
   override def close(): Ui[Any] = unreveal()
