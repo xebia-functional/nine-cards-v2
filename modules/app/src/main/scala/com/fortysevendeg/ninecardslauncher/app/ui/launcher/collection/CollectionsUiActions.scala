@@ -30,7 +30,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDraw
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkSpaceItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{LauncherWorkSpacesListener, WorkSpaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -131,9 +131,6 @@ trait CollectionsUiActions
             onUpdateOpenMenu = updateOpenCollectionMenu,
             onEndOpenMenu = closeCollectionMenu
           )
-        ) <~
-        awsListener(AnimatedWorkSpacesListener(
-          onLongClick = () => (uiVibrate() ~ (drawerLayout <~ dlOpenDrawer)).run)
         )) ~
       (searchPanel <~ searchContentStyle) ~
       (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
@@ -257,11 +254,15 @@ trait CollectionsUiActions
     }).get
   )
 
-  private[this] def startOpenCollectionMenu(): Ui[_] =
+  private[this] def startOpenCollectionMenu(): Ui[_] = {
+    val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
     (menuCollectionRoot <~ vVisible <~ vClearClick) ~
+      (menuWorkspaceContent <~ vAlpha(0)) ~
+      (menuLauncherContent <~ vTranslationY(height)) ~
       (dockAppsPanel <~ fade(out = true)) ~
       (paginationPanel <~ fade(out = true)) ~
       (searchPanel <~ fade(out = true))
+  }
 
   private[this] def updateOpenCollectionMenu(percent: Float): Ui[_] = {
     val backgroundPercent = maxBackgroundPercent * percent

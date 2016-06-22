@@ -24,8 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   (context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)
-  with Contexts[View]
-  with LongClickHandler { self =>
+  with Contexts[View] { self =>
 
   type PageChangedObserver = (Int => Unit)
 
@@ -36,8 +35,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   val minimumViews = 3
 
   val positionViewKey = "position-view"
-
-  var listener = new AnimatedWorkSpacesListener
 
   var data: Seq[Data] = Seq.empty
 
@@ -84,8 +81,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (w[FrameLayout] <~
       wire(parentViewThree) <~
       vAddField(positionViewKey, FrontView)).get), params)).run
-
-  override def onLongClick: () => Unit = listener.onLongClick
 
   def createEmptyView(): Holder
 
@@ -309,9 +304,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       case (ACTION_MOVE, Stopped) => setStateIfNeeded(x, y)
       case (ACTION_DOWN, _) =>
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        startLongClick()
       case (ACTION_CANCEL | ACTION_UP, _) =>
-        resetLongClick()
         computeFling()
         statuses = statuses.copy(touchState = Stopped)
       case _ =>
@@ -349,7 +342,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       val yMoved = yDiff > touchSlop
 
       if (xMoved || yMoved) {
-        resetLongClick()
         val penultimate = data.length - 2
         val isScrolling = (statuses.infinite, statuses.horizontalGallery, xDiff > yDiff, moveItemsAnimator.isRunning) match {
           case (true, true, true, _) => true

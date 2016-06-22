@@ -7,7 +7,8 @@ import android.view.MotionEvent._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{LongClickHandler, Scrolling, TranslationAnimator}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
@@ -19,7 +20,8 @@ import macroid._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
+  extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr)
+  with LongClickHandler {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -35,6 +37,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   val menuAnimator = new TranslationAnimator(
     update = (value: Float) => {
+      android.util.Log.d("9cards", s"TranslationAnimator: displacement: $value")
       workSpacesStatuses = workSpacesStatuses.copy(displacement = value)
       updateCanvasMenu()
     })
@@ -77,6 +80,16 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def addWidget(widgetView: View): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView).run
     case _ =>
+  }
+
+  override def onLongClick(): Unit = {
+    workSpacesStatuses = workSpacesStatuses.startLaunchedOpen()
+    (uiVibrate() ~
+      workSpacesListener.onStartOpenMenu() ~
+      (this <~
+        vInvalidate <~~
+        menuAnimator.move(0, -sizeCalculateMovement / 2)) ~~
+      resetMenuMovement()).run
   }
 
   override def getItemViewTypeCount: Int = 2
@@ -158,9 +171,10 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     if (isVerticalMoving(x, y) && !touchingWidget) {
       workSpacesListener.onStartOpenMenu().run
       resetLongClick()
-      workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
+      workSpacesStatuses = workSpacesStatuses.start()
     } else {
       super.setStateIfNeeded(x, y)
+      if (statuses.touchState == Scrolling) resetLongClick()
     }
   }
 
@@ -176,15 +190,18 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
           p.statuses = p.statuses.copy(touchingWidget = false)
         }
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+        startLongClick()
       case ACTION_MOVE =>
         if (!statuses.enabled) {
           if (isVerticalMoving(x, y)) {
             resetLongClick()
+            workSpacesListener.onStartOpenMenu().run
             statuses = statuses.copy(enabled = true)
-            workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
+            workSpacesStatuses = workSpacesStatuses.start()
           }
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         }
+      case ACTION_UP | ACTION_CANCEL => resetLongClick()
       case _ =>
     }
   }
@@ -206,6 +223,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def performMenuMovement(delta: Float): Ui[_] = {
     menuAnimator.cancel()
     workSpacesStatuses = workSpacesStatuses.updateDisplacement(sizeCalculateMovement, delta)
+    android.util.Log.d("9cards", s"displacement: ${workSpacesStatuses.displacement} - delta: $delta")
     updateCanvasMenu()
   }
 
@@ -222,7 +240,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   private[this] def resetMenuMovement(): Ui[_] = {
-    workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false)
+    workSpacesStatuses = workSpacesStatuses.reset()
     workSpacesListener.onEndOpenMenu(workSpacesStatuses.openedMenu)
   }
 
@@ -283,6 +301,12 @@ case class LauncherWorkSpacesStatuses(
     copy(displacement = math.max(-size, Math.min(size, displacement - delta)))
 
   def percent(size: Int): Float = math.abs(displacement) / size
+
+  def start(): LauncherWorkSpacesStatuses = copy(openingMenu = true)
+
+  def startLaunchedOpen(): LauncherWorkSpacesStatuses = copy(openedMenu = true)
+
+  def reset(): LauncherWorkSpacesStatuses = copy(openingMenu = false)
 
 }
 

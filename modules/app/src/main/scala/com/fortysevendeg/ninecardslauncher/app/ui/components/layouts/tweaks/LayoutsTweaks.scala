@@ -116,8 +116,6 @@ object AnimatedWorkSpacesTweaks {
 
   type W = AnimatedWorkSpaces[_, _]
 
-  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
-
   def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
 
   def awsCurrentWorkSpace() = Excerpt[W, Int] (_.statuses.currentItem)
