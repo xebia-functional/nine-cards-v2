@@ -30,7 +30,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDraw
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{LauncherWorkSpacesListener, WorkspaceItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -131,6 +131,9 @@ trait CollectionsUiActions
             onUpdateOpenMenu = updateOpenCollectionMenu,
             onEndOpenMenu = closeCollectionMenu
           )
+        ) <~
+        awsListener(AnimatedWorkSpacesListener(
+          onLongClick = () => (workspaces <~ lwsOpenMenu).run)
         )) ~
       (searchPanel <~ searchContentStyle) ~
       (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~

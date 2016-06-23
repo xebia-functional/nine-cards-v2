@@ -54,6 +54,8 @@ object LauncherWorkSpacesTweaks {
 
   def lwsClean = Tweak[W] (_.clean())
 
+  def lwsOpenMenu = Tweak[W] (_.openMenu())
+
   def lwsListener(listener: LauncherWorkSpacesListener) = Tweak[W] (_.workSpacesListener = listener)
 
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
@@ -115,6 +117,8 @@ object LauncherWorkSpacesTweaks {
 object AnimatedWorkSpacesTweaks {
 
   type W = AnimatedWorkSpaces[_, _]
+
+  def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
   def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
 
