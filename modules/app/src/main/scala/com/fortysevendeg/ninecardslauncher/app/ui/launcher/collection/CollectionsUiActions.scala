@@ -17,7 +17,6 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -33,7 +32,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Laun
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
@@ -287,13 +285,8 @@ trait CollectionsUiActions
 
   private[this] def createPager(activePosition: Int): Ui[Any] =
     workspaces map { ws =>
-      val maybeColorMoment = for {
-        first <- getData.headOption
-        moment <- first.moment
-        collection <- moment.collection
-      } yield resGetColor(getIndexColor(collection.themedColorIndex))
       val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
-        val view = pagination(position, if (position == 0) maybeColorMoment else None)
+        val view = pagination(position)
         view.setActivated(activePosition == position)
         view
       }
@@ -302,8 +295,8 @@ trait CollectionsUiActions
 
   def reloadWorkspacePager: Ui[Any] = (workspaces ~> lwsCurrentPage()).get map createPager getOrElse Ui.nop
 
-  def pagination(position: Int, maybeColor: Option[Int]) =
-    (w[TintableImageView] <~ paginationItemStyle <~ vSetPosition(position) <~ (maybeColor map tivDefaultColor getOrElse Tweak.blank)).get
+  def pagination(position: Int) =
+    (w[TintableImageView] <~ paginationItemStyle <~ vSetPosition(position)).get
 
   private[this] def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], view: View, color: Int, map: Map[String, String] = Map.empty): Ui[_] = {

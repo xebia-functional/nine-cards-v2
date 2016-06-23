@@ -23,9 +23,8 @@
     <string name="momentsTitle">Momentos</string>
     <string name="profileTitle">Perfil</string>
     <string name="configurationTitle">Configuración</string>
-    <string name="wallpaperTitle">Fondo de Pantalla</string>
-    <string name="androidSettingsTitle">Ajustes de Android</string>
-    <string name="nineCardsSettingsTitle">Ajustes de 9Cards</string>
+    <string name="wallpaperTitle">Wallpapers</string>
+    <string name="nineCardsSettingsTitle">Ajustes</string>
     <string name="widgetsTitle">Widgets</string>
 
     <!-- Wizard -->
