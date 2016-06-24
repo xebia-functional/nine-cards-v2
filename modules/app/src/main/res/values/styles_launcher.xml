@@ -276,11 +276,32 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|center_horizontal</item>
         <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/padding_default</item>
     </style>
 
-    <style name="LauncherCollectionMenuButtonBottom">
+    <style name="LauncherCollectionMenuButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/text_large</item>
+        <item name="android:drawablePadding">@dimen/padding_default</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/text_menu_name</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <style name="LauncherCollectionMenuButtonWallpaper" parent="LauncherCollectionMenuButton">
+        <item name="android:drawableTop">@drawable/launcher_fab_button_item_wallpaper</item>
+        <item name="android:text">@string/wallpaperTitle</item>
+    </style>
+
+    <style name="LauncherCollectionMenuButtonWidgets" parent="LauncherCollectionMenuButton">
+        <item name="android:drawableTop">@drawable/launcher_fab_button_item_widgets</item>
+        <item name="android:text">@string/widgetsTitle</item>
+    </style>
+
+    <style name="LauncherCollectionMenuButtonSetting" parent="LauncherCollectionMenuButton">
+        <item name="android:drawableTop">@drawable/launcher_fab_button_item_settings</item>
+        <item name="android:text">@string/nineCardsSettingsTitle</item>
     </style>
 
     <style name="LauncherCollectionMenuContent">

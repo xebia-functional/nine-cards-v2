@@ -138,13 +138,13 @@ trait CollectionsUiActions
         )) ~
       (searchPanel <~ searchContentStyle) ~
       (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
-      (menuLauncherWallpaper <~ launcherButtonWallpaperStyle <~ On.click {
+      (menuLauncherWallpaper <~ On.click {
         closeCollectionMenu() ~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
       }) ~
-      (menuLauncherWidgets <~ launcherButtonWidgetsStyle <~ On.click {
+      (menuLauncherWidgets <~ On.click {
         closeCollectionMenu() ~ Ui(presenter.goToWidgets())
       }) ~
-      (menuLauncherSettings <~ launcherButtonSettingsStyle <~ On.click {
+      (menuLauncherSettings <~ On.click {
         closeCollectionMenu() ~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
       }) ~
       (burgerIcon <~ burgerButtonStyle <~ On.click(

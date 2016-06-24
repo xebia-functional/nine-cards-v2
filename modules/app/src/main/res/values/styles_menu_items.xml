@@ -1,34 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Launcher Menu Item -->
-
-    <style name="LauncherMenuItem">
-        <item name="android:layout_width">@dimen/max_width_launcher_menu_item</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:padding">@dimen/padding_default</item>
-    </style>
-
-    <style name="LauncherMenuItemTitle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:lines">1</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:textColor">@color/collection_workspace_button_item_title</item>
-        <item name="android:textSize">@dimen/text_medium</item>
-        <item name="android:padding">@dimen/padding_small</item>
-        <item name="android:gravity">center_horizontal</item>
-    </style>
-
-    <style name="LauncherMenuItemIcon">
-        <item name="android:layout_width">@dimen/size_launcher_menu_item</item>
-        <item name="android:layout_height">@dimen/size_launcher_menu_item</item>
-        <item name="android:layout_margin">@dimen/padding_default</item>
-        <item name="android:scaleType">centerInside</item>
-    </style>
-
     <!-- Workspace Menu Item -->
 
     <style name="WorkspaceMenuItem">
