@@ -17,29 +17,17 @@
         android:title="@string/profileTitle"/>
 
     <item
-            android:id="@+id/menu_change_moment"
-            android:icon="@drawable/menu_icon_profile"
-            android:title="Change Moment"/> <!-- Remove this option when the new menu is created-->
-
-    <item
         android:title="@string/configurationTitle"
         android:showAsAction="ifRoom">
         <menu>
             <item
-                android:id="@+id/menu_wallpapers"
-                android:title="@string/wallpaperTitle"/>
+                android:id="@+id/menu_send_feedback"
+                android:title="@string/sendFeedbackTitle"/>
 
             <item
-                android:id="@+id/menu_android_settings"
-                android:title="@string/androidSettingsTitle"/>
+                android:id="@+id/menu_help"
+                android:title="@string/helpTitle"/>
 
-            <item
-                android:id="@+id/menu_9cards_settings"
-                android:title="@string/nineCardsSettingsTitle"/>
-
-            <item
-                android:id="@+id/menu_widgets"
-                android:title="@string/widgetsTitle"/>
         </menu>
     </item>
 

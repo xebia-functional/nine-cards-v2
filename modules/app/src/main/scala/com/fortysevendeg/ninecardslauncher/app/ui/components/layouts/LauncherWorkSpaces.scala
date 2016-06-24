@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWork
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -48,8 +49,6 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def getCollections: Seq[Collection] = data flatMap (a => a.collections)
 
-  def getCountCollectionScreens: Int = data count(_.workSpaceType == CollectionsWorkSpace)
-
   def isEmptyCollections: Boolean = getCountCollections == 0
 
   def isMomentWorkSpace: Boolean = data(statuses.currentItem).workSpaceType.isMomentWorkSpace
@@ -81,6 +80,16 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ =>
   }
 
+  def openMenu(): Unit = {
+    workSpacesStatuses = workSpacesStatuses.startLaunchedOpen()
+    (uiVibrate() ~
+      workSpacesListener.onStartOpenMenu() ~
+      (this <~
+        vInvalidate <~~
+        menuAnimator.move(0, -sizeCalculateMovement / 2)) ~~
+      resetMenuMovement()).run
+  }
+
   override def getItemViewTypeCount: Int = 2
 
   override def getItemViewType(data: LauncherData, position: Int): Int = data.workSpaceType.value
@@ -102,7 +111,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
     view match {
       case Some(v: LauncherWorkSpaceCollectionsHolder) =>
-        v.populate(data.collections, data.positionByType, getCountCollectionScreens)
+        v.populate(data.collections, data.positionByType)
       case Some(v: LauncherWorkSpaceMomentsHolder) =>
         data.moment map v.populate getOrElse Ui.nop
       case _ => Ui.nop
@@ -160,7 +169,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     if (isVerticalMoving(x, y) && !touchingWidget) {
       workSpacesListener.onStartOpenMenu().run
       resetLongClick()
-      workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
+      workSpacesStatuses = workSpacesStatuses.start()
     } else {
       super.setStateIfNeeded(x, y)
     }
@@ -183,7 +192,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
           if (isVerticalMoving(x, y)) {
             resetLongClick()
             statuses = statuses.copy(enabled = true)
-            workSpacesStatuses = workSpacesStatuses.copy(openingMenu = true)
+            workSpacesStatuses = workSpacesStatuses.start()
           }
           statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         }
@@ -224,7 +233,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   private[this] def resetMenuMovement(): Ui[_] = {
-    workSpacesStatuses = workSpacesStatuses.copy(openingMenu = false)
+    workSpacesStatuses = workSpacesStatuses.reset()
     workSpacesListener.onEndOpenMenu(workSpacesStatuses.openedMenu)
   }
 
@@ -285,6 +294,12 @@ case class LauncherWorkSpacesStatuses(
     copy(displacement = math.max(-size, Math.min(size, displacement - delta)))
 
   def percent(size: Int): Float = math.abs(displacement) / size
+
+  def start(): LauncherWorkSpacesStatuses = copy(openingMenu = true)
+
+  def startLaunchedOpen(): LauncherWorkSpacesStatuses = copy(openedMenu = true)
+
+  def reset(): LauncherWorkSpacesStatuses = copy(openingMenu = false)
 
 }
 

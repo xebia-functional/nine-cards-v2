@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/WorkSpaceMenuItem">
+    style="@style/WorkspaceMenuItem">
 
     <ImageView
         android:id="@+id/workspace_icon"
-        style="@style/WorkSpaceMenuItemIcon"/>
+        style="@style/WorkspaceMenuItemIcon"/>
 
     <TextView
         android:id="@+id/workspace_title"
-        style="@style/WorkSpaceMenuItemTitle"/>
+        style="@style/WorkspaceMenuItemTitle"/>
 
 </LinearLayout>

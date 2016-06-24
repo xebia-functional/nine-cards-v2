@@ -25,7 +25,13 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   def loadPrivateCollections(): Unit = {
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
-      onResult = (privateCollections: Seq[PrivateCollection]) => actions.addPrivateCollections(privateCollections),
+      onResult = (privateCollections: Seq[PrivateCollection]) => {
+        if (privateCollections.isEmpty) {
+          actions.showEmptyMessage()
+        } else {
+          actions.addPrivateCollections(privateCollections)
+        }
+      },
       onException = (ex: Throwable) => actions.showContactUsError())
   }
 
@@ -64,6 +70,8 @@ trait PrivateCollectionsActions {
   def showLoading(): Ui[Any]
 
   def showContactUsError(): Ui[Any]
+
+  def showEmptyMessage(): Ui[Any]
 
   def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any]
 

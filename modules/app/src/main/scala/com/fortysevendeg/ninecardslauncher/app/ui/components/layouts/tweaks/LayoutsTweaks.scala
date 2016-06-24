@@ -54,6 +54,8 @@ object LauncherWorkSpacesTweaks {
 
   def lwsClean = Tweak[W] (_.clean())
 
+  def lwsOpenMenu = Tweak[W] (_.openMenu())
+
   def lwsListener(listener: LauncherWorkSpacesListener) = Tweak[W] (_.workSpacesListener = listener)
 
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
@@ -83,8 +85,6 @@ object LauncherWorkSpacesTweaks {
   def lwsCountCollections() = Excerpt[W, Int] (_.getCountCollections)
 
   def lwsGetCollections() = Excerpt[W, Seq[Collection]] (_.getCollections)
-
-  def lwsCountCollectionScreens() = Excerpt[W, Int] (_.getCountCollectionScreens)
 
   def lwsEmptyCollections() = Excerpt[W, Boolean] (_.isEmptyCollections)
 
@@ -138,7 +138,7 @@ object FabItemMenuTweaks {
 }
 
 object WorkSpaceItemMenuTweaks {
-  type W = WorkSpaceItemMenu
+  type W = WorkspaceItemMenu
 
   def wimPopulate(backgroundColor: Int, resourceId: Int, text: Int) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 

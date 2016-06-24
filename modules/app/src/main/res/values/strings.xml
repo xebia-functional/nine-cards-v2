@@ -28,9 +28,9 @@
     <string name="profileTitle">Profile</string>
     <string name="configurationTitle">Configuration</string>
     <string name="wallpaperTitle">Wallpaper</string>
-    <string name="androidSettingsTitle">Android Settings</string>
-    <string name="nineCardsSettingsTitle">9Cards Settings</string>
+    <string name="nineCardsSettingsTitle">Settings</string>
     <string name="widgetsTitle">Widgets</string>
+    <string name="sendFeedbackTitle">Send feedback</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>
@@ -41,6 +41,8 @@
     <string name="errorSelectUser">You must select a user</string>
 
     <string name="messageAcceptTerms">You should accept terms and conditions</string>
+
+    <string name="messageEmpty">There isn\'t data in this moment</string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g></string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
@@ -76,6 +78,11 @@
 
     <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>
+
+    <!-- Moment -->
+
+    <string name="editMoment">Edit Moment</string>
+    <string name="changeMoment">Change Moment</string>
 
     <!-- Collections -->
 

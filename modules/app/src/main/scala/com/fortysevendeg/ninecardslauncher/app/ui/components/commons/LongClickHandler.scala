@@ -12,7 +12,7 @@ trait LongClickHandler {
     override def run(): Unit = onLongClick()
   }
 
-  def onLongClick: () => Unit
+  def onLongClick(): Unit
 
   def startLongClick() = handler.postDelayed(runnable, longClickMillis)
 

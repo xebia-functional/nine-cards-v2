@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/menu_collection_root"
-    style="@style/LauncherCollectionMenuRoot">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/menu_collection_root"
+        style="@style/LauncherCollectionMenuRoot">
 
     <LinearLayout
-        android:id="@+id/menu_collection_content"
-        style="@style/LauncherCollectionMenuContent" />
+            android:id="@+id/menu_workspace_content"
+            style="@style/LauncherCollectionMenuContent" />
+
+
+    <LinearLayout
+            android:id="@+id/menu_launcher_content"
+            style="@style/LauncherCollectionMenuContentBottom">
+
+        <TextView
+                android:id="@+id/menu_launcher_wallpaper"
+                style="@style/LauncherCollectionMenuButtonWallpaper"/>
+
+        <TextView
+                android:id="@+id/menu_launcher_widgets"
+                style="@style/LauncherCollectionMenuButtonWidgets"/>
+
+        <TextView
+                android:id="@+id/menu_launcher_settings"
+                style="@style/LauncherCollectionMenuButtonSetting"/>
+
+    </LinearLayout>
 
 </FrameLayout>

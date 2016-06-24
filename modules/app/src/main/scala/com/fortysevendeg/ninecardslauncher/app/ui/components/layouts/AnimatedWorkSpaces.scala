@@ -85,7 +85,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       wire(parentViewThree) <~
       vAddField(positionViewKey, FrontView)).get), params)).run
 
-  override def onLongClick: () => Unit = listener.onLongClick
+  override def onLongClick(): Unit = listener.onLongClick()
 
   def createEmptyView(): Holder
 
