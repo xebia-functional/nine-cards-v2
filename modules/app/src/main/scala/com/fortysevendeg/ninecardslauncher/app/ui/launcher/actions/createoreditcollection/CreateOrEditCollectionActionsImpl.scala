@@ -14,14 +14,17 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
 trait CreateOrEditCollectionActionsImpl
-  extends Styles {
+  extends CreateOrEditCollectionActions
+  with Styles {
 
   self: TypedFindView with BaseActionFragment =>
 
@@ -37,9 +40,11 @@ trait CreateOrEditCollectionActionsImpl
 
   lazy val iconImage = Option(findView(TR.new_collection_select_icon_image))
 
-  def showMessage(message: Int): Ui[_] = content <~ vSnackbarShort(message)
+  val launcherPresenter: LauncherPresenter
 
-  def initUi(implicit presenter: CreateOrEditCollectionPresenter): Ui[_] =
+  val presenter: CreateOrEditCollectionPresenter
+
+  override def initialize(): Ui[Any] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.newCollection) <~
@@ -49,39 +54,49 @@ trait CreateOrEditCollectionActionsImpl
         On.click(Ui(presenter.saveCollection(getName, getCategory, getColor)))) ~
       setCategory(Communication) ~
       setIndexColor(0) ~
-      (colorContent <~ On.click {
-        Ui {
-          getColor map { color =>
-            val ft = getFragmentManager.beginTransaction()
-            Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-            ft.addToBackStack(javaNull)
-            val dialog = new ColorDialogFragment(color)
-            dialog.setTargetFragment(this, RequestCodes.selectInfoColor)
-            dialog.show(ft, tagDialog)
-          }
-        }
-      }) ~
-      (iconContent <~ On.click {
-        Ui {
-          getCategory map { category =>
-            val ft = getFragmentManager.beginTransaction()
-            Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-            ft.addToBackStack(javaNull)
-            val dialog = new IconDialogFragment(category)
-            dialog.setTargetFragment(this, RequestCodes.selectInfoIcon)
-            dialog.show(ft, tagDialog)
-          }
-        }
-      })
+      (colorContent <~ On.click(Ui(presenter.changeColor(getColor)))) ~
+      (iconContent <~ On.click(Ui(presenter.changeIcon(getCategory))))
 
-  def hideKeyboard: Ui[_] = name <~ etHideKeyboard
+  override def addCollection(collection: Collection): Ui[Any] = Ui {
+    launcherPresenter.addCollection(collection)
+  }
 
-  def setCategory(category: NineCardCategory): Ui[_] =
+  override def showColorDialog(color: Int): Ui[Any] = Ui {
+    val ft = getFragmentManager.beginTransaction()
+    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    val dialog = new ColorDialogFragment(color)
+    dialog.setTargetFragment(this, RequestCodes.selectInfoColor)
+    dialog.show(ft, tagDialog)
+  }
+
+  override def showIconDialog(nineCardCategory: NineCardCategory) = Ui {
+    val ft = getFragmentManager.beginTransaction()
+    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    val dialog = new IconDialogFragment(nineCardCategory)
+    dialog.setTargetFragment(this, RequestCodes.selectInfoIcon)
+    dialog.show(ft, tagDialog)
+  }
+
+  override def showMessageContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
+
+  override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
+
+  override def updateCategory(nineCardCategory: NineCardCategory): Ui[Any] = setCategory(nineCardCategory)
+
+  override def updateColor(indexColor: Int): Ui[Any] = setIndexColor(indexColor)
+
+  override def close(): Ui[Any] = hideKeyboard ~ unreveal()
+
+  private[this] def hideKeyboard: Ui[Any] = name <~ etHideKeyboard
+
+  private[this] def setCategory(category: NineCardCategory): Ui[Any] =
     iconImage <~
       vTag(category) <~
       ivSrc(resGetDrawable(iconCollectionDetail(category.name)).colorize(Color.GRAY))
 
-  def setIndexColor(index: Int): Ui[_] = {
+  private[this] def setIndexColor(index: Int): Ui[Any] = {
     val color = resGetColor(getIndexColor(index))
     val size = resGetDimensionPixelSize(R.dimen.size_icon_select_new_collection)
     val drawable = new ShapeDrawable(new OvalShape)
@@ -94,6 +109,8 @@ trait CreateOrEditCollectionActionsImpl
       vTag(index) <~
       ivSrc(drawable)
   }
+
+  private[this] def showMessage(message: Int): Ui[Any] = content <~ vSnackbarShort(message)
 
   private[this] def getName: Option[String] = (for {
     n <- name

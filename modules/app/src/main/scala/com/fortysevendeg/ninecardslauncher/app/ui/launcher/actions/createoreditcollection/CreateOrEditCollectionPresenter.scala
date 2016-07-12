@@ -47,6 +47,14 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
     } getOrElse actions.showMessageContactUsError.run
   }
 
+  def changeColor(maybeColor: Option[Int]): Unit = maybeColor map { color =>
+    actions.showColorDialog(color)
+  } getOrElse actions.showMessageContactUsError
+
+  def changeIcon(maybeCategory: Option[NineCardCategory]): Unit = maybeCategory map { category =>
+    actions.showIconDialog(category)
+  } getOrElse actions.showMessageContactUsError
+
 }
 
 trait CreateOrEditCollectionActions {
@@ -62,6 +70,10 @@ trait CreateOrEditCollectionActions {
   def showMessageContactUsError: Ui[Any]
 
   def showMessageFormFieldError: Ui[Any]
+
+  def showColorDialog(color: Int): Ui[Any]
+
+  def showIconDialog(nineCardCategory: NineCardCategory): Ui[Any]
 
   def close(): Ui[Any]
 

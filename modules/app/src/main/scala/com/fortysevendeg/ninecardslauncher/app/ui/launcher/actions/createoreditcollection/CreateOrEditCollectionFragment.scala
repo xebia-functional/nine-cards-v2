@@ -13,13 +13,14 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Ui
 
-class CreateOrEditCollectionFragment(implicit launcherPresenter: LauncherPresenter)
+class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
   extends BaseActionFragment
   with CreateOrEditCollectionActionsImpl
-  with CreateOrEditCollectionActions
   with NineCardIntentConversions { self =>
 
-  implicit lazy val presenter = new CreateOrEditCollectionPresenter(self)
+  lazy val launcherPresenter = lPresenter
+
+  lazy val presenter = new CreateOrEditCollectionPresenter(self)
 
   override def getLayoutId: Int = R.layout.new_collection
 
@@ -50,22 +51,6 @@ class CreateOrEditCollectionFragment(implicit launcherPresenter: LauncherPresent
       case _ =>
     }
   }
-
-  override def initialize(): Ui[Any] = initUi
-
-  override def addCollection(collection: Collection): Ui[Any] = Ui {
-    launcherPresenter.addCollection(collection)
-  }
-
-  override def showMessageContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
-
-  override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
-
-  override def updateCategory(nineCardCategory: NineCardCategory): Ui[Any] = setCategory(nineCardCategory)
-
-  override def updateColor(indexColor: Int): Ui[Any] = setIndexColor(indexColor)
-
-  override def close(): Ui[Any] = hideKeyboard ~ unreveal()
 }
 
 object CreateOrEditCollectionFragment {
