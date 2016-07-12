@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
 import android.app.{Activity, Dialog}
 import android.content.Intent
@@ -65,7 +65,7 @@ case class IconDialogFragment(categorySelected: NineCardCategory)(implicit conte
       (this <~ On.click{
         Ui {
           val responseIntent = new Intent
-          responseIntent.putExtra(NewCollectionFragment.iconRequest, category.name)
+          responseIntent.putExtra(CreateOrEditCollectionFragment.iconRequest, category.name)
           getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
           dismiss()
         }

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
@@ -9,7 +9,7 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class NewCollectionPresenter (actions: NewCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
+class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter {
 
   def initialize(): Unit = actions.initialize().run
@@ -49,7 +49,7 @@ class NewCollectionPresenter (actions: NewCollectionActions)(implicit contextWra
 
 }
 
-trait NewCollectionActions {
+trait CreateOrEditCollectionActions {
 
   def initialize(): Ui[Any]
 

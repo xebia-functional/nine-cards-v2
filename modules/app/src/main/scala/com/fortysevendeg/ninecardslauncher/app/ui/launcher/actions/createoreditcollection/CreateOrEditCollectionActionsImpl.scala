@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
 import android.graphics.Color
 import android.graphics.Paint.Style
@@ -20,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-trait NewCollectionComposer
+trait CreateOrEditCollectionActionsImpl
   extends Styles {
 
   self: TypedFindView with BaseActionFragment =>
@@ -39,7 +39,7 @@ trait NewCollectionComposer
 
   def showMessage(message: Int): Ui[_] = content <~ vSnackbarShort(message)
 
-  def initUi(implicit presenter: NewCollectionPresenter): Ui[_] =
+  def initUi(implicit presenter: CreateOrEditCollectionPresenter): Ui[_] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.newCollection) <~

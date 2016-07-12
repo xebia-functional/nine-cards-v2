@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
 import android.app.Activity
 import android.content.Intent
@@ -13,13 +13,13 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Ui
 
-class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
+class CreateOrEditCollectionFragment(implicit launcherPresenter: LauncherPresenter)
   extends BaseActionFragment
-  with NewCollectionComposer
-  with NewCollectionActions
+  with CreateOrEditCollectionActionsImpl
+  with CreateOrEditCollectionActions
   with NineCardIntentConversions { self =>
 
-  implicit lazy val presenter = new NewCollectionPresenter(self)
+  implicit lazy val presenter = new CreateOrEditCollectionPresenter(self)
 
   override def getLayoutId: Int = R.layout.new_collection
 
@@ -35,15 +35,15 @@ class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
     (requestCode, resultCode) match {
       case (RequestCodes.selectInfoIcon, Activity.RESULT_OK) =>
         val maybeCategory = Option(data) flatMap (d => Option(d.getExtras)) map {
-          case extras if extras.containsKey(NewCollectionFragment.iconRequest) =>
-            Some(NineCardCategory(extras.getString(NewCollectionFragment.iconRequest)))
+          case extras if extras.containsKey(CreateOrEditCollectionFragment.iconRequest) =>
+            Some(NineCardCategory(extras.getString(CreateOrEditCollectionFragment.iconRequest)))
           case _ => None
         } getOrElse None
         presenter.updateCategory(maybeCategory)
       case (RequestCodes.selectInfoColor, Activity.RESULT_OK) =>
         val maybeIndexColor = Option(data) flatMap (d => Option(d.getExtras)) map {
-          case extras if extras.containsKey(NewCollectionFragment.colorRequest) =>
-            Some(extras.getInt(NewCollectionFragment.colorRequest))
+          case extras if extras.containsKey(CreateOrEditCollectionFragment.colorRequest) =>
+            Some(extras.getInt(CreateOrEditCollectionFragment.colorRequest))
           case _ => None
         } getOrElse None
         presenter.updateColor(maybeIndexColor)
@@ -68,7 +68,7 @@ class NewCollectionFragment(implicit launcherPresenter: LauncherPresenter)
   override def close(): Ui[Any] = hideKeyboard ~ unreveal()
 }
 
-object NewCollectionFragment {
+object CreateOrEditCollectionFragment {
   val iconRequest = "icon-request"
   val colorRequest = "color-request"
 }
