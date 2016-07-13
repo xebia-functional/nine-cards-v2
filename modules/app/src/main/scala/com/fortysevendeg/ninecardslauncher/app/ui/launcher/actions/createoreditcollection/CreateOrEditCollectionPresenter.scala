@@ -48,12 +48,12 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
   }
 
   def changeColor(maybeColor: Option[Int]): Unit = maybeColor map { color =>
-    actions.showColorDialog(color)
-  } getOrElse actions.showMessageContactUsError
+    actions.showColorDialog(color).run
+  } getOrElse actions.showMessageContactUsError.run
 
   def changeIcon(maybeCategory: Option[NineCardCategory]): Unit = maybeCategory map { category =>
-    actions.showIconDialog(category)
-  } getOrElse actions.showMessageContactUsError
+    actions.showIconDialog(category).run
+  } getOrElse actions.showMessageContactUsError.run
 
 }
 

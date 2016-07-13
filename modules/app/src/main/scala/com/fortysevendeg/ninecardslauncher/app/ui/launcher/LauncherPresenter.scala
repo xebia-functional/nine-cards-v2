@@ -224,7 +224,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def editCollectionInReorderMode(): Unit =
     (statuses.collectionReorderMode match {
-      case Some(_) => actions.showNoImplementedYetMessage()
+      case Some(collection) => actions.editCollection(collection)
       case None => actions.showContactUsError()
     }).run
 
@@ -664,13 +664,15 @@ trait LauncherUiActions {
 
   def reloadContactsInDrawer(
     contacts: IterableContacts,
-    counters: Seq[TermCounter] = Seq.empty): Ui[_]
+    counters: Seq[TermCounter] = Seq.empty): Ui[Any]
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
 
   def rippleToCollection(color: Int, point: Point): Ui[Future[Any]]
 
   def resetFromCollection(): Ui[Any]
+
+  def editCollection(collection: Collection): Ui[Any]
 
   def addWidgetView(widgetView: View): Ui[Any]
 
