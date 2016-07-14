@@ -8,15 +8,15 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.Ui
 
 class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
   extends BaseActionFragment
   with CreateOrEditCollectionActionsImpl
   with NineCardIntentConversions { self =>
+
+  lazy val maybeCollectionId = Option(getString(Seq(getArguments), CreateOrEditCollectionFragment.collectionId, javaNull))
 
   lazy val launcherPresenter = lPresenter
 
@@ -28,19 +28,19 @@ class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    presenter.initialize()
+    presenter.initialize(maybeCollectionId)
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
     (requestCode, resultCode) match {
       case (RequestCodes.selectInfoIcon, Activity.RESULT_OK) =>
-        val maybeCategory = Option(data) flatMap (d => Option(d.getExtras)) map {
+        val maybeIcon = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(CreateOrEditCollectionFragment.iconRequest) =>
-            Some(NineCardCategory(extras.getString(CreateOrEditCollectionFragment.iconRequest)))
+            Some(extras.getString(CreateOrEditCollectionFragment.iconRequest))
           case _ => None
         } getOrElse None
-        presenter.updateCategory(maybeCategory)
+        presenter.updateIcon(maybeIcon)
       case (RequestCodes.selectInfoColor, Activity.RESULT_OK) =>
         val maybeIndexColor = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(CreateOrEditCollectionFragment.colorRequest) =>
@@ -56,4 +56,5 @@ class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
 object CreateOrEditCollectionFragment {
   val iconRequest = "icon-request"
   val colorRequest = "color-request"
+  val collectionId = "collectionId"
 }

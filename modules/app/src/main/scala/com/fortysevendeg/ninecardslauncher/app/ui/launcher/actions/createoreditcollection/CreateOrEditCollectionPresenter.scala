@@ -2,9 +2,10 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoredit
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
+import com.fortysevendeg.ninecardslauncher.process.collection.{EditCollectionRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{FreeCollectionType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppsCollectionType, FreeCollectionType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateCollectionsRequest
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
@@ -12,18 +13,51 @@ import scalaz.concurrent.Task
 class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter {
 
-  def initialize(): Unit = actions.initialize().run
+  def initialize(maybeCollectionId: Option[String]): Unit = {
+    actions.initialize().run
+    maybeCollectionId match {
+      case Some(collectionId) => findCollection(collectionId.toInt)
+      case None => actions.initializeNewCollection()
+    }
+  }
 
-  def saveCollection(maybeName: Option[String], maybeCategory: Option[NineCardCategory], maybeIndex: Option[Int]): Unit =
+  def findCollection(collectionId: Int): Unit =
+    Task.fork(di.collectionProcess.getCollectionById(collectionId).run).resolveAsyncUi(
+      onResult = {
+        case Some(collection) => actions.initializeEditCollection(collection)
+        case _ => actions.showMessageContactUsError
+      },
+      onException = (ex) => actions.showMessageContactUsError
+    )
+
+  def editCollection(collection: Collection, maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit =
     (for {
       name <- maybeName
-      category <- maybeCategory
+      icon <- maybeIcon
+      index <- maybeIndex
+    } yield {
+      val request = EditCollectionRequest(
+        name = name,
+        icon = icon,
+        themedColorIndex = index,
+        appsCategory = collection.appsCategory
+      )
+      Task.fork(di.collectionProcess.editCollection(collection.id, request).run).resolveAsyncUi(
+        onResult = (c) => actions.editCollection(c) ~ actions.close(),
+        onException = (ex) => actions.showMessageContactUsError
+      )
+    }) getOrElse actions.showMessageFormFieldError.run
+
+  def saveCollection(maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit =
+    (for {
+      name <- maybeName
+      icon <- maybeIcon
       index <- maybeIndex
     } yield {
       val request = AddCollectionRequest(
         name = name,
         collectionType = FreeCollectionType,
-        icon = category.getIconResource,
+        icon = icon,
         themedColorIndex = index,
         appsCategory = None,
         cards = Seq.empty,
@@ -35,9 +69,9 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
       )
     }) getOrElse actions.showMessageFormFieldError.run
 
-  def updateCategory(maybeCategory: Option[NineCardCategory]): Unit = {
-    maybeCategory map { category =>
-      actions.updateCategory(category).run
+  def updateIcon(maybeIcon: Option[String]): Unit = {
+    maybeIcon map { icon =>
+      actions.updateIcon(icon).run
     } getOrElse actions.showMessageContactUsError.run
   }
 
@@ -51,8 +85,8 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
     actions.showColorDialog(color).run
   } getOrElse actions.showMessageContactUsError.run
 
-  def changeIcon(maybeCategory: Option[NineCardCategory]): Unit = maybeCategory map { category =>
-    actions.showIconDialog(category).run
+  def changeIcon(maybeIcon: Option[String]): Unit = maybeIcon map { icon =>
+    actions.showIconDialog(icon).run
   } getOrElse actions.showMessageContactUsError.run
 
 }
@@ -61,11 +95,17 @@ trait CreateOrEditCollectionActions {
 
   def initialize(): Ui[Any]
 
-  def updateCategory(nineCardCategory: NineCardCategory): Ui[Any]
+  def editCollection(collection: Collection): Ui[Any]
+
+  def updateIcon(iconName: String): Ui[Any]
 
   def updateColor(indexColor: Int): Ui[Any]
 
   def addCollection(collection: Collection): Ui[Any]
+
+  def initializeNewCollection(): Ui[Any]
+
+  def initializeEditCollection(collection: Collection): Ui[Any]
 
   def showMessageContactUsError: Ui[Any]
 
@@ -73,7 +113,7 @@ trait CreateOrEditCollectionActions {
 
   def showColorDialog(color: Int): Ui[Any]
 
-  def showIconDialog(nineCardCategory: NineCardCategory): Ui[Any]
+  def showIconDialog(icon: String): Ui[Any]
 
   def close(): Ui[Any]
 

@@ -17,6 +17,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -62,6 +63,8 @@ trait CollectionsUiActions
   val pageCollections = 1
 
   val typeWorkspaceButtonKey = "type-workspace-button-key"
+
+  val collectionId = "collectionId"
 
   lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
 
@@ -155,8 +158,11 @@ trait CollectionsUiActions
 
   def showEditCollection(collection: Collection): Ui[Any] = {
     val view = collectionActionsPanel flatMap (_.leftActionView)
-    showAction(f[CreateOrEditCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection))
+    val collectionMap = Map(collectionId -> collection.id.toString)
+    showAction(f[CreateOrEditCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection), collectionMap)
   }
+
+//  getIndexColor(collection.themedColorIndex)
 
   def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[Any] =
     workspaces <~ Tweak[View] { view =>

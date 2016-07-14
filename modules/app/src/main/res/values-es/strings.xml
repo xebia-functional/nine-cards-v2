@@ -86,6 +86,7 @@
     <string name="publicCollections">Colecciones Públicas</string>
 
     <string name="newCollection">Nueva colección</string>
+    <string name="editCollection">Editar colección</string>
     <string name="collectionName">Nombre de la colección</string>
     <string name="selectIcon">Seleccionar icono</string>
     <string name="selectColor">Seleccionar color</string>

@@ -272,6 +272,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
+  def updateCollection(collection: Collection): Unit = {
+    val data = updateCollectionInCurrentData(collection)
+    actions.reloadWorkspaces(data).run
+  }
+
   def removeCollection(collection: Collection): Unit = {
     Task.fork(deleteCollection(collection.id).run).resolveAsyncUi(
       onResult = (_) => {
@@ -591,6 +596,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       val page = newData.size - 1
       (page, newData)
     }
+  }
+
+  private[this] def updateCollectionInCurrentData(collection: Collection): Seq[LauncherData] = {
+    val currentData = actions.getData
+    val cols = currentData flatMap (_.collections)
+    val collections = cols.updated(collection.position, collection)
+    createLauncherDataCollections(collections)
   }
 
   private[this] def createLauncherDataCollections(collections: Seq[Collection]): Seq[LauncherData] = {
