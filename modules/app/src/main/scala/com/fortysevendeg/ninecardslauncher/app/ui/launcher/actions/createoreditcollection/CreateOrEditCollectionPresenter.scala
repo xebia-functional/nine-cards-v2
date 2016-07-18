@@ -16,7 +16,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
     actions.initialize().run
     maybeCollectionId match {
       case Some(collectionId) => findCollection(collectionId.toInt)
-      case None => actions.initializeNewCollection()
+      case None => actions.initializeNewCollection().run
     }
   }
 

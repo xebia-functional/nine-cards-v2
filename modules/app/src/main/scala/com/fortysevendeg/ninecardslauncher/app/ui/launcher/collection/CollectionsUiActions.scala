@@ -17,6 +17,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -158,7 +159,7 @@ trait CollectionsUiActions
   def showEditCollection(collection: Collection): Ui[Any] = {
     val view = collectionActionsPanel flatMap (_.leftActionView)
     val collectionMap = Map(collectionId -> collection.id.toString)
-    showAction(f[CreateOrEditCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection), collectionMap)
+    showAction(f[CreateOrEditCollectionFragment], view, resGetColor(getIndexColor(collection.themedColorIndex)), collectionMap)
   }
 
 //  getIndexColor(collection.themedColorIndex)
@@ -268,7 +269,7 @@ trait CollectionsUiActions
           case wim: WorkspaceItemMenu => Option(wim)
           case _ => None
         }) flatMap (_.icon)
-        showAction(f[CreateOrEditCollectionFragment], iconView, resGetColor(R.color.collection_fab_button_item_create_new_collection))
+        showAction(f[CreateOrEditCollectionFragment], iconView, resGetColor(R.color.collection_group_1))
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonMyCollectionsStyle <~

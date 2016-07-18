@@ -51,13 +51,13 @@ trait CreateOrEditCollectionActionsImpl
 
   override def initialize(): Ui[Any] =
     (toolbar <~
-      dtbInit(colorPrimary) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (colorContent <~ On.click(Ui(presenter.changeColor(getColor)))) ~
       (iconContent <~ On.click(Ui(presenter.changeIcon(getIcon))))
 
   override def initializeNewCollection(): Ui[Any] =
     (toolbar <~
+      dtbInit(colorPrimary) <~
       dtbChangeText(R.string.newCollection)) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
@@ -65,15 +65,18 @@ trait CreateOrEditCollectionActionsImpl
       setIcon(defaultIcon) ~
       setIndexColor(0)
 
-  override def initializeEditCollection(collection: Collection): Ui[Any] =
+  override def initializeEditCollection(collection: Collection): Ui[Any] ={
+    val color = resGetColor(getIndexColor(collection.themedColorIndex))
     (toolbar <~
+      dtbInit(color) <~
       dtbChangeText(R.string.editCollection)) ~
       (collectionName <~ tvText(collection.name)) ~
       (fab <~
-        fabButtonMenuStyle(colorPrimary) <~
+        fabButtonMenuStyle(color) <~
         On.click(Ui(presenter.editCollection(collection, getName, getIcon, getColor)))) ~
       setIcon(collection.icon) ~
       setIndexColor(collection.themedColorIndex)
+  }
 
   override def addCollection(collection: Collection): Ui[Any] = Ui {
     launcherPresenter.addCollection(collection)
@@ -127,9 +130,13 @@ trait CreateOrEditCollectionActionsImpl
     drawable.getPaint.setColor(color)
     drawable.getPaint.setStyle(Style.FILL)
     drawable.getPaint.setAntiAlias(true)
-    colorImage <~
-      vTag(index) <~
-      ivSrc(drawable)
+    (toolbar <~
+      dtbInit(color)) ~
+      (fab <~
+        fabButtonMenuStyle(color)) ~
+      (colorImage <~
+        vTag(index) <~
+        ivSrc(drawable))
   }
 
   private[this] def showMessage(message: Int): Ui[Any] = content <~ vSnackbarShort(message)
