@@ -150,7 +150,7 @@ trait DrawerUiActions
       loadAppsAlphabetical
     } else {
       Ui.nop
-    }) ~ revealInDrawer(showKeyboard) ~~ (searchPanel <~ vGone)
+    }) ~ revealInDrawer(showKeyboard) ~~ (topBarPanel <~ vGone)
 
   protected def openTabs: Ui[_] =
     (tabs <~ tvOpen <~ showTabs) ~
@@ -241,7 +241,7 @@ trait DrawerUiActions
 
   def revealOutDrawer: Ui[_] = {
     val searchIsEmpty = searchBoxView exists (_.isEmpty)
-    (searchPanel <~ vVisible) ~
+    (topBarPanel <~ vVisible) ~
       (searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
       (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData(searchIsEmpty)))
   }

@@ -28,6 +28,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehavi
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
@@ -91,15 +92,9 @@ trait CollectionsUiActions
 
   lazy val paginationPanel = Option(findView(TR.launcher_pagination_panel))
 
-  lazy val searchPanel = Option(findView(TR.launcher_search_panel))
+  lazy val topBarPanel = Option(findView(TR.launcher_top_bar_panel))
 
   lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
-
-  lazy val burgerIcon = Option(findView(TR.launcher_burger_icon))
-
-  lazy val googleIcon = Option(findView(TR.launcher_google_icon))
-
-  lazy val micIcon = Option(findView(TR.launcher_mic_icon))
 
   lazy val actionFragmentContent = Option(findView(TR.action_fragment_content))
 
@@ -121,6 +116,7 @@ trait CollectionsUiActions
         (goToMenuOption(itemId) ~ closeMenu()).run
         true
       })) ~
+      (topBarPanel <~ tblInit) ~
       (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~
@@ -136,7 +132,6 @@ trait CollectionsUiActions
         awsListener(AnimatedWorkSpacesListener(
           onLongClick = () => (workspaces <~ lwsOpenMenu).run)
         )) ~
-      (searchPanel <~ searchContentStyle) ~
       (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
       (menuLauncherWallpaper <~ On.click {
         closeCollectionMenu() ~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
@@ -146,12 +141,7 @@ trait CollectionsUiActions
       }) ~
       (menuLauncherSettings <~ On.click {
         closeCollectionMenu() ~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
-      }) ~
-      (burgerIcon <~ burgerButtonStyle <~ On.click(
-        drawerLayout <~ dlOpenDrawer
-      )) ~
-      (googleIcon <~ googleButtonStyle <~ On.click(Ui(presenter.launchSearch))) ~
-      (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch)))
+      })
 
   def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[_] =
     workspaces <~ Tweak[View] { view =>
@@ -291,7 +281,7 @@ trait CollectionsUiActions
       (menuLauncherContent <~ vTranslationY(height)) ~
       (dockAppsPanel <~ fade(out = true)) ~
       (paginationPanel <~ fade(out = true)) ~
-      (searchPanel <~ fade(out = true))
+      (topBarPanel <~ fade(out = true))
   }
 
   private[this] def updateOpenCollectionMenu(percent: Float): Ui[_] = {
@@ -310,7 +300,7 @@ trait CollectionsUiActions
     } else {
       (dockAppsPanel <~ fade()) ~
         (paginationPanel <~ fade()) ~
-        (searchPanel <~ fade()) ~
+        (topBarPanel <~ fade()) ~
         (menuCollectionRoot <~ vGone)
     }
 

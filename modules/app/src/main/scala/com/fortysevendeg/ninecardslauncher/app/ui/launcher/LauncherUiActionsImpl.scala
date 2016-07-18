@@ -11,6 +11,7 @@ import android.view.{DragEvent, View, WindowManager}
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -152,6 +153,8 @@ trait LauncherUiActionsImpl
     workspaces <~ lwsAddWidget(widgetView)
   }
 
+  override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer
+
   override def back: Ui[Any] =
     if (isDrawerTabsOpened) {
       closeDrawerTabs
@@ -177,13 +180,13 @@ trait LauncherUiActionsImpl
 
   override def startReorder: Ui[Any] =
     (dockAppsPanel <~ fadeOut()) ~
-      (searchPanel <~ fadeOut()) ~
+      (topBarPanel <~ fadeOut()) ~
       (collectionActionsPanel <~ caplLoad(actionForCollections) <~ fadeIn()) ~
       reloadEdges()
 
   override def endReorder: Ui[Any] =
     (dockAppsPanel <~ fadeIn()) ~
-      (searchPanel <~ fadeIn()) ~
+      (topBarPanel <~ fadeIn()) ~
       (collectionActionsPanel <~~ fadeOut()) ~
       hideEdges()
 
@@ -200,7 +203,7 @@ trait LauncherUiActionsImpl
   override def startAddItem(cardType: CardType): Ui[Any] = {
     val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
     revealOutDrawer ~
-      (searchPanel <~ fadeOut()) ~
+      (topBarPanel <~ fadeOut()) ~
       (cardType match {
         case AppCardType => collectionActionsPanel <~ caplLoad(actionForApps) <~ fadeIn()
         case _ => Ui.nop
@@ -210,7 +213,7 @@ trait LauncherUiActionsImpl
   }
 
   override def endAddItem: Ui[Any] =
-    (searchPanel <~ fadeIn()) ~
+    (topBarPanel <~ fadeIn()) ~
       (collectionActionsPanel <~~ fadeOut()) ~
       hideEdges()
 
@@ -291,7 +294,7 @@ trait LauncherUiActionsImpl
       val dragAreaKey = "drag-area"
       override def onDrag(v: View, event: DragEvent): Boolean = {
         val dragArea = v.getField[DragArea](dragAreaKey) getOrElse NoDragArea
-        (event.getAction, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
+        (event.getAction, (topBarPanel ~> height).get, (dockAppsPanel ~> height).get) match {
           case (_, Some(topBar), Some(bottomBar)) =>
             val height = KitKat.ifSupportedThen (view.getHeight - getStatusBarHeight) getOrElse view.getHeight
             val top = KitKat.ifSupportedThen (topBar + getStatusBarHeight) getOrElse topBar

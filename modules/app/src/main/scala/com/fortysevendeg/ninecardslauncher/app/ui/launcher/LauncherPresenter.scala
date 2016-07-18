@@ -95,6 +95,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def startAddItemToCollection(contact: Contact): Unit = startAddItemToCollection(toAddCardRequest(contact))
 
+  def launchMenu(): Unit = actions.openMenu().run
+
   private[this] def startAddItemToCollection(addCardRequest: AddCardRequest): Unit = {
     statuses = statuses.startAddItem(addCardRequest)
     actions.startAddItem(addCardRequest.cardType).run
@@ -673,6 +675,8 @@ trait LauncherUiActions {
   def resetFromCollection(): Ui[Any]
 
   def addWidgetView(widgetView: View): Ui[Any]
+
+  def openMenu(): Ui[Any]
 
   def isEmptyCollectionsInWorkspace: Boolean
 

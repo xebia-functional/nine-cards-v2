@@ -17,21 +17,6 @@ import macroid.{ContextWrapper, Tweak}
 
 trait Styles {
 
-  def searchContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =
-    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
-
-  def burgerButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    tivDefaultColor(theme.get(SearchIconsColor)) +
-      tivPressedColor(theme.get(SearchPressedColor))
-
-  def googleButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    tivDefaultColor(theme.get(SearchGoogleColor)) +
-      tivPressedColor(theme.get(SearchPressedColor))
-
-  def micButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    tivDefaultColor(theme.get(SearchIconsColor)) +
-      tivPressedColor(theme.get(SearchPressedColor))
-
   def menuAvatarStyle(implicit context: ContextWrapper): Tweak[ImageView] =
     Lollipop ifSupportedThen {
       vCircleOutlineProvider()

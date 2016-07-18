@@ -351,3 +351,12 @@ object CollectionActionsPanelLayoutTweaks {
     Tweak[W] (_.dragController(action, x, y))
 
 }
+
+object TopBarLayoutTweaks {
+
+  type W = TopBarLayout
+
+  def tblInit(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.init.run)
+
+}
