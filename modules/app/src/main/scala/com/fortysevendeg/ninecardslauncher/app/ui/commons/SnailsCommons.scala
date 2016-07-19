@@ -4,12 +4,13 @@ import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import android.view.View
-import android.view.animation.{DecelerateInterpolator, AccelerateInterpolator, AccelerateDecelerateInterpolator}
+import android.view.animation.{AccelerateDecelerateInterpolator, AccelerateInterpolator, DecelerateInterpolator}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{Ui, Snail, ContextWrapper}
+import macroid.{ContextWrapper, Snail, Ui}
 
 import scala.concurrent.Promise
 
@@ -167,54 +168,11 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def fadeIn(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      view.setAlpha(0)
-      view.setVisibility(View.VISIBLE)
-      val animator = view
-        .animate
-        .setInterpolator(new DecelerateInterpolator())
-        .alpha(1f)
-        .setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess()
-          }
-        })
+  def applyFadeIn(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] =
+    vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1), duration = duration)
 
-      animator.setDuration(duration getOrElse resGetInteger(R.integer.anim_duration_normal))
-      animator.start()
-
-      animPromise.future
-  }
-
-  def fadeOut(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      val animator = view
-        .animate
-        .setInterpolator(new AccelerateDecelerateInterpolator())
-        .alpha(0f)
-        .setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            view.setVisibility(View.INVISIBLE)
-            animPromise.trySuccess()
-          }
-        })
-
-      animator.setDuration(duration getOrElse resGetInteger(R.integer.anim_duration_normal))
-      animator.start()
-
-      animPromise.future
-  }
+  def applyFadeOut(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] =
+    applyAnimation(alpha = Some(0), duration = duration) + vInvisible
 
   def applyAnimation(
     x: Option[Float] = None,

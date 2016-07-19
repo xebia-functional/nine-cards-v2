@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 
 import android.content.Context
-import android.graphics.Point
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.view.MotionEvent._
@@ -13,16 +12,15 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, NumberOfAppsInHorizontalMoment, NumberOfRowsMoment, ShowBackgroundMoment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceMomentMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, WorkSpaceMomentIcon}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
@@ -64,13 +62,13 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       val rows = preferenceValues.getInt(NumberOfRowsMoment)
       val showBackground = preferenceValues.getBoolean(ShowBackgroundMoment)
       val sizeApp = (parentDimen.width - (paddingDefault * 2)) / numApps
-      val maxApps = (rows * numApps) - 1
+      val maxApps = rows * numApps
 
       (appsBox <~ (if (showBackground) vBackground(drawable) else vBlankBackground)) ~
         (message <~ vGone) ~
         (appsBox <~
           vgRemoveAllViews <~
-          vgAddViews(createCollection(collection, sizeApp) +: (collection.cards.take(maxApps) map (createIconCard(_, moment.momentType, sizeApp))))) ~
+          vgAddViews(collection.cards.take(maxApps) map (createIconCard(_, moment.momentType, sizeApp)))) ~
           ((for {
             moment <- moment.momentType
             view <- presenter.getWidgetView(moment)
@@ -101,17 +99,6 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
 
   def clearWidgets(): Ui[Any] = {
     widgets <~ vgRemoveAllViews
-  }
-
-  private[this] def createCollection(collection: Collection, sizeApp: Int): WorkSpaceMomentIcon = {
-    (w[WorkSpaceMomentIcon] <~
-      lp[FlexboxLayout](sizeApp, WRAP_CONTENT) <~
-      wmmPopulateCollection(collection) <~
-      FuncOn.click { view: View =>
-        val (x, y) = PositionsUtils.calculateAnchorViewPosition(view)
-        val point = new Point(x + (view.getWidth / 2), y + (view.getHeight / 2))
-        Ui(presenter.goToCollection(Some(collection), point))
-      }).get
   }
 
   private[this] def createIconCard(card: Card, moment: Option[NineCardsMoment], sizeApp: Int): WorkSpaceMomentIcon =

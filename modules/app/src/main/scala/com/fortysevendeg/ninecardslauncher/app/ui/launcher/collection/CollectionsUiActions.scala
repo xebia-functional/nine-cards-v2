@@ -23,15 +23,15 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
@@ -41,9 +41,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import ViewOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -157,22 +155,6 @@ trait CollectionsUiActions
     }
 
   def showCollectionsLoading: Ui[_] = loading <~ vVisible
-
-  def showLauncherInfo(
-    data: Seq[LauncherData],
-    apps: Seq[DockApp]): Ui[_] = {
-    (loading <~ vGone) ~
-      (dockAppsPanel <~ daplInit(apps)) ~
-      (workspaces <~
-        vGlobalLayoutListener(_ =>
-          (workspaces <~
-            lwsData(data, selectedPageDefault) <~
-            awsAddPageChangedObserver(currentPage => {
-              (paginationPanel <~ reloadPager(currentPage)).run
-            })) ~
-            createPager(selectedPageDefault)
-        ))
-  }
 
   def userProfileMenu(
     maybeEmail: Option[String],
@@ -304,7 +286,7 @@ trait CollectionsUiActions
         (menuCollectionRoot <~ vGone)
     }
 
-  private[this] def createPager(activePosition: Int): Ui[Any] =
+  def createPager(activePosition: Int): Ui[Any] =
     workspaces map { ws =>
       val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
         val view = pagination(position)

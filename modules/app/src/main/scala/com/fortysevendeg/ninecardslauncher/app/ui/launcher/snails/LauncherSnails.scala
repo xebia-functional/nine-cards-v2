@@ -33,9 +33,9 @@ object LauncherSnails {
   def fade(out: Boolean = false)(implicit context: ContextWrapper): Snail[View] = {
     val duration = resGetInteger(R.integer.anim_duration_pager_appear)
     if (out) {
-      fadeOut(Some(duration))
+      applyFadeOut(Some(duration))
     } else {
-      fadeIn(Some(duration))
+      applyFadeIn(Some(duration))
     }
   }
 

@@ -21,6 +21,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
@@ -99,12 +101,30 @@ trait LauncherUiActionsImpl
     goToNextWorkspace().ifUi(canMoveToNextScreen)
   }
 
-  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] =
-    showLauncherInfo(data, apps)
+  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
+    val collectionMoment = data.headOption.flatMap(_.moment).flatMap(_.collection)
+    (loading <~ vGone) ~
+      (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank)) ~
+      (dockAppsPanel <~ daplInit(apps)) ~
+      (workspaces <~
+        vGlobalLayoutListener(_ =>
+          (workspaces <~
+            lwsData(data, selectedPageDefault) <~
+            awsAddPageChangedObserver(currentPage => {
+              ((getData.lift(currentPage) map (data => topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
+                (paginationPanel <~ reloadPager(currentPage))).run
+            })) ~
+            createPager(selectedPageDefault)
+        ))
+  }
 
   override def reloadCurrentMoment(): Ui[Any] = workspaces <~ lwsDataForceReloadMoment()
 
-  override def reloadMoment(moment: LauncherData): Ui[Any] = workspaces <~ lwsDataMoment(moment)
+  override def reloadMoment(data: LauncherData): Ui[Any] = {
+    val collectionMoment = data.moment.flatMap(_.collection)
+    (workspaces <~ lwsDataMoment(data)) ~
+      (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank))
+  }
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
     userProfileMenu(email, name, avatarUrl, coverPhotoUrl)
@@ -179,15 +199,15 @@ trait LauncherUiActionsImpl
   override def closeTabs: Ui[Any] = closeDrawerTabs
 
   override def startReorder: Ui[Any] =
-    (dockAppsPanel <~ fadeOut()) ~
-      (topBarPanel <~ fadeOut()) ~
-      (collectionActionsPanel <~ caplLoad(actionForCollections) <~ fadeIn()) ~
+    (dockAppsPanel <~ applyFadeOut()) ~
+      (topBarPanel <~ applyFadeOut()) ~
+      (collectionActionsPanel <~ caplLoad(actionForCollections) <~ applyFadeIn()) ~
       reloadEdges()
 
   override def endReorder: Ui[Any] =
-    (dockAppsPanel <~ fadeIn()) ~
-      (topBarPanel <~ fadeIn()) ~
-      (collectionActionsPanel <~~ fadeOut()) ~
+    (dockAppsPanel <~ applyFadeIn()) ~
+      (topBarPanel <~ applyFadeIn()) ~
+      (collectionActionsPanel <~~ applyFadeOut()) ~
       hideEdges()
 
   override def goToNextScreenReordering(): Ui[Any] = {
@@ -203,9 +223,9 @@ trait LauncherUiActionsImpl
   override def startAddItem(cardType: CardType): Ui[Any] = {
     val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
     revealOutDrawer ~
-      (topBarPanel <~ fadeOut()) ~
+      (topBarPanel <~ applyFadeOut()) ~
       (cardType match {
-        case AppCardType => collectionActionsPanel <~ caplLoad(actionForApps) <~ fadeIn()
+        case AppCardType => collectionActionsPanel <~ caplLoad(actionForApps) <~ applyFadeIn()
         case _ => Ui.nop
       }) ~
       reloadEdges() ~
@@ -213,8 +233,8 @@ trait LauncherUiActionsImpl
   }
 
   override def endAddItem: Ui[Any] =
-    (topBarPanel <~ fadeIn()) ~
-      (collectionActionsPanel <~~ fadeOut()) ~
+    (topBarPanel <~ applyFadeIn()) ~
+      (collectionActionsPanel <~~ applyFadeOut()) ~
       hideEdges()
 
   override def goToPreviousScreenAddingItem(): Ui[Any] = {
@@ -226,10 +246,6 @@ trait LauncherUiActionsImpl
     val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
     (goToNextWorkspace() ~ reloadEdges()).ifUi(canMoveToNextScreen)
   }
-
-  private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
-
-  private[this] def fadeOut() = applyAnimation(alpha = Some(0)) + vInvisible
 
   override def isTabsOpened: Boolean = isDrawerTabsOpened
 

@@ -4,13 +4,19 @@
         style="@style/LauncherMomentPanel"
         android:id="@+id/launcher_moment_panel">
 
-    <ImageView
-            style="@style/LauncherMomentIcon"
-            android:id="@+id/launcher_moment_icon"/>
+    <LinearLayout
+            android:id="@+id/launcher_moment_content"
+            style="@style/LauncherMomentInfoContent">
 
-    <TextView
-            style="@style/LauncherMomentText"
-            android:id="@+id/launcher_moment_text"/>
+        <ImageView
+                style="@style/LauncherMomentIcon"
+                android:id="@+id/launcher_moment_icon"/>
+
+        <TextView
+                style="@style/LauncherMomentText"
+                android:id="@+id/launcher_moment_text"/>
+
+    </LinearLayout>
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
             style="@style/LauncherMomentGoogleButton"
