@@ -16,9 +16,9 @@
                 style="@style/LauncherMomentText"
                 android:id="@+id/launcher_moment_text"/>
 
-        <DigitalClock
+        <TextClock
                 style="@style/LauncherMomentClock"
-                android:id="@+id/launcher_moment_text_digital_clock"/>
+                android:id="@+id/launcher_moment_text_clock"/>
 
     </LinearLayout>
 

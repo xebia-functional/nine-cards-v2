@@ -56,6 +56,7 @@ object CommonsTweak {
     }
 
     val color = resGetColor(getIndexColor(indexColor))
+    val elevation = resGetDimensionPixelSize(R.dimen.elevation_default)
 
     vBackground(Lollipop ifSupportedThen {
       new RippleDrawable(
@@ -67,7 +68,7 @@ object CommonsTweak {
       states.addState(Array[Int](android.R.attr.state_pressed), getDrawable(color.dark()))
       states.addState(Array.emptyIntArray, getDrawable(color))
       states
-    })
+    }) + (Lollipop ifSupportedThen vElevation(elevation) getOrElse Tweak.blank)
   }
 
   def vSetPosition(position: Int): Tweak[View] = vTag(R.id.position, position)

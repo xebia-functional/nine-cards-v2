@@ -177,6 +177,10 @@
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 
+    <style name="LauncherMomentClock" parent="LauncherMomentText">
+        <item name="android:paddingLeft">@dimen/padding_small</item>
+    </style>
+
     <style name="LauncherMomentGoogleButton">
         <item name="android:layout_width">@dimen/height_search_box</item>
         <item name="android:layout_height">match_parent</item>

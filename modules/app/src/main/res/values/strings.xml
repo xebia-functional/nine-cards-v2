@@ -431,5 +431,18 @@
     <string name="tutorial">See the Tutorial</string>
     <string name="tos">Terms of Use</string>
 
+    <!-- Months -->
+    <string name="month_1">Jan.</string>
+    <string name="month_2">Feb.</string>
+    <string name="month_3">Mar.</string>
+    <string name="month_4">Apr.</string>
+    <string name="month_5">May.</string>
+    <string name="month_6">Jun.</string>
+    <string name="month_7">Jul.</string>
+    <string name="month_8">Aug.</string>
+    <string name="month_9">Sep.</string>
+    <string name="month_10">Oct.</string>
+    <string name="month_11">Nov.</string>
+    <string name="month_12">Dec.</string>
 
 </resources>

@@ -10,7 +10,6 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardsPreferencesValue
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
@@ -27,8 +26,6 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   with TypedFindView {
 
   LayoutInflater.from(context).inflate(R.layout.moment_workspace_layout, this)
-
-  val preferenceValues = new NineCardsPreferencesValue
 
   val content = Option(findView(TR.launcher_moment_content))
 
