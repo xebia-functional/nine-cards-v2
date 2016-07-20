@@ -28,7 +28,7 @@ import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigExceptio
 import NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
 import com.fortysevendeg.ninecardslauncher2.R
-import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.{Answer, Errata, Result}
@@ -180,14 +180,25 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
   protected def createIntent[T](activity: Activity, targetClass: Class[T]): Intent = new Intent(activity, targetClass)
 
   private[this] def onConnectionFailed(connectionResult: ConnectionResult): Unit = {
-    if (connectionResult.hasResolution) {
+
+    def withActivity(f: (AppCompatActivity => Unit)) =
       contextWrapper.original.get match {
-        case Some(activity: AppCompatActivity) =>
-          Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
-            case Failure(e) => connectionError()
-            case _ =>
-          }
+        case Some(activity: AppCompatActivity) => f(activity)
         case _ =>
+      }
+
+    if (connectionResult.hasResolution) {
+      withActivity { activity =>
+        Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
+          case Failure(e) => connectionError()
+          case _ =>
+        }
+      }
+    } else if (connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
+      withActivity { activity =>
+        GoogleApiAvailability.getInstance()
+          .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
+          .show()
       }
     } else {
       connectionError()
