@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.profile
 
+import java.util.Date
+
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -228,22 +230,26 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     } yield ()
 
   private[this] def createSync(devices: Seq[CloudStorageDeviceSummary]): Seq[AccountSync] = {
-    val currentDevice = devices.find(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = true, resourceId = d.resourceId)
-    }
-    val otherDevices = devices.filterNot(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, resourceId = d.resourceId)
-    }
-    val otherDevicesWithHeader = if (otherDevices.isEmpty) {
-      Seq.empty
-    } else {
-      AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
-        otherDevices
-    }
-    (AccountSync.header(resGetString(R.string.syncCurrent)) +:
-      currentDevice.toSeq) ++ otherDevicesWithHeader
-  }
 
+    def toAccountSync(d: CloudStorageDeviceSummary, current: Boolean = false): AccountSync =
+      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = current, resourceId = d.resourceId)
+
+    def order(seq: Seq[CloudStorageDeviceSummary]): Seq[CloudStorageDeviceSummary] =
+      seq.sortBy(_.modifiedDate)(Ordering[Date].reverse)
+
+    devices.partition(_.currentDevice) match {
+      case (current, other) =>
+        val currentDevices = order(current)
+        val currentDevice = currentDevices.headOption map (toAccountSync(_, current = true))
+        val otherDevices = order(other ++ currentDevices.tail) match {
+          case seq if seq.isEmpty => Seq.empty
+          case seq => AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
+            (seq map (toAccountSync(_)))
+        }
+        (AccountSync.header(resGetString(R.string.syncCurrent)) +:
+          currentDevice.toSeq) ++ otherDevices
+    }
+  }
 }
 
 object Statuses {
