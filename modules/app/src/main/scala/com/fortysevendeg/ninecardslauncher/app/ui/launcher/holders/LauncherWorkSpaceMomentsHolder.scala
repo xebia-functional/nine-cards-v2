@@ -5,24 +5,19 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.view.MotionEvent._
 import android.view.View.OnTouchListener
-import android.view.ViewGroup.LayoutParams._
 import android.view.{LayoutInflater, MotionEvent, View}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, NumberOfAppsInHorizontalMoment, NumberOfRowsMoment, ShowBackgroundMoment}
+import com.fortysevendeg.ninecardslauncher.app.commons.NineCardsPreferencesValue
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceMomentMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, WorkSpaceMomentIcon}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
 import macroid._
 
@@ -41,8 +36,6 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
 
   val message = Option(findView(TR.launcher_moment_message))
 
-  val appsBox = Option(findView(TR.launcher_moment_apps_layout))
-
   val radius = resGetDimensionPixelSize(R.dimen.radius_default)
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
@@ -54,29 +47,21 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     d
   }
 
+  (content <~ On.click(Ui(presenter.clickMomentWorkspaceBackground()))).run
+
   def populate(moment: LauncherMoment): Ui[Any] = {
     (for {
       collection <- moment.collection
     } yield {
-      val numApps = preferenceValues.getInt(NumberOfAppsInHorizontalMoment)
-      val rows = preferenceValues.getInt(NumberOfRowsMoment)
-      val showBackground = preferenceValues.getBoolean(ShowBackgroundMoment)
-      val sizeApp = (parentDimen.width - (paddingDefault * 2)) / numApps
-      val maxApps = rows * numApps
-
-      (appsBox <~ (if (showBackground) vBackground(drawable) else vBlankBackground)) ~
-        (message <~ vGone) ~
-        (appsBox <~
-          vgRemoveAllViews <~
-          vgAddViews(collection.cards.take(maxApps) map (createIconCard(_, moment.momentType, sizeApp)))) ~
+      (message <~ vGone) ~
           ((for {
             moment <- moment.momentType
             view <- presenter.getWidgetView(moment)
           } yield addWidget(view)) getOrElse clearWidgets()) ~
-        (content <~ vVisible <~ vAlpha(0f) <~ applyAnimation(alpha = Some(1f)))
+        (widgets <~ vVisible <~ vAlpha(0f) <~ applyAnimation(alpha = Some(1f)))
     }) getOrElse
       ((message <~ vVisible) ~
-        (content <~ vGone))
+        (widgets <~ vGone))
   }
 
   def addWidget(widgetView: View): Ui[Any] = {
@@ -100,13 +85,5 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   def clearWidgets(): Ui[Any] = {
     widgets <~ vgRemoveAllViews
   }
-
-  private[this] def createIconCard(card: Card, moment: Option[NineCardsMoment], sizeApp: Int): WorkSpaceMomentIcon =
-    (w[WorkSpaceMomentIcon] <~
-      lp[FlexboxLayout](sizeApp, WRAP_CONTENT) <~
-      wmmPopulateCard(card) <~
-      On.click {
-        Ui(presenter.openMomentIntent(card, moment))
-      }).get
 
 }

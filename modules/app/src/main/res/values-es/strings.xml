@@ -282,14 +282,8 @@
     <string name="momentsPrefTitle">Momentos</string>
     <string name="momentsPrefSummary">Resumen Momentos</string>
 
-    <string name="numberOfAppsInHorizontalTitle">Número de aplicaciones en horizontal</string>
-    <string name="numberOfAppsInHorizontalSummary">Resumen de Número de aplicaciones</string>
-
-    <string name="numberOfRowsTitle">Número de filas</string>
-    <string name="numberOfRowsSummary">Resumen de Número de filas</string>
-
-    <string name="showBackgroundTitle">Mostrar fondo en aplicaciones</string>
-    <string name="showBackgroundSummary">Resumen de Mostrar fondo en aplicaciones</string>
+    <string name="showClockTitle">Mostrar reloj</string>
+    <string name="showClockSummary">Resumen de Mostrar reloj</string>
 
     <!-- AppDrawer Preferences -->
 

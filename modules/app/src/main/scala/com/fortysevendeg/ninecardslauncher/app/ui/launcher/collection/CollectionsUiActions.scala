@@ -114,6 +114,7 @@ trait CollectionsUiActions
         (goToMenuOption(itemId) ~ closeMenu()).run
         true
       })) ~
+      (paginationPanel <~ On.longClick((workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
       (topBarPanel <~ tblInit) ~
       (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
@@ -186,7 +187,11 @@ trait CollectionsUiActions
 
   def isCollectionMenuVisible: Boolean = workspaces exists (_.workSpacesStatuses.openedMenu)
 
-  def goToWorkspace(page: Int): Ui[_] = (workspaces <~ lwsSelect(page)) ~ (paginationPanel <~ reloadPager(page))
+  def goToWorkspace(page: Int): Ui[_] = {
+    (getData.lift(page) map (data => topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
+      (workspaces <~ lwsSelect(page)) ~
+      (paginationPanel <~ reloadPager(page))
+  }
 
   def goToNextWorkspace(): Ui[_] =
     (workspaces ~> lwsNextScreen()).get.flatten map { next =>

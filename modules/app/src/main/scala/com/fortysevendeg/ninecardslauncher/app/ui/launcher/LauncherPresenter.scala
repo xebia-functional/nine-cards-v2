@@ -230,6 +230,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case None => actions.showContactUsError()
     }).run
 
+  def goToMomentWorkspace(): Unit = (actions.goToMomentWorkspace() ~ actions.closeAppsMoment()).run
+
+  def clickMomentWorkspaceBackground(): Unit = actions.swapAppsMoment().run
+
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
     self !>>
       TrackEvent(
@@ -238,6 +242,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         action = OpenAction,
         label = card.packageName map ProvideLabel,
         value = Some(OpenMomentFromWorkspaceValue))
+    actions.closeAppsMoment().run
     execute(card.intent)
   }
 
@@ -621,6 +626,8 @@ trait LauncherUiActions {
 
   def endReorder: Ui[Any]
 
+  def goToMomentWorkspace(): Ui[Any]
+
   def goToPreviousScreenReordering(): Ui[Any]
 
   def goToNextScreenReordering(): Ui[Any]
@@ -677,6 +684,12 @@ trait LauncherUiActions {
   def addWidgetView(widgetView: View): Ui[Any]
 
   def openMenu(): Ui[Any]
+
+  def openAppsMoment(): Ui[Any]
+
+  def closeAppsMoment(): Ui[Any]
+
+  def swapAppsMoment(): Ui[Any]
 
   def isEmptyCollectionsInWorkspace: Boolean
 

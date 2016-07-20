@@ -9,6 +9,7 @@ import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
@@ -26,6 +27,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Anim
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
@@ -60,6 +62,8 @@ trait LauncherUiActionsImpl
   implicit val managerContext: FragmentManagerContext[Fragment, FragmentManager]
 
   lazy val foreground = Option(findView(TR.launcher_foreground))
+
+  lazy val appsMoment = Option(findView(TR.launcher_apps_moment))
 
   lazy val actionForCollections = Seq(
     CollectionActionItem(resGetString(R.string.edit), R.drawable.icon_launcher_action_edit, CollectionActionEdit),
@@ -103,7 +107,9 @@ trait LauncherUiActionsImpl
 
   override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
     val collectionMoment = data.headOption.flatMap(_.moment).flatMap(_.collection)
+    val launcherMoment = data.headOption.flatMap(_.moment)
     (loading <~ vGone) ~
+      (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
       (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank)) ~
       (dockAppsPanel <~ daplInit(apps)) ~
       (workspaces <~
@@ -122,7 +128,9 @@ trait LauncherUiActionsImpl
 
   override def reloadMoment(data: LauncherData): Ui[Any] = {
     val collectionMoment = data.moment.flatMap(_.collection)
+    val launcherMoment = data.moment
     (workspaces <~ lwsDataMoment(data)) ~
+      (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
       (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank))
   }
 
@@ -175,6 +183,12 @@ trait LauncherUiActionsImpl
 
   override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer
 
+  override def openAppsMoment(): Ui[Any] = drawerLayout <~ dlOpenDrawerEnd
+
+  override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
+
+  override def swapAppsMoment(): Ui[Any] = drawerLayout <~ dlSwapDrawerEnd
+
   override def back: Ui[Any] =
     if (isDrawerTabsOpened) {
       closeDrawerTabs
@@ -209,6 +223,8 @@ trait LauncherUiActionsImpl
       (topBarPanel <~ applyFadeIn()) ~
       (collectionActionsPanel <~~ applyFadeOut()) ~
       hideEdges()
+
+  override def goToMomentWorkspace(): Ui[Any] = goToWorkspace(pageMoments)
 
   override def goToNextScreenReordering(): Ui[Any] = {
     val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreenOnlyCollections()).get getOrElse false
@@ -297,6 +313,7 @@ trait LauncherUiActionsImpl
         (content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
+        (appsMoment <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (actionFragmentContent <~
           vPadding(paddingDefault, paddingDefault + sbHeight, paddingDefault, paddingDefault + nbHeight)) ~
         (drawerLayout <~ vBackground(R.drawable.background_workspace)) ~

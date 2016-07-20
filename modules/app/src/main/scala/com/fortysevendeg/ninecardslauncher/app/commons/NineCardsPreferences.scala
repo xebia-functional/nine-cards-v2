@@ -52,22 +52,10 @@ sealed trait NineCardsPreferenceValue[T]
   val default: T
 }
 
-case object NumberOfAppsInHorizontalMoment
-  extends NineCardsPreferenceValue[Int] {
-  override val name: String = numberOfAppsInHorizontalMoment
-  override val default: Int = 5
-}
-
-case object NumberOfRowsMoment
-  extends NineCardsPreferenceValue[Int] {
-  override val name: String = numberOfRowsMoment
-  override val default: Int = 1
-}
-
-case object ShowBackgroundMoment
+case object ShowClockMoment
   extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = showBackgroundMoment
-  override val default: Boolean = false
+  override val name: String = showClockMoment
+  override val default: Boolean = true
 }
 
 class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
@@ -111,9 +99,7 @@ object PreferencesKeys {
   val helpKey = "helpKey"
   val appInfoKey = "appInfoKey"
 
-  val numberOfAppsInHorizontalMoment = "numberOfAppsInHorizontalMoment"
-  val numberOfRowsMoment = "numberOfRowsMoment"
-  val showBackgroundMoment = "showBackgroundMoment"
+  val showClockMoment = "showClockMoment"
 }
 
 object PreferencesStates {

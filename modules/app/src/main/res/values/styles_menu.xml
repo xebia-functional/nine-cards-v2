@@ -13,6 +13,19 @@
         <item name="android:background">@color/background_menu</item>
     </style>
 
+    <style name="MenuAppsMomentContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:background">@color/background_menu</item>
+    </style>
+
+    <style name="MenuAppsMoment">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="MenuHeaderRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/menu_height</item>

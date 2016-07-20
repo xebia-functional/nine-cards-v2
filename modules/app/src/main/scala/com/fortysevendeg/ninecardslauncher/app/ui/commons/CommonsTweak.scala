@@ -8,6 +8,8 @@ import android.graphics.drawable._
 import android.os.Vibrator
 import android.view.View
 import ColorOps._
+import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
 import android.widget.{EditText, ImageView}
@@ -108,6 +110,26 @@ object ExtraTweaks {
     Option(contextWrapper.bestAvailable.getSystemService(Context.INPUT_METHOD_SERVICE)) foreach {
       case imm: InputMethodManager => imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
       case _ =>
+    }
+  }
+
+  def dlOpenDrawerEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.openDrawer(GravityCompat.END))
+
+  def dlCloseDrawerEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.closeDrawer(GravityCompat.END))
+
+  def dlSwapDrawer: Tweak[DrawerLayout] = Tweak[DrawerLayout] { view =>
+    if (view.isDrawerOpen(GravityCompat.START)) {
+      view.closeDrawer(GravityCompat.START)
+    } else {
+      view.openDrawer(GravityCompat.START)
+    }
+  }
+
+  def dlSwapDrawerEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout] { view =>
+    if (view.isDrawerOpen(GravityCompat.END)) {
+      view.closeDrawer(GravityCompat.END)
+    } else {
+      view.openDrawer(GravityCompat.END)
     }
   }
 
