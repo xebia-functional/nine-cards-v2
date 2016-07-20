@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
@@ -17,17 +17,17 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   with Conversions
   with MomentConversions {
 
-  def initialize(): Unit = {
-    loadPrivateCollections()
+  def initialize(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Unit = {
+    loadPrivateCollections
     actions.initialize().run
   }
 
-  def loadPrivateCollections(): Unit = {
+  def loadPrivateCollections(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Unit = {
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (privateCollections: Seq[PrivateCollection]) => {
         if (privateCollections.isEmpty) {
-          actions.showEmptyMessage()
+          actions.showEmptyMessage
         } else {
           actions.addPrivateCollections(privateCollections)
         }
@@ -71,9 +71,9 @@ trait PrivateCollectionsActions {
 
   def showContactUsError(): Ui[Any]
 
-  def showEmptyMessage(): Ui[Any]
+  def showEmptyMessage(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Ui[Any]
 
-  def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any]
+  def addPrivateCollections(privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Ui[Any]
 
   def addCollection(collection: Collection): Ui[Any]
 
