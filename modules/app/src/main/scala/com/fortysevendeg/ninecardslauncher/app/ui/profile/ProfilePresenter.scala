@@ -184,7 +184,12 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     Task.fork(loadAccounts(client, filterOutResourceIds).run).resolveAsyncUi(
       onResult = accountSyncs => {
         syncEnabled = true
-        actions.setAccountsAdapter(accountSyncs)
+        if (accountSyncs.isEmpty) {
+          launchService()
+          actions.showLoading()
+        } else {
+          actions.setAccountsAdapter(accountSyncs)
+        }
       },
       onException = (_) => actions.showConnectingGoogleError(() => loadUserAccounts(client)),
       onPreTask = () => actions.showLoading()
@@ -240,14 +245,15 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     devices.partition(_.currentDevice) match {
       case (current, other) =>
         val currentDevices = order(current)
-        val currentDevice = currentDevices.headOption map (toAccountSync(_, current = true))
-        val otherDevices = order(other ++ currentDevices.tail) match {
+        val currentDevicesWithHeader = currentDevices.headOption map { device =>
+          Seq(AccountSync.header(resGetString(R.string.syncCurrent)), toAccountSync(device, current = true))
+        } getOrElse Seq.empty
+        val otherDevices = order(other ++ currentDevices.drop(1)) match {
           case seq if seq.isEmpty => Seq.empty
           case seq => AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
             (seq map (toAccountSync(_)))
         }
-        (AccountSync.header(resGetString(R.string.syncCurrent)) +:
-          currentDevice.toSeq) ++ otherDevices
+        currentDevicesWithHeader ++ otherDevices
     }
   }
 }
