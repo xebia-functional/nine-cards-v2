@@ -14,7 +14,7 @@ class PrivateCollectionsFragment(implicit lPresenter: LauncherPresenter)
   with PrivateCollectionsActionsImpl
   with NineCardIntentConversions { self =>
 
-  implicit lazy val presenter = new PrivateCollectionsPresenter(self)
+  lazy val presenter = new PrivateCollectionsPresenter(self)
 
   lazy val launcherPresenter = lPresenter
 
@@ -24,7 +24,7 @@ class PrivateCollectionsFragment(implicit lPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    presenter.initialize
+    presenter.initialize()
   }
 }
 

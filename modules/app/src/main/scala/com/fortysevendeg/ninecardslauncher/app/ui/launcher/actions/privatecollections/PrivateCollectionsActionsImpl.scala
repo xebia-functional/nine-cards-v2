@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecolle
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
+import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
 import android.widget.{ImageView, LinearLayout}
@@ -16,8 +17,8 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCard, PrivateCollection}
@@ -30,13 +31,13 @@ trait PrivateCollectionsActionsImpl
   with Styles
   with NineCardIntentConversions {
 
-  self: TypedFindView with BaseActionFragment =>
+  self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
   val launcherPresenter: LauncherPresenter
 
-  val presenter: PrivateCollectionsPresenter
+  implicit val presenter: PrivateCollectionsPresenter
 
   override def initialize(): Ui[Any] =
     (toolbar <~
@@ -45,7 +46,7 @@ trait PrivateCollectionsActionsImpl
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
-  override def addPrivateCollections(privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Ui[Any] = {
+  override def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any] = {
     val adapter = new PrivateCollectionsAdapter(privateCollections)
     (recycler <~
       vVisible <~
@@ -60,7 +61,7 @@ trait PrivateCollectionsActionsImpl
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  override def showEmptyMessage(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Ui[Any] = showError(R.string.messageEmpty, presenter.loadPrivateCollections)
+  override def showEmptyMessage(): Ui[Any] = showError(R.string.messageEmpty, presenter.loadPrivateCollections())
 
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
 

@@ -17,17 +17,17 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   with Conversions
   with MomentConversions {
 
-  def initialize(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Unit = {
-    loadPrivateCollections
+  def initialize(): Unit = {
+    loadPrivateCollections()
     actions.initialize().run
   }
 
-  def loadPrivateCollections(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Unit = {
+  def loadPrivateCollections(): Unit = {
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (privateCollections: Seq[PrivateCollection]) => {
         if (privateCollections.isEmpty) {
-          actions.showEmptyMessage
+          actions.showEmptyMessage()
         } else {
           actions.addPrivateCollections(privateCollections)
         }
@@ -71,9 +71,9 @@ trait PrivateCollectionsActions {
 
   def showContactUsError(): Ui[Any]
 
-  def showEmptyMessage(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Ui[Any]
+  def showEmptyMessage(): Ui[Any]
 
-  def addPrivateCollections(privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Ui[Any]
+  def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any]
 
   def addCollection(collection: Collection): Ui[Any]
 
