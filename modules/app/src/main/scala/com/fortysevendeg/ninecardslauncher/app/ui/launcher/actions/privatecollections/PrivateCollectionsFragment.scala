@@ -5,9 +5,7 @@ import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{PrivateCollection, Collection}
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.Ui
 
 class PrivateCollectionsFragment(implicit lPresenter: LauncherPresenter)
   extends BaseActionFragment
