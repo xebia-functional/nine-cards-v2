@@ -249,14 +249,22 @@
     <string name="syncCurrent">Current device</string>
     <string name="syncLastSynced">Last synced: %s</string>
 
+    <string name="menuAccountSync">Synchronize</string>
+    <string name="menuAccountCopy">Copy</string>
+    <string name="menuAccountDelete">Delete</string>
+
     <string name="accountSynced">Account synced</string>
 
     <string name="errorSyncing">Error syncing account. Try again please</string>
 
     <string name="errorLoadingUser">Error loading user</string>
 
+    <string name="errorEmptyNameForDevice">Please, specify a name for the new configuration</string>
+    <string name="errorEmptyNameForDeviceButton">Try again</string>
+
     <string name="logout">Logout</string>
 
+    <string name="copyAccountSyncDialogTitle">New configuration name</string>
     <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
 
     <!-- Preferences -->
