@@ -39,10 +39,10 @@ trait PublicCollectionsActionsImpl
   self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
-  
+
   val launcherPresenter: LauncherPresenter
 
-  implicit val presenter: PublicCollectionsPresenter
+  implicit val collectionPresenter: PublicCollectionsPresenter
 
   var typeFilter = slot[TextView]
 
@@ -74,7 +74,7 @@ trait PublicCollectionsActionsImpl
           typeFilter <~ vPopupMenuShow(
             menu = R.menu.type_public_collection_menu,
             onMenuItemClickListener = (item: MenuItem) => {
-              presenter.loadPublicCollectionsByTypeSharedCollection(
+              collectionPresenter.loadPublicCollectionsByTypeSharedCollection(
                 item.getItemId match {
                   case R.id.top => TopSharedCollection
                   case _ => LatestSharedCollection
@@ -88,7 +88,7 @@ trait PublicCollectionsActionsImpl
             layout = R.layout.list_item_popup_menu,
             menu = categoryNamesMenu,
             onItemClickListener = (position: Int) => {
-              categories.lift(position) foreach presenter.loadPublicCollectionsByCategory
+              categories.lift(position) foreach collectionPresenter.loadPublicCollectionsByCategory
             },
             width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
             height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
@@ -96,7 +96,7 @@ trait PublicCollectionsActionsImpl
       (recycler <~ recyclerStyle)
 
   override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError, () => {
-    presenter.loadPublicCollections()
+    collectionPresenter.loadPublicCollections()
   })
 
   override def loadPublicCollections(

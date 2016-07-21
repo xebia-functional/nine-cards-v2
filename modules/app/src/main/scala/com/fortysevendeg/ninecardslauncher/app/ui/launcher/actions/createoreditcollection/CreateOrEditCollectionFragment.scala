@@ -20,7 +20,7 @@ class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
 
   lazy val launcherPresenter = lPresenter
 
-  lazy val presenter = new CreateOrEditCollectionPresenter(self)
+  lazy val collectionPresenter = new CreateOrEditCollectionPresenter(self)
 
   override def getLayoutId: Int = R.layout.new_collection
 
@@ -28,7 +28,7 @@ class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    presenter.initialize(maybeCollectionId)
+    collectionPresenter.initialize(maybeCollectionId)
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
@@ -40,14 +40,14 @@ class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
             Some(extras.getString(CreateOrEditCollectionFragment.iconRequest))
           case _ => None
         } getOrElse None
-        presenter.updateIcon(maybeIcon)
+        collectionPresenter.updateIcon(maybeIcon)
       case (RequestCodes.selectInfoColor, Activity.RESULT_OK) =>
         val maybeIndexColor = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(CreateOrEditCollectionFragment.colorRequest) =>
             Some(extras.getInt(CreateOrEditCollectionFragment.colorRequest))
           case _ => None
         } getOrElse None
-        presenter.updateColor(maybeIndexColor)
+        collectionPresenter.updateColor(maybeIndexColor)
       case _ =>
     }
   }

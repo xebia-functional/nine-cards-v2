@@ -37,7 +37,7 @@ trait PrivateCollectionsActionsImpl
 
   val launcherPresenter: LauncherPresenter
 
-  implicit val presenter: PrivateCollectionsPresenter
+  implicit val collectionPresenter: PrivateCollectionsPresenter
 
   override def initialize(): Ui[Any] =
     (toolbar <~
@@ -61,7 +61,7 @@ trait PrivateCollectionsActionsImpl
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  override def showEmptyMessage(): Ui[Any] = showError(R.string.messageEmpty, presenter.loadPrivateCollections())
+  override def showEmptyMessage(): Ui[Any] = showError(R.string.messageEmpty, collectionPresenter.loadPrivateCollections())
 
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
 

@@ -114,20 +114,21 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       case (itemData, index) =>
         val newScreen = data.lift(index).isEmpty
         val sameData = data.lift(index) contains itemData
-        (sameData, newScreen, views.lift(index), forcePopulatePosition) match {
-          case (true, false, Some(oldView: Holder), Some(forceIndex)) if index == forceIndex =>
-            populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
-            oldView
-          case (true, false, Some(oldView: Holder), _) if oldView.isInstanceOf=>
-            oldView
-          case (false, false, Some(oldView: Holder), _) =>
-            populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
-            oldView
-          case _ =>
-            val view = createView(getItemViewType(itemData, index))
-            populateView(Some(view), itemData, getItemViewType(itemData, index), index).run
-            view
+
+        lazy val newView = createView(getItemViewType(itemData, index))
+
+        val selectedView =
+          if (newScreen) newView
+          else views.lift(index) match {
+            case Some(oldView) => oldView
+            case _ => newView
+          }
+
+        (sameData, forcePopulatePosition) match {
+          case (true, Some(forceIndex)) if index != forceIndex =>
+          case _ => populateView(Some(selectedView), itemData, getItemViewType(itemData, index), index).run
         }
+        selectedView
     }) ++ (newData.length until minimumViews map (_ => createEmptyView()))
 
     data = newData

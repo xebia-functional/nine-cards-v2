@@ -569,8 +569,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   private[this] def reorderCollectionsInCurrentData(from: Int, to: Int): Seq[LauncherData] = {
-    val currentData = actions.getData
-    val cols = currentData flatMap (_.collections)
+    val cols = actions.getData flatMap (_.collections)
     val collections = cols.reorder(from, to).zipWithIndex map {
       case (collection, index) => collection.copy(position = index)
     }
@@ -578,8 +577,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   private[this] def reloadCollectionsInCurrentData: Seq[LauncherData] = {
-    val currentData = actions.getData
-    val collections = currentData flatMap (_.collections)
+    val collections = actions.getData flatMap (_.collections)
     createLauncherDataCollections(collections)
   }
 
@@ -599,8 +597,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   private[this] def updateCollectionInCurrentData(collection: Collection): Seq[LauncherData] = {
-    val currentData = actions.getData
-    val cols = currentData flatMap (_.collections)
+    val cols = actions.getData flatMap (_.collections)
     val collections = cols.updated(collection.position, collection)
     createLauncherDataCollections(collections)
   }

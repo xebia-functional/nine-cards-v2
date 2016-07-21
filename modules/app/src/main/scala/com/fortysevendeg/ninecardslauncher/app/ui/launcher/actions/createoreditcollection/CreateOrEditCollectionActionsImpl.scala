@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.Paint.Style
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
+import android.support.v4.app.DialogFragment
 import com.fortysevendeg.macroid.extras.EditTextTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -47,13 +48,13 @@ trait CreateOrEditCollectionActionsImpl
 
   val launcherPresenter: LauncherPresenter
 
-  val presenter: CreateOrEditCollectionPresenter
+  val collectionPresenter: CreateOrEditCollectionPresenter
 
   override def initialize(): Ui[Any] =
     (toolbar <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
-      (colorContent <~ On.click(Ui(presenter.changeColor(getColor)))) ~
-      (iconContent <~ On.click(Ui(presenter.changeIcon(getIcon))))
+      (colorContent <~ On.click(Ui(collectionPresenter.changeColor(getColor)))) ~
+      (iconContent <~ On.click(Ui(collectionPresenter.changeIcon(getIcon))))
 
   override def initializeNewCollection(): Ui[Any] =
     (toolbar <~
@@ -61,7 +62,7 @@ trait CreateOrEditCollectionActionsImpl
       dtbChangeText(R.string.newCollection)) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
-        On.click(Ui(presenter.saveCollection(getName, getIcon, getColor)))) ~
+        On.click(Ui(collectionPresenter.saveCollection(getName, getIcon, getColor)))) ~
       setIcon(defaultIcon) ~
       setIndexColor(0)
 
@@ -73,7 +74,7 @@ trait CreateOrEditCollectionActionsImpl
       (collectionName <~ tvText(collection.name)) ~
       (fab <~
         fabButtonMenuStyle(color) <~
-        On.click(Ui(presenter.editCollection(collection, getName, getIcon, getColor)))) ~
+        On.click(Ui(collectionPresenter.editCollection(collection, getName, getIcon, getColor)))) ~
       setIcon(collection.icon) ~
       setIndexColor(collection.themedColorIndex)
   }
@@ -86,22 +87,16 @@ trait CreateOrEditCollectionActionsImpl
     launcherPresenter.updateCollection(collection)
   }
 
-  override def showColorDialog(color: Int): Ui[Any] = Ui {
-    val ft = getFragmentManager.beginTransaction()
-    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(javaNull)
+  override def showColorDialog(color: Int): Ui[Any] = {
     val dialog = new ColorDialogFragment(color)
-    dialog.setTargetFragment(this, RequestCodes.selectInfoColor)
-    dialog.show(ft, tagDialog)
+    val requestCode = RequestCodes.selectInfoColor
+    showDialog(dialog, requestCode)
   }
 
-  override def showIconDialog(icon: String) = Ui {
-    val ft = getFragmentManager.beginTransaction()
-    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(javaNull)
+  override def showIconDialog(icon: String) = {
     val dialog = new IconDialogFragment(icon)
-    dialog.setTargetFragment(this, RequestCodes.selectInfoIcon)
-    dialog.show(ft, tagDialog)
+    val requestCode = RequestCodes.selectInfoIcon
+    showDialog(dialog, requestCode)
   }
 
   override def showMessageContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
@@ -115,6 +110,14 @@ trait CreateOrEditCollectionActionsImpl
   override def close(): Ui[Any] = hideKeyboard ~ unreveal()
 
   private[this] def hideKeyboard: Ui[Any] = name <~ etHideKeyboard
+
+  private[this] def showDialog(dialog: DialogFragment, requestCode: Int) = Ui {
+    val ft = getFragmentManager.beginTransaction()
+    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    dialog.setTargetFragment(this, requestCode)
+    dialog.show(ft, tagDialog)
+  }
 
   private[this] def setIcon(iconName: String): Ui[Any] =
     iconImage <~
@@ -142,8 +145,8 @@ trait CreateOrEditCollectionActionsImpl
   private[this] def showMessage(message: Int): Ui[Any] = content <~ vSnackbarShort(message)
 
   private[this] def getName: Option[String] = (for {
-    n <- name
-    text <- Option(n.getText)
+    editText <- name
+    text <- Option(editText.getText)
   } yield if (text.toString.isEmpty) None else Some(text.toString)).flatten
 
   private[this] def getIcon: Option[String] = iconImage flatMap { icon =>

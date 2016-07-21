@@ -264,30 +264,21 @@ trait CollectionsUiActions
       workspaceButtonCreateCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       FuncOn.click { view: View =>
-        val iconView = (view match {
-          case wim: WorkspaceItemMenu => Option(wim)
-          case _ => None
-        }) flatMap (_.icon)
+        val iconView = getIconView(view)
         showAction(f[CreateOrEditCollectionFragment], iconView, resGetColor(R.color.collection_group_1))
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonMyCollectionsStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       FuncOn.click { view: View =>
-        val iconView = (view match {
-          case wim: WorkspaceItemMenu => Option(wim)
-          case _ => None
-        }) flatMap (_.icon)
+        val iconView = getIconView(view)
         showAction(f[PrivateCollectionsFragment], iconView, resGetColor(R.color.collection_fab_button_item_my_collections))
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonPublicCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       FuncOn.click { view: View =>
-        val iconView = (view match {
-          case wim: WorkspaceItemMenu => Option(wim)
-          case _ => None
-        }) flatMap (_.icon)
+        val iconView = getIconView(view)
         showAction(f[PublicCollectionsFragment], iconView, resGetColor(R.color.collection_fab_button_item_public_collection))
       }).get,
     (w[WorkspaceItemMenu] <~
@@ -303,6 +294,11 @@ trait CollectionsUiActions
         closeCollectionMenu() ~ Ui(presenter.goToChangeMoment())
       }).get
   )
+
+  private[this] def getIconView(view: View): Option[View] = (view match {
+    case wim: WorkspaceItemMenu => Option(wim)
+    case _ => None
+  }) flatMap (_.icon)
 
   private[this] def startOpenCollectionMenu(): Ui[Any] = {
     val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
