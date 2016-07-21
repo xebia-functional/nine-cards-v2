@@ -111,4 +111,7 @@ object ExtraTweaks {
     }
   }
 
+  def etSetError(message: Int)(implicit contextWrapper: ContextWrapper) =
+    Tweak[EditText](_.setError(contextWrapper.bestAvailable.getString(message)))
+
 }

@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.profile
 import android.app.Activity
 import android.support.design.widget.TabLayout
 import android.support.design.widget.TabLayout.Tab
+import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -16,7 +17,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, PublicationsAdapter, SubscriptionsAdapter}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{AccountSync, Device}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{CopyAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -32,6 +35,8 @@ trait ProfileUiActionsImpl
   implicit val uiContext: UiContext[Activity]
 
   implicit lazy val theme = presenter.getTheme
+
+  val tagDialog = "dialog"
 
   lazy val rootLayout = Option(findView(TR.profile_root))
 
@@ -53,7 +58,7 @@ trait ProfileUiActionsImpl
 
   lazy val loadingView = Option(findView(TR.profile_loading))
 
-  lazy val iconIndicatorDrawable = new PathMorphDrawable(
+  lazy val iconIndicatorDrawable = PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
@@ -79,6 +84,12 @@ trait ProfileUiActionsImpl
 
   override def showSyncingError(): Ui[Any] = showMessage(R.string.errorSyncing)
 
+  override def showInvalidConfigurationNameError(resourceId: String): Ui[Any] =
+    rootLayout <~ vSnackbarIndefiniteAction(
+      R.string.errorEmptyNameForDevice,
+      R.string.errorEmptyNameForDeviceButton,
+      () => showDialogForCopyDevice(resourceId))
+
   override def showMessageAccountSynced(): Ui[Any] = showMessage(R.string.accountSynced)
 
   override def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
@@ -86,21 +97,21 @@ trait ProfileUiActionsImpl
     (userEmail <~ tvText(email)) ~
       (userAvatar <~
         (avatarUrl map ivUri getOrElse {
-          val drawable = new CharDrawable(name.substring(0, 1).toUpperCase)
+          val drawable = CharDrawable(name.substring(0, 1).toUpperCase)
           ivSrc(drawable)
         }) <~
         menuAvatarStyle)
 
   override def setAccountsAdapter(items: Seq[AccountSync]): Ui[Any] =
-    (recyclerView <~ vVisible <~ rvAdapter(new AccountsAdapter(items, accountClickListener))) ~
+    (recyclerView <~ vVisible <~ rvAdapter(AccountsAdapter(items, accountClickListener))) ~
       (loadingView <~ vInvisible)
 
   override def setPublicationsAdapter(items: Seq[String]): Ui[Any] =
-    (recyclerView <~ vVisible <~ rvAdapter(new PublicationsAdapter(items))) ~
+    (recyclerView <~ vVisible <~ rvAdapter(PublicationsAdapter(items))) ~
       (loadingView <~ vInvisible)
 
   override def setSubscriptionsAdapter(items: Seq[String]): Ui[Any] =
-    (recyclerView <~ vVisible <~ rvAdapter(new SubscriptionsAdapter(items))) ~
+    (recyclerView <~ vVisible <~ rvAdapter(SubscriptionsAdapter(items))) ~
       (loadingView <~ vInvisible)
 
   override def handleToolbarVisibility(percentage: Float): Ui[Any] = toolbar match {
@@ -114,14 +125,32 @@ trait ProfileUiActionsImpl
     userContainer <~ vAlpha(alpha)
   }
 
+  override def showDialogForDeleteDevice(resourceId: String): Unit =
+    showDialog(new RemoveAccountDeviceDialogFragment(resourceId))
+
+  override def showDialogForCopyDevice(resourceId: String): Unit =
+    showDialog(new CopyAccountDeviceDialogFragment(resourceId))
+
+  private[this] def showDialog(dialog: DialogFragment): Unit = {
+    activityContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        val ft = activity.getSupportFragmentManager.beginTransaction()
+        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+        ft.addToBackStack(javaNull)
+        dialog.show(ft, tagDialog)
+      case _ =>
+    }
+  }
+
   private[this] def showError(message: Int, clickAction: () => Unit): Ui[_] =
     (rootLayout <~ vSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
       (loadingView <~ vInvisible)
 
-  private[this] def accountClickListener(position: Int, accountSync: AccountSync): Unit =
-    accountSync.accountSyncType match {
-      case Device(true) => presenter.launchService()
-      case Device(false) => accountSync.resourceId foreach presenter.showDialogForDeleteDevice
+  private[this] def accountClickListener(position: Int, itemId: Int, accountSync: AccountSync): Unit =
+    itemId match {
+      case R.id.action_sync => presenter.launchService()
+      case R.id.action_delete => accountSync.resourceId foreach showDialogForDeleteDevice
+      case R.id.action_copy => accountSync.resourceId foreach showDialogForCopyDevice
       case _ =>
     }
 

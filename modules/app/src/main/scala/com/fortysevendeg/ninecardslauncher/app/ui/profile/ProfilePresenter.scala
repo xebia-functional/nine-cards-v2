@@ -122,18 +122,6 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
 
-  def showDialogForDeleteDevice(resourceId: String): Unit = {
-    contextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) =>
-        val ft = activity.getSupportFragmentManager.beginTransaction()
-        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-        ft.addToBackStack(javaNull)
-        val dialog = new RemoveAccountDeviceDialogFragment(() => deleteDevice(resourceId))
-        dialog.show(ft, tagDialog)
-      case _ =>
-    }
-  }
-
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean =
     (requestCode, resultCode) match {
       case (`resolveGooglePlayConnection`, Activity.RESULT_OK) =>
@@ -163,6 +151,21 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
   }
 
+  def copyDevice(name: String, resourceId: String): Unit = Option(name) match {
+    case Some(s) if s.length > 0 => ???
+    case _ => actions.showInvalidConfigurationNameError(resourceId).run
+  }
+
+  def deleteDevice(resourceId: String): Unit =
+    clientStatuses match {
+      case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
+        Task.fork(deleteAccountDevice(client, resourceId).run).resolveAsyncUi(
+          onResult = (_) => Ui(loadUserAccounts(client, Seq(resourceId))),
+          onException = (_) => actions.showContactUsError(() => deleteDevice(resourceId)),
+          onPreTask = () => actions.showLoading())
+      case _ => actions.showConnectingGoogleError(() => tryToConnect())
+    }
+
   private[this] def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
 
   private[this] def loadUserInfo(): Unit =
@@ -187,16 +190,6 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       onException = (_) => actions.showConnectingGoogleError(() => loadUserAccounts(client)),
       onPreTask = () => actions.showLoading()
     )
-
-  private[this] def deleteDevice(resourceId: String): Unit =
-    clientStatuses match {
-      case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
-        Task.fork(deleteAccountDevice(client, resourceId).run).resolveAsyncUi(
-          onResult = (_) => Ui(loadUserAccounts(client, Seq(resourceId))),
-          onException = (_) => actions.showContactUsError(() => deleteDevice(resourceId)),
-          onPreTask = () => actions.showLoading())
-      case _ => actions.showConnectingGoogleError(() => tryToConnect())
-    }
 
   private[this] def loadUserEmail(): ServiceDef2[Option[String], UserException] = di.userProcess.getUser.map(_.email)
 
@@ -266,7 +259,13 @@ trait ProfileUiActions {
 
   def showSyncingError(): Ui[Any]
 
+  def showInvalidConfigurationNameError(resourceId: String): Ui[Any]
+
   def showMessageAccountSynced(): Ui[Any]
+
+  def showDialogForDeleteDevice(resourceId: String): Unit
+
+  def showDialogForCopyDevice(resourceId: String): Unit
 
   def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_]
 

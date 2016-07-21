@@ -6,10 +6,12 @@ import android.content.DialogInterface.OnClickListener
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfilePresenter
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
-class RemoveAccountDeviceDialogFragment(onClickListener: () => Unit)(implicit contextWrapper: ContextWrapper)
+class RemoveAccountDeviceDialogFragment(resourceId: String)(implicit contextWrapper: ContextWrapper, profilePresenter: ProfilePresenter)
   extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
@@ -17,11 +19,9 @@ class RemoveAccountDeviceDialogFragment(onClickListener: () => Unit)(implicit co
     new AlertDialog.Builder(getActivity).
       setMessage(R.string.removeAccountSyncMessage).
       setPositiveButton(android.R.string.ok, new OnClickListener {
-        override def onClick(dialog: DialogInterface, which: Int): Unit = onClickListener()
+        override def onClick(dialog: DialogInterface, which: Int): Unit = profilePresenter.deleteDevice(resourceId)
       }).
-      setNegativeButton(android.R.string.cancel, new OnClickListener {
-        override def onClick(dialog: DialogInterface, which: Int): Unit = dismiss()
-      }).
+      setNegativeButton(android.R.string.cancel, javaNull).
       create()
   }
 
