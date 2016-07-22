@@ -55,7 +55,7 @@ sealed trait NineCardsPreferenceValue[T]
 case object ShowClockMoment
   extends NineCardsPreferenceValue[Boolean] {
   override val name: String = showClockMoment
-  override val default: Boolean = true
+  override val default: Boolean = false
 }
 
 class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {

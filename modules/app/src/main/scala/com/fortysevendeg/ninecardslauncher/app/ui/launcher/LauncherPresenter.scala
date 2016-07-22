@@ -234,6 +234,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def clickMomentWorkspaceBackground(): Unit = actions.swapAppsMoment().run
 
+  def clickMomentTopBar(): Unit = actions.openAppsMoment().run
+
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
     self !>>
       TrackEvent(

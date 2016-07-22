@@ -16,6 +16,8 @@
     <string name="sendTo">Enviar a</string>
     <string name="buttonErrorReload">Recargar</string>
 
+    <string name="atHour">a las</string>
+
     <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a la collectión %1$s</string>
 
     <!-- Menu -->
@@ -421,19 +423,5 @@
     <string name="sendFeedback">Envíanos tus opiniones (Lanza AppTentive)</string>
     <string name="tutorial">Revisa el Tutorial</string>
     <string name="tos">Términos de Uso</string>
-
-    <!-- Months -->
-    <string name="month_1">Ene.</string>
-    <string name="month_2">Feb.</string>
-    <string name="month_3">Mar.</string>
-    <string name="month_4">Abr.</string>
-    <string name="month_5">May.</string>
-    <string name="month_6">Jun.</string>
-    <string name="month_7">Jul.</string>
-    <string name="month_8">Ago.</string>
-    <string name="month_9">Sep.</string>
-    <string name="month_10">Oct.</string>
-    <string name="month_11">Nov.</string>
-    <string name="month_12">Dic.</string>
 
 </resources>

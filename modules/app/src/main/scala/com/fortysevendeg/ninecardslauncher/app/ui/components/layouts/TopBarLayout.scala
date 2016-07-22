@@ -24,7 +24,6 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
-import org.joda.time.DateTime
 
 class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   extends FrameLayout(context, attrs, defStyle)
@@ -65,17 +64,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val momentWorkspace = LayoutInflater.from(context).inflate(R.layout.moment_bar_view_panel, javaNull)
 
-  val displacement = resGetDimensionPixelSize(R.dimen.shadow_displacement_default)
-
-  val radius = resGetDimensionPixelSize(R.dimen.shadow_radius_default)
-
-  val textTweak = tvShadowLayer(radius, displacement, displacement, resGetColor(R.color.shadow_default))
-
-  ((this <~
-    vgAddViews(Seq(momentWorkspace, collectionWorkspace))) ~
-    (momentText <~ textTweak) ~
-    (momentDigitalClock <~ textTweak) ~
-    (momentClock <~ textTweak)).run
+  (this <~
+    vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
 
   def init(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] =
     (momentWorkspace <~ vInvisible) ~
@@ -110,16 +100,13 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     val resIcon = iconCollectionDetail(collection.icon)
     val showClock = preferenceValues.getBoolean(ShowClockMoment)
     val text = if (showClock) {
-      val now = new DateTime()
-      val month = resGetString(s"month_${now.getMonthOfYear}") map (month => s" - $month ${now.getDayOfMonth},") getOrElse ""
-      s"${collection.name}$month"
+      s"${collection.name} ${resGetString(R.string.atHour)}"
     } else collection.name
     (momentContent <~
-      On.click(goToCollection(collection))) ~
+      On.click(Ui(presenter.clickMomentTopBar()))) ~
       (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~
       (momentClock <~ (if (showClock) vVisible else vGone)) ~
       (momentIcon <~
-        vBackgroundCollection(collection.themedColorIndex) <~
         ivSrc(resIcon)) ~
       (momentText <~
         tvText(text)) ~
@@ -135,14 +122,6 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     case CollectionsWorkSpace if collectionWorkspace.getVisibility == View.INVISIBLE =>
       (collectionWorkspace <~ applyFadeIn()) ~ (momentWorkspace <~ applyFadeOut())
     case _ => Ui.nop
-  }
-
-  private[this] def goToCollection(collection: Collection)(implicit presenter: LauncherPresenter) = {
-    val point = momentIcon map { view =>
-      val (x, y) = PositionsUtils.calculateAnchorViewPosition(view)
-      new Point(x + (view.getWidth / 2), y + (view.getHeight / 2))
-    } getOrElse new Point(0, 0)
-    Ui(presenter.goToCollection(Some(collection), point))
   }
 
   def getView(workSpaceType: WorkSpaceType): Option[View] = workSpaceType match {

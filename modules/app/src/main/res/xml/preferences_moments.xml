@@ -4,7 +4,7 @@
 
     <CheckBoxPreference
             android:key="showClockMoment"
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:title="@string/showClockTitle"
             android:summary="@string/showClockSummary"/>
 
