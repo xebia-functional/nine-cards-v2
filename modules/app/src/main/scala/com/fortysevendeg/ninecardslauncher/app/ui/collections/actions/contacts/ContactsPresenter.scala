@@ -10,7 +10,7 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class ContactsPresenter(actions: ContactsIuActions)(implicit activityContextWrapper: ActivityContextWrapper)
+class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Presenter {
 
   def initialize(): Unit = {
@@ -48,7 +48,7 @@ class ContactsPresenter(actions: ContactsIuActions)(implicit activityContextWrap
 
 }
 
-trait ContactsIuActions {
+trait ContactsUiActions {
 
   def initialize(): Ui[Any]
 

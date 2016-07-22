@@ -13,10 +13,10 @@ import com.fortysevendeg.ninecardslauncher2.R
 
 class ContactsFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter)
   extends BaseActionFragment
-  with ContactsIuActionsImpl
+  with ContactsUiActionsImpl
   with NineCardIntentConversions { self =>
 
-  override lazy val presenter = new ContactsPresenter(self)
+  override lazy val contactsPresenter = new ContactsPresenter(self)
 
   override val collectionsPresenter: CollectionsPagerPresenter = collectionsPagerPresenter
 
@@ -24,7 +24,7 @@ class ContactsFragment(implicit collectionsPagerPresenter: CollectionsPagerPrese
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    presenter.initialize()
+    contactsPresenter.initialize()
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
@@ -47,13 +47,13 @@ class ContactsFragment(implicit collectionsPagerPresenter: CollectionsPagerPrese
             case _ => None
           }
         }
-        presenter.addContact(maybeRequest)
+        contactsPresenter.addContact(maybeRequest)
       case _ =>
     }
   }
 
   override def onDestroy(): Unit = {
-    presenter.destroy()
+    contactsPresenter.destroy()
     super.onDestroy()
   }
 }
