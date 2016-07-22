@@ -153,7 +153,7 @@ trait LauncherUiActionsImpl
 
   override def reloadContactsInDrawer(
     contacts: IterableContacts,
-    counters: Seq[TermCounter] = Seq.empty): Ui[_] =
+    counters: Seq[TermCounter] = Seq.empty): Ui[Any] =
     addContacts(
       contacts = contacts,
       clickListener = (contact: Contact) => presenter.openContact(contact),
@@ -176,6 +176,8 @@ trait LauncherUiActionsImpl
   }
 
   override def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
+
+  override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
 
   override def addWidgetView(widgetView: View): Ui[Any] = {
     workspaces <~ lwsAddWidget(widgetView)
@@ -206,7 +208,7 @@ trait LauncherUiActionsImpl
 
   override def resetAction: Ui[Any] = turnOffFragmentContent
 
-  override def destroyAction: Ui[Any] = Ui(removeActionFragment)
+  override def destroyAction: Ui[Any] = (actionFragmentContent <~ vBlankBackground) ~ Ui(removeActionFragment)
 
   override def logout: Ui[Any] = cleanWorkspaces() ~ Ui(presenter.goToWizard())
 
@@ -281,7 +283,7 @@ trait LauncherUiActionsImpl
 
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections
 
-  def turnOffFragmentContent: Ui[_] =
+  def turnOffFragmentContent: Ui[Any] =
     fragmentContent <~ vClickable(false)
 
   def reloadPager(currentPage: Int) = Transformer {

@@ -17,6 +17,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -34,7 +35,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWo
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection.NewCollectionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
@@ -61,6 +62,8 @@ trait CollectionsUiActions
   val pageCollections = 1
 
   val typeWorkspaceButtonKey = "type-workspace-button-key"
+
+  val collectionId = "collectionId"
 
   lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
 
@@ -108,7 +111,7 @@ trait CollectionsUiActions
 
   lazy val menuLauncherSettings = Option(findView(TR.menu_launcher_settings))
 
-  def initCollectionsUi: Ui[_] =
+  def initCollectionsUi: Ui[Any] =
     (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
         (goToMenuOption(itemId) ~ closeMenu()).run
@@ -142,7 +145,13 @@ trait CollectionsUiActions
         closeCollectionMenu() ~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
       })
 
-  def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[_] =
+  def showEditCollection(collection: Collection): Ui[Any] = {
+    val view = collectionActionsPanel flatMap (_.leftActionView)
+    val collectionMap = Map(collectionId -> collection.id.toString)
+    showAction(f[CreateOrEditCollectionFragment], view, resGetColor(getIndexColor(collection.themedColorIndex)), collectionMap)
+  }
+
+  def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[Any] =
     workspaces <~ Tweak[View] { view =>
       val snackbar = Snackbar.make(view, activityContextWrapper.application.getString(message, args:_*), Snackbar.LENGTH_SHORT)
       snackbar.getView.getLayoutParams match {
@@ -155,13 +164,13 @@ trait CollectionsUiActions
       snackbar.show()
     }
 
-  def showCollectionsLoading: Ui[_] = loading <~ vVisible
+  def showCollectionsLoading: Ui[Any] = loading <~ vVisible
 
   def userProfileMenu(
     maybeEmail: Option[String],
     maybeName: Option[String],
     maybeAvatarUrl: Option[String],
-    maybeCoverUrl: Option[String]): Ui[_] =
+    maybeCoverUrl: Option[String]): Ui[Any] =
     (menuName <~ tvText(maybeName.getOrElse(""))) ~
       (menuEmail <~ tvText(maybeEmail.getOrElse(""))) ~
       (menuAvatar <~
@@ -177,33 +186,33 @@ trait CollectionsUiActions
           case None => ivBlank
         }))
 
-  def closeMenu(): Ui[_] = drawerLayout <~ dlCloseDrawer
+  def closeMenu(): Ui[Any] = drawerLayout <~ dlCloseDrawer
 
-  def closeCollectionMenu(): Ui[_] = workspaces <~ lwsCloseMenu
+  def closeCollectionMenu(): Ui[Any] = workspaces <~ lwsCloseMenu
 
-  def cleanWorkspaces(): Ui[_] = workspaces <~ lwsClean
+  def cleanWorkspaces(): Ui[Any] = workspaces <~ lwsClean
 
   def isMenuVisible: Boolean = drawerLayout exists (_.isDrawerOpen(GravityCompat.START))
 
   def isCollectionMenuVisible: Boolean = workspaces exists (_.workSpacesStatuses.openedMenu)
 
-  def goToWorkspace(page: Int): Ui[_] = {
+  def goToWorkspace(page: Int): Ui[Any] = {
     (getData.lift(page) map (data => topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
       (workspaces <~ lwsSelect(page)) ~
       (paginationPanel <~ reloadPager(page))
   }
 
-  def goToNextWorkspace(): Ui[_] =
+  def goToNextWorkspace(): Ui[Any] =
     (workspaces ~> lwsNextScreen()).get.flatten map { next =>
       goToWorkspace(next)
     } getOrElse Ui.nop
 
-  def goToPreviousWorkspace(): Ui[_] =
+  def goToPreviousWorkspace(): Ui[Any] =
     (workspaces ~> lwsPreviousScreen()).get.flatten map { previous =>
       goToWorkspace(previous)
     } getOrElse Ui.nop
 
-  protected def goToMenuOption(itemId: Int): Ui[_] = {
+  protected def goToMenuOption(itemId: Int): Ui[Any] = {
     (itemId, activityContextWrapper.original.get) match {
       case (R.id.menu_collections, _) => goToWorkspace(pageCollections)
       case (R.id.menu_moments, _) => goToWorkspace(pageMoments)
@@ -231,19 +240,22 @@ trait CollectionsUiActions
       workspaceButtonCreateCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       FuncOn.click { view: View =>
-        showAction(f[NewCollectionFragment], view, resGetColor(R.color.collection_fab_button_item_create_new_collection))
+        val iconView = getIconView(view)
+        showAction(f[CreateOrEditCollectionFragment], iconView, resGetColor(R.color.collection_group_1))
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonMyCollectionsStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       FuncOn.click { view: View =>
-        showAction(f[PrivateCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_my_collections))
+        val iconView = getIconView(view)
+        showAction(f[PrivateCollectionsFragment], iconView, resGetColor(R.color.collection_fab_button_item_my_collections))
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonPublicCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       FuncOn.click { view: View =>
-        showAction(f[PublicCollectionsFragment], view, resGetColor(R.color.collection_fab_button_item_public_collection))
+        val iconView = getIconView(view)
+        showAction(f[PublicCollectionsFragment], iconView, resGetColor(R.color.collection_fab_button_item_public_collection))
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonEditMomentStyle <~
@@ -259,7 +271,12 @@ trait CollectionsUiActions
       }).get
   )
 
-  private[this] def startOpenCollectionMenu(): Ui[_] = {
+  private[this] def getIconView(view: View): Option[View] = (view match {
+    case wim: WorkspaceItemMenu => Option(wim)
+    case _ => None
+  }) flatMap (_.icon)
+
+  private[this] def startOpenCollectionMenu(): Ui[Any] = {
     val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
     val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
     val workspaceType = if (isCollectionWorkspace) CollectionsWorkSpace else MomentWorkSpace
@@ -271,7 +288,7 @@ trait CollectionsUiActions
       (topBarPanel <~ fade(out = true))
   }
 
-  private[this] def updateOpenCollectionMenu(percent: Float): Ui[_] = {
+  private[this] def updateOpenCollectionMenu(percent: Float): Ui[Any] = {
     val backgroundPercent = maxBackgroundPercent * percent
     val colorBackground = Color.BLACK.alpha(backgroundPercent)
     val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
@@ -281,7 +298,7 @@ trait CollectionsUiActions
       (menuWorkspaceContent <~ vAlpha(percent) <~ vTranslationY(translate))
   }
 
-  private[this] def closeCollectionMenu(opened: Boolean): Ui[_] =
+  private[this] def closeCollectionMenu(opened: Boolean): Ui[Any] =
     if (opened) {
       menuCollectionRoot <~ On.click(closeCollectionMenu())
     } else {
@@ -307,22 +324,26 @@ trait CollectionsUiActions
     (w[TintableImageView] <~ paginationItemStyle <~ vSetPosition(position)).get
 
   private[this] def showAction[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], view: View, color: Int, map: Map[String, String] = Map.empty): Ui[_] = {
+  (fragmentBuilder: FragmentBuilder[F], maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty): Ui[Any] = {
     val sizeIconWorkSpaceMenuItem = resGetDimensionPixelSize(R.dimen.size_workspace_menu_item)
-    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.workspace_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
+    val (startX: Int, startY: Int) = maybeView map calculateAnchorViewPosition getOrElse(0, 0)
+    val (startWX: Int, startWY: Int) = workspaces map calculateAnchorViewPosition getOrElse(0, 0)
+    val (endPosX: Int, endPosY: Int) = workspaces map (w => (startWX + w.statuses.dimen.width / 2, startWY + w.statuses.dimen.height / 2)) getOrElse(0, 0)
     val x = startX + (sizeIconWorkSpaceMenuItem / 2)
     val y = startY + (sizeIconWorkSpaceMenuItem / 2)
     val args = new Bundle()
     args.putInt(BaseActionFragment.sizeIcon, sizeIconWorkSpaceMenuItem)
     args.putInt(BaseActionFragment.startRevealPosX, x)
     args.putInt(BaseActionFragment.startRevealPosY, y)
-    args.putInt(BaseActionFragment.endRevealPosX, x)
-    args.putInt(BaseActionFragment.endRevealPosY, y)
+    args.putInt(BaseActionFragment.endRevealPosX, endPosX)
+    args.putInt(BaseActionFragment.endRevealPosY, endPosY)
     map foreach {
       case (key, value) => args.putString(key, value)
     }
     args.putInt(BaseActionFragment.colorPrimary, color)
-    (fragmentContent <~ vClickable(true)) ~
+    closeCollectionMenu() ~
+      (actionFragmentContent <~ vBackgroundColor(Color.BLACK.alpha(maxBackgroundPercent))) ~
+      (fragmentContent <~ vClickable(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
 

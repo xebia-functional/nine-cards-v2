@@ -30,7 +30,7 @@ trait Styles {
   }
 
   def workspaceButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
-    wimPopulate(resGetColor(R.color.collection_fab_button_item_create_new_collection),
+    wimPopulate(resGetColor(R.color.collection_group_1),
       R.drawable.fab_menu_icon_create_new_collection,
       R.string.createNewCollection)
 

@@ -91,6 +91,7 @@
     <string name="publicCollections">Public collections</string>
 
     <string name="newCollection">New collection</string>
+    <string name="editCollection">Edit collection</string>
     <string name="collectionName">Collection name</string>
     <string name="selectIcon">Select icon</string>
     <string name="selectColor">Select color</string>

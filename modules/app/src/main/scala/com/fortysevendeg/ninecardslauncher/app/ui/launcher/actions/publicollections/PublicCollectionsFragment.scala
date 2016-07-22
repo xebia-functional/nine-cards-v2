@@ -5,20 +5,16 @@ import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TypeSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.Ui
 
-class PublicCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
+class PublicCollectionsFragment(implicit lPresenter: LauncherPresenter)
   extends BaseActionFragment
-  with PublicCollectionsComposer
-  with NineCardIntentConversions
-  with PublicCollectionsUiActions { self =>
+  with PublicCollectionsActionsImpl
+  with NineCardIntentConversions { self =>
 
-  implicit lazy val presenter: PublicCollectionsPresenter = new PublicCollectionsPresenter(self)
+  override lazy val collectionPresenter: PublicCollectionsPresenter = new PublicCollectionsPresenter(self)
+
+  lazy val launcherPresenter = lPresenter
 
   lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
 
@@ -26,29 +22,8 @@ class PublicCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    presenter.initialize()
+    collectionPresenter.initialize()
   }
-
-  override def initialize(): Ui[Any] = initUi
-
-  override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError, () => {
-    presenter.loadPublicCollections()
-  })
-
-  override def loadPublicCollections(sharedCollections: Seq[SharedCollection]): Ui[Any] =
-    reloadPublicCollections(sharedCollections)
-
-  override def addCollection(collection: Collection): Ui[Any] = Ui {
-    launcherPresenter.addCollection(collection)
-  }
-
-  override def showLoading(): Ui[Any] = showLoadingView
-
-  override def updateCategory(category: NineCardCategory): Ui[Any] = changeCategoryName(category)
-
-  override def updateTypeCollection(typeSharedCollection: TypeSharedCollection): Ui[Any] = changeTypeCollection(typeSharedCollection)
-
-  override def close(): Ui[Any] = unreveal()
 }
 
 
