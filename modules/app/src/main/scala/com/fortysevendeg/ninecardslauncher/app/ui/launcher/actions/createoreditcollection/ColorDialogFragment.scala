@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
 import android.app.{Activity, Dialog}
 import android.content.Intent
@@ -70,7 +70,7 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
         On.click {
           Ui {
             val responseIntent = new Intent
-            responseIntent.putExtra(NewCollectionFragment.colorRequest, index)
+            responseIntent.putExtra(CreateOrEditCollectionFragment.colorRequest, index)
             getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
             dismiss()
           }
