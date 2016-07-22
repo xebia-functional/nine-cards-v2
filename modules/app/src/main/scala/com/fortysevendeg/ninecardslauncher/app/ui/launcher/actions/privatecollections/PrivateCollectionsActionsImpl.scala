@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecolle
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
+import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
 import android.widget.{ImageView, LinearLayout}
@@ -16,35 +17,36 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{PrivateCard, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCard, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-trait PrivateCollectionsComposer
-  extends Styles
+trait PrivateCollectionsActionsImpl
+  extends PrivateCollectionsActions
+  with Styles
   with NineCardIntentConversions {
 
-  self: TypedFindView with BaseActionFragment =>
+  self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
-  def initUi: Ui[_] =
+  val launcherPresenter: LauncherPresenter
+
+  implicit val collectionPresenter: PrivateCollectionsPresenter
+
+  override def initialize(): Ui[Any] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.myCollections) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
-  def showLoadingView: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
-
-  def showError(res: Int): Ui[_] = rootContent <~ vSnackbarShort(res)
-
-  def reloadPrivateCollections(
-    privateCollections: Seq[PrivateCollection])(implicit uiContext: UiContext[_], presenter: PrivateCollectionsPresenter): Ui[_] = {
+  override def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any] = {
     val adapter = new PrivateCollectionsAdapter(privateCollections)
     (recycler <~
       vVisible <~
@@ -52,6 +54,20 @@ trait PrivateCollectionsComposer
       rvAdapter(adapter)) ~
       (loading <~ vGone)
   }
+
+  override def addCollection(collection: Collection): Ui[Any] = Ui {
+    launcherPresenter.addCollection(collection)
+  }
+
+  override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
+
+  override def showEmptyMessage(): Ui[Any] = showError(R.string.messageEmpty, collectionPresenter.loadPrivateCollections())
+
+  override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
+
+  override def close(): Ui[Any] = unreveal()
+
+  private[this] def showMessage(message: Int): Ui[Any] = content <~ vSnackbarShort(message)
 
 }
 

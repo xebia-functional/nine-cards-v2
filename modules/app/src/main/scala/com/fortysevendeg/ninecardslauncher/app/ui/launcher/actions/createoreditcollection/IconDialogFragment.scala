@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.newcollection
+package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
 import android.app.{Activity, Dialog}
 import android.content.Intent
@@ -16,22 +16,40 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.commons.types.ContactsCategory
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class IconDialogFragment(categorySelected: NineCardCategory)(implicit contextWrapper: ContextWrapper)
+case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: ContextWrapper)
   extends DialogFragment
   with NineCardIntentConversions {
+
+  val categoryIcons = appsCategories map { cat =>
+    val name = resGetString(cat.getStringResource).getOrElse(cat.getStringResource)
+    ItemData(name, cat.getIconResource)
+  }
+
+  val momentIcons = moments map { mom =>
+    val name = resGetString(mom.getStringResource).getOrElse(mom.getStringResource)
+    ItemData(name, mom.getIconResource)
+  }
+
+  val contactIcon = Seq {
+    val name = resGetString(ContactsCategory.getStringResource).getOrElse(ContactsCategory.getStringResource)
+    ItemData(name, ContactsCategory.getIconResource)
+  }
+
+  val icons = categoryIcons ++ momentIcons ++ contactIcon
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
     val rootView = new ScrollView(getActivity)
     val contentView = new LinearLayout(getActivity)
     contentView.setOrientation(LinearLayout.VERTICAL)
 
-    val views = appsCategories map { cat => new ItemView(cat, cat == categorySelected) }
+    val views = icons map { ic => new ItemView(ic, ic.icon == iconSelected) }
 
     ((rootView <~ vgAddView(contentView)) ~
       (contentView <~ vgAddViews(views))).run
@@ -39,7 +57,7 @@ case class IconDialogFragment(categorySelected: NineCardCategory)(implicit conte
     new AlertDialog.Builder(getActivity).setView(rootView).create()
   }
 
-  class ItemView(category: NineCardCategory, select: Boolean)
+  class ItemView(data: ItemData, select: Boolean)
     extends LinearLayout(contextWrapper.bestAvailable)
     with TypedFindView {
 
@@ -48,9 +66,7 @@ case class IconDialogFragment(categorySelected: NineCardCategory)(implicit conte
     lazy val text = Option(findView(TR.icon_dialog_name))
     lazy val icon = Option(findView(TR.icon_dialog_select))
 
-    val name = resGetString(category.getStringResource).getOrElse(category.getStringResource)
-
-    val colorizeDrawable = resGetDrawable(iconCollectionDetail(category.name)).colorize(Color.GRAY)
+    val colorizeDrawable = resGetDrawable(iconCollectionDetail(data.icon)).colorize(Color.GRAY)
 
     val drawable = new PathMorphDrawable(
       defaultIcon = IconTypes.CHECK,
@@ -59,13 +75,13 @@ case class IconDialogFragment(categorySelected: NineCardCategory)(implicit conte
 
     ((text <~
       (if (select) tvColorResource(R.color.text_selected_color_dialog) else Tweak.blank) <~
-      tvText(name) <~
+      tvText(data.name) <~
       tvCompoundDrawablesWithIntrinsicBounds(left = Some(colorizeDrawable))) ~
       (icon <~ (if (select) ivSrc(drawable) else Tweak.blank)) ~
       (this <~ On.click{
         Ui {
           val responseIntent = new Intent
-          responseIntent.putExtra(NewCollectionFragment.iconRequest, category.name)
+          responseIntent.putExtra(CreateOrEditCollectionFragment.iconRequest, data.icon)
           getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
           dismiss()
         }
@@ -73,5 +89,7 @@ case class IconDialogFragment(categorySelected: NineCardCategory)(implicit conte
     ).run
 
   }
+
+  case class ItemData(name: String, icon: String)
 
 }

@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollect
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
+import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.{MenuItem, View, ViewGroup}
 import android.widget.{ImageView, LinearLayout, TextView}
@@ -16,25 +17,32 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TypeSharedCollection, LatestSharedCollection, TopSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{LatestSharedCollection, TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-trait PublicCollectionsComposer
-  extends Styles
+trait PublicCollectionsActionsImpl
+  extends PublicCollectionsUiActions 
+  with Styles
   with PublicCollectionsStyle
   with NineCardIntentConversions {
 
-  self: TypedFindView with BaseActionFragment =>
+  self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 
   lazy val recycler = Option(findView(TR.actions_recycler))
+
+  val launcherPresenter: LauncherPresenter
+
+  implicit val collectionPresenter: PublicCollectionsPresenter
 
   var typeFilter = slot[TextView]
 
@@ -47,7 +55,7 @@ trait PublicCollectionsComposer
     (categoriesSorted map (_._1), categoriesSorted map (_._2))
   }
 
-  def initUi(implicit presenter: PublicCollectionsPresenter): Ui[_] =
+  override def initialize(): Ui[Any] =
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.publicCollections) <~
@@ -66,7 +74,7 @@ trait PublicCollectionsComposer
           typeFilter <~ vPopupMenuShow(
             menu = R.menu.type_public_collection_menu,
             onMenuItemClickListener = (item: MenuItem) => {
-              presenter.loadPublicCollectionsByTypeSharedCollection(
+              collectionPresenter.loadPublicCollectionsByTypeSharedCollection(
                 item.getItemId match {
                   case R.id.top => TopSharedCollection
                   case _ => LatestSharedCollection
@@ -80,17 +88,19 @@ trait PublicCollectionsComposer
             layout = R.layout.list_item_popup_menu,
             menu = categoryNamesMenu,
             onItemClickListener = (position: Int) => {
-              categories.lift(position) foreach presenter.loadPublicCollectionsByCategory
+              categories.lift(position) foreach collectionPresenter.loadPublicCollectionsByCategory
             },
             width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
             height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
         }) ~
       (recycler <~ recyclerStyle)
 
-  def showLoadingView: Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+  override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError, () => {
+    collectionPresenter.loadPublicCollections()
+  })
 
-  def reloadPublicCollections(
-    sharedCollections: Seq[SharedCollection])(implicit uiContext: UiContext[_], presenter: PublicCollectionsPresenter): Ui[_] = {
+  override def loadPublicCollections(
+    sharedCollections: Seq[SharedCollection]): Ui[Any] = {
     val adapter = new PublicCollectionsAdapter(sharedCollections)
     (recycler <~
       vVisible <~
@@ -99,13 +109,21 @@ trait PublicCollectionsComposer
       (loading <~ vGone)
   }
 
-  def changeCategoryName(category: NineCardCategory) =
+  override def addCollection(collection: Collection): Ui[Any] = Ui {
+    launcherPresenter.addCollection(collection)
+  }
+
+  override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
+
+  override def updateCategory(category: NineCardCategory): Ui[Any] =
     categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)
 
-  def changeTypeCollection(typeSharedCollection: TypeSharedCollection) = typeSharedCollection match {
+  override def updateTypeCollection(typeSharedCollection: TypeSharedCollection): Ui[Any] = typeSharedCollection match {
     case TopSharedCollection => typeFilter <~ tvText(R.string.top)
     case LatestSharedCollection => typeFilter <~ tvText(R.string.latest)
   }
+
+  override def close(): Ui[Any] = unreveal()
 
 }
 
@@ -134,7 +152,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
 
   lazy val shareCollection = Option(findView(TR.public_collections_item_share_collection))
 
-  def bind(collection: SharedCollection, position: Int): Ui[_] = {
+  def bind(collection: SharedCollection, position: Int): Ui[Any] = {
     val background = new ShapeDrawable(new OvalShape)
     background.getPaint.setColor(resGetColor(getRandomIndexColor))
     val appsCount = appsByRow - 1

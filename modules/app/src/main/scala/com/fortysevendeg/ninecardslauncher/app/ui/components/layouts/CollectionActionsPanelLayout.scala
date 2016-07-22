@@ -11,7 +11,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableButton
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableButtonTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, DragLauncherType, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -37,6 +36,10 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
 
   var draggingTo: Option[Int] = None
 
+  def leftActionView: Option[TintableButton] = Option(findView(TR.launcher_collections_action_1))
+
+  def rightActionView: Option[TintableButton] = Option(findView(TR.launcher_collections_action_2))
+
   def load(actions: Seq[CollectionActionItem])
           (implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Ui[Any] = {
 
@@ -48,8 +51,8 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
         tbResetColor
 
     def buttonByIndex(index: Int): Option[TintableButton] = index match {
-      case 0 => Option(findView(TR.launcher_collections_action_1))
-      case 1 => Option(findView(TR.launcher_collections_action_2))
+      case 0 => leftActionView
+      case 1 => rightActionView
       case _ => None
     }
 
