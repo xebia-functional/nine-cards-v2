@@ -203,6 +203,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         }
       }
     } else if (connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
+      actions.goToUser().run
       withActivity { activity =>
         GoogleApiAvailability.getInstance()
           .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
