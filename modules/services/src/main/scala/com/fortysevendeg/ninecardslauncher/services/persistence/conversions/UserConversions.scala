@@ -19,7 +19,9 @@ trait UserConversions {
       androidToken = user.data.androidToken,
       name = user.data.name,
       avatar = user.data.avatar,
-      cover = user.data.cover)
+      cover = user.data.cover,
+      deviceName = user.data.deviceName,
+      deviceCloudId = user.data.deviceCloudId)
 
   def toRepositoryUser(user: User): RepositoryUser =
     RepositoryUser(
@@ -33,7 +35,9 @@ trait UserConversions {
         androidToken = user.androidToken,
         name = user.name,
         avatar = user.avatar,
-        cover = user.cover))
+        cover = user.cover,
+        deviceName = user.deviceName,
+        deviceCloudId = user.deviceCloudId))
 
   def toRepositoryUser(request: UpdateUserRequest): RepositoryUser =
     RepositoryUser(
@@ -47,7 +51,9 @@ trait UserConversions {
         androidToken = request.androidToken,
         name = request.name,
         avatar = request.avatar,
-        cover = request.cover))
+        cover = request.cover,
+        deviceName = request.deviceName,
+        deviceCloudId = request.deviceCloudId))
 
   def toRepositoryUserData(request: AddUserRequest): RepositoryUserData =
     RepositoryUserData(
@@ -59,5 +65,7 @@ trait UserConversions {
       androidToken = request.androidToken,
       name = request.name,
       avatar = request.avatar,
-      cover = request.cover)
+      cover = request.cover,
+      deviceName = request.deviceName,
+      deviceCloudId = request.deviceCloudId)
 }
