@@ -25,7 +25,7 @@ class UserProcessImpl(
 
   private[this] val noActiveUserErrorMessage = "No active user"
 
-  val emptyUserRequest = AddUserRequest(None, None, None, None, None, None, None, None, None)
+  val emptyUserRequest = AddUserRequest(None, None, None, None, None, None, None, None, None, None, None)
 
   override def signIn(email: String, deviceName: String, token: String, permissions: Seq[String])(implicit context: ContextSupport) = {
     withActiveUser { id =>
@@ -59,7 +59,7 @@ class UserProcessImpl(
 
   override def unregister(implicit context: ContextSupport) =
     withActiveUser { id =>
-      val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None)
+      val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None, None, None)
       (for {
         _ <- syncInstallation(id, None, None, None)
         _ <- persistenceServices.updateUser(update)

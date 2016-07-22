@@ -30,6 +30,8 @@ trait UserProcessData
 
   val permissions = Seq.empty
 
+  val deviceCloudId = "fake-device-cloud-id"
+
   val googleDevice = GoogleDevice(
     name = deviceName,
     deviceId = deviceId,
@@ -52,7 +54,9 @@ trait UserProcessData
     androidToken = None,
     name = None,
     avatar = None,
-    cover = None)
+    cover = None,
+    deviceName = Some(deviceName),
+    deviceCloudId = Some(deviceCloudId))
 
   val installationStatusCode = 102
 
