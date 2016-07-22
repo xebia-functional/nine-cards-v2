@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.profile
 
+import java.util.Date
+
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -182,7 +184,12 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     Task.fork(loadAccounts(client, filterOutResourceIds).run).resolveAsyncUi(
       onResult = accountSyncs => {
         syncEnabled = true
-        actions.setAccountsAdapter(accountSyncs)
+        if (accountSyncs.isEmpty) {
+          launchService()
+          actions.showLoading()
+        } else {
+          actions.setAccountsAdapter(accountSyncs)
+        }
       },
       onException = (_) => actions.showConnectingGoogleError(() => loadUserAccounts(client)),
       onPreTask = () => actions.showLoading()
@@ -228,22 +235,27 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     } yield ()
 
   private[this] def createSync(devices: Seq[CloudStorageDeviceSummary]): Seq[AccountSync] = {
-    val currentDevice = devices.find(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = true, cloudId = d.cloudId)
-    }
-    val otherDevices = devices.filterNot(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, cloudId = d.cloudId)
-    }
-    val otherDevicesWithHeader = if (otherDevices.isEmpty) {
-      Seq.empty
-    } else {
-      AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
-        otherDevices
-    }
-    (AccountSync.header(resGetString(R.string.syncCurrent)) +:
-      currentDevice.toSeq) ++ otherDevicesWithHeader
-  }
 
+    def toAccountSync(d: CloudStorageDeviceSummary, current: Boolean = false): AccountSync =
+      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = current, cloudId = d.cloudId)
+
+    def order(seq: Seq[CloudStorageDeviceSummary]): Seq[CloudStorageDeviceSummary] =
+      seq.sortBy(_.modifiedDate)(Ordering[Date].reverse)
+
+    devices.partition(_.currentDevice) match {
+      case (current, other) =>
+        val currentDevices = order(current)
+        val currentDevicesWithHeader = currentDevices.headOption map { device =>
+          Seq(AccountSync.header(resGetString(R.string.syncCurrent)), toAccountSync(device, current = true))
+        } getOrElse Seq.empty
+        val otherDevices = order(other ++ currentDevices.drop(1)) match {
+          case seq if seq.isEmpty => Seq.empty
+          case seq => AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
+            (seq map (toAccountSync(_)))
+        }
+        currentDevicesWithHeader ++ otherDevices
+    }
+  }
 }
 
 object Statuses {

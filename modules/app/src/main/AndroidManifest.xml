@@ -12,7 +12,11 @@
         android:icon="@drawable/ic_launcher"
         android:name="com.fortysevendeg.ninecardslauncher.app.NineCardsApplication">
 
-        <meta-data android:name="io.fabric.ApiKey" android:value="@string/crashlytics_api_key"/>
+        <meta-data android:name="io.fabric.ApiKey"
+                   android:value="@string/crashlytics_api_key"/>
+
+        <meta-data android:name="com.google.android.gms.version"
+                   android:value="@integer/google_play_services_version" />
 
         <activity
             android:theme="@style/AppThemeWallpaper"
