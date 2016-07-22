@@ -261,7 +261,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:scaleType">centerInside</item>
         <item name="android:padding">@dimen/padding_large</item>
-        <item name="android:src">@drawable/share_collection_wizard_start</item>
+        <item name="android:src">@drawable/publish_collection_wizard_start</item>
     </style>
 
     <style name="PublishCollectionWizardFooter">
@@ -272,14 +272,14 @@
     <style name="PublishCollectionWizardDots">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:src">@drawable/share_collection_wizard_arrow</item>
+        <item name="android:src">@drawable/publish_collection_wizard_arrow</item>
     </style>
 
     <style name="PublishCollectionWizardArrow">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/footer_wizard_height</item>
         <item name="android:gravity">right</item>
-        <item name="android:src">@drawable/share_collection_wizard_arrow</item>
+        <item name="android:src">@drawable/publish_collection_wizard_arrow</item>
     </style>
 
 </resources>
