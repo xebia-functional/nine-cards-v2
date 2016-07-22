@@ -117,6 +117,41 @@
         <item name="android:gravity">center_horizontal</item>
     </style>
 
+    <style name="WizardDeviceItemLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="WizardDeviceItemCheck">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="WizardDeviceItemTitleLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="WizardDeviceItemTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/padding_default</item>
+        <item name="android:textColor">@color/text_default_title</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <style name="WizardDeviceItemSubtitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
     <style name="WizardDeviceRadioGroup">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0px</item>

@@ -10,7 +10,8 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.StepData
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{HeaderRadioButton, StepData}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.HeaderRadioButtonTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
@@ -184,8 +185,8 @@ trait WizardUiActionsImpl
   private[this] def pagination(position: Int) =
     (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def userRadio(title: String, tag: String): RadioButton =
-    (w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)).get
+  private[this] def userRadio(title: String, tag: String): HeaderRadioButton =
+    (w[HeaderRadioButton] <~ hrbTitle(title) <~ vTag(tag)).get
 
 }
 

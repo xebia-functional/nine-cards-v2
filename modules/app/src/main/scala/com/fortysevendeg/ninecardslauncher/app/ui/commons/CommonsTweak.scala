@@ -10,7 +10,7 @@ import android.view.View
 import ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
-import android.widget.{EditText, ImageView}
+import android.widget.{EditText, ImageView, RadioButton}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -110,5 +110,9 @@ object ExtraTweaks {
       case _ =>
     }
   }
+
+  def rbSetChecked(checked: Boolean)(implicit contextWrapper: ContextWrapper) = Tweak[RadioButton](_.setChecked(checked))
+
+  def rbToggle(implicit contextWrapper: ContextWrapper) = Tweak[RadioButton](_.toggle())
 
 }
