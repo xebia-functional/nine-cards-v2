@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
+import AnimatedWorkSpaces._
 import macroid._
 
 object LauncherWorkSpacesTweaks {
@@ -80,6 +81,9 @@ object LauncherWorkSpacesTweaks {
     }
   }
 
+  def lwsAddPageChangedObserver(observer: ((LauncherData, LauncherData, Boolean, Float) => Unit)) =
+    Tweak[W](_.addMovementObservers(observer))
+
   def lwsCurrentPage() = Excerpt[W, Int] (_.currentPage())
 
   def lwsCountCollections() = Excerpt[W, Int] (_.getCountCollections)
@@ -120,7 +124,7 @@ object AnimatedWorkSpacesTweaks {
 
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
-  def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
+  def awsAddPageChangedObserver(observer: PageChangedObserver) = Tweak[W](_.addPageChangedObservers(observer))
 
   def awsCurrentWorkSpace() = Excerpt[W, Int] (_.statuses.currentItem)
 

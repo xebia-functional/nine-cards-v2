@@ -116,9 +116,9 @@ trait LauncherUiActionsImpl
         vGlobalLayoutListener(_ =>
           (workspaces <~
             lwsData(data, selectedPageDefault) <~
+            (topBarPanel map (tbp => lwsAddPageChangedObserver(tbp.movement)) getOrElse Tweak.blank) <~
             awsAddPageChangedObserver(currentPage => {
-              ((getData.lift(currentPage) map (data => topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
-                (paginationPanel <~ reloadPager(currentPage))).run
+              (paginationPanel <~ reloadPager(currentPage)).run
             })) ~
             createPager(selectedPageDefault)
         ))

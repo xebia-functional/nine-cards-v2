@@ -4,27 +4,27 @@ import android.content.Context
 import android.graphics.Point
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
-import android.widget.{FrameLayout, TextView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, ShowClockMoment}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, ShowClockMoment}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
-import org.joda.time.{DateTime, JodaTimePermission}
+import org.joda.time.DateTime
 
 class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   extends FrameLayout(context, attrs, defStyle)
@@ -94,13 +94,25 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         tivPressedColor(theme.get(SearchPressedColor)) <~
         On.click(Ui(presenter.launchVoiceSearch)))
 
+  def movement(from: LauncherData, to: LauncherData, isFromLeft: Boolean, fraction: Float): Unit =
+    if (from.workSpaceType != to.workSpaceType) {
+      val displacement = getWidth * fraction
+      val fromX = if (isFromLeft) displacement else -displacement
+      val toX = fromX + (if (isFromLeft) -getWidth else getWidth)
+      ((getView(from.workSpaceType) <~
+        (if (fraction >= 1) vInvisible + vTranslationX(0) else vVisible + vTranslationX(fromX))) ~
+        (getView(to.workSpaceType) <~
+          vTranslationX(toX) <~
+          vVisible)).run
+    }
+
   def reloadMoment(collection: Collection)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
     val resIcon = iconCollectionDetail(collection.icon)
     val showClock = preferenceValues.getBoolean(ShowClockMoment)
     val text = if (showClock) {
       val now = new DateTime()
-      val month = resGetString(s"month_${now.getMonthOfYear}") map (month => s" $month ${now.getDayOfMonth},") getOrElse ""
-      s"${collection.name},$month"
+      val month = resGetString(s"month_${now.getMonthOfYear}") map (month => s" - $month ${now.getDayOfMonth},") getOrElse ""
+      s"${collection.name}$month"
     } else collection.name
     (momentContent <~
       On.click(goToCollection(collection))) ~
@@ -131,6 +143,12 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       new Point(x + (view.getWidth / 2), y + (view.getHeight / 2))
     } getOrElse new Point(0, 0)
     Ui(presenter.goToCollection(Some(collection), point))
+  }
+
+  def getView(workSpaceType: WorkSpaceType): Option[View] = workSpaceType match {
+    case MomentWorkSpace => Some(momentWorkspace)
+    case CollectionsWorkSpace => Some(collectionWorkspace)
+    case _ => None
   }
 
 }

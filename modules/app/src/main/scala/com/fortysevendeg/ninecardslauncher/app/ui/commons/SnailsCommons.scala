@@ -172,7 +172,7 @@ object SnailsCommons {
     vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1), duration = duration)
 
   def applyFadeOut(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] =
-    applyAnimation(alpha = Some(0), duration = duration) + vInvisible
+    applyAnimation(alpha = Some(0), duration = duration) + vInvisible + vAlpha(1)
 
   def applyAnimation(
     x: Option[Float] = None,
