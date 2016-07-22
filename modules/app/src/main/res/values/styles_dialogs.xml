@@ -218,4 +218,68 @@
         <item name="android:textColor">@color/item_list_popup_menu</item>
     </style>
 
+    <!-- Dialog Publish Collection Wizard  -->
+
+    <style name="PublishCollectionWizardRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="PublishCollectionWizardContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="PublishCollectionWizardHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:text">@string/publishCollectionHeader</item>
+    </style>
+
+    <style name="PublishCollectionWizardMessage">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:paddingRight">@dimen/padding_large</item>
+        <item name="android:paddingBottom">@dimen/padding_large</item>
+        <item name="android:text">@string/publishCollectionMessage</item>
+    </style>
+
+    <style name="PublishCollectionWizardImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:src">@drawable/share_collection_wizard_start</item>
+    </style>
+
+    <style name="PublishCollectionWizardFooter">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/footer_wizard_height</item>
+    </style>
+
+    <style name="PublishCollectionWizardDots">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:src">@drawable/share_collection_wizard_arrow</item>
+    </style>
+
+    <style name="PublishCollectionWizardArrow">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/footer_wizard_height</item>
+        <item name="android:gravity">right</item>
+        <item name="android:src">@drawable/share_collection_wizard_arrow</item>
+    </style>
+
 </resources>

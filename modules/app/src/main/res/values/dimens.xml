@@ -165,6 +165,9 @@
     <dimen name="margin_top_error_dialog_image">46dp</dimen>
     <dimen name="margin_bottom_error_dialog_image">55dp</dimen>
 
+    <dimen name="header_wizard_height">70dp</dimen>
+    <dimen name="footer_wizard_height">70dp</dimen>
+
     <!-- ListPopupMenu -->
     <dimen name="width_list_popup_menu">220dp</dimen>
     <dimen name="height_list_popup_menu">320dp</dimen>

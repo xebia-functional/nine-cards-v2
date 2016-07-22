@@ -29,7 +29,7 @@ class CollectionFragment
     actions = self)
 
   override lazy val collectionsPresenter: CollectionsPagerPresenter = getActivity match {
-    case a: CollectionsDetailsActivity => a.presenter
+    case a: CollectionsDetailsActivity => a.collectionsPagerPresenter
     case _ => throw new IllegalArgumentException(badActivityMessage)
   }
 

@@ -55,6 +55,8 @@ class CollectionsPagerPresenter(
   }
 
   def showMessageNotImplemented(): Unit = actions.showMessageNotImplemented.run
+  
+  def showPublishCollectionWizard(): Unit = actions.showPublishCollectionWizardDialog.run
 
   def addCards(cards: Seq[AddCardRequest]): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.addCards(collection.id, cards).run).resolveAsyncUi(
@@ -126,6 +128,8 @@ trait CollectionsUiActions {
 
   def destroyAction: Ui[Any]
 
+  def showPublishCollectionWizardDialog: Ui[Any]
+
   def showContactUsError: Ui[Any]
 
   def showMessageNotImplemented: Ui[Any]
@@ -140,13 +144,13 @@ trait CollectionsUiActions {
 
   def getCurrentCollection: Option[Collection]
 
-  def translationScrollY(scroll: Int): Ui[_]
+  def translationScrollY(scroll: Int): Ui[Any]
 
-  def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[_]
+  def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any]
 
-  def notifyScroll(sType: ScrollType): Ui[_]
+  def notifyScroll(sType: ScrollType): Ui[Any]
 
-  def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_]
+  def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[Any]
 
   def exitTransition: Ui[Any]
 
