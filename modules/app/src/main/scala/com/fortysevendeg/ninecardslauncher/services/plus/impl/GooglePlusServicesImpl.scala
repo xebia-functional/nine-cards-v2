@@ -4,8 +4,9 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
-import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServicesException, GooglePlusServices, ImplicitsGooglePlusProcessExceptions}
-import com.google.android.gms.common.api.GoogleApiClient
+import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServices, GooglePlusServicesException, ImplicitsGooglePlusProcessExceptions}
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
+import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient}
 import com.google.android.gms.plus.People.LoadPeopleResult
 import com.google.android.gms.plus.Plus
 import com.google.android.gms.plus.model.people.Person
@@ -20,6 +21,20 @@ class GooglePlusServicesImpl(googleApiClient: GoogleApiClient)
 
   val me = "me"
 
+  val recoverableStatusCodes: Seq[Int] = Seq(
+    CommonStatusCodes.API_NOT_CONNECTED,
+    CommonStatusCodes.CANCELED,
+    CommonStatusCodes.INTERRUPTED,
+    CommonStatusCodes.INVALID_ACCOUNT,
+    CommonStatusCodes.RESOLUTION_REQUIRED,
+    CommonStatusCodes.SIGN_IN_REQUIRED,
+    GoogleSignInStatusCodes.SIGN_IN_CANCELLED,
+    GoogleSignInStatusCodes.SIGN_IN_FAILED)
+
+  val validCodes: Seq[Int] = Seq(
+    CommonStatusCodes.SUCCESS,
+    CommonStatusCodes.SUCCESS_CACHE)
+
   override def loadUserProfile = (for {
     loadPeopleResult <- loadPeopleApi
     person <- fetchPerson(loadPeopleResult)
@@ -31,7 +46,12 @@ class GooglePlusServicesImpl(googleApiClient: GoogleApiClient)
   private[this] def loadPeopleApi: ServiceDef2[LoadPeopleResult, GooglePlusServicesException] = Service {
     Task {
       Try(Plus.PeopleApi.load(googleApiClient, me).await()) match {
-        case Success(r) => Answer(r)
+        case Success(r) if validCodes.contains(r.getStatus.getStatusCode) => Answer(r)
+        case Success(r) =>
+          val message = Option(r.getStatus.getStatusMessage) getOrElse "Unknown error with Google API"
+          Errata(GooglePlusServicesException(
+            message = message,
+            recoverable = recoverableStatusCodes.contains(r.getStatus.getStatusCode)))
         case Failure(e) => Errata(GooglePlusServicesException(message = e.getMessage, cause = Some(e)))
       }
     }
