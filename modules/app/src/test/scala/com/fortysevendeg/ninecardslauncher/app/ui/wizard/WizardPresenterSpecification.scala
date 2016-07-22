@@ -417,7 +417,7 @@ class WizardPresenterSpec
         presenter.generateCollections(None)
 
         there was after(1.seconds).one(mockActions).goToWizard()
-        there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.keyDevice, CreateCollectionService.newConfiguration)
+        there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.cloudIdKey, CreateCollectionService.newConfiguration)
         there was after(1.seconds).one(mockContextActivity).startService(mockIntent)
     }
 
@@ -429,7 +429,7 @@ class WizardPresenterSpec
         presenter.generateCollections(Some(intentKey))
 
         there was after(1.seconds).one(mockActions).goToWizard()
-        there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.keyDevice, intentKey)
+        there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.cloudIdKey, intentKey)
         there was after(1.seconds).one(mockContextActivity).startService(mockIntent)
     }
   }

@@ -14,14 +14,9 @@ case class User(
   installationId: Option[String],
   deviceToken: Option[String],
   androidToken: Option[String],
-  userProfile: UserProfile,
-  userDevice: UserDevice)
+  userProfile: UserProfile)
 
 case class UserProfile(
   name: Option[String],
   avatar: Option[String],
   cover: Option[String])
-
-case class UserDevice(
-  name: Option[String],
-  cloudId: Option[String])

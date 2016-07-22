@@ -28,6 +28,8 @@ trait WizardPresenterData {
 
   val deviceId = "XXX-47"
 
+  val cloudId = "fake-cloud-id"
+
   val androidMarketScopes = "androidmarket"
 
   val googleScopes = "fakeGoogleScope"
@@ -38,13 +40,14 @@ trait WizardPresenterData {
 
   val momentType = Option("HOME")
 
-  val cloudStorageDevice = CloudStorageDevice(
-    deviceId = deviceId,
-    deviceName = deviceName,
-    documentVersion = 1,
-    collections = Seq.empty,
-    moments = None
-  )
+  val cloudStorageDevice =
+    CloudStorageDevice(cloudId = cloudId,
+      CloudStorageDeviceData(
+        deviceId = deviceId,
+        deviceName = deviceName,
+        documentVersion = 1,
+        collections = Seq.empty,
+        moments = None))
 
   val userCloudDevices = UserCloudDevices(
     name = nameDevice,

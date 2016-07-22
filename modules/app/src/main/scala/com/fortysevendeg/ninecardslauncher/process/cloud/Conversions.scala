@@ -9,16 +9,16 @@ import play.api.libs.json.Json
 
 object Conversions {
 
-  def toDriveDevice(driveServiceFile: DriveServiceFile, deviceId: String): CloudStorageDeviceSummary =
+  def toCloudStorageDeviceSummary(driveServiceFile: DriveServiceFile, maybeCloudId: Option[String]): CloudStorageDeviceSummary =
     CloudStorageDeviceSummary(
-      resourceId = driveServiceFile.googleDriveId,
+      cloudId = driveServiceFile.googleDriveId,
       title = driveServiceFile.title,
       createdDate = driveServiceFile.createdDate,
       modifiedDate = driveServiceFile.modifiedDate,
-      currentDevice = driveServiceFile.fileId contains deviceId)
+      currentDevice = maybeCloudId contains driveServiceFile.googleDriveId)
 
   def toCloudStorageDevice(userDevice: UserDevice) =
-    CloudStorageDevice(
+    CloudStorageDeviceData(
       deviceId = userDevice.deviceId,
       deviceName = userDevice.deviceName,
       documentVersion = CloudStorageProcess.actualDocumentVersion,

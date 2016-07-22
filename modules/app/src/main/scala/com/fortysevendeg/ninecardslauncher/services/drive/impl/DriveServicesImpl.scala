@@ -4,10 +4,9 @@ import java.io.{InputStream, OutputStreamWriter}
 
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.services.drive.{DriveRateLimitExceeded, DriveResourceNotAvailable, DriveSigInRequired}
+import com.fortysevendeg.ninecardslauncher.services.drive._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
-import com.fortysevendeg.ninecardslauncher.services.drive.{Conversions, DriveServices, DriveServicesException}
 import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, PendingResult, Result}
 import com.google.android.gms.drive._
 import com.google.android.gms.drive.metadata.CustomPropertyKey
@@ -24,7 +23,7 @@ class DriveServicesImpl(client: GoogleApiClient)
   extends DriveServices
   with Conversions {
 
-  def listFiles(maybeFileType: Option[String]) = {
+  override def listFiles(maybeFileType: Option[String]) = {
     val sortOrder = new SortOrder.Builder()
       .addSortAscending(SortableField.MODIFIED_DATE)
       .build()
@@ -37,14 +36,16 @@ class DriveServicesImpl(client: GoogleApiClient)
     searchFiles(maybeQuery)(_ map toGoogleDriveFile)
   }
 
-  def findFile(fileId: String) = {
-    val query = new Query.Builder()
-      .addFilter(Filters.eq(propertyFileId, fileId))
-      .build()
-    searchFiles(query.some)(_.headOption map toGoogleDriveFile)
+  override def fileExists(driveId: String) = Service {
+    Task {
+      val validCodes = Seq(DriveStatusCodes.DRIVE_RESOURCE_NOT_AVAILABLE)
+      Drive.DriveApi
+        .fetchDriveId(client, driveId)
+        .withResult(_ => Answer(true), Some((validCodes, false)))
+    }
   }
 
-  def readFile(driveId: String) =
+  override def readFile(driveId: String) =
     openDriveFile(driveId) { driveContentsResult =>
       val contents = driveContentsResult.getDriveContents
       val stringContent = scala.io.Source.fromInputStream(contents.getInputStream).mkString
@@ -52,20 +53,20 @@ class DriveServicesImpl(client: GoogleApiClient)
       Answer(stringContent)
     }
 
-  def createFile(title: String, content: String, fileId: String, fileType: String, mimeType: String) =
-    createNewFile(title, fileId, fileType, mimeType, _.write(content)) map (_ => ())
+  override def createFile(title: String, content: String, fileId: String, fileType: String, mimeType: String) =
+    createNewFile(title, fileId, fileType, mimeType, _.write(content))
 
-  def createFile(title: String, content: InputStream, fileId: String, fileType: String, mimeType: String) =
+  override def createFile(title: String, content: InputStream, fileId: String, fileType: String, mimeType: String) =
     createNewFile(title, fileId, fileType, mimeType,
         writer => Iterator
           .continually(content.read)
           .takeWhile(_ != -1)
-          .foreach(writer.write)) map (_ => ())
+          .foreach(writer.write))
 
-  def updateFile(driveId: String, content: String) =
+  override def updateFile(driveId: String, content: String) =
     updateFile(driveId, _.write(content))
 
-  def updateFile(driveId: String, content: InputStream) =
+  override def updateFile(driveId: String, content: InputStream) =
     updateFile(
       driveId,
       writer => Iterator
@@ -73,7 +74,7 @@ class DriveServicesImpl(client: GoogleApiClient)
         .takeWhile(_ != -1)
         .foreach(writer.write))
 
-  def deleteFile(driveId: String) = Service {
+  override def deleteFile(driveId: String) = Service {
     Task {
       Drive.DriveApi
         .fetchDriveId(client, driveId)
@@ -103,7 +104,12 @@ class DriveServicesImpl(client: GoogleApiClient)
 
   private[this] def appFolder = Drive.DriveApi.getAppFolder(client)
 
-  private[this] def createNewFile(title: String, fileId: String, fileType: String, mimeType: String, f: (OutputStreamWriter) => Unit) = Service {
+  private[this] def createNewFile(
+    title: String,
+    fileId: String,
+    fileType: String,
+    mimeType: String,
+    f: (OutputStreamWriter) => Unit) = Service {
     Task {
       Drive.DriveApi
         .newDriveContents(client)
@@ -123,7 +129,7 @@ class DriveServicesImpl(client: GoogleApiClient)
           appFolder
             .createFile(client, changeSet, driveContents)
             .withResult { nr =>
-              Answer(nr.getDriveFile)
+              Answer(nr.getDriveFile.getDriveId.getResourceId)
             }
         }
 
@@ -170,13 +176,20 @@ object Extensions {
   implicit class PendingResultOps[T <: Result](pendingResult: PendingResult[T]) {
 
     def withResult[R](f: (T) => core.Result[R, DriveServicesException]): core.Result[R, DriveServicesException] =
-      fetchResult match {
-        case Some(result) if result.getStatus.isSuccess =>
+      withResult(f, None)
+
+    def withResult[R](
+      f: (T) => core.Result[R, DriveServicesException],
+      validCodesAndDefault: Option[(Seq[Int],R)]): core.Result[R, DriveServicesException] =
+      (fetchResult, validCodesAndDefault) match {
+        case (Some(result), _) if result.getStatus.isSuccess =>
           Try(f(result)) match {
             case Success(r) => r
             case Failure(e) => Errata(DriveServicesException(e.getMessage, cause = Some(e)))
           }
-        case Some(result) =>
+        case (Some(result), Some((validCodes, defaultValue))) if validCodes contains result.getStatus.getStatusCode =>
+          Answer[R, DriveServicesException](defaultValue)
+        case (Some(result), _) =>
           Errata(DriveServicesException(
             googleDriveError = statusCodeToError(result.getStatus.getStatusCode),
             message = result.getStatus.getStatusMessage))

@@ -16,12 +16,12 @@ trait DriveServices {
   def listFiles(maybeFileType: Option[String]): ServiceDef2[Seq[DriveServiceFile], DriveServicesException]
 
   /**
-    * Try to fetch the file with the specified `fileId`
-    * @param fileId custom file identifier
-    * @return Option of `DriveServiceFile`
+    * Verify if a specific file exists
+    * @param driveId file identifier
+    * @return boolean indicating if the file exists
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def findFile(fileId: String): ServiceDef2[Option[DriveServiceFile], DriveServicesException]
+  def fileExists(driveId: String): ServiceDef2[Boolean, DriveServicesException]
 
   /**
     * Returns the content of a file
@@ -37,10 +37,11 @@ trait DriveServices {
     * @param content the content as String
     * @param fileId custom file identifier that can be used in #findFile method
     * @param fileType a String that later can be used in #listFiles method
-    * @param mimeType the file mimeType
+    * @param mimeType the file
+    * @return the file identifier
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def createFile(title: String, content: String, fileId: String, fileType: String, mimeType: String): ServiceDef2[Unit, DriveServicesException]
+  def createFile(title: String, content: String, fileId: String, fileType: String, mimeType: String): ServiceDef2[String, DriveServicesException]
 
   /**
     * Creates a new file
@@ -50,7 +51,7 @@ trait DriveServices {
     * @param mimeType the file mimeType
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def createFile(title: String, content: InputStream, fileId: String, fileType: String, mimeType: String): ServiceDef2[Unit, DriveServicesException]
+  def createFile(title: String, content: InputStream, fileId: String, fileType: String, mimeType: String): ServiceDef2[String, DriveServicesException]
 
   /**
     * Updates the content of an existing text file

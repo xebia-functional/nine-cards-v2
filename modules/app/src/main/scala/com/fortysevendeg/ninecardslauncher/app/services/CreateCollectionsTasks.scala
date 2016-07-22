@@ -38,7 +38,7 @@ trait CreateCollectionsTasks
 
   def loadConfiguration(
    client: GoogleApiClient,
-   deviceId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CloudStorageProcessException with CollectionException with DockAppException with MomentException] = {
+   cloudId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CloudStorageProcessException with CollectionException with DockAppException with MomentException] = {
    val cloudStorageProcess = di.createCloudStorageProcess(client)
    for {
      _ <- di.deviceProcess.resetSavedItems()
@@ -46,21 +46,13 @@ trait CreateCollectionsTasks
      _ <- di.deviceProcess.generateDockApps(dockAppsSize)
      apps <- di.deviceProcess.getSavedApps(GetByName)
      _ = setProcess(GettingAppsProcess)
-     cloudStorageDevice <- cloudStorageProcess.getCloudStorageDeviceByAndroidId(deviceId)
+     device <- cloudStorageProcess.getCloudStorageDevice(cloudId)
      _ = setProcess(LoadingConfigProcess)
      _ = setProcess(CreatingCollectionsProcess)
-     collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(cloudStorageDevice.collections))
-     momentSeq = cloudStorageDevice.moments map (_ map toMoment) getOrElse Seq.empty
+     collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
+     momentSeq = device.data.moments map (_ map toMoment) getOrElse Seq.empty
      _ <- di.momentProcess.saveMoments(momentSeq)
    } yield collections
   }
 
-  private[this] def getAppsNotInstalled(apps: Seq[App], collections: Seq[CloudStorageCollection]): Seq[String] = {
-    val intents = collections flatMap (_.items map (item => Json.parse(item.intent).as[NineCardIntent]))
-    intents flatMap {
-      _.extractPackageName() flatMap { pn =>
-        if (!apps.exists(_.packageName == pn)) Option(pn) else None
-      }
-    }
-  }
 }
