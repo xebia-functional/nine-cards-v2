@@ -96,11 +96,13 @@ class DriveServicesImpl(client: GoogleApiClient)
       request.withResult { r =>
         val buffer = r.getMetadataBuffer
 
-        // Fix for actual devices using Google Drive
+        /*
+         * TODO - Remove this block as part of ticket 525 (https://github.com/47deg/nine-cards-v2/issues/525)
+         * This code fixes actual devices using Google Drive
+         */
         val (validFiles, filesToFix) = buffer.iterator().toIterable.toList.partition { metadata =>
           Option(metadata.getCustomProperties.get(propertyUUID)).nonEmpty
         }
-        android.util.Log.i("9Cards", s"Fixing ${filesToFix.size} Drive files")
         val fixedFiles = filesToFix map { metadata =>
           val uuid = newUUID
           val changeSet = new MetadataChangeSet.Builder()
