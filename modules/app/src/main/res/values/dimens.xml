@@ -6,6 +6,7 @@
 
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_default">8dp</dimen>
+    <dimen name="padding_medium">12dp</dimen>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_xlarge">24dp</dimen>
 
@@ -44,6 +45,11 @@
 
     <!-- Top bar -->
     <dimen name="size_icon_top_bar_moment">24dp</dimen>
+
+    <!-- Apps moment bar -->
+    <dimen name="size_apps_bar_moment">86dp</dimen>
+    <dimen name="height_header_apps_bar_moment">96dp</dimen>
+    <dimen name="size_icon_apps_bar_moment">40dp</dimen>
 
     <!-- WorkSpace -->
     <dimen name="size_workspace_moment_icon">64dp</dimen>

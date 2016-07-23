@@ -189,8 +189,6 @@ trait LauncherUiActionsImpl
 
   override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
 
-  override def swapAppsMoment(): Ui[Any] = drawerLayout <~ dlSwapDrawerEnd
-
   override def back: Ui[Any] =
     if (isDrawerTabsOpened) {
       closeDrawerTabs
@@ -315,7 +313,7 @@ trait LauncherUiActionsImpl
         (content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
-        (appsMoment <~ vPadding(0, sbHeight, 0, nbHeight)) ~
+        (appsMoment <~ amlPaddingTopAndBottom(sbHeight, nbHeight)) ~
         (actionFragmentContent <~
           vPadding(paddingDefault, paddingDefault + sbHeight, paddingDefault, paddingDefault + nbHeight)) ~
         (drawerLayout <~ vBackground(R.drawable.background_workspace)) ~

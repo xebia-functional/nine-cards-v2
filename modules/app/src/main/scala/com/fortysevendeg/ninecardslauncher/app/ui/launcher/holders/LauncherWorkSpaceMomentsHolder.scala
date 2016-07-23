@@ -44,8 +44,6 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     d
   }
 
-  (content <~ On.click(Ui(presenter.clickMomentWorkspaceBackground()))).run
-
   def populate(moment: LauncherMoment): Ui[Any] = {
     (for {
       collection <- moment.collection

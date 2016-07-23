@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
-import android.graphics.Point
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
@@ -13,7 +12,6 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, ShowClockMoment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._

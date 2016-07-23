@@ -232,7 +232,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def goToMomentWorkspace(): Unit = (actions.goToMomentWorkspace() ~ actions.closeAppsMoment()).run
 
-  def clickMomentWorkspaceBackground(): Unit = actions.swapAppsMoment().run
+  def clickWorkspaceBackground(): Unit = actions.openAppsMoment().run
 
   def clickMomentTopBar(): Unit = actions.openAppsMoment().run
 
@@ -701,8 +701,6 @@ trait LauncherUiActions {
   def openAppsMoment(): Ui[Any]
 
   def closeAppsMoment(): Ui[Any]
-
-  def swapAppsMoment(): Ui[Any]
 
   def isEmptyCollectionsInWorkspace: Boolean
 

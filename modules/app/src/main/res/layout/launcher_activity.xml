@@ -76,12 +76,8 @@
         app:menu="@menu/app_menu"
         style="@style/MenuNavigationView"/>
     
-    <ScrollView style="@style/MenuAppsMomentContent">
-
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.AppsMomentLayout
-            android:id="@+id/launcher_apps_moment"
-            style="@style/MenuAppsMoment" />
-
-    </ScrollView>
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.AppsMomentLayout
+        android:id="@+id/launcher_apps_moment"
+        style="@style/MenuAppsMomentContent" />
 
 </android.support.v4.widget.DrawerLayout>

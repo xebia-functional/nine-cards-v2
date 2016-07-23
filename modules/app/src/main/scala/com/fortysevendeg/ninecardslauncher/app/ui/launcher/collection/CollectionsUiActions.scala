@@ -112,7 +112,7 @@ trait CollectionsUiActions
   lazy val menuLauncherSettings = Option(findView(TR.menu_launcher_settings))
 
   def initCollectionsUi: Ui[Any] =
-    (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
+    (drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
         (goToMenuOption(itemId) ~ closeMenu()).run
         true
@@ -132,6 +132,7 @@ trait CollectionsUiActions
           )
         ) <~
         awsListener(AnimatedWorkSpacesListener(
+          onClick = () => presenter.clickWorkspaceBackground(),
           onLongClick = () => (workspaces <~ lwsOpenMenu).run)
         )) ~
       (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~

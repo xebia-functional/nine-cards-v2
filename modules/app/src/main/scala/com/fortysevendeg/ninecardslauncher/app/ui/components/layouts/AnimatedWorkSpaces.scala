@@ -26,7 +26,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   (context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)
   with Contexts[View]
-  with LongClickHandler { self =>
+  with ClicksHandler { self =>
 
   // First parameter  [Data]    : Current data of the screen
   // Second parameter [Data]    : The data where you go
@@ -328,9 +328,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       case (ACTION_MOVE, Stopped) => setStateIfNeeded(x, y)
       case (ACTION_DOWN, _) =>
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        startLongClick()
+        startClicks()
       case (ACTION_CANCEL | ACTION_UP, _) =>
-        resetLongClick()
+        if (isClick) listener.onClick()
+        resetClicks()
         computeFling()
         statuses = statuses.copy(touchState = Stopped)
       case _ =>
@@ -368,7 +369,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       val yMoved = yDiff > touchSlop
 
       if (xMoved || yMoved) {
-        resetLongClick()
+        resetClicks()
         val penultimate = data.length - 2
         val isScrolling = (statuses.infinite, statuses.horizontalGallery, xDiff > yDiff, moveItemsAnimator.isRunning) match {
           case (true, true, true, _) => true
@@ -476,6 +477,7 @@ object AnimatedWorkSpaces {
 }
 
 case class AnimatedWorkSpacesListener(
+  onClick: () => Unit = () => (),
   onLongClick: () => Unit = () => ())
 
 case class Dimen(width: Int = 0, height: Int = 0)
