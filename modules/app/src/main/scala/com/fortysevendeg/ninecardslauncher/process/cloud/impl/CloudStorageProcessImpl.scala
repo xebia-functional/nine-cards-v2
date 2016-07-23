@@ -66,12 +66,12 @@ class CloudStorageProcessImpl(
           documentVersion = CloudStorageProcess.actualDocumentVersion,
           collections = collections,
           moments = Some(moments))
-        _ <- createOrUpdateCloudStorageDevice(
+        device <- createOrUpdateCloudStorageDevice(
           maybeCloudId = if (exists) maybeCloudId else None,
           cloudStorageDeviceData = cloudStorageDeviceData)
-      } yield ()).resolve[CloudStorageProcessException]
+      } yield device).resolve[CloudStorageProcessException]
     } getOrElse {
-      Service(Task(Result.errata[Unit, CloudStorageProcessException](CloudStorageProcessException(noActiveUserErrorMessage))))
+      Service(Task(Result.errata[CloudStorageDevice, CloudStorageProcessException](CloudStorageProcessException(noActiveUserErrorMessage))))
     }
 
   override def deleteCloudStorageDevice(cloudId: String) =

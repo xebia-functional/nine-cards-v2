@@ -73,6 +73,16 @@ class UserProcessImpl(
       } yield toUser(user)).resolve[UserException]
     }
 
+  override def updateUserDevice(
+    deviceName: String,
+    deviceCloudId: String)(implicit context: ContextSupport) =
+    withActiveUser { id =>
+      (for {
+        Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
+        _ <- persistenceServices.updateUser(toUpdateRequest(id, user, deviceName, deviceCloudId))
+      } yield ()).resolve[UserException]
+    }
+
   private[this] def withActiveUser[T](f: Int => ServiceDef2[T, UserException])(implicit context: ContextSupport) =
     context.getActiveUserId map f getOrElse {
       Service(Task(Result.errata[T, UserException](UserException(noActiveUserErrorMessage))))

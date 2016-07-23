@@ -38,6 +38,7 @@ trait CloudStorageProcessImplData {
 
   def generateDriveServiceFile =
     DriveServiceFile(
+      uuid = java.util.UUID.randomUUID.toString,
       googleDriveId = Random.nextString(10),
       fileId = Random.nextString(10).some,
       title = Random.nextString(10),

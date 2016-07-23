@@ -117,7 +117,7 @@ class CreateCollectionService
   override def onBind(intent: Intent): IBinder = javaNull
 
   override def connected(client: GoogleApiClient): Unit = {
-    val service = selectedCloudId map (loadConfiguration(client, _)) getOrElse createNewConfiguration
+    val service = selectedCloudId map (loadConfiguration(client, _)) getOrElse createNewConfiguration(client)
 
     Task.fork(service.run).resolveAsync(
       onResult = collections => {

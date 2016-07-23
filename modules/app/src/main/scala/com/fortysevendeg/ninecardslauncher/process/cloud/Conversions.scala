@@ -11,11 +11,11 @@ object Conversions {
 
   def toCloudStorageDeviceSummary(driveServiceFile: DriveServiceFile, maybeCloudId: Option[String]): CloudStorageDeviceSummary =
     CloudStorageDeviceSummary(
-      cloudId = driveServiceFile.googleDriveId,
+      cloudId = driveServiceFile.uuid,
       title = driveServiceFile.title,
       createdDate = driveServiceFile.createdDate,
       modifiedDate = driveServiceFile.modifiedDate,
-      currentDevice = maybeCloudId contains driveServiceFile.googleDriveId)
+      currentDevice = maybeCloudId contains driveServiceFile.uuid)
 
   def toCloudStorageDevice(userDevice: UserDevice) =
     CloudStorageDeviceData(
