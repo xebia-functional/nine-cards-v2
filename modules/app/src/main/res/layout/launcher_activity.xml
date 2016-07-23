@@ -23,11 +23,11 @@
 
                 <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.CollectionActionsPanelLayout
                     style="@style/LauncherCollectionActionsPanel"
-                    android:id="@+id/launcher_collections_actions_panel" />
+                    android:id="@+id/launcher_collections_actions_panel"/>
 
                 <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.TopBarLayout
-                        style="@style/LauncherSearchPanel"
-                        android:id="@+id/launcher_top_bar_panel" />
+                    style="@style/LauncherSearchPanel"
+                    android:id="@+id/launcher_top_bar_panel"/>
 
             </FrameLayout>
 
@@ -54,7 +54,7 @@
 
             <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.DockAppsPanelLayout
                 android:id="@+id/launcher_dock_apps_panel"
-                style="@style/LauncherDrawerPanel" />
+                style="@style/LauncherDrawerPanel"/>
 
         </LinearLayout>
 
@@ -66,7 +66,7 @@
 
         <FrameLayout
             style="@style/LauncherForeground"
-            android:id="@+id/launcher_foreground" />
+            android:id="@+id/launcher_foreground"/>
 
     </FrameLayout>
 
@@ -75,9 +75,9 @@
         app:headerLayout="@layout/menu_header"
         app:menu="@menu/app_menu"
         style="@style/MenuNavigationView"/>
-    
+
     <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.AppsMomentLayout
         android:id="@+id/launcher_apps_moment"
-        style="@style/MenuAppsMomentContent" />
+        style="@style/MenuAppsMomentContent"/>
 
 </android.support.v4.widget.DrawerLayout>
