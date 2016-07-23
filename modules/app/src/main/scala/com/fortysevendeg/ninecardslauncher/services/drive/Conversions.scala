@@ -10,7 +10,7 @@ trait Conversions {
     DriveServiceFile(
       uuid = metadata.getCustomProperties.get(propertyUUID),
       googleDriveId = metadata.getDriveId.getResourceId,
-      fileId = Option(metadata.getCustomProperties.get(propertyFileId)),
+      deviceId = Option(metadata.getCustomProperties.get(propertyDeviceId)),
       title = metadata.getTitle,
       createdDate = metadata.getCreatedDate,
       modifiedDate = metadata.getModifiedDate)
@@ -19,7 +19,7 @@ trait Conversions {
     DriveServiceFile(
       uuid = uuid,
       googleDriveId = metadata.getDriveId.getResourceId,
-      fileId = Option(metadata.getCustomProperties.get(propertyFileId)),
+      deviceId = Option(metadata.getCustomProperties.get(propertyDeviceId)),
       title = metadata.getTitle,
       createdDate = metadata.getCreatedDate,
       modifiedDate = metadata.getModifiedDate)

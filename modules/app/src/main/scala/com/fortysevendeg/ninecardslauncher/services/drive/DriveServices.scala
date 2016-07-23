@@ -35,23 +35,24 @@ trait DriveServices {
     * Creates a new text file
     * @param title the file title
     * @param content the content as String
-    * @param fileId custom file identifier that can be used in #findFile method
+    * @param deviceId custom device identifier
     * @param fileType a String that later can be used in #listFiles method
     * @param mimeType the file
     * @return the file identifier
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def createFile(title: String, content: String, fileId: String, fileType: String, mimeType: String): ServiceDef2[String, DriveServicesException]
+  def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String): ServiceDef2[String, DriveServicesException]
 
   /**
     * Creates a new file
     * @param title the file title
     * @param content the content as InputStream (won't be closed after finish)
+    * @param deviceId custom device identifier
     * @param fileType a String that later can be used in #listFiles method
     * @param mimeType the file mimeType
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def createFile(title: String, content: InputStream, fileId: String, fileType: String, mimeType: String): ServiceDef2[String, DriveServicesException]
+  def createFile(title: String, content: InputStream, deviceId: String, fileType: String, mimeType: String): ServiceDef2[String, DriveServicesException]
 
   /**
     * Updates the content of an existing text file

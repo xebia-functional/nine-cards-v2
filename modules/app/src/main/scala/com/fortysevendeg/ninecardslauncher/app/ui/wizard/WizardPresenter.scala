@@ -89,18 +89,6 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     actions.showErrorAcceptTerms().run
   }
 
-//  def saveCurrentDevice(): Unit =
-//    (clientStatuses.driveApiClient, clientStatuses.username) match {
-//      case (Some(client), _) =>
-//        Task.fork(storeDevice(client).run).resolveAsyncUi(
-//          onResult = (_) => actions.showDiveIn(),
-//          onException = (_) => actions.showDiveIn())
-//      case (_, Some(account)) =>
-//        connectAccount(account, termsAccept = true)
-//      case _ =>
-//        actions.goToUser().run
-//    }
-
   def generateCollections(maybeKey: Option[String]): Unit =
     contextWrapper.original.get match {
       case Some(activity) =>
@@ -326,18 +314,6 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         })
     }) getOrElse actions.showErrorConnectingGoogle().run
   }
-
-//  private[this] def storeDevice(client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException with UserException] = {
-//    val cloudStorageProcess = di.createCloudStorageProcess(client)
-//    for {
-//      collections <- di.collectionProcess.getCollections
-//      moments <- di.momentProcess.getMoments
-//      savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-//        collections = addMomentsToCollections(collections, moments),
-//        moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
-//      _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
-//    } yield ()
-//  }
 
   private[this] def addMomentsToCollections(collections: Seq[Collection], moments: Seq[Moment]) =
     collections map (collection => toCloudStorageCollection(collection, moments.find(_.collectionId == Option(collection.id))))

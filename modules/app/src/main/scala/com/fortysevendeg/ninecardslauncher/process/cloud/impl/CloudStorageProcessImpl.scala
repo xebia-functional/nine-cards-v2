@@ -99,10 +99,10 @@ class CloudStorageProcessImpl(
     maybeCloudId: Option[String],
     title: String,
     content: String,
-    fileId: String): ServiceDef2[String, DriveServicesException] =
+    deviceId: String): ServiceDef2[String, DriveServicesException] =
     maybeCloudId match {
       case Some(cloudId) => driveServices.updateFile(cloudId, content) map (_ => cloudId)
-      case _ => driveServices.createFile(title, content, fileId, userDeviceType, jsonMimeType)
+      case _ => driveServices.createFile(title, content, deviceId, userDeviceType, jsonMimeType)
     }
 
   private[this] def deviceExists(

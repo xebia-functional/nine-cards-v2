@@ -24,10 +24,10 @@ class DriveServicesImpl(client: GoogleApiClient)
   extends DriveServices
   with Conversions {
 
-  private[this] val fileNotFoundError = (fileId: String) => s"File with id $fileId doesn't exists"
+  private[this] val fileNotFoundError = (driveId: String) => s"File with id $driveId doesn't exists"
 
-  private[this] val queryUUID = (fileId: String) => new Query.Builder()
-    .addFilter(Filters.eq(propertyUUID, fileId))
+  private[this] val queryUUID = (driveId: String) => new Query.Builder()
+    .addFilter(Filters.eq(propertyUUID, driveId))
     .build()
 
   override def listFiles(maybeFileType: Option[String]) = {
@@ -54,11 +54,11 @@ class DriveServicesImpl(client: GoogleApiClient)
       Answer(stringContent)
     }
 
-  override def createFile(title: String, content: String, fileId: String, fileType: String, mimeType: String) =
-    createNewFile(newUUID, title, fileId, fileType, mimeType, _.write(content))
+  override def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String) =
+    createNewFile(newUUID, title, deviceId, fileType, mimeType, _.write(content))
 
-  override def createFile(title: String, content: InputStream, fileId: String, fileType: String, mimeType: String) =
-    createNewFile(newUUID, title, fileId, fileType, mimeType,
+  override def createFile(title: String, content: InputStream, deviceId: String, fileType: String, mimeType: String) =
+    createNewFile(newUUID, title, deviceId, fileType, mimeType,
         writer => Iterator
           .continually(content.read)
           .takeWhile(_ != -1)
@@ -126,7 +126,7 @@ class DriveServicesImpl(client: GoogleApiClient)
   private[this] def createNewFile(
     uuid: String,
     title: String,
-    fileId: String,
+    deviceId: String,
     fileType: String,
     mimeType: String,
     f: (OutputStreamWriter) => Unit) = Service {
@@ -138,7 +138,7 @@ class DriveServicesImpl(client: GoogleApiClient)
             .setTitle(title)
             .setMimeType(mimeType)
             .setCustomProperty(propertyUUID, uuid)
-            .setCustomProperty(propertyFileId, fileId)
+            .setCustomProperty(propertyDeviceId, deviceId)
             .setCustomProperty(propertyFileType, fileType)
             .build()
 
@@ -196,13 +196,13 @@ object DriveServicesImpl {
 
   private[this] val customFileType = "FILE_TYPE"
 
-  private[this] val customFileId = "FILE_ID"
+  private[this] val customDeviceId = "FILE_ID"
 
   def propertyUUID = new CustomPropertyKey(uuid, CustomPropertyKey.PRIVATE)
 
   def propertyFileType = new CustomPropertyKey(customFileType, CustomPropertyKey.PRIVATE)
 
-  def propertyFileId = new CustomPropertyKey(customFileId, CustomPropertyKey.PRIVATE)
+  def propertyDeviceId = new CustomPropertyKey(customDeviceId, CustomPropertyKey.PRIVATE)
 
 }
 

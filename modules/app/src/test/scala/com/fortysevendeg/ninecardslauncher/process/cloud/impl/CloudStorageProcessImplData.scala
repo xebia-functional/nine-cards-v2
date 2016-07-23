@@ -40,12 +40,10 @@ trait CloudStorageProcessImplData {
     DriveServiceFile(
       uuid = java.util.UUID.randomUUID.toString,
       googleDriveId = Random.nextString(10),
-      fileId = Random.nextString(10).some,
+      deviceId = Random.nextString(10).some,
       title = Random.nextString(10),
       createdDate = DateTime.now().minusMonths(6).toDate,
       modifiedDate = DateTime.now().minusMonths(3).toDate)
-
-  val fileId = "file-id"
 
   val deviceId = "device-id"
 
