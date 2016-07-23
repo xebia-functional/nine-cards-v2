@@ -511,7 +511,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         } getOrElse {
           if (preferenceStatus.momentsWasChanged) {
             preferenceStatus.setMoments(false)
-            actions.reloadCurrentMoment()
+            actions.reloadMomentTopBar()
           } else {
             Ui.nop
           }
@@ -674,6 +674,8 @@ trait LauncherUiActions {
   def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
 
   def reloadCurrentMoment(): Ui[Any]
+
+  def reloadMomentTopBar(): Ui[Any]
 
   def reloadMoment(moment: LauncherData): Ui[Any]
 

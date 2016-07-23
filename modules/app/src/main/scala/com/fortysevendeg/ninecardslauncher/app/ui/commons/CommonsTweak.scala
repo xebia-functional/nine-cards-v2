@@ -99,9 +99,9 @@ object ExtraTweaks {
 
   def vDisableHapticFeedback: Tweak[View] = Tweak[View](_.setHapticFeedbackEnabled(false))
 
-  def uiVibrate(milis: Long = 100)(implicit contextWrapper: ContextWrapper): Ui[Any] = Ui {
+  def uiVibrate(millis: Long = 100)(implicit contextWrapper: ContextWrapper): Ui[Any] = Ui {
     contextWrapper.application.getSystemService(Context.VIBRATOR_SERVICE) match {
-      case vibrator: Vibrator => vibrator.vibrate(milis)
+      case vibrator: Vibrator => vibrator.vibrate(millis)
       case _ =>
     }
   }

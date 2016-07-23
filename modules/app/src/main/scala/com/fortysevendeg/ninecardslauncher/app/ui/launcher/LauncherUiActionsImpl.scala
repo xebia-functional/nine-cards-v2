@@ -126,6 +126,11 @@ trait LauncherUiActionsImpl
 
   override def reloadCurrentMoment(): Ui[Any] = workspaces <~ lwsDataForceReloadMoment()
 
+  override def reloadMomentTopBar(): Ui[Any] = {
+    val collectionMoment = getData.headOption.flatMap(_.moment).flatMap(_.collection)
+    topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank)
+  }
+
   override def reloadMoment(data: LauncherData): Ui[Any] = {
     val collectionMoment = data.moment.flatMap(_.collection)
     val launcherMoment = data.moment
