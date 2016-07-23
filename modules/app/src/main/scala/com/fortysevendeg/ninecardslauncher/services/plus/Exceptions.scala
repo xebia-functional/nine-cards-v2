@@ -4,7 +4,8 @@ import scalaz.Scalaz._
 
 case class GooglePlusServicesException(
   message: String,
-  cause: Option[Throwable] = None) extends RuntimeException(message) {
+  cause: Option[Throwable] = None,
+  recoverable: Boolean = false) extends RuntimeException(message) {
 
   cause foreach initCause
 

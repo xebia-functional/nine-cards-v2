@@ -26,9 +26,9 @@ import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
+import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher2.R
-import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.{Answer, Errata, Result}
@@ -165,29 +165,49 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     onConnectionFailed(connectionResult)
   }
 
-  override def onPlusConnected(bundle: Bundle): Unit =
+  override def onPlusConnected(bundle: Bundle): Unit = {
+
+    def error(throwable: Throwable): Unit = throwable match {
+      case ex: SocialProfileProcessException if ex.recoverable => onDriveConnected(javaNull)
+      case _ => actions.showErrorConnectingGoogle().run
+    }
+
     clientStatuses.plusApiClient match {
       case Some(apiClient) =>
         val googlePlusProcess = di.createGooglePlusProcess(apiClient)
         Task.fork(googlePlusProcess.updateUserProfile().run).resolveAsync(
-          onResult = (_) => loadDevices(clientStatuses.driveApiClient, clientStatuses.username, clientStatuses.userPermissions),
-          onException = (_) => onDriveConnected(javaNull),
+          onResult = (_) =>
+            loadDevices(clientStatuses.driveApiClient, clientStatuses.username, clientStatuses.userPermissions),
+          onException = error,
           onPreTask = () => actions.showLoading().run
         )
       case None => actions.goToUser().run
     }
+  }
 
   protected def createIntent[T](activity: Activity, targetClass: Class[T]): Intent = new Intent(activity, targetClass)
 
   private[this] def onConnectionFailed(connectionResult: ConnectionResult): Unit = {
-    if (connectionResult.hasResolution) {
+
+    def withActivity(f: (AppCompatActivity => Unit)) =
       contextWrapper.original.get match {
-        case Some(activity: AppCompatActivity) =>
-          Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
-            case Failure(e) => connectionError()
-            case _ =>
-          }
+        case Some(activity: AppCompatActivity) => f(activity)
         case _ =>
+      }
+
+    if (connectionResult.hasResolution) {
+      withActivity { activity =>
+        Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
+          case Failure(e) => connectionError()
+          case _ =>
+        }
+      }
+    } else if (connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
+      actions.goToUser().run
+      withActivity { activity =>
+        GoogleApiAvailability.getInstance()
+          .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
+          .show()
       }
     } else {
       connectionError()
