@@ -118,6 +118,12 @@ object ExtraTweaks {
 
   def dlCloseDrawerEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.closeDrawer(GravityCompat.END))
 
+  def dlLockedClosed: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED))
+
+  def dlUnlocked: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED))
+
+  def dlLockedOpen: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN))
+
   def dlSwapDrawer: Tweak[DrawerLayout] = Tweak[DrawerLayout] { view =>
     if (view.isDrawerOpen(GravityCompat.START)) {
       view.closeDrawer(GravityCompat.START)
