@@ -330,7 +330,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         startClicks()
       case (ACTION_CANCEL | ACTION_UP, _) =>
-        if (isClick) listener.onClick()
+        if (isClick && action == ACTION_UP) listener.onClick()
         resetClicks()
         computeFling()
         statuses = statuses.copy(touchState = Stopped)
