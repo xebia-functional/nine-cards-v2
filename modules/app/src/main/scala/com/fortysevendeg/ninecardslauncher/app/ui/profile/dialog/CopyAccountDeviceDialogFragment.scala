@@ -26,16 +26,14 @@ class CopyAccountDeviceDialogFragment(cloudId: String)(implicit contextWrapper: 
       setTitle(R.string.copyAccountSyncDialogTitle).
       setView(dialogView).
       setPositiveButton(android.R.string.ok, new OnClickListener {
-        override def onClick(dialog: DialogInterface, which: Int): Unit = {
-          val maybeText = (dialogView.editText ~> text).get.flatten
-          profilePresenter.copyDevice(maybeText, cloudId)
-        }
+        override def onClick(dialog: DialogInterface, which: Int): Unit =
+          profilePresenter.copyDevice(dialogView.readText.get, cloudId)
       }).
       setNegativeButton(android.R.string.cancel, javaNull).
       create()
 
     dialog.setOnShowListener(new OnShowListener {
-      override def onShow(dialog: DialogInterface): Unit = (dialogView.editText <~ etShowKeyboard).run
+      override def onShow(dialog: DialogInterface): Unit = dialogView.showKeyboard.run
     })
 
     dialog
@@ -47,7 +45,11 @@ class CopyAccountDeviceDialogFragment(cloudId: String)(implicit contextWrapper: 
 
     LayoutInflater.from(getActivity).inflate(R.layout.dialog_edit_text, this)
 
-    lazy val editText = Option(findView(TR.dialog_edittext))
+    private[this] lazy val editText = Option(findView(TR.dialog_edittext))
+
+    def readText: Ui[Option[String]] = (editText ~> text) map (_.flatten)
+
+    def showKeyboard: Ui[Any] = editText <~ etShowKeyboard
 
   }
 

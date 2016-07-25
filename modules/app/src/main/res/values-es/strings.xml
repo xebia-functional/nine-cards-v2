@@ -253,7 +253,7 @@
     <string name="errorLoadingUser">Error cargando usuario</string>
 
     <string name="errorEmptyNameForDevice">Por favor, especifique un nombre para la nueva configuración</string>
-    <string name="errorEmptyNameForDeviceButton">De nuevo</string>
+    <string name="errorEmptyNameForDeviceButton">Inténtalo de nuevo</string>
 
     <string name="logout">Salir</string>
 
