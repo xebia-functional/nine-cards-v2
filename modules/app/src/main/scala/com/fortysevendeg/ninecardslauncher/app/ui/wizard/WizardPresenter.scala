@@ -18,7 +18,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceSummary}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
@@ -26,9 +26,9 @@ import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.UserInfo
+import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher2.R
-import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.{Answer, Errata, Result}
@@ -73,6 +73,8 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   def goToWizard(): Unit = actions.goToWizard().run
 
+  def processFinished(): Unit = actions.showDiveIn().run
+
   def connectAccount(username: String, termsAccept: Boolean): Unit = if (termsAccept) {
     getAccount(username) match {
       case Some(acc) =>
@@ -87,23 +89,11 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     actions.showErrorAcceptTerms().run
   }
 
-  def saveCurrentDevice(): Unit =
-    (clientStatuses.driveApiClient, clientStatuses.username) match {
-      case (Some(client), _) =>
-        Task.fork(storeDevice(client).run).resolveAsyncUi(
-          onResult = (_) => actions.showDiveIn(),
-          onException = (_) => actions.showDiveIn())
-      case (_, Some(account)) =>
-        connectAccount(account, termsAccept = true)
-      case _ =>
-        actions.goToUser().run
-    }
-
   def generateCollections(maybeKey: Option[String]): Unit =
     contextWrapper.original.get match {
       case Some(activity) =>
         val intent = createIntent(activity, classOf[CreateCollectionService])
-        intent.putExtra(CreateCollectionService.keyDevice, maybeKey.getOrElse(CreateCollectionService.newConfiguration))
+        intent.putExtra(CreateCollectionService.cloudIdKey, maybeKey.getOrElse(CreateCollectionService.newConfiguration))
         activity.startService(intent)
         actions.goToWizard().run
       case _ =>
@@ -165,29 +155,49 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     onConnectionFailed(connectionResult)
   }
 
-  override def onPlusConnected(bundle: Bundle): Unit =
+  override def onPlusConnected(bundle: Bundle): Unit = {
+
+    def error(throwable: Throwable): Unit = throwable match {
+      case ex: SocialProfileProcessException if ex.recoverable => onDriveConnected(javaNull)
+      case _ => actions.showErrorConnectingGoogle().run
+    }
+
     clientStatuses.plusApiClient match {
       case Some(apiClient) =>
         val googlePlusProcess = di.createGooglePlusProcess(apiClient)
         Task.fork(googlePlusProcess.updateUserProfile().run).resolveAsync(
-          onResult = (_) => loadDevices(clientStatuses.driveApiClient, clientStatuses.username, clientStatuses.userPermissions),
-          onException = (_) => onDriveConnected(javaNull),
+          onResult = (_) =>
+            loadDevices(clientStatuses.driveApiClient, clientStatuses.username, clientStatuses.userPermissions),
+          onException = error,
           onPreTask = () => actions.showLoading().run
         )
       case None => actions.goToUser().run
     }
+  }
 
   protected def createIntent[T](activity: Activity, targetClass: Class[T]): Intent = new Intent(activity, targetClass)
 
   private[this] def onConnectionFailed(connectionResult: ConnectionResult): Unit = {
-    if (connectionResult.hasResolution) {
+
+    def withActivity(f: (AppCompatActivity => Unit)) =
       contextWrapper.original.get match {
-        case Some(activity: AppCompatActivity) =>
-          Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
-            case Failure(e) => connectionError()
-            case _ =>
-          }
+        case Some(activity: AppCompatActivity) => f(activity)
         case _ =>
+      }
+
+    if (connectionResult.hasResolution) {
+      withActivity { activity =>
+        Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
+          case Failure(e) => connectionError()
+          case _ =>
+        }
+      }
+    } else if (connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
+      actions.goToUser().run
+      withActivity { activity =>
+        GoogleApiAvailability.getInstance()
+          .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
+          .show()
       }
     } else {
       connectionError()
@@ -305,17 +315,6 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }) getOrElse actions.showErrorConnectingGoogle().run
   }
 
-  private[this] def storeDevice(client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client)
-    for {
-      collections <- di.collectionProcess.getCollections
-      moments <- di.momentProcess.getMoments
-      _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-        collections = addMomentsToCollections(collections, moments),
-        moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
-    } yield ()
-  }
-
   private[this] def addMomentsToCollections(collections: Seq[Collection], moments: Seq[Moment]) =
     collections map (collection => toCloudStorageCollection(collection, moments.find(_.collectionId == Option(collection.id))))
 
@@ -327,8 +326,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     if (cloudStorageResources.isEmpty) {
       for {
         userInfo <- di.userConfigProcess.getUserInfo
-        cloudStorageDevices = userInfo.devices map toCloudStorageDevice
-        _ <- storeOnCloud(cloudStorageProcess, cloudStorageDevices)
+        cloudStorageDevices <- storeOnCloud(cloudStorageProcess, userInfo.devices map toCloudStorageDevice)
       } yield UserCloudDevices(userInfo.name, cloudStorageDevices)
     } else {
       for {
@@ -338,13 +336,13 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }
   }
 
-  private[this] def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDevice]) = Service {
-    val tasks = cloudStorageDevices map (d => cloudStorageProcess.createOrUpdateCloudStorageDevice(d).run)
+  private[this] def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = Service {
+    val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
   }
 
   private[this] def loadFromCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageResources: Seq[CloudStorageDeviceSummary]) = Service {
-    val tasks = cloudStorageResources map (r => cloudStorageProcess.getCloudStorageDevice(r.resourceId).run)
+    val tasks = cloudStorageResources map (r => cloudStorageProcess.getCloudStorageDevice(r.cloudId).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect {
       case Answer(r) => Some(r)
       case e@Errata(_) =>

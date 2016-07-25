@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException

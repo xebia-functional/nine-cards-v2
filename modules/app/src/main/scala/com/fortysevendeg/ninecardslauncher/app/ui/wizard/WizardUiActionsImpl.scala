@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Anim
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDevice
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceData}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -85,7 +85,7 @@ trait WizardUiActionsImpl
                 val tag = Option(i.getTag) map (_.toString)
                 tag match {
                   case Some(`newConfigurationKey`) => presenter.generateCollections(None)
-                  case device => presenter.generateCollections(device)
+                  case cloudId => presenter.generateCollections(cloudId)
                 }
               }
           }
@@ -159,7 +159,7 @@ trait WizardUiActionsImpl
   }
 
   private[this] def addDevicesToRadioGroup(devices: Seq[CloudStorageDevice]): Ui[Any] = {
-    val radioViews = (devices map (device => userRadio(device.deviceName, device.deviceId))) :+
+    val radioViews = (devices map (device => userRadio(device.data.deviceName, device.cloudId))) :+
       userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey)
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui {

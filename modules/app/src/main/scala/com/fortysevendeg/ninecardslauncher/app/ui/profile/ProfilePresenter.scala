@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.profile
 
+import java.util.Date
+
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -98,15 +100,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     syncEnabled = false
   }
 
-  def loadUserAccounts(): Unit = clientStatuses match {
-    case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
-      loadUserAccounts(client)
-    case GoogleApiClientStatuses(Some(client)) =>
-      tryToConnect()
-      actions.showLoading().run
-    case _ =>
-      loadUserInfo()
-  }
+  def loadUserAccounts(): Unit = withConnectedClient(loadUserAccounts(_))
 
   def loadPublications(): Unit = {
     // TODO - Load publications and set adapter
@@ -121,6 +115,18 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   private[this] def sampleItems(tab: String) = 1 to 20 map (i => s"$tab Item $i")
 
   def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
+
+  def showDialogForDeleteDevice(cloudId: String): Unit = {
+    contextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        val ft = activity.getSupportFragmentManager.beginTransaction()
+        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+        ft.addToBackStack(javaNull)
+        val dialog = new RemoveAccountDeviceDialogFragment(cloudId)
+        dialog.show(ft, tagDialog)
+      case _ =>
+    }
+  }
 
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean =
     (requestCode, resultCode) match {
@@ -151,20 +157,18 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
   }
 
+  def deleteDevice(cloudId: String): Unit =
+    withConnectedClient { client =>
+      Task.fork(deleteAccountDevice(client, cloudId).run).resolveAsyncUi(
+        onResult = (_) => Ui(loadUserAccounts(client, Seq(cloudId))),
+        onException = (_) => actions.showContactUsError(() => deleteDevice(cloudId)),
+        onPreTask = () => actions.showLoading())
+    }
+
   def copyDevice(name: String, resourceId: String): Unit = Option(name) match {
     case Some(s) if s.length > 0 => ???
     case _ => actions.showInvalidConfigurationNameError(resourceId).run
   }
-
-  def deleteDevice(resourceId: String): Unit =
-    clientStatuses match {
-      case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
-        Task.fork(deleteAccountDevice(client, resourceId).run).resolveAsyncUi(
-          onResult = (_) => Ui(loadUserAccounts(client, Seq(resourceId))),
-          onException = (_) => actions.showContactUsError(() => deleteDevice(resourceId)),
-          onPreTask = () => actions.showLoading())
-      case _ => actions.showConnectingGoogleError(() => tryToConnect())
-    }
 
   private[this] def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
 
@@ -185,7 +189,12 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     Task.fork(loadAccounts(client, filterOutResourceIds).run).resolveAsyncUi(
       onResult = accountSyncs => {
         syncEnabled = true
-        actions.setAccountsAdapter(accountSyncs)
+        if (accountSyncs.isEmpty) {
+          launchService()
+          actions.showLoading()
+        } else {
+          actions.setAccountsAdapter(accountSyncs)
+        }
       },
       onException = (_) => actions.showConnectingGoogleError(() => loadUserAccounts(client)),
       onPreTask = () => actions.showLoading()
@@ -201,15 +210,15 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       val filteredDevices = if (filterOutResourceIds.isEmpty) {
         devices
       } else {
-        devices.filterNot(d => filterOutResourceIds.contains(d.resourceId))
+        devices.filterNot(d => filterOutResourceIds.contains(d.cloudId))
       }
       createSync(filteredDevices)
     }
   }
 
-  private[this] def deleteAccountDevice(client: GoogleApiClient, driveId: String): ServiceDef2[Unit, CloudStorageProcessException] =  {
+  private[this] def deleteAccountDevice(client: GoogleApiClient, cloudId: String): ServiceDef2[Unit, CloudStorageProcessException] =  {
     val cloudStorageProcess = di.createCloudStorageProcess(client)
-    cloudStorageProcess.deleteCloudStorageDevice(driveId)
+    cloudStorageProcess.deleteCloudStorageDevice(cloudId)
   }
 
   private[this] def logout(): ServiceDef2[Unit, CollectionException with DockAppException with MomentException with UserException] =
@@ -221,22 +230,37 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     } yield ()
 
   private[this] def createSync(devices: Seq[CloudStorageDeviceSummary]): Seq[AccountSync] = {
-    val currentDevice = devices.find(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = true, resourceId = d.resourceId)
+
+    def toAccountSync(d: CloudStorageDeviceSummary, current: Boolean = false): AccountSync =
+      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = current, cloudId = d.cloudId)
+
+    def order(seq: Seq[CloudStorageDeviceSummary]): Seq[CloudStorageDeviceSummary] =
+      seq.sortBy(_.modifiedDate)(Ordering[Date].reverse)
+
+    devices.partition(_.currentDevice) match {
+      case (current, other) =>
+        val currentDevices = order(current)
+        val currentDevicesWithHeader = currentDevices.headOption map { device =>
+          Seq(AccountSync.header(resGetString(R.string.syncCurrent)), toAccountSync(device, current = true))
+        } getOrElse Seq.empty
+        val otherDevices = order(other ++ currentDevices.drop(1)) match {
+          case seq if seq.isEmpty => Seq.empty
+          case seq => AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
+            (seq map (toAccountSync(_)))
+        }
+        currentDevicesWithHeader ++ otherDevices
     }
-    val otherDevices = devices.filterNot(_.currentDevice) map { d =>
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, resourceId = d.resourceId)
-    }
-    val otherDevicesWithHeader = if (otherDevices.isEmpty) {
-      Seq.empty
-    } else {
-      AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
-        otherDevices
-    }
-    (AccountSync.header(resGetString(R.string.syncCurrent)) +:
-      currentDevice.toSeq) ++ otherDevicesWithHeader
   }
 
+  private[this] def withConnectedClient[R](f: (GoogleApiClient) => R) = clientStatuses match {
+    case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
+      f(client)
+    case GoogleApiClientStatuses(Some(client)) =>
+      tryToConnect()
+      actions.showLoading().run
+    case _ =>
+      loadUserInfo()
+  }
 }
 
 object Statuses {

@@ -4,12 +4,31 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 import org.joda.time.DateTime
 
 import scala.util.Random
 import scalaz.Scalaz._
 
 trait CloudStorageProcessImplData {
+
+  val activeUserId = 10
+
+  val cloudId = "drive-id"
+
+  val user = User(
+    activeUserId,
+    userId = Some("user-id"),
+    email = Some("email"),
+    sessionToken = Some("session-token"),
+    installationId = Some("installation-id"),
+    deviceToken = Some("device-token"),
+    androidToken = Some("android-token"),
+    name = None,
+    avatar = None,
+    cover = None,
+    deviceName = Some("device"),
+    deviceCloudId = Some(cloudId))
 
   val driveServiceFile = generateDriveServiceFile
 
@@ -19,15 +38,12 @@ trait CloudStorageProcessImplData {
 
   def generateDriveServiceFile =
     DriveServiceFile(
+      uuid = java.util.UUID.randomUUID.toString,
       googleDriveId = Random.nextString(10),
-      fileId = Random.nextString(10).some,
+      deviceId = Random.nextString(10).some,
       title = Random.nextString(10),
       createdDate = DateTime.now().minusMonths(6).toDate,
       modifiedDate = DateTime.now().minusMonths(3).toDate)
-
-  val driveId = "drive-id"
-
-  val fileId = "file-id"
 
   val deviceId = "device-id"
 
@@ -46,7 +62,7 @@ trait CloudStorageProcessImplData {
   val momentType = Option("HOME")
 
   val cloudStorageDevice =
-    CloudStorageDevice(
+    CloudStorageDeviceData(
       deviceId,
       deviceName,
       documentVersion,

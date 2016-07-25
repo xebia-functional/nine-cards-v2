@@ -15,4 +15,6 @@ trait UserProcess {
   def unregister(implicit context: ContextSupport): ServiceDef2[Unit, UserException]
 
   def getUser(implicit context: ContextSupport): ServiceDef2[User, UserException]
+
+  def updateUserDevice(deviceName: String, deviceCloudId: String)(implicit context: ContextSupport): ServiceDef2[Unit, UserException]
 }

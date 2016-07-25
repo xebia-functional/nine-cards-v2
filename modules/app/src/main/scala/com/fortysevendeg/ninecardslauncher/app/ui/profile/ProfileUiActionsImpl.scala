@@ -82,7 +82,7 @@ trait ProfileUiActionsImpl
 
   override def showLoadingUserError(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingUser, clickAction)
 
-  override def showSyncingError(): Ui[Any] = showMessage(R.string.errorSyncing)
+  override def showSyncingError(): Ui[Any] = showMessage(R.string.errorSyncing) ~ (loadingView <~ vInvisible)
 
   override def showInvalidConfigurationNameError(resourceId: String): Ui[Any] =
     rootLayout <~ vSnackbarIndefiniteAction(
@@ -90,7 +90,7 @@ trait ProfileUiActionsImpl
       R.string.errorEmptyNameForDeviceButton,
       () => showDialogForCopyDevice(resourceId))
 
-  override def showMessageAccountSynced(): Ui[Any] = showMessage(R.string.accountSynced)
+  override def showMessageAccountSynced(): Ui[Any] = showMessage(R.string.accountSynced) ~ (loadingView <~ vInvisible)
 
   override def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
     (userName <~ tvText(name)) ~
@@ -149,8 +149,8 @@ trait ProfileUiActionsImpl
   private[this] def accountClickListener(position: Int, itemId: Int, accountSync: AccountSync): Unit =
     itemId match {
       case R.id.action_sync => presenter.launchService()
-      case R.id.action_delete => accountSync.resourceId foreach showDialogForDeleteDevice
-      case R.id.action_copy => accountSync.resourceId foreach showDialogForCopyDevice
+      case R.id.action_delete => accountSync.cloudId foreach showDialogForDeleteDevice
+      case R.id.action_copy => accountSync.cloudId foreach showDialogForCopyDevice
       case _ =>
     }
 

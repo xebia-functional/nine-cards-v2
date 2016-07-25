@@ -95,7 +95,6 @@
     <color name="collection_fab_button_item_edit_moment">#ff9800</color>
     <color name="collection_fab_button_item_change_moment">#3f51b5</color>
 
-    <color name="collection_fab_button_item_create_new_collection">#009688</color>
     <color name="collection_fab_button_item_my_collections">#3F51B5</color>
     <color name="collection_fab_button_item_public_collection">#F44336</color>
 

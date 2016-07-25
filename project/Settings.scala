@@ -122,6 +122,7 @@ object Settings {
     prettyTime,
     glide,
     okHttp,
+    gfcTimeUUID,
     stetho,
     stethoOkhttp,
     stethoUrlconnection,
