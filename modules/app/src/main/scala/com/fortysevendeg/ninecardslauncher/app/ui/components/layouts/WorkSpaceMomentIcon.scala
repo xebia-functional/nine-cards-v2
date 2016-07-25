@@ -32,19 +32,13 @@ class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: In
 
   LayoutInflater.from(context).inflate(R.layout.workspace_moment_menu, this)
 
-  val displacement = resGetDimensionPixelSize(R.dimen.shadow_displacement_default)
-
   val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-
-  val radius = resGetDimensionPixelSize(R.dimen.shadow_radius_default)
 
   private[this] val content = Option(findView(TR.workspace_moment_icon_content))
 
   private[this] val title = Option(findView(TR.workspace_moment_title))
 
   private[this] val icon = Option(findView(TR.workspace_moment_icon))
-
-  (title <~ tvShadowLayer(radius, displacement, displacement, resGetColor(R.color.shadow_default))).run
 
   def populateCollection(collection: Collection): Ui[Any] = {
     val resIcon = iconCollectionDetail(collection.icon)

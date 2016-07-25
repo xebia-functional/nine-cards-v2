@@ -18,7 +18,7 @@ import macroid._
 
 class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   extends LinearLayout(context, attrs, defStyle)
-    with TypedFindView {
+  with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
