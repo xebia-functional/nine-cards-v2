@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
-import android.content.ClipData
+import android.appwidget.{AppWidgetHost, AppWidgetManager}
+import android.content.{ClipData, Intent}
 import android.graphics.Point
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
@@ -9,6 +10,7 @@ import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -20,6 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
@@ -61,6 +64,10 @@ trait LauncherUiActionsImpl
 
   implicit val managerContext: FragmentManagerContext[Fragment, FragmentManager]
 
+  lazy val appWidgetManager = AppWidgetManager.getInstance(activityContextWrapper.application)
+
+  lazy val appWidgetHost = new AppWidgetHost(activityContextWrapper.application, R.id.app_widget_host_id)
+
   lazy val foreground = Option(findView(TR.launcher_foreground))
 
   lazy val appsMoment = Option(findView(TR.launcher_apps_moment))
@@ -74,11 +81,16 @@ trait LauncherUiActionsImpl
     CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall))
 
   override def initialize: Ui[Any] =
-    Ui(initAllSystemBarsTint) ~
+    Ui{
+      appWidgetHost.startListening()
+      initAllSystemBarsTint
+    } ~
       prepareBars ~
       initCollectionsUi ~
       initDrawerUi ~
       (root <~ dragListener())
+
+  override def destroy: Ui[Any] = Ui(appWidgetHost.stopListening())
 
   override def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): Ui[Any] =
     (workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager
@@ -184,8 +196,36 @@ trait LauncherUiActionsImpl
 
   override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
 
-  override def addWidgetView(widgetView: View): Ui[Any] = {
-    workspaces <~ lwsAddWidget(widgetView)
+  override def addWidget(widgetViewId: Int): Ui[Any] = workspaces <~ lwsAddWidget(createView(widgetViewId))
+
+  override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
+
+  override def deleteWidget(widgetViewId: Int): Ui[Any] = Ui(appWidgetHost.deleteAppWidgetId(widgetViewId))
+
+  override def configureWidget(appWidgetId: Int): Ui[Any] = {
+    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+    if (appWidgetInfo.configure != javaNull) {
+      val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
+      intent.setComponent(appWidgetInfo.configure)
+      intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+      uiStartIntentForResult(intent, RequestCodes.goToConfigureWidgets)
+    } else {
+      Ui(presenter.addWidget(Some(appWidgetId)))
+    }
+  }
+
+  override def showWidgetsDialog(): Ui[Any] = {
+    val appWidgetId = appWidgetHost.allocateAppWidgetId()
+    val pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
+    pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+    uiStartIntentForResult(pickIntent, RequestCodes.goToWidgets)
+  }
+
+  private[this] def createView(appWidgetId: Int): View = {
+    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+    val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+    hostView.setAppWidget(appWidgetId, appWidgetInfo)
+    hostView
   }
 
   override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer

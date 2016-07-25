@@ -49,11 +49,8 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       collection <- moment.collection
     } yield {
       (message <~ vGone) ~
-          ((for {
-            moment <- moment.momentType
-            view <- presenter.getWidgetView(moment)
-          } yield addWidget(view)) getOrElse clearWidgets()) ~
-        (widgets <~ vVisible <~ vAlpha(0f) <~ applyAnimation(alpha = Some(1f)))
+        (widgets <~ vVisible) ~
+        (moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets())
     }) getOrElse
       ((message <~ vVisible) ~
         (widgets <~ vGone))
