@@ -5,7 +5,6 @@ import java.util.Date
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Presenter, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
@@ -14,8 +13,6 @@ import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.RemoveAccountDeviceDialogFragment
-import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -178,7 +175,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       case Some(name) if name.length > 0 =>
         withConnectedClient { client =>
           Task.fork(copyAccountDevice(name, client, cloudId).run).resolveAsyncUi(
-            onResult = (_) => Ui(loadUserAccounts(client, Seq(cloudId))),
+            onResult = (_) => Ui(loadUserAccounts(client)),
             onException = (_) => actions.showContactUsError(() => copyDevice(maybeName, cloudId)),
             onPreTask = () => actions.showLoading())
         }
