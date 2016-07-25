@@ -29,7 +29,9 @@ trait SocialProfileProcessImplData {
     androidToken = Some("android-token"),
     name = Some(name),
     avatar = Some(avatarUrl),
-    cover = Some(coverUrl))
+    cover = Some(coverUrl),
+    deviceName = Some("device"),
+    deviceCloudId = Some("device-cloud-id"))
 
   val findUserByIdRequest = FindUserByIdRequest(activeUserId)
 
@@ -43,6 +45,8 @@ trait SocialProfileProcessImplData {
     androidToken = user.androidToken,
     name = googlePlusProfile.name,
     avatar = googlePlusProfile.avatarUrl,
-    cover = googlePlusProfile.coverUrl)
+    cover = googlePlusProfile.coverUrl,
+    deviceName = user.deviceName,
+    deviceCloudId = user.deviceCloudId)
 
 }
