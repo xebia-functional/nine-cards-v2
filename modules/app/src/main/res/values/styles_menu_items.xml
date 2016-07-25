@@ -43,11 +43,13 @@
     <style name="WorkSpaceMomentIconTitle">
         <item name="android:layout_width">@dimen/size_workspace_moment_icon</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/padding_small</item>
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/menu_apps_moment_item_title</item>
         <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
 
     <style name="WorkSpaceMomentIconDrawableContent">

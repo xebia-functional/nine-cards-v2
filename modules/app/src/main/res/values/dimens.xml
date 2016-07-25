@@ -48,11 +48,11 @@
 
     <!-- Apps moment bar -->
     <dimen name="size_apps_bar_moment">86dp</dimen>
-    <dimen name="height_header_apps_bar_moment">96dp</dimen>
+    <dimen name="height_header_apps_bar_moment">104dp</dimen>
     <dimen name="size_icon_apps_bar_moment">40dp</dimen>
 
     <!-- WorkSpace -->
-    <dimen name="size_workspace_moment_icon">64dp</dimen>
+    <dimen name="size_workspace_moment_icon">60dp</dimen>
     <dimen name="margin_top_workspace_moment_background">24dp</dimen>
     <dimen name="size_workspace_menu_item">50dp</dimen>
     <dimen name="max_width_launcher_menu_item">100dp</dimen>

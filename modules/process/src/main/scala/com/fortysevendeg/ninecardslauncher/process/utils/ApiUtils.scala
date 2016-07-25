@@ -23,7 +23,9 @@ class ApiUtils(persistenceServices: PersistenceServices)
 
   private[this] def getTokens(id: Int)(implicit context: ContextSupport): ServiceDef2[(String, Option[String]), ApiServiceException] = Service {
     persistenceServices.findUserById(FindUserByIdRequest(id)).run map {
-      case Answer(Some(User(_, _, _, Some(sessionToken), _, _, androidToken, _, _, _))) => Result.answer[(String, Option[String]), ApiServiceException]((sessionToken, androidToken)) //TODO refactor to named params once available in Scala
+      case Answer(Some(User(_, _, _, Some(sessionToken), _, _, androidToken, _, _, _, _, _))) =>
+        //TODO refactor to named params once available in Scala
+        Result.answer[(String, Option[String]), ApiServiceException]((sessionToken, androidToken))
       case _ => Result.errata(ApiServiceException("Session token doesn't exists"))
     }
   }
