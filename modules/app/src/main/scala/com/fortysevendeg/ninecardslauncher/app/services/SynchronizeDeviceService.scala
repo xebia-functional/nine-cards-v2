@@ -73,9 +73,10 @@ class SynchronizeDeviceService
     for {
       collections <- di.collectionProcess.getCollections
       moments <- di.momentProcess.getMoments
-      _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+      savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
         collections = addMomentsToCollections(collections, moments),
         moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
+      _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
     } yield ()
   }
 
