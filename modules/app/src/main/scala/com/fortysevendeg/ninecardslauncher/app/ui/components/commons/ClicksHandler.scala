@@ -2,7 +2,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.commons
 
 import android.os
 
-trait LongClickHandler {
+trait ClicksHandler {
+
+  private[this] val clickMillis = 300
+
+  var pressStart: Long = 0
 
   private[this] val longClickMillis = 1000
 
@@ -14,8 +18,24 @@ trait LongClickHandler {
 
   def onLongClick(): Unit
 
+  def startClick() = pressStart = System.currentTimeMillis()
+
+  def resetClick() =  pressStart = 0
+
+  def isClick = pressStart != 0 && (System.currentTimeMillis() - pressStart) < clickMillis
+
   def startLongClick() = handler.postDelayed(runnable, longClickMillis)
 
   def resetLongClick() = handler.removeCallbacks(runnable)
+
+  def startClicks() = {
+    startClick()
+    startLongClick()
+  }
+
+  def resetClicks() = {
+    resetClick()
+    resetLongClick()
+  }
 
 }

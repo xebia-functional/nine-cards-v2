@@ -65,6 +65,8 @@
         <item name="android:layout_marginRight">@dimen/padding_default</item>
     </style>
 
+    <!-- Search Panel (App Drawer) -->
+
     <style name="LauncherSearchPanel">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_search_box</item>
@@ -105,6 +107,96 @@
         <item name="android:scaleType">centerInside</item>
     </style>
 
+    <!-- Collections Panel -->
+
+    <style name="LauncherCollectionsPanel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_search_box</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="LauncherCollectionsBurgerButton">
+        <item name="android:layout_width">@dimen/height_search_box</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:src">@drawable/search_bar_icon_light</item>
+    </style>
+
+    <style name="LauncherCollectionsGoogleButton">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:src">@drawable/search_bar_logo_google_light</item>
+        <item name="android:scaleType">fitStart</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
+    </style>
+
+    <style name="LauncherCollectionsMicButton">
+        <item name="android:layout_width">@dimen/height_search_box</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:src">@drawable/icon_mic_search</item>
+    </style>
+
+    <!-- Moment Panel -->
+
+    <style name="LauncherMomentPanel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_search_box</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="LauncherMomentInfoContent">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="LauncherMomentIcon">
+        <item name="android:layout_width">@dimen/size_icon_top_bar_moment</item>
+        <item name="android:layout_height">@dimen/size_icon_top_bar_moment</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginLeft">@dimen/padding_default</item>
+        <item name="android:layout_marginRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="LauncherMomentText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_launcher_moment_panel</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="LauncherMomentClock" parent="LauncherMomentText">
+        <item name="android:paddingLeft">@dimen/padding_small</item>
+    </style>
+
+    <style name="LauncherMomentGoogleButton">
+        <item name="android:layout_width">@dimen/height_search_box</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:src">@drawable/icon_google_search</item>
+    </style>
+
+    <style name="LauncherMomentMicButton">
+        <item name="android:layout_width">@dimen/height_search_box</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:src">@drawable/icon_mic_search</item>
+    </style>
+
+
+    <!-- App Drawer -->
+
     <style name="LauncherAnimatedDrawer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -134,30 +226,6 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">right</item>
         <item name="android:visibility">gone</item>
-    </style>
-
-    <style name="LauncherBurgerButton">
-        <item name="android:layout_width">@dimen/height_search_box</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:scaleType">centerInside</item>
-        <item name="android:src">@drawable/search_bar_icon_light</item>
-    </style>
-
-    <style name="LauncherGoogleButton">
-        <item name="android:layout_width">0px</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:src">@drawable/search_bar_logo_google_light</item>
-        <item name="android:scaleType">fitStart</item>
-        <item name="android:paddingTop">@dimen/padding_default</item>
-        <item name="android:paddingBottom">@dimen/padding_default</item>
-    </style>
-
-    <style name="LauncherMicButton">
-        <item name="android:layout_width">@dimen/height_search_box</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:scaleType">centerInside</item>
-        <item name="android:src">@drawable/icon_mic_search</item>
     </style>
 
     <style name="LauncherDrawerPanel">
@@ -320,28 +388,10 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="LauncherMomentContent">
+    <style name="LauncherMomentWidgets">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="LauncherMomentWidgets">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0px</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="LauncherMomentAppsLayout">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">@dimen/padding_default</item>
-        <item name="android:paddingRight">@dimen/padding_default</item>
-        <item name="flexWrap">wrap</item>
-        <item name="justifyContent">flex_start</item>
-        <item name="alignItems">flex_start</item>
-        <item name="alignContent">flex_start</item>
     </style>
 
     <style name="LauncherMomentMessage">

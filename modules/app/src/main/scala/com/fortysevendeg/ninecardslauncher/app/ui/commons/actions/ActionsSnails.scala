@@ -22,14 +22,14 @@ object ActionsSnails {
       val startRadius = sizeIcon / 2
       revealIn(x, y, w, h, startRadius, resGetInteger(R.integer.anim_duration_normal))
     } getOrElse {
-      fadeIn()
+      applyFadeIn()
     }
 
   def revealOut(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] =
     Lollipop ifSupportedThen {
       revealOut(x, y, w, h, resGetInteger(R.integer.anim_duration_normal))
     } getOrElse {
-      fadeOut()
+      applyFadeOut()
     }
 
   def scaleToToolbar(radioScale: Float)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
