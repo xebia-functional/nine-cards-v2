@@ -121,7 +121,7 @@ trait ProfileUiActionsImpl
   private[this] def accountClickListener(position: Int, accountSync: AccountSync): Unit =
     accountSync.accountSyncType match {
       case Device(true) => presenter.launchService()
-      case Device(false) => accountSync.resourceId foreach presenter.showDialogForDeleteDevice
+      case Device(false) => accountSync.cloudId foreach presenter.showDialogForDeleteDevice
       case _ =>
     }
 

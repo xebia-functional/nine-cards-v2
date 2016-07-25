@@ -82,7 +82,9 @@ case class UserData(
   androidToken: Option[String],
   name: Option[String],
   avatar: Option[String],
-  cover: Option[String])
+  cover: Option[String],
+  deviceName: Option[String],
+  deviceCloudId: Option[String])
 
 case class DataCounter(term: String, count: Int)
 

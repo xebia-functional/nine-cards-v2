@@ -71,6 +71,8 @@ object Conversions {
       androidToken = Option[String](userEntity.data.androidToken),
       name = Option[String](userEntity.data.name),
       avatar = Option[String](userEntity.data.avatar),
-      cover = Option[String](userEntity.data.cover)))
+      cover = Option[String](userEntity.data.cover),
+      deviceName = Option[String](userEntity.data.deviceName),
+      deviceCloudId = Option[String](userEntity.data.deviceCloudId)))
 
 }
