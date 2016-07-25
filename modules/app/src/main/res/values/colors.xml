@@ -68,7 +68,7 @@
     <color name="text_menu_email">#b5ffffff</color>
 
     <!-- Menu Apps Moment -->
-    <color name="menu_apps_moment_item_title">#333333</color>
+    <color name="menu_apps_moment_item_title">#292929</color>
 
     <!-- WorkSpace -->
     <color name="collection_workspace_button_item_title">#ffffff</color>
