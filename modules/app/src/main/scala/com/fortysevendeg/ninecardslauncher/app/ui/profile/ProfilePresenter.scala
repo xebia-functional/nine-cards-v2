@@ -140,8 +140,17 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
 
 
-  def quit(): Unit =
-    Task.fork(logout().run).resolveAsyncUi(
+  def quit(): Unit = {
+
+    def logout =
+      for {
+        _ <- di.collectionProcess.cleanCollections()
+        _ <- di.deviceProcess.deleteAllDockApps()
+        _ <- di.momentProcess.deleteAllMoments()
+        _ <- di.userProcess.unregister
+      } yield ()
+
+    Task.fork(logout.run).resolveAsyncUi(
       onResult = (_) => Ui {
         contextWrapper.original.get foreach { activity =>
           activity.setResult(ResultCodes.logoutSuccessful)
@@ -149,6 +158,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         }
       },
       onException = (_) => actions.showContactUsError(quit))
+  }
 
   def launchService(): Unit = if (syncEnabled) {
     contextWrapper.original.get map { activity =>
@@ -157,35 +167,70 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
   }
 
-  def deleteDevice(cloudId: String): Unit =
+  def deleteDevice(cloudId: String): Unit = {
+
+    def deleteAccountDevice(client: GoogleApiClient, cloudId: String): ServiceDef2[Unit, CloudStorageProcessException] =  {
+      val cloudStorageProcess = di.createCloudStorageProcess(client)
+      cloudStorageProcess.deleteCloudStorageDevice(cloudId)
+    }
+
     withConnectedClient { client =>
       Task.fork(deleteAccountDevice(client, cloudId).run).resolveAsyncUi(
         onResult = (_) => Ui(loadUserAccounts(client, Seq(cloudId))),
         onException = (_) => actions.showContactUsError(() => deleteDevice(cloudId)),
         onPreTask = () => actions.showLoading())
     }
+  }
 
   def copyDevice(name: String, resourceId: String): Unit = Option(name) match {
-    case Some(s) if s.length > 0 => ???
+    case Some(s) if s.length > 0 =>
+      withConnectedClient { client =>
+
+      }
     case _ => actions.showInvalidConfigurationNameError(resourceId).run
   }
 
   private[this] def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
 
-  private[this] def loadUserInfo(): Unit =
-    Task.fork(loadUserEmail().run).resolveAsyncUi(
-      onResult = email => Ui {
-        val client = email map createGoogleDriveClient
-        clientStatuses = clientStatuses.copy(apiClient = client)
-        client foreach (_.connect())
-      },
-      onException = (_) => actions.showLoadingUserError(loadUserInfo),
-      onPreTask = () => actions.showLoading()
-    )
-
   private[this] def loadUserAccounts(
     client: GoogleApiClient,
-    filterOutResourceIds: Seq[String] = Seq.empty): Unit =
+    filterOutResourceIds: Seq[String] = Seq.empty): Unit = {
+
+    def toAccountSync(d: CloudStorageDeviceSummary, current: Boolean = false): AccountSync =
+      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = current, cloudId = d.cloudId)
+
+    def order(seq: Seq[CloudStorageDeviceSummary]): Seq[CloudStorageDeviceSummary] =
+      seq.sortBy(_.modifiedDate)(Ordering[Date].reverse)
+
+    def createSync(devices: Seq[CloudStorageDeviceSummary]) =
+      devices.partition(_.currentDevice) match {
+        case (current, other) =>
+          val currentDevices = order(current)
+          val currentDevicesWithHeader = currentDevices.headOption map { device =>
+            Seq(AccountSync.header(resGetString(R.string.syncCurrent)), toAccountSync(device, current = true))
+          } getOrElse Seq.empty
+          val otherDevices = order(other ++ currentDevices.drop(1)) match {
+            case seq if seq.isEmpty => Seq.empty
+            case seq => AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
+              (seq map (toAccountSync(_)))
+          }
+          currentDevicesWithHeader ++ otherDevices
+      }
+
+    def loadAccounts(
+      client: GoogleApiClient,
+      filterOutResourceIds: Seq[String] = Seq.empty) = {
+      val cloudStorageProcess = di.createCloudStorageProcess(client)
+      cloudStorageProcess.getCloudStorageDevices.map { devices =>
+        val filteredDevices = if (filterOutResourceIds.isEmpty) {
+          devices
+        } else {
+          devices.filterNot(d => filterOutResourceIds.contains(d.cloudId))
+        }
+        createSync(filteredDevices)
+      }
+    }
+
     Task.fork(loadAccounts(client, filterOutResourceIds).run).resolveAsyncUi(
       onResult = accountSyncs => {
         syncEnabled = true
@@ -199,67 +244,32 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       onException = (_) => actions.showConnectingGoogleError(() => loadUserAccounts(client)),
       onPreTask = () => actions.showLoading()
     )
+  }
 
-  private[this] def loadUserEmail(): ServiceDef2[Option[String], UserException] = di.userProcess.getUser.map(_.email)
+  private[this] def withConnectedClient[R](f: (GoogleApiClient) => R) = {
 
-  private[this] def loadAccounts(
-    client: GoogleApiClient,
-    filterOutResourceIds: Seq[String] = Seq.empty): ServiceDef2[Seq[AccountSync], CloudStorageProcessException] =  {
-    val cloudStorageProcess = di.createCloudStorageProcess(client)
-    cloudStorageProcess.getCloudStorageDevices.map { devices =>
-      val filteredDevices = if (filterOutResourceIds.isEmpty) {
-        devices
-      } else {
-        devices.filterNot(d => filterOutResourceIds.contains(d.cloudId))
-      }
-      createSync(filteredDevices)
+    def loadUserEmail() = di.userProcess.getUser.map(_.email)
+
+    def loadUserInfo(): Unit =
+      Task.fork(loadUserEmail().run).resolveAsyncUi(
+        onResult = email => Ui {
+          val client = email map createGoogleDriveClient
+          clientStatuses = clientStatuses.copy(apiClient = client)
+          client foreach (_.connect())
+        },
+        onException = (_) => actions.showLoadingUserError(loadUserInfo),
+        onPreTask = () => actions.showLoading()
+      )
+
+    clientStatuses match {
+      case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
+        f(client)
+      case GoogleApiClientStatuses(Some(client)) =>
+        tryToConnect()
+        actions.showLoading().run
+      case _ =>
+        loadUserInfo()
     }
-  }
-
-  private[this] def deleteAccountDevice(client: GoogleApiClient, cloudId: String): ServiceDef2[Unit, CloudStorageProcessException] =  {
-    val cloudStorageProcess = di.createCloudStorageProcess(client)
-    cloudStorageProcess.deleteCloudStorageDevice(cloudId)
-  }
-
-  private[this] def logout(): ServiceDef2[Unit, CollectionException with DockAppException with MomentException with UserException] =
-    for {
-      _ <- di.collectionProcess.cleanCollections()
-      _ <- di.deviceProcess.deleteAllDockApps()
-      _ <- di.momentProcess.deleteAllMoments()
-      _ <- di.userProcess.unregister
-    } yield ()
-
-  private[this] def createSync(devices: Seq[CloudStorageDeviceSummary]): Seq[AccountSync] = {
-
-    def toAccountSync(d: CloudStorageDeviceSummary, current: Boolean = false): AccountSync =
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = current, cloudId = d.cloudId)
-
-    def order(seq: Seq[CloudStorageDeviceSummary]): Seq[CloudStorageDeviceSummary] =
-      seq.sortBy(_.modifiedDate)(Ordering[Date].reverse)
-
-    devices.partition(_.currentDevice) match {
-      case (current, other) =>
-        val currentDevices = order(current)
-        val currentDevicesWithHeader = currentDevices.headOption map { device =>
-          Seq(AccountSync.header(resGetString(R.string.syncCurrent)), toAccountSync(device, current = true))
-        } getOrElse Seq.empty
-        val otherDevices = order(other ++ currentDevices.drop(1)) match {
-          case seq if seq.isEmpty => Seq.empty
-          case seq => AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
-            (seq map (toAccountSync(_)))
-        }
-        currentDevicesWithHeader ++ otherDevices
-    }
-  }
-
-  private[this] def withConnectedClient[R](f: (GoogleApiClient) => R) = clientStatuses match {
-    case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
-      f(client)
-    case GoogleApiClientStatuses(Some(client)) =>
-      tryToConnect()
-      actions.showLoading().run
-    case _ =>
-      loadUserInfo()
   }
 }
 
