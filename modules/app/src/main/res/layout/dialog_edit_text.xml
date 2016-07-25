@@ -7,9 +7,7 @@
 
         <EditText
             android:id="@+id/dialog_edittext"
-            android:inputType="textAutoComplete"
-            style="@style/ProfileConfigurationName"
-            android:hint="@string/hintNewConfigurationName"/>
+            style="@style/ProfileConfigurationName"/>
 
     </android.support.design.widget.TextInputLayout>
 

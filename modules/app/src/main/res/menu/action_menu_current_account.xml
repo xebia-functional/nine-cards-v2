@@ -8,7 +8,6 @@
 
     <item
         android:title="@string/menuAccountSync"
-        android:id="@+id/action_sync"
-        android:icon="@drawable/icon_account_sync"/>
+        android:id="@+id/action_sync"/>
 
 </menu>
