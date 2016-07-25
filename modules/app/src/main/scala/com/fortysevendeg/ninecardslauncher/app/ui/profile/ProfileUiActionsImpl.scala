@@ -125,11 +125,11 @@ trait ProfileUiActionsImpl
     userContainer <~ vAlpha(alpha)
   }
 
-  override def showDialogForDeleteDevice(resourceId: String): Unit =
-    showDialog(new RemoveAccountDeviceDialogFragment(resourceId))
+  override def showDialogForDeleteDevice(cloudId: String): Unit =
+    showDialog(new RemoveAccountDeviceDialogFragment(cloudId))
 
-  override def showDialogForCopyDevice(resourceId: String): Unit =
-    showDialog(new CopyAccountDeviceDialogFragment(resourceId))
+  override def showDialogForCopyDevice(cloudId: String): Unit =
+    showDialog(new CopyAccountDeviceDialogFragment(cloudId))
 
   private[this] def showDialog(dialog: DialogFragment): Unit = {
     activityContextWrapper.original.get match {

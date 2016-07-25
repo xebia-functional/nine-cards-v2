@@ -8,6 +8,7 @@ import android.graphics.drawable._
 import android.os.Vibrator
 import android.view.View
 import ColorOps._
+import android.view.View.OnFocusChangeListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
 import android.widget.{EditText, ImageView}
@@ -110,8 +111,5 @@ object ExtraTweaks {
       case _ =>
     }
   }
-
-  def etSetError(message: Int)(implicit contextWrapper: ContextWrapper) =
-    Tweak[EditText](_.setError(contextWrapper.bestAvailable.getString(message)))
 
 }

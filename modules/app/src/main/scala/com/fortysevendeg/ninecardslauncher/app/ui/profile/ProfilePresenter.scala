@@ -8,20 +8,14 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Presenter, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.RemoveAccountDeviceDialogFragment
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -116,18 +110,6 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
 
-  def showDialogForDeleteDevice(cloudId: String): Unit = {
-    contextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) =>
-        val ft = activity.getSupportFragmentManager.beginTransaction()
-        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-        ft.addToBackStack(javaNull)
-        val dialog = new RemoveAccountDeviceDialogFragment(cloudId)
-        dialog.show(ft, tagDialog)
-      case _ =>
-    }
-  }
-
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean =
     (requestCode, resultCode) match {
       case (`resolveGooglePlayConnection`, Activity.RESULT_OK) =>
@@ -169,7 +151,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def deleteDevice(cloudId: String): Unit = {
 
-    def deleteAccountDevice(client: GoogleApiClient, cloudId: String): ServiceDef2[Unit, CloudStorageProcessException] =  {
+    def deleteAccountDevice(client: GoogleApiClient, cloudId: String) =  {
       val cloudStorageProcess = di.createCloudStorageProcess(client)
       cloudStorageProcess.deleteCloudStorageDevice(cloudId)
     }
@@ -182,12 +164,26 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
   }
 
-  def copyDevice(name: String, resourceId: String): Unit = Option(name) match {
-    case Some(s) if s.length > 0 =>
-      withConnectedClient { client =>
+  def copyDevice(maybeName: Option[String], cloudId: String): Unit = {
 
-      }
-    case _ => actions.showInvalidConfigurationNameError(resourceId).run
+    def copyAccountDevice(name: String, client: GoogleApiClient, cloudId: String) = {
+      val cloudStorageProcess = di.createCloudStorageProcess(client)
+      for {
+        device <- cloudStorageProcess.getCloudStorageDevice(cloudId)
+        _ <- cloudStorageProcess.createCloudStorageDevice(device.data.copy(deviceName = name))
+      } yield ()
+    }
+
+    maybeName match {
+      case Some(name) if name.length > 0 =>
+        withConnectedClient { client =>
+          Task.fork(copyAccountDevice(name, client, cloudId).run).resolveAsyncUi(
+            onResult = (_) => Ui(loadUserAccounts(client, Seq(cloudId))),
+            onException = (_) => actions.showContactUsError(() => copyDevice(maybeName, cloudId)),
+            onPreTask = () => actions.showLoading())
+        }
+      case _ => actions.showInvalidConfigurationNameError(cloudId).run
+    }
   }
 
   private[this] def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
