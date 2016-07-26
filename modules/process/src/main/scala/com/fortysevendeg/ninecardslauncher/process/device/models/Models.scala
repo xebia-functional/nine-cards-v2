@@ -66,7 +66,10 @@ case class Widget(
   userHashCode: Option[Int],
   autoAdvanceViewId: Int,
   initialLayout: Int,
-  dimensions: WidgetDimensions,
+  minWidth: Int,
+  minHeight: Int,
+  minResizeWidth: Int,
+  minResizeHeight: Int,
   className: String,
   packageName: String,
   resizeMode: WidgetResizeMode,
@@ -74,12 +77,6 @@ case class Widget(
   label: String,
   icon: Drawable,
   preview: Option[Drawable])
-
-case class WidgetDimensions(
-  minCellHeight: Int,
-  minResizeCellHeight: Int,
-  minResizeCellWidth: Int,
-  minCellWidth: Int)
 
 case class TermCounter(
   term: String,

@@ -172,7 +172,10 @@ trait DeviceConversions extends NineCardIntentConversions {
     userHashCode = item.userHashCode,
     autoAdvanceViewId = item.autoAdvanceViewId,
     initialLayout = item.initialLayout,
-    dimensions = toWidgetDimensions(item.minHeight, item.minResizeHeight, item.minResizeWidth, item.minWidth),
+    minWidth = item.minWidth,
+    minHeight = item.minHeight,
+    minResizeWidth = item.minResizeWidth,
+    minResizeHeight = item.minResizeHeight,
     className = item.className,
     packageName = item.packageName,
     resizeMode = WidgetResizeMode(item.resizeMode),
@@ -180,14 +183,5 @@ trait DeviceConversions extends NineCardIntentConversions {
     label = item.label,
     icon = item.icon,
     preview = item.preview)
-
-  def toWidgetDimensions(minDPHeight: Int, minResizeDPHeight: Int, minResizeDPWidth: Int, minDPWidth: Int): WidgetDimensions =
-    WidgetDimensions(
-      minCellHeight = toCell(minDPHeight),
-      minResizeCellHeight = toCell(minResizeDPHeight),
-      minResizeCellWidth = toCell(minResizeDPWidth),
-      minCellWidth = toCell(minDPWidth))
-
-  private[this] def toCell(size: Int): Int = (size + margins) / cellSize
 
 }
